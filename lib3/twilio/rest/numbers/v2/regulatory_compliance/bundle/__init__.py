@@ -17,7 +17,6 @@ from twilio.rest.numbers.v2.regulatory_compliance.bundle.item_assignment import 
 
 
 class BundleList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -220,7 +219,6 @@ class BundleList(ListResource):
 
 
 class BundlePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -259,7 +257,6 @@ class BundlePage(Page):
 
 
 class BundleContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -361,7 +358,6 @@ class BundleContext(InstanceContext):
 
 
 class BundleInstance(InstanceResource):
-    """  """
 
     class Status(object):
         DRAFT = "draft"

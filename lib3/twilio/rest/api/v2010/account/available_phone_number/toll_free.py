@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class TollFreeList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid, country_code):
         """
@@ -266,7 +265,6 @@ class TollFreeList(ListResource):
 
 
 class TollFreePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -312,7 +310,6 @@ class TollFreePage(Page):
 
 
 class TollFreeInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, country_code):
         """

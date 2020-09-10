@@ -59,8 +59,8 @@ class TV(TMDB):
 
         Args:
             language: (optional) ISO 639 code.
-            append_to_response: (optional) Comma separated, any TV series
-                                method.
+            append_to_response: (optional) Append requests within the same
+                namespace to the response.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -80,7 +80,9 @@ class TV(TMDB):
 
         Args:
             language: (optional) ISO 3166-1 code.
-            append_to_response: (optional) Comma separated, any tv method.
+            session_id: (required) See Authentication.
+            guest_session_id: (optional) See Authentication.
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -96,7 +98,7 @@ class TV(TMDB):
 
         Args:
             language: (optional) ISO 3166-1 code.
-            append_to_response: (optional) Comma separated, any tv method.
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -112,9 +114,7 @@ class TV(TMDB):
         to a TV show.
 
         Args:
-            language: (optional) ISO 639 code.
-            append_to_response: (optional) Comma separated, any collection
-                                method.
+            language: (optional) ISO 3166-1 code.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -131,8 +131,6 @@ class TV(TMDB):
 
         Args:
             language: (optional) ISO 639 code.
-            append_to_response: (optional) Comma separated, any collection
-                                method.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -195,8 +193,6 @@ class TV(TMDB):
 
         Args:
             language: (optional) ISO 639 code.
-            include_image_language: (optional) Comma separated, a valid
-                                    ISO 69-1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -210,6 +206,9 @@ class TV(TMDB):
     def keywords(self, **kwargs):
         """
         Get the keywords that have been added to a TV show.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -225,8 +224,8 @@ class TV(TMDB):
         Get the list of TV show recommendations for this item.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -242,8 +241,8 @@ class TV(TMDB):
         Get the reviews for a TV show.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -260,8 +259,7 @@ class TV(TMDB):
         festival or theatre.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
-            language: (optional) ISO 639-1 code.
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -278,9 +276,8 @@ class TV(TMDB):
         keywords and genres.
 
         Args:
-            page: (optional) Minimum value of 1.  Expected value is an integer.
             language: (optional) ISO 639-1 code.
-            append_to_response: (optional) Comma separated, any TV method.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -294,6 +291,9 @@ class TV(TMDB):
     def translations(self, **kwargs):
         """
         Get a list of the translations that exist for a TV show.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -329,9 +329,10 @@ class TV(TMDB):
         https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id.
 
         Args:
-            session_id: see Authentication.
-            guest_session_id: see Authentication.
-            value: Rating value.
+            session_id: (optional) See Authentication.
+            guest_session_id: (optional) See Authentication.
+            value: (required) This is the value of the rating you want to
+                submit. The value is expected to be between 0.5 and 10.0.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -355,8 +356,8 @@ class TV(TMDB):
         https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id.
 
         Args:
-            session_id: see Authentication.
-            guest_session_id: see Authentication.
+            session_id: (optional) See Authentication.
+            guest_session_id: (optional) See Authentication.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -398,9 +399,8 @@ class TV(TMDB):
         UTC-05:00).
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             language: (optional) ISO 639 code.
-            timezone: (optional) Valid value from the list of timezones.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -419,8 +419,8 @@ class TV(TMDB):
         in the next 7 days.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             language: (optional) ISO 639 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -437,8 +437,8 @@ class TV(TMDB):
         daily.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             language: (optional) ISO 639 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -454,8 +454,8 @@ class TV(TMDB):
         Get a list of the top rated TV shows on TMDb.
 
         Args:
-            page: (optional) Minimum 1, maximum 1000.
             language: (optional) ISO 639 code.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -497,8 +497,8 @@ class TV_Seasons(TMDB):
 
         Args:
             language: (optional) ISO 639 code.
-            append_to_response: (optional) Comma separated, any TV series
-                                method.
+            append_to_response: (optional) Append requests within the same
+                namespace to the response.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -515,8 +515,8 @@ class TV_Seasons(TMDB):
 
         Args:
             language: (optional) ISO 639 code.
-            append_to_response: (optional) Comma separated, any TV series
-                                method.
+            session_id: (required) See Authentication.
+            guest_session_id: (optional) See Authentication.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -530,6 +530,9 @@ class TV_Seasons(TMDB):
     def credits(self, **kwargs):
         """
         Get the credits for TV season.
+
+        Args:
+            language: (optional) ISO 639 code.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -573,8 +576,6 @@ class TV_Seasons(TMDB):
 
         Args:
             language: (optional) ISO 639 code.
-            include_image_language: (optional) Comma separated, a valid
-                                    ISO 69-1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -635,8 +636,8 @@ class TV_Episodes(TMDB):
 
         Args:
             language: (optional) ISO 639 code.
-            append_to_response: (optional) Comma separated, any TV series
-                                method.
+            append_to_response: (optional) Append requests within the same
+                namespace to the response.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -652,9 +653,8 @@ class TV_Episodes(TMDB):
         Get your rating for an episode.
 
         Args:
-            language: (optional) ISO 639 code.
-            append_to_response: (optional) Comma separated, any TV series
-                                method.
+            session_id: (required) See Authentication.
+            guest_session_id: (optional) See Authentication.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -668,6 +668,9 @@ class TV_Episodes(TMDB):
     def credits(self, **kwargs):
         """
         Get the credits (cast, crew and guest stars) for a TV episode.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -689,7 +692,7 @@ class TV_Episodes(TMDB):
         *Defunct or no longer available as a service.
 
         Args:
-            language: (optional) ISO 639 code.
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -711,6 +714,9 @@ class TV_Episodes(TMDB):
         should be a comma seperated value like so:
         include_image_language=en,null.
 
+        Args:
+            None
+
         Returns:
             A dict respresentation of the JSON returned from the API.
         """
@@ -723,6 +729,9 @@ class TV_Episodes(TMDB):
     def translations(self, **kwargs):
         """
         Get the translation data for an episode.
+
+        Args:
+            None
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -742,9 +751,10 @@ class TV_Episodes(TMDB):
         https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id.
 
         Args:
-            session_id: see Authentication.
-            guest_session_id: see Authentication.
-            value: Rating value.
+            session_id: (optional) See Authentication.
+            guest_session_id: (optional) See Authentication.
+            value: (required) This is the value of the rating you want to
+                submit. The value is expected to be between 0.5 and 10.0.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -768,8 +778,8 @@ class TV_Episodes(TMDB):
         https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id.
 
         Args:
-            session_id: see Authentication.
-            guest_session_id: see Authentication.
+            session_id: (optional) See Authentication.
+            guest_session_id: (optional) See Authentication.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -874,9 +884,11 @@ class TV_Changes(TMDB):
         changes and episode changes methods to look these up individually.
 
         Args:
-            start_date: (optional) Expected format is 'YYYY-MM-DD'.
-            end_date: (optional) Expected format is 'YYYY-MM-DD'.
-            page: (optional) Minimum 1, maximum 1000.
+            start_date: (optional) Filter the results with a start date.
+                Expected format is 'YYYY-MM-DD'.
+            end_date: (optional) Filter the results with a end date.
+                Expected format is 'YYYY-MM-DD'.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -895,9 +907,11 @@ class TV_Changes(TMDB):
         and end_date query parameters.
 
         Args:
-            start_date: (optional) Expected format is 'YYYY-MM-DD'.
-            end_date: (optional) Expected format is 'YYYY-MM-DD'.
-            page: (optional) Minimum 1, maximum 1000.
+            start_date: (optional) Filter the results with a start date.
+                Expected format is 'YYYY-MM-DD'.
+            end_date: (optional) Filter the results with a end date.
+                Expected format is 'YYYY-MM-DD'.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.
@@ -916,9 +930,11 @@ class TV_Changes(TMDB):
         and end_date query parameters.
 
         Args:
-            start_date: (optional) Expected format is 'YYYY-MM-DD'.
-            end_date: (optional) Expected format is 'YYYY-MM-DD'.
-            page: (optional) Minimum 1, maximum 1000.
+            start_date: (optional) Filter the results with a start date.
+                Expected format is 'YYYY-MM-DD'.
+            end_date: (optional) Filter the results with a end date.
+                Expected format is 'YYYY-MM-DD'.
+            page: (optional) Minimum 1, maximum 1000, default 1.
 
         Returns:
             A dict respresentation of the JSON returned from the API.

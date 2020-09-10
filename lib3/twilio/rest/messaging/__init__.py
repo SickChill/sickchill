@@ -37,6 +37,13 @@ class Messaging(Domain):
         return self._v1
 
     @property
+    def deactivations(self):
+        """
+        :rtype: twilio.rest.messaging.v1.deactivation.DeactivationsList
+        """
+        return self.v1.deactivations
+
+    @property
     def services(self):
         """
         :rtype: twilio.rest.messaging.v1.service.ServiceList

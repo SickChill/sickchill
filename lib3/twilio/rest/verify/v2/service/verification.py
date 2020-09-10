@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class VerificationList(ListResource):
-    """  """
 
     def __init__(self, version, service_sid):
         """
@@ -110,7 +109,6 @@ class VerificationList(ListResource):
 
 
 class VerificationPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -150,7 +148,6 @@ class VerificationPage(Page):
 
 
 class VerificationContext(InstanceContext):
-    """  """
 
     def __init__(self, version, service_sid, sid):
         """
@@ -217,7 +214,6 @@ class VerificationContext(InstanceContext):
 
 
 class VerificationInstance(InstanceResource):
-    """  """
 
     class Channel(object):
         SMS = "sms"

@@ -19,7 +19,7 @@ class PipUpdateManager(UpdateManagerBase):
         return self.get_current_version()
 
     def get_newest_version(self):
-        return packaging_version.parse(self.session.get(f'https://pypi.org/pypi/sickchill/json').json()['info']['version'])
+        return packaging_version.parse(self.session.get('https://pypi.org/pypi/sickchill/json').json()['info']['version'])
 
     def get_newest_commit_hash(self):
         return self.get_newest_version()
@@ -29,23 +29,24 @@ class PipUpdateManager(UpdateManagerBase):
             return 0
 
         newest, current = self.get_newest_version(), self.get_current_version()
-        return 'Major: {}, Minor: {}, Micro: {}'.format(newest.major - current.major, newest.minor - current.minor, newest.micro - current.micro)
+        return f'Major: {newest.major - current.major}, Minor: {newest.minor - current.minor}, Micro: {newest.micro - current.micro}'
 
     def list_remote_branches(self):
         return ['pip']
 
     def set_newest_text(self):
         if self.need_update():
-            base_url = 'https://github.com/{}/{}'.format(settings.GIT_ORG, settings.GIT_REPO)
             if self.get_newest_commit_hash():
-                url = '{}/compare{}...{}'.format(base_url, self.get_current_commit_hash().base_version, self.get_newest_commit_hash().base_version)
+                current = self.get_current_commit_hash().base_version
+                newest = self.get_newest_commit_hash().base_version
+                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}'
             else:
-                url = '{}/commits/'.format(base_url)
+                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/'
 
             newest_tag = 'newer_version_available'
-            newest_text = _('There is a <a href="{compare_url}" onclick="window.open(this.href); return false;">'
-                            'newer version available</a> &mdash; <a href="{update_url}">Update Now</a>').format(
-                compare_url=url, update_url=self.get_update_url())
+            update_url = self.get_update_url()
+            newest_text = _(f'There is a <a href="{url}" onclick="window.open(this.href); return false;">'
+                            f'newer version available</a> &mdash; <a href="{update_url}">Update Now</a>')
 
         else:
             return
@@ -54,6 +55,9 @@ class PipUpdateManager(UpdateManagerBase):
 
     def need_update(self):
         return self.get_newest_version() > self.get_current_version()
+
+    def get_update_url(self):
+        return self.session.get('https://pypi.org/pypi/sickchill/json').json()['info']['release_url']
 
     def update(self):
         pass

@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class RecordingSettingsList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -59,7 +58,6 @@ class RecordingSettingsList(ListResource):
 
 
 class RecordingSettingsPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -98,7 +96,6 @@ class RecordingSettingsPage(Page):
 
 
 class RecordingSettingsContext(InstanceContext):
-    """  """
 
     def __init__(self, version):
         """
@@ -167,7 +164,6 @@ class RecordingSettingsContext(InstanceContext):
 
 
 class RecordingSettingsInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload):
         """

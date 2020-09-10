@@ -18,7 +18,6 @@ from twilio.rest.api.v2010.account.sip.domain.ip_access_control_list_mapping imp
 
 
 class DomainList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -194,7 +193,6 @@ class DomainList(ListResource):
 
 
 class DomainPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -234,7 +232,6 @@ class DomainPage(Page):
 
 
 class DomainContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -395,7 +392,6 @@ class DomainContext(InstanceContext):
 
 
 class DomainInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

@@ -1,5 +1,6 @@
 import random
 from threading import Lock
+from typing import TYPE_CHECKING
 
 from .init_helpers import setup_gettext, setup_lib_path, sickchill_dir
 
@@ -9,6 +10,9 @@ import rarfile
 
 from sickchill.oldbeard.common import SD
 from sickchill.oldbeard.numdict import NumDict
+
+if TYPE_CHECKING:
+    from .movies import MovieList
 
 setup_gettext()
 
@@ -532,7 +536,7 @@ WEB_USE_GZIP = True
 WEB_USERNAME = None
 WINDOWS_SHARES = {}
 
-movie_list = None
+movie_list: 'MovieList' = None
 
 
 def get_backlog_cycle_time():

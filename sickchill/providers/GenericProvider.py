@@ -62,6 +62,8 @@ class GenericProvider(object):
         self.show = None
         self.supports_absolute_numbering = False
         self.supports_backlog = True
+        self.supports_movies = False
+
         self.url = ''
         self.urls = {}
 
@@ -561,7 +563,7 @@ class GenericProvider(object):
 
         # This is the generic attribute used to manually add cookies for provider authentication
         if self.enable_cookies and self.cookies:
-            cookie_validator = re.compile(r'^(\w+=\w+)(;\w+=\w+)*$')
+            cookie_validator = re.compile(r'^(\w+=[\w%-]+)(;\w+=[\w%-]+)*$')
             if not cookie_validator.match(self.cookies):
                 return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
 

@@ -16,7 +16,6 @@ from twilio.rest.studio.v1.flow.execution.execution_step.execution_step_context 
 
 
 class ExecutionStepList(ListResource):
-    """  """
 
     def __init__(self, version, flow_sid, execution_sid):
         """
@@ -155,7 +154,6 @@ class ExecutionStepList(ListResource):
 
 
 class ExecutionStepPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -201,7 +199,6 @@ class ExecutionStepPage(Page):
 
 
 class ExecutionStepContext(InstanceContext):
-    """  """
 
     def __init__(self, version, flow_sid, execution_sid, sid):
         """
@@ -270,7 +267,6 @@ class ExecutionStepContext(InstanceContext):
 
 
 class ExecutionStepInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, flow_sid, execution_sid, sid=None):
         """

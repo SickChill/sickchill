@@ -13,7 +13,6 @@ from twilio.base.page import Page
 
 
 class BalanceList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -53,7 +52,6 @@ class BalanceList(ListResource):
 
 
 class BalancePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -93,7 +91,6 @@ class BalancePage(Page):
 
 
 class BalanceInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid):
         """

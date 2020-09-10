@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class UsageRecordList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -144,7 +143,6 @@ class UsageRecordList(ListResource):
 
 
 class UsageRecordPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -183,7 +181,6 @@ class UsageRecordPage(Page):
 
 
 class UsageRecordInstance(InstanceResource):
-    """  """
 
     class Granularity(object):
         HOURLY = "hourly"

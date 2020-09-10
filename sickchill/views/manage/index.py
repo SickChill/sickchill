@@ -435,7 +435,7 @@ class Manage(Home, WebRoot):
                        **kwargs):
         dir_map = {}
         for cur_arg in [x for x in kwargs if x.startswith('orig_root_dir_')]:
-            dir_map[kwargs[cur_arg]] = str(kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')], 'utf-8')
+            dir_map[kwargs[cur_arg]] = kwargs[cur_arg.replace('orig_root_dir_', 'new_root_dir_')]
 
         showIDs = toEdit.split("|")
         errors = []

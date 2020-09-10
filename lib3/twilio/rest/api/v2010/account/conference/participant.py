@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class ParticipantList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid, conference_sid):
         """
@@ -295,7 +294,6 @@ class ParticipantList(ListResource):
 
 
 class ParticipantPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -341,7 +339,6 @@ class ParticipantPage(Page):
 
 
 class ParticipantContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, conference_sid, call_sid):
         """
@@ -453,7 +450,6 @@ class ParticipantContext(InstanceContext):
 
 
 class ParticipantInstance(InstanceResource):
-    """  """
 
     class Status(object):
         QUEUED = "queued"

@@ -21,7 +21,6 @@ from twilio.rest.api.v2010.account.available_phone_number.voip import VoipList
 
 
 class AvailablePhoneNumberCountryList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -157,7 +156,6 @@ class AvailablePhoneNumberCountryList(ListResource):
 
 
 class AvailablePhoneNumberCountryPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -201,7 +199,6 @@ class AvailablePhoneNumberCountryPage(Page):
 
 
 class AvailablePhoneNumberCountryContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, country_code):
         """
@@ -369,7 +366,6 @@ class AvailablePhoneNumberCountryContext(InstanceContext):
 
 
 class AvailablePhoneNumberCountryInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, country_code=None):
         """

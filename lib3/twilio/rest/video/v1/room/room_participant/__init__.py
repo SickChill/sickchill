@@ -19,7 +19,6 @@ from twilio.rest.video.v1.room.room_participant.room_participant_subscribed_trac
 
 
 class ParticipantList(ListResource):
-    """  """
 
     def __init__(self, version, room_sid):
         """
@@ -186,7 +185,6 @@ class ParticipantList(ListResource):
 
 
 class ParticipantPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -226,7 +224,6 @@ class ParticipantPage(Page):
 
 
 class ParticipantContext(InstanceContext):
-    """  """
 
     def __init__(self, version, room_sid, sid):
         """
@@ -346,7 +343,6 @@ class ParticipantContext(InstanceContext):
 
 
 class ParticipantInstance(InstanceResource):
-    """  """
 
     class Status(object):
         CONNECTED = "connected"

@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class LocalList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -232,7 +231,6 @@ class LocalList(ListResource):
 
 
 class LocalPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -272,7 +270,6 @@ class LocalPage(Page):
 
 
 class LocalInstance(InstanceResource):
-    """  """
 
     class AddressRequirement(object):
         NONE = "none"

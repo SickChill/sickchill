@@ -591,6 +591,16 @@ statusStrings = StatusStrings({
     SNATCHED_BEST: _("Snatched (Best)")
 })
 
+cssStatusStrings = NumDict({
+    DOWNLOADED: 'downloaded',
+    SNATCHED: 'snatched',
+    SNATCHED_PROPER: 'snatched-proper',
+    FAILED: 'failed',
+    SNATCHED_BEST: 'snatched-best',
+    ARCHIVED: 'archived',
+    WANTED: 'wanted'
+})
+
 
 class Overview(object):
     UNAIRED = UNAIRED  # 1

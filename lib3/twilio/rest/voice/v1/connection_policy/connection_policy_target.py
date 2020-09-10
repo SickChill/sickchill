@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class ConnectionPolicyTargetList(ListResource):
-    """  """
 
     def __init__(self, version, connection_policy_sid):
         """
@@ -181,7 +180,6 @@ class ConnectionPolicyTargetList(ListResource):
 
 
 class ConnectionPolicyTargetPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -225,7 +223,6 @@ class ConnectionPolicyTargetPage(Page):
 
 
 class ConnectionPolicyTargetContext(InstanceContext):
-    """  """
 
     def __init__(self, version, connection_policy_sid, sid):
         """
@@ -312,7 +309,6 @@ class ConnectionPolicyTargetContext(InstanceContext):
 
 
 class ConnectionPolicyTargetInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, connection_policy_sid, sid=None):
         """

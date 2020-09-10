@@ -1,22 +1,17 @@
 """Extensions to the 'distutils' for large or complex distributions"""
 
-import os
+from fnmatch import fnmatchcase
 import functools
+import os
+import re
 
-# Disabled for now due to: #2228, #2230
-import setuptools.distutils_patch  # noqa: F401
+import _distutils_hack.override  # noqa: F401
 
 import distutils.core
-import distutils.filelist
-import re
 from distutils.errors import DistutilsOptionError
 from distutils.util import convert_path
-from fnmatch import fnmatchcase
 
 from ._deprecation_warning import SetuptoolsDeprecationWarning
-
-from setuptools.extern.six import PY3, string_types
-from setuptools.extern.six.moves import filter, map
 
 import setuptools.version
 from setuptools.extension import Extension
@@ -24,17 +19,12 @@ from setuptools.dist import Distribution
 from setuptools.depends import Require
 from . import monkey
 
-__metaclass__ = type
-
 
 __all__ = [
     'setup', 'Distribution', 'Command', 'Extension', 'Require',
     'SetuptoolsDeprecationWarning',
-    'find_packages'
+    'find_packages', 'find_namespace_packages',
 ]
-
-if PY3:
-    __all__.append('find_namespace_packages')
 
 __version__ = setuptools.version.__version__
 
@@ -124,9 +114,7 @@ class PEP420PackageFinder(PackageFinder):
 
 
 find_packages = PackageFinder.find
-
-if PY3:
-    find_namespace_packages = PEP420PackageFinder.find
+find_namespace_packages = PEP420PackageFinder.find
 
 
 def _install_setup_requires(attrs):
@@ -189,7 +177,7 @@ class Command(_Command):
         if val is None:
             setattr(self, option, default)
             return default
-        elif not isinstance(val, string_types):
+        elif not isinstance(val, str):
             raise DistutilsOptionError("'%s' must be a %s (got `%s`)"
                                        % (option, what, val))
         return val
@@ -203,11 +191,11 @@ class Command(_Command):
         val = getattr(self, option)
         if val is None:
             return
-        elif isinstance(val, string_types):
+        elif isinstance(val, str):
             setattr(self, option, re.split(r',\s*|\s+', val))
         else:
             if isinstance(val, list):
-                ok = all(isinstance(v, string_types) for v in val)
+                ok = all(isinstance(v, str) for v in val)
             else:
                 ok = False
             if not ok:

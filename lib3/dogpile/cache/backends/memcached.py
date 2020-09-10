@@ -324,12 +324,17 @@ class BMemcachedBackend(GenericMemcachedBackend):
      SASL authentication.
     :param password: optional password, will be used for
      SASL authentication.
+    :param tls_context: optional TLS context, will be used for
+     TLS connections.
+
+     .. versionadded:: 1.0.2
 
     """
 
     def __init__(self, arguments):
         self.username = arguments.get("username", None)
         self.password = arguments.get("password", None)
+        self.tls_context = arguments.get("tls_context", None)
         super(BMemcachedBackend, self).__init__(arguments)
 
     def _imports(self):
@@ -355,7 +360,10 @@ class BMemcachedBackend(GenericMemcachedBackend):
 
     def _create_client(self):
         return self.Client(
-            self.url, username=self.username, password=self.password
+            self.url,
+            username=self.username,
+            password=self.password,
+            tls_context=self.tls_context,
         )
 
     def delete_multi(self, keys):

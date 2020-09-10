@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function
 import collections
 import threading
 import types
+import warnings
 
 import cryptography
 from cryptography import utils
@@ -51,20 +52,31 @@ def _consume_errors(lib):
     return errors
 
 
-def _openssl_assert(lib, ok):
-    if not ok:
-        errors = _consume_errors(lib)
-        errors_with_text = []
-        for err in errors:
-            buf = ffi.new("char[]", 256)
-            lib.ERR_error_string_n(err.code, buf, len(buf))
-            err_text_reason = ffi.string(buf)
+def _errors_with_text(errors):
+    errors_with_text = []
+    for err in errors:
+        buf = ffi.new("char[]", 256)
+        lib.ERR_error_string_n(err.code, buf, len(buf))
+        err_text_reason = ffi.string(buf)
 
-            errors_with_text.append(
-                _OpenSSLErrorWithText(
-                    err.code, err.lib, err.func, err.reason, err_text_reason
-                )
+        errors_with_text.append(
+            _OpenSSLErrorWithText(
+                err.code, err.lib, err.func, err.reason, err_text_reason
             )
+        )
+
+    return errors_with_text
+
+
+def _consume_errors_with_text(lib):
+    return _errors_with_text(_consume_errors(lib))
+
+
+def _openssl_assert(lib, ok, errors=None):
+    if not ok:
+        if errors is None:
+            errors = _consume_errors(lib)
+        errors_with_text = _errors_with_text(errors)
 
         raise InternalError(
             "Unknown OpenSSL error. This error is commonly encountered when "
@@ -153,6 +165,19 @@ class Binding(object):
             _openssl_assert(cls.lib, res == 1)
 
 
+def _verify_openssl_version(lib):
+    if (
+        lib.CRYPTOGRAPHY_OPENSSL_LESS_THAN_110
+        and not lib.CRYPTOGRAPHY_IS_LIBRESSL
+    ):
+        warnings.warn(
+            "OpenSSL version 1.0.2 is no longer supported by the OpenSSL "
+            "project, please upgrade. The next version of cryptography will "
+            "drop support for it.",
+            utils.CryptographyDeprecationWarning,
+        )
+
+
 def _verify_package_version(version):
     # Occasionally we run into situations where the version of the Python
     # package does not match the version of the shared object that is loaded.
@@ -182,3 +207,5 @@ _verify_package_version(cryptography.__version__)
 # condition registering the OpenSSL locks. On Python 3.4+ the import lock
 # is per module so this approach will not work.
 Binding.init_static_locks()
+
+_verify_openssl_version(Binding.lib)

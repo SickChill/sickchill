@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class AwsList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -164,7 +163,6 @@ class AwsList(ListResource):
 
 
 class AwsPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -203,7 +201,6 @@ class AwsPage(Page):
 
 
 class AwsContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -268,7 +265,6 @@ class AwsContext(InstanceContext):
 
 
 class AwsInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """

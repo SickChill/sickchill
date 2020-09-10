@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class SubscribedTrackList(ListResource):
-    """  """
 
     def __init__(self, version, room_sid, participant_sid):
         """
@@ -154,7 +153,6 @@ class SubscribedTrackList(ListResource):
 
 
 class SubscribedTrackPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -200,7 +198,6 @@ class SubscribedTrackPage(Page):
 
 
 class SubscribedTrackContext(InstanceContext):
-    """  """
 
     def __init__(self, version, room_sid, participant_sid, sid):
         """
@@ -249,7 +246,6 @@ class SubscribedTrackContext(InstanceContext):
 
 
 class SubscribedTrackInstance(InstanceResource):
-    """  """
 
     class Kind(object):
         AUDIO = "audio"

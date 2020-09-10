@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class UserChannelList(ListResource):
-    """  """
 
     def __init__(self, version, service_sid, user_sid):
         """
@@ -121,7 +120,6 @@ class UserChannelList(ListResource):
 
 
 class UserChannelPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -167,7 +165,6 @@ class UserChannelPage(Page):
 
 
 class UserChannelInstance(InstanceResource):
-    """  """
 
     class ChannelStatus(object):
         JOINED = "joined"

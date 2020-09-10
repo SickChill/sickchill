@@ -1,7 +1,11 @@
 import time
 import traceback
+from typing import TYPE_CHECKING
 
 from sickchill import logger, settings
+
+if TYPE_CHECKING:
+    from sickchill.oldbeard.databases.movie import Movie
 
 from . import common, failed_history, generic_queue, history, search, ui
 
@@ -37,6 +41,12 @@ class SearchQueue(generic_queue.GenericQueue):
                 return True
         return False
 
+    def is_movie_in_queue(self, movie: 'Movie'):
+        for cur_item in self.queue:
+            if isinstance(cur_item, MovieQueueItem) and cur_item.movie.pk == movie.pk:
+                return True
+        return False
+
     def get_all_ep_from_queue(self, show):
         ep_obj_list = []
         for cur_item in self.queue:
@@ -62,7 +72,7 @@ class SearchQueue(generic_queue.GenericQueue):
 
     def is_backlog_in_progress(self):
         for cur_item in self.queue + [self.currentItem]:
-            if isinstance(cur_item, BacklogQueueItem):
+            if isinstance(cur_item, (BacklogQueueItem, MovieQueueItem)):
                 return True
         return False
 
@@ -77,7 +87,7 @@ class SearchQueue(generic_queue.GenericQueue):
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, DailySearchQueueItem):
                 length['daily'] += 1
-            elif isinstance(cur_item, BacklogQueueItem):
+            elif isinstance(cur_item, (BacklogQueueItem, MovieQueueItem)):
                 length['backlog'] += 1
             elif isinstance(cur_item, ManualSearchQueueItem):
                 length['manual'] += 1
@@ -97,6 +107,8 @@ class SearchQueue(generic_queue.GenericQueue):
         elif isinstance(item, (ManualSearchQueueItem, FailedQueueItem)):
             # manual and failed searches
             add_item = not self.is_ep_in_queue(item.segment)
+        elif isinstance(item, MovieQueueItem):
+            add_item = not self.is_movie_in_queue(item.movie)
         else:
             logger.debug("Not adding item, it's already in the queue")
 
@@ -121,7 +133,7 @@ class DailySearchQueueItem(generic_queue.QueueItem):
             else:
                 for result in found_results:
                     # just use the first result for now
-                    logger.info("Downloading " + result.name + " from " + result.provider.name)
+                    logger.info(f"Downloading {result.name} from {result.provider.name}")
                     self.success = search.snatchEpisode(result)
 
                     # give the CPU a break
@@ -140,7 +152,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
         super().__init__('Manual Search', MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.name = 'MANUAL-' + str(show.indexerid)
+        self.name = f'MANUAL-{show.indexerid}'
         self.success = None
         self.show = show
         self.segment = segment
@@ -151,15 +163,15 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
         super().run()
 
         try:
-            logger.info("Beginning manual search for: [" + self.segment.pretty_name() + "]")
+            logger.info(f"Beginning manual search for: [{self.segment.pretty_name()}]")
             self.started = True
 
-            searchResult = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
+            search_result = search.searchProviders(self.show, [self.segment], True, self.downCurQuality)
 
-            if searchResult:
+            if search_result:
                 # just use the first result for now
-                logger.info("Downloading " + searchResult[0].name + " from " + searchResult[0].provider.name)
-                self.success = search.snatchEpisode(searchResult[0])
+                logger.info(f"Downloading {search_result[0].name} from {search_result[0].provider.name}")
+                self.success = search.snatchEpisode(search_result[0])
 
                 # give the CPU a break
                 time.sleep(common.cpu_presets[settings.CPU_PRESET])
@@ -168,7 +180,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
                 ui.notifications.message('No downloads were found',
                                          "Couldn't find a download for <i>{0}</i>".format(self.segment.pretty_name()))
 
-                logger.info("Unable to find a download for: [" + self.segment.pretty_name() + "]")
+                logger.info(f"Unable to find a download for: [{self.segment.pretty_name()}]")
 
         except Exception:
             logger.debug(traceback.format_exc())
@@ -187,7 +199,7 @@ class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
         super().__init__('Backlog', BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
-        self.name = 'BACKLOG-' + str(show.indexerid)
+        self.name = f'BACKLOG-{show.indexerid}'
         self.success = None
         self.show = show
         self.segment = segment
@@ -197,19 +209,50 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
         if not self.show.paused:
             try:
-                logger.info("Beginning backlog search for: [" + self.show.name + "]")
+                logger.info(f"Beginning backlog search for: [{self.show.name}]")
                 searchResult = search.searchProviders(self.show, self.segment, False)
 
                 if searchResult:
                     for result in searchResult:
                         # just use the first result for now
-                        logger.info("Downloading " + result.name + " from " + result.provider.name)
+                        logger.info(f"Downloading {result.name} from {result.provider.name}")
                         search.snatchEpisode(result)
 
                         # give the CPU a break
                         time.sleep(common.cpu_presets[settings.CPU_PRESET])
                 else:
-                    logger.info("No needed episodes found during backlog search for: [" + self.show.name + "]")
+                    logger.info(f"No needed episodes found during backlog search for: [{self.show.name}]")
+            except Exception:
+                logger.debug(traceback.format_exc())
+
+        super().finish()
+        self.finish()
+
+
+class MovieQueueItem(generic_queue.QueueItem):
+    def __init__(self, movie: 'Movie'):
+        super().__init__('Movie', BACKLOG_SEARCH)
+        self.priority = generic_queue.QueuePriorities.LOW
+        self.name = f'BACKLOG-{movie.tmdb_id}'
+        self.success = None
+        self.movie = movie
+
+    def run(self):
+        super().run()
+
+        if not self.movie.paused:
+            try:
+                logger.info(f"Beginning backlog search for: [{self.movie.name}]")
+                settings.movie_list.search_providers(self.movie)
+                for result in self.movie.results:
+                    # just use the first result for now
+                    logger.info(f"Downloading {result.name} from {result.provider}")
+                    settings.movie_list.snatch_movie(result)
+
+                    # give the CPU a break
+                    time.sleep(common.cpu_presets[settings.CPU_PRESET])
+                else:
+                    logger.info(_(f"No needed movie results found during backlog search for: [{self.movie.name}]"))
             except Exception:
                 logger.debug(traceback.format_exc())
 
@@ -221,7 +264,7 @@ class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
         super().__init__('Retry', FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.name = 'RETRY-' + str(show.indexerid)
+        self.name = f'RETRY-{show.indexerid}'
         self.show = show
         self.segment = segment
         self.success = None
@@ -235,7 +278,7 @@ class FailedQueueItem(generic_queue.QueueItem):
         try:
             for epObj in self.segment:
 
-                logger.info("Marking episode as bad: [" + epObj.pretty_name() + "]")
+                logger.info(f"Marking episode as bad: [{epObj.pretty_name()}]")
 
                 failed_history.markFailed(epObj)
 
@@ -245,23 +288,23 @@ class FailedQueueItem(generic_queue.QueueItem):
                     history.logFailed(epObj, release, provider)
 
                 failed_history.revertEpisode(epObj)
-                logger.info("Beginning failed download search for: [" + epObj.pretty_name() + "]")
+                logger.info(f"Beginning failed download search for: [{epObj.pretty_name()}]")
 
             # If it is wanted, self.downCurQuality doesnt matter
             # if it isnt wanted, we need to make sure to not overwrite the existing ep that we reverted to!
-            searchResult = search.searchProviders(self.show, self.segment, True, False)
+            search_result = search.searchProviders(self.show, self.segment, True)
 
-            if searchResult:
-                for result in searchResult:
+            if search_result:
+                for result in search_result:
                     # just use the first result for now
-                    logger.info("Downloading " + result.name + " from " + result.provider.name)
+                    logger.info(f"Downloading {result.name} from {result.provider.name}")
                     search.snatchEpisode(result)
 
                     # give the CPU a break
                     time.sleep(common.cpu_presets[settings.CPU_PRESET])
             else:
                 pass
-                # logger.info("No valid episode found to retry for: [" + self.segment.pretty_name() + "]")
+                # logger.info(f"No valid episode found to retry for: [{self.segment.pretty_name()}]")
         except Exception:
             logger.debug(traceback.format_exc())
 

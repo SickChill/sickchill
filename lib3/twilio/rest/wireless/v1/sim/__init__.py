@@ -17,7 +17,6 @@ from twilio.rest.wireless.v1.sim.usage_record import UsageRecordList
 
 
 class SimList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -189,7 +188,6 @@ class SimList(ListResource):
 
 
 class SimPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -228,7 +226,6 @@ class SimPage(Page):
 
 
 class SimContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -366,7 +363,6 @@ class SimContext(InstanceContext):
 
 
 class SimInstance(InstanceResource):
-    """  """
 
     class Status(object):
         NEW = "new"

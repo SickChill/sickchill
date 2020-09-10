@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class TranscriptionList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -143,7 +142,6 @@ class TranscriptionList(ListResource):
 
 
 class TranscriptionPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -183,7 +181,6 @@ class TranscriptionPage(Page):
 
 
 class TranscriptionContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -239,7 +236,6 @@ class TranscriptionContext(InstanceContext):
 
 
 class TranscriptionInstance(InstanceResource):
-    """  """
 
     class Status(object):
         IN_PROGRESS = "in-progress"

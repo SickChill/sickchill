@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class ByocTrunkList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -182,7 +181,6 @@ class ByocTrunkList(ListResource):
 
 
 class ByocTrunkPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -221,7 +219,6 @@ class ByocTrunkPage(Page):
 
 
 class ByocTrunkContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -311,7 +308,6 @@ class ByocTrunkContext(InstanceContext):
 
 
 class ByocTrunkInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """

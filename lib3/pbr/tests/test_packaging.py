@@ -183,7 +183,8 @@ class Venv(fixtures.Fixture):
 
     def _setUp(self):
         path = self.useFixture(fixtures.TempDir()).path
-        virtualenv.create_environment(path, clear=True)
+        virtualenv.cli_run([path])
+
         python = os.path.join(path, 'bin', 'python')
         command = [python] + self.pip_cmd + ['-U']
         if self.modules and len(self.modules) > 0:

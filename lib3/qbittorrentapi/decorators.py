@@ -1,12 +1,28 @@
 import logging
 from functools import wraps
 from json import loads
+from pkg_resources import parse_version
 
 from qbittorrentapi.exceptions import APIError
 from qbittorrentapi.exceptions import HTTP403Error
-from qbittorrentapi.helpers import is_version_less_than
 
 logger = logging.getLogger(__name__)
+
+
+def _is_version_less_than(ver1, ver2, lteq=True):
+    """
+    Determine if ver1 is equal to or later than ver2.
+
+    Note: changes need to be reflected in request.Request._is_version_less_than as well
+
+    :param ver1: version to check
+    :param ver2: current version of application
+    :param lteq: True for Less Than or Equals; False for just Less Than
+    :return: True or False
+    """
+    if lteq:
+        return parse_version(ver1) <= parse_version(ver2)
+    return parse_version(ver1) < parse_version(ver2)
 
 
 class Alias(object):
@@ -163,7 +179,7 @@ def version_implemented(version_introduced, endpoint, end_point_params=None):
         def wrapper(obj, *args, **kwargs):
             current_version = obj._app_web_api_version_from_version_checker()
             # if the installed version of the API is less than what's required:
-            if is_version_less_than(current_version, version_introduced, lteq=False):
+            if _is_version_less_than(current_version, version_introduced, lteq=False):
                 # clear the unsupported end_point_params
                 if end_point_params:
                     parameters_list = end_point_params

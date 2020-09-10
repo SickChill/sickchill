@@ -1,100 +1,157 @@
+# The contents of this file are subject to the BitTorrent Open Source License
+# Version 1.1 (the License).  You may not copy or use this file, in either
+# source code or executable form, except in compliance with the License.  You
+# may obtain a copy of the License at http://www.bittorrent.com/license/.
+#
+# Software distributed under the License is distributed on an AS IS basis,
+# WITHOUT WARRANTY OF ANY KIND, either express or implied.  See the License
+# for the specific language governing rights and limitations under the
+# License.
+
+# Written by Petru Paler
+
+"""bencode.py - bencode decoder."""
+
+from bencodepy.compat import to_binary
+from bencodepy.exceptions import BencodeDecodeError
 from collections import OrderedDict
-from collections.abc import Iterable
-import bencodepy
+
+try:
+    from typing import Dict, List, Tuple, Deque, Union, TextIO, BinaryIO, Any
+except ImportError:
+    Dict = List = Tuple = Deque = Union = TextIO = BinaryIO = Any = None
+
+try:
+    import pathlib
+except ImportError:
+    pathlib = None
+
+ENCODING_FALLBACK_TYPES = ('key', 'value')
 
 
-class Decoder:
-    def __init__(self, data: bytes):
-        self.data = data
-        self.idx = 0
+class BencodeDecoder(object):
+    def __init__(self, encoding=None, encoding_fallback=None, dict_ordered=False, dict_ordered_sort=False):
+        self.encoding = encoding
+        self.dict_ordered = dict_ordered
+        self.dict_ordered_sort = dict_ordered_sort
 
-    def __read(self, i: int) -> bytes:
-        """Returns a set number (i) of bytes from self.data."""
-        b = self.data[self.idx: self.idx + i]
-        self.idx += i
-        if len(b) != i:
-            raise bencodepy.DecodingError(
-                "Incorrect byte length returned between indexes of {0} and {1}. Possible unexpected End of File."
-                    .format(str(self.idx), str(self.idx - i)))
-        return b
+        if dict_ordered_sort and not dict_ordered:
+            raise ValueError(
+                'Invalid value for "dict_ordered_sort" (requires "dict_ordered" to be enabled)'
+            )
 
-    def __read_to(self, terminator: bytes) -> bytes:
-        """Returns bytes from self.data starting at index (self.idx) until terminator character."""
-        try:
-            # noinspection PyTypeChecker
-            i = self.data.index(terminator, self.idx)
-            b = self.data[self.idx:i]
-            self.idx = i + 1
-            return b
-        except ValueError:
-            raise bencodepy.DecodingError(
-                'Unable to locate terminator character "{0}" after index {1}.'.format(str(terminator), str(self.idx)))
+        # Parse encoding fallback
+        if encoding_fallback is not None and encoding_fallback not in ENCODING_FALLBACK_TYPES + ('all',):
+            raise ValueError(
+                'Invalid value for "encoding_fallback" (expected "all", "keys", "values" or None)'
+            )
 
-    def __parse(self) -> object:
-        """Selects the appropriate method to decode next bencode element and returns the result."""
-        char = self.data[self.idx: self.idx + 1]
-        if char in [b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'0']:
-            str_len = int(self.__read_to(b':'))
-            return self.__read(str_len)
-        elif char == b'i':
-            self.idx += 1
-            return int(self.__read_to(b'e'))
-        elif char == b'd':
-            return self.__parse_dict()
-        elif char == b'l':
-            return self.__parse_list()
-        elif char == b'':
-            raise bencodepy.DecodingError('Unexpected End of File at index position of {0}.'.format(str(self.idx)))
+        if encoding_fallback == 'all':
+            self.encoding_fallback = ENCODING_FALLBACK_TYPES
+        elif encoding_fallback is not None:
+            self.encoding_fallback = (encoding_fallback,)
         else:
-            raise bencodepy.DecodingError(
-                'Invalid token character ({0}) at position {1}.'.format(str(char), str(self.idx)))
+            self.encoding_fallback = tuple()
 
-    def decode(self) -> Iterable:
-        """Start of decode process. Returns final results."""
-        if self.data[0:1] not in (b'd', b'l'):
-            return self.__wrap_with_tuple()
-        return self.__parse()
+        # noinspection PyDictCreation
+        self.decode_func = {}
+        self.decode_func[b'l'] = self.decode_list
+        self.decode_func[b'i'] = self.decode_int
+        self.decode_func[b'0'] = self.decode_string
+        self.decode_func[b'1'] = self.decode_string
+        self.decode_func[b'2'] = self.decode_string
+        self.decode_func[b'3'] = self.decode_string
+        self.decode_func[b'4'] = self.decode_string
+        self.decode_func[b'5'] = self.decode_string
+        self.decode_func[b'6'] = self.decode_string
+        self.decode_func[b'7'] = self.decode_string
+        self.decode_func[b'8'] = self.decode_string
+        self.decode_func[b'9'] = self.decode_string
+        self.decode_func[b'd'] = self.decode_dict
 
-    def __wrap_with_tuple(self) -> tuple:
-        """Returns a tuple of all nested bencode elements."""
-        l = list()
-        length = len(self.data)
-        while self.idx < length:
-            l.append(self.__parse())
-        return tuple(l)
+    def decode(self, value):
+        # type: (bytes) -> Union[Tuple, List, OrderedDict, bool, int, str, bytes]
+        """
+        Decode bencode formatted byte string ``value``.
 
-    def __parse_dict(self) -> OrderedDict:
-        """Returns an Ordered Dictionary of nested bencode elements."""
-        self.idx += 1
-        d = OrderedDict()
-        key_name = None
-        while self.data[self.idx: self.idx + 1] != b'e':
-            if key_name is None:
-                key_name = self.__parse()
-            else:
-                d[key_name] = self.__parse()
-                key_name = None
-        self.idx += 1
-        return d
+        :param value: Bencode formatted string
+        :type value: bytes
 
-    def __parse_list(self) -> list:
-        """Returns an list of nested bencode elements."""
-        self.idx += 1
-        l = []
-        while self.data[self.idx: self.idx + 1] != b'e':
-            l.append(self.__parse())
-        self.idx += 1
-        return l
+        :return: Decoded value
+        :rtype: object
+        """
+        try:
+            value = to_binary(value)
+            data, length = self.decode_func[value[0:1]](value, 0)
+        except (IndexError, KeyError, TypeError, ValueError):
+            raise BencodeDecodeError("not a valid bencoded string")
 
+        if length != len(value):
+            raise BencodeDecodeError("invalid bencoded value (data after valid prefix)")
 
-def decode_from_file(path: str) -> Iterable:
-    """Convenience function. Reads file and calls decode()."""
-    with open(path, 'rb') as f:
-        b = f.read()
-    return decode(b)
+        return data
 
+    def decode_int(self, x, f):
+        # type: (bytes, int) -> Tuple[int, int]
+        f += 1
+        newf = x.index(b'e', f)
+        n = int(x[f:newf])
 
-def decode(data: bytes) -> Iterable:
-    """Convenience function. Initializes Decoder class, calls decode method, and returns the result."""
-    decoder = Decoder(data)
-    return decoder.decode()
+        if x[f:f + 1] == b'-':
+            if x[f + 1:f + 2] == b'0':
+                raise ValueError
+        elif x[f:f + 1] == b'0' and newf != f + 1:
+            raise ValueError
+
+        return n, newf + 1
+
+    def decode_string(self, x, f, kind='value'):
+        # type: (bytes, int) -> Tuple[bytes, int]
+        """Decode torrent bencoded 'string' in x starting at f."""
+        colon = x.index(b':', f)
+        n = int(x[f:colon])
+
+        if x[f:f + 1] == b'0' and colon != f + 1:
+            raise ValueError
+
+        colon += 1
+        s = x[colon:colon + n]
+
+        if self.encoding:
+            try:
+                return s.decode(self.encoding), colon + n
+            except UnicodeDecodeError:
+                if kind not in self.encoding_fallback:
+                    raise
+
+        return bytes(s), colon + n
+
+    def decode_list(self, x, f):
+        # type: (bytes, int) -> Tuple[List, int]
+        r, f = [], f + 1
+
+        while x[f:f + 1] != b'e':
+            v, f = self.decode_func[x[f:f + 1]](x, f)
+            r.append(v)
+
+        return r, f + 1
+
+    def decode_dict(self, x, f):
+        # type: (bytes, int) -> Tuple[OrderedDict[str, Any], int]
+        """Decode bencoded dictionary."""
+
+        f += 1
+
+        if self.dict_ordered:
+            r = OrderedDict()
+        else:
+            r = {}
+
+        while x[f:f + 1] != b'e':
+            k, f = self.decode_string(x, f, kind='key')
+            r[k], f = self.decode_func[x[f:f + 1]](x, f)
+
+        if self.dict_ordered_sort:
+            r = OrderedDict(sorted(r.items()))
+
+        return r, f + 1

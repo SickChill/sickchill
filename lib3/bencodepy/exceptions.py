@@ -1,14 +1,7 @@
-class EncodingError(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-    def __str__(self):
-        return repr(self.msg)
+"""bencode.py - exceptions."""
 
 
-class DecodingError(Exception):
-    def __init__(self, msg):
-        self.msg = msg
+class BencodeDecodeError(Exception):
+    """Bencode decode error."""
 
-    def __str__(self):
-        return repr(self.msg)
+    pass

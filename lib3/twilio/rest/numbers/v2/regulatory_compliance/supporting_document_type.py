@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class SupportingDocumentTypeList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -141,7 +140,6 @@ class SupportingDocumentTypeList(ListResource):
 
 
 class SupportingDocumentTypePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -180,7 +178,6 @@ class SupportingDocumentTypePage(Page):
 
 
 class SupportingDocumentTypeContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -221,7 +218,6 @@ class SupportingDocumentTypeContext(InstanceContext):
 
 
 class SupportingDocumentTypeInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """

@@ -19,7 +19,6 @@ from twilio.rest.trunking.v1.trunk.phone_number import PhoneNumberList
 
 
 class TrunkList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -39,7 +38,8 @@ class TrunkList(ListResource):
     def create(self, friendly_name=values.unset, domain_name=values.unset,
                disaster_recovery_url=values.unset,
                disaster_recovery_method=values.unset, recording=values.unset,
-               secure=values.unset, cnam_lookup_enabled=values.unset):
+               transfer_mode=values.unset, secure=values.unset,
+               cnam_lookup_enabled=values.unset):
         """
         Create the TrunkInstance
 
@@ -48,6 +48,7 @@ class TrunkList(ListResource):
         :param unicode disaster_recovery_url: The HTTP URL that we should call if an error occurs while sending SIP traffic towards your configured Origination URL
         :param unicode disaster_recovery_method: The HTTP method we should use to call the disaster_recovery_url
         :param TrunkInstance.RecordingSetting recording: The recording settings for the trunk
+        :param TrunkInstance.TransferSetting transfer_mode: The call transfer settings for the trunk
         :param bool secure: Whether Secure Trunking is enabled for the trunk
         :param bool cnam_lookup_enabled: Whether Caller ID Name (CNAM) lookup should be enabled for the trunk
 
@@ -60,6 +61,7 @@ class TrunkList(ListResource):
             'DisasterRecoveryUrl': disaster_recovery_url,
             'DisasterRecoveryMethod': disaster_recovery_method,
             'Recording': recording,
+            'TransferMode': transfer_mode,
             'Secure': secure,
             'CnamLookupEnabled': cnam_lookup_enabled,
         })
@@ -178,7 +180,6 @@ class TrunkList(ListResource):
 
 
 class TrunkPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -217,7 +218,6 @@ class TrunkPage(Page):
 
 
 class TrunkContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -264,7 +264,8 @@ class TrunkContext(InstanceContext):
     def update(self, friendly_name=values.unset, domain_name=values.unset,
                disaster_recovery_url=values.unset,
                disaster_recovery_method=values.unset, recording=values.unset,
-               secure=values.unset, cnam_lookup_enabled=values.unset):
+               transfer_mode=values.unset, secure=values.unset,
+               cnam_lookup_enabled=values.unset):
         """
         Update the TrunkInstance
 
@@ -273,6 +274,7 @@ class TrunkContext(InstanceContext):
         :param unicode disaster_recovery_url: The HTTP URL that we should call if an error occurs while sending SIP traffic towards your configured Origination URL
         :param unicode disaster_recovery_method: The HTTP method we should use to call the disaster_recovery_url
         :param TrunkInstance.RecordingSetting recording: The recording settings for the trunk
+        :param TrunkInstance.TransferSetting transfer_mode: The call transfer settings for the trunk
         :param bool secure: Whether Secure Trunking is enabled for the trunk
         :param bool cnam_lookup_enabled: Whether Caller ID Name (CNAM) lookup should be enabled for the trunk
 
@@ -285,6 +287,7 @@ class TrunkContext(InstanceContext):
             'DisasterRecoveryUrl': disaster_recovery_url,
             'DisasterRecoveryMethod': disaster_recovery_method,
             'Recording': recording,
+            'TransferMode': transfer_mode,
             'Secure': secure,
             'CnamLookupEnabled': cnam_lookup_enabled,
         })
@@ -356,12 +359,16 @@ class TrunkContext(InstanceContext):
 
 
 class TrunkInstance(InstanceResource):
-    """  """
 
     class RecordingSetting(object):
         DO_NOT_RECORD = "do-not-record"
         RECORD_FROM_RINGING = "record-from-ringing"
         RECORD_FROM_ANSWER = "record-from-answer"
+
+    class TransferSetting(object):
+        DISABLE_ALL = "disable-all"
+        ENABLE_ALL = "enable-all"
+        SIP_ONLY = "sip-only"
 
     def __init__(self, version, payload, sid=None):
         """
@@ -381,6 +388,7 @@ class TrunkInstance(InstanceResource):
             'friendly_name': payload.get('friendly_name'),
             'secure': payload.get('secure'),
             'recording': payload.get('recording'),
+            'transfer_mode': payload.get('transfer_mode'),
             'cnam_lookup_enabled': payload.get('cnam_lookup_enabled'),
             'auth_type': payload.get('auth_type'),
             'auth_type_set': payload.get('auth_type_set'),
@@ -463,6 +471,14 @@ class TrunkInstance(InstanceResource):
         :rtype: dict
         """
         return self._properties['recording']
+
+    @property
+    def transfer_mode(self):
+        """
+        :returns: The call transfer settings for the trunk
+        :rtype: TrunkInstance.TransferSetting
+        """
+        return self._properties['transfer_mode']
 
     @property
     def cnam_lookup_enabled(self):
@@ -549,7 +565,8 @@ class TrunkInstance(InstanceResource):
     def update(self, friendly_name=values.unset, domain_name=values.unset,
                disaster_recovery_url=values.unset,
                disaster_recovery_method=values.unset, recording=values.unset,
-               secure=values.unset, cnam_lookup_enabled=values.unset):
+               transfer_mode=values.unset, secure=values.unset,
+               cnam_lookup_enabled=values.unset):
         """
         Update the TrunkInstance
 
@@ -558,6 +575,7 @@ class TrunkInstance(InstanceResource):
         :param unicode disaster_recovery_url: The HTTP URL that we should call if an error occurs while sending SIP traffic towards your configured Origination URL
         :param unicode disaster_recovery_method: The HTTP method we should use to call the disaster_recovery_url
         :param TrunkInstance.RecordingSetting recording: The recording settings for the trunk
+        :param TrunkInstance.TransferSetting transfer_mode: The call transfer settings for the trunk
         :param bool secure: Whether Secure Trunking is enabled for the trunk
         :param bool cnam_lookup_enabled: Whether Caller ID Name (CNAM) lookup should be enabled for the trunk
 
@@ -570,6 +588,7 @@ class TrunkInstance(InstanceResource):
             disaster_recovery_url=disaster_recovery_url,
             disaster_recovery_method=disaster_recovery_method,
             recording=recording,
+            transfer_mode=transfer_mode,
             secure=secure,
             cnam_lookup_enabled=cnam_lookup_enabled,
         )

@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class UserBindingList(ListResource):
-    """  """
 
     def __init__(self, version, service_sid, user_sid):
         """
@@ -163,7 +162,6 @@ class UserBindingList(ListResource):
 
 
 class UserBindingPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -209,7 +207,6 @@ class UserBindingPage(Page):
 
 
 class UserBindingContext(InstanceContext):
-    """  """
 
     def __init__(self, version, service_sid, user_sid, sid):
         """
@@ -267,7 +264,6 @@ class UserBindingContext(InstanceContext):
 
 
 class UserBindingInstance(InstanceResource):
-    """  """
 
     class BindingType(object):
         GCM = "gcm"

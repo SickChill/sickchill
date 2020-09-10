@@ -63,12 +63,17 @@ class DispatchFormatter(logging.Formatter, object):
         # e.g. password and password_1 both get censored instead of getting ********_1
         censored.sort(key=len, reverse=True)
 
+        if not isinstance(msg, (str, bytes)):
+            msg = repr(msg)
+
         for item in censored:
             try:
                 # passwords that include ++ for example will error. Cannot escape or it wont match at all.
                 msg = re.sub(fr'\b({item})\b', '*' * 8, msg)
             except re.error:
                 msg = msg.replace(item, '*' * 8)
+            except TypeError:
+                print(msg)
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
         msg = re.sub(r'([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)', r'\1=**********\2', msg, re.I)
@@ -137,10 +142,10 @@ class Logger(object):
 
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
-            logger.setLevel(log_level)
-
-        for logger in ('subliminal', 'tornado.access', 'tornado.general'):
-            logging.getLogger(logger).setLevel('CRITICAL')
+            if logger.name in ('subliminal', 'tornado.access', 'tornado.general'):
+                logger.setLevel('CRITICAL')
+            else:
+                logger.setLevel(log_level)
 
         log_format = '{asctime} {levelname} :: {threadName} :: {message}'
         # console log handler
@@ -170,9 +175,12 @@ class Logger(object):
 
         level = DB if self.database_logging else DEBUG if self.debug_logging else INFO
         for logger in self.loggers:
-            logger.setLevel(level)
-            for handler in logger.handlers:
-                handler.setLevel(level)
+            if logger.name in ('subliminal', 'tornado.access', 'tornado.general'):
+                logger.setLevel('CRITICAL')
+            else:
+                logger.setLevel(level)
+                for handler in logger.handlers:
+                    handler.setLevel(level)
 
     @staticmethod
     def shutdown():

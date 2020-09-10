@@ -31,6 +31,7 @@ from cachecontrol import CacheControl
 from cloudscraper.exceptions import CloudflareException
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
+from urllib3 import disable_warnings
 
 import sickchill
 from sickchill import adba, logger, settings
@@ -46,6 +47,8 @@ LOCALE_NAMES.update({
     "ar_SA": {"name_en": "Arabic (Saudi Arabia)", "name": "(العربية (المملكة العربية السعودية"},
     "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
 })
+
+disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 opener = urllib.request.build_opener()
 opener.addheaders = [('User-agent', sickchill.oldbeard.common.USER_AGENT)]

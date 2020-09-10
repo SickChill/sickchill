@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class RegulationList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -171,7 +170,6 @@ class RegulationList(ListResource):
 
 
 class RegulationPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -210,7 +208,6 @@ class RegulationPage(Page):
 
 
 class RegulationContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -251,7 +248,6 @@ class RegulationContext(InstanceContext):
 
 
 class RegulationInstance(InstanceResource):
-    """  """
 
     class EndUserType(object):
         INDIVIDUAL = "individual"

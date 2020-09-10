@@ -110,7 +110,7 @@ class ExtensionManager(object):
         then ignored
     :type propagate_map_exceptions: bool
     :param on_load_failure_callback: Callback function that will be called when
-        a entrypoint can not be loaded. The arguments that will be provided
+        an entrypoint can not be loaded. The arguments that will be provided
         when this is called (when an entrypoint fails to load) are
         (manager, entrypoint, exception)
     :type on_load_failure_callback: function
@@ -156,7 +156,7 @@ class ExtensionManager(object):
             are logged and then ignored
         :type propagate_map_exceptions: bool
         :param on_load_failure_callback: Callback function that will
-            be called when a entrypoint can not be loaded. The
+            be called when an entrypoint can not be loaded. The
             arguments that will be provided when this is called (when
             an entrypoint fails to load) are (manager, entrypoint,
             exception)

@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class AllTimeList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -160,7 +159,6 @@ class AllTimeList(ListResource):
 
 
 class AllTimePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -200,7 +198,6 @@ class AllTimePage(Page):
 
 
 class AllTimeInstance(InstanceResource):
-    """  """
 
     class Category(object):
         AGENT_CONFERENCE = "agent-conference"

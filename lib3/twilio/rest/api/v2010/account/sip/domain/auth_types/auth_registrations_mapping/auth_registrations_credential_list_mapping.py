@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class AuthRegistrationsCredentialListMappingList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid, domain_sid):
         """
@@ -174,7 +173,6 @@ class AuthRegistrationsCredentialListMappingList(ListResource):
 
 
 class AuthRegistrationsCredentialListMappingPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -220,7 +218,6 @@ class AuthRegistrationsCredentialListMappingPage(Page):
 
 
 class AuthRegistrationsCredentialListMappingContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, domain_sid, sid):
         """
@@ -278,7 +275,6 @@ class AuthRegistrationsCredentialListMappingContext(InstanceContext):
 
 
 class AuthRegistrationsCredentialListMappingInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, domain_sid, sid=None):
         """

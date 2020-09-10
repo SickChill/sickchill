@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class WebChannelList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -171,7 +170,6 @@ class WebChannelList(ListResource):
 
 
 class WebChannelPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -210,7 +208,6 @@ class WebChannelPage(Page):
 
 
 class WebChannelContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -276,7 +273,6 @@ class WebChannelContext(InstanceContext):
 
 
 class WebChannelInstance(InstanceResource):
-    """  """
 
     class ChatStatus(object):
         INACTIVE = "inactive"

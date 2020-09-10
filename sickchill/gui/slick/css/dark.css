@@ -156,12 +156,12 @@ home.mako
     background-image: url("../images/loading32-dark.gif");
 }
 
-.show-container {
+.show-container, .movie-container {
     background-color: #333333;
     border-color: #333333;
 }
 
-.show-title:after {
+.show-title:after, .movie-title:after {
     background-image: -webkit-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
     background-image: -moz-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
     background-image: -ms-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
@@ -169,7 +169,7 @@ home.mako
     background-image: linear-gradient(to left, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
 }
 
-.show-date:after {
+.show-date:after, .movie-date:after{
     background-image: -webkit-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
     background-image: -moz-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
     background-image: -ms-linear-gradient(right, rgba(51, 51, 51, 1), rgba(51, 51, 51, 0));
@@ -253,7 +253,7 @@ ul.tags li {
     background: url(../images/tag.png) no-repeat scroll 5px 4px #15528F;
 }
 
-.tvshowImg {
+.tvshowImg, .movieImg {
     border: 1px solid #111111;
 }
 

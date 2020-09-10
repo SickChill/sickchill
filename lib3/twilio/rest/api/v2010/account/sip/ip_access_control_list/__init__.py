@@ -16,7 +16,6 @@ from twilio.rest.api.v2010.account.sip.ip_access_control_list.ip_address import 
 
 
 class IpAccessControlListList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -163,7 +162,6 @@ class IpAccessControlListList(ListResource):
 
 
 class IpAccessControlListPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -207,7 +205,6 @@ class IpAccessControlListPage(Page):
 
 
 class IpAccessControlListContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -302,7 +299,6 @@ class IpAccessControlListContext(InstanceContext):
 
 
 class IpAccessControlListInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

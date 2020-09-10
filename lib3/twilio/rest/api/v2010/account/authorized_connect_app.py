@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class AuthorizedConnectAppList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -151,7 +150,6 @@ class AuthorizedConnectAppList(ListResource):
 
 
 class AuthorizedConnectAppPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -195,7 +193,6 @@ class AuthorizedConnectAppPage(Page):
 
 
 class AuthorizedConnectAppContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, connect_app_sid):
         """
@@ -242,7 +239,6 @@ class AuthorizedConnectAppContext(InstanceContext):
 
 
 class AuthorizedConnectAppInstance(InstanceResource):
-    """  """
 
     class Permission(object):
         GET_ALL = "get-all"

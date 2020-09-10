@@ -18,7 +18,6 @@ from twilio.rest.video.v1.room.room_participant import ParticipantList
 
 
 class RoomList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -221,7 +220,6 @@ class RoomList(ListResource):
 
 
 class RoomPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -260,7 +258,6 @@ class RoomPage(Page):
 
 
 class RoomContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -344,7 +341,6 @@ class RoomContext(InstanceContext):
 
 
 class RoomInstance(InstanceResource):
-    """  """
 
     class RoomStatus(object):
         IN_PROGRESS = "in-progress"
@@ -352,6 +348,7 @@ class RoomInstance(InstanceResource):
         FAILED = "failed"
 
     class RoomType(object):
+        PEER_TO_PEER_BASIC = "peer-to-peer-basic"
         PEER_TO_PEER = "peer-to-peer"
         GROUP = "group"
         GROUP_SMALL = "group-small"

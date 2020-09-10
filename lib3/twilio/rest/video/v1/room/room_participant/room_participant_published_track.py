@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class PublishedTrackList(ListResource):
-    """  """
 
     def __init__(self, version, room_sid, participant_sid):
         """
@@ -154,7 +153,6 @@ class PublishedTrackList(ListResource):
 
 
 class PublishedTrackPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -200,7 +198,6 @@ class PublishedTrackPage(Page):
 
 
 class PublishedTrackContext(InstanceContext):
-    """  """
 
     def __init__(self, version, room_sid, participant_sid, sid):
         """
@@ -249,7 +246,6 @@ class PublishedTrackContext(InstanceContext):
 
 
 class PublishedTrackInstance(InstanceResource):
-    """  """
 
     class Kind(object):
         AUDIO = "audio"

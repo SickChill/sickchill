@@ -511,13 +511,14 @@ home.mako
     border-radius: 3px;
 }
 
-span.show-option {
+span.show-option,
+span.movie-option {
     white-space: nowrap;
     margin-left: 10px;
     line-height: 40px;
 }
 
-.show-grid {
+.show-grid, .movie-grid {
     display: none;
 }
 
@@ -549,7 +550,7 @@ span.show-option {
     top: 3px;
 }
 
-.show-container {
+.show-container, .movie-container {
     margin: 4px;
     background-color: #F3F3F3;
     border: 5px solid #F3F3F3;
@@ -557,38 +558,43 @@ span.show-option {
     box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.31);
 }
 
-.show-details {
+.show-details, .movie-details {
     height: 32px;
     overflow: hidden;
 }
 
-.show-image {
+.show-image, .movie-image {
     overflow: hidden;
     max-width: 100%;
 }
 
-.show-container .ui-progressbar {
+.show-container .ui-progressbar, .movie-container .ui-progressbar {
     height: 7px !important;
     top: -2px;
 }
 
-.show-container .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br {
+.show-container .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br,
+.movie-container .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br {
     border-bottom-right-radius: 0;
 }
 
-.show-container .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
+.show-container .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl,
+.movie-container .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
     border-bottom-left-radius: 0;
 }
 
-.show-container .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
+.show-container .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr,
+.movie-container .ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
     border-top-right-radius: 0;
 }
 
-.show-container .ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl {
+.show-container .ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl,
+.movie-container .ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl {
     border-top-left-radius: 0;
 }
 
-.show-container .ui-widget-content {
+.show-container .ui-widget-content,
+.movie-container .ui-widget-content {
     border-top: 1px solid #111111;
     border-bottom: 1px solid #111111;
     border-left: 0;
@@ -606,12 +612,16 @@ span.show-option {
 .show-container .progress-20,
 .show-container .progress-40,
 .show-container .progress-60,
-.show-container .progress-80 {
+.show-container .progress-80,
+.movie-container .progress-20,
+.movie-container .progress-40,
+.movie-container .progress-60,
+.movie-container .progress-80 {
     border-radius: 0;
     height: 7px
 }
 
-.show-title {
+.show-title, .movie-title {
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -619,7 +629,7 @@ span.show-option {
     margin: 4px 4px 0 4px;
 }
 
-.show-title:after {
+.show-title:after, .movie-title:after {
     content: "";
     pointer-events: none;
     position: absolute;
@@ -634,7 +644,7 @@ span.show-option {
     background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
 }
 
-.show-date {
+.show-date, .movie-date {
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -643,7 +653,7 @@ span.show-option {
     color: #949494;
 }
 
-.show-date:after {
+.show-date:after, .movie-date:after {
     content: "";
     pointer-events: none;
     position: absolute;
@@ -658,37 +668,37 @@ span.show-option {
     background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
 }
 
-.show-table {
+.show-table, .movie-table {
     text-align: center;
     vertical-align: middle;
     width: 33%
 }
 
-.show-add {
+.show-add, .movie-add {
     font-size: 11px;
     text-align: left;
     display: block;
 }
 
-.show-status {
+.show-status, .movie-status {
     font-size: 11px;
     text-align: left;
     display: block;
 }
 
-.show-network-image {
+.show-network-image, .movie-network-image {
     width: 50px;
     height: auto;
 }
 
-.show-dlstats {
+.show-dlstats, .movie-dlstats {
     font-size: 11px;
     text-align: left;
     display: block;
     margin-left: 4px;
 }
 
-.show-quality {
+.show-quality, .movie-quality {
     font-size: 11px;
     text-align: right;
     display: block;
@@ -1008,7 +1018,7 @@ ul.tags li a {
     color: #FFFFFF;
 }
 
-.tvshowImg {
+.tvshowImg, .movieImg {
     border: 1px solid #CCCCCC;
     border-radius: 5px;
     max-height: 311px;
@@ -1270,7 +1280,7 @@ td.col-search {
     width: 46px;
 }
 
-.showLegend {
+.showLegend, .movieLegend {
     padding-right: 6px;
     padding-bottom: 1px;
     width: 150px;
@@ -1608,7 +1618,8 @@ h2.day, h2.network {
     font-size: 11px
 }
 
-.calendarShow .show-status {
+.calendarShow .show-status,
+.calendarShow .movie-status {
     padding: 5px 10px 10px;
     text-align: center
 }
@@ -2254,7 +2265,7 @@ span.config-path-title {
     line-height: 18px;
 }
 
-span.quality {
+span.quality, span.status {
     font: 12px/13px "Open Sans", verdana, sans-serif;
     background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25));
     background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25));
@@ -2340,8 +2351,24 @@ span.Unknown {
     background-color: #999999;
 }
 
-span.Proper {
-    background-color: #3F7F00;
+span.Proper, [class^="pill-snatched"], [class*=" pill-snatched"] {
+    background-color: green;
+}
+
+span.pill-downloaded {
+    background-color: blue;
+}
+
+span.pill-wanted {
+    background-color: #BE2625;
+}
+
+span.pill-failed {
+    background-color: red;
+}
+
+span.pill-archived {
+    background-color: dimgrey;
 }
 
 span.false {
@@ -2351,6 +2378,16 @@ span.false {
 
 span.true {
     color: #669966;
+    /* green */
+}
+
+td.false {
+    background-color: #993333;
+    /* red */
+}
+
+td.true {
+    background-color: #669966;
     /* green */
 }
 
@@ -3623,7 +3660,7 @@ input.tablesorter-filter.disabled {
         padding-left: 0 !important;
     }
 
-    .tvshowImg {
+    .tvshowImg, .movieImg {
         margin-bottom: 10px;
     }
 
@@ -3665,7 +3702,7 @@ input.tablesorter-filter.disabled {
         padding: 0;
     }
 
-    .tvshowImg {
+    .tvshowImg, .movieImg {
         max-height: 245px;
     }
 
@@ -3700,7 +3737,7 @@ input.tablesorter-filter.disabled {
         float: right;
     }
 
-    .tvshowImg {
+    .tvshowImg, .movieImg {
         max-height: 269px;
     }
 }
@@ -3714,7 +3751,7 @@ input.tablesorter-filter.disabled {
         float: right;
     }
 
-    .tvshowImg {
+    .tvshowImg, .movieImg {
         max-height: 269px;
     }
 }

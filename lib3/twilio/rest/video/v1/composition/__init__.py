@@ -45,7 +45,7 @@ class CompositionList(ListResource):
         The results are returned as a generator, so this operation is memory efficient.
 
         :param CompositionInstance.Status status: Read only Composition resources with this status
-        :param datetime date_created_after: Read only Composition resources created on or after this [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date-time with time zone
+        :param datetime date_created_after: Read only Composition resources created on or after this `ISO 8601 <https://en.wikipedia.org/wiki/ISO_8601>`_ date-time with time zone
         :param datetime date_created_before: Read only Composition resources created before this ISO 8601 date-time with time zone
         :param unicode room_sid: Read only Composition resources with this Room SID
         :param int limit: Upper limit for the number of records to return. stream()
@@ -79,7 +79,7 @@ class CompositionList(ListResource):
         memory before returning.
 
         :param CompositionInstance.Status status: Read only Composition resources with this status
-        :param datetime date_created_after: Read only Composition resources created on or after this [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date-time with time zone
+        :param datetime date_created_after: Read only Composition resources created on or after this `ISO 8601 <https://en.wikipedia.org/wiki/ISO_8601>`_ date-time with time zone
         :param datetime date_created_before: Read only Composition resources created before this ISO 8601 date-time with time zone
         :param unicode room_sid: Read only Composition resources with this Room SID
         :param int limit: Upper limit for the number of records to return. list() guarantees
@@ -110,7 +110,7 @@ class CompositionList(ListResource):
         Request is executed immediately
 
         :param CompositionInstance.Status status: Read only Composition resources with this status
-        :param datetime date_created_after: Read only Composition resources created on or after this [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date-time with time zone
+        :param datetime date_created_after: Read only Composition resources created on or after this `ISO 8601 <https://en.wikipedia.org/wiki/ISO_8601>`_ date-time with time zone
         :param datetime date_created_before: Read only Composition resources created before this ISO 8601 date-time with time zone
         :param unicode room_sid: Read only Composition resources with this Room SID
         :param str page_token: PageToken provided by the API

@@ -7,9 +7,9 @@ from qbittorrentapi.decorators import login_required
 from qbittorrentapi.decorators import response_json
 from qbittorrentapi.decorators import response_text
 from qbittorrentapi.decorators import version_implemented
-from qbittorrentapi.helpers import APINames
-from qbittorrentapi.helpers import ClientCache
-from qbittorrentapi.helpers import Dictionary
+from qbittorrentapi.definitions import APINames
+from qbittorrentapi.definitions import ClientCache
+from qbittorrentapi.definitions import Dictionary
 from qbittorrentapi.request import Request
 
 logger = logging.getLogger(__name__)
@@ -25,11 +25,10 @@ class BuildInfoDictionary(Dictionary):
 
 @aliased
 class Application(ClientCache):
-
     """
     Allows interaction with "Application" API endpoints.
 
-    Usage:
+    :Usage:
         >>> from qbittorrentapi import Client
         >>> client = Client(host='localhost:8080', username='admin', password='adminadmin')
         >>> # this are all the same attributes that are available as named in the
@@ -85,7 +84,6 @@ class Application(ClientCache):
 
 @aliased
 class AppAPIMixIn(Request):
-
     """Implementation of all Application API methods"""
 
     @property
@@ -141,7 +139,7 @@ class AppAPIMixIn(Request):
         Retrieve build info. (alias: app_buildInfo)
 
         :return: Dictionary of build info. Each piece of info is an attribute.
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-build-info
+            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-build-info
         """
         return self._get(_name=APINames.Application, _method='buildInfo', **kwargs)
 
@@ -157,7 +155,7 @@ class AppAPIMixIn(Request):
         Retrieve qBittorrent application preferences.
 
         :return: Dictionary of preferences. Each preference is an attribute.
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-application-preferences
+            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-application-preferences
         """
         return self._get(_name=APINames.Application, _method='preferences', **kwargs)
 

@@ -103,12 +103,12 @@ class TestMapFieldsParsingScenarios(base.BaseTestCase):
                 project_urls =
                     Bug Tracker = https://bugs.launchpad.net/pbr/
                     Documentation = https://docs.openstack.org/pbr/
-                    Source Code = https://git.openstack.org/cgit/openstack-dev/pbr/
+                    Source Code = https://opendev.org/openstack/pbr
                 """,  # noqa: E501
             'expected_project_urls': {
                 'Bug Tracker': 'https://bugs.launchpad.net/pbr/',
                 'Documentation': 'https://docs.openstack.org/pbr/',
-                'Source Code': 'https://git.openstack.org/cgit/openstack-dev/pbr/',  # noqa: E501
+                'Source Code': 'https://opendev.org/openstack/pbr',
             },
         }),
         ('query_parameters', {
@@ -146,7 +146,7 @@ class TestKeywordsParsingScenarios(base.BaseTestCase):
                     three
                 """,  # noqa: E501
             'expected_keywords': ['one', 'two', 'three'],
-            },
+        },
         ),
         ('inline_keywords', {
             'config_text': """

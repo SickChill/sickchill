@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class ReservationList(ListResource):
-    """  """
 
     def __init__(self, version, workspace_sid, worker_sid):
         """
@@ -163,7 +162,6 @@ class ReservationList(ListResource):
 
 
 class ReservationPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -209,7 +207,6 @@ class ReservationPage(Page):
 
 
 class ReservationContext(InstanceContext):
-    """  """
 
     def __init__(self, version, workspace_sid, worker_sid, sid):
         """
@@ -413,7 +410,6 @@ class ReservationContext(InstanceContext):
 
 
 class ReservationInstance(InstanceResource):
-    """  """
 
     class Status(object):
         PENDING = "pending"

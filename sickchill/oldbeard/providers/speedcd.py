@@ -1,4 +1,5 @@
 import re
+import traceback
 from urllib.parse import urljoin
 
 from requests.utils import dict_from_cookiejar
@@ -26,11 +27,12 @@ class Provider(TorrentProvider):
         self.minleech = 0
         self.freeleech = False
 
+        self.enable_cookies = True
+
         # URLs
         self.url = 'https://speed.cd'
         self.urls = {
             'login': urljoin(self.url, 'takeElogin.php'),
-            'search': urljoin(self.url, 'browse.php'),
         }
 
         # Proper Strings
@@ -40,6 +42,9 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self)
 
     def login(self):
+        if self.cookies:
+            logger.debug(self.add_cookies_from_ui()[1])
+
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
@@ -71,17 +76,21 @@ class Provider(TorrentProvider):
         if not self.login():
             return results
 
-        # http://speed.cd/browse.php?c49=1&c50=1&c52=1&c41=1&c55=1&c2=1&c30=1&freeleech=on&search=arrow&d=on
+        # http://speed.cd/browse/49/50/52/41/55/2/30/freeleech/deep/q/arrow
         # Search Params
-        search_params = {
-            'c30': 1,  # Anime
-            'c41': 1,  # TV/Packs
-            'c49': 1,  # TV/HD
-            'c50': 1,  # TV/Sports
-            'c52': 1,  # TV/B-Ray
-            'c55': 1,  # TV/Kids
-            'search': '',
-        }
+        search_params = [
+            'browse',
+            '41',  # TV/Packs
+            '2',   # Episodes
+            '49',  # TV/HD
+            '50',  # TV/Sports
+            '52',  # TV/B-Ray
+            '55',  # TV/Kids
+            '30',  # Anime
+        ]
+        if self.freeleech:
+            search_params.append('freeleech')
+        search_params.append('deep')
 
         # Units
         units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
@@ -91,25 +100,29 @@ class Provider(TorrentProvider):
             img = td.find('img')
             if img:
                 result = img.get('alt')
+                if not result:
+                    result = img.get('title')
+
+            if not result:
+                anchor = td.find('a')
+                if anchor:
+                    result = anchor.get_text(strip=True)
+
             if not result:
                 result = td.get_text(strip=True)
             return result
-
-        if self.freeleech:
-            search_params['freeleech'] = 'on'
 
         for mode in search_strings:
             items = []
             logger.debug(_(f"Search Mode: {mode}"))
 
             for search_string in search_strings[mode]:
-
+                current_params = search_params
                 if mode != 'RSS':
                     logger.debug(_(f"Search String: {search_string}"))
+                    current_params += ['q', re.sub(r'[^\w\s]', '', search_string)]
 
-                search_params['search'] = re.sub(r'[^\w\s]', '', search_string)
-
-                data = self.get_url(self.urls['search'], params=search_params, returns='text')
+                data = self.get_url(urljoin(self.url, '/'.join(current_params)), returns='text')
                 if not data:
                     continue
 
@@ -125,19 +138,24 @@ class Provider(TorrentProvider):
                         continue
 
                     labels = [process_column_header(label) for label in torrent_rows[0]('th')]
+                    row_labels = [process_column_header(label) for label in torrent_rows[1]('td')]
+
+                    def label_index(name):
+                        if name in labels:
+                            return labels.index(name)
+                        return row_labels.index(name)
 
                     # Skip column headers
                     for result in torrent_rows[1:]:
                         try:
                             cells = result('td')
-
-                            title = cells[labels.index('Title')].find('a').get_text()
-                            download_url = urljoin(self.url, cells[labels.index('Download') - 1].a['href'])
+                            title = cells[label_index('Title')].find('a').get_text()
+                            download_url = urljoin(self.url, cells[label_index('Download')].a['href'])
                             if not all([title, download_url]):
                                 continue
 
-                            seeders = try_int(cells[labels.index('Seeders') - 1].get_text(strip=True))
-                            leechers = try_int(cells[labels.index('Leechers') - 1].get_text(strip=True))
+                            seeders = try_int(cells[label_index('Seeders') - 1].get_text(strip=True))
+                            leechers = try_int(cells[label_index('Leechers') - 1].get_text(strip=True))
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
@@ -146,8 +164,7 @@ class Provider(TorrentProvider):
                                         "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))
                                 continue
 
-                            torrent_size = cells[labels.index('Size') - 1].get_text()
-                            torrent_size = torrent_size[:-2] + ' ' + torrent_size[-2:]
+                            torrent_size = cells[label_index('Size') - 1].get_text()
                             size = convert_size(torrent_size, units=units) or -1
 
                             item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
@@ -155,7 +172,9 @@ class Provider(TorrentProvider):
                                 logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
-                        except Exception:
+                        except Exception as error:
+                            logger.debug(f'Speed.cd: {error}')
+                            logger.debug(traceback.format_exc())
                             continue
 
             # For each search mode sort all the items by seeders if available

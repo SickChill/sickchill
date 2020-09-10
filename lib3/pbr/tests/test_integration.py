@@ -11,7 +11,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 import os.path
+import pkg_resources
 import shlex
 import sys
 
@@ -77,19 +82,35 @@ class TestIntegration(base.BaseTestCase):
         # We don't break these into separate tests because we'd need separate
         # source dirs to isolate from side effects of running pip, and the
         # overheads of setup would start to beat the benefits of parallelism.
-        self.useFixture(base.CapturedSubprocess(
-            'sync-req',
-            ['python', 'update.py', os.path.join(REPODIR, self.short_name)],
-            cwd=os.path.join(REPODIR, 'requirements')))
-        self.useFixture(base.CapturedSubprocess(
-            'commit-requirements',
-            'git diff --quiet || git commit -amrequirements',
-            cwd=os.path.join(REPODIR, self.short_name), shell=True))
-        path = os.path.join(
-            self.useFixture(fixtures.TempDir()).path, 'project')
-        self.useFixture(base.CapturedSubprocess(
-            'clone',
-            ['git', 'clone', os.path.join(REPODIR, self.short_name), path]))
+        path = os.path.join(REPODIR, self.short_name)
+        setup_cfg = os.path.join(path, 'setup.cfg')
+        project_name = pkg_resources.safe_name(self.short_name).lower()
+        # These projects should all have setup.cfg files but we'll be careful
+        if os.path.exists(setup_cfg):
+            config = configparser.ConfigParser()
+            config.read(setup_cfg)
+            if config.has_section('metadata'):
+                raw_name = config.get('metadata', 'name',
+                                      fallback='notapackagename')
+                # Technically we should really only need to use the raw
+                # name because all our projects should be good and use
+                # normalized names but they don't...
+                project_name = pkg_resources.safe_name(raw_name).lower()
+        constraints = os.path.join(REPODIR, 'requirements',
+                                   'upper-constraints.txt')
+        tmp_constraints = os.path.join(
+            self.useFixture(fixtures.TempDir()).path,
+            'upper-constraints.txt')
+        # We need to filter out the package we are installing to avoid
+        # conflicts with the constraints.
+        with open(constraints, 'r') as src:
+            with open(tmp_constraints, 'w') as dest:
+                for line in src:
+                    constraint = line.split('===')[0]
+                    if project_name != constraint:
+                        dest.write(line)
+        pip_cmd = PIP_CMD + ['-c', tmp_constraints]
+
         venv = self.useFixture(
             test_packaging.Venv('sdist',
                                 modules=['pip', 'wheel', PBRVERSION],
@@ -105,7 +126,7 @@ class TestIntegration(base.BaseTestCase):
         filename = os.path.join(
             path, 'dist', os.listdir(os.path.join(path, 'dist'))[0])
         self.useFixture(base.CapturedSubprocess(
-            'tarball', [python] + PIP_CMD + [filename]))
+            'tarball', [python] + pip_cmd + [filename]))
         venv = self.useFixture(
             test_packaging.Venv('install-git',
                                 modules=['pip', 'wheel', PBRVERSION],
@@ -113,7 +134,7 @@ class TestIntegration(base.BaseTestCase):
         root = venv.path
         python = venv.python
         self.useFixture(base.CapturedSubprocess(
-            'install-git', [python] + PIP_CMD + ['git+file://' + path]))
+            'install-git', [python] + pip_cmd + ['git+file://' + path]))
         if self.short_name == 'nova':
             found = False
             for _, _, filenames in os.walk(root):
@@ -127,7 +148,7 @@ class TestIntegration(base.BaseTestCase):
         root = venv.path
         python = venv.python
         self.useFixture(base.CapturedSubprocess(
-            'install-e', [python] + PIP_CMD + ['-e', path]))
+            'install-e', [python] + pip_cmd + ['-e', path]))
 
 
 class TestInstallWithoutPbr(base.BaseTestCase):
@@ -188,12 +209,16 @@ class TestInstallWithoutPbr(base.BaseTestCase):
 class TestMarkersPip(base.BaseTestCase):
 
     scenarios = [
-        ('pip-1.5', {'modules': ['pip>=1.5,<1.6']}),
-        ('pip-6.0', {'modules': ['pip>=6.0,<6.1']}),
         ('pip-latest', {'modules': ['pip']}),
-        ('setuptools-EL7', {'modules': ['pip==1.4.1', 'setuptools==0.9.8']}),
-        ('setuptools-Trusty', {'modules': ['pip==1.5', 'setuptools==2.2']}),
-        ('setuptools-minimum', {'modules': ['pip==1.5', 'setuptools==0.7.2']}),
+        ('setuptools-Bionic', {
+            'modules': ['pip==9.0.1', 'setuptools==39.0.1']}),
+        ('setuptools-Stretch', {
+            'modules': ['pip==9.0.1', 'setuptools==33.1.1']}),
+        ('setuptools-EL8', {'modules': ['pip==9.0.3', 'setuptools==39.2.0']}),
+        ('setuptools-Buster', {
+            'modules': ['pip==18.1', 'setuptools==40.8.0']}),
+        ('setuptools-Focal', {
+            'modules': ['pip==20.0.2', 'setuptools==45.2.0']}),
     ]
 
     @testtools.skipUnless(
@@ -240,25 +265,17 @@ class TestLTSSupport(base.BaseTestCase):
     # These versions come from the versions installed from the 'virtualenv'
     # command from the 'python-virtualenv' package.
     scenarios = [
-        ('EL7', {'modules': ['pip==1.4.1', 'setuptools==0.9.8'],
-                 'py3support': True}),  # And EPEL6
-        ('Trusty', {'modules': ['pip==1.5', 'setuptools==2.2'],
-                    'py3support': True}),
-        ('Jessie', {'modules': ['pip==1.5.6', 'setuptools==5.5.1'],
-                    'py3support': True}),
-        # Wheezy has pip1.1, which cannot be called with '-m pip'
-        # So we'll use a different version of pip here.
-        ('WheezyPrecise', {'modules': ['pip==1.4.1', 'setuptools==0.6c11'],
-                           'py3support': False})
+        ('Bionic', {'modules': ['pip==9.0.1', 'setuptools==39.0.1']}),
+        ('Stretch', {'modules': ['pip==9.0.1', 'setuptools==33.1.1']}),
+        ('EL8', {'modules': ['pip==9.0.3', 'setuptools==39.2.0']}),
+        ('Buster', {'modules': ['pip==18.1', 'setuptools==40.8.0']}),
+        ('Focal', {'modules': ['pip==20.0.2', 'setuptools==45.2.0']}),
     ]
 
     @testtools.skipUnless(
         os.environ.get('PBR_INTEGRATION', None) == '1',
         'integration tests not enabled')
     def test_lts_venv_default_versions(self):
-        if (sys.version_info[0] == 3 and not self.py3support):
-            self.skipTest('This combination will not install with py3, '
-                          'skipping test')
         venv = self.useFixture(
             test_packaging.Venv('setuptools', modules=self.modules))
         bin_python = venv.python

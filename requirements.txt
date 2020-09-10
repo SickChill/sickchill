@@ -1,7 +1,8 @@
+#DISABLE_SQLALCHEMY_CEXT=1 TORNADO_EXTENSION=0 pip install --no-binary sqlalchemy,tornado -Utlib3 -r requirements.txt
 backports-abc
 beautifulsoup4
 beekeeper
-bencodepy
+bencode.py
 CacheControl
 #cfscrape
 chardet

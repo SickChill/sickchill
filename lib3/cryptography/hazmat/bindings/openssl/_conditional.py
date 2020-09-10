@@ -13,10 +13,6 @@ def cryptography_has_ec2m():
     ]
 
 
-def cryptography_has_rsa_r_pkcs_decoding_error():
-    return ["RSA_R_PKCS_DECODING_ERROR"]
-
-
 def cryptography_has_rsa_oaep_md():
     return [
         "EVP_PKEY_CTX_set_rsa_oaep_md",
@@ -34,14 +30,6 @@ def cryptography_has_ssl3_method():
         "SSLv3_method",
         "SSLv3_client_method",
         "SSLv3_server_method",
-    ]
-
-
-def cryptography_has_compression():
-    return [
-        "SSL_get_current_compression",
-        "SSL_get_current_expansion",
-        "SSL_COMP_get_name",
     ]
 
 
@@ -270,12 +258,6 @@ def cryptography_has_raw_key():
     ]
 
 
-def cryptography_has_evp_r_memory_limit_exceeded():
-    return [
-        "EVP_R_MEMORY_LIMIT_EXCEEDED",
-    ]
-
-
 def cryptography_has_engine():
     return [
         "ENGINE_by_id",
@@ -297,6 +279,14 @@ def cryptography_has_verified_chain():
     ]
 
 
+def cryptography_has_srtp():
+    return [
+        "SSL_CTX_set_tlsext_use_srtp",
+        "SSL_set_tlsext_use_srtp",
+        "SSL_get_selected_srtp_profile",
+    ]
+
+
 # This is a mapping of
 # {condition: function-returning-names-dependent-on-that-condition} so we can
 # loop over them and delete unsupported names at runtime. It will be removed
@@ -304,13 +294,9 @@ def cryptography_has_verified_chain():
 # lists so we can use coverage to measure which are used.
 CONDITIONAL_NAMES = {
     "Cryptography_HAS_EC2M": cryptography_has_ec2m,
-    "Cryptography_HAS_RSA_R_PKCS_DECODING_ERROR": (
-        cryptography_has_rsa_r_pkcs_decoding_error
-    ),
     "Cryptography_HAS_RSA_OAEP_MD": cryptography_has_rsa_oaep_md,
     "Cryptography_HAS_RSA_OAEP_LABEL": cryptography_has_rsa_oaep_label,
     "Cryptography_HAS_SSL3_METHOD": cryptography_has_ssl3_method,
-    "Cryptography_HAS_COMPRESSION": cryptography_has_compression,
     "Cryptography_HAS_102_VERIFICATION": cryptography_has_102_verification,
     "Cryptography_HAS_110_VERIFICATION_PARAMS": (
         cryptography_has_110_verification_params
@@ -349,9 +335,7 @@ CONDITIONAL_NAMES = {
     "Cryptography_HAS_EVP_DIGESTFINAL_XOF": (
         cryptography_has_evp_digestfinal_xof
     ),
-    "Cryptography_HAS_EVP_R_MEMORY_LIMIT_EXCEEDED": (
-        cryptography_has_evp_r_memory_limit_exceeded
-    ),
     "Cryptography_HAS_ENGINE": cryptography_has_engine,
     "Cryptography_HAS_VERIFIED_CHAIN": cryptography_has_verified_chain,
+    "Cryptography_HAS_SRTP": cryptography_has_srtp,
 }

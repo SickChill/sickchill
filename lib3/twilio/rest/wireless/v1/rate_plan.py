@@ -16,7 +16,6 @@ from twilio.base.page import Page
 
 
 class RatePlanList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -186,7 +185,6 @@ class RatePlanList(ListResource):
 
 
 class RatePlanPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -225,7 +223,6 @@ class RatePlanPage(Page):
 
 
 class RatePlanContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -291,7 +288,6 @@ class RatePlanContext(InstanceContext):
 
 
 class RatePlanInstance(InstanceResource):
-    """  """
 
     class DataLimitStrategy(object):
         BLOCK = "block"

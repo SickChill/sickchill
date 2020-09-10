@@ -1,9 +1,8 @@
 from qbittorrentapi.decorators import login_required
 from qbittorrentapi.decorators import response_json
-from qbittorrentapi.helpers import APINames
-from qbittorrentapi.helpers import ClientCache
-from qbittorrentapi.helpers import List
-from qbittorrentapi.helpers import ListEntry
+from qbittorrentapi.definitions import APINames
+from qbittorrentapi.definitions import ClientCache
+from qbittorrentapi.definitions import List, ListEntry
 from qbittorrentapi.request import Request
 
 
@@ -26,11 +25,10 @@ class LogEntry(ListEntry):
 
 
 class Log(ClientCache):
-
     """
     Allows interaction with "Log" API endpoints.
 
-    Usage:
+    :Usage:
         >>> from qbittorrentapi import Client
         >>> client = Client(host='localhost:8080', username='admin', password='adminadmin')
         >>> # this is all the same attributes that are available as named in the
@@ -72,8 +70,7 @@ class Log(ClientCache):
 
 
 class LogAPIMixIn(Request):
-
-    """Implementation of all Log API methods"""
+    """Implementation of all Log API methods."""
 
     @property
     def log(self):

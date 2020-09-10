@@ -81,7 +81,7 @@ regex = re.compile(  # noqa: W605
     # port number
     r"(?::\d{2,5})?"
     # resource path
-    u"(?:/[-a-z\u00a1-\uffff\U00010000-\U0010ffff0-9._~%!$&'()*+,;=:@/]*)?"
+    r"(?:/[-a-z\u00a1-\uffff\U00010000-\U0010ffff0-9._~%!$&'()*+,;=:@/]*)?"
     # query string
     r"(?:\?\S*)?"
     # fragment

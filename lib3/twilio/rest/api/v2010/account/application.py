@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class ApplicationList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -203,7 +202,6 @@ class ApplicationList(ListResource):
 
 
 class ApplicationPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -243,7 +241,6 @@ class ApplicationPage(Page):
 
 
 class ApplicationContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -311,7 +308,7 @@ class ApplicationContext(InstanceContext):
         :param unicode sms_method: The HTTP method to use with sms_url
         :param unicode sms_fallback_url: The URL to call when an error occurs while retrieving or executing the TwiML
         :param unicode sms_fallback_method: The HTTP method to use with sms_fallback_url
-        :param unicode sms_status_callback: The URL to send status information to your application
+        :param unicode sms_status_callback: Same as message_status_callback. Deprecated, included for backwards compatibility.
         :param unicode message_status_callback: The URL to send message status information to your application
 
         :returns: The updated ApplicationInstance
@@ -356,7 +353,6 @@ class ApplicationContext(InstanceContext):
 
 
 class ApplicationInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """
@@ -614,7 +610,7 @@ class ApplicationInstance(InstanceResource):
         :param unicode sms_method: The HTTP method to use with sms_url
         :param unicode sms_fallback_url: The URL to call when an error occurs while retrieving or executing the TwiML
         :param unicode sms_fallback_method: The HTTP method to use with sms_fallback_url
-        :param unicode sms_status_callback: The URL to send status information to your application
+        :param unicode sms_status_callback: Same as message_status_callback. Deprecated, included for backwards compatibility.
         :param unicode message_status_callback: The URL to send message status information to your application
 
         :returns: The updated ApplicationInstance

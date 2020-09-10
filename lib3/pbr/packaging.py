@@ -431,9 +431,9 @@ def generate_script(group, entry_point, header, template):
 
 
 def override_get_script_args(
-        dist, executable=os.path.normpath(sys.executable), is_wininst=False):
+        dist, executable=os.path.normpath(sys.executable)):
     """Override entrypoints console_script."""
-    header = easy_install.get_script_header("", executable, is_wininst)
+    header = easy_install.get_script_header("", executable)
     for group, template in ENTRY_POINTS_MAP.items():
         for name, ep in dist.get_entry_map(group).items():
             yield (name, generate_script(group, ep, header, template))
@@ -455,8 +455,12 @@ class LocalInstallScripts(install_scripts.install_scripts):
     """Intercepts console scripts entry_points."""
     command_name = 'install_scripts'
 
-    def _make_wsgi_scripts_only(self, dist, executable, is_wininst):
-        header = easy_install.get_script_header("", executable, is_wininst)
+    def _make_wsgi_scripts_only(self, dist, executable):
+        # get_script_header() is deprecated since Setuptools 12.0
+        try:
+            header = easy_install.ScriptWriter.get_header("", executable)
+        except AttributeError:
+            header = easy_install.get_script_header("", executable)
         wsgi_script_template = ENTRY_POINTS_MAP['wsgi_scripts']
         for name, ep in dist.get_entry_map('wsgi_scripts').items():
             content = generate_script(
@@ -482,16 +486,12 @@ class LocalInstallScripts(install_scripts.install_scripts):
         bs_cmd = self.get_finalized_command('build_scripts')
         executable = getattr(
             bs_cmd, 'executable', easy_install.sys_executable)
-        is_wininst = getattr(
-            self.get_finalized_command("bdist_wininst"), '_is_running', False
-        )
-
         if 'bdist_wheel' in self.distribution.have_run:
             # We're building a wheel which has no way of generating mod_wsgi
             # scripts for us. Let's build them.
             # NOTE(sigmavirus24): This needs to happen here because, as the
             # comment below indicates, no_ep is True when building a wheel.
-            self._make_wsgi_scripts_only(dist, executable, is_wininst)
+            self._make_wsgi_scripts_only(dist, executable)
 
         if self.no_ep:
             # no_ep is True if we're installing into an .egg file or building
@@ -505,7 +505,7 @@ class LocalInstallScripts(install_scripts.install_scripts):
             get_script_args = easy_install.get_script_args
             executable = '"%s"' % executable
 
-        for args in get_script_args(dist, executable, is_wininst):
+        for args in get_script_args(dist, executable):
             self.write_script(*args)
 
 

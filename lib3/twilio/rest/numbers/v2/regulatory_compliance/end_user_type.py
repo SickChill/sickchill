@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class EndUserTypeList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -141,7 +140,6 @@ class EndUserTypeList(ListResource):
 
 
 class EndUserTypePage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -180,7 +178,6 @@ class EndUserTypePage(Page):
 
 
 class EndUserTypeContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -221,7 +218,6 @@ class EndUserTypeContext(InstanceContext):
 
 
 class EndUserTypeInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, sid=None):
         """

@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class OutgoingCallerIdList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -167,7 +166,6 @@ class OutgoingCallerIdList(ListResource):
 
 
 class OutgoingCallerIdPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -207,7 +205,6 @@ class OutgoingCallerIdPage(Page):
 
 
 class OutgoingCallerIdContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -283,7 +280,6 @@ class OutgoingCallerIdContext(InstanceContext):
 
 
 class OutgoingCallerIdInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

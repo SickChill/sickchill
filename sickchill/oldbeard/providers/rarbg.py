@@ -22,6 +22,7 @@ class Provider(TorrentProvider):
         self.minleech = 0
         self.token = None
         self.token_expires = None
+        self.supports_movies = True
 
         # Spec: https://torrentapi.org/apidocs_v2.txt
         self.url = "https://rarbg.to"
@@ -57,7 +58,6 @@ class Provider(TorrentProvider):
 
         search_params = {
             "app_id": "sickchill",
-            "category": "tv",
             "min_seeders": try_int(self.minseed),
             "min_leechers": try_int(self.minleech),
             "limit": 100,
@@ -81,7 +81,12 @@ class Provider(TorrentProvider):
                 search_params["mode"] = "list"
                 search_params.pop("search_string", None)
                 search_params.pop("search_tvdb", None)
+                if settings.movie_list.query.count():
+                    search_params['category[]'] = ['17', '18']
+                else:
+                    search_params['category'] = ['tv']
             else:
+                search_params['category'] = ('tv', 'movies')[mode == 'Movie']
                 search_params["sort"] = self.sorting if self.sorting else "seeders"
                 search_params["mode"] = "search"
 

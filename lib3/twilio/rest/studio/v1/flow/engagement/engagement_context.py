@@ -14,7 +14,6 @@ from twilio.base.page import Page
 
 
 class EngagementContextList(ListResource):
-    """  """
 
     def __init__(self, version, flow_sid, engagement_sid):
         """
@@ -69,7 +68,6 @@ class EngagementContextList(ListResource):
 
 
 class EngagementContextPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -115,7 +113,6 @@ class EngagementContextPage(Page):
 
 
 class EngagementContextContext(InstanceContext):
-    """  """
 
     def __init__(self, version, flow_sid, engagement_sid):
         """
@@ -162,7 +159,6 @@ class EngagementContextContext(InstanceContext):
 
 
 class EngagementContextInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, flow_sid, engagement_sid):
         """

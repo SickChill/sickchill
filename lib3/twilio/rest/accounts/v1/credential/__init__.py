@@ -14,7 +14,6 @@ from twilio.rest.accounts.v1.credential.public_key import PublicKeyList
 
 
 class CredentialList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -69,7 +68,6 @@ class CredentialList(ListResource):
 
 
 class CredentialPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -108,7 +106,6 @@ class CredentialPage(Page):
 
 
 class CredentialInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload):
         """

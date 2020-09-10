@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class KeyList(ListResource):
-    """  """
 
     def __init__(self, version, account_sid):
         """
@@ -143,7 +142,6 @@ class KeyList(ListResource):
 
 
 class KeyPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -183,7 +181,6 @@ class KeyPage(Page):
 
 
 class KeyContext(InstanceContext):
-    """  """
 
     def __init__(self, version, account_sid, sid):
         """
@@ -259,7 +256,6 @@ class KeyContext(InstanceContext):
 
 
 class KeyInstance(InstanceResource):
-    """  """
 
     def __init__(self, version, payload, account_sid, sid=None):
         """

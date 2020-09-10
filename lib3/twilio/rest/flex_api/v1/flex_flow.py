@@ -15,7 +15,6 @@ from twilio.base.page import Page
 
 
 class FlexFlowList(ListResource):
-    """  """
 
     def __init__(self, version):
         """
@@ -208,7 +207,6 @@ class FlexFlowList(ListResource):
 
 
 class FlexFlowPage(Page):
-    """  """
 
     def __init__(self, version, response, solution):
         """
@@ -247,7 +245,6 @@ class FlexFlowPage(Page):
 
 
 class FlexFlowContext(InstanceContext):
-    """  """
 
     def __init__(self, version, sid):
         """
@@ -356,7 +353,6 @@ class FlexFlowContext(InstanceContext):
 
 
 class FlexFlowInstance(InstanceResource):
-    """  """
 
     class ChannelType(object):
         WEB = "web"
