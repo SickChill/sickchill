@@ -56,7 +56,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-        % for current_season in sorted(show.episodes, reverse=True):
+        % for current_season in sorted(show.episodes, reverse=True, key=lambda x: try_int(x)):
             <div class="row">
                 <div class="col-md-12">
                     <h2>${('Season '+ str(current_season), 'Specials')[try_int(current_season, None) == 0]}</h2>
