@@ -81,7 +81,7 @@ class Provider(TorrentProvider):
                 search_params["mode"] = "list"
                 search_params.pop("search_string", None)
                 search_params.pop("search_tvdb", None)
-                if settings.movie_list.query.count():
+                if settings.movie_list and settings.movie_list.query.count():
                     search_params['category[]'] = ['17', '18']
                 else:
                     search_params['category'] = ['tv']
