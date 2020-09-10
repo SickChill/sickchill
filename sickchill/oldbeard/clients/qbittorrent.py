@@ -9,24 +9,35 @@ from sickchill.oldbeard.clients.generic import GenericClient
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
         super().__init__('qBittorrent', host, username, password)
-        self.host, self.port = splitport(self.host)
-        self.api = qbittorrentapi.Client(host=self.host, port=self.port or 8080, username=self.username, password=self.password)
+        self.host, self.port = splitport(self.host or settings.TORRENT_HOST)
+        self.api = qbittorrentapi.Client(
+            host=self.host,
+            port=self.port or 8080,
+            username=self.username or settings.TORRENT_USERNAME,
+            password=self.password or settings.TORRENT_PASSWORD
+        )
 
     def _get_auth(self):
-        return self.api.is_logged_in or self.api.auth_log_in()
+        try:
+            if not self.api.is_logged_in:
+                self.api.auth_log_in()
+        except (qbittorrentapi.LoginFailed, qbittorrentapi.APIConnectionError):
+            return False
+        return True
 
     def testAuthentication(self):
         try:
-            self._get_auth()
+            if not self.api.is_logged_in:
+                self.api.auth_log_in()
         except (qbittorrentapi.LoginFailed, qbittorrentapi.APIConnectionError) as error:
-            return False, 'Failed to authenticate with {0}, {1}'.format(self.name, error)
+            return False, f'Failed to authenticate with {self.name}, {error}'
         return True, 'Success: Connected and Authenticated'
 
     @staticmethod
     def __torrent_args(result):
         return dict(
             save_path=settings.TORRENT_DIR or None,
-            category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[result.show.is_anime] or None,
+            category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[bool(result.show) and result.show.is_anime] or None,
             is_paused=settings.TORRENT_PAUSED
         )
 
