@@ -280,9 +280,10 @@ class NewznabProvider(NZBProvider):
                         search_params['tvdbid'] = ep_obj.show.indexerid
 
                     if ep_obj.show.air_by_date or ep_obj.show.sports:
-                        date_str = str(ep_obj.airdate)
-                        search_params['season'] = date_str.partition('-')[0]
-                        search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
+                        # date_str = str(ep_obj.airdate)
+                        # search_params['season'] = date_str.partition('-')[0]
+                        # search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
+                        search_params['q'] = str(ep_obj.airdate)
                     elif ep_obj.show.is_anime:
                         search_params['ep'] = ep_obj.absolute_number
                     else:
