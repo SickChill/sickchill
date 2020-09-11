@@ -2,6 +2,7 @@ import os
 import re
 from datetime import date
 from urllib.parse import urljoin
+
 from imdbpie import Imdb
 
 from sickchill import settings
