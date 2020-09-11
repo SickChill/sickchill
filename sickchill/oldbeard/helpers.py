@@ -950,8 +950,8 @@ def get_show(name, tryIndexers=False):
         if not showObj:
             scene_exceptions = sickchill.oldbeard.scene_exceptions.get_scene_exception_by_name_multiple(name)
             for scene_exception in scene_exceptions:
-                if scene_exception[1]:
-                    showObj = Show.find(settings.showList, scene_exception[1])
+                if scene_exception[0]:
+                    showObj = Show.find(settings.showList, scene_exception[0])
                     if showObj:
                         break
 
