@@ -484,7 +484,7 @@
                                             <div class="col-md-12">
                                                 <div class="poster-container">
                                                     <input type="hidden" name="poster"/>
-                                                    <img src="${static_url(show.show_image_url('poster_thumb', include_date=True), include_version=False)}"
+                                                    <img src="${static_url(show.show_image_url('poster', include_date=True), include_version=False)}"
                                                          data-image-type="poster"
                                                          class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
                                                     />
@@ -504,7 +504,7 @@
                                             <div class="col-md-12">
                                                 <div class="banner-container">
                                                     <input type="hidden" name="banner"/>
-                                                    <img src="${static_url(show.show_image_url('banner_thumb', include_date=True), include_version=False)}"
+                                                    <img src="${static_url(show.show_image_url('banner', include_date=True), include_version=False)}"
                                                          data-image-type="banner"
                                                          class="custom-image banner" alt="${_('Banner for')} ${show.name}"
                                                     />

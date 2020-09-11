@@ -109,9 +109,12 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="poster-container">
-                        <img src="${static_url(show.show_image_url('poster_thumb', include_date=True), include_version=False)}"
-                             class="tvshowImg" alt="${_('Poster for')} ${show.name}"
-                             onclick="location.href='${static_url(show.show_image_url('poster', include_date=True), include_version=False)}"/>
+                        <a href="${static_url(show.show_image_url('poster', include_date=True), include_version=False)}">
+                            <img src="${static_url(show.show_image_url('poster', include_date=True), include_version=False)}"
+                                 class="tvshowImg" alt="${_('Poster for')} ${show.name}"
+                            />
+                        </a>
+
                     </div>
                     <div class="info-container">
                         <div class="row">
@@ -141,15 +144,15 @@
                                         ${show.imdb_info['runtimes']} ${_('minutes')}
                                     % endif
                                     </span>
-                                    <a href="${anon_url('http://www.imdb.com/title/', show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb"></span></a>
-                                    <a href="${anon_url('https://trakt.tv/shows/', show.imdbid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${show.imdbid}"><span class="displayshow-icon-trakt"></span></a>
+                                    <a href="${anon_url('http://www.imdb.com/title/', show.imdbid)}" rel="noreferrer" target="_blank" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb"></span></a>
+                                    <a href="${anon_url('https://trakt.tv/shows/', show.imdbid)}" rel="noreferrer" target="_blank" title="https://trakt.tv/shows/${show.imdbid}"><span class="displayshow-icon-trakt"></span></a>
                                 % endif
-                                <a href="${anon_url(show.idxr.show_url, show.indexerid)}" onclick="window.open(this.href, '_blank'); return false;"
+                                <a href="${anon_url(show.idxr.show_url, show.indexerid)}" target="_blank"
                                    title="${show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
-                                    <a href="${anon_url('http://thexem.de/search?q=', show.name)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://thexem.de/search?q-${show.name}"><span class="displayshow-icon-xem"></span></a>
+                                    <a href="${anon_url('http://thexem.de/search?q=', show.name)}" rel="noreferrer" target="_blank" title="http://thexem.de/search?q-${show.name}"><span class="displayshow-icon-xem"></span></a>
                                 % endif
-                                <a href="${anon_url('https://fanart.tv/series/', show.indexerid)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://fanart.tv/series/${show.name}"><span class="displayshow-icon-fanart"></span></a>
+                                <a href="${anon_url('https://fanart.tv/series/', show.indexerid)}" rel="noreferrer" target="_blank" title="https://fanart.tv/series/${show.name}"><span class="displayshow-icon-fanart"></span></a>
                             </div>
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                 <ul class="tags">
@@ -414,7 +417,7 @@
                     <div class="row seasonheader" data-season-id="${epResult["season"]}">
                         <div class="col-md-12">
                             <br/>
-                            <h3 style="display: inline;"><a name="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
+                            <h3 style="display: inline;"><a id="season-${epResult["season"]}"></a>${(_("Specials"), _("Season") + ' ' + str(epResult["season"]))[int(epResult["season"]) > 0]}</h3>
                             % if not settings.DISPLAY_ALL_SEASONS:
                                 % if curSeason == -1:
                                     <button id="showseason-${epResult['season']}" type="button" class="btn btn-xs pull-right" data-toggle="collapse" data-target="#collapseSeason-${epResult['season']}" aria-expanded="true">${_('Hide Episodes')}</button>
