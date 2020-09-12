@@ -61,7 +61,7 @@ class Client(GenericClient):
         Sets a label on an existing torrent in the client
         params: :result: an instance of the searchResult class
         """
-        label = settings.TORRENT_LABEL_ANIME or settings.TORRENT_LABEL if result.show.is_anime else settings.TORRENT_LABEL
+        label = (settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[result.show.is_anime] or settings.TORRENT_LABEL
         params = {
             'action': 'setprops',
             'hash': result.hash,

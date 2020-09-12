@@ -31,9 +31,8 @@ class Provider(TorrentProvider):
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
-        # TODO Removed to allow Tests to pass... Not sure about removing it
-        # if not self.show or not self.show.is_anime:
-        #   return results
+        if self.show and not self.show.is_anime:
+          return results
 
         for mode in search_strings:
             items = []

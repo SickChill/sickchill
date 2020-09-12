@@ -37,7 +37,7 @@ class Client(GenericClient):
     def __torrent_args(result):
         return dict(
             save_path=settings.TORRENT_DIR or None,
-            category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[bool(result.show) and result.show.is_anime] or None,
+            category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[result.show.is_anime] or settings.TORRENT_LABEL,
             is_paused=settings.TORRENT_PAUSED
         )
 
