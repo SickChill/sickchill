@@ -177,8 +177,8 @@ class ShowIndexer(object):
     def season_banner_url(self, show, season, thumb=False, multiple=False):
         return self.indexers[show.indexer].season_banner_url(show, season, thumb, multiple=multiple)
 
-    def episode_image_url(self, episode, multiple=False):
-        return self.indexers[episode.show.indexer].episode_image_url(episode, multiple=multiple)
+    def episode_image_url(self, episode):
+        return self.indexers[episode.show.indexer].episode_image_url(episode)
 
     def get_indexer_favorites(self):
         results = []
