@@ -1713,7 +1713,6 @@ class CMDSickChillSearchIndexers(ApiCall):
                     if in_show_list and self.only_new:
                         continue
 
-
                     results.append({
                         indexer_ids[indexer]: result['id'],
                         "name": result['seriesName'],
