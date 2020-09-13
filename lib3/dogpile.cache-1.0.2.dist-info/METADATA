@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: dogpile.cache
 Version: 1.0.2
 Summary: A caching front-end based on the Dogpile lock.

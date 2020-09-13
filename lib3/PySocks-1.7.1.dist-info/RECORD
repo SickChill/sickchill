@@ -5,7 +5,7 @@ PySocks-1.7.1.dist-info/RECORD,,
 PySocks-1.7.1.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
 PySocks-1.7.1.dist-info/WHEEL,sha256=t_MpApv386-8PVts2R6wsTifdIn0vbUDTVv61IbqFC8,92
 PySocks-1.7.1.dist-info/top_level.txt,sha256=TKSOIfCFBoK9EY8FBYbYqC3PWd3--G15ph9n8-QHPDk,19
-__pycache__/socks.cpython-37.pyc,,
-__pycache__/sockshandler.cpython-37.pyc,,
+__pycache__/socks.cpython-38.pyc,,
+__pycache__/sockshandler.cpython-38.pyc,,
 socks.py,sha256=xOYn27t9IGrbTBzWsUUuPa0YBuplgiUykzkOB5V5iFY,31086
 sockshandler.py,sha256=2SYGj-pwt1kjgLoZAmyeaEXCeZDWRmfVS_QG6kErGtY,3966
