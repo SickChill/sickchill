@@ -17,22 +17,8 @@ $.tablesorter.addParser({
     is() {
         return false;
     },
-    format(s) {
-        const replacements = {
-            custom: 11,
-            bluray: 10, // Custom: Only bluray
-            hd1080p: 9,
-            '1080p': 8, // Custom: Only 1080p
-            hdtv: 7, // Custom: 1080p and 720p (only HDTV)
-            'web-dl': 6, // Custom: 1080p and 720p (only WEB-DL)
-            hd720p: 5,
-            '720p': 4, // Custom: Only 720p
-            hd: 3,
-            sd: 2,
-            any: 1,
-            best: 0
-        };
-        return replacements[s.toLowerCase()];
+    format(s, table, cell) {
+        return $(cell).find('span').data('quality');
     },
     type: 'numeric'
 });
