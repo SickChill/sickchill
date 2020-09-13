@@ -4,6 +4,7 @@ beautifulsoup4
 beekeeper
 bencode.py
 CacheControl
+certifi
 #cfscrape
 chardet
 cloudscraper

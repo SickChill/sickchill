@@ -1,5 +1,6 @@
 # Author: Marvin Pinto <me@marvinp.ca>
 # Author: Dennis Lutter <lad1337@gmail.com>
+import certifi
 import urllib.parse
 import urllib.request
 
@@ -50,7 +51,7 @@ class Notifier(object):
 
         success = False
         try:
-            urllib.request.urlopen(req)
+            urllib.request.urlopen(req, cafile=certifi.where())
             message = 'Telegram message sent successfully.'
             success = True
         except IOError as e:
