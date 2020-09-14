@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: timeago
 Version: 1.0.14
 Summary: A very simple python library, used to format datetime with `*** time ago` statement. eg: "3 hours ago".
