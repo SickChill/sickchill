@@ -42,7 +42,6 @@ profilehooks
 httplib2
 PySocks
 win_inet_pton
-imdbpie
 imagesize
 send2trash
 deluge-client
@@ -57,3 +56,4 @@ sqlalchemy
 python-slugify
 guessit
 requests
+git+https://github.com/alberanid/imdbpy#egg=imdbpy
