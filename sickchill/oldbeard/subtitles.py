@@ -20,14 +20,12 @@ from .helpers import is_media_file
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
-if 'legendastv' not in subliminal.provider_manager.names():
-    subliminal.provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
+# if 'legendastv' not in subliminal.provider_manager.names():
+#     subliminal.provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
 if 'itasa' not in subliminal.provider_manager.names():
     subliminal.provider_manager.register('itasa = sickchill.providers.subtitle.itasa:ItaSAProvider')
 if 'wizdom' not in subliminal.provider_manager.names():
     subliminal.provider_manager.register('wizdom = sickchill.providers.subtitle.wizdom:WizdomProvider')
-# We disabled the original subscenter in lib/subliminal/extensions.py since it's outdated.
-# Until it gets an update in subliminal, we'll use a fixed provider.
 if 'subscenter' not in subliminal.provider_manager.names():
     subliminal.provider_manager.register('subscenter = sickchill.providers.subtitle.subscenter:SubsCenterProvider')
 if 'subtitulamos' not in subliminal.provider_manager.names():
