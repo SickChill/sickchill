@@ -847,7 +847,7 @@ class TVShow(object):
                 'title': imdb_title.setdefault('title', self.name),
                 'year': imdb_title.setdefault('year', self.startyear),
                 'akas': '|'.join(imdb_title.setdefault('akas', [])),
-                'runtimes': imdb_title.setdefault('runtimes', [self.runtime]),
+                'runtimes': imdb_title.setdefault('runtimes', [self.runtime])[0],
                 'genres': '|'.join(imdb_title.setdefault('genres', [])),
                 'countries': '|'.join(imdb_title.get('countries', [])),
                 'country_codes': '|'.join(imdb_title.get('country codes', [])),

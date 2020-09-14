@@ -140,7 +140,7 @@
                                     % if show.imdb_info.get('year'):
                                         (${show.imdb_info['year']})
                                     % endif
-                                    % if show.imdb_info.get('runtime'):
+                                    % if show.imdb_info.get('runtimes'):
                                         ${show.imdb_info['runtimes']} ${_('minutes')}
                                     % endif
                                     </span>
