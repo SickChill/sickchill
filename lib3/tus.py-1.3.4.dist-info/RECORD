@@ -1,6 +1,6 @@
-../../bin/tus-resume,sha256=vm0ma67rBr3Xg9pt092_EqWSSTIJ_E-IIm_sT3fh6tI,248
-../../bin/tus-upload,sha256=44eq9KXMvG1DpIGaS-5zf_qd9UY7WwCMY30thUT-NGg,248
-__pycache__/tus.cpython-37.pyc,,
+../../bin/tus-resume,sha256=u_Wrt8gf3tRKoDRWN4T_NdVkOCEx5PTy-yMIqCC63NA,240
+../../bin/tus-upload,sha256=Ffqu8DUVgFKcM_RNVd6Z_1iHvQRRaCf_eIMJ_K5h0B0,240
+__pycache__/tus.cpython-38.pyc,,
 tus.py,sha256=tpg2yStHRMS2bE2MRRm0SuiPHNS4c-f1fUBYfqqnCfg,7203
 tus.py-1.3.4.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
 tus.py-1.3.4.dist-info/METADATA,sha256=znQdj5zIJtRJqDCuFOM2gMVqZdXFrivsFP1Yzz0jrFk,746

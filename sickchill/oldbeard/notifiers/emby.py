@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 import requests
 
 from sickchill import logger, settings
@@ -9,14 +11,10 @@ class Notifier(object):
         self.session = None
 
     def __make_session(self, emby_apikey=None):
-        if self.session:
-            return self.session
+        if not self.session:
+            self.session = requests.Session()
 
-        if not emby_apikey:
-            emby_apikey = settings.EMBY_APIKEY
-
-        self.session = requests.Session()
-        self.session.headers.update({'X-MediaBrowser-Token': emby_apikey, 'Content-Type': 'application/json'})
+        self.session.headers.update({'X-Emby-Token': emby_apikey or settings.EMBY_APIKEY, 'Content-Type': 'application/json'})
         return self.session
 
     def _notify_emby(self, message, host=None, emby_apikey=None):
@@ -26,18 +24,19 @@ class Notifier(object):
             Returns True for no issue or False if there was an error
 
         """
-        url = '{0}/emby/Notifications/Admin'.format(host or settings.EMBY_HOST)
-        data = {'Name': 'SickChill', 'Description': message, 'ImageUrl': settings.LOGO_URL}
+        url = urljoin(host or settings.EMBY_HOST, 'emby/Notifications/Admin')
+        params = {'Name': 'SickChill', 'Description': message, 'ImageUrl': settings.LOGO_URL}
 
         try:
             session = self.__make_session(emby_apikey)
-            response = session.post(url, data=data)
+            response = session.get(url, params=params)
+            if response:
+                logger.debug("EMBY: HTTP response: {0}".format(response.text.replace('\n', '')))
             response.raise_for_status()
 
-            logger.debug('EMBY: HTTP response: {}'.format(response.text.replace('\n', '')))
             return True
-        except requests.exceptions.HTTPError as e:
-            logger.warning("EMBY: Warning: Couldn't contact Emby at {} {}".format(url, e))
+        except requests.exceptions.HTTPError as error:
+            logger.warning(f"EMBY: Warning: Could not contact Emby at {url} {error}")
             return False
 
 ##############################################################################
@@ -70,18 +69,18 @@ class Notifier(object):
                 else:
                     logger.warning('EMBY: Provider unknown')
                     return False
-                params.update({'{0}id'.format(provider): show.indexerid})
+                params.update({f'{provider}id': show.indexerid})
 
-            url = '{0}/emby/Library/Series/Updated'.format(settings.EMBY_HOST)
+            url = urljoin(settings.EMBY_HOST, 'emby/Library/Series/Updated')
 
             try:
                 session = self.__make_session()
                 response = session.get(url, params=params)
                 response.raise_for_status()
-                logger.debug('EMBY: HTTP response: {}'.format(response.text.replace('\n', '')))
+                logger.debug('EMBY: HTTP response: {0}'.format(response.text.replace('\n', '')))
                 return True
 
             except requests.exceptions.HTTPError as error:
-                logger.warning("EMBY: Warning: Couldn't contact Emby at {} {}".format(url, error))
+                logger.warning(f"EMBY: Warning: Could not contact Emby at {url} {error}")
 
                 return False

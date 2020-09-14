@@ -29,7 +29,7 @@ class Provider(TorrentProvider):
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
-        if not self.show or not self.show.is_anime:
+        if self.show and not self.show.is_anime:
             return results
 
         for mode in search_strings:

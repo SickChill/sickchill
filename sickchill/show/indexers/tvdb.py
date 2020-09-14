@@ -101,11 +101,14 @@ class TVDB(Indexer):
         """
         language = language or self.language
         result = []
-        if re.match(r'^t?t?\d{7,8}$', str(name)) or re.match(r'^\d{6}$', name):
+        if isinstance(name, bytes):
+            name = name.decode()
+
+        if re.match(r'^t?t?\d{7,8}$', name) or re.match(r'^\d{6}$', name):
             try:
-                if re.match(r'^t?t?\d{7,8}$', str(name)):
+                if re.match(r'^t?t?\d{7,8}$', name):
                     result = self._search(imdbId=f'tt{name.strip("t")}', language=language)
-                elif re.match(r'^\d{6}$', str(name)):
+                elif re.match(r'^\d{6}$', name):
                     series = self._series(name, language=language)
                     if series:
                         result = [series.info(language)]

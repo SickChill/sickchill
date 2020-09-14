@@ -1,5 +1,8 @@
 <%inherit file="/layouts/main.mako"/>
 <%!
+    import timeago
+    from datetime import datetime
+
     from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
 %>
@@ -41,47 +44,52 @@
         </div>
         <div class="row">
             <% imdb_tt = {show.imdbid for show in settings.showList if show.imdbid} %>
+##             ${popular_shows['ranks'][0]}
+
             <div id="popularShows">
                 <div id="container">
                     % if not popular_shows:
                         <div class="trakt_show" style="width:100%; margin-top:20px">
-                            <p class="red-text">${_('Fetching of IMDB Data failed. Are you online?')}
-                                <strong>${_('Exception')}:</strong>
+                            <p class="red-text">${_('Fetching of IMDB Data failed. Are you online?')}</p>
+                            <strong>${_('Exception')}:</strong>
                             <p>${imdb_exception}</p>
                         </div>
                     % else:
-                        % for cur_result in popular_shows:
-                            % if cur_result['imdb_tt'] in imdb_tt:
+                        % for current_result in popular_shows['ranks']:
+                            <% current_imdb_id = current_result['id'].split('/')[2] %>
+                            % if current_imdb_id in imdb_tt:
                                 <% continue %>
                             % endif
 
-                            % if 'rating' in cur_result and cur_result['rating']:
-                                <% cur_rating = cur_result['rating'] %>
-                                <% cur_votes = cur_result['votes'] %>
+                            % if 'rating' in current_result and current_result['rating']:
+                                <% current_rating = current_result['rating'] %>
+                                <% current_votes = current_result['votes'] %>
                             % else:
-                                <% cur_rating = '0' %>
-                                <% cur_votes = '0' %>
+                                <% current_rating = '0' %>
+                                <% current_votes = '0' %>
                             % endif
 
-                            <div class="trakt_show" data-name="${cur_result['name']}" data-rating="${cur_rating}"
-                                 data-votes="${cur_votes.replace(',', '')}">
+                            <div class="trakt_show" data-name="${current_result['title']}" data-rating="${current_rating}"
+                                 data-votes="${current_votes.replace(',', '')}">
                                 <div class="traktContainer">
                                     <div class="trakt-image">
-                                        <a class="trakt-image" href="${anon_url(cur_result['imdb_url'])}" target="_blank">
-                                            <img alt="" class="trakt-image" src="${scRoot}/cache/${cur_result['image_path']}"
+                                        <a class="trakt-image" href="${anon_url(current_result['image']['url'])}" target="_blank">
+                                            <img alt="" class="trakt-image" src="${current_result['image']['url']}"
                                                  height="273px" width="186px"/>
                                         </a>
                                     </div>
 
                                     <div class="show-title">
-                                        ${(cur_result['name'], '<span>&nbsp;</span>')['' == cur_result['name']]}
+                                        ${current_result.get('title','<span>&nbsp;</span>')} - (${current_result.get('year', 'TBD')})
                                     </div>
 
                                     <div class="clearfix">
-                                        <p>${int(float(cur_rating)*10)}%&nbsp;<span class="displayshow-icon-heart"></span></p>
-                                        <i>${cur_votes}</i>
+                                        <% previous_rank_until = datetime.strptime(current_result['previousRanks'][0]['until'],'%Y-%m-%dT%H:%M:%SZ') %>
+                                        <p>#${current_result['currentRank']}</p>
+                                        <p class="small"><i>Since ${timeago.format(previous_rank_until)}</i></p>
+                                        <p class="small"><i>Previously #${current_result['previousRanks'][0]['rank']}</i></p>
                                         <div class="traktShowTitleIcons">
-                                            <a href="${scRoot}/addShows/addShowByID?indexer_id=${cur_result['imdb_tt']}&amp;show_name=${cur_result['name'] | u}&amp;indexer=IMDB"
+                                            <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_imdb_id}&amp;show_name=${current_result['title'] | u}&amp;indexer=IMDB"
                                                class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
                                         </div>
                                     </div>

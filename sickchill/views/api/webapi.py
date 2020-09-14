@@ -1705,7 +1705,7 @@ class CMDSickChillSearchIndexers(ApiCall):
         lang_id = self.valid_languages[self.lang]
 
         if self.name and not self.indexerid:  # only name was given
-            search_results = sickchill.indexer.search_indexers_for_series_name(str(self.name).encode(), self.lang)
+            search_results = sickchill.indexer.search_indexers_for_series_name(self.name, self.lang)
             for indexer, indexer_results in search_results.items():
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows

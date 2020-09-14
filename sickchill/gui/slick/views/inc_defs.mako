@@ -73,7 +73,7 @@
 
         cssClass = overrideClass or "quality " + cssClass
     %>
-    <span title="${title | h}" class="${cssClass}">${qualityString}</span>
+    <span title="${title | h}" data-quality="${quality}" class="${cssClass}">${qualityString}</span>
 </%def>
 
 

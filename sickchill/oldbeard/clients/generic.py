@@ -188,7 +188,7 @@ class GenericClient(object):
 
         r_code = False
 
-        logger.debug('Calling {0} Client'.format(self.name))
+        logger.debug(f'Calling {self.name} Client')
 
         if not (self.auth or self._get_auth()):
             logger.warning('{0}: Authentication Failed'.format(self.name))

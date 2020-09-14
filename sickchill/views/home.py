@@ -1572,7 +1572,7 @@ class Home(WebRoot):
         submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0}'.format(show), 'icon': 'fa fa-pencil'}]
         return t.render(submenu=submenu, title=_('Manual Snatch'), header=_('Manual Snatch'),  controller="home", action="searchEpisodeListManual", results=results)
 
-    def snatchEpisodeManual(self):
+    def snatchEpisodeManual(self, *args, **kwargs):
         url = self.get_body_argument('url')
         show = self.get_body_argument('show')
 

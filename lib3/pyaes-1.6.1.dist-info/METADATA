@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: pyaes
 Version: 1.6.1
 Summary: Pure-Python Implementation of the AES block-cipher and common modes of operation

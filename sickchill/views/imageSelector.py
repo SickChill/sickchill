@@ -59,7 +59,7 @@ class ImageSelector(Home):
         """
         url = self.get_query_argument('url')
         regex = r'^https?://(artworks.thetvdb.com|assets.fanart.tv|image.tmdb.org)/.*'
-        if not re.match(regex, url) or 'editShow?show=' not in self.request.headers.get('Referer', ''):
+        if not re.match(regex, url):
             return self.write_error(404)
 
         request = self.indexer_session.get(url, stream=True)

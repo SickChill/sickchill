@@ -1,3 +1,4 @@
+import traceback
 from functools import wraps
 
 from requests.exceptions import HTTPError as RHTTPError, RequestException, RequestsWarning
@@ -26,9 +27,11 @@ class ExceptionDecorator(object):
                         return wrapper(*args, **kwargs)
 
                 logger.debug("Could not find item on the indexer: (Indexer probably doesn't have this item) [{error}]".format(error=str(e)))
+                logger.debug(traceback.format_exc())
                 result = self.default_return
             except RHTTPError as e:
                 logger.debug("Could not find item on the indexer: (Indexer probably doesn't have this item) [{error}]".format(error=str(e)))
+                logger.debug(traceback.format_exc())
                 result = self.default_return
 
             return result

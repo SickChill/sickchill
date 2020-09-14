@@ -50,7 +50,17 @@ LOCALE_NAMES.update({
 
 disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-opener = urllib.request.build_opener()
+try:
+    from urllib.request import HTTPSHandler
+    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context.options |= ssl.OP_NO_SSLv2
+    context.verify_mode = ssl.CERT_REQUIRED
+    context.load_verify_locations(certifi.where(), None)
+    https_handler = HTTPSHandler(context=context, check_hostname=True)
+    opener = urllib.request.build_opener(https_handler)
+except ImportError:
+    opener = urllib.request.build_opener()
+
 opener.addheaders = [('User-agent', sickchill.oldbeard.common.USER_AGENT)]
 urllib.request.install_opener(opener)
 
@@ -950,8 +960,8 @@ def get_show(name, tryIndexers=False):
         if not showObj:
             scene_exceptions = sickchill.oldbeard.scene_exceptions.get_scene_exception_by_name_multiple(name)
             for scene_exception in scene_exceptions:
-                if scene_exception[1]:
-                    showObj = Show.find(settings.showList, scene_exception[1])
+                if scene_exception[0]:
+                    showObj = Show.find(settings.showList, scene_exception[0])
                     if showObj:
                         break
 
