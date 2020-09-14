@@ -787,11 +787,14 @@ class TVShow(object):
         self.status = getattr(myShow, 'status', 'Unknown')
 
     def check_imdb_id(self):
-        if not self.imdb_id.startswith('tt'):
+        if self.imdb_id:
+            self.imdb_id = re.sub(r'[^\d]', '', self.imdb_id)
+
+        if self.imdb_id:
             self.imdb_id = 'tt' + self.imdb_id
 
         try:
-            int(re.sub(r"[^0-9]", "", self.imdb_id).lstrip('t'))
+            int(self.imdb_id.lstrip('t'))
         except (ValueError, TypeError):
             self.imdb_id = ""
 
