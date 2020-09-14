@@ -66,7 +66,7 @@ class TVShow(object):
     indexerid = DirtySetter(0)
     indexer = DirtySetter(0)
     show_name = DirtySetter("")
-    imdbid = DirtySetter("")
+    imdb_id = DirtySetter("")
     network = DirtySetter("")
     genre: list = DirtySetter([])
     classification = DirtySetter("")
@@ -112,7 +112,6 @@ class TVShow(object):
             raise MultipleShowObjectsException("Can't create a show if it already exists")
 
         self.loadFromDB()
-
 
     @property
     def name(self):
@@ -737,8 +736,8 @@ class TVShow(object):
 
             self.default_ep_status = int(sql_results[0]["default_ep_status"] or SKIPPED)
 
-            if not self.imdbid:
-                self.imdbid = sql_results[0]["imdb_id"]
+            if not self.imdb_id:
+                self.imdb_id = sql_results[0]["imdb_id"]
 
             if self.is_anime:
                 self.release_groups = BlackAndWhiteList(self.indexerid)
@@ -773,7 +772,7 @@ class TVShow(object):
         self.network = getattr(myShow, 'network', '')
         self.runtime = getattr(myShow, 'runtime', '')
 
-        self.imdbid = getattr(myShow, 'imdbId', '')
+        self.imdb_id = getattr(myShow, 'imdbId', '')
 
         if hasattr(myShow, 'airsDayOfWeek') and hasattr(myShow, 'airsTime'):
             if myShow.airsTime and myShow.airsDayOfWeek:
@@ -790,14 +789,14 @@ class TVShow(object):
 
         self.status = getattr(myShow, 'status', 'Unknown')
 
-    def check_imdbid(self):
-        if not self.imdbid.startswith('tt'):
-            self.imdbid = 'tt' + self.imdbid
+    def check_imdb_id(self):
+        if not self.imdb_id.startswith('tt'):
+            self.imdb_id = 'tt' + self.imdb_id
 
         try:
-            int(re.sub(r"[^0-9]", "", self.imdbid).lstrip('t'))
+            int(re.sub(r"[^0-9]", "", self.imdb_id).lstrip('t'))
         except (ValueError, TypeError):
-            self.imdbid = ""
+            self.imdb_id = ""
 
     def loadIMDbInfo(self):
         try:
@@ -806,10 +805,10 @@ class TVShow(object):
             client._cachedir = settings.CACHE_DIR
             i = ImdbFacade(client=client)
 
-            # Check that the imdbid we have is valid for searching
-            self.check_imdbid()
+            # Check that the imdb_id we have is valid for searching
+            self.check_imdb_id()
 
-            if self.name and not self.imdbid:
+            if self.name and not self.imdb_id:
                 # Add regular name and custom name to be searched first
                 attempts = {self.show_name}
                 if self.custom_name:
@@ -833,29 +832,29 @@ class TVShow(object):
                     if self.startyear:
                         results = [x for x in results if x.year == self.startyear]
                     if len(results) == 1:
-                        self.imdbid = results[0].imdb_id
+                        self.imdb_id = results[0].imdb_id
 
-                    if self.imdbid:
+                    if self.imdb_id:
                         break
 
             # Make sure the lib didn't give us back something bogus
-            self.check_imdbid()
+            self.check_imdb_id()
 
-            if not self.imdbid:
-                logger.debug(str(self.indexerid) + ": Not loading show info from IMDb, because we don't know the imdbid")
+            if not self.imdb_id:
+                logger.debug(str(self.indexerid) + ": Not loading show info from IMDb, because we don't know the imdb_id")
                 return
 
             logger.debug(str(self.indexerid) + ": Loading show info from IMDb")
 
-            imdb_title = i.get_title(self.imdbid)
+            imdb_title = i.get_title(self.imdb_id)
 
-            title_versions = client.get_title_versions(self.imdbid)
+            title_versions = client.get_title_versions(self.imdb_id)
 
             # indexer_id, imdb_id, title, year, akas, runtimes, genres, countries, country_codes, certificates, rating, votes, last_update
 
             self.imdb_info = {
                 'indexer_id': self.indexerid,
-                'imdb_id': imdb_title.imdb_id or self.imdbid,
+                'imdb_id': imdb_title.imdb_id or self.imdb_id,
                 'title': imdb_title.title or self.name,
                 'year': imdb_title.year or self.startyear,
                 'akas': '|'.join(
@@ -1115,7 +1114,7 @@ class TVShow(object):
             "dvdorder": self.dvdorder,
             "startyear": self.startyear,
             "lang": self.lang,
-            "imdb_id": self.imdbid,
+            "imdb_id": self.imdb_id,
             "last_update_indexer": self.last_update_indexer,
             "rls_ignore_words": self.rls_ignore_words,
             "rls_require_words": self.rls_require_words,
@@ -1129,7 +1128,7 @@ class TVShow(object):
 
         helpers.update_anime_support()
 
-        if self.imdbid and self.imdb_info:
+        if self.imdb_id and self.imdb_info:
             main_db_con = db.DBConnection()
             main_db_con.upsert("imdb_info", self.imdb_info, controlValueDict)
 

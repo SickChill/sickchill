@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="row">
-            <% imdb_tt = {show.imdbid for show in settings.showList if show.imdbid} %>
+            <% imdb_tt = {show.imdb_id for show in settings.showList if show.imdb_id} %>
 ##             ${popular_shows['ranks'][0]}
 
             <div id="popularShows">

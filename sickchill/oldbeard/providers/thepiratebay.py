@@ -95,8 +95,8 @@ class Provider(TorrentProvider):
             logger.debug("Search Mode: {0}".format(mode))
 
             all_search_strings = search_strings[mode]
-            if mode != "RSS" and self.show and self.show.imdbid:
-                all_search_strings = [self.show.imdbid] + search_strings[mode]
+            if mode != "RSS" and self.show and self.show.imdb_id:
+                all_search_strings = [self.show.imdb_id] + search_strings[mode]
 
             for search_string in all_search_strings:
                 search_urls = (self.urls["search"], self.urls["rss"])[mode == "RSS"]

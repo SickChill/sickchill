@@ -41,11 +41,11 @@ class Provider(TorrentProvider):
             logger.debug(_(f"Search Mode: {mode}"))
 
             if mode != "RSS":
-                if not (self.show and self.show.imdbid):
+                if not (self.show and self.show.imdb_id):
                     continue
 
-                search_params["imdb_id"] = self.show.imdbid.strip('tt')
-                logger.debug("Search string: {}".format(self.show.imdbid))
+                search_params["imdb_id"] = self.show.imdb_id.strip('tt')
+                logger.debug("Search string: {}".format(self.show.imdb_id))
             else:
                 search_params.pop('imdb_id')
 

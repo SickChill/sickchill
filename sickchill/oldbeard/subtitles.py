@@ -523,7 +523,7 @@ def refine_video(video, episode):
         'release_group': 'release_group',
         'season': 'season',
         'series': 'show.name',
-        'series_imdb_id': 'show.imdbid',
+        'series_imdb_id': 'show.imdb_id',
         'size': 'file_size',
         'title': 'name',
         'year': 'show.startyear',

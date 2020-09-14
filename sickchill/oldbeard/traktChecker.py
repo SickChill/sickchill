@@ -307,13 +307,13 @@ class TraktChecker(object):
             if settings.showList:
                 for show in settings.showList:
                     if show.status in ("Ended", "Canceled"):
-                        if not show.imdbid:
+                        if not show.imdb_id:
                             logger.warning('Could not check trakt progress for {0} because the imdb id is missing from {} data, skipping'.format(
                                 show.name, show.idxr.name))
                             continue
 
                         try:
-                            progress = self.trakt_api.traktRequest("shows/" + show.imdbid + "/progress/watched") or {}
+                            progress = self.trakt_api.traktRequest("shows/" + show.imdb_id + "/progress/watched") or {}
                         except traktException as e:
                             logger.warning("Could not connect to Trakt service. Aborting removing show {0} from SickChill. Error: {1}".format(show.name, repr(e)))
                             continue
