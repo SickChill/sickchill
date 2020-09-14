@@ -19,6 +19,7 @@
                         <select id="showsort" class="form-control form-control-inline input-sm" title="Show Sort">
                             <option value="name">${_('Name')}</option>
                             <option value="original" selected="selected">${_('Original')}</option>
+                            <option value="rank" selected="selected">${_('Rank')}</option>
                             <option value="votes">${_('Votes')}</option>
                             <option value="rating">% ${_('Rating')}</option>
                             <option value="rating_votes">% ${_('Rating > Votes')}</option>
@@ -44,8 +45,6 @@
         </div>
         <div class="row">
             <% imdb_tt = {show.imdb_id for show in settings.showList if show.imdb_id} %>
-##             ${popular_shows['ranks'][0]}
-
             <div id="popularShows">
                 <div id="container">
                     % if not popular_shows:
@@ -55,26 +54,25 @@
                             <p>${imdb_exception}</p>
                         </div>
                     % else:
-                        % for current_result in popular_shows['ranks']:
-                            <% current_imdb_id = current_result['id'].split('/')[2] %>
+                        % for current_result in popular_shows:
+                            % if not current_result.getID():
+                                <% continue %>
+                            % endif
+
+                            <% current_imdb_id = 'tt' + current_result.getID() %>
                             % if current_imdb_id in imdb_tt:
                                 <% continue %>
                             % endif
 
-                            % if 'rating' in current_result and current_result['rating']:
-                                <% current_rating = current_result['rating'] %>
-                                <% current_votes = current_result['votes'] %>
-                            % else:
-                                <% current_rating = '0' %>
-                                <% current_votes = '0' %>
-                            % endif
+                            <% current_result.setdefault('rating', '0.0') %>
+                            <% current_result.setdefault('votes', '0') %>
 
-                            <div class="trakt_show" data-name="${current_result['title']}" data-rating="${current_rating}"
-                                 data-votes="${current_votes.replace(',', '')}">
+                            <div class="trakt_show" data-name="${current_result['title']}" data-rating="${current_result['rating']}"
+                                 data-votes="${str(current_result['votes']).replace(',', '')}" data-rank="${current_result['popular tv 100 rank']}">
                                 <div class="traktContainer">
                                     <div class="trakt-image">
-                                        <a class="trakt-image" href="${anon_url(current_result['image']['url'])}" target="_blank">
-                                            <img alt="" class="trakt-image" src="${current_result['image']['url']}"
+                                        <a class="trakt-image" href="${anon_url(imdb_url(current_result))}" target="_blank">
+                                            <img alt="" class="trakt-image" src="${current_result.get_fullsizeURL()}"
                                                  height="273px" width="186px"/>
                                         </a>
                                     </div>
@@ -84,10 +82,9 @@
                                     </div>
 
                                     <div class="clearfix">
-                                        <% previous_rank_until = datetime.strptime(current_result['previousRanks'][0]['until'],'%Y-%m-%dT%H:%M:%SZ') %>
-                                        <p>#${current_result['currentRank']}</p>
-                                        <p class="small"><i>Since ${timeago.format(previous_rank_until)}</i></p>
-                                        <p class="small"><i>Previously #${current_result['previousRanks'][0]['rank']}</i></p>
+                                        <p>${int(float(current_result['rating'])*10)}%&nbsp;<span class="displayshow-icon-heart"></span> <i>#${current_result['popular tv 100 rank']}</i></p>
+                                        <i>${current_result['votes']}</i>
+
                                         <div class="traktShowTitleIcons">
                                             <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_imdb_id}&amp;show_name=${current_result['title'] | u}&amp;indexer=IMDB"
                                                class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>

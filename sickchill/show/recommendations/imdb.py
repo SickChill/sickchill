@@ -1,9 +1,8 @@
 import os
 import re
-from datetime import date
-from urllib.parse import urljoin
 
-from imdbpie import Imdb
+import imdb
+from imdb.parser.http.piculet import Path, Rule
 
 from sickchill import settings
 from sickchill.oldbeard import helpers
@@ -13,11 +12,21 @@ class imdbPopular(object):
     def __init__(self):
         """Gets a list of most popular TV series from imdb"""
         self.session = helpers.make_session()
-        self.imdb = Imdb(session=self.session)
+
+        self.imdb = imdb.IMDb()
+        self.imdb.topBottomProxy.tvmeter100_parser.rules[0].extractor.rules.append(
+            Rule(
+                key='cover url',
+                extractor=Path('./td[@class="posterColumn"]/a/img/@src')
+            )
+        )
 
     def fetch_popular_shows(self):
         """Get popular show information from IMDB"""
-        return self.imdb.get_popular_shows()
+        return self.imdb.get_popular100_tv()
+
+    def imdb_url(self, result):
+        return self.imdb.get_imdbURL(result)
 
     @staticmethod
     def change_size(image_url, factor=3):

@@ -1761,8 +1761,7 @@ class TVEpisode(object):
 
     def deleteEpisode(self):
 
-        logger.debug((_"Deleting {show} {ep} from the DB").format
-                     (show=self.show.name, ep=episode_num(self.season, self.episode)))
+        logger.debug(_("Deleting {show} {ep} from the DB").format(show=self.show.name, ep=episode_num(self.season, self.episode)))
 
         # remove myself from the show dictionary
         if self.show.getEpisode(self.season, self.episode, noCreate=True) == self:
