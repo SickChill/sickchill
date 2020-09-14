@@ -95,7 +95,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_(f'Search Mode: {mode}'))
+            logger.debug(_("Search Mode: {mode}".format(mode)))
 
             # if looking for season, look for more pages
             if mode == 'Season':
@@ -103,7 +103,7 @@ class Provider(TorrentProvider):
 
             for search_string in search_strings[mode]:
                 if mode != 'RSS':
-                    logger.debug(_(f'Search String: {search_string}'))
+                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
 
                 # Remove season / episode from search (not supported by tracker)
                 search_str = re.sub(r'\d+$' if anime else r'[S|E]\d\d', '', search_string).strip()
@@ -242,7 +242,8 @@ class Provider(TorrentProvider):
                     })
 
                     if mode != 'RSS':
-                        logger.debug(_(f'Found result: {torrent_name} with {seeders} seeders and {leechers} leechers'))
+                        logger.debug(_('Found result: {title} with {seeders} seeders and {leechers} leechers'.format(
+                            title=torrent_name, seeders=seeders, leechers=leechers)))
 
                 except (AttributeError, TypeError, KeyError, ValueError, IndexError):
                     logger.exception('Failed parsing provider.')

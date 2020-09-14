@@ -20,6 +20,6 @@ class KeyHandler(RequestHandler):
             result = {'success': True, 'api_key': settings.API_KEY}
         else:
             result = {'success': False, 'error': _('Failed authentication while getting api key')}
-            logger.warning(_(f'Authentication failed during api key request: {traceback.format_exc()}'))
+            logger.warning(_('Authentication failed during api key request: {traceback}'.format(traceback=traceback.format_exc())))
 
         return self.finish(result)

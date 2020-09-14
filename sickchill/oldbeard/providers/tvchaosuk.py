@@ -78,7 +78,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_(f'Search Mode: {mode}'))
+            logger.debug(_("Search Mode: {mode}".format(mode)))
 
             for search_string in search_strings[mode]:
 
@@ -86,7 +86,7 @@ class Provider(TorrentProvider):
                     search_string = re.sub(r'(.*)S0?', r'\1Series ', search_string)
 
                 if mode != 'RSS':
-                    logger.debug(_(f'Search String: {search_string}'))
+                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
 
                 search_params['keywords'] = search_string
                 data = self.get_url(self.urls['search'], post_data=search_params, returns='text')
@@ -143,7 +143,7 @@ class Provider(TorrentProvider):
                             size = convert_size(torrent_size, units=units) or -1
 
                             if mode != 'RSS':
-                                logger.debug(_(f'Found result: {title} with {seeders} seeders and {leechers} leechers'))
+                                logger.debug(_('Found result: {title} with {seeders} seeders and {leechers} leechers'.format(title=title, seeders=seeders, leechers=leechers)))
 
                             item = {'title': title + '.hdtv.x264', 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers}
                             items.append(item)

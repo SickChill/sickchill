@@ -28,7 +28,7 @@ class MainSanityCheck(db.DBSanityCheck):
             "SELECT episode_id, showid, status, location, season, episode FROM tv_episodes WHERE status = ?", [common.ARCHIVED]
         )
         if sql_results:
-            logger.warning(_(f"Found {len(sql_results)} shows with bare archived status, attempting automatic conversion..."))
+            logger.warning(_("Found {count} shows with bare archived status, attempting automatic conversion...".format(count=len(sql_results))))
 
         for archivedEp in sql_results:
             fixed_status = common.Quality.compositeStatus(common.ARCHIVED, common.Quality.UNKNOWN)
@@ -45,7 +45,9 @@ class MainSanityCheck(db.DBSanityCheck):
             location = archivedEp['location'] or 'unknown location'
             result = ('NOT FOUND', 'EXISTS')[bool(existing)]
 
-            logger.info(_(f'Changing status from {old_status} to {new_status} for {archived_episode}: {ep} at {location} (File {result})'))
+            logger.info(_('Changing status from {old_status} to {new_status} for {archived_episode}: {ep} at {location} (File {result})'.format(
+                old_status=old_status, new_status=new_status, archived_episode=archived_episode, ep=ep, location=location, result=result
+            )))
 
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [fixed_status, episode_id])
 
@@ -56,7 +58,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         for cur_duplicate in sql_results:
 
-            logger.debug(_(f"Duplicate show detected! {column}: {cur_duplicate[column]} count: {cur_duplicate['count']}"))
+            logger.debug(_("Duplicate show detected! {column}: {dupe} count: {count}".format(column=column, dupe=cur_duplicate[column], count=cur_duplicate['count'])))
 
             cur_dupe_results = self.connection.select(
                 "SELECT show_id, " + column + " FROM tv_shows WHERE " + column + " = ? LIMIT ?",
@@ -64,7 +66,7 @@ class MainSanityCheck(db.DBSanityCheck):
             )
 
             for cur_dupe_id in cur_dupe_results:
-                logger.info(_(f"Deleting duplicate show with {column}: {cur_dupe_id[column]} showid: {cur_dupe_id['show_id']}"))
+                logger.info(_("Deleting duplicate show with {column}: {dupe} showid: {show}".format(column=column, dupe=cur_dupe_id[column], show=cur_dupe_id['show_id'])))
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
 
     def fix_duplicate_episodes(self):
@@ -77,7 +79,9 @@ class MainSanityCheck(db.DBSanityCheck):
             dupe_season = cur_duplicate["season"]
             dupe_episode = cur_duplicate["episode"],
             dupe_count = cur_duplicate["count"]
-            logger.debug(_(f"Duplicate episode detected! showid: {dupe_id} season: {dupe_season} episode {dupe_episode} count: {dupe_count}"))
+            logger.debug(_("Duplicate episode detected! showid: {dupe_id} season: {dupe_season} episode {dupe_episode} count: {dupe_count}".format(
+                dupe_id=dupe_id, dupe_season=dupe_season, dupe_episode=dupe_episode, dupe_count=dupe_count))
+            )
 
             cur_dupe_results = self.connection.select(
                 "SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? and episode = ? ORDER BY episode_id DESC LIMIT ?",
@@ -87,7 +91,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
             for cur_dupe_id in cur_dupe_results:
                 current_episode_id = cur_dupe_id["episode_id"]
-                logger.info(_(f"Deleting duplicate episode with episode_id: {current_episode_id}"))
+                logger.info(_("Deleting duplicate episode with episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
                 self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [current_episode_id])
 
     def fix_orphan_episodes(self):
@@ -99,8 +103,10 @@ class MainSanityCheck(db.DBSanityCheck):
         for cur_orphan in sql_results:
             current_episode_id = cur_orphan["episode_id"]
             current_show_id = cur_orphan["showid"]
-            logger.debug(_(f"Orphan episode detected! episode_id: {current_episode_id} showid: {current_show_id}"))
-            logger.info(_(f"Deleting orphan episode with episode_id: {current_episode_id}"))
+            logger.debug(_("Orphan episode detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
+                current_episode_id=current_episode_id, current_show_id=current_show_id))
+            )
+            logger.info(_("Deleting orphan episode with episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
             self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [current_episode_id])
 
     def fix_missing_table_indexes(self):
@@ -137,7 +143,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         for cur_unaired in sql_results:
             current_episode_id = cur_unaired["episode_id"]
-            logger.info(_(f"Fixing unaired episode status for episode_id: {current_episode_id}"))
+            logger.info(_("Fixing unaired episode status for episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNAIRED, current_episode_id])
 
     def fix_episode_statuses(self):
@@ -145,8 +151,9 @@ class MainSanityCheck(db.DBSanityCheck):
         for cur_ep in sql_results:
             current_episode_id = cur_ep["episode_id"]
             current_show_id = cur_ep["showid"]
-            logger.debug(_(f"MALFORMED episode status detected! episode_id: {current_episode_id} showid: {current_show_id}"))
-            logger.info(_(f"Fixing malformed episode status with episode_id: {current_episode_id}"))
+            logger.debug(_("MALFORMED episode status detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
+                current_episode_id=current_episode_id, current_show_id=current_show_id)))
+            logger.info(_("Fixing malformed episode status with episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNKNOWN, current_episode_id])
 
     def fix_invalid_airdates(self):
@@ -157,8 +164,9 @@ class MainSanityCheck(db.DBSanityCheck):
         for bad_airdate in sql_results:
             current_episode_id = bad_airdate["episode_id"]
             current_show_id = bad_airdate["showid"]
-            logger.debug(_(f"Bad episode airdate detected! episode_id: {current_episode_id} showid: {current_show_id}"))
-            logger.info(_(f"Fixing bad episode airdate for episode_id: {current_episode_id}"))
+            logger.debug(_("Bad episode airdate detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
+                current_episode_id=current_episode_id, current_show_id=current_show_id)))
+            logger.info(_("Fixing bad episode airdate for episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
             self.connection.action("UPDATE tv_episodes SET airdate = '1' WHERE episode_id = ?", [current_episode_id])
 
     def fix_show_nfo_lang(self):
@@ -212,13 +220,11 @@ class InitialSchema(db.SchemaUpgrade):
 
             if cur_db_version < MIN_DB_VERSION:
                 logger.log_error_and_exit(_(
-                    f"Your database version ({cur_db_version}) is too old to migrate from what this version of SickChill supports ({MIN_DB_VERSION}).\n"
-                    "Upgrade using a previous version (tag) build 496 to build 501 of SickChill first or remove database file to begin fresh."))
+                    "Your database version ({cur_db_version}) is too old to migrate from what this version of SickChill supports ({MIN_DB_VERSION}).\nUpgrade using a previous version (tag) build 496 to build 501 of SickChill first or remove database file to begin fresh.".format(cur_db_version=cur_db_version, MIN_DB_VERSION=MIN_DB_VERSION)))
 
             if cur_db_version > MAX_DB_VERSION:
                 logger.log_error_and_exit(_(
-                    f"Your database version ({cur_db_version}) has been incremented past what this version of SickChill supports ({MAX_DB_VERSION}).\n"
-                    "If you have used other forks of SickChill, your database may be unusable due to their modifications."))
+                    "Your database version ({cur_db_version}) has been incremented past what this version of SickChill supports ({MAX_DB_VERSION}).\nIf you have used other forks of SickChill, your database may be unusable due to their modifications.".format(cur_db_version=cur_db_version, MAX_DB_VERSION=MAX_DB_VERSION)))
 
 
 class AddPreferWords(InitialSchema):

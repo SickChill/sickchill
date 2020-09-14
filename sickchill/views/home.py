@@ -233,7 +233,7 @@ class Home(WebRoot):
         if result:
             return _("SMS sent successfully")
         else:
-            return _(f"Problem sending SMS: {message}")
+            return _("Problem sending SMS: {message}".format(message=message))
 
     def testTelegram(self):
         telegram_id = self.get_body_argument('telegram_id')
@@ -242,7 +242,7 @@ class Home(WebRoot):
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
         else:
-            return _(f"Error sending Telegram notification: {message}")
+            return _("Error sending Telegram notification: {message}".format(message=message))
 
     def testJoin(self):
         join_id = self.get_body_argument('join_id')
@@ -252,7 +252,7 @@ class Home(WebRoot):
         if result:
             return _("join notification succeeded. Check your join clients to make sure it worked")
         else:
-            return _(f"Error sending join notification: {message}")
+            return _("Error sending join notification: {message}".format(message=message))
 
     def testGrowl(self):
         host = self.get_query_argument('host')
@@ -1557,7 +1557,7 @@ class Home(WebRoot):
         cache_db_con = db.DBConnection('cache.db', row_type="dict")
         results = cache_db_con.select(
             'SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC',
-            [show, season, '%|{}|%'.format(episode), FAILED])
+            [show, season, f'%|{episode}|%', FAILED])
 
         for result in results:
             episodes_list = [int(ep) for ep in result['episodes'].split('|') if ep]

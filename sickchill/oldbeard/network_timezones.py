@@ -100,7 +100,7 @@ def get_network_timezone(network):
     if network and not (network_tz_name or network in missing_network_timezones):
         missing_network_timezones.add(network)
         severity = (logger.ERROR, logger.INFO)[network.endswith('none')]
-        logger.log(severity, _(f'Missing time zone for network: {orig_network}. Check valid network is set in indexer (theTVDB) before filing issue.'))
+        logger.log(severity, _('Missing time zone for network: {orig_network}. Check valid network is set in indexer (theTVDB) before filing issue.'.format(orig_network=orig_network)))
 
     try:
         network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone

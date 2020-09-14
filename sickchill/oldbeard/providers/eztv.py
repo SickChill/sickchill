@@ -38,7 +38,7 @@ class Provider(TorrentProvider):
         # Just doing the first page of results, because there is no search filter
         for mode in search_strings:
             items = []
-            logger.debug(_(f"Search Mode: {mode}"))
+            logger.debug(_("Search Mode: {mode}".format(mode)))
 
             if mode != "RSS":
                 if not (self.show and self.show.imdb_id):
