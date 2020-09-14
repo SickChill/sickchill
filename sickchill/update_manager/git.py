@@ -244,7 +244,7 @@ class GitUpdateManager(UpdateManagerBase):
             update_url = self.get_update_url()
             newest_text = _(
                 'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> (you\'re {commits_behind} commit{s} behind) &mdash; <a href="{update_url}">Update Now</a>'.format(
-                    commits_behind=commits_behind, update_url=update_url, url=url
+                    commits_behind=commits_behind, update_url=update_url, url=url, s=s
                 )
             )
         else:
