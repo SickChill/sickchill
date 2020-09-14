@@ -372,7 +372,7 @@ class UI(WebRoot):
             helpers.add_site_message(message, tag=tag, level=level)
         else:
             if settings.BRANCH and self.get_current_user() and settings.BRANCH not in ('master', 'pip') and not settings.DEVELOPER:
-                message = _(f"You're using the {settings.BRANCH} branch. Please use 'master' unless specifically asked")
+                message = _("You're using the {branch} branch. Please use 'master' unless specifically asked".format(branch=settings.BRANCH))
                 helpers.add_site_message(message, tag='not_using_master_branch', level='danger')
 
         return settings.SITE_MESSAGES

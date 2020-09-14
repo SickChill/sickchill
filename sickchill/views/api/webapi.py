@@ -1952,7 +1952,7 @@ class CMDShow(ApiCall):
 
         show_dict["indexerid"] = show_obj.indexerid
         show_dict["tvdbid"] = show_obj.indexerid
-        show_dict["imdbid"] = show_obj.imdbid
+        show_dict["imdbid"] = show_obj.imdb_id
 
         show_dict["network"] = show_obj.network
         if not show_dict["network"]:

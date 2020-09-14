@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: twilio
 Version: 6.45.1
 Summary: Twilio API client and TwiML generator
@@ -26,8 +26,8 @@ Description-Content-Type: text/markdown
 Requires-Dist: six
 Requires-Dist: pytz
 Requires-Dist: PyJWT (>=1.4.2)
-Requires-Dist: requests[security] (>=2.0.0); python_version<"3.0"
-Requires-Dist: requests (>=2.0.0); python_version>="3.0"
+Requires-Dist: requests[security] (>=2.0.0) ; python_version<"3.0"
+Requires-Dist: requests (>=2.0.0) ; python_version>="3.0"
 
 # twilio-python
 

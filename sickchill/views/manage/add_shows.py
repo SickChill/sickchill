@@ -307,7 +307,7 @@ class AddShows(Home):
             imdb_exception = error
 
         return t.render(title=_("Popular Shows"), header=_("Popular Shows"),
-                        popular_shows=popular_shows, imdb_exception=imdb_exception,
+                        popular_shows=popular_shows, imdb_exception=imdb_exception, imdb_url=imdb_popular.imdb_url,
                         topmenu="home", controller="addShows", action="popularShows")
 
     def favoriteShows(self):

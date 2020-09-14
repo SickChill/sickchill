@@ -1,10 +1,10 @@
-#DISABLE_SQLALCHEMY_CEXT=1 TORNADO_EXTENSION=0 pip install --no-binary sqlalchemy,tornado -Utlib3 -r requirements.txt
+#DISABLE_SQLALCHEMY_CEXT=1 TORNADO_EXTENSION=0 pip install --no-binary sqlalchemy,tornado,lxml -Utlib3 -r requirements.txt
+#rm -rf lib3/lxml*
 backports-abc
 beautifulsoup4
 beekeeper
 bencode.py
 CacheControl
-#cfscrape
 chardet
 cloudscraper
 configobj
@@ -16,11 +16,8 @@ jsonrpclib-pelix
 kodipydent
 Mako
 markdown2
-#oauthlib
 PyGithub
-#pyjsparser
 pyOpenSSL
-#pysrt
 python-dateutil
 python-twitter
 rarfile
@@ -42,7 +39,6 @@ profilehooks
 httplib2
 PySocks
 win_inet_pton
-imdbpie
 imagesize
 send2trash
 deluge-client
@@ -57,3 +53,4 @@ sqlalchemy
 python-slugify
 guessit
 requests
+git+https://github.com/alberanid/imdbpy#egg=imdbpy

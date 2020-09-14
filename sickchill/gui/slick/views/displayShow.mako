@@ -128,7 +128,7 @@
                                     <span class="imdbstars" data-qtip-content="${rating_tip}">${show.imdb_info['rating']}</span>
                                 % endif
 
-                                % if not show.imdbid:
+                                % if not show.imdb_id:
                                     <span>(${show.startyear}) - ${show.runtime} ${_('minutes')} - </span>
                                 % else:
                                     % if 'country_codes' in show.imdb_info:
@@ -140,12 +140,12 @@
                                     % if show.imdb_info.get('year'):
                                         (${show.imdb_info['year']})
                                     % endif
-                                    % if show.imdb_info.get('runtime'):
+                                    % if show.imdb_info.get('runtimes'):
                                         ${show.imdb_info['runtimes']} ${_('minutes')}
                                     % endif
                                     </span>
-                                    <a href="${anon_url('http://www.imdb.com/title/', show.imdbid)}" rel="noreferrer" target="_blank" title="http://www.imdb.com/title/${show.imdbid}"><span class="displayshow-icon-imdb"></span></a>
-                                    <a href="${anon_url('https://trakt.tv/shows/', show.imdbid)}" rel="noreferrer" target="_blank" title="https://trakt.tv/shows/${show.imdbid}"><span class="displayshow-icon-trakt"></span></a>
+                                    <a href="${anon_url('http://www.imdb.com/title/', show.imdb_id)}" rel="noreferrer" target="_blank" title="http://www.imdb.com/title/${show.imdb_id}"><span class="displayshow-icon-imdb"></span></a>
+                                    <a href="${anon_url('https://trakt.tv/shows/', show.imdb_id)}" rel="noreferrer" target="_blank" title="https://trakt.tv/shows/${show.imdb_id}"><span class="displayshow-icon-trakt"></span></a>
                                 % endif
                                 <a href="${anon_url(show.idxr.show_url, show.indexerid)}" target="_blank"
                                    title="${show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>

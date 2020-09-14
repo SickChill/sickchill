@@ -19,7 +19,7 @@ class HomeChangeLog(Home):
         except Exception:
             logger.debug('Could not load changes from repo, giving a link!')
             changes_url = 'https://sickchill.github.io/sickchill-news/CHANGES.md'
-            changes = _(f'Could not load changes from the repo. [Click here for CHANGES.md]({changes_url})')
+            changes = _('Could not load changes from the repo. [Click here for CHANGES.md]') + f'({changes_url})'
 
         t = PageTemplate(rh=self, filename="markdown.mako")
         data = markdown2.markdown(changes if changes else _("The was a problem connecting to github, please refresh and try again"), extras=['header-ids'])

@@ -58,6 +58,7 @@
                                             src="${static_url("images/poster.png")}"
                                             data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}"
                                             class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"
+                                            onerror="this.src='${static_url("images/poster.png")}'"
                                     />
                                 </div>
                                 <div class="movie-information">
@@ -95,8 +96,9 @@
                                 <div class="movie-image">
                                     <img
                                             src="${static_url("images/poster.png")}"
-                                            data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}"
+                                            data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}' if result["poster_path"] else static_url("images/poster.png")}"
                                             class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"
+                                            onerror="this.src='${static_url("images/poster.png")}'"
                                     />
                                 </div>
                                 <div class="movie-information">
@@ -130,7 +132,7 @@
                         <div class="poster-container">
                             <div class="movie-container">
                                 <div class="movie-image">
-                                    <img src="${static_url("images/poster.png")}" data-src="${result['image']['url'] if 'image' in result else static_url("images/poster.png")}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['year']}"/>
+                                    <img src="${static_url("images/poster.png")}" data-src="${result.get_fullsizeURL() or static_url("images/poster.png")}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['year']}"/>
                                 </div>
                                 <div class="movie-information">
                                     <div class="movie-title">
@@ -142,7 +144,7 @@
                                     </div>
                                     <div class="movie-details">
                                         <form method="post" action="${reverse_url('movies-add', 'add')}" class="form-horizontal pull-right">
-                                            <input type="hidden" name="imdb" value="${result['id'].split('/')[2:-1][0]}">
+                                            <input type="hidden" name="imdb" value="${result.getID()}">
                                             <button type="submit" class="btn btn-primary">Add</button>
                                         </form>
                                     </div>

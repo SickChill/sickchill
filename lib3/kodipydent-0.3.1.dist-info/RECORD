@@ -8,7 +8,7 @@ kodipydent-0.3.1.dist-info/metadata.json,sha256=dOFrwLNKV8F5exBv1j8hmhNX4SjVmPdd
 kodipydent-0.3.1.dist-info/top_level.txt,sha256=ZEwE-oUouiZrsO1m9MpBSd85UtBkuej2NydvAqh1MBI,11
 kodipydent/KodiClient.py,sha256=VUa89jCJIEgjnrh6bXJLLFjGnJVPQc7D4u7bMmti4P8,2248
 kodipydent/__init__.py,sha256=W_m2brA9kjRl3sa-GIZuHCsJaXtBfRCuX1NUuBNx78c,76
-kodipydent/__pycache__/KodiClient.cpython-38.pyc,,
-kodipydent/__pycache__/__init__.cpython-38.pyc,,
-kodipydent/__pycache__/rpctohive.cpython-38.pyc,,
+kodipydent/__pycache__/KodiClient.cpython-37.pyc,,
+kodipydent/__pycache__/__init__.cpython-37.pyc,,
+kodipydent/__pycache__/rpctohive.cpython-37.pyc,,
 kodipydent/rpctohive.py,sha256=-kQfXIGRZTWFZJ3X7THnTJaPEQtl2wNM8-ublroFbFw,2496

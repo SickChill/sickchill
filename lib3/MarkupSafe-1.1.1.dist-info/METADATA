@@ -29,7 +29,6 @@ Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
 Classifier: Topic :: Software Development :: Libraries :: Python Modules
 Classifier: Topic :: Text Processing :: Markup :: HTML
 Requires-Python: >=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*
-Description-Content-Type: text/x-rst
 
 MarkupSafe
 ==========
@@ -100,6 +99,5 @@ Links
     *   Windows: https://ci.appveyor.com/project/pallets/markupsafe
 
 *   Test coverage: https://codecov.io/gh/pallets/markupsafe
-*   Official chat: https://discord.gg/t6rrQZH
 
 

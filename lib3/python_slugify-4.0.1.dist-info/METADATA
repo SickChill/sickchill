@@ -1,4 +1,4 @@
-Metadata-Version: 2.0
+Metadata-Version: 2.1
 Name: python-slugify
 Version: 4.0.1
 Summary: A Python Slugify application that handles Unicode
@@ -20,10 +20,9 @@ Classifier: Programming Language :: Python :: 3.5
 Classifier: Programming Language :: Python :: 3.6
 Classifier: Programming Language :: Python :: 3.7
 Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*
-Provides-Extra: unidecode
 Requires-Dist: text-unidecode (>=1.3)
 Provides-Extra: unidecode
-Requires-Dist: Unidecode (>=1.1.1); extra == 'unidecode'
+Requires-Dist: Unidecode (>=1.1.1) ; extra == 'unidecode'
 
 A Python Slugify application that handles Unicode
 

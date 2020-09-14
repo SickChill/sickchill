@@ -3870,6 +3870,9 @@ const SICKCHILL = {
                         case 'votes':
                             sortCriteria = 'votes';
                             break;
+                        case 'rank':
+                            sortCriteria = 'rank';
+                            break;
                         default:
                             sortCriteria = 'name';
                             break;
@@ -3895,7 +3898,8 @@ const SICKCHILL = {
                             return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase();
                         },
                         rating: '[data-rating] parseInt',
-                        votes: '[data-votes] parseInt'
+                        votes: '[data-votes] parseInt',
+                        rank: '[data-rank] parseInt'
                     }
                 });
             };

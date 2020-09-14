@@ -252,7 +252,7 @@ class MovieQueueItem(generic_queue.QueueItem):
                     # give the CPU a break
                     time.sleep(common.cpu_presets[settings.CPU_PRESET])
                 else:
-                    logger.info(_(f"No needed movie results found during backlog search for: [{self.movie.name}]"))
+                    logger.info(_("No needed movie results found during backlog search for: [{name}]".format(name=self.movie.name)))
             except Exception:
                 logger.debug(traceback.format_exc())
 

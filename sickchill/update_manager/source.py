@@ -105,8 +105,7 @@ class SourceUpdateManager(UpdateManagerBase):
 
             update_url = self.get_update_url()
             newest_tag = 'unknown_current_version'
-            newest_text = _('Unknown current version number: If you\'ve never used the SickChill upgrade system before then current version is not set. '
-                            f'&mdash; <a href="{update_url}">Update Now</a>')
+            newest_text = _('Unknown current version number: If you\'ve never used the SickChill upgrade system before then current version is not set. &mdash; <a href="{update_url}">Update Now</a>'.format(update_url=update_url))
 
         elif self._num_commits_behind > 0:
             if self._newest_commit_hash:
@@ -120,8 +119,11 @@ class SourceUpdateManager(UpdateManagerBase):
             commits_behind = self._num_commits_behind
             s = ('', 's')[commits_behind != 1]
             update_url = self.get_update_url()
-            newest_text = _(f'There is a <a href="{url}" onclick="window.open(this.href); return false;">'
-                            f'newer version available</a> (you\'re {commits_behind} commit{s} behind) &mdash; <a href="{update_url}">Update Now</a>')
+            newest_text = _(
+                'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> (you\'re {commits_behind} commit{s} behind) &mdash; <a href="{update_url}">Update Now</a>'.format(
+                    commits_behind=commits_behind, update_url=update_url, url=url, s=s
+                )
+            )
         else:
             return
 

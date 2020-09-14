@@ -68,12 +68,12 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_(f"Search Mode: {mode}"))
+            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
             for search_string in search_strings[mode]:
 
                 if mode != 'RSS':
                     search_url = self.urls['search'] % (quote_plus(search_string), self.categories)
-                    logger.debug(_(f"Search String: {search_string}"))
+                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
                 else:
                     search_url = self.urls['rss'] % self.categories
 
