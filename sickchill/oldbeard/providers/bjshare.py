@@ -95,7 +95,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode)))
+            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
 
             # if looking for season, look for more pages
             if mode == 'Season':

@@ -45,7 +45,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode)))
+            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
 
             if self.onlyspasearch:
                 search_params['idioma_'] = 1

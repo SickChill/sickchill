@@ -69,7 +69,7 @@ class Provider(NZBProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode)))
+            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
             for search_string in search_strings[mode]:
                 search_params['search'] = search_string
                 if mode != 'RSS':
