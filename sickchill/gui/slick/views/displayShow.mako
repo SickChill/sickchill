@@ -74,13 +74,13 @@
                                         % endfor
                                     </select>
                                 % else:
-                                    <label>
+                                    <label id="seasonJumpLinks">
                                         <span>${_('Season')}:</span>
                                         % for seasonNum in seasonResults:
                                             % if int(seasonNum["season"]) == 0:
-                                                <a href="#season-${seasonNum["season"]}">${_('Specials')}</a>
+                                                <a data-season="season-${seasonNum["season"]}" href="#">${_('Specials')}</a>
                                             % else:
-                                                <a href="#season-${seasonNum["season"]}">${seasonNum["season"]}</a>
+                                                <a data-season="season-${seasonNum["season"]}" href="#">${seasonNum["season"]}</a>
                                             % endif
                                             % if seasonNum != seasonResults[-1]:
                                                 <span class="separator">|</span>

@@ -2655,15 +2655,24 @@ const SICKCHILL = {
             });
 
             $('#seasonJump').on('change', function () {
-                const id = $('#seasonJump option:selected').val();
+                const $seasonJumpOpt =  $('#seasonJump option:selected');
+                const id = $seasonJumpOpt.val();
                 if (id && id !== 'jump') {
-                    const season = $('#seasonJump option:selected').data('season');
-                    $('html,body').animate({scrollTop: $('[name ="' + id.slice(1) + '"]').offset().top - 50}, 'slow');
+                    const season = $seasonJumpOpt.data('season');
+                    $('html,body').animate({scrollTop: $('#' + id.slice(1)).offset().top - 50}, 'slow');
                     $('#collapseSeason-' + season).collapse('show');
                     location.hash = id;
                 }
 
                 $(this).val('jump');
+            });
+
+            $('#seasonJumpLinks a').on('click', function (ev) {
+                const season = $(ev.target).data('season');
+                $('html,body').animate({scrollTop: $('#' + season).offset().top - 50}, 'slow');
+                $('#collapseSeason-' + season).collapse('show');
+                location.hash = season;
+                return false;
             });
 
             $('#prevShow').on('click', () => {
