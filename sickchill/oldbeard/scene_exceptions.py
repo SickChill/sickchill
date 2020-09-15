@@ -324,14 +324,15 @@ def getSceneSeasons(indexer_id):
 
 
 def rebuild_exception_cache(indexer_id):
-    if indexer_id not in exceptionsCache:
-        exceptionsCache[indexer_id] = {}
-
     cache_db_con = db.DBConnection('cache.db')
     results = cache_db_con.action('SELECT show_name, season FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
 
+    exceptions_cache_list = {}
     for result in results:
-        if result["season"] not in exceptionsCache[indexer_id]:
-            exceptionsCache[indexer_id][result["season"]] = []
+        if result["season"] not in exceptions_cache_list:
+            exceptions_cache_list[result["season"]] = []
 
-        exceptionsCache[indexer_id][result["season"]].append(result["show_name"])
+        exceptions_cache_list[result["season"]].append(result["show_name"])
+
+    exceptionsCache[indexer_id] = exceptions_cache_list
+    exceptionsSeasonCache[indexer_id] = exceptions_cache_list.keys()
