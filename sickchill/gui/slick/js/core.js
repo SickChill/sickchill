@@ -2654,8 +2654,8 @@ const SICKCHILL = {
                 return false;
             });
 
-            $('#seasonJump').on('change', function () {
-                const $seasonJumpOpt =  $('#seasonJump option:selected');
+            $('#seasonJump').on('change', () => {
+                const $seasonJumpOpt = $('#seasonJump option:selected');
                 const id = $seasonJumpOpt.val();
                 if (id && id !== 'jump') {
                     const season = $seasonJumpOpt.data('season');
@@ -2667,7 +2667,7 @@ const SICKCHILL = {
                 $(this).val('jump');
             });
 
-            $('#seasonJumpLinks a').on('click', function (ev) {
+            $('#seasonJumpLinks a').on('click', ev => {
                 const season = $(ev.target).data('season');
                 $('html,body').animate({scrollTop: $('#' + season).offset().top - 50}, 'slow');
                 $('#collapseSeason-' + season).collapse('show');
