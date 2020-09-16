@@ -156,7 +156,7 @@ class GenericClient(object):
 
             try:
                 torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
-            except (bencodepy.DecodingError, Exception) as error:
+            except (bencodepy.BencodeDecodeError, Exception) as error:
                 logger.exception('Unable to bdecode torrent')
                 logger.info('Error is: {0}'.format(error))
                 logger.info('Torrent bencoded data: {0!r}'.format(result.content))
@@ -172,7 +172,7 @@ class GenericClient(object):
             try:
                 result.hash = sha1(bencodepy.encode(info)).hexdigest()
                 logger.debug('Result Hash is {0}'.format(result.hash))
-            except (bencodepy.EncodingError, Exception) as error:
+            except (bencodepy.Ben, Exception) as error:
                 logger.exception('Unable to bencode torrent info')
                 logger.info('Error is: {0}'.format(error))
                 logger.info('Torrent bencoded data: {0!r}'.format(result.content))

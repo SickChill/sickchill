@@ -147,7 +147,7 @@ class TorrentRssProvider(TorrentProvider):
                 torrent_file = self.get_url(url, returns='content')
                 try:
                     bencodepy.decode(torrent_file)
-                except (bencodepy.DecodingError, Exception) as error:
+                except (bencodepy.exceptions.BencodeDecodeError, Exception) as error:
                     self.dumpHTML(torrent_file)
                     return False, 'Torrent link is not a valid torrent file: {0}'.format(error)
 

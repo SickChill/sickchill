@@ -204,20 +204,12 @@ class NameParser(object):
             if show:
                 if self.showObj and show.indexerid != self.showObj.indexerid:
                     show = None
-
-                # if show is an anime, try to use an anime expression first
-                if show.is_anime:
-                    anime_matches = [x for x in matches if x.is_anime]
-                    if anime_matches:
-                        best_result_anime = max(sorted(anime_matches, reverse=True, key=attrgetter('which_regex')), key=attrgetter('score'))
-                        if best_result_anime and best_result_anime.series_name:
-                            show_anime = helpers.get_show(best_result_anime.series_name)
-                            if show_anime and show_anime.indexerid == show.indexerid:
-                                best_result = best_result_anime
-
                 best_result.show = show
-            elif not show and self.showObj:
+            elif self.showObj and not show:
                 best_result.show = self.showObj
+
+            # Only allow anime matches if resolved show or specified show is anime
+            best_result = self.check_anime_preferred(best_result, matches)
 
             # if this is a naming pattern test or result doesn't have a show object then return best result
             if not best_result.show or self.naming_pattern:
@@ -328,6 +320,19 @@ class NameParser(object):
 
         # CPU sleep
         time.sleep(0.02)
+
+        return best_result
+
+    def check_anime_preferred(self, best_result, matches):
+        show = self.showObj or best_result.show
+        if (best_result.show and best_result.show.is_anime and not self.showObj) or (self.showObj and self.showObj.is_anime):
+            anime_matches = [x for x in matches if x.is_anime]
+            if anime_matches:
+                best_result_anime = max(sorted(anime_matches, reverse=True, key=attrgetter('which_regex')), key=attrgetter('score'))
+                if best_result_anime and best_result_anime.series_name:
+                    show_anime = helpers.get_show(best_result_anime.series_name)
+                    if show_anime and show_anime.indexerid == show.indexerid:
+                        best_result = best_result_anime
 
         return best_result
 
