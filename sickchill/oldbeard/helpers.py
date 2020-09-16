@@ -946,7 +946,7 @@ def get_show(name, tryIndexers=False):
 
     try:
         # check cache for show
-        cache = sickchill.oldbeard.name_cache.retrieveNameFromCache(name)
+        cache = sickchill.oldbeard.name_cache.get_id_from_name(name)
         if cache:
             fromCache = True
             showObj = Show.find(settings.showList, int(cache))
@@ -967,7 +967,7 @@ def get_show(name, tryIndexers=False):
 
         # add show to cache
         if showObj and not fromCache:
-            sickchill.oldbeard.name_cache.addNameToCache(name, showObj.indexerid)
+            sickchill.oldbeard.name_cache.add_name(name, showObj.indexerid)
     except Exception as error:
         logger.debug(_("Error when attempting to find show: {0} in SickChill. Error: {1} ").format(name, error))
         logger.debug(traceback.format_exc())

@@ -207,11 +207,13 @@ class NameParser(object):
 
                 # if show is an anime, try to use an anime expression first
                 if show.is_anime:
-                    best_result_anime = max(sorted([x for x in matches if x.is_anime], reverse=True, key=attrgetter('which_regex')), key=attrgetter('score'))
-                    if best_result_anime and best_result_anime.series_name:
-                        show_anime = helpers.get_show(best_result_anime.series_name)
-                        if show_anime and show_anime.indexerid == show.indexerid:
-                            best_result = best_result_anime
+                    anime_matches = [x for x in matches if x.is_anime]
+                    if anime_matches:
+                        best_result_anime = max(sorted(anime_matches, reverse=True, key=attrgetter('which_regex')), key=attrgetter('score'))
+                        if best_result_anime and best_result_anime.series_name:
+                            show_anime = helpers.get_show(best_result_anime.series_name)
+                            if show_anime and show_anime.indexerid == show.indexerid:
+                                best_result = best_result_anime
 
                 best_result.show = show
             elif not show and self.showObj:

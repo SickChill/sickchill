@@ -914,12 +914,12 @@ class Home(WebRoot):
 
     def sceneExceptions(self):
         show = self.get_query_argument('show')
-        exceptionsList = sickchill.oldbeard.scene_exceptions.get_all_scene_exceptions(show)
-        if not exceptionsList:
+        exeptions_list = sickchill.oldbeard.scene_exceptions.get_all_scene_exceptions(show)
+        if not exeptions_list:
             return _("No scene exceptions")
 
         out = []
-        for season, exceptions in iter(sorted(exceptionsList.items())):
+        for season, exceptions in iter(sorted(exeptions_list.items())):
             if season == -1:
                 season = "*"
             out.append("S" + str(season) + ": " + ", ".join(exceptions.names))
@@ -1033,10 +1033,10 @@ class Home(WebRoot):
         # Map custom exceptions
         exceptions = {}
 
-        if exceptions_list is not None:
+        if exceptions_list:
             # noinspection PyUnresolvedReferences
             for season in exceptions_list.split(','):
-                (season, shows) = season.split(':')
+                season, shows = season.split(':')
 
                 show_list = []
 
@@ -1165,10 +1165,13 @@ class Home(WebRoot):
             except CantUpdateShowException as e:
                 errors.append(_("Unable to update show: {error}").format(error=e))
 
+        import traceback
+        logger.debug('Updating show exceptions')
         try:
-            sickchill.oldbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)  # @UndefinedVdexerid)
+            sickchill.oldbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)
             time.sleep(cpu_presets[settings.CPU_PRESET])
         except CantUpdateShowException:
+            logger.debug(traceback.format_exc())
             errors.append(_("Unable to force an update on scene exceptions of the show."))
 
         if do_update_scene_numbering:

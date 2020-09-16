@@ -217,7 +217,7 @@ class SickChill(object):
         sickchill.start.start()
 
         # Build internal name cache
-        name_cache.buildNameCache()
+        name_cache.build_name_cache()
 
         # Pre-populate network timezones, it isn't thread safe
         network_timezones.update_network_dict()

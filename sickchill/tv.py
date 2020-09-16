@@ -863,6 +863,8 @@ class TVShow(object):
             logger.debug(f"{self.indexerid}: Obtained info from IMDb ->{self.imdb_info}")
         except (ValueError, LookupError, OperationalError, imdb.IMDbError, imdb.IMDbDataAccessError, NewConnectionError, MaxRetryError) as error:
             logger.info(f'Could not get IMDB info: {error}')
+        except (SyntaxError, KeyError):
+            logger.info('Could not get info from IDMb, pip install lxml')
 
     def nextEpisode(self):
         curDate = datetime.date.today().toordinal()

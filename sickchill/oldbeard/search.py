@@ -349,7 +349,7 @@ def searchForNeededEpisodes():
 
     for curShow in show_list:
         if not curShow.paused:
-            sickchill.oldbeard.name_cache.buildNameCache(curShow)
+            sickchill.oldbeard.name_cache.build_name_cache(curShow)
             episodes.extend(wantedEpisodes(curShow, fromDate))
 
     if not episodes:
@@ -423,7 +423,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     didSearch = False
 
     # build name cache for show
-    sickchill.oldbeard.name_cache.buildNameCache(show)
+    sickchill.oldbeard.name_cache.build_name_cache(show)
 
     origThreadName = threading.currentThread().name
 
@@ -698,7 +698,7 @@ def searchProvidersList(show, episodes, search_mode='eponly'):
     origThreadName = threading.currentThread().name
 
     # build name cache for show
-    sickchill.oldbeard.name_cache.buildNameCache(show)
+    sickchill.oldbeard.name_cache.build_name_cache(show)
 
     providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
     if not providers:

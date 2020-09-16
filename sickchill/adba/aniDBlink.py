@@ -4,7 +4,7 @@ import threading
 import zlib
 from time import sleep, time
 
-from .aniDBerrors import AniDBBannedError, AniDBMustAuthError, AniDBPacketCorruptedError
+from .aniDBerrors import AniDBBannedError, AniDBError, AniDBMustAuthError, AniDBPacketCorruptedError
 from .aniDBresponses import ResponseResolver
 
 
@@ -16,7 +16,7 @@ class AniDBLink(threading.Thread):
         self.target = (server, port)
         self.timeout = timeout
 
-        self.myport = 0
+        self.myport = myport
         self.bound = self.connectSocket(myport, self.timeout)
         self.sock = None
 
@@ -54,7 +54,8 @@ class AniDBLink(threading.Thread):
             return False
 
     def disconnectSocket(self):
-        self.sock.close()
+        if self.sock:
+            self.sock.close()
 
     def stop(self):
         self.log("Releasing socket and stopping link thread")
@@ -121,12 +122,18 @@ class AniDBLink(threading.Thread):
             except Exception:
                 sys.excepthook(*sys.exc_info())
                 print("Avoiding flood by paranoidly panicing: Aborting link thread, killing connection, releasing waiters and quiting")
-                self.sock.close()
-                try: cmd.waiter.release()
-                except Exception: pass
+                self.disconnectSocket()
+                try:
+                    cmd.waiter.release()
+                except Exception:
+                    pass
+
                 for tag, cmd in self.cmd_queue.items():
-                    try: cmd.waiter.release()
-                    except Exception: pass
+                    try:
+                        cmd.waiter.release()
+                    except Exception:
+                        pass
+
                 sys.exit()
 
     def _handle_timeouts(self):
@@ -199,6 +206,10 @@ class AniDBLink(threading.Thread):
         return newtag
 
     def request(self, command):
+        if not self.sock or self.connectSocket(self.myport, self.timeout):
+            self.log('Not connected to aniDB, not sending command')
+            raise AniDBError('No Socket')
+
         if not (self.session and command.session) and command.command not in ('AUTH', 'PING', 'ENCRYPT'):
             raise AniDBMustAuthError("You must be authed to execute commands besides AUTH and PING")
         command.started = time()

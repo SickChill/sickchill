@@ -8,7 +8,7 @@ import unittest
 
 from sickchill import settings
 from sickchill.oldbeard.helpers import make_dirs
-from sickchill.oldbeard.name_cache import addNameToCache
+from sickchill.oldbeard.name_cache import add_name
 from sickchill.oldbeard.postProcessor import PostProcessor
 from sickchill.tv import TVEpisode, TVShow
 from tests import test_lib as test
@@ -55,7 +55,7 @@ class PPBasicTests(test.SickChillTestDBCase):
         episode.name = "some episode name"
         episode.saveToDB()
 
-        addNameToCache('show name', 3)
+        add_name('show name', 3)
         settings.PROCESS_METHOD = 'move'
 
         post_processor = PostProcessor(test.FILE_PATH)
