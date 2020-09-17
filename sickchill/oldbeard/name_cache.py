@@ -75,14 +75,10 @@ def build_name_cache(show=None):
         clear_cache(show.indexerid)
         for season in scene_exceptions.get_all_scene_exceptions(show.indexerid).values():
             for exception in season:
-                name = helpers.full_sanitizeSceneName(exception['show_name'])
-                if name in name_cache:
-                    continue
+                name_cache[helpers.full_sanitizeSceneName(exception['show_name'])] = int(show.indexerid)
 
-                name_cache[name] = int(show.indexerid)
-
-        name_cache[show.show_name] = int(show.indexerid)
+        name_cache[helpers.full_sanitizeSceneName(show.show_name)] = int(show.indexerid)
         if show.custom_name:
-            name_cache[show.custom_name] = int(show.indexerid)
+            name_cache[helpers.full_sanitizeSceneName(show.custom_name)] = int(show.indexerid)
 
         logger.debug("Internal name cache for " + show.name + " set to: [ " + ', '.join([key for key, value in name_cache.items() if value == show.indexerid]) + " ]")

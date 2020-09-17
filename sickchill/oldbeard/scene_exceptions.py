@@ -94,6 +94,16 @@ def get_all_scene_exceptions(indexer_id):
                 "custom": bool(cur_exception["custom"])
             })
 
+    shows = [show for show in settings.showList if show.indexerid == indexer_id]
+    if len(shows) == 1:
+        show = shows[0]
+        if -1 not in exception_dict and show.show_name or show.custom_name:
+            exception_dict[-1] = []
+        if show.show_name:
+            exception_dict[-1].append(helpers.full_sanitizeSceneName(show.show_name))
+        if show.custom_name:
+            exception_dict[-1].append(helpers.full_sanitizeSceneName(show.custom_name))
+
     return exceptions_dict
 
 
@@ -295,7 +305,7 @@ def _xem_exceptions_fetcher():
 
 def rebuild_exception_cache(indexer_id):
     cache_db_con = db.DBConnection('cache.db')
-    results = cache_db_con.action('SELECT show_name, season FROM scene_exceptions WHERE indexer_id=?', [indexer_id])
+    results = cache_db_con.action('SELECT show_name, season FROM scene_exceptions WHERE indexer_id = ?', [indexer_id])
 
     exceptions_cache_list = {}
     for result in results:
