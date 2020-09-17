@@ -132,7 +132,11 @@
                         <div class="poster-container">
                             <div class="movie-container">
                                 <div class="movie-image">
-                                    <img src="${static_url("images/poster.png")}" data-src="${result.get_fullsizeURL() or static_url("images/poster.png")}" class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['year']}"/>
+                                    <img
+                                            src="${static_url("images/poster.png")}" data-src="${result.get_fullsizeURL() or static_url("images/poster.png")}"
+                                            class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['year']}"
+                                            onerror="this.src='${static_url("images/poster.png")}'"
+                                    />
                                 </div>
                                 <div class="movie-information">
                                     <div class="movie-title">

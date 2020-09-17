@@ -14,12 +14,15 @@ class imdbPopular(object):
         self.session = helpers.make_session()
 
         self.imdb = imdb.IMDb()
-        self.imdb.topBottomProxy.tvmeter100_parser.rules[0].extractor.rules.append(
-            Rule(
-                key='cover url',
-                extractor=Path('./td[@class="posterColumn"]/a/img/@src')
+        try:
+            self.imdb.topBottomProxy.tvmeter100_parser.rules[0].extractor.rules.append(
+                Rule(
+                    key='cover url',
+                    extractor=Path('./td[@class="posterColumn"]/a/img/@src')
+                )
             )
-        )
+        except Exception:
+            pass
 
     def fetch_popular_shows(self):
         """Get popular show information from IMDB"""

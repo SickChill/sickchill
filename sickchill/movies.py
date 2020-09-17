@@ -42,12 +42,15 @@ class MovieList:
             self.session: Session = db_cons[self.filename]
 
         self.imdb = imdb.IMDb()
-        self.imdb.topBottomProxy.moviemeter100_parser.rules[0].extractor.rules.append(
-            Rule(
-                key='cover url',
-                extractor=Path('./td[@class="posterColumn"]/a/img/@src')
+        try:
+            self.imdb.topBottomProxy.moviemeter100_parser.rules[0].extractor.rules.append(
+                Rule(
+                    key='cover url',
+                    extractor=Path('./td[@class="posterColumn"]/a/img/@src')
+                )
             )
-        )
+        except:
+            pass
 
     def __iter__(self):
         for item in self.query.all():
