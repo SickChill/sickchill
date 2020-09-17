@@ -30,7 +30,13 @@ def setup_gettext(language=None):
 
 
 def check_installed():
-    for location in sysconfig.get_paths().values():
-        if sickchill_dir().startswith(location):
-            return True
-    return False
+    try:
+        from importlib.metadata import Distribution, PackageNotFoundError
+    except ImportError:
+        from importlib_metadata import Distribution, PackageNotFoundError
+
+    try:
+        Distribution.from_name('sickchill')
+    except PackageNotFoundError:
+        return False
+    return True

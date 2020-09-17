@@ -219,11 +219,10 @@ class UpdateManager(object):
             'source': running from source without git
         """
 
-        # check if we're a windows build
-        if check_installed():
-            install_type = 'pip'
-        elif os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), '.git')):
+        if os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), '.git')):
             install_type = 'git'
+        elif check_installed():
+            install_type = 'pip'
         else:
             install_type = 'source'
 
