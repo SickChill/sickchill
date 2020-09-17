@@ -80,16 +80,16 @@ def get_all_scene_exceptions(indexer_id):
     :param indexer_id: ID to check
     :return: dict of exceptions
     """
-    exceptions_dict = {}
+    all_exceptions_dict = {}
 
     cache_db_con = db.DBConnection('cache.db')
     exceptions = cache_db_con.select("SELECT show_name, season, custom FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
 
     if exceptions:
         for cur_exception in exceptions:
-            if cur_exception["season"] not in exceptions_dict:
-                exceptions_dict[cur_exception["season"]] = []
-            exceptions_dict[cur_exception["season"]].append({
+            if cur_exception["season"] not in all_exceptions_dict:
+                all_exceptions_dict[cur_exception["season"]] = []
+            all_exceptions_dict[cur_exception["season"]].append({
                 "show_name": cur_exception["show_name"],
                 "custom": bool(cur_exception["custom"])
             })
@@ -97,14 +97,20 @@ def get_all_scene_exceptions(indexer_id):
     shows = [show for show in settings.showList if show.indexerid == indexer_id]
     if len(shows) == 1:
         show = shows[0]
-        if -1 not in exception_dict and show.show_name or show.custom_name:
-            exception_dict[-1] = []
+        if -1 not in all_exceptions_dict and show.show_name or show.custom_name:
+            all_exceptions_dict[-1] = []
         if show.show_name:
-            exception_dict[-1].append(helpers.full_sanitizeSceneName(show.show_name))
+            all_exceptions_dict[-1].append({
+                "show_name": helpers.full_sanitizeSceneName(show.show_name),
+                "custom": False
+            })
         if show.custom_name:
-            exception_dict[-1].append(helpers.full_sanitizeSceneName(show.custom_name))
+            all_exceptions_dict[-1].append({
+                "show_name": helpers.full_sanitizeSceneName(show.custom_name),
+                "custom": False
+            })
 
-    return exceptions_dict
+    return all_exceptions_dict
 
 
 def get_scene_exception_by_name(show_name):
