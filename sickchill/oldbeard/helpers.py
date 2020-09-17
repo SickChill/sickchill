@@ -950,6 +950,10 @@ def get_show(name, tryIndexers=False):
         if cache:
             fromCache = True
             showObj = Show.find(settings.showList, int(cache))
+        else:
+            show_matches = [show for show in settings.showList if (show.show_name and name == show.show_name) or (show.custom_name and name == show.custom_name)]
+            if len(show_matches) == 1:
+                showObj = show_matches[0]
 
         # try indexers
         if not showObj and tryIndexers:
