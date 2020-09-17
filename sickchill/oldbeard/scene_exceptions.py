@@ -227,8 +227,7 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
             continue
 
         for cur_exception_dict in exception_dict[cur_indexer_id]:
-            for ex in cur_exception_dict.items():
-                cur_exception, cur_season = ex
+            for cur_exception, cur_season in cur_exception_dict.items():
                 if cur_exception not in existing_exceptions:
                     queries.append(
                         ["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?);",
