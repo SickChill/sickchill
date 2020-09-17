@@ -173,7 +173,7 @@ class SubtitulamosProvider(Provider):
         # get the episode url
         episode_url = self._search_url_titles(series, season, episode, year)
         if episode_url is None:
-            logger.error('No episode url found for %s, season %d, episode %d', series, season, episode)
+            logger.info(f'[{self.provider_name}]: No episode url found for {series}, season {season}, episode {episode}')
             return []
 
         r = self.session.get(episode_url, headers={'Referer': self.server_url}, timeout=10)
