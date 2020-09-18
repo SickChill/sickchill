@@ -106,7 +106,7 @@ class ConfigPostProcessing(Config):
         settings.metadata_provider_dict['TIVO'].set_config(settings.METADATA_TIVO)
         settings.metadata_provider_dict['Mede8er'].set_config(settings.METADATA_MEDE8ER)
 
-        if self.isNamingValid(naming_pattern, naming_multi_ep, anime_type=naming_anime) != "invalid":
+        if self.isNamingValid(naming_pattern, naming_multi_ep) != "invalid":
             settings.NAMING_PATTERN = naming_pattern
             settings.NAMING_MULTI_EP = try_int(naming_multi_ep, NAMING_LIMITED_EXTEND_E_PREFIXED)
             settings.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()

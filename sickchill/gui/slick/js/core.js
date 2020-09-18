@@ -1335,7 +1335,6 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
-                    anime_type: 3 // eslint-disable-line camelcase
                 }, data => {
                     if (data) {
                         $('#naming_example').text(data + '.ext');
@@ -1348,7 +1347,6 @@ const SICKCHILL = {
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
                     multi: example.multi,
-                    anime_type: 3 // eslint-disable-line camelcase
                 }, data => {
                     if (data) {
                         $('#naming_example_multi').text(data + '.ext');
@@ -1361,7 +1359,6 @@ const SICKCHILL = {
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern: example.pattern,
                     multi: example.multi,
-                    anime_type: example.animeType // eslint-disable-line camelcase
                 }, data => {
                     let info;
                     if (data === 'invalid') {
