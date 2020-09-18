@@ -1531,34 +1531,34 @@ const SICKCHILL = {
                     anime_type: example.animeType // eslint-disable-line camelcase
                 }, data => {
                     let info;
-                    const $naming_anime_pattern_input = $('#naming_anime_pattern');
+                    const $namingAnimePatternInput = $('#naming_anime_pattern');
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
-                        $naming_anime_pattern_input.qtip('option', {
+                        $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
-                        $naming_anime_pattern_input.qtip('toggle', true);
-                        $naming_anime_pattern_input.css('background-color', '#FFDDDD');
+                        $namingAnimePatternInput.qtip('toggle', true);
+                        $namingAnimePatternInput.css('background-color', '#FFDDDD');
                     } else if (data === 'seasonfolders') {
                         info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
-                        $naming_anime_pattern_input.qtip('option', {
+                        $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
-                        $naming_anime_pattern_input.qtip('toggle', true);
-                        $naming_anime_pattern_input.css('background-color', '#FFFFDD');
+                        $namingAnimePatternInput.qtip('toggle', true);
+                        $namingAnimePatternInput.css('background-color', '#FFFFDD');
                     } else {
                         info = _('This pattern is valid.');
-                        $naming_anime_pattern_input.qtip('option', {
+                        $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-green'
                         });
-                        $naming_anime_pattern_input.qtip('toggle', false);
-                        $naming_anime_pattern_input.css('background-color', '#FFFFFF');
+                        $namingAnimePatternInput.qtip('toggle', false);
+                        $namingAnimePatternInput.css('background-color', '#FFFFFF');
                     }
 
-                    $naming_anime_pattern_input.attr('title', info);
+                    $namingAnimePatternInput.attr('title', info);
                 });
             }
 
