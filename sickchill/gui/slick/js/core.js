@@ -1531,37 +1531,38 @@ const SICKCHILL = {
                     anime_type: example.animeType // eslint-disable-line camelcase
                 }, data => {
                     let info;
+                    const $naming_anime_pattern_input = $('#naming_anime_pattern');
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
-                        $('#naming_pattern').qtip('option', {
+                        $naming_anime_pattern_input.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
-                        $('#naming_pattern').qtip('toggle', true);
-                        $('#naming_pattern').css('background-color', '#FFDDDD');
+                        $naming_anime_pattern_input.qtip('toggle', true);
+                        $naming_anime_pattern_input.css('background-color', '#FFDDDD');
                     } else if (data === 'seasonfolders') {
                         info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
-                        $('#naming_pattern').qtip('option', {
+                        $naming_anime_pattern_input.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
-                        $('#naming_pattern').qtip('toggle', true);
-                        $('#naming_pattern').css('background-color', '#FFFFDD');
+                        $naming_anime_pattern_input.qtip('toggle', true);
+                        $naming_anime_pattern_input.css('background-color', '#FFFFDD');
                     } else {
                         info = _('This pattern is valid.');
-                        $('#naming_pattern').qtip('option', {
+                        $naming_anime_pattern_input.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-green'
                         });
-                        $('#naming_pattern').qtip('toggle', false);
-                        $('#naming_pattern').css('background-color', '#FFFFFF');
+                        $naming_anime_pattern_input.qtip('toggle', false);
+                        $naming_anime_pattern_input.css('background-color', '#FFFFFF');
                     }
 
-                    $('#naming_pattern').attr('title', info);
+                    $naming_anime_pattern_input.attr('title', info);
                 });
             }
 
-            // @TODO all of these setup funcitons should be able to be rolled into a generic jQuery function
+            // @TODO all of these setup functions should be able to be rolled into a generic jQuery function
 
             function setupNaming() {
                 // If it is a custom selection then show the text box
