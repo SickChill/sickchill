@@ -1334,7 +1334,7 @@ const SICKCHILL = {
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
+                    pattern: example.pattern
                 }, data => {
                     if (data) {
                         $('#naming_example').text(data + '.ext');
@@ -1346,7 +1346,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
-                    multi: example.multi,
+                    multi: example.multi
                 }, data => {
                     if (data) {
                         $('#naming_example_multi').text(data + '.ext');
@@ -1358,7 +1358,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern: example.pattern,
-                    multi: example.multi,
+                    multi: example.multi
                 }, data => {
                     let info;
                     if (data === 'invalid') {
