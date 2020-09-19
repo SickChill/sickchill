@@ -93,9 +93,6 @@ def check_force_season_folders(pattern=None, multi=None, anime_type=None):
     if pattern is None:
         pattern = settings.NAMING_PATTERN
 
-    if anime_type is None:
-        anime_type = settings.NAMING_ANIME
-
     valid = not validate_name(pattern, None, anime_type, file_only=True)
 
     if multi is not None:
@@ -112,9 +109,6 @@ def check_valid_naming(pattern=None, multi=None, anime_type=None):
     """
     if pattern is None:
         pattern = settings.NAMING_PATTERN
-
-    if anime_type is None:
-        anime_type = settings.NAMING_ANIME
 
     logger.debug("Checking whether the pattern " + pattern + " is valid for a single episode")
     valid = validate_name(pattern, None, anime_type)

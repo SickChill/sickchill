@@ -1334,8 +1334,7 @@ const SICKCHILL = {
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern,
-                    anime_type: 3 // eslint-disable-line camelcase
+                    pattern: example.pattern
                 }, data => {
                     if (data) {
                         $('#naming_example').text(data + '.ext');
@@ -1347,8 +1346,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: 3 // eslint-disable-line camelcase
+                    multi: example.multi
                 }, data => {
                     if (data) {
                         $('#naming_example_multi').text(data + '.ext');
@@ -1360,8 +1358,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern: example.pattern,
-                    multi: example.multi,
-                    anime_type: example.animeType // eslint-disable-line camelcase
+                    multi: example.multi
                 }, data => {
                     let info;
                     if (data === 'invalid') {
@@ -1531,37 +1528,38 @@ const SICKCHILL = {
                     anime_type: example.animeType // eslint-disable-line camelcase
                 }, data => {
                     let info;
+                    const $namingAnimePatternInput = $('#naming_anime_pattern');
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
-                        $('#naming_pattern').qtip('option', {
+                        $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
-                        $('#naming_pattern').qtip('toggle', true);
-                        $('#naming_pattern').css('background-color', '#FFDDDD');
+                        $namingAnimePatternInput.qtip('toggle', true);
+                        $namingAnimePatternInput.css('background-color', '#FFDDDD');
                     } else if (data === 'seasonfolders') {
                         info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
-                        $('#naming_pattern').qtip('option', {
+                        $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red'
                         });
-                        $('#naming_pattern').qtip('toggle', true);
-                        $('#naming_pattern').css('background-color', '#FFFFDD');
+                        $namingAnimePatternInput.qtip('toggle', true);
+                        $namingAnimePatternInput.css('background-color', '#FFFFDD');
                     } else {
                         info = _('This pattern is valid.');
-                        $('#naming_pattern').qtip('option', {
+                        $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-green'
                         });
-                        $('#naming_pattern').qtip('toggle', false);
-                        $('#naming_pattern').css('background-color', '#FFFFFF');
+                        $namingAnimePatternInput.qtip('toggle', false);
+                        $namingAnimePatternInput.css('background-color', '#FFFFFF');
                     }
 
-                    $('#naming_pattern').attr('title', info);
+                    $namingAnimePatternInput.attr('title', info);
                 });
             }
 
-            // @TODO all of these setup funcitons should be able to be rolled into a generic jQuery function
+            // @TODO all of these setup functions should be able to be rolled into a generic jQuery function
 
             function setupNaming() {
                 // If it is a custom selection then show the text box
