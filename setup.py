@@ -16,7 +16,7 @@ if 'setup.py' in sys.argv[0]:
         packages=['sickchill'],
         install_requires=info_dict['install_requires'],
         dependency_links=[
-            'git+https://github.com/alberanid/imdbpy#egg=imdbpy'
+            'https://github.com/alberanid/imdbpy.git@1edb204#egg=imdbpy-2020.09.29'
         ],
         cmdclass=info_dict['commands'],
         message_extractors={
