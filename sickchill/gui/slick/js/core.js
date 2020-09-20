@@ -4501,7 +4501,7 @@ const UTIL = {
 };
 
 // Handle js-gettext + load javascript functions
-$.getJSON(scRoot + '/ui/locale.json', data => {
+$.getJSON(scRoot + '/ui/locale.json', {lang: getMeta('settings.GUI_LANG')}, data => {
     if (data === undefined) {
         window.gt = new Gettext();
     } else {

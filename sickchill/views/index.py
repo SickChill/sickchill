@@ -329,9 +329,10 @@ class UI(WebRoot):
         super().__init__(*args, **kwargs)
 
     def locale_json(self):
+
+        lang = self.get_query_argument("lang")
         """ Get /locale/{lang_code}/LC_MESSAGES/messages.json """
-        locale_file = os.path.normpath('{locale_dir}/{lang}/LC_MESSAGES/messages.json'.format(
-            locale_dir=locale_dir(), lang=settings.GUI_LANG))
+        locale_file = os.path.normpath(f'{locale_dir()}/{lang}/LC_MESSAGES/messages.json')
 
         if os.path.isfile(locale_file):
             self.set_header('Content-Type', 'application/json')

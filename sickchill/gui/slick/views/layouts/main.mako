@@ -67,6 +67,7 @@
         <meta data-var="settings.SICKCHILL_BACKGROUND" data-content="${settings.SICKCHILL_BACKGROUND}">
         <meta data-var="settings.FANART_BACKGROUND" data-content="${settings.FANART_BACKGROUND}">
         <meta data-var="settings.FANART_BACKGROUND_OPACITY" data-content="${settings.FANART_BACKGROUND_OPACITY}">
+        <meta data-var="settings.GUI_LANG" data-content="${settings.GUI_LANG}">
         <%block name="metas" />
 
         <link rel="shortcut icon" href="${static_url('images/ico/favicon.ico')}">
