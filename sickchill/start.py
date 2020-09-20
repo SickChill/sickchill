@@ -215,6 +215,7 @@ def initialize(consoleLogging=True):
         settings.WEB_USE_GZIP = check_setting_bool(settings.CFG, 'General', 'web_use_gzip', True)
 
         settings.SSL_VERIFY = check_setting_bool(settings.CFG, 'General', 'ssl_verify', True)
+        helpers.set_opener(settings.SSL_VERIFY)
 
         settings.EP_DEFAULT_DELETED_STATUS = check_setting_int(settings.CFG, 'General', 'ep_default_deleted_status', ARCHIVED)
         if settings.EP_DEFAULT_DELETED_STATUS not in (SKIPPED, ARCHIVED, IGNORED):

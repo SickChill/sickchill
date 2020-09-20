@@ -133,6 +133,7 @@ class ConfigGeneral(Config):
         logger.set_level()
 
         settings.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
+        helpers.set_opener(settings.SSL_VERIFY)
 
         settings.COMING_EPS_MISSED_RANGE = config.min_max(coming_eps_missed_range, 7, 0, 42810)
 

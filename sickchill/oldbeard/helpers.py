@@ -48,21 +48,26 @@ LOCALE_NAMES.update({
     "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
 })
 
-disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-try:
-    from urllib.request import HTTPSHandler
-    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-    context.options |= ssl.OP_NO_SSLv2
-    context.verify_mode = ssl.CERT_REQUIRED
-    context.load_verify_locations(certifi.where(), None)
-    https_handler = HTTPSHandler(context=context, check_hostname=True)
-    opener = urllib.request.build_opener(https_handler)
-except ImportError:
-    opener = urllib.request.build_opener()
+def set_opener(verify: bool):
+    disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-opener.addheaders = [('User-agent', sickchill.oldbeard.common.USER_AGENT)]
-urllib.request.install_opener(opener)
+    try:
+        from urllib.request import HTTPSHandler
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        context.options |= ssl.OP_NO_SSLv2
+        context.verify_mode = ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
+        context.load_verify_locations(certifi.where(), None)
+        https_handler = HTTPSHandler(context=context, check_hostname=True)
+        opener = urllib.request.build_opener(https_handler)
+    except ImportError:
+        opener = urllib.request.build_opener()
+
+    opener.addheaders = [('User-agent', sickchill.oldbeard.common.USER_AGENT)]
+    urllib.request.install_opener(opener)
+
+
+set_opener(settings.SSL_VERIFY)
 
 # Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
 copyfileobj_orig = shutil.copyfileobj
