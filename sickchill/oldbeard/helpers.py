@@ -57,6 +57,7 @@ def set_opener(verify: bool):
         context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
         context.options |= ssl.OP_NO_SSLv2
         context.verify_mode = ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
+        context.check_hostname = verify
         context.load_verify_locations(certifi.where(), None)
         https_handler = HTTPSHandler(context=context, check_hostname=True)
         opener = urllib.request.build_opener(https_handler)
