@@ -5,6 +5,7 @@ import re
 import time
 
 from sickchill import logger, settings
+from sickchill.helper.exceptions import UpdaterException
 from sickchill.init_helpers import check_installed
 from sickchill.oldbeard import db, helpers, ui
 
@@ -184,16 +185,25 @@ class UpdateManager(object):
     def compare_db_version(self):
         try:
             self.need_update()
-            cur_hash = self.get_newest_commit_hash()
-            assert len(cur_hash) == 40, "Commit hash wrong length: {0} hash: {1}".format(len(cur_hash), cur_hash)
+            newest_version = self.get_newest_commit_hash()
+            if isinstance(newest_version, str):
+                if len(newest_version) != 40:
+                    raise UpdaterException(f"Commit hash wrong length: {len(newest_version)} hash: {newest_version}")
+            else:
+                newest_version = f"v{newest_version.major}.{newest_version.minor:02d}.{newest_version.micro:02d}-{newest_version.post}"
 
-            check_url = "https://raw.githubusercontent.com/{0}/{1}/{2}/sickchill/oldbeard/databases/main.py"
-            for attempt in (cur_hash, "master"):
-                response = helpers.getURL(check_url.format(settings.GIT_ORG, settings.GIT_REPO, attempt), session=self.session, returns='text')
-                if response:
-                    break
+            response = helpers.getURL(
+                f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/{newest_version}/sickchill/oldbeard/databases/main.py",
+                session=self.session, returns='text'
+            )
+            if not response:
+                response = helpers.getURL(
+                    f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/master/sickchill/oldbeard/databases/main.py",
+                    session=self.session, returns='text'
+                )
 
-            assert response, "Empty response from {0}".format(check_url)
+            if not response:
+                raise UpdaterException(f"Empty response from GitHub for {newest_version}")
 
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})", response)
             destination_db_version = int(match.group('version'))

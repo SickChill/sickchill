@@ -86,3 +86,9 @@ class ShowNotFoundException(SickChillException):
     """
     The show wasn't found on the Indexer
     """
+
+
+class UpdaterException(SickChillException):
+    """
+    The updater encountered an error
+    """
