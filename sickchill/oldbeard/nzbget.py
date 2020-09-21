@@ -5,6 +5,7 @@ from base64 import standard_b64encode
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
+from sickchill.oldbeard.helpers import make_context
 
 from .common import Quality
 
@@ -16,7 +17,7 @@ def sendNZB(nzb, proper=False):
     :param nzb: nzb object
     :param proper: True if this is a Proper download, False if not. Defaults to False
     '''
-    if settings.NZBGET_HOST is None:
+    if not settings.NZBGET_HOST:
         logger.warning('No NZBget host found in configuration. Please configure it.')
         return False
 
@@ -32,12 +33,12 @@ def sendNZB(nzb, proper=False):
         settings.NZBGET_PASSWORD,
         settings.NZBGET_HOST)
 
-    nzbGetRPC = xmlrpc.client.ServerProxy(url)
+    nzbGetRPC = xmlrpc.client.ServerProxy(url, context=make_context(settings.SSL_VERIFY))
     try:
         if nzbGetRPC.writelog('INFO', 'SickChill connected to drop off {0} any moment now.'.format(nzb.name + '.nzb')):
-            logger.debug('Successful connected to NZBget')
+            logger.debug('Successfully connected to NZBget')
         else:
-            logger.warning('Successful connected to NZBget, but unable to send a message')
+            logger.warning('Successfully connected to NZBget, but unable to send a message')
 
     except http.client.error:
         logger.warning('Please check your NZBget host and port (if it is running). NZBget is not responding to this combination')

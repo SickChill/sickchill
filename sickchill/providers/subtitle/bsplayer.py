@@ -17,6 +17,9 @@ from subliminal import __short_version__
 from subliminal.providers import Provider, TimeoutSafeTransport
 from subliminal.subtitle import fix_line_ending, Subtitle
 
+from sickchill import settings
+from sickchill.oldbeard.helpers import make_context
+
 logger = logging.getLogger(__name__)
 
 # s1-9, s101-109
@@ -90,7 +93,7 @@ class BSPlayerProvider(Provider):
     user_agent = 'subliminal v%s' % __short_version__
 
     def __init__(self, search_url=None):
-        self.server = ServerProxy(self.server_url, TimeoutSafeTransport(10))
+        self.server = ServerProxy(self.server_url, TimeoutSafeTransport(10), context=make_context(settings.SSL_VERIFY))
         # None values not allowed for logging in, so replace it by ''
         self.token = None
         self.session = Session()

@@ -49,24 +49,32 @@ LOCALE_NAMES.update({
 })
 
 
-def set_opener(verify: bool):
-    disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+_context = None
 
-    try:
-        from urllib.request import HTTPSHandler
+
+def make_context(verify: bool):
+    global _context
+    if not _context or (_context and _context.check_hostname != verify):
         context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
         context.options |= ssl.OP_NO_SSLv2
         context.verify_mode = ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
         context.check_hostname = verify
         context.load_verify_locations(certifi.where(), None)
-        https_handler = HTTPSHandler(context=context, check_hostname=True)
+        _context = context
+    return _context
+
+
+def set_opener(verify: bool):
+    disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    try:
+        from urllib.request import HTTPSHandler
+        https_handler = HTTPSHandler(context=make_context(verify), check_hostname=True)
         opener = urllib.request.build_opener(https_handler)
     except ImportError:
         opener = urllib.request.build_opener()
 
     opener.addheaders = [('User-agent', sickchill.oldbeard.common.USER_AGENT)]
     urllib.request.install_opener(opener)
-
 
 set_opener(settings.SSL_VERIFY)
 
