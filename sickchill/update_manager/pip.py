@@ -37,9 +37,17 @@ class PipUpdateManager(UpdateManagerBase):
     def set_newest_text(self):
         if self.need_update():
             if self.get_newest_commit_hash():
-                current = self.get_current_commit_hash().base_version
-                newest = self.get_newest_commit_hash().base_version
-                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}'
+                current_version = self.get_current_commit_hash()
+                current = current_version.base_version
+                if current_version.is_postrelease:
+                    current += f'-{current_version.post}'
+
+                newest_version = self.get_newest_commit_hash()
+                newest = newest_version.base_version
+                if newest_version.is_postrelease:
+                    newest += f'-{newest_version.post}'
+
+                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/v{current}...v{newest}'
             else:
                 url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/'
 
