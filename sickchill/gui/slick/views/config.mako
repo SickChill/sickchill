@@ -37,7 +37,6 @@
                                     ${settings.BRANCH}
                                 </a>
                             % endif
-
                         </div>
                     </div>
                     % if settings.BRANCH != 'pip':
