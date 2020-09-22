@@ -2,8 +2,8 @@ import asyncio
 import errno
 import os
 import threading
-from typing import Any, Dict
 from socket import error as socket_error
+from typing import Any, Dict
 
 from tornado.ioloop import IOLoop
 from tornado.platform.asyncio import AnyThreadEventLoopPolicy
