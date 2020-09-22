@@ -15,6 +15,12 @@ class PipUpdateManager(UpdateManagerBase):
     def get_current_version(self):
         return packaging_version.parse(version.__version__)
 
+    def get_clean_version(self):
+        current_version = self.get_current_version()
+        result = f'v{current_version.major:04d}.{current_version.minor:02d}.{current_version.micro:02}'
+        if current_version.is_postrelease:
+            result += f'-{current_version.post}'
+
     def get_current_commit_hash(self):
         return self.get_current_version()
 

@@ -51,11 +51,14 @@ class Config(WebRoot):
             ssl_version = 'Unknown'
 
         sc_version = ''
-        if settings.VERSION_NOTIFY:
+        if settings.VERSION_NOTIFY or settings.BRANCH == 'pip':
             updater = UpdateManager()
             if updater:
-                updater.need_update()
-                sc_version = updater.get_current_version()
+                if settings.BRANCH == 'pip':
+                    sc_version = updater.updater.get_clean_version()
+                else:
+                    updater.need_update()
+                    sc_version = updater.get_current_version()
 
         return t.render(
             submenu=self.ConfigMenu(), title=_('SickChill Configuration'),
