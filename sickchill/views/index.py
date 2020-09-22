@@ -10,7 +10,8 @@ from operator import attrgetter
 from secrets import compare_digest
 from urllib.parse import urljoin
 
-from mako.lookup import Template
+from mako.exceptions import RichTraceback
+from mako.lookup import TemplateLookup
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine
@@ -170,6 +171,7 @@ class WebHandler(BaseHandler):
         try:
             # TODO: Make all routes use get_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
             # nonsense loop so we can just yield the method directly
+            # raise Exception('Raising from async_call')
             kwargs = self.request.arguments
             for arg, value in kwargs.items():
                 if len(value) == 1:
@@ -183,11 +185,8 @@ class WebHandler(BaseHandler):
             return function(**kwargs)
         except TypeError:
             return function()
-        except OSError as error:
-            return Template("Looks like we do not have enough disk space to render the page! {error}").render_unicode(error=error)
-        except Exception:
-            logger.exception('Failed doing webui callback: {0}'.format((traceback.format_exc())))
-            raise
+        except Exception as error:
+            return WebRoot(application=self.application, request=self.request).print_traceback(error=error, **self.request.arguments)
 
     # post uses get method
     post = get
@@ -197,6 +196,12 @@ class WebHandler(BaseHandler):
 class WebRoot(WebHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def print_traceback(self, error, *args, **kwargs):
+        logger.info(f'A mako error occurred: {error}')
+        t = PageTemplate(rh=self, filename='500.mako')
+        kwargs['backtrace'] = RichTraceback(error=error)
+        return t.render(*args, **kwargs)
 
     def index(self):
         return self.redirect('/' + settings.DEFAULT_PAGE + '/')

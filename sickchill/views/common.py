@@ -8,7 +8,7 @@ from mako.runtime import UNDEFINED
 from mako.template import Template
 from tornado.escape import linkify
 
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.oldbeard import classes, helpers
 
 mako_lookup = {}
@@ -25,8 +25,9 @@ def get_lookup():
 
 
 class PageTemplate(Template):
-    def __init__(self, rh, filename):
+    def __init__(self, rh, filename, test_exception: bool = False):
         super().__init__(filename)
+        self.test_exception = test_exception
         self.context = {}
 
         lookup = get_lookup()
@@ -78,10 +79,17 @@ class PageTemplate(Template):
         context.update(kwargs)
         # noinspection PyBroadException
         try:
+            if self.test_exception:
+                raise Exception('This is a test Exception')
             return self.template.render_unicode(*args, **context)
         except Exception as error:
-            print(error)
+            logger.info(f'A mako error occurred: {error}')
             context['title'] = '500'
             context['header'] = _('Mako Error')
-            context['backtrace'] = RichTraceback()
-            return get_lookup().get_template('500.mako').render_unicode(*args, **context)
+            context['backtrace'] = RichTraceback(error=error)
+            lookup = TemplateLookup(
+                directories=[os.path.join(settings.PROG_DIR, "gui/" + settings.GUI_NAME + "/views/")],
+                strict_undefined=settings.BRANCH and settings.BRANCH != 'master',
+                format_exceptions=True,
+            )
+            return lookup.get_template('500.mako').render_unicode(*args, **context)

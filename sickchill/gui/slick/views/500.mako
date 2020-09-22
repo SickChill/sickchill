@@ -13,13 +13,15 @@
     <div id="mako-error" class="collapse">
         <br>
         <div class="align-center">
-            <% filename, line_number, function, line = backtrace.traceback[-1] %>
             <pre>
-                File ${filename}:${line_number}, in ${function}:
-                % if line:
-                    ${line}
-                % endif
-                    ${str(backtrace.error.__class__.__name__)}: ${backtrace.error}
+                Traceback (most recent call last):
+                % for filename, line_number, function, line in backtrace.traceback:
+                    File ${filename}:${line_number}, in ${function or '?'}:
+                    % if line:
+                        ${line | trim}
+                    % endif
+                % endfor
+                ${backtrace.errorname}: ${backtrace.message}
             </pre>
         </div>
     </div>
