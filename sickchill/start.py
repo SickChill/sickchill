@@ -126,24 +126,7 @@ def initialize(consoleLogging=True):
 
         load_gettext_translations(locale_dir(), 'messages')
 
-        settings.CACHE_DIR = os.path.normpath(os.path.join(settings.PROG_DIR, "gui", settings.GUI_NAME, "cache"))
-        if platform.system() != 'Windows':  # Not sure if this will work on windows yet, but it works on linux
-            DATA_CACHE = os.path.join(settings.DATA_DIR, 'cache')
-            try:
-                if not os.path.isdir(DATA_CACHE):
-                    if os.path.isdir(settings.CACHE_DIR) and not os.path.islink(settings.CACHE_DIR):
-                        helpers.moveFile(settings.CACHE_DIR, DATA_CACHE)
-
-                if not os.path.isdir(DATA_CACHE):
-                    helpers.makeDir(DATA_CACHE)
-
-                if os.path.isdir(DATA_CACHE) and not os.path.islink(settings.CACHE_DIR):
-                    if os.path.isdir(settings.CACHE_DIR):
-                        shutil.rmtree(settings.CACHE_DIR)
-
-                    os.symlink(DATA_CACHE, settings.CACHE_DIR)
-            except Exception as e:
-                print(e)
+        settings.CACHE_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "cache"))
 
         # Check if we need to perform a restore of the cache folder
         try:

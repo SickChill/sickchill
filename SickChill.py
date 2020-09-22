@@ -397,16 +397,7 @@ class SickChill(object):
                 self.remove_pid_file(self.pid_file)
 
             if event == sickchill.oldbeard.event_queue.Events.SystemEvent.RESTART:
-                install_type = settings.versionCheckScheduler.action.install_type
-
-                popen_list = []
-
-                if install_type in ('git', 'source'):
-                    popen_list = [sys.executable, settings.MY_FULLNAME]
-                elif install_type == 'win':
-                    logger.exception('You are using a binary Windows build of SickChill. '
-                               'Please switch to using git.')
-
+                popen_list = [sys.executable, settings.MY_FULLNAME]
                 if popen_list and not settings.NO_RESTART:
                     popen_list += settings.MY_ARGS
                     if '--nolaunch' not in popen_list:

@@ -24,7 +24,8 @@
                     <div class="traktContainer">
                         <div class="trakt-image">
                             <a class="trakt-image" href="${anon_url(show_url)}" target="_blank">
-                                <img alt="" class="trakt-image" src="" data-src-indexer-id="${cur_show['indexer_id']}" data-src-cache="${scRoot}/cache/${cur_show['image_path']}"
+                                <img alt="" class="trakt-image" src="" data-src-indexer-id="${cur_show['indexer_id']}"
+                                     data-src-cache="${static_url('cache/' + cur_show['image_path'], include_version=True)}"
                                      height="273px" width="186px"/>
                             </a>
                         </div>

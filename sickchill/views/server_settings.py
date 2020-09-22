@@ -2,6 +2,7 @@ import asyncio
 import errno
 import os
 import threading
+from typing import Any, Dict
 from socket import error as socket_error
 
 from tornado.ioloop import IOLoop
@@ -25,6 +26,23 @@ from .routes import Route
 #         self.set_status(404)
 #         t = PageTemplate(rh=self, filename="404.mako")
 #         return self.finish(t.render(title='404', header=_('Oops')))
+
+
+class SickChillStaticFileHandler(StaticFileHandler):
+    @classmethod
+    def make_static_url(cls, settings: Dict[str, Any], path: str, include_version: bool = True) -> str:
+        url = settings.get("static_url_prefix", "/static/") + path
+        if not include_version:
+            return url
+
+        custom_settings = settings
+        if 'cache/' in path:
+            custom_settings['static_path'] = os.path.dirname(sickchill.settings.CACHE_DIR)
+        version_hash = cls.get_version(custom_settings, path)
+        if not version_hash:
+            return url
+
+        return "%s?v=%s" % (url, version_hash)
 
 
 class SRWebServer(threading.Thread):
@@ -53,9 +71,6 @@ class SRWebServer(threading.Thread):
         })
 
         self.options.setdefault('port', settings.WEB_PORT or 8081)
-
-        assert isinstance(self.options['port'], int)
-        assert 'data_root' in self.options
 
         self.server = None
 
@@ -113,32 +128,33 @@ class SRWebServer(threading.Thread):
             cookie_secret=settings.WEB_COOKIE_SECRET,
             login_url=f'{self.options["web_root"]}/login/',
             static_path=self.options['data_root'],
-            static_url_prefix=f'{self.options["web_root"]}/'
+            static_url_prefix=f'{self.options["web_root"]}/',
+            static_handler_class=SickChillStaticFileHandler
             # default_handler_class=Custom404Handler
         )
 
         # Static File Handlers
         self.app.add_handlers(".*$", [
-            url(rf'{self.options["web_root"]}/(favicon\.ico)', StaticFileHandler,
+            url(rf'{self.options["web_root"]}/(favicon\.ico)', SickChillStaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'images/ico')}, name='favicon'),
 
-            url(rf'{self.options["web_root"]}/images/(.*)', StaticFileHandler,
+            url(rf'{self.options["web_root"]}/images/(.*)', SickChillStaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'images')}, name='images'),
 
-            url(rf'{self.options["web_root"]}/cache/images/(.*)', StaticFileHandler,
+            url(rf'{self.options["web_root"]}/cache/images/(.*)', SickChillStaticFileHandler,
                 {"path": os.path.join(settings.CACHE_DIR, 'images')}, name='image_cache'),
 
-            url(rf'{self.options["web_root"]}/css/(.*)', StaticFileHandler,
+            url(rf'{self.options["web_root"]}/css/(.*)', SickChillStaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'css')}, name='css'),
 
-            url(rf'{self.options["web_root"]}/js/(.*)', StaticFileHandler,
+            url(rf'{self.options["web_root"]}/js/(.*)', SickChillStaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'js')}, name='js'),
 
-            url(rf'{self.options["web_root"]}/fonts/(.*)', StaticFileHandler,
+            url(rf'{self.options["web_root"]}/fonts/(.*)', SickChillStaticFileHandler,
                 {"path": os.path.join(self.options['data_root'], 'fonts')}, name='fonts')
 
             # TODO: WTF is this?
-            # url(rf'{self.options["web_root"]}/videos/(.*)', StaticFileHandler,
+            # url(rf'{self.options["web_root"]}/videos/(.*)', SickChillStaticFileHandler,
             #     {"path": self.video_root}, name='videos')
         ])
 
