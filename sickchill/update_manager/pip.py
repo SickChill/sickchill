@@ -15,11 +15,13 @@ class PipUpdateManager(UpdateManagerBase):
     def get_current_version(self):
         return packaging_version.parse(version.__version__)
 
-    def get_clean_version(self):
-        current_version = self.get_current_version()
-        result = f'v{current_version.major:04d}.{current_version.minor:02d}.{current_version.micro:02}'
-        if current_version.is_postrelease:
-            result += f'-{current_version.post}'
+    def get_clean_version(self, use_version: packaging_version.Version = None):
+        _version = use_version or self.get_current_version()
+        result = f'v{_version.major:04d}.{_version.minor:02d}.{_version.micro:02}'
+        if _version.is_postrelease:
+            result += f'-{_version.post}'
+
+        return result
 
     def get_current_commit_hash(self):
         return self.get_current_version()
@@ -43,17 +45,9 @@ class PipUpdateManager(UpdateManagerBase):
     def set_newest_text(self):
         if self.need_update():
             if self.get_newest_commit_hash():
-                current_version = self.get_current_commit_hash()
-                current = current_version.base_version
-                if current_version.is_postrelease:
-                    current += f'-{current_version.post}'
-
-                newest_version = self.get_newest_commit_hash()
-                newest = newest_version.base_version
-                if newest_version.is_postrelease:
-                    newest += f'-{newest_version.post}'
-
-                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/v{current}...v{newest}'
+                current = self.get_clean_version()
+                newest = self.get_clean_version(self.get_newest_commit_hash())
+                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}'
             else:
                 url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/'
 
