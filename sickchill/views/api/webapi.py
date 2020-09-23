@@ -1710,6 +1710,10 @@ class CMDSickChillSearchIndexers(ApiCall):
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
                     in_show_list = sickchill.show.Show.Show.find(settings.showList, int(result['id']))
+                    if in_show_list:
+                        in_show_list = True
+                    else:
+                        in_show_list = False
                     if in_show_list and self.only_new:
                         continue
 
