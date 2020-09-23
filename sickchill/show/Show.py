@@ -43,11 +43,20 @@ class Show(object):
         :return: The desired show if found, ``None`` if not found
         :throw: ``MultipleShowObjectsException`` if multiple shows match the provided ``indexer_id``
         """
-
-        if indexer_id is None or shows is None or len(shows) == 0:
+        if not indexer_id or not shows:
             return None
 
-        indexer_ids = [int(indexer_id)] if not isinstance(indexer_id, list) else [int(x) for x in indexer_id]
+        if not isinstance(indexer_id, (str, int)):
+            return None
+
+        if isinstance(indexer_id, list):
+            if not isinstance(indexer_id[0], (int, str)):
+                return None
+
+            indexer_ids = [int(x) for x in indexer_id]
+        else:
+            indexer_ids = [int(indexer_id)]
+
         results = [show for show in shows if show.indexerid in indexer_ids]
 
         if not results:

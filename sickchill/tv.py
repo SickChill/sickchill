@@ -94,7 +94,7 @@ class TVShow(object):
 
     # location = DirtySetter("")
 
-    def __init__(self, indexer, indexerid, lang=""):
+    def __init__(self, indexer, indexerid: int, lang=""):
         self.dirty = True
 
         self.lock = threading.Lock()

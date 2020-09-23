@@ -41,7 +41,7 @@ class ShowTests(unittest.TestCase):
             (False, 12.3): None,
             (True, None): None,
             (True, ''): None,
-            (True, '123'): None,
+            (True, '123'): show123,
             (True, 123): show123,
             (True, 12.3): None,
             (True, 456): show456,
@@ -52,7 +52,7 @@ class ShowTests(unittest.TestCase):
             (False, ''): None,
             (False, '123'): None,
             (True, ''): None,
-            (True, '123'): None,
+            (True, '123'): show123,
         }
 
         for tests in test_cases, unicode_test_cases:
