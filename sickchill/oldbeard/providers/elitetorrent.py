@@ -61,7 +61,7 @@ class Provider(TorrentProvider):
                 logger.debug("Show info is not spanish, skipping provider search")
                 continue
 
-            for search_string in search_strings[mode]:
+            for search_string in {*search_strings[mode]}:
                 if mode != 'RSS':
                     logger.debug("Search string: {0}".format
                                  (search_string))

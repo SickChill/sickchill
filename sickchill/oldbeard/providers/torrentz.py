@@ -50,7 +50,7 @@ class Provider(TorrentProvider):
         for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}".format(mode=mode)))
-            for search_string in search_strings[mode]:
+            for search_string in {*search_strings[mode]}:
 
                 # Feed verified does not exist on this clone
                 # search_url = self.urls['verified'] if self.confirmed else self.urls['feed']

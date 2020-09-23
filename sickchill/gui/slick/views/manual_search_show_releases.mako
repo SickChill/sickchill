@@ -35,7 +35,7 @@
                             <td align="center" class="text-nowrap">${result['seeders']}</td>
                             <td align="center" class="text-nowrap">${result['leechers']}</td>
                             <td align="center" class="text-nowrap">
-                                <form action="snatchEpisodeManual" method="post">
+                                <form action="manual_snatch_show_release" method="post">
                                     <input type="hidden" name="url" value="${result['url']}">
                                     <input type="hidden" name="show" value="${result['indexerid']}">
                                     <input type="submit" value="${result['url'].split(':', 1)[0].title()}" class="btn btn-link">

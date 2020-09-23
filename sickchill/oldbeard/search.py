@@ -477,7 +477,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                         foundResults[curProvider.name][curEp] = searchResults[curEp]
 
                 break
-            elif not curProvider.search_fallback or searchCount == 2:
+            elif searchCount == 2 or not curProvider.search_fallback:
                 break
 
             if search_mode == 'sponly':
@@ -680,96 +680,3 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     # Remove provider from thread name before return results
     threading.currentThread().name = origThreadName
     return finalResults
-
-
-def searchProvidersList(show, episodes, search_mode='eponly'):
-    """
-    Walk providers for information on shows
-
-    :param show: Show we are looking for
-    :param episodes: Episodes we hope to find
-    :param search_mode: String, eponly|sponly: Episode search or Season Pack Search?
-    :return: results for search
-    """
-    foundResults = {"results": []}
-
-    didSearch = False
-
-    origThreadName = threading.currentThread().name
-
-    # build name cache for show
-    sickchill.oldbeard.name_cache.build_name_cache(show)
-
-    providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
-    if not providers:
-        logger.info("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.")
-        return foundResults
-
-    episodes = [episodes]
-    search_episodes = {}
-    for ep in episodes:
-        if ep.season not in search_episodes:
-            search_episodes[ep.season] = [ep]
-        elif search_mode != 'sponly':
-            search_episodes[ep.season] += [ep]
-
-    for curProvider in providers:
-        threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
-
-        if curProvider.anime_only and not show.is_anime:
-            logger.debug("" + str(show.name) + " is not an anime, skipping")
-            continue
-
-        if curProvider.search_mode != search_mode and not curProvider.search_fallback:
-            logger.debug('Skipping provider because search type does not match and fallback is disabled')
-            continue
-
-        logger.info(_("Performing {episode_or_season} search for {show}").format(
-            episode_or_season=(_('season pack'), _('episode'))[search_mode == 'eponly'], show=show.name))
-
-        curProvider.cache.update_cache()
-        for ep_list in search_episodes.values():
-            for episode in ep_list:
-                try:
-                    curProvider.show = episode.show
-                    if search_mode == 'sponly':
-                        search_params = curProvider.get_season_search_strings(episode)
-                    else:
-                        search_params = curProvider.get_episode_search_strings(episode)
-
-                    searchResults = curProvider.search(search_params[0], ep_obj=episode)
-                except AuthException as error:
-                    logger.warning("Authentication error: {0!r}".format(error))
-                    continue
-                except Exception as error:
-                    logger.exception("Exception while searching {0}. Error: {1!r}".format(curProvider.name, error))
-                    logger.debug(traceback.format_exc())
-                    continue
-
-                didSearch = True
-
-                # make a list of all the results for this provider
-                for curResult in searchResults:
-                    curResult["show"] = episode.show.indexerid
-                    curResult["season"] = episode.season
-                    curResult["episode"] = episode.episode
-                    curResult["provider"] = curProvider.name
-                    try:
-                        parse_result = NameParser(parse_method=('normal', 'anime')[show.is_anime]).parse(curResult["title"])
-                        curResult["quality"] = parse_result.quality
-                        curResult["release_group"] = parse_result.release_group
-                        curResult["version"] = parse_result.version
-                    except (InvalidNameException, InvalidShowException) as error:
-                        logger.debug("{0}".format(error))
-                        continue
-
-                foundResults["results"] += searchResults
-
-    if not didSearch:
-        logger.info("Unable to find any results. Please check the log")
-
-    # Remove provider from thread name before return results
-    threading.currentThread().name = origThreadName
-
-    foundResults["results"].sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
-    return foundResults

@@ -450,7 +450,12 @@
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(settings.KODI_HOST and settings.USE_KODI)]}>${_('Play')}</th>
                                             <th data-sorter="false" ${("class=\"col-ep columnSelector-false\"", "class=\"col-ep\"")[bool(settings.USE_SUBTITLES)]}>${_('Subtitles')}</th>
                                             <th data-sorter="false" class="col-ep">${_('Status')}</th>
-                                            <th data-sorter="false" class="col-search">${_('Search')}</th>
+                                            <th data-sorter="false" class="col-search text-nowrap">
+                                                ${_('Search')}
+                                                <a class="manual-snatch-show-release" href="manual_search_show_releases?show=${show.indexerid}&amp;season=${epResult["season"]}">
+                                                    <span class="displayshow-icon-plus" title="Manual Snatch Season"></span>
+                                                </a>
+                                            </th>
                                         </tr>
                                     </thead>
 
@@ -584,7 +589,7 @@
                                                         <span class="displayshow-icon-search" title="Manual Search"></span>
                                                     </a>
                                                 % endif
-                                                <a class="manualSnatch" href="searchEpisodeListManual?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}">
+                                                <a class="manual-snatch-show-release" href="manual_search_show_releases?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}">
                                                     <span class="displayshow-icon-plus" title="Manual Snatch"></span>
                                                 </a>
                                             % endif

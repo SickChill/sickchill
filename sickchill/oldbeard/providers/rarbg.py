@@ -95,7 +95,7 @@ class Provider(TorrentProvider):
                 else:
                     search_params.pop("search_tvdb", None)
 
-            for search_string in search_strings[mode]:
+            for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
                     search_string = re.sub(r"\((\d{4})\)", r'\1', search_string).replace(' ', '.')
                     search_params["search_string"] = search_string

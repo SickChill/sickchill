@@ -47,7 +47,7 @@ class Show(object):
         if indexer_id is None or shows is None or len(shows) == 0:
             return None
 
-        indexer_ids = [indexer_id] if not isinstance(indexer_id, list) else indexer_id
+        indexer_ids = [int(indexer_id)] if not isinstance(indexer_id, list) else [int(x) for x in indexer_id]
         results = [show for show in shows if show.indexerid in indexer_ids]
 
         if not results:

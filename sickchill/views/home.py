@@ -25,6 +25,7 @@ from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+from sickchill.tv import TVShow
 from sickchill.update_manager import UpdateManager
 
 from ..oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
@@ -1550,17 +1551,33 @@ class Home(WebRoot):
 
         return self.redirect("/home/displayShow?show=" + show)
 
-    def searchEpisodeListManual(self):
+    def manual_search_show_releases(self):
         show = self.get_query_argument('show')
         season = self.get_query_argument('season')
-        episode = self.get_query_argument('episode')
+        episode = self.get_query_argument('episode', None)
 
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         cache_db_con = db.DBConnection('cache.db', row_type="dict")
-        results = cache_db_con.select(
-            'SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC',
-            [show, season, f'%|{episode}|%', FAILED])
+        # show_object: TVShow = Show.find(settings.showList, show)
+        # sickchill.oldbeard.search.searchProviders(
+        #     show_object,
+        #     show_object.getEpisode(season=season, episode=episode or 1),
+        #     downCurQuality=True,
+        #     manualSearch=True,
+        #     manual_snatch=('sponly', 'eponly')[episode is not None]
+        # )
+
+        if episode:
+            results = cache_db_con.select(
+                'SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC',
+                [show, season, f'%|{episode}|%', FAILED])
+        else:
+            show_object: TVShow = Show.find(settings.showList, show)
+            episodes_sql = '|'.join([str(ep.season) for ep in show_object.getAllEpisodes(season=season) if ep.season > 0])
+            results = cache_db_con.select(
+                'SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC',
+                [show, season, f'%{episodes_sql}%', FAILED])
 
         for result in results:
             episodes_list = [int(ep) for ep in result['episodes'].split('|') if ep]
@@ -1571,11 +1588,11 @@ class Home(WebRoot):
 
         # TODO: If no cache results do a search on indexers and post back to this method.
 
-        t = PageTemplate(rh=self, filename="searchEpisodeListManual.mako")
+        t = PageTemplate(rh=self, filename="manual_search_show_releases.mako")
         submenu = [{'title': _('Edit'), 'path': 'home/editShow?show={0}'.format(show), 'icon': 'fa fa-pencil'}]
-        return t.render(submenu=submenu, title=_('Manual Snatch'), header=_('Manual Snatch'),  controller="home", action="searchEpisodeListManual", results=results)
+        return t.render(submenu=submenu, title=_('Manual Snatch'), header=_('Manual Snatch'),  controller="home", action="manual_search_show_releases", results=results)
 
-    def snatchEpisodeManual(self, *args, **kwargs):
+    def manual_snatch_show_release(self, *args, **kwargs):
         url = self.get_body_argument('url')
         show = self.get_body_argument('show')
 

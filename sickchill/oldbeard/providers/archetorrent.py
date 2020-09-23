@@ -96,7 +96,7 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}".format(mode=mode)))
 
-            for search_string in search_strings[mode]:
+            for search_string in {*search_strings[mode]}:
                 logger.debug('Search String: {0} for mode {1}'.format(search_strings[mode], mode))
                 if mode != 'RSS':
                     logger.debug('Search string: {0}'.format
