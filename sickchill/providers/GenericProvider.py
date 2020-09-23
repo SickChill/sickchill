@@ -192,20 +192,22 @@ class GenericProvider(object):
             quality = parse_result.quality
             release_group = parse_result.release_group
             version = parse_result.version
-            add_cache_entry = False
+            skip_release = False
+            actual_episodes = []
+            actual_season = -1
 
             if not (show_object.air_by_date or show_object.sports):
                 if search_mode == 'sponly':
                     if parse_result.episode_numbers:
                         logger.debug(
                             'This is supposed to be a season pack search but the result {0} is not a valid season pack, skipping it'.format(title))
-                        add_cache_entry = True
+                        skip_release = True
                     elif not [ep for ep in episodes if parse_result.season_number == (ep.season, ep.scene_season)[ep.show.is_scene]]:
                         logger.info(
                             'This season result {0} is for a season we are not searching for, skipping it'.format(title),
                             logger.DEBUG
                         )
-                        add_cache_entry = True
+                        skip_release = True
 
                 else:
                     if not all([
@@ -224,9 +226,9 @@ class GenericProvider(object):
                     ]):
 
                         logger.info('The result {0} doesn\'t seem to match an episode that we are currently trying to snatch, skipping it'.format(title))
-                        add_cache_entry = True
+                        skip_release = True
 
-                if not add_cache_entry:
+                if not skip_release:
                     actual_season = parse_result.season_number
                     actual_episodes = parse_result.episode_numbers
             else:
@@ -234,7 +236,7 @@ class GenericProvider(object):
 
                 if not parse_result.is_air_by_date:
                     logger.debug('This is supposed to be a date search but the result {0} didn\'t parse as one, skipping it'.format(title))
-                    add_cache_entry = True
+                    skip_release = True
                 else:
                     air_date = parse_result.air_date.toordinal()
                     db = DBConnection()
@@ -254,31 +256,29 @@ class GenericProvider(object):
                             same_day_special = True
                     elif len(sql_results) != 1:
                         logger.warning('Tried to look up the date for the episode {0} but the database didn\'t give proper results, skipping it'.format(title))
-                        add_cache_entry = True
+                        skip_release = True
 
-                if not add_cache_entry and not same_day_special:
-                    actual_season = int(sql_results[0]['season'])
-                    actual_episodes = [int(sql_results[0]['episode'])]
+                    if not skip_release and not same_day_special:
+                        actual_season = int(sql_results[0]['season'])
+                        actual_episodes = [int(sql_results[0]['episode'])]
 
-            if add_cache_entry:
-                logger.debug('Adding item from search to cache: {0}'.format(title))
+            logger.debug('Adding item from search to cache: {0}'.format(title))
 
-                ci = self.cache._add_cache_entry(title, url, size, seeders, leechers, parse_result=parse_result)
+            ci = self.cache._add_cache_entry(title, url, size, seeders, leechers, parse_result=parse_result)
 
-                if ci is not None:
-                    cl.append(ci)
+            if ci is not None:
+                cl.append(ci)
 
+            if skip_release:
                 continue
-
-            episode_wanted = True
 
             for episode_number in actual_episodes:
                 if not show_object.wantEpisode(actual_season, episode_number, quality, manual_search,
                                                download_current_quality):
-                    episode_wanted = False
+                    skip_release = True
                     break
 
-            if not episode_wanted:
+            if skip_release:
                 logger.debug(_('Ignoring result ') + f'{title}.')
                 continue
 
@@ -308,6 +308,8 @@ class GenericProvider(object):
             elif len(episode_object) == 0:
                 episode_number = SEASON_RESULT
                 logger.debug('Separating full season result to check for later')
+            else:
+                episode_number = None
 
             if episode_number not in results:
                 results[episode_number] = [result]
