@@ -27,7 +27,7 @@ class Provider(TorrentProvider):
         self.minleech = 0
 
         # URLs
-        self.url = 'https://www2.torrentz2.si/'
+        self.url = 'https://torrentz.com/'
         self.urls = {
             'verified': urljoin(self.url, 'feed_verified'),
             'feed': urljoin(self.url, 'feed'),
