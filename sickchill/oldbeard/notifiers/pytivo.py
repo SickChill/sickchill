@@ -1,9 +1,8 @@
 import os
 from urllib.parse import urlencode
-# noinspection PyUnresolvedReferences
 from urllib.request import Request, urlopen
 
-from requests.exceptions import HTTPError
+import requests
 
 from sickchill import logger, settings, tv
 
@@ -82,7 +81,7 @@ class Notifier(object):
 
         try:
             urlopen(request)
-        except HTTPError as e:
+        except requests.exceptions.RequestException as e:
             if hasattr(e, 'reason'):
                 logger.exception("pyTivo notification: Error, failed to reach a server - " + e.reason)
                 return False

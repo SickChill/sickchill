@@ -1310,46 +1310,21 @@ def handle_requests_exception(requests_exception):
             logger.info(_("SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general").format(error.request.url))
         logger.debug(default.format(error, type(error.__class__.__name__)))
         logger.debug(traceback.format_exc())
-
-    except requests.exceptions.HTTPError as error:
+    except requests.exceptions.ContentDecodingError as error:
+        logger.info(default.format(error, type(error.__class__.__name__)))
+        logger.debug(traceback.format_exc())
+    except urllib3.exceptions.ProxySchemeUnknown as error:
+        logger.info(default.format('You must prefix your proxy setting with a scheme (http/https/etc)', error))
+    except CloudflareException as error:
+        logger.info(default.format(error, type(error.__class__.__name__)))
+    except requests.exceptions.RequestException as error:
         if not (hasattr(error, 'response') and error.response and
                 hasattr(error.response, 'status_code') and error.response.status_code == 404 and
                 hasattr(error.response, 'headers') and error.response.headers.get('X-Content-Type-Options') == 'nosniff'):
             logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.TooManyRedirects as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.ConnectTimeout as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.ReadTimeout as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.ProxyError as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.ConnectionError as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.ContentDecodingError as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-        logger.debug(traceback.format_exc())
-    except requests.exceptions.ChunkedEncodingError as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.InvalidURL as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.InvalidSchema as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.MissingSchema as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.RetryError as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.StreamConsumedError as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except requests.exceptions.URLRequired as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except CloudflareException as error:
-        logger.info(default.format(error, type(error.__class__.__name__)))
-    except urllib3.exceptions.ProxySchemeUnknown as error:
-        logger.info(default.format('You must prefix your proxy setting with a scheme (http/https/etc)', error))
     except (TypeError, ValueError) as error:
         level = get_level(error)
-        logger.info(default.format(error, type(error.__class__.__name__)), level)
+        logger.log(level, default.format(error, type(error.__class__.__name__)))
         if requests_exception.request:
             logger.info(_('url is {0}').format(repr(requests_exception.request.url)))
             logger.info('headers are {0}'.format(repr(requests_exception.request.headers)))
@@ -1358,7 +1333,7 @@ def handle_requests_exception(requests_exception):
         if level == logger.WARNING:
             logger.debug(traceback.format_exc())
     except Exception as error:
-        logger.info(default.format(error, type(error.__class__.__name__)), get_level(error))
+        logger.log(get_level(error), default.format(error, type(error.__class__.__name__)))
         logger.debug(traceback.format_exc())
 
 
@@ -1686,7 +1661,7 @@ def manage_torrents_url(reset=False):
         try:
             h = requests.head(url)
             return h.status_code != 404
-        except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout):
+        except requests.exceptions.RequestException:
             return False
 
     if settings.TORRENT_METHOD == 'utorrent':

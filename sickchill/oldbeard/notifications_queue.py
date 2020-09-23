@@ -3,7 +3,6 @@ import time
 import traceback
 
 import requests
-from requests.exceptions import HTTPError
 
 from sickchill import logger, settings
 
@@ -142,7 +141,7 @@ class DiscordTask(generic_queue.QueueItem):
                               data=json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, tts=discord_tts)),
                               headers=headers)
             r.raise_for_status()
-        except HTTPError as error:
+        except requests.exceptions.RequestException as error:
             if error.response.status_code != 429 or int(error.response.headers.get('X-RateLimit-Remaining')) != 0:
                 raise error
 

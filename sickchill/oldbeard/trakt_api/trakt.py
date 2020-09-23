@@ -90,7 +90,7 @@ class TraktAPI:
 
             # convert response to json
             resp = resp.json()
-        except requests.RequestException as e:
+        except requests.exceptions.RequestException as e:
             code = getattr(e.response, 'status_code', None)
             if not code:
                 if 'timed out' in e:

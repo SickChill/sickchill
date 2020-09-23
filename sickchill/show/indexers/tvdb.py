@@ -3,8 +3,8 @@ import json
 import re
 import traceback
 
+import requests
 import tvdbsimple
-from requests.exceptions import HTTPError
 
 # from sickchill import logger
 import sickchill.start
@@ -31,21 +31,21 @@ class TVDB(Indexer):
         self.series_images = tvdbsimple.Series_Images
         self.updates = tvdbsimple.Updates
 
-    @ExceptionDecorator(default_return=None)
+    @ExceptionDecorator()
     def series(self, *args, **kwargs):
         result = self._series(*args, **kwargs)
         if result:
             result.info(language=kwargs.get('language'))
         return result
 
-    @ExceptionDecorator(default_return=None)
+    @ExceptionDecorator()
     def get_series_by_id(self, indexerid, language=None):
         result = self._series(indexerid, language)
         if result:
             result.info(language=language)
         return result
 
-    @ExceptionDecorator(default_return=None)
+    @ExceptionDecorator()
     def series_from_show(self, show):
         result = self._series(show.indexerid, show.lang)
         if result:
@@ -74,7 +74,7 @@ class TVDB(Indexer):
 
         return result
 
-    @ExceptionDecorator(default_return=None)
+    @ExceptionDecorator()
     def episode(self, item, season=None, episode=None, **kwargs):
         if isinstance(item, TVEpisode):
             show = item.show
@@ -112,7 +112,7 @@ class TVDB(Indexer):
                     series = self._series(name, language=language)
                     if series:
                         result = [series.info(language)]
-            except HTTPError:
+            except requests.exceptions.RequestException:
                 logger.exception(traceback.format_exc())
         else:
             # Name as provided (usually from nfo)
@@ -134,7 +134,7 @@ class TVDB(Indexer):
                     result = self._search(attempt, language=language)
                     if result:
                         break
-                except HTTPError:
+                except requests.exceptions.RequestException:
                     logger.exception(traceback.format_exc())
 
         return result
@@ -162,7 +162,7 @@ class TVDB(Indexer):
             return location
         return f'https://artworks.thetvdb.com/banners/{re.sub(r"^_cache/", "", location)}'
 
-    @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError), image_api=True)
+    @ExceptionDecorator(default_return='', catch=(requests.exceptions.RequestException, KeyError), image_api=True)
     def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None, multiple=False):
         api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
         images = getattr(api_results, keyType)(lang or show.lang)
@@ -191,13 +191,13 @@ class TVDB(Indexer):
     def season_banner_url(self, show, season, thumb=False, multiple=False):
         return self.__call_images_api(show, thumb, 'seasonwide', season, multiple=multiple)
 
-    @ExceptionDecorator(default_return='', catch=(HTTPError, KeyError, TypeError))
+    @ExceptionDecorator(default_return='', catch=(requests.exceptions.RequestException, KeyError, TypeError))
     def episode_image_url(self, episode):
         return self.complete_image_url(self.episode(episode)['filename'])
 
     def episode_guide_url(self, show):
         # https://forum.kodi.tv/showthread.php?tid=323588
-        data = html.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid}), True).replace(' ', '')
+        data = html.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid})).replace(' ', '')
         return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url('login') + '?' + data + '|Content-Type=application/json'
 
     def get_favorites(self):

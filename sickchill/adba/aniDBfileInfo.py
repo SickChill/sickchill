@@ -58,10 +58,8 @@ def download_file(url, filename):
                     fp.write(chunk)
                     fp.flush()
 
-    except (requests.HTTPError, requests.exceptions.RequestException):
+    except requests.exceptions.RequestException:
         _remove_file_failed(filename)
-        return False
-    except (requests.ConnectionError, requests.Timeout):
         return False
 
     return True

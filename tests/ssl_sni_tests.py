@@ -37,6 +37,8 @@ def generator(_provider):
                 raise
         except requests.exceptions.Timeout:
             print('Provider timed out')
+        except requests.exceptions.RequestException:
+            raise
 
     return _connectivity_test
 

@@ -1,5 +1,5 @@
+import requests
 import twitter
-from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1Session
 
 from sickchill import logger, settings
@@ -16,27 +16,27 @@ class Notifier(object):
 
     def notify_snatch(self, ep_name):
         if settings.TWITTER_NOTIFY_ONSNATCH:
-            self._notifyTwitter(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
+            self._notify_twitter(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
 
     def notify_download(self, ep_name):
         if settings.TWITTER_NOTIFY_ONDOWNLOAD:
-            self._notifyTwitter(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
+            self._notify_twitter(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
         if settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notifyTwitter(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
+            self._notify_twitter(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
 
     def notify_git_update(self, new_version='??'):
         if settings.USE_TWITTER:
             update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
-            self._notifyTwitter(title + ' - ' + update_text + new_version)
+            self._notify_twitter(title + ' - ' + update_text + new_version)
 
     def notify_login(self, ipaddress=''):
         if settings.USE_TWITTER:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notifyTwitter(title + ' - ' + update_text.format(ipaddress))
+            self._notify_twitter(title + ' - ' + update_text.format(ipaddress))
 
     def test_notify(self):
         """
@@ -44,7 +44,7 @@ class Notifier(object):
 
         :return: True if succeeded, False otherwise
         """
-        return self._notifyTwitter('This is a test notification from SickChill', force=True)
+        return self._notify_twitter('This is a test notification from SickChill', force=True)
 
     def _get_authorization(self):
         """
@@ -57,8 +57,8 @@ class Notifier(object):
 
         try:
             request_token = oauth_session.fetch_request_token(self.REQUEST_TOKEN_URL)
-        except RequestException as err:
-            logger.exception('Invalid response from Twitter requesting temp token: {}'.format(err))
+        except requests.exceptions.RequestException as error:
+            logger.exception(f'Invalid response from Twitter requesting temp token: {error}')
         else:
             settings.TWITTER_USERNAME = request_token['oauth_token']
             settings.TWITTER_PASSWORD = request_token['oauth_token_secret']
@@ -134,7 +134,7 @@ class Notifier(object):
 
         return True
 
-    def _notifyTwitter(self, message='', force=False):
+    def _notify_twitter(self, message='', force=False):
         prefix = settings.TWITTER_PREFIX
 
         if not settings.USE_TWITTER and not force:

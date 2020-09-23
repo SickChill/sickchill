@@ -7,7 +7,7 @@ from typing import Dict, Iterable, Union
 from urllib.parse import urlencode
 
 import bencodepy
-from requests.exceptions import HTTPError
+import requests
 
 from sickchill import logger, settings
 from sickchill.oldbeard import helpers
@@ -242,13 +242,13 @@ class GenericClient(object):
         """
         try:
             self.response = self.session.get(self.url, timeout=120, verify=False)
-        except Exception:
+        except requests.exceptions.RequestException:
             pass
 
         try:
             self._get_auth()
             if not self.response:
-                raise HTTPError(404, 'Not Found')
+                raise requests.exceptions.HTTPError(404, 'Not Found')
 
             self.response.raise_for_status()
             if self.auth:

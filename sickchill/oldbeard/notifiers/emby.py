@@ -35,7 +35,7 @@ class Notifier(object):
             response.raise_for_status()
 
             return True
-        except requests.exceptions.HTTPError as error:
+        except requests.exceptions.RequestException as error:
             logger.warning(f"EMBY: Warning: Could not contact Emby at {url} {error}")
             return False
 
@@ -80,7 +80,7 @@ class Notifier(object):
                 logger.debug('EMBY: HTTP response: {0}'.format(response.text.replace('\n', '')))
                 return True
 
-            except requests.exceptions.HTTPError as error:
+            except requests.exceptions.RequestException as error:
                 logger.warning(f"EMBY: Warning: Could not contact Emby at {url} {error}")
 
                 return False
