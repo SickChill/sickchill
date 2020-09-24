@@ -134,7 +134,7 @@
                                 <div class="movie-image">
                                     <img
                                             src="${static_url("images/poster.png")}" data-src="${result.get_fullsizeURL() or static_url("images/poster.png")}"
-                                            class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['year']}"
+                                            class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result.get('year', 'TBD')}"
                                             onerror="this.src='${static_url("images/poster.png")}'"
                                     />
                                 </div>
@@ -144,7 +144,7 @@
                                     </div>
 
                                     <div class="movie-date">
-                                        ${result['year']}
+                                        ${result.get('year', 'TBD')}
                                     </div>
                                     <div class="movie-details">
                                         <form method="post" action="${reverse_url('movies-add', 'add')}" class="form-horizontal pull-right">
