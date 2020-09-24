@@ -1498,7 +1498,39 @@ class CMDSickChillCheckVersion(ApiCall):
 
         return _responds(RESULT_SUCCESS, data)
 
+# noinspection PyAbstractClass
+class CMDSickChillBackup(ApiCall):
+    _help = {
+        "desc": "Make a backup of settings, databases, and cached images",
+        "optionalParameters": {
+            "location": {"desc": "The full path to the folder where you want to save the backup (must exist)"}
+        }
+    }
+    
+    def __init__(self, args, kwargs):
+        super().__init__(args, kwargs)
+        self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
 
+    def run(self):
+        update_manager = UpdateManager()
+        if self.location:
+            if not os.path.isdir(self.location):
+                return _responds(RESULT_FAILURE, msg='Not a valid location')
+        else:
+            self.location = os.path.join(settings.DATA_DIR, 'backup')
+            if not os.path.isdir(self.location):
+                os.mkdir(self.location)
+                
+        logger.info(_("API: sb.backup backing up to {location}").format(location=self.location))
+        result = update_manager._backup(self.location)
+        if result:
+            logger.info(_("API: sb.backup successful!"))
+            return _responds(RESULT_SUCCESS, msg="Backup successful")
+        else:
+            logger.warning(_("API: sb.backup failed!"))
+            return _responds(RESULT_FAILURE, msg="Backup failed")
+            
+        
 # noinspection PyAbstractClass
 class CMDSickChillCheckScheduler(ApiCall):
     _help = {"desc": "Get information about the scheduler"}
@@ -2869,6 +2901,7 @@ function_mapper = {
     "postprocess": CMDPostProcess,
     "sb.addrootdir": CMDSickChillAddRootDir,
     "sb.checkversion": CMDSickChillCheckVersion,
+    "sb.backup": CMDSickChillBackup,
     "sb.checkscheduler": CMDSickChillCheckScheduler,
     "sb.deleterootdir": CMDSickChillDeleteRootDir,
     "sb.getdefaults": CMDSickChillGetDefaults,
