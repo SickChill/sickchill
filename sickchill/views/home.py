@@ -159,7 +159,7 @@ class Home(WebRoot):
         return show_stat, max_download_count
 
     def is_alive(self):
-        callback = self.get_query_arguments('callback')[0]
+        callback = self.get_query_argument('callback')
         self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
         self.set_header('Content-Type', 'text/javascript')
         self.set_header('Access-Control-Allow-Origin', '*')

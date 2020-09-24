@@ -3104,17 +3104,17 @@ const SICKCHILL = {
                                     clearInterval(checkIsAlive);
                                     setTimeout(() => { // eslint-disable-line max-nested-callbacks
                                         window.location = scRoot + '/' + srDefaultPage + '/';
-                                    }, 2000);
+                                    }, 3000);
                                 }, 'jsonp');
-                            }, 100);
+                            }, 1000);
                         }
                     }, 'jsonp').fail(() => {
                         $('#restart_message').show();
                         $('#shut_down_loading').hide();
                         $('#shut_down_success').show();
                     });
-                }, 100);
-            }, 500);
+                }, 1000);
+            }, 5000);
         }
     },
     manage: {
