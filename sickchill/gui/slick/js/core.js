@@ -1867,6 +1867,10 @@ const SICKCHILL = {
                 } else if (selectedProvider.toLowerCase() === 'nzbget') {
                     $(nzbgetSettings).show();
                 } else if (selectedProvider.toLowerCase() === 'download_station') {
+                    $('#host_title').text('Synology host:port');
+                    $('#username_title').text('Synology Username');
+                    $('#password_title').text('Synology Password');
+
                     $(downloadStationSettings).show();
                     $(testDSM).show();
                     $(testDSMResult).show();
