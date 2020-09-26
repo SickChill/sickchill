@@ -965,7 +965,16 @@ def get_show(name, tryIndexers=False):
             fromCache = True
             showObj = Show.find(settings.showList, int(cache))
         else:
-            show_matches = [show for show in settings.showList if (show.show_name and name == show.show_name) or (show.custom_name and name == show.custom_name)]
+            check_names = [
+                full_sanitizeSceneName(name),
+                name
+            ]
+            show_matches = [
+                show for show in settings.showList
+                if (show.show_name and full_sanitizeSceneName(show.show_name) in check_names)
+                   or (show.custom_name and full_sanitizeSceneName(show.custom_name) in check_names)
+            ]
+
             if len(show_matches) == 1:
                 showObj = show_matches[0]
 
