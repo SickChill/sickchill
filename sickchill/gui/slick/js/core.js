@@ -2519,7 +2519,8 @@ const SICKCHILL = {
         },
         displayShow() {
             if (metaToBool('settings.FANART_BACKGROUND')) {
-                $.backstretch(scRoot + '/cache/images/' + $('#showID').attr('value') + '.fanart.jpg');
+                const backgroundPath = getMeta('showBackgroundImage') || '/cache/images/' + $('#showID').attr('value') + '.fanart.jpg';
+                $.backstretch(scRoot + backgroundPath);
                 $('.backstretch').css('opacity', getMeta('settings.FANART_BACKGROUND_OPACITY')).fadeIn('500');
             }
 
