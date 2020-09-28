@@ -272,7 +272,7 @@ class QueueItemAdd(ShowQueueItem):
                         network_image_url=self.show.network_image_url, show_image_url=self.show.show_image_url, quality=self.show.quality)
         # noinspection PyUnresolvedReferences
         return info(id=0, name=self.show_name, sort_name=sortable_name(self.show_name), network=_('Loading'),
-                    network_image_url='images/network/nonetwork.png', show_image_url=lambda x, include_date=False: 'images/{}.png'.format(('poster', 'banner')['banner' in x]),
+                    network_image_url='images/network/nonetwork.png', show_image_url=lambda x: 'images/{}.png'.format(('poster', 'banner')['banner' in x]),
                     quality=0)
 
     def run(self):
