@@ -126,6 +126,9 @@ class ImageCache(object):
         path = self.__getattribute__(which + "_path")(indexer_id)
         if os.path.isfile(path):
             return 'cache' + path.split(settings.CACHE_DIR)[1].replace('\\', '/')
+        if which == 'fanart' and sickchill.settings.SICKCHILL_BACKGROUND:
+            return 'ui/sickchill_background'
+
         return ('images/poster.png', 'images/banner.png')['banner' in which]
 
     BANNER = 1

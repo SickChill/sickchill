@@ -32,12 +32,15 @@ class Client(GenericClient, DelugeBase):
     def _get_auth(self):
         self.setup()
         if not self.client.connected:
-            for attempt in range(0, 5):
-                try:
-                    self.client.connect()
-                    break
-                except FailedToReconnectException:
-                    time.sleep(5)
+            try:
+                for attempt in range(0, 5):
+                    try:
+                        self.client.connect()
+                        break
+                    except FailedToReconnectException:
+                        time.sleep(5)
+            except Exception as error:
+                logger.debug(f"{self.name}: {error}")
 
         self.auth = self.client.connected
         return self.auth
