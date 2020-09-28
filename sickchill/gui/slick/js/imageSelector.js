@@ -146,7 +146,7 @@
         const imageSelectorElement = $('.image-selector-dialog');
         imagesContainer = imageSelectorElement.children('.images');
 
-        imageSelectorElement.children('#images-provider').on('change', function () {
+        imageSelectorElement.find('#images-provider').on('change', function () {
             const uploadContainer = imageSelectorElement.children('.upload');
 
             if ($(this).children('option:selected').val() === '-1') {

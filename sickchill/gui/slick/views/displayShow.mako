@@ -10,7 +10,9 @@
     from sickchill.oldbeard.helpers import anon_url
     from sickchill.helper.common import pretty_file_size, try_int
 %>
-
+<%block name="metas">
+    <meta data-var="showBackgroundImage" data-content="${static_url(show.show_image_url('fanart', include_date=True), include_version=False)}">
+</%block>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/lib/jquery.bookmarkscroll.js')}"></script>
     <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>

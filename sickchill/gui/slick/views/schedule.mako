@@ -171,7 +171,7 @@
                                         <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="bannerThumb"
                                                  src="${static_url("images/banner.png")}"
-                                                 data-src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'banner_thumb'))}"
+                                                 data-src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'banner_thumb', include_date=True))}"
                                             />
                                         </a>
                                     </td>
@@ -278,7 +278,7 @@
                                                     <div class="poster">
                                                         <a title="${cur_result['show_name']}" href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
                                                             <img alt=""
-                                                                 src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'poster_thumb'))}"
+                                                                 src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'poster_thumb', include_date=True))}"
                                                             />
                                                         </a>
                                                     </div>
@@ -425,7 +425,7 @@
                                     <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
                                         <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
-                                                 src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
+                                                 src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], (layout, 'poster_thumb')[layout == 'poster'], include_date=True))}"
                                             />
                                         </a>
                                     </th>
