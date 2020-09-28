@@ -35,9 +35,10 @@ class SickChillStaticFileHandler(StaticFileHandler):
         if not include_version:
             return url
 
-        custom_settings = settings
+        custom_settings = settings.copy()
         if 'cache/' in path:
             custom_settings['static_path'] = os.path.dirname(sickchill.settings.CACHE_DIR)
+
         version_hash = cls.get_version(custom_settings, path)
         if not version_hash:
             return url

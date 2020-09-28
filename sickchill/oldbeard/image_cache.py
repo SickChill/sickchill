@@ -122,16 +122,10 @@ class ImageCache(object):
         logger.debug("Checking if file " + str(banner_thumb_path) + " exists")
         return os.path.isfile(banner_thumb_path)
 
-    def image_url(self, indexer_id, which, include_date=False):
+    def image_url(self, indexer_id, which):
         path = self.__getattribute__(which + "_path")(indexer_id)
         if os.path.isfile(path):
-            try:
-                image_path = 'cache' + path.split(settings.CACHE_DIR)[1].replace('\\', '/')
-                return f"{image_path}?updated={int(os.path.getctime(path))}" if include_date else image_path
-
-            except (AttributeError, ValueError, IndexError):
-                logger.info('Error with cache path, path={}, cache={}, split={}'.format(
-                    path, settings.CACHE_DIR, str(path.split(settings.CACHE_DIR))))
+            return 'cache' + path.split(settings.CACHE_DIR)[1].replace('\\', '/')
         return ('images/poster.png', 'images/banner.png')['banner' in which]
 
     BANNER = 1

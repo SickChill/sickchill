@@ -484,7 +484,7 @@
                                             <div class="col-md-12">
                                                 <div class="poster-container">
                                                     <input type="hidden" name="poster"/>
-                                                    <img src="${static_url(show.show_image_url('poster', include_date=True), include_version=False)}"
+                                                    <img src="${static_url(show.show_image_url('poster'))}"
                                                          data-image-type="poster"
                                                          class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
                                                     />
@@ -504,7 +504,7 @@
                                             <div class="col-md-12">
                                                 <div class="banner-container">
                                                     <input type="hidden" name="banner"/>
-                                                    <img src="${static_url(show.show_image_url('banner', include_date=True), include_version=False)}"
+                                                    <img src="${static_url(show.show_image_url('banner'))}"
                                                          data-image-type="banner"
                                                          class="custom-image banner" alt="${_('Banner for')} ${show.name}"
                                                     />
@@ -524,7 +524,7 @@
                                             <div class="col-md-12">
                                                 <div class="fanart-container">
                                                     <input type="hidden" name="fanart"/>
-                                                    <img src="${static_url(show.show_image_url('fanart', include_date=True), include_version=False)}"
+                                                    <img src="${static_url(show.show_image_url('fanart'))}"
                                                          data-image-type="fanart"
                                                          class="custom-image tvshowImg" alt="${_('Fanart for')} ${show.name}"
                                                     />

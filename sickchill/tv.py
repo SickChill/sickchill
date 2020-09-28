@@ -152,8 +152,8 @@ class TVShow(object):
     def network_image_url(self):
         return 'images/network/{0}.png'.format(unidecode(self.network or 'nonetwork').lower())
 
-    def show_image_url(self, which, include_date=False):
-        return settings.IMAGE_CACHE.image_url(self.indexerid, which, include_date)
+    def show_image_url(self, which):
+        return settings.IMAGE_CACHE.image_url(self.indexerid, which)
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
