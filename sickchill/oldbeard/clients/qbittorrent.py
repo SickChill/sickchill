@@ -12,9 +12,10 @@ class Client(GenericClient):
         self.host, self.port = splitport(self.host or settings.TORRENT_HOST)
         self.api = qbittorrentapi.Client(
             host=self.host,
-            port=self.port or 8080,
+            port=self.port or None,
             username=self.username or settings.TORRENT_USERNAME,
-            password=self.password or settings.TORRENT_PASSWORD
+            password=self.password or settings.TORRENT_PASSWORD,
+            VERIFY_WEBUI_CERTIFICATE=settings.TORRENT_VERIFY_CERT
         )
 
     def _get_auth(self):

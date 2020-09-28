@@ -1976,19 +1976,18 @@ const SICKCHILL = {
                         $('#torrent_path_option').hide();
                         $('#label_warning_qbittorrent').show();
                         $('#label_anime_warning_qbittorrent').show();
+                        $('#torrent_verify_cert_option').show();
                         $('#host_desc_torrent').text(_('URL to your qBittorrent client (e.g. http://localhost:8080)'));
                     } else if (selectedProvider.toLowerCase() === 'mlnet') {
                         client = 'mlnet';
                         $('#torrent_path_option').hide();
                         $('#torrent_label_option').hide();
-                        $('#torrent_verify_cert_option').hide();
                         $('#torrent_paused_option').hide();
                         $('#host_desc_torrent').text(_('URL to your MLDonkey (e.g. http://localhost:4080)'));
                     } else if (selectedProvider.toLowerCase() === 'putio') {
                         client = 'putio';
                         $('#torrent_path_option').hide();
                         $('#torrent_label_option').hide();
-                        $('#torrent_verify_cert_option').hide();
                         $('#torrent_paused_option').hide();
                         $('#torrent_host_option').hide();
                         $('#host_desc_torrent').text(_('URL to your putio client (e.g. http://localhost:8080)'));
