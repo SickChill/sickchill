@@ -78,11 +78,12 @@
         const wrapUrl = new URL(scRoot + '/imageSelector/url_wrap/', location.href);
         if (thumbSrc) {
             wrapUrl.searchParams.append('url', thumbSrc);
-            image.attr('src', wrapUrl.href).attr('data-image', imageSrc);
+            image.attr('data-thumb', thumbSrc);
         } else {
             wrapUrl.searchParams.append('url', imageSrc);
-            image.attr('src', wrapUrl.href);
         }
+
+        image.attr('src', wrapUrl.href).attr('data-image', imageSrc);
 
         image.appendTo(imagesContainer);
     }
@@ -114,9 +115,10 @@
 
                 if (selectedImage.length > 0) {
                     const image = selectedImage.data('image');
-                    const thumb = selectedImage.attr('src');
+                    const thumb = selectedImage.data('thumb');
+                    const src = selectedImage.attr('src');
                     $('[name=' + imageType + ']').val((image ? image + '|' : '') + thumb);
-                    field.attr('src', thumb).addClass('modified');
+                    field.attr('src', src).addClass('modified');
                 }
 
                 $(this).dialog('close');
