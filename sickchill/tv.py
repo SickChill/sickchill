@@ -2451,6 +2451,14 @@ class TVEpisode(object):
             logger.warning("{0}: Failed to modify date of '{1}'".format
                            (self.show.indexerid, os.path.basename(self.location)))
 
+    def cleanup_download_properties(self):
+        """
+        Clean the properties related with the current download.
+        Use only when replacing with a new release or similar tasks.
+        """
+        if hasattr(self, '_release_group'):
+            del self._release_group
+
     def __getstate__(self):
         d = dict(self.__dict__)
         del d['lock']
