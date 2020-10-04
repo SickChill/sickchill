@@ -2456,8 +2456,14 @@ class TVEpisode(object):
         Clean the properties related with the current download.
         Use only when replacing with a new release or similar tasks.
         """
-        if hasattr(self, '_release_group'):
-            del self._release_group
+        self.file_size = 0
+        self.is_proper = False
+        self.location = ''
+        self.release_group = ''
+        self.release_name = ''
+        self._location = ''
+        self._release_group = ''
+
 
     def __getstate__(self):
         d = dict(self.__dict__)
