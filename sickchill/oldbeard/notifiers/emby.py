@@ -59,23 +59,11 @@ class Notifier(object):
                 logger.debug('EMBY: No host specified, check your settings')
                 return False
 
-            params = {}
-            if show:
-                if show.indexer == 1:
-                    provider = 'tvdb'
-                elif show.indexer == 2:
-                    logger.warning('EMBY: TVRage Provider no longer valid')
-                    return False
-                else:
-                    logger.warning('EMBY: Provider unknown')
-                    return False
-                params.update({f'{provider}id': show.indexerid})
-
-            url = urljoin(settings.EMBY_HOST, 'emby/Library/Series/Updated')
+            url = urljoin(settings.EMBY_HOST, 'emby/Library/Refresh')
 
             try:
                 session = self.__make_session()
-                response = session.get(url, params=params)
+                response = session.post(url)
                 response.raise_for_status()
                 logger.debug('EMBY: HTTP response: {0}'.format(response.text.replace('\n', '')))
                 return True
