@@ -11,13 +11,13 @@ from .aniDBtvDBmaper import TvDBMap
 class AniDBabstractObject(object):
     def __init__(self, aniDB, load=False):
         self.laoded = False
-        self.set_connection(aniDB)
-        if load:
-            self.load_data()
-
         self.aniDB = None
         self.rawData = None
         self.log = self._fake_log
+        
+        self.set_connection(aniDB)
+        if load:
+            self.load_data()
 
     def set_connection(self, anidb):
         self.aniDB = anidb
