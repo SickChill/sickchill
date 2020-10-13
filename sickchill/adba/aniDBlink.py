@@ -17,8 +17,8 @@ class AniDBLink(threading.Thread):
         self.timeout = timeout
 
         self.myport = myport
-        self.bound = self.connectSocket(myport, self.timeout)
         self.sock = None
+        self.bound = self.connectSocket(myport, self.timeout)
 
         self.cmd_queue = {None: None}
         self.resp_tagged_queue = {}
@@ -79,19 +79,20 @@ class AniDBLink(threading.Thread):
                 data = self.sock.recv(8192)
             except socket.timeout:
                 self._handle_timeouts()
-
                 continue
+
             self.log("NetIO < %s" % repr(data))
             try:
                 for i in range(2):
                     try:
-                        tmp = data
+                        tmp = data.decode('utf8')
                         resp = None
                         if tmp[:2] == '\x00\x00':
                             tmp = zlib.decompressobj().decompress(tmp[2:])
                             self.log("UnZip | %s" % repr(tmp))
                         resp = ResponseResolver(tmp)
                     except Exception:
+                        self.log("ResponseResolver Error")
                         sys.excepthook(*sys.exc_info())
                         self.crypt = None
                         self.session = None
@@ -120,6 +121,7 @@ class AniDBLink(threading.Thread):
                 else:
                     self.tags.remove(resp.restag)
             except Exception:
+                self.log("Catastrophic error - Closing anidb thread")
                 sys.excepthook(*sys.exc_info())
                 print("Avoiding flood by paranoidly panicing: Aborting link thread, killing connection, releasing waiters and quiting")
                 self.disconnectSocket()
@@ -191,7 +193,10 @@ class AniDBLink(threading.Thread):
         command.started = time()
         data = command.raw_data()
 
-        self.sock.sendto(data, self.target)
+        encoded_data = data.encode('utf-8')
+
+        self.sock.sendto(encoded_data, self.target)
+
         if command.command == 'AUTH' and self.log_private:
             self.log("NetIO > sensitive data is not logged!")
         else:
@@ -206,7 +211,7 @@ class AniDBLink(threading.Thread):
         return newtag
 
     def request(self, command):
-        if not self.sock or self.connectSocket(self.myport, self.timeout):
+        if not self.sock and self.connectSocket(self.myport, self.timeout):
             self.log('Not connected to aniDB, not sending command')
             raise AniDBError('No Socket')
 

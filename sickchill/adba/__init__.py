@@ -53,6 +53,8 @@ class Connection(threading.Thread):
         self.counter = 0
         self.counterAge = 0
 
+        self.catastrophicError = False
+
     @staticmethod
     def print_log(data):
         print((strftime("%Y-%m-%d %H:%M:%S", localtime(time())) + ": " + str(data)))
@@ -106,10 +108,14 @@ class Connection(threading.Thread):
             if self.mode == 1:
                 command.wait_response()
                 try:
-                    command.resp
+                    if command.resp == None:
+                        self.catastrophicError = True
+                        raise Exception()
                 except Exception:
                     if self.link.banned:
                         raise AniDBBannedError("User is banned")
+                    elif self.catastrophicError:
+                        raise AniDBInternalError("Something bad occurred (Usually a knock-on exception)")
                     else:
                         raise AniDBCommandTimeoutError("Command has timed out")
 

@@ -69,7 +69,7 @@ class Command(object):
 class AuthCommand(Command):
     def __init__(self, username, password, protover, client, clientver, nat=None, comp=None, enc=None, mtu=None):
         parameters = {'user': username, 'pass': password, 'protover': protover, 'client': client,
-                      'client_version': clientver, 'nat': nat, 'comp': comp, 'enc': enc, 'mtu': mtu}
+                      'clientver': clientver, 'nat': nat, 'comp': comp, 'enc': enc, 'mtu': mtu}
         super().__init__('AUTH', **parameters)
 
 
