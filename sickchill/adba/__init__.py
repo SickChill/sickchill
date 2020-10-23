@@ -108,7 +108,7 @@ class Connection(threading.Thread):
             if self.mode == 1:
                 command.wait_response()
                 try:
-                    if command.resp == None:
+                    if command.resp is None:
                         self.catastrophicError = True
                         raise Exception()
                 except Exception:
