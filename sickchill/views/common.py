@@ -45,18 +45,18 @@ class PageTemplate(Template):
         self.context['reverse_url'] = rh.reverse_url
         self.context['linkify'] = linkify
 
-        if rh.request.headers['Host'][0] == '[':
-            self.context['sbHost'] = re.match(r"^\[.*\]", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
-        else:
-            self.context['sbHost'] = re.match(r"^[^:]+", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
-
-        if "X-Forwarded-Host" in rh.request.headers:
-            self.context['sbHost'] = rh.request.headers['X-Forwarded-Host']
-        if "X-Forwarded-Port" in rh.request.headers:
-            sbHttpPort = rh.request.headers['X-Forwarded-Port']
-            self.context['sbHttpsPort'] = sbHttpPort
-        if "X-Forwarded-Proto" in rh.request.headers:
-            self.context['sbHttpsEnabled'] = rh.request.headers['X-Forwarded-Proto'].lower() == 'https'
+        # if rh.request.headers['Host'][0] == '[':
+        #     self.context['sbHost'] = re.match(r"^\[.*\]", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
+        # else:
+        #     self.context['sbHost'] = re.match(r"^[^:]+", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
+        #
+        # if "X-Forwarded-Host" in rh.request.headers:
+        #     self.context['sbHost'] = rh.request.headers['X-Forwarded-Host']
+        # if "X-Forwarded-Port" in rh.request.headers:
+        #     sbHttpPort = rh.request.headers['X-Forwarded-Port']
+        #     self.context['sbHttpsPort'] = sbHttpPort
+        # if "X-Forwarded-Proto" in rh.request.headers:
+        #     self.context['sbHttpsEnabled'] = rh.request.headers['X-Forwarded-Proto'].lower() == 'https'
 
         self.context['numErrors'] = len(classes.ErrorViewer.errors)
         self.context['numWarnings'] = len(classes.WarningViewer.errors)
