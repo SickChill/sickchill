@@ -3058,7 +3058,7 @@ const SICKCHILL = {
 
             $('.custom-image').imageSelector();
         },
-        manual_search_show_releases() {
+        manual_search_show_releases() { // eslint-disable-line camelcase
             $('#manualSearchShowTable:has(tbody tr)').tablesorter({
                 widgets: ['zebra', 'filter'],
                 textExtraction: (function () {
@@ -3066,7 +3066,7 @@ const SICKCHILL = {
                         0(node) { // Provider
                             return $(node).attr('title');
                         }
-                     };
+                    };
                 })(),
                 headers: (function () {
                     return {
@@ -3076,8 +3076,8 @@ const SICKCHILL = {
                     };
                 })(),
                 widgetOptions: {
-                    filter_hideFilters: true, // eslint-disable-line camelcase
-                },
+                    filter_hideFilters: true // eslint-disable-line camelcase
+                }
             });
         },
         postProcess() {
