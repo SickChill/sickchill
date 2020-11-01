@@ -112,6 +112,7 @@ module.exports = function(grunt) {
                 mainFiles: {
                     'tablesorter': [
                         'dist/js/jquery.tablesorter.combined.min.js',
+                        'dist/js/parsers/parser-metric.min.js',
                         'dist/js/widgets/widget-columnSelector.min.js',
                         'dist/css/theme.blue.min.css'
                     ],

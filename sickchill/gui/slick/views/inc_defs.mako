@@ -3,6 +3,7 @@
 %>
 <%def name="renderQualityPill(quality, showTitle=False, overrideClass=None)">
     <%
+        quality=int(quality)
         # Build a string of quality names to use as title attribute
         if showTitle:
             allowed_qualities, preferred_qualities = Quality.splitQuality(quality)
