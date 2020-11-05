@@ -141,8 +141,8 @@ class Provider(TorrentProvider):
                             try:
                                 title = result('td')[1].find('a').text
                                 download_url = urljoin(search_url, result('td')[3].find('a')['href'])
-                                seeders = int(result.find('td', class_='ac t_seeders').text)
-                                leechers = int(result.find('td', class_='ac t_leechers').text)
+                                seeders = int(result('td')[7].text)
+                                leechers = int(result('td')[8].text)
                                 torrent_size = result('td')[5].text
                                 size = convert_size(torrent_size) or -1
                             except (AttributeError, TypeError, KeyError):
