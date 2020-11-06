@@ -3058,6 +3058,28 @@ const SICKCHILL = {
 
             $('.custom-image').imageSelector();
         },
+        manual_search_show_releases() { // eslint-disable-line camelcase
+            $('#manualSearchShowTable:has(tbody tr)').tablesorter({
+                widgets: ['zebra', 'filter'],
+                textExtraction: (function () {
+                    return {
+                        0(node) { // Provider
+                            return $(node).attr('title');
+                        }
+                    };
+                })(),
+                headers: (function () {
+                    return {
+                        3: {sorter: 'quality'},
+                        4: {sorter: 'metric'},
+                        7: {sorter: false, filter: false}
+                    };
+                })(),
+                widgetOptions: {
+                    filter_hideFilters: true // eslint-disable-line camelcase
+                }
+            });
+        },
         postProcess() {
             $('#episodeDir').fileBrowser({
                 title: _('Select Unprocessed Episode Folder'),
