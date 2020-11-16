@@ -120,11 +120,13 @@ class BSPlayerProvider(Provider):
             try:
                 res = self.session.post(self.search_url, data=data, headers=headers)
                 return ElementTree.fromstring(res.content)
+            except ElementTree.ParseError:
+                logger.warning(f"[BSPlayer]: {res.content}")
             except Exception as ex:
                 logger.error("[BSPlayer] ERROR: %s." % ex)
                 if func_name == 'logIn':
                     self.search_url = get_sub_domain()
-                sleep(1)
+                sleep(2)
         logger.error('[BSPlayer] ERROR: Too many tries (%d)...' % tries)
 
     def initialize(self):

@@ -1,12 +1,10 @@
 # Author: Marvin Pinto <me@marvinp.ca>
 # Author: Dennis Lutter <lad1337@gmail.com>
-import urllib.parse
-import urllib.request
 
 from sickchill import logger, settings
-from sickchill.helper import HTTP_STATUS_CODES
 from sickchill.oldbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
                                        NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
+from sickchill.oldbeard.helpers import getURL, make_session
 
 
 class Notifier(object):
@@ -15,6 +13,8 @@ class Notifier(object):
 
     https://telegram.org/
     """
+    def __init__(self):
+        self.session = make_session()
 
     def test_notify(self, id=None, api_key=None):
         """
@@ -25,8 +25,7 @@ class Notifier(object):
         """
         return self._notify_telegram('Test', 'This is a test notification from SickChill', id, api_key, force=True)
 
-    @staticmethod
-    def _send_telegram_msg(title, msg, id=None, api_key=None):
+    def _send_telegram_msg(self, title, msg, id=None, api_key=None):
         """
         Sends a Telegram notification
 
@@ -37,40 +36,12 @@ class Notifier(object):
 
         :returns: True if the message succeeded, False otherwise
         """
-        id = settings.TELEGRAM_ID if id is None else id
-        api_key = settings.TELEGRAM_APIKEY if api_key is None else api_key
-
         logger.debug('Telegram in use with API KEY: {0}'.format(api_key))
-
-        message = '{0} : {1}'.format(title, msg)
-        payload = urllib.parse.urlencode({'chat_id': id, 'text': message})
-        telegram_api = 'https://api.telegram.org/bot%s/%s'
-
-        req = urllib.request.Request(telegram_api % (api_key, 'sendMessage'), payload.encode())
-
-        success = False
-        try:
-            urllib.request.urlopen(req)
-            message = 'Telegram message sent successfully.'
-            success = True
-        except IOError as e:
-            message = 'Unknown IO error: {0}'.format(e)
-            if hasattr(e, 'code'):
-                error_message = {
-                    400: 'Missing parameter(s). Double check your settings or if the channel/user exists.',
-                    401: 'Authentication failed.',
-                    420: 'Too many messages.',
-                    500: 'Server error. Please retry in a few moments.',
-                }
-                if e.code in error_message:
-                    message = error_message.get(e.code)
-                else:
-                    message = HTTP_STATUS_CODES.get(e.code, message)
-        except Exception as e:
-            message = 'Error while sending Telegram message: {0} '.format(e)
-        finally:
-            logger.info(message)
-            return success, message
+        params = {'chat_id': id or settings.TELEGRAM_ID, 'text': f'{title} : {msg}'}
+        response = getURL(f'https://api.telegram.org/bot{api_key or settings.TELEGRAM_APIKEY}/sendMessage', params=params, session=self.session, returns='json')
+        message = ('Telegram message sent successfully.', 'Sending Telegram message failed, check the log')[response is None]
+        logger.info(message)
+        return response is not None, message
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
         """
