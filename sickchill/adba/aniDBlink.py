@@ -85,12 +85,17 @@ class AniDBLink(threading.Thread):
             try:
                 for i in range(2):
                     try:
-                        tmp = data.decode('utf8')
+                        tmp = data
                         resp = None
-                        if tmp[:2] == '\x00\x00':
+                        if tmp[:2] == b'\x00\x00':
+                            self.log('Attempting inflation')
                             tmp = zlib.decompressobj().decompress(tmp[2:])
                             self.log("UnZip | %s" % repr(tmp))
+                        self.log('Decoding')
+                        tmp = tmp.decode('utf8')
+                        self.log('Parsing')
                         resp = ResponseResolver(tmp)
+                        self.log('Response success!')
                     except Exception:
                         self.log("ResponseResolver Error")
                         sys.excepthook(*sys.exc_info())
