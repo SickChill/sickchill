@@ -214,6 +214,10 @@ def is_media_file(filename):
         if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
             return False
 
+        # ignore abc.xyz.mkv release intro
+        if re.search(r'^abc\.xyz.(\w+\.)?(mp4|avi|mkv)$', filename, re.I):
+            return False
+
         # ignore RARBG release intro
         if re.search(r'^RARBG\.(\w+\.)?(mp4|avi|txt)$', filename, re.I):
             return False
