@@ -67,18 +67,23 @@ class Provider(TorrentProvider):
                 with BS4Parser(data, "html5lib") as html:
                     for result in html("img", alt="Download torrent"):
                         try:
-                            title = result.parent['title']
-                            details_url = result.parent['href']
+                            data_row = result.find_parent('tr')
+                            info_row = data_row.previous_sibling
+
+                            category, release_group, download_links, file_size, comments, downloads, seeders, leechers, health = data_row('td')
+                            e_title = info_row('td')[1]('a')[0]
+
+                            title = e_title.get_text(strip=True)
+                            details_url = e_title['href']
 
                             if not (title and details_url):
                                 if mode != "RSS":
                                     logger.debug("Discarding torrent because We could not parse the title and details")
                                 continue
 
-                            info = result.parent.parent.find_next_siblings("td")
-                            size = convert_size(info[0].get_text(strip=True)) or -1
-                            seeders = try_int(info[3].get_text(strip=True))
-                            leechers = try_int(info[4].get_text(strip=True))
+                            size = convert_size(file_size.get_text(strip=True)) or -1
+                            seeders = try_int(seeders.get_text(strip=True))
+                            leechers = try_int(leechers.get_text(strip=True))
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
@@ -87,7 +92,11 @@ class Provider(TorrentProvider):
                                                  (title, seeders, leechers))
                                 continue
 
-                            download_url, magnet, torrent_hash = self.get_details(details_url)
+                            e_download_torrent, e_download_magnet = download_links('a')
+                            download_url = urljoin(self.url, e_download_torrent['href'])
+                            magnet = urljoin(self.url, e_download_magnet['href'])
+                            torrent_hash = self.get_torrent_hash(details_url)
+
                             if not all([download_url, magnet, torrent_hash]):
                                 logger.info("Failed to get all required information from the details page. url:{}, magnet:{}, hash:{}".format(
                                     bool(download_url), bool(magnet), bool(torrent_hash))
@@ -111,19 +120,17 @@ class Provider(TorrentProvider):
 
             return results
 
-    def get_details(self, url):
-        download = magnet = torrent_hash = None
-        details_data = self.get_url(urljoin(self.url, url))
+    def get_torrent_hash(self, details_url):
+        torrent_hash = None
+        details_data = self.get_url(urljoin(self.url, details_url))
         if not details_data:
             logger.debug("No data returned from details page for result")
-            return download, magnet, torrent_hash
+            return torrent_hash
 
         with BS4Parser(details_data, "html5lib") as html:
-            magnet = html.find("img", src="/images/orange.png").parent['href'] + self._custom_trackers
-            download = html.find("img", src="/images/blue.png").parent['href']
-            torrent_hash = self.hash_from_magnet(magnet)
+            torrent_hash = html('td', string='Torrent hash:')[0].parent('td')[1].get_text(strip=True).replace(' ', '')
 
-        return download, magnet, torrent_hash
+        return torrent_hash
 
 
 class DemonoidCache(tvcache.TVCache):
