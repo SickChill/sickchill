@@ -32,7 +32,6 @@ disabled_provider_tests = {
     'Torrentz': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     'ThePirateBay': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
     'EZTV': ['test_rss_search', 'test_episode_search', 'test_season_search', 'test_cache_update', 'test_result_values'],
-    'Demonoid': ['test_rss_search', 'test_episode_search', 'test_season_search'],
     'Rarbg': ['test_season_search']
 }
 
