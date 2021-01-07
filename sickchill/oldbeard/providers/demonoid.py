@@ -70,8 +70,13 @@ class Provider(TorrentProvider):
                             data_row = result.find_parent('tr')
                             info_row = data_row.previous_sibling
 
-                            category, release_group, download_links, file_size, comments, downloads, seeders, leechers, health = data_row('td')
+                            data_cells = data_row('td')
+
                             e_title = info_row('td')[1]('a')[0]
+                            e_download_links = data_cells[2]
+                            e_file_size = data_cells[3]
+                            e_seeders = data_cells[6]
+                            e_leechers = data_cells[7]
 
                             title = e_title.get_text(strip=True)
                             details_url = e_title['href']
@@ -81,9 +86,9 @@ class Provider(TorrentProvider):
                                     logger.debug("Discarding torrent because We could not parse the title and details")
                                 continue
 
-                            size = convert_size(file_size.get_text(strip=True)) or -1
-                            seeders = try_int(seeders.get_text(strip=True))
-                            leechers = try_int(leechers.get_text(strip=True))
+                            size = convert_size(e_file_size.get_text(strip=True)) or -1
+                            seeders = try_int(e_seeders.get_text(strip=True))
+                            leechers = try_int(e_leechers.get_text(strip=True))
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
@@ -92,7 +97,7 @@ class Provider(TorrentProvider):
                                                  (title, seeders, leechers))
                                 continue
 
-                            e_download_torrent, e_download_magnet = download_links('a')
+                            e_download_torrent, e_download_magnet = e_download_links('a')
                             download_url = urljoin(self.url, e_download_torrent['href'])
                             magnet = urljoin(self.url, e_download_magnet['href'])
                             torrent_hash = self.get_torrent_hash(details_url)
