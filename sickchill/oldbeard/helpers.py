@@ -352,7 +352,9 @@ def moveFile(srcFile, destFile):
     try:
         shutil.move(srcFile, destFile)
         fixSetGroupID(destFile)
-    except OSError:
+    except PermissionError:
+        raise
+    except OSError as e:
         copyFile(srcFile, destFile)
         os.unlink(srcFile)
 
