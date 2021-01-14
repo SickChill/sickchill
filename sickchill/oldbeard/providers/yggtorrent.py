@@ -27,7 +27,7 @@ class Provider(TorrentProvider):
 
         # URLs
         self.custom_url = None
-        self.url = 'https://www2.yggtorrent.se/'
+        self.url = 'https://www2.yggtorrent.si/'
         self.urls = {
             'login': urljoin(self.url, 'user/login'),
             'search': urljoin(self.url, 'engine/search')
