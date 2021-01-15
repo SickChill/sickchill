@@ -73,7 +73,9 @@ class Provider(TorrentProvider):
             "filter_cat[2]": 1,
             "filter_cat[3]": 1,
             "filter_cat[4]": 1,
-            "filter_cat[5]": 1
+            "filter_cat[5]": 1,
+            "filter_cat[6]": 1,
+            "filter_cat[7]": 1,
         }
 
         # Units
