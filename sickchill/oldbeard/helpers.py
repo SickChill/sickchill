@@ -295,7 +295,7 @@ def list_media_files(path):
     :return: list of files
     """
 
-    if not dir or not os.path.isdir(path):
+    if not path or not os.path.isdir(path):
         return []
 
     files = []
