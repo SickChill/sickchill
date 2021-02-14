@@ -1,3 +1,5 @@
+import validators
+
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
@@ -15,6 +17,7 @@ class Provider(TorrentProvider):
         self.anime_only = True
 
         self.url = 'https://nyaa.si'
+        self.custom_url = None
 
         self.minseed = 0
         self.minleech = 0
@@ -26,6 +29,11 @@ class Provider(TorrentProvider):
         results = []
         if self.show and not self.show.is_anime:
             return results
+
+        if self.custom_url:
+            if not validators.url(self.custom_url):
+                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                return results
 
         for mode in search_strings:
             items = []
@@ -45,7 +53,7 @@ class Provider(TorrentProvider):
                     search_params['q'] = search_string
 
                 results = []
-                data = self.cache.get_rss_feed(self.url, params=search_params)['entries']
+                data = self.cache.get_rss_feed(self.custom_url or self.url, params=search_params)['entries']
                 if not data:
                     logger.debug('Data returned from provider does not contain any torrents')
                     continue
