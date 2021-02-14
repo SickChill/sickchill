@@ -326,10 +326,10 @@ def copyFile(srcFile, destFile):
         return
     except (shutil.SpecialFileError, shutil.Error) as error:
         logger.warning('{0}'.format(error))
-        return
+        raise error
     except Exception as error:
         logger.exception('{0}'.format(error))
-        return
+        raise error
 
     try:
         shutil.copymode(srcFile, destFile)
@@ -345,14 +345,8 @@ def moveFile(srcFile, destFile):
     :param destFile: Path of destination file
     """
 
-    try:
-        shutil.move(srcFile, destFile)
-        fixSetGroupID(destFile)
-    except PermissionError:
-        raise
-    except OSError as e:
-        copyFile(srcFile, destFile)
-        os.unlink(srcFile)
+    shutil.move(srcFile, destFile)
+    fixSetGroupID(destFile)
 
 
 def hardlinkFile(srcFile, destFile):
@@ -365,11 +359,13 @@ def hardlinkFile(srcFile, destFile):
 
     try:
         os.link(srcFile, destFile)
-        fixSetGroupID(destFile)
     except Exception as error:
         logger.warning(_("Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead").format
                        (srcFile, destFile, error))
         copyFile(srcFile, destFile)
+
+    fixSetGroupID(destFile)
+
 
 
 def moveAndSymlinkFile(srcFile, destFile):
@@ -588,32 +584,35 @@ def fixSetGroupID(childPath):
     if platform.system() == 'Windows':
         return
 
-    parentPath = os.path.dirname(childPath)
-    parentStat = os.stat(parentPath)
-    parentMode = stat.S_IMODE(parentStat[stat.ST_MODE])
+    try:
+        parentPath = os.path.dirname(childPath)
+        parentStat = os.stat(parentPath)
+        parentMode = stat.S_IMODE(parentStat[stat.ST_MODE])
 
-    childPath = os.path.join(parentPath, os.path.basename(childPath))
+        childPath = os.path.join(parentPath, os.path.basename(childPath))
 
-    if parentMode & stat.S_ISGID:
-        parentGID = parentStat[stat.ST_GID]
-        childStat = os.stat(childPath)
-        childGID = childStat[stat.ST_GID]
+        if parentMode & stat.S_ISGID:
+            parentGID = parentStat[stat.ST_GID]
+            childStat = os.stat(childPath)
+            childGID = childStat[stat.ST_GID]
 
-        if childGID == parentGID:
-            return
+            if childGID == parentGID:
+                return
 
-        childPath_owner = childStat.st_uid
-        user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
+            childPath_owner = childStat.st_uid
+            user_id = os.geteuid()
 
-        if user_id not in (childPath_owner, 0):
-            logger.debug(_("Not running as root or owner of {}, not trying to set the set-group-ID").format(childPath))
-            return
+            if user_id not in (childPath_owner, 0):
+                logger.debug(_("Not running as root or owner of {}, not trying to set the set-group-ID").format(childPath))
+                return
 
-        try:
-            os.chown(childPath, -1, parentGID)  # @UndefinedVariable - only available on UNIX
-            logger.debug(_("Respecting the set-group-ID bit on the parent directory for {0}").format(childPath))
-        except OSError:
-            logger.error("Failed to respect the set-group-ID bit on the parent directory for {0} (setting group ID {1})".format(childPath, parentGID))
+            try:
+                os.chown(childPath, -1, parentGID)
+                logger.debug(_("Respecting the set-group-ID bit on the parent directory for {0}").format(childPath))
+            except (OSError, PermissionError):
+                logger.debug("Failed to respect the set-group-ID bit on the parent directory for {0} (setting group ID {1})".format(childPath, parentGID))
+    except Exception as error:
+        logger.debug(f'Error setting set-group-id on the parent directory. {error}')
 
 
 def is_anime_in_show_list():
