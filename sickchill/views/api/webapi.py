@@ -929,7 +929,7 @@ class CMDEpisodeSetStatus(ApiCall):
 
         # convert the string status to a int
         for status in statusStrings:
-            if str(statusStrings[status]).lower() == str(self.status).lower():
+            if str(statusStrings[status]).lower() == str(_(self.status.title())).lower():
                 self.status = status
                 break
         else:  # if we don't break out of the for loop we got here.
@@ -1506,7 +1506,7 @@ class CMDSickChillBackup(ApiCall):
             "location": {"desc": "The full path to the folder where you want to save the backup (must exist)"}
         }
     }
-    
+
     def __init__(self, args, kwargs):
         super().__init__(args, kwargs)
         self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
@@ -1520,7 +1520,7 @@ class CMDSickChillBackup(ApiCall):
             self.location = os.path.join(settings.DATA_DIR, 'backup')
             if not os.path.isdir(self.location):
                 os.mkdir(self.location)
-                
+
         logger.info(_("API: sb.backup backing up to {location}").format(location=self.location))
         result = update_manager._backup(self.location)
         if result:
@@ -1529,8 +1529,8 @@ class CMDSickChillBackup(ApiCall):
         else:
             logger.warning(_("API: sb.backup failed!"))
             return _responds(RESULT_FAILURE, msg="Backup failed")
-            
-        
+
+
 # noinspection PyAbstractClass
 class CMDSickChillCheckScheduler(ApiCall):
     _help = {"desc": "Get information about the scheduler"}
@@ -1862,7 +1862,7 @@ class CMDSickChillSetDefaults(ApiCall):
         if self.status:
             # convert the string status to a int
             for status in statusStrings:
-                if statusStrings[status].lower() == str(self.status).lower():
+                if statusStrings[status].lower() == str(_(self.status.title())).lower():
                     self.status = status
                     break
             # this should be obsolete because of the above
@@ -2173,7 +2173,7 @@ class CMDShowAddNew(ApiCall):
         if self.status:
             # convert the string status to a int
             for status in statusStrings:
-                if statusStrings[status].lower() == str(self.status).lower():
+                if statusStrings[status].lower() == str(_(self.status.title())).lower():
                     self.status = status
                     break
 
@@ -2190,7 +2190,7 @@ class CMDShowAddNew(ApiCall):
         if self.future_status:
             # convert the string status to a int
             for status in statusStrings:
-                if statusStrings[status].lower() == str(self.future_status).lower():
+                if statusStrings[status].lower() == str(_(self.future_status.title())).lower():
                     self.future_status = status
                     break
 
