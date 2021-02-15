@@ -575,21 +575,22 @@ class StatusStrings(NumDict):
 
 
 # Assign strings to statuses
-statusStrings = StatusStrings({
-
-    UNKNOWN: _("Unknown"),
-    UNAIRED: _("Unaired"),
-    SNATCHED: _("Snatched"),
-    DOWNLOADED: _("Downloaded"),
-    SKIPPED: _("Skipped"),
-    SNATCHED_PROPER: _("Snatched (Proper)"),
-    WANTED: _("Wanted"),
-    ARCHIVED: _("Archived"),
-    IGNORED: _("Ignored"),
-    SUBTITLED: _("Subtitled"),
-    FAILED: _("Failed"),
-    SNATCHED_BEST: _("Snatched (Best)")
+statusStrings_bare = StatusStrings({
+    UNKNOWN: "Unknown",
+    UNAIRED: "Unaired",
+    SNATCHED: "Snatched",
+    DOWNLOADED: "Downloaded",
+    SKIPPED: "Skipped",
+    SNATCHED_PROPER: "Snatched (Proper)",
+    WANTED: "Wanted",
+    ARCHIVED: "Archived",
+    IGNORED: "Ignored",
+    SUBTITLED: "Subtitled",
+    FAILED: "Failed",
+    SNATCHED_BEST: "Snatched (Best)"
 })
+
+statusStrings = StatusStrings({key: _(value) for key, value in statusStrings_bare.items()})
 
 cssStatusStrings = NumDict({
     DOWNLOADED: 'downloaded',

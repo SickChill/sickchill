@@ -16,7 +16,7 @@ from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
 from sickchill.oldbeard import classes, db, helpers, network_timezones, sbdatetime, search_queue, ui
-from sickchill.oldbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings, UNAIRED,
+from sickchill.oldbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings_bare, UNAIRED,
                                        UNKNOWN, WANTED)
 from sickchill.oldbeard.postProcessor import PROCESS_METHODS
 from sickchill.show.ComingEpisodes import ComingEpisodes
@@ -467,8 +467,17 @@ def _responds(result_type, data=None, msg=""):
     }
 
 
-def _get_status_strings(s):
-    return statusStrings[s]
+def status_to_code(status_string) -> int:
+    # convert the string status to a int
+    if isinstance(status_string, int):
+        return status_string
+
+    for status in statusStrings_bare:
+        if statusStrings_bare[status].lower() == str(status_string).lower():
+            return status
+
+    logger.debug(traceback.format_exc())
+    raise ApiError("The status string could not be matched to a status. Report to Devs!")
 
 
 def _ordinal_to_datetime_form(ordinal):
@@ -755,7 +764,7 @@ class CMDEpisode(ApiCall):
             episode['airdate'] = 'Never'
 
         status, quality = Quality.splitCompositeStatus(int(episode["status"]))
-        episode["status"] = _get_status_strings(status)
+        episode["status"] = statusStrings_bare[status]
         episode["quality"] = get_quality_string(quality)
         episode["file_size_human"] = pretty_file_size(episode["file_size"])
 
@@ -927,14 +936,7 @@ class CMDEpisodeSetStatus(ApiCall):
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
-        # convert the string status to a int
-        for status in statusStrings:
-            if str(statusStrings[status]).lower() == str(_(self.status.title())).lower():
-                self.status = status
-                break
-        else:  # if we don't break out of the for loop we got here.
-            # the allowed values has at least one item that could not be matched against the internal status strings
-            raise ApiError("The status string could not be matched to a status. Report to Devs!")
+        self.status = status_to_code(self.status)
 
         if self.e:
             ep_obj = show_obj.getEpisode(self.s, self.e)
@@ -947,7 +949,7 @@ class CMDEpisodeSetStatus(ApiCall):
 
         def _ep_result(result_code, ep, msg=""):
             return {
-                'season': ep.season, 'episode': ep.episode, 'status': _get_status_strings(ep.status),
+                'season': ep.season, 'episode': ep.episode, 'status': statusStrings_bare[ep.status],
                 'result': result_type_map[result_code], 'message': msg
             }
 
@@ -1131,7 +1133,7 @@ class CMDHistory(ApiCall):
 
         for row in data:
             status, quality = Quality.splitCompositeStatus(int(row["action"]))
-            status = _get_status_strings(status)
+            status = statusStrings_bare[status]
 
             if self.type and not status.lower() == self.type:
                 continue
@@ -1616,7 +1618,7 @@ class CMDSickChillGetDefaults(ApiCall):
         any_qualities, best_qualities = _map_quality(settings.QUALITY_DEFAULT)
 
         data = {
-            "status": statusStrings[settings.STATUS_DEFAULT].lower(),
+            "status": statusStrings_bare[settings.STATUS_DEFAULT].lower(),
             "flatten_folders": int(not settings.SEASON_FOLDERS_DEFAULT),
             "season_folders": int(settings.SEASON_FOLDERS_DEFAULT),
             "initial": any_qualities, "archive": best_qualities,
@@ -1839,7 +1841,7 @@ class CMDSickChillSetDefaults(ApiCall):
         self.season_folders, args = self.check_params(args, kwargs, "flatten_folders", not bool(settings.SEASON_FOLDERS_DEFAULT), False, "bool", [])
         self.season_folders, args = self.check_params(args, kwargs, "season_folders", self.season_folders, False, "bool", [])
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string",
-                                              ["wanted", "skipped", "ignored"])
+                                              ["wanted", "skipped", "archived", "ignored"])
 
     def run(self):
         """ Set SickChill's user default configuration value """
@@ -1860,17 +1862,12 @@ class CMDSickChillSetDefaults(ApiCall):
             settings.QUALITY_DEFAULT = Quality.combineQualities(i_quality_id, a_quality_id)
 
         if self.status:
-            # convert the string status to a int
-            for status in statusStrings:
-                if statusStrings[status].lower() == str(_(self.status.title())).lower():
-                    self.status = status
-                    break
-            # this should be obsolete because of the above
-            if self.status not in statusStrings:
-                raise ApiError("Invalid Status")
+            self.status = status_to_code(self.status)
+
             # only allow the status options we want
-            if int(self.status) not in (3, 5, 6, 7):
+            if self.status not in (WANTED, SKIPPED, ARCHIVED, IGNORED):
                 raise ApiError("Status Prohibited")
+
             settings.STATUS_DEFAULT = self.status
 
         if self.season_folders is not None:
@@ -2171,17 +2168,10 @@ class CMDShowAddNew(ApiCall):
         # use default status as a fail-safe
         new_status = settings.STATUS_DEFAULT
         if self.status:
-            # convert the string status to a int
-            for status in statusStrings:
-                if statusStrings[status].lower() == str(_(self.status.title())).lower():
-                    self.status = status
-                    break
-
-            if self.status not in statusStrings:
-                raise ApiError("Invalid Status")
+            self.status = status_to_code(self.status)
 
             # only allow the status options we want
-            if int(self.status) not in (WANTED, SKIPPED, IGNORED):
+            if self.status not in (WANTED, SKIPPED, IGNORED):
                 return _responds(RESULT_FAILURE, msg="Status prohibited")
             new_status = self.status
 
@@ -2189,16 +2179,10 @@ class CMDShowAddNew(ApiCall):
         default_ep_status_after = settings.STATUS_DEFAULT_AFTER
         if self.future_status:
             # convert the string status to a int
-            for status in statusStrings:
-                if statusStrings[status].lower() == str(_(self.future_status.title())).lower():
-                    self.future_status = status
-                    break
-
-            if self.future_status not in statusStrings:
-                raise ApiError("Invalid Status")
+            self.future_status = status_to_code(self.future_status)
 
             # only allow the status options we want
-            if int(self.future_status) not in (WANTED, SKIPPED, IGNORED):
+            if self.future_status not in (WANTED, SKIPPED, IGNORED):
                 return _responds(RESULT_FAILURE, msg="Status prohibited")
             default_ep_status_after = self.future_status
 
@@ -2579,7 +2563,7 @@ class CMDShowSeasons(ApiCall):
             seasons = {}
             for row in sql_results:
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
-                row["status"] = _get_status_strings(status)
+                row["status"] = statusStrings_bare[status]
                 row["quality"] = get_quality_string(quality)
                 if try_int(row['airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
@@ -2606,7 +2590,7 @@ class CMDShowSeasons(ApiCall):
                 cur_episode = int(row["episode"])
                 del row["episode"]
                 status, quality = Quality.splitCompositeStatus(int(row["status"]))
-                row["status"] = _get_status_strings(status)
+                row["status"] = statusStrings_bare[status]
                 row["quality"] = get_quality_string(quality)
                 if try_int(row['airdate'], 1) > 693595:  # 1900
                     dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
@@ -2693,7 +2677,7 @@ class CMDShowStats(ApiCall):
 
         # show stats
         episode_status_counts_total = {"total": 0}
-        for status in statusStrings:
+        for status in statusStrings_bare:
             if status in [UNKNOWN, DOWNLOADED, SNATCHED, SNATCHED_PROPER, ARCHIVED]:
                 continue
             episode_status_counts_total[status] = 0
@@ -2764,7 +2748,7 @@ class CMDShowStats(ApiCall):
                 episodes_stats["total"] = episode_status_counts_total[statusCode]
                 continue
             # status, quality = Quality.splitCompositeStatus(int(statusCode))
-            status_string = statusStrings[statusCode].lower().replace(" ", "_").replace("(", "").replace(
+            status_string = statusStrings_bare[statusCode].lower().replace(" ", "_").replace("(", "").replace(
                 ")", "")
             episodes_stats[status_string] = episode_status_counts_total[statusCode]
 
