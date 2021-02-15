@@ -13,10 +13,10 @@ ENV PYTHONIOENCODING="UTF-8"
 RUN apk add --update --no-cache \
     git mediainfo unrar tzdata libffi openssl \
     && apk add --no-cache --virtual .build-deps \
-    gcc libffi-dev openssl-dev musl-dev \
-    && pip install pyopenssl \
+    gcc libffi-dev openssl-dev musl-dev python3-dev cargo \
+    && pip install -U pyopenssl \
     && apk del .build-deps gcc \
-    &&  mkdir /app /var/run/sickchill
+    && mkdir /app /var/run/sickchill
 
 WORKDIR /app/sickchill
 VOLUME /data /downloads /tv
