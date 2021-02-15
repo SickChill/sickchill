@@ -344,8 +344,12 @@ def moveFile(srcFile, destFile):
     :param srcFile: Path of source file
     :param destFile: Path of destination file
     """
+    try:
+        shutil.move(srcFile, destFile)
+    except OSError:
+        copyFile(srcFile, destFile)
+        os.unlink(srcFile)
 
-    shutil.move(srcFile, destFile)
     fixSetGroupID(destFile)
 
 
