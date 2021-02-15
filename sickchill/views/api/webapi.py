@@ -16,8 +16,8 @@ from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
 from sickchill.oldbeard import classes, db, helpers, network_timezones, sbdatetime, search_queue, ui
-from sickchill.oldbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings_bare, UNAIRED,
-                                       UNKNOWN, WANTED)
+from sickchill.oldbeard.common import (ARCHIVED, DOWNLOADED, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED, SNATCHED_PROPER, statusStrings_bare,
+                                       UNAIRED, UNKNOWN, WANTED)
 from sickchill.oldbeard.postProcessor import PROCESS_METHODS
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
