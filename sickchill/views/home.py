@@ -22,6 +22,7 @@ from sickchill.oldbeard.scene_numbering import (get_scene_absolute_numbering, ge
                                                 get_scene_numbering_for_show, get_xem_absolute_numbering_for_show, get_xem_numbering_for_show,
                                                 set_scene_numbering)
 from sickchill.oldbeard.trakt_api import TraktAPI
+from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -1601,13 +1602,22 @@ class Home(WebRoot):
 
         cache_db_con = db.DBConnection('cache.db', row_type="dict")
         result = cache_db_con.select_one('SELECT * FROM results WHERE url = ?', [url])
-        if not result:
-            json.dumps({'result': 'failure', 'message': _('Result not found in the cache')})
+        if result:
+            provider = sickchill.oldbeard.providers.getProviderClass(result.get('provider'))
+            if provider.provider_type == GenericProvider.TORRENT:
+                result = sickchill.oldbeard.classes.TorrentSearchResult.make_result(result)
+            elif provider.provider_type == GenericProvider.NZB:
+                result = sickchill.oldbeard.classes.NZBSearchResult.make_result(result)
+            elif provider.provider_type == GenericProvider.NZBDATA:
+                result = sickchill.oldbeard.classes.NZBDataSearchResult.make_result(result)
+            else:
+                result = json.dumps({'result': 'failure', 'message': _('Result provider not found, cannot determine type')})
+        else:
+            result = json.dumps({'result': 'failure', 'message': _('Result not found in the cache')})
 
-        result = sickchill.oldbeard.classes.TorrentSearchResult.make_result(result)
         if isinstance(result, str):
             sickchill.oldbeard.logger.info(_('Could not snatch manually selected result: {}').format(result))
-        elif result:
+        elif isinstance(result, sickchill.oldbeard.classes.SearchResult):
             sickchill.oldbeard.search.snatchEpisode(result, SNATCHED_BEST)
 
         return self.redirect("/home/displayShow?show=" + show)
