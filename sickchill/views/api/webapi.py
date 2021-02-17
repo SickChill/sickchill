@@ -1348,9 +1348,14 @@ class CMDPostProcess(ApiCall):
         "desc": "Manually post-process the files in the download folder",
         "optionalParameters": {
             "path": {"desc": "The path to the folder to post-process"},
+            "proc_dir": {"desc": "The path to the folder to post-process (deprecated, use path param instead)"},
+            "release_name": {"desc": "The name of the release to process"},
+            "nzbName": {"desc": "The name of the release to process (deprecated, use release_name param instead)"},
             "force_replace": {"desc": "Force already post-processed files to be post-processed again"},
+            "force": {"desc": "Force already post-processed files to be post-processed again (deprecated, use force_replace param instead)"},
             "force_next": {"desc": "Waits for the current processing queue item to finish and returns result of this request"},
             "return_data": {"desc": "Returns the result of the post-process"},
+            "quiet": {"desc": "Returns the result of the post-process (deprecated, use return_data param instead)"},
             "process_method": {"desc": "How should valid post-processed files be handled"},
             "is_priority": {"desc": "Replace the file even if it exists in a higher quality"},
             "failed": {"desc": "Mark download as failed"},
@@ -1361,13 +1366,21 @@ class CMDPostProcess(ApiCall):
 
     def __init__(self, args, kwargs):
         super().__init__(args, kwargs)
-        self.path, args = self.check_params(args, kwargs, "path", None, False, "string", [])
-        self.release_name, args = self.check_params(args, kwargs, "release_name", None, False, "string", [])
-        self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", [])
+        self.proc_dir, args = self.check_params(args, kwargs, "proc_dir", None, False, "string", [])
+        self.path, args = self.check_params(args, kwargs, "path", None, False, "string", []) or self.proc_dir
+
+        self.nzbName, args = self.check_params(args, kwargs, "nzbName", None, False, "string", [])
+        self.release_name, args = self.check_params(args, kwargs, "release_name", None, False, "string", []) or self.nzbName
+
+        self.force, args = self.check_params(args, kwargs, "force", False, False, "bool", [])
+        self.force_replace, args = self.check_params(args, kwargs, "force_replace", False, False, "bool", []) or self.force
+
         self.force_next, args = self.check_params(args, kwargs, "force_next", False, False, "bool", [])
-        self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", [])
-        self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string",
-                                                      PROCESS_METHODS)
+
+        self.quiet, args = self.check_params(args, kwargs, "quiet", False, False, "bool", [])
+        self.return_data, args = self.check_params(args, kwargs, "return_data", False, False, "bool", []) or self.quiet
+
+        self.process_method, args = self.check_params(args, kwargs, "process_method", False, False, "string", PROCESS_METHODS)
         self.is_priority, args = self.check_params(args, kwargs, "is_priority", False, False, "bool", [])
         self.failed, args = self.check_params(args, kwargs, "failed", False, False, "bool", [])
         self.delete, args = self.check_params(args, kwargs, "delete", False, False, "bool", [])
