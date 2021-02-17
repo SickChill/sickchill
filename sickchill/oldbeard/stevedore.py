@@ -28,6 +28,7 @@ providers = RegistrableExtensionManager('oldbeard.providers', [
     'shazbat = oldbeard.providers.shazbat:ShazbatProvider',
     'scc = oldbeard.providers.scc:SCCProvider',
     'thepiratebay = oldbeard.providers.thepiratebay:ThePirateBayProvider',
+    'torrent_paradise = oldbeard.providers.torrent_paradise:Provider',
     'nyaa = oldbeard.providers.nyaa:NyaaProvider',
     'bitcannon = oldbeard.providers.bitcannon:BitCannonProvider',
     'magnetdl = oldbeard.providers.magnetdl:MagnetDLProvider',

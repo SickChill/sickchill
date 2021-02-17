@@ -435,6 +435,7 @@ TRACKERS_LIST = "udp://coppersurfer.tk:6969/announce,udp://open.demonii.com:1337
 TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
 TRACKERS_LIST += "udp://exodus.desync.com:6969,udp://9.rarbg.me:2710/announce,"
 TRACKERS_LIST += "udp://glotorrents.pw:6969/announce,udp://tracker.openbittorrent.com:80/announce,"
+TRACKERS_LIST += "udp://tracker.opentrackr.org:1337/announce,udp://tracker.internetwarriors.net:1337"
 TRAKT_ACCESS_TOKEN = None
 # TRAKT_API_KEY = 'd4161a7a106424551add171e5470112e4afdaf2438e6ef2fe0548edc75924868'
 TRAKT_API_KEY = '5c65f55e11d48c35385d9e8670615763a605fad28374c8ae553a7b7a50651ddd'

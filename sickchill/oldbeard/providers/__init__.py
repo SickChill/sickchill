@@ -7,15 +7,15 @@ from sickchill.oldbeard.providers import (abnormal, alpharatio, archetorrent, bi
                                           eztv, filelist, gftracker, gimmepeers, hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs,
                                           ilcorsaronero, immortalseed, iptorrents, kat, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits,
                                           nyaa, omgwtfnzbs, pretome, rarbg, scc, scenetime, shazbat, skytorrents, speedcd, thepiratebay, tntvillage,
-                                          tokyotoshokan, torrent9, torrentbytes, torrentday, torrentleech, torrentproject, torrentz, tvchaosuk, xthor,
-                                          yggtorrent)
+                                          tokyotoshokan, torrent9, torrent_paradise, torrentbytes, torrentday, torrentleech, torrentproject, torrentz,
+                                          tvchaosuk, xthor, yggtorrent)
 
 __all__ = [
     'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'bjshare', 'btn', 'cpasbien', 'danishbits', 'demonoid',
     'elitetorrent', 'eztv', 'filelist', 'gftracker', 'gimmepeers', 'hd4free', 'hdbits', 'hdspace', 'hdtorrents', 'hdtorrents_it',
     'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'kat', 'limetorrents', 'magnetdl', 'morethantv',
     'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
-    'shazbat', 'skytorrents', 'speedcd', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9',
+    'shazbat', 'skytorrents', 'speedcd', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9', 'torrent_paradise',
     'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent'
 ]
 
