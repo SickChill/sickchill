@@ -5,13 +5,9 @@ name: Python package
 
 on:
   push:
-    branches:
-      - '*'
     branches-ignore:
-        - 'l10n_*'
+      - 'l10n_*'
   pull_request:
-    branches:
-      - '*'
     branches-ignore:
       - 'l10n_*'
 
