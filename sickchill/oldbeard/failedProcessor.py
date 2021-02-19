@@ -1,21 +1,24 @@
 import logging
 
+import validators
+
 from sickchill import logger, settings
 from sickchill.helper.exceptions import FailedPostProcessingFailedException
 from sickchill.oldbeard import search_queue, show_name_helpers
+from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
 class FailedProcessor(object):
     """Take appropriate action when a download fails to complete"""
 
-    def __init__(self, dirName, nzbName):
+    def __init__(self, directory, release_name):
         """
-        :param dirName: Full path to the folder of the failed download
-        :param nzbName: Full name of the nzb file that failed
+        :param directory: Full path to the folder of the failed download
+        :param release_name: Full name of the release file that failed
         """
-        self.dir_name = dirName
-        self.nzb_name = nzbName
+        self.directory = directory
+        self.release_name = release_name
 
         self.log = ""
 
@@ -25,15 +28,21 @@ class FailedProcessor(object):
 
         :return: True
         """
-        self._log("Failed download detected: (" + str(self.nzb_name) + ", " + str(self.dir_name) + ")")
+        self._log(_("Failed download detected:") + " (" + str(self.release_name) + ", " + str(self.directory) + ")")
 
-        releaseName = show_name_helpers.determineReleaseName(self.dir_name, self.nzb_name)
-        if not releaseName:
-            self._log("Warning: unable to find a valid release name.", logger.WARNING)
+        if self.release_name and validators.url(self.release_name):
+            cache_db_con = DBConnection("cache.db")
+            cache_result = cache_db_con.select_one("SELECT name FROM results WHERE url = ?", [self.release_name])
+            if cache_result:
+                self.release_name = cache_result[0]
+
+        release_name = show_name_helpers.determine_release_name(self.directory, self.release_name)
+        if not release_name:
+            self._log(_("Warning: unable to find a valid release name."), logger.WARNING)
             raise FailedPostProcessingFailedException()
 
         try:
-            parsed = NameParser(False).parse(releaseName)
+            parsed = NameParser(False).parse(release_name)
         except (InvalidNameException, InvalidShowException) as error:
             self._log("{0}".format(error), logger.DEBUG)
             raise FailedPostProcessingFailedException()

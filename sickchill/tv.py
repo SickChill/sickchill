@@ -408,17 +408,17 @@ class TVShow(object):
                 continue
 
             # see if we should save the release name in the db
-            ep_file_name = os.path.basename(curEpisode.location)
-            ep_file_name = os.path.splitext(ep_file_name)[0]
+            ep_filename = os.path.basename(curEpisode.location)
+            ep_filename = os.path.splitext(ep_filename)[0]
 
             try:
-                parse_result = NameParser(False, showObj=self, tryIndexers=True).parse(ep_file_name)
+                parse_result = NameParser(False, showObj=self, tryIndexers=True).parse(ep_filename)
             except (InvalidNameException, InvalidShowException):
                 parse_result = None
 
-            if ' ' not in ep_file_name and parse_result and parse_result.release_group:
-                logger.debug(f"Name {ep_file_name} gave release group of {parse_result.release_group}, seems valid")
-                curEpisode.release_name = ep_file_name
+            if ' ' not in ep_filename and parse_result and parse_result.release_group:
+                logger.debug(f"Name {ep_filename} gave release group of {parse_result.release_group}, seems valid")
+                curEpisode.release_name = ep_filename
                 curEpisode.release_group = parse_result.release_group
 
             # store the reference in the show

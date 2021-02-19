@@ -288,7 +288,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         show_obj: TVShow object for which to create the metadata
 
         path: An absolute or relative path where we should put the file. Note that
-                the file name will be the default show_file_name.
+                the file name will be the default show_filename.
 
         Note that this method expects that _show_data will return an ElementTree
         object. If your _show_data returns data in another format yo'll need to
@@ -330,7 +330,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         ep_obj: TVEpisode object for which to create the metadata
 
-        file_name_path: The file name to use for this metadata. Note that the extension
+        filename_path: The file name to use for this metadata. Note that the extension
                 will be automatically added based on _ep_nfo_extension. This should
                 include an absolute path.
 

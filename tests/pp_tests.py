@@ -24,11 +24,11 @@ class PPInitTests(unittest.TestCase):
         """
         self.post_processor = PostProcessor(test.FILE_PATH)
 
-    def test_init_file_name(self):
+    def test_init_filename(self):
         """
         Test file name
         """
-        self.assertEqual(self.post_processor.file_name, test.FILENAME)
+        self.assertEqual(self.post_processor.filename, test.FILENAME)
 
     def test_init_folder_name(self):
         """
@@ -67,7 +67,7 @@ class ListAssociatedFiles(unittest.TestCase):
         super().__init__(test_case)
         self.test_tree = os.path.join('Show Name', 'associated_files', 'random', 'recursive', 'subdir')
 
-        file_names = [
+        filenames = [
             'Show Name [SickChill].avi',
             'Show Name [SickChill].srt',
             'Show Name [SickChill].nfo',
@@ -77,7 +77,7 @@ class ListAssociatedFiles(unittest.TestCase):
             'Show [SickChill] Non-Associated.en.srt',
             'Show [SickChill] Non-Associated.srt',
         ]
-        self.file_list = [os.path.join('Show Name', f) for f in file_names] + [os.path.join(self.test_tree, f) for f in file_names]
+        self.file_list = [os.path.join('Show Name', f) for f in filenames] + [os.path.join(self.test_tree, f) for f in filenames]
         self.post_processor = PostProcessor('Show Name')
         self.maxDiff = None
         settings.MOVE_ASSOCIATED_FILES = True
@@ -100,8 +100,8 @@ class ListAssociatedFiles(unittest.TestCase):
 
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=True)
 
-        associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
-        out_list = sorted(file_name for file_name in self.file_list[1:] if 'Non-Associated' not in file_name)
+        associated_files = sorted(filename.lstrip('./') for filename in associated_files)
+        out_list = sorted(filename for filename in self.file_list[1:] if 'Non-Associated' not in filename)
 
         self.assertEqual(out_list, associated_files)
 
@@ -111,23 +111,23 @@ class ListAssociatedFiles(unittest.TestCase):
     def test_no_subfolders(self):
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=False)
 
-        associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
-        out_list = sorted(file_name for file_name in self.file_list[1:] if 'associated_files' not in file_name and 'Non-Associated' not in file_name)
+        associated_files = sorted(filename.lstrip('./') for filename in associated_files)
+        out_list = sorted(filename for filename in self.file_list[1:] if 'associated_files' not in filename and 'Non-Associated' not in filename)
 
         self.assertEqual(out_list, associated_files)
 
     def test_subtitles_only(self):
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=True)
 
-        associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
-        out_list = sorted(file_name for file_name in self.file_list if file_name.endswith('.srt') and 'Non-Associated' not in file_name)
+        associated_files = sorted(filename.lstrip('./') for filename in associated_files)
+        out_list = sorted(filename for filename in self.file_list if filename.endswith('.srt') and 'Non-Associated' not in filename)
 
         self.assertEqual(out_list, associated_files)
 
     def test_subtitles_only_no_subfolders(self):
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=False)
-        associated_files = sorted(file_name.lstrip('./') for file_name in associated_files)
-        out_list = sorted(file_name for file_name in self.file_list if file_name.endswith('.srt') and 'associated_files' not in file_name and 'Non-Associated' not in file_name)
+        associated_files = sorted(filename.lstrip('./') for filename in associated_files)
+        out_list = sorted(filename for filename in self.file_list if filename.endswith('.srt') and 'associated_files' not in filename and 'Non-Associated' not in filename)
 
         self.assertEqual(out_list, associated_files)
 
