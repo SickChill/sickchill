@@ -1,21 +1,21 @@
 # Translations template for sickchill.
-# Copyright (C) 2020 SickChill
+# Copyright (C) 2021 SickChill
 # This file is distributed under the same license as the sickchill project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sickchill 2020.9.13.post3.dev2+g61b294d12.d20200914\n"
+"Project-Id-Version: sickchill 2021.2.17.post2.dev3+g9ae82b341\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2020-09-14 03:15-0400\n"
+"POT-Creation-Date: 2021-02-19 14:45-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: sickchill/logger.py:378
 msgid "&lt;No Filter&gt;"
@@ -85,18 +85,18 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
-#: sickchill/logger.py:395 sickchill/views/home.py:726 sickchill/views/home.py:729
-#: sickchill/views/home.py:946 sickchill/views/home.py:953
-#: sickchill/views/home.py:1196 sickchill/views/home.py:1209
-#: sickchill/views/home.py:1232 sickchill/views/home.py:1245
-#: sickchill/views/home.py:1250 sickchill/views/home.py:1266
-#: sickchill/views/home.py:1271 sickchill/views/home.py:1335
-#: sickchill/views/home.py:1338 sickchill/views/home.py:1344
-#: sickchill/views/home.py:1347 sickchill/views/home.py:1354
-#: sickchill/views/home.py:1357 sickchill/views/home.py:1379
-#: sickchill/views/home.py:1484 sickchill/views/home.py:1489
-#: sickchill/views/home.py:1494 sickchill/views/home.py:1507
-#: sickchill/views/home.py:1511 sickchill/views/home.py:1516
+#: sickchill/logger.py:395 sickchill/views/home.py:728 sickchill/views/home.py:731
+#: sickchill/views/home.py:948 sickchill/views/home.py:955
+#: sickchill/views/home.py:1201 sickchill/views/home.py:1214
+#: sickchill/views/home.py:1237 sickchill/views/home.py:1250
+#: sickchill/views/home.py:1255 sickchill/views/home.py:1271
+#: sickchill/views/home.py:1276 sickchill/views/home.py:1340
+#: sickchill/views/home.py:1343 sickchill/views/home.py:1349
+#: sickchill/views/home.py:1352 sickchill/views/home.py:1359
+#: sickchill/views/home.py:1362 sickchill/views/home.py:1384
+#: sickchill/views/home.py:1489 sickchill/views/home.py:1494
+#: sickchill/views/home.py:1499 sickchill/views/home.py:1512
+#: sickchill/views/home.py:1516 sickchill/views/home.py:1521
 #: sickchill/views/imageSelector.py:23 sickchill/views/imageSelector.py:27
 #: sickchill/views/imageSelector.py:49 sickchill/views/movies.py:54
 #: sickchill/views/movies.py:64
@@ -227,15 +227,15 @@ msgstr ""
 msgid "Talk-Show"
 msgstr ""
 
-#: sickchill/settings.py:548
+#: sickchill/settings.py:549
 msgid "Ignore (do not process contents)"
 msgstr ""
 
-#: sickchill/settings.py:549
+#: sickchill/settings.py:550
 msgid "Unpack (process contents)"
 msgstr ""
 
-#: sickchill/settings.py:550
+#: sickchill/settings.py:551
 msgid "Treat as video (process archive as-is)"
 msgstr ""
 
@@ -252,10 +252,14 @@ msgid "{show_id}: Loading all episodes from {indexer_name}..."
 msgstr ""
 
 #: sickchill/tv.py:1769
-msgid "Removing myself from my show's list"
+msgid "Deleting {show} {ep} from the DB"
 msgstr ""
 
 #: sickchill/tv.py:1773
+msgid "Removing myself from my show's list"
+msgstr ""
+
+#: sickchill/tv.py:1777
 msgid "Deleting myself from the database"
 msgstr ""
 
@@ -361,52 +365,28 @@ msgstr ""
 msgid "Extend (Limited, E-prefixed)"
 msgstr ""
 
-#: sickchill/oldbeard/common.py:192 sickchill/oldbeard/common.py:583
+#: sickchill/oldbeard/common.py:192
 msgid "Downloaded"
 msgstr ""
 
-#: sickchill/oldbeard/common.py:193 sickchill/oldbeard/common.py:582
+#: sickchill/oldbeard/common.py:193
 msgid "Snatched"
 msgstr ""
 
-#: sickchill/oldbeard/common.py:194 sickchill/oldbeard/common.py:585
+#: sickchill/oldbeard/common.py:194
 msgid "Snatched (Proper)"
 msgstr ""
 
-#: sickchill/oldbeard/common.py:195 sickchill/oldbeard/common.py:590
+#: sickchill/oldbeard/common.py:195
 msgid "Failed"
 msgstr ""
 
-#: sickchill/oldbeard/common.py:196 sickchill/oldbeard/common.py:591
+#: sickchill/oldbeard/common.py:196
 msgid "Snatched (Best)"
 msgstr ""
 
-#: sickchill/oldbeard/common.py:197 sickchill/oldbeard/common.py:587
+#: sickchill/oldbeard/common.py:197
 msgid "Archived"
-msgstr ""
-
-#: sickchill/oldbeard/common.py:580
-msgid "Unknown"
-msgstr ""
-
-#: sickchill/oldbeard/common.py:581
-msgid "Unaired"
-msgstr ""
-
-#: sickchill/oldbeard/common.py:584
-msgid "Skipped"
-msgstr ""
-
-#: sickchill/oldbeard/common.py:586
-msgid "Wanted"
-msgstr ""
-
-#: sickchill/oldbeard/common.py:588
-msgid "Ignored"
-msgstr ""
-
-#: sickchill/oldbeard/common.py:589
-msgid "Subtitled"
 msgstr ""
 
 #: sickchill/oldbeard/config.py:179
@@ -477,263 +457,263 @@ msgstr ""
 msgid "Control dict to upsert cannot have values of None!"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:222
+#: sickchill/oldbeard/helpers.py:236
 msgid "Invalid filename. Filename must be a string. {0}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:354
+#: sickchill/oldbeard/helpers.py:367
 msgid "Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:372
+#: sickchill/oldbeard/helpers.py:388
 msgid "Failed to create symlink of {0} at {1}. Error: {2}. Copying instead"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:383
+#: sickchill/oldbeard/helpers.py:399
 msgid "Checking if the path {0} already exists"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:389 sickchill/oldbeard/helpers.py:409
+#: sickchill/oldbeard/helpers.py:405 sickchill/oldbeard/helpers.py:425
 msgid "Folder {0} didn't exist, creating it"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:392 sickchill/oldbeard/helpers.py:416
+#: sickchill/oldbeard/helpers.py:408 sickchill/oldbeard/helpers.py:432
 msgid "Failed creating {0} : {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:457
+#: sickchill/oldbeard/helpers.py:473
 msgid "Renaming file from {0} to {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:460
+#: sickchill/oldbeard/helpers.py:476
 msgid "Failed renaming {0} to {1} : {2}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:480
+#: sickchill/oldbeard/helpers.py:496
 msgid "Trying to clean any empty folders under "
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:490
+#: sickchill/oldbeard/helpers.py:506
 msgid "Deleting empty folder: "
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:496
+#: sickchill/oldbeard/helpers.py:512
 msgid "Unable to delete {0}. Error: {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:532
+#: sickchill/oldbeard/helpers.py:548
 msgid "No parent path provided in {location} unable to get permissions from it"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:555
+#: sickchill/oldbeard/helpers.py:571
 msgid "Not running as root or owner of {location}, not trying to set permissions"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:561
+#: sickchill/oldbeard/helpers.py:577
 msgid "Failed to set permission for {0} to {1:o}, parent directory has {2:o}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:593
+#: sickchill/oldbeard/helpers.py:610
 msgid "Not running as root or owner of {}, not trying to set the set-group-ID"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:598
+#: sickchill/oldbeard/helpers.py:615
 msgid "Respecting the set-group-ID bit on the parent directory for {0}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:641
+#: sickchill/oldbeard/helpers.py:660
 msgid "Found absolute number {absolute} for show {show} {ep}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:645
+#: sickchill/oldbeard/helpers.py:664
 msgid "No entries for absolute number for show {show} {ep}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:719
+#: sickchill/oldbeard/helpers.py:738
 msgid "pyopenssl module missing, please install for https access"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:748
+#: sickchill/oldbeard/helpers.py:767
 msgid "Error creating SSL key and certificate {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:751
+#: sickchill/oldbeard/helpers.py:770
 msgid "Created https key: {ssl_key}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:752
+#: sickchill/oldbeard/helpers.py:771
 msgid "Created https cert: {ssl_cert}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:771
+#: sickchill/oldbeard/helpers.py:790
 msgid "Not creating backup, {0} doesn't exist"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:775
+#: sickchill/oldbeard/helpers.py:794
 msgid "Trying to back up {0} to {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:777
+#: sickchill/oldbeard/helpers.py:796
 msgid "Backup done"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:780
+#: sickchill/oldbeard/helpers.py:799
 msgid "Error while trying to back up {0} to {1} : {2}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:783
+#: sickchill/oldbeard/helpers.py:802
 msgid "Trying again."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:786
+#: sickchill/oldbeard/helpers.py:805
 msgid "Unable to back up {0} to {1} please do it manually."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:807 sickchill/oldbeard/helpers.py:822
+#: sickchill/oldbeard/helpers.py:826 sickchill/oldbeard/helpers.py:841
 msgid "Not restoring, {0} doesn't exist"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:811
+#: sickchill/oldbeard/helpers.py:830
 msgid "Trying to backup {0} to {1}.r{2} before restoring backup"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:816
+#: sickchill/oldbeard/helpers.py:835
 msgid "Error while trying to backup DB file {0} before proceeding with restore: {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:826
+#: sickchill/oldbeard/helpers.py:845
 msgid "Trying to restore file {0} to {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:828
+#: sickchill/oldbeard/helpers.py:847
 msgid "Restore done"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:831
+#: sickchill/oldbeard/helpers.py:850
 msgid "Error while trying to restore file {0}. Error: {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:834
+#: sickchill/oldbeard/helpers.py:853
 msgid "Trying again. Attempt #: {0}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:837
+#: sickchill/oldbeard/helpers.py:856
 msgid "Unable to restore file {0} to {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:972
+#: sickchill/oldbeard/helpers.py:1004
 msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1030
+#: sickchill/oldbeard/helpers.py:1062
 msgid "Usage of anidb disabled. Skiping"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1034
+#: sickchill/oldbeard/helpers.py:1066
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1039
+#: sickchill/oldbeard/helpers.py:1071
 msgid "anidb: {0} "
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1044 sickchill/oldbeard/helpers.py:1053
+#: sickchill/oldbeard/helpers.py:1076 sickchill/oldbeard/helpers.py:1085
 msgid "anidb exception msg: {0} "
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1074 sickchill/oldbeard/helpers.py:1127
+#: sickchill/oldbeard/helpers.py:1106 sickchill/oldbeard/helpers.py:1159
 msgid "Zip creation error: {0} "
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1106
+#: sickchill/oldbeard/helpers.py:1138
 msgid "Zip extraction error: {0} "
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1156
+#: sickchill/oldbeard/helpers.py:1188
 msgid "Zip extraction error: {0}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1181
+#: sickchill/oldbeard/helpers.py:1213
 msgid "Using global proxy for indexers: {}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1198
+#: sickchill/oldbeard/helpers.py:1230
 msgid "Using global proxy: {}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1232
+#: sickchill/oldbeard/helpers.py:1264
 msgid "Requested a json response but response was not json, check the url: {0}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1271
+#: sickchill/oldbeard/helpers.py:1303
 msgid ""
 "Problem downloading file, setting permissions or writing file to {0} - ERROR:"
 " {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1285
+#: sickchill/oldbeard/helpers.py:1317
 msgid "Request failed: {0} ({1})"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1290
+#: sickchill/oldbeard/helpers.py:1322
 msgid "SSL Error requesting url: '{0}' You have {1}, try upgrading OpenSSL to 1.0.1e+"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1292
+#: sickchill/oldbeard/helpers.py:1324
 msgid ""
 "SSL Error requesting url: '{0}' Try disabling Cert Verification on the "
 "advanced tab of /config/general"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1336
+#: sickchill/oldbeard/helpers.py:1343
 msgid "url is {0}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1364
+#: sickchill/oldbeard/helpers.py:1371
 msgid "Unable to get size for file {0} because the link to the file is not valid"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1369
+#: sickchill/oldbeard/helpers.py:1376
 msgid "Unable to get size for file {0} Error: {1}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1376
+#: sickchill/oldbeard/helpers.py:1383
 msgid "Generating New API key"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1432
+#: sickchill/oldbeard/helpers.py:1439
 msgid "Trying to determine free space on the destination drive"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1435
+#: sickchill/oldbeard/helpers.py:1442
 msgid "A path to a file is required for the source. {0} is not a file."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1439
+#: sickchill/oldbeard/helpers.py:1446
 msgid ""
 "A path is required for the destination. Check that the root dir and show "
 "locations are correct for {0} (I got '{1}')"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1449
+#: sickchill/oldbeard/helpers.py:1456
 msgid ""
 "Process method is 'move' and src and destination are on the same device, "
 "skipping free space check"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1455
+#: sickchill/oldbeard/helpers.py:1462
 msgid "Unable to determine free space, so I will assume there is enough."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1456 sickchill/oldbeard/helpers.py:1489
+#: sickchill/oldbeard/helpers.py:1463 sickchill/oldbeard/helpers.py:1496
 msgid "Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1474
+#: sickchill/oldbeard/helpers.py:1481
 msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1488
+#: sickchill/oldbeard/helpers.py:1495
 msgid "Unable to determine free space"
 msgstr ""
 
@@ -750,15 +730,15 @@ msgstr ""
 msgid "Script result: {0}"
 msgstr ""
 
-#: sickchill/oldbeard/search.py:456 sickchill/oldbeard/search.py:727
+#: sickchill/oldbeard/search.py:456
 msgid "Performing {episode_or_season} search for {show}"
 msgstr ""
 
-#: sickchill/oldbeard/search.py:457 sickchill/oldbeard/search.py:728
+#: sickchill/oldbeard/search.py:457
 msgid "season pack"
 msgstr ""
 
-#: sickchill/oldbeard/search.py:457 sickchill/oldbeard/search.py:728
+#: sickchill/oldbeard/search.py:457
 msgid "episode"
 msgstr ""
 
@@ -1017,7 +997,7 @@ msgid ""
 msgstr ""
 
 #: sickchill/oldbeard/providers/abnormal.py:78
-#: sickchill/oldbeard/providers/alpharatio.py:92
+#: sickchill/oldbeard/providers/alpharatio.py:94
 #: sickchill/oldbeard/providers/archetorrent.py:97
 #: sickchill/oldbeard/providers/bitcannon.py:44
 #: sickchill/oldbeard/providers/bjshare.py:98
@@ -1043,7 +1023,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/morethantv.py:103
 #: sickchill/oldbeard/providers/newpct.py:48
 #: sickchill/oldbeard/providers/norbits.py:53
-#: sickchill/oldbeard/providers/nyaa.py:32
+#: sickchill/oldbeard/providers/nyaa.py:40
 #: sickchill/oldbeard/providers/omgwtfnzbs.py:72
 #: sickchill/oldbeard/providers/pretome.py:73
 #: sickchill/oldbeard/providers/rarbg.py:78 sickchill/oldbeard/providers/scc.py:79
@@ -1069,7 +1049,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/bjshare.py:245
 #: sickchill/oldbeard/providers/ilcorsaronero.py:287
 #: sickchill/oldbeard/providers/norbits.py:103
-#: sickchill/oldbeard/providers/nyaa.py:76
+#: sickchill/oldbeard/providers/nyaa.py:84
 #: sickchill/oldbeard/providers/torrentday.py:148
 #: sickchill/oldbeard/providers/tvchaosuk.py:146
 #: sickchill/oldbeard/providers/xthor.py:92
@@ -1094,7 +1074,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/newpct.py:64
 #: sickchill/oldbeard/providers/newznab.py:304
 #: sickchill/oldbeard/providers/norbits.py:57
-#: sickchill/oldbeard/providers/nyaa.py:35
+#: sickchill/oldbeard/providers/nyaa.py:43
 #: sickchill/oldbeard/providers/omgwtfnzbs.py:76
 #: sickchill/oldbeard/providers/pretome.py:77
 #: sickchill/oldbeard/providers/rarbg.py:102 sickchill/oldbeard/providers/scc.py:82
@@ -1104,6 +1084,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/tntvillage.py:288
 #: sickchill/oldbeard/providers/tokyotoshokan.py:40
 #: sickchill/oldbeard/providers/torrent9.py:82
+#: sickchill/oldbeard/providers/torrent_paradise.py:36
 #: sickchill/oldbeard/providers/torrentbytes.py:77
 #: sickchill/oldbeard/providers/torrentday.py:109
 #: sickchill/oldbeard/providers/torrentproject.py:51
@@ -1209,43 +1190,43 @@ msgid ""
 "behind) &mdash; <a href=\"{update_url}\">Update Now</a>"
 msgstr ""
 
-#: sickchill/update_manager/pip.py:48
+#: sickchill/update_manager/pip.py:56
 msgid ""
 "There is a <a href=\"{url}\" onclick=\"window.open(this.href); return "
 "false;\">newer version available</a> &mdash; <a href=\"{update_url}\">Update "
 "Now</a>"
 msgstr ""
 
-#: sickchill/update_manager/runner.py:47
+#: sickchill/update_manager/runner.py:48
 msgid "New update found for SickChill, starting auto-updater"
 msgstr ""
 
-#: sickchill/update_manager/runner.py:51
+#: sickchill/update_manager/runner.py:52
 msgid "Update was successful"
 msgstr ""
 
-#: sickchill/update_manager/runner.py:55
+#: sickchill/update_manager/runner.py:56
 msgid "Update failed!"
 msgstr ""
 
-#: sickchill/update_manager/runner.py:67 sickchill/update_manager/runner.py:75
-#: sickchill/update_manager/runner.py:79 sickchill/update_manager/runner.py:83
+#: sickchill/update_manager/runner.py:68 sickchill/update_manager/runner.py:76
+#: sickchill/update_manager/runner.py:80 sickchill/update_manager/runner.py:84
 msgid "Backup"
 msgstr ""
 
-#: sickchill/update_manager/runner.py:67
+#: sickchill/update_manager/runner.py:68
 msgid "Config backup in progress..."
 msgstr ""
 
-#: sickchill/update_manager/runner.py:75
+#: sickchill/update_manager/runner.py:76
 msgid "Config backup successful, updating..."
 msgstr ""
 
-#: sickchill/update_manager/runner.py:79 sickchill/update_manager/runner.py:83
+#: sickchill/update_manager/runner.py:80 sickchill/update_manager/runner.py:84
 msgid "Config backup failed, aborting update"
 msgstr ""
 
-#: sickchill/update_manager/runner.py:251
+#: sickchill/update_manager/runner.py:260
 msgid "No update needed"
 msgstr ""
 
@@ -1256,8 +1237,20 @@ msgid ""
 "href=\"{update_url}\">Update Now</a>"
 msgstr ""
 
-#: sickchill/views/authentication.py:15
+#: sickchill/views/authentication.py:17
 msgid "Login"
+msgstr ""
+
+#: sickchill/views/authentication.py:27
+msgid "User logged into the SickChill web interface"
+msgstr ""
+
+#: sickchill/views/authentication.py:29
+msgid "User attempted a failed login to the SickChill web interface from IP: "
+msgstr ""
+
+#: sickchill/views/authentication.py:30
+msgid "Incorrect username or password! Both username and password are case sensitive!"
 msgstr ""
 
 #: sickchill/views/changelog.py:22
@@ -1272,7 +1265,7 @@ msgstr ""
 msgid "Changelog"
 msgstr ""
 
-#: sickchill/views/common.py:85
+#: sickchill/views/common.py:88
 msgid "Mako Error"
 msgstr ""
 
@@ -1300,557 +1293,561 @@ msgstr ""
 msgid "Removed history entries older than 30 days"
 msgstr ""
 
-#: sickchill/views/home.py:50 sickchill/views/home.py:55
+#: sickchill/views/home.py:52 sickchill/views/home.py:57
 msgid "Invalid show parameters"
 msgstr ""
 
-#: sickchill/views/home.py:62
+#: sickchill/views/home.py:64
 msgid "Invalid parameters"
 msgstr ""
 
-#: sickchill/views/home.py:65 sickchill/views/home.py:1379
+#: sickchill/views/home.py:67 sickchill/views/home.py:1384
 msgid "Episode couldn't be retrieved"
 msgstr ""
 
-#: sickchill/views/home.py:113 sickchill/views/home.py:637
-#: sickchill/views/home.py:664
+#: sickchill/views/home.py:115 sickchill/views/home.py:639
+#: sickchill/views/home.py:666
 msgid "Home"
 msgstr ""
 
-#: sickchill/views/home.py:113
+#: sickchill/views/home.py:115
 msgid "Show List"
 msgstr ""
 
-#: sickchill/views/home.py:203
+#: sickchill/views/home.py:205
 msgid "Success. Connected and authenticated"
 msgstr ""
 
-#: sickchill/views/home.py:205
+#: sickchill/views/home.py:207
 msgid "Authentication failed. SABnzbd expects"
 msgstr ""
 
-#: sickchill/views/home.py:205
+#: sickchill/views/home.py:207
 msgid "as authentication method"
 msgstr ""
 
-#: sickchill/views/home.py:207
+#: sickchill/views/home.py:209
 msgid "Unable to connect to host"
 msgstr ""
 
-#: sickchill/views/home.py:234
+#: sickchill/views/home.py:236
 msgid "SMS sent successfully"
 msgstr ""
 
-#: sickchill/views/home.py:236
+#: sickchill/views/home.py:238
 msgid "Problem sending SMS: {message}"
 msgstr ""
 
-#: sickchill/views/home.py:243
+#: sickchill/views/home.py:245
 msgid ""
 "Telegram notification succeeded. Check your Telegram clients to make sure it "
 "worked"
 msgstr ""
 
-#: sickchill/views/home.py:245
+#: sickchill/views/home.py:247
 msgid "Error sending Telegram notification: {message}"
 msgstr ""
 
-#: sickchill/views/home.py:253
+#: sickchill/views/home.py:255
 msgid "join notification succeeded. Check your join clients to make sure it worked"
 msgstr ""
 
-#: sickchill/views/home.py:255
+#: sickchill/views/home.py:257
 msgid "Error sending join notification: {message}"
 msgstr ""
 
-#: sickchill/views/home.py:265
+#: sickchill/views/home.py:267
 msgid " with password"
 msgstr ""
 
-#: sickchill/views/home.py:267
+#: sickchill/views/home.py:269
 msgid "Registered and Tested growl successfully {growl_host}"
 msgstr ""
 
-#: sickchill/views/home.py:269
+#: sickchill/views/home.py:271
 msgid "Registration and Testing of growl failed {growl_host}"
 msgstr ""
 
-#: sickchill/views/home.py:277
+#: sickchill/views/home.py:279
 msgid "Test prowl notice sent successfully"
 msgstr ""
 
-#: sickchill/views/home.py:279
+#: sickchill/views/home.py:281
 msgid "Test prowl notice failed"
 msgstr ""
 
-#: sickchill/views/home.py:285
+#: sickchill/views/home.py:287
 msgid ""
 "Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it "
 "worked"
 msgstr ""
 
-#: sickchill/views/home.py:287
+#: sickchill/views/home.py:289
 msgid "Error sending Boxcar2 notification"
 msgstr ""
 
-#: sickchill/views/home.py:295
+#: sickchill/views/home.py:297
 msgid ""
 "Pushover notification succeeded. Check your Pushover clients to make sure it "
 "worked"
 msgstr ""
 
-#: sickchill/views/home.py:297
+#: sickchill/views/home.py:299
 msgid "Error sending Pushover notification"
 msgstr ""
 
-#: sickchill/views/home.py:310
+#: sickchill/views/home.py:312
 msgid "Key verification successful"
 msgstr ""
 
-#: sickchill/views/home.py:312
+#: sickchill/views/home.py:314
 msgid "Unable to verify key"
 msgstr ""
 
-#: sickchill/views/home.py:319
+#: sickchill/views/home.py:321
 msgid "Tweet successful, check your twitter to make sure it worked"
 msgstr ""
 
-#: sickchill/views/home.py:321
+#: sickchill/views/home.py:323
 msgid "Error sending tweet"
 msgstr ""
 
-#: sickchill/views/home.py:326
+#: sickchill/views/home.py:328
 msgid "Please enter a valid account sid"
 msgstr ""
 
-#: sickchill/views/home.py:329
+#: sickchill/views/home.py:331
 msgid "Please enter a valid auth token"
 msgstr ""
 
-#: sickchill/views/home.py:332
+#: sickchill/views/home.py:334
 msgid "Please enter a valid phone sid"
 msgstr ""
 
-#: sickchill/views/home.py:335
+#: sickchill/views/home.py:337
 msgid "Please format the phone number as \"+1-###-###-####\""
 msgstr ""
 
-#: sickchill/views/home.py:339
+#: sickchill/views/home.py:341
 msgid "Authorization successful and number ownership verified"
 msgstr ""
 
-#: sickchill/views/home.py:341
+#: sickchill/views/home.py:343
 msgid "Error sending sms"
 msgstr ""
 
-#: sickchill/views/home.py:347
+#: sickchill/views/home.py:349
 msgid "Slack message successful"
 msgstr ""
 
-#: sickchill/views/home.py:349
+#: sickchill/views/home.py:351
 msgid "Slack message failed"
 msgstr ""
 
-#: sickchill/views/home.py:355
+#: sickchill/views/home.py:357
 msgid "Rocket.Chat message successful"
 msgstr ""
 
-#: sickchill/views/home.py:357
+#: sickchill/views/home.py:359
 msgid "Rocket.Chat message failed"
 msgstr ""
 
-#: sickchill/views/home.py:363
+#: sickchill/views/home.py:365
 msgid "Matrix message successful"
 msgstr ""
 
-#: sickchill/views/home.py:365
+#: sickchill/views/home.py:367
 msgid "Matrix message failed"
 msgstr ""
 
-#: sickchill/views/home.py:371
+#: sickchill/views/home.py:373
 msgid "Discord message successful"
 msgstr ""
 
-#: sickchill/views/home.py:373
+#: sickchill/views/home.py:375
 msgid "Discord message failed"
 msgstr ""
 
-#: sickchill/views/home.py:382
+#: sickchill/views/home.py:384
 msgid "Test KODI notice {result} to {kodi_host}"
 msgstr ""
 
-#: sickchill/views/home.py:397
+#: sickchill/views/home.py:399
 msgid "Successful test notice sent to Plex Home Theater ... {plex_clients}"
 msgstr ""
 
-#: sickchill/views/home.py:399
+#: sickchill/views/home.py:401
 msgid "Test failed for Plex Home Theater ... {plex_clients}"
 msgstr ""
 
-#: sickchill/views/home.py:402
+#: sickchill/views/home.py:404
 msgid "Tested Plex Home Theater(s)"
 msgstr ""
 
-#: sickchill/views/home.py:418
+#: sickchill/views/home.py:420
 msgid "Successful test of Plex Media Server(s) ... {plex_servers}"
 msgstr ""
 
-#: sickchill/views/home.py:420
+#: sickchill/views/home.py:422
 msgid "Test failed, No Plex Media Server host specified"
 msgstr ""
 
-#: sickchill/views/home.py:422
+#: sickchill/views/home.py:424
 msgid "Test failed for Plex Media Server(s) ... {plex_servers}"
 msgstr ""
 
-#: sickchill/views/home.py:425
+#: sickchill/views/home.py:427
 msgid "Tested Plex Media Server host(s)"
 msgstr ""
 
-#: sickchill/views/home.py:432
+#: sickchill/views/home.py:434
 msgid "Tried sending desktop notification via libnotify"
 msgstr ""
 
-#: sickchill/views/home.py:440
+#: sickchill/views/home.py:442
 msgid "Test notice sent successfully to {emby_host}"
 msgstr ""
 
-#: sickchill/views/home.py:442
+#: sickchill/views/home.py:444
 msgid "Test notice failed to {emby_host}"
 msgstr ""
 
-#: sickchill/views/home.py:451
+#: sickchill/views/home.py:453
 msgid "Successfully started the scan update"
 msgstr ""
 
-#: sickchill/views/home.py:453
+#: sickchill/views/home.py:455
 msgid "Test failed to start the scan update"
 msgstr ""
 
-#: sickchill/views/home.py:470
+#: sickchill/views/home.py:472
 msgid "Test notice sent successfully to {nmj2_host}"
 msgstr ""
 
-#: sickchill/views/home.py:472
+#: sickchill/views/home.py:474
 msgid "Test notice failed to {nmj2_host}"
 msgstr ""
 
-#: sickchill/views/home.py:494
+#: sickchill/views/home.py:496
 msgid "Trakt Authorized"
 msgstr ""
 
-#: sickchill/views/home.py:495
+#: sickchill/views/home.py:497
 msgid "Trakt Not Authorized!"
 msgstr ""
 
-#: sickchill/views/home.py:563
+#: sickchill/views/home.py:565
 msgid "Test email sent successfully! Check inbox."
 msgstr ""
 
-#: sickchill/views/home.py:565
+#: sickchill/views/home.py:567
 msgid "ERROR: {last_error}"
 msgstr ""
 
-#: sickchill/views/home.py:571
+#: sickchill/views/home.py:573
 msgid ""
 "Pushalot notification succeeded. Check your Pushalot clients to make sure it "
 "worked"
 msgstr ""
 
-#: sickchill/views/home.py:573
+#: sickchill/views/home.py:575
 msgid "Error sending Pushalot notification"
 msgstr ""
 
-#: sickchill/views/home.py:579
+#: sickchill/views/home.py:581
 msgid "Pushbullet notification succeeded. Check your device to make sure it worked"
 msgstr ""
 
-#: sickchill/views/home.py:581 sickchill/views/home.py:591
-#: sickchill/views/home.py:599
+#: sickchill/views/home.py:583 sickchill/views/home.py:593
+#: sickchill/views/home.py:601
 msgid "Error sending Pushbullet notification"
 msgstr ""
 
-#: sickchill/views/home.py:616
+#: sickchill/views/home.py:618
 msgid "Status"
 msgstr ""
 
-#: sickchill/views/home.py:637 sickchill/views/home.py:664
+#: sickchill/views/home.py:639 sickchill/views/home.py:666
 msgid "Restarting SickChill"
 msgstr ""
 
-#: sickchill/views/home.py:667
+#: sickchill/views/home.py:669
 msgid "Update Failed"
 msgstr ""
 
-#: sickchill/views/home.py:668
+#: sickchill/views/home.py:670
 msgid "Update wasn't successful, not restarting. Check your log for more information."
 msgstr ""
 
-#: sickchill/views/home.py:695
+#: sickchill/views/home.py:697
 msgid "Checking out branch"
 msgstr ""
 
-#: sickchill/views/home.py:698
+#: sickchill/views/home.py:700
 msgid "Already on branch"
 msgstr ""
 
-#: sickchill/views/home.py:726
+#: sickchill/views/home.py:728
 msgid "Invalid show ID: {show}"
 msgstr ""
 
-#: sickchill/views/home.py:729 sickchill/views/home.py:1352
-#: sickchill/views/home.py:1489 sickchill/views/home.py:1511
+#: sickchill/views/home.py:731 sickchill/views/home.py:1357
+#: sickchill/views/home.py:1494 sickchill/views/home.py:1516
 #: sickchill/views/imageSelector.py:27
 msgid "Show not in show list"
 msgstr ""
 
-#: sickchill/views/home.py:745 sickchill/views/home.py:1498
-#: sickchill/views/home.py:1572
+#: sickchill/views/home.py:747 sickchill/views/home.py:1503
+#: sickchill/views/home.py:1593
 msgid "Edit"
 msgstr ""
 
-#: sickchill/views/home.py:756
+#: sickchill/views/home.py:758
 msgid ""
 "This show is in the process of being downloaded - the info below is "
 "incomplete."
 msgstr ""
 
-#: sickchill/views/home.py:759
+#: sickchill/views/home.py:761
 msgid "The information on this page is in the process of being updated."
 msgstr ""
 
-#: sickchill/views/home.py:762
+#: sickchill/views/home.py:764
 msgid "The episodes below are currently being refreshed from disk"
 msgstr ""
 
-#: sickchill/views/home.py:765
+#: sickchill/views/home.py:767
 msgid "Currently downloading subtitles for this show"
 msgstr ""
 
-#: sickchill/views/home.py:768
+#: sickchill/views/home.py:770
 msgid "This show is queued to be refreshed."
 msgstr ""
 
-#: sickchill/views/home.py:771
+#: sickchill/views/home.py:773
 msgid "This show is queued and awaiting an update."
 msgstr ""
 
-#: sickchill/views/home.py:774
+#: sickchill/views/home.py:776
 msgid "This show is queued and awaiting subtitles download."
 msgstr ""
 
-#: sickchill/views/home.py:779
+#: sickchill/views/home.py:781
 msgid "Resume"
 msgstr ""
 
-#: sickchill/views/home.py:781
+#: sickchill/views/home.py:783
 msgid "Pause"
 msgstr ""
 
-#: sickchill/views/home.py:785
+#: sickchill/views/home.py:787
 msgid "Remove"
 msgstr ""
 
-#: sickchill/views/home.py:791
+#: sickchill/views/home.py:793
 msgid "Re-scan files"
 msgstr ""
 
-#: sickchill/views/home.py:794
+#: sickchill/views/home.py:796
 msgid "Force Full Update"
 msgstr ""
 
-#: sickchill/views/home.py:797
+#: sickchill/views/home.py:799
 msgid "Update show in KODI"
 msgstr ""
 
-#: sickchill/views/home.py:804
+#: sickchill/views/home.py:806
 msgid "Update show in Emby"
 msgstr ""
 
-#: sickchill/views/home.py:813
+#: sickchill/views/home.py:815
 msgid "Hide specials"
 msgstr ""
 
-#: sickchill/views/home.py:821
+#: sickchill/views/home.py:823
 msgid "Show specials"
 msgstr ""
 
-#: sickchill/views/home.py:827 sickchill/views/home.py:1501
-#: sickchill/views/home.py:1502
+#: sickchill/views/home.py:829 sickchill/views/home.py:1506
+#: sickchill/views/home.py:1507
 msgid "Preview Rename"
 msgstr ""
 
-#: sickchill/views/home.py:832
+#: sickchill/views/home.py:834
 msgid "Download Subtitles"
 msgstr ""
 
-#: sickchill/views/home.py:919
+#: sickchill/views/home.py:921
 msgid "No scene exceptions"
 msgstr ""
 
-#: sickchill/views/home.py:942 sickchill/views/home.py:1245
-#: sickchill/views/home.py:1266
+#: sickchill/views/home.py:944 sickchill/views/home.py:1250
+#: sickchill/views/home.py:1271
 msgid "Invalid show ID"
 msgstr ""
 
-#: sickchill/views/home.py:949 sickchill/views/home.py:1250
-#: sickchill/views/home.py:1271
+#: sickchill/views/home.py:951 sickchill/views/home.py:1255
+#: sickchill/views/home.py:1276
 msgid "Unable to find the specified show"
 msgstr ""
 
-#: sickchill/views/home.py:979
+#: sickchill/views/home.py:981
 msgid "Unable to retreive Fansub Groups from AniDB."
 msgstr ""
 
-#: sickchill/views/home.py:988 sickchill/views/home.py:991
+#: sickchill/views/home.py:990 sickchill/views/home.py:993
 msgid "Edit Show"
 msgstr ""
 
-#: sickchill/views/home.py:1114 sickchill/views/home.py:1147
+#: sickchill/views/home.py:1116 sickchill/views/home.py:1149
 msgid "Unable to refresh this show: {error}"
 msgstr ""
 
-#: sickchill/views/home.py:1139
+#: sickchill/views/home.py:1141
 msgid "New location <tt>{location}</tt> does not exist"
 msgstr ""
 
-#: sickchill/views/home.py:1166
+#: sickchill/views/home.py:1168
 msgid "Unable to update show: {error}"
 msgstr ""
 
-#: sickchill/views/home.py:1172
+#: sickchill/views/home.py:1177
 msgid "Unable to force an update on scene exceptions of the show."
 msgstr ""
 
-#: sickchill/views/home.py:1179
+#: sickchill/views/home.py:1184
 msgid "Unable to force an update on scene numbering of the show."
 msgstr ""
 
-#: sickchill/views/home.py:1186 sickchill/views/manage/index.py:488
+#: sickchill/views/home.py:1191 sickchill/views/manage/index.py:488
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr ""
 
-#: sickchill/views/home.py:1199
+#: sickchill/views/home.py:1204
 msgid "{show_name} has been {paused_resumed}"
 msgstr ""
 
-#: sickchill/views/home.py:1199
+#: sickchill/views/home.py:1204
 msgid "resumed"
 msgstr ""
 
-#: sickchill/views/home.py:1199
+#: sickchill/views/home.py:1204
 msgid "paused"
 msgstr ""
 
-#: sickchill/views/home.py:1212
+#: sickchill/views/home.py:1217
 msgid "{show_name} has been {deleted_trashed} {was_deleted}"
 msgstr ""
 
-#: sickchill/views/home.py:1214
+#: sickchill/views/home.py:1219
 msgid "deleted"
 msgstr ""
 
-#: sickchill/views/home.py:1214
+#: sickchill/views/home.py:1219
 msgid "trashed"
 msgstr ""
 
-#: sickchill/views/home.py:1215
+#: sickchill/views/home.py:1220
 msgid "(media untouched)"
 msgstr ""
 
-#: sickchill/views/home.py:1215
+#: sickchill/views/home.py:1220
 msgid "(with all related media)"
 msgstr ""
 
-#: sickchill/views/home.py:1236
+#: sickchill/views/home.py:1241
 msgid "Unable to refresh this show."
 msgstr ""
 
-#: sickchill/views/home.py:1256
+#: sickchill/views/home.py:1261
 msgid "Unable to update this show."
 msgstr ""
 
-#: sickchill/views/home.py:1295
+#: sickchill/views/home.py:1300
 msgid "Library update command sent to KODI host(s)): {kodi_hosts}"
 msgstr ""
 
-#: sickchill/views/home.py:1297
+#: sickchill/views/home.py:1302
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 msgstr ""
 
-#: sickchill/views/home.py:1306
+#: sickchill/views/home.py:1311
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
 msgstr ""
 
-#: sickchill/views/home.py:1309
+#: sickchill/views/home.py:1314
 msgid "Unable to contact Plex Media Server host: {plex_server}"
 msgstr ""
 
-#: sickchill/views/home.py:1321
+#: sickchill/views/home.py:1326
 msgid "Library update command sent to Emby host: {emby_host}"
 msgstr ""
 
-#: sickchill/views/home.py:1323
+#: sickchill/views/home.py:1328
 msgid "Unable to contact Emby host: {emby_host}"
 msgstr ""
 
-#: sickchill/views/home.py:1333 sickchill/views/home.py:1507
+#: sickchill/views/home.py:1338 sickchill/views/home.py:1512
 msgid "You must specify a show and at least one episode"
 msgstr ""
 
-#: sickchill/views/home.py:1342
+#: sickchill/views/home.py:1347
 msgid "Invalid status"
 msgstr ""
 
-#: sickchill/views/home.py:1441
+#: sickchill/views/home.py:1446
 msgid ""
 "Backlog was automatically started for the following seasons of "
 "<b>{show_name}</b>"
 msgstr ""
 
-#: sickchill/views/home.py:1448 sickchill/views/home.py:1467
+#: sickchill/views/home.py:1453 sickchill/views/home.py:1472
 msgid "Season"
 msgstr ""
 
-#: sickchill/views/home.py:1455
+#: sickchill/views/home.py:1460
 msgid "Backlog started"
 msgstr ""
 
-#: sickchill/views/home.py:1460
+#: sickchill/views/home.py:1465
 msgid ""
 "Retrying Search was automatically started for the following season of "
 "<b>{show_name}</b>"
 msgstr ""
 
-#: sickchill/views/home.py:1474
+#: sickchill/views/home.py:1479
 msgid "Retry Search started"
 msgstr ""
 
-#: sickchill/views/home.py:1484 sickchill/views/imageSelector.py:23
+#: sickchill/views/home.py:1489 sickchill/views/imageSelector.py:23
 msgid "You must specify a show"
 msgstr ""
 
-#: sickchill/views/home.py:1494 sickchill/views/home.py:1516
+#: sickchill/views/home.py:1499 sickchill/views/home.py:1521
 msgid "Can't rename episodes when the show dir is missing."
 msgstr ""
 
-#: sickchill/views/home.py:1573
+#: sickchill/views/home.py:1594
 msgid "Manual Snatch"
 msgstr ""
 
-#: sickchill/views/home.py:1585
+#: sickchill/views/home.py:1614
+msgid "Result provider not found, cannot determine type"
+msgstr ""
+
+#: sickchill/views/home.py:1616
 msgid "Result not found in the cache"
 msgstr ""
 
-#: sickchill/views/home.py:1589
+#: sickchill/views/home.py:1619
 msgid "Could not snatch manually selected result: {}"
 msgstr ""
 
-#: sickchill/views/home.py:1731 sickchill/views/home.py:1761
+#: sickchill/views/home.py:1761 sickchill/views/home.py:1791
 msgid "New subtitles downloaded: {new_subtitle_languages}"
 msgstr ""
 
-#: sickchill/views/home.py:1734 sickchill/views/home.py:1764
+#: sickchill/views/home.py:1764 sickchill/views/home.py:1794
 msgid "No subtitles downloaded"
 msgstr ""
 
@@ -1858,43 +1855,43 @@ msgstr ""
 msgid "Invalid image provider"
 msgstr ""
 
-#: sickchill/views/index.py:60
+#: sickchill/views/index.py:61
 msgid "Oops: 404 Not Found"
 msgstr ""
 
-#: sickchill/views/index.py:62
+#: sickchill/views/index.py:63
 msgid "Wrong API key used"
 msgstr ""
 
-#: sickchill/views/index.py:232
+#: sickchill/views/index.py:237
 msgid "API Key not generated"
 msgstr ""
 
-#: sickchill/views/index.py:235
+#: sickchill/views/index.py:240
 msgid "API Builder"
 msgstr ""
 
-#: sickchill/views/index.py:322
+#: sickchill/views/index.py:327
 msgid "Schedule"
 msgstr ""
 
-#: sickchill/views/index.py:346
+#: sickchill/views/index.py:352
 msgid "Test 1"
 msgstr ""
 
-#: sickchill/views/index.py:346
+#: sickchill/views/index.py:352
 msgid "This is test number 1"
 msgstr ""
 
-#: sickchill/views/index.py:347
+#: sickchill/views/index.py:353
 msgid "Test 2"
 msgstr ""
 
-#: sickchill/views/index.py:347
+#: sickchill/views/index.py:353
 msgid "This is test number 2"
 msgstr ""
 
-#: sickchill/views/index.py:375
+#: sickchill/views/index.py:381
 msgid ""
 "You're using the {branch} branch. Please use 'master' unless specifically "
 "asked"
@@ -1961,6 +1958,18 @@ msgstr ""
 msgid "Authentication failed during api key request: {traceback}"
 msgstr ""
 
+#: sickchill/views/api/webapi.py:1539
+msgid "API: sb.backup backing up to {location}"
+msgstr ""
+
+#: sickchill/views/api/webapi.py:1542
+msgid "API: sb.backup successful!"
+msgstr ""
+
+#: sickchill/views/api/webapi.py:1545
+msgid "API: sb.backup failed!"
+msgstr ""
+
 #: sickchill/views/config/anime.py:24
 msgid "Config - Anime"
 msgstr ""
@@ -1969,7 +1978,7 @@ msgstr ""
 msgid "Anime"
 msgstr ""
 
-#: sickchill/views/config/anime.py:39 sickchill/views/config/general.py:199
+#: sickchill/views/config/anime.py:39 sickchill/views/config/general.py:200
 #: sickchill/views/config/notifications.py:301
 #: sickchill/views/config/post_processing.py:141
 #: sickchill/views/config/providers.py:316 sickchill/views/config/search.py:153
@@ -2001,15 +2010,15 @@ msgstr ""
 msgid "Your \"add show\" defaults have been set to your current selections."
 msgstr ""
 
-#: sickchill/views/config/general.py:171
+#: sickchill/views/config/general.py:172
 msgid "Unable to create directory {directory}, https cert directory not changed."
 msgstr ""
 
-#: sickchill/views/config/general.py:175
+#: sickchill/views/config/general.py:176
 msgid "Unable to create directory {directory}, https key directory not changed."
 msgstr ""
 
-#: sickchill/views/config/general.py:196
+#: sickchill/views/config/general.py:197
 #: sickchill/views/config/notifications.py:298
 #: sickchill/views/config/post_processing.py:139
 #: sickchill/views/config/search.py:150
@@ -2041,7 +2050,7 @@ msgstr ""
 msgid "Notifications"
 msgstr ""
 
-#: sickchill/views/config/index.py:61 sickchill/views/config/index.py:62
+#: sickchill/views/config/index.py:64 sickchill/views/config/index.py:65
 msgid "SickChill Configuration"
 msgstr ""
 
