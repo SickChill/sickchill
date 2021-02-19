@@ -7,9 +7,13 @@ on:
   push:
     branches:
       - '*'
+    - branches-ignore:
+        - 'l10n_*'
   pull_request:
     branches:
       - '*'
+      - branches-ignore:
+          - 'l10n_*'
 
 jobs:
   test:
