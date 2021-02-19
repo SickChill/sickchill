@@ -69,6 +69,14 @@
                                 </div>
                             </div>
                         </div>
+                        %if login_error:
+                        <div class="row">
+                            <div class="col-md-12 text-center text-danger">
+                                <i class="glyphicon glyphicon-alert" title="${login_error}"></i>
+                                &nbsp;${login_error}
+                            </div>
+                        </div>
+                        %endif
                     </form>
                 </div>
             </div>
