@@ -4,9 +4,8 @@ import shutil
 import stat
 import traceback
 
-from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
-
 import validators
+from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
 from sickchill import logger, settings
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
