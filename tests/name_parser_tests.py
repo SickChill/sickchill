@@ -305,7 +305,7 @@ class BasicTests(test.SickChillTestDBCase):
         for cur_test_base in SIMPLE_TEST_CASES[section]:
             if transform:
                 cur_test = transform(cur_test_base)
-                name_parser.file_name = cur_test
+                name_parser.filename = cur_test
             else:
                 cur_test = cur_test_base
             if VERBOSE or verbose:
@@ -341,7 +341,7 @@ class BasicTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(True)
         self._test_names(name_parser, 'standard')
 
-    def test_standard_file_names(self):
+    def test_standard_filenames(self):
         """
         Test standard file names
         """
@@ -355,7 +355,7 @@ class BasicTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'standard_repeat')
 
-    def test_standard_repeat_file_names(self):
+    def test_standard_repeat_filenames(self):
         """
         Test standard repeat file names
         """
@@ -369,7 +369,7 @@ class BasicTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'fov')
 
-    def test_fov_file_names(self):
+    def test_fov_filenames(self):
         """
         Test fov file names
         """
@@ -383,7 +383,7 @@ class BasicTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'fov_repeat')
 
-    def test_fov_repeat_file_names(self):
+    def test_fov_repeat_filenames(self):
         """
         Test fov repeat file names
         """
@@ -397,7 +397,7 @@ class BasicTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'stupid')
 
-    def test_stupid_file_names(self):
+    def test_stupid_filenames(self):
         """
         Test stupid file names
         """
@@ -411,7 +411,7 @@ class BasicTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'no_season_general')
 
-    def test_no_s_general_file_names(self):
+    def test_no_s_general_filenames(self):
         """
         Test no season general file names
         """
@@ -425,7 +425,7 @@ class BasicTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'no_season_multi_ep')
 
-    def test_no_s_multi_ep_file_names(self):
+    def test_no_s_multi_ep_filenames(self):
         """
         Test no season multi episode file names
         """
@@ -439,7 +439,7 @@ class BasicTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'season_only')
 
-    def test_s_only_file_names(self):
+    def test_s_only_filenames(self):
         """
         Test season only file names
         """
@@ -476,7 +476,7 @@ class AnimeTests(test.SickChillTestDBCase):
         for cur_test_base in ANIME_TEST_CASES[section]:
             if transform:
                 cur_test = transform(cur_test_base)
-                name_parser.file_name = cur_test
+                name_parser.filename = cur_test
             else:
                 cur_test = cur_test_base
             if VERBOSE or verbose:
@@ -505,14 +505,14 @@ class AnimeTests(test.SickChillTestDBCase):
             self.assertEqual(test_result.which_regex, [section], print_debug())
             self.assertEqual(str(test_result), str(result), print_debug())
 
-    def test_anime_sxxexx_file_names(self):
+    def test_anime_sxxexx_filenames(self):
         """
         Test anime SxxExx file names
         """
         name_parser = parser.NameParser(parse_method='anime')
         self._test_names(name_parser, 'anime_SxxExx', lambda x: x + '.avi')
 
-    def test_anime_bare_file_names(self):
+    def test_anime_bare_filenames(self):
         """
         Test anime bare file names
         """
@@ -520,7 +520,7 @@ class AnimeTests(test.SickChillTestDBCase):
         self._test_names(name_parser, 'anime_bare', lambda x: x + '.avi')
 
     @unittest.expectedFailure
-    def test_anime_bare_file_names_indirect(self):
+    def test_anime_bare_filenames_indirect(self):
         """
         Test anime bare file names without defining parse method
         """
@@ -554,7 +554,7 @@ class BasicFailedTests(test.SickChillTestDBCase):
         for cur_test_base in SIMPLE_TEST_CASES[section]:
             if transform:
                 cur_test = transform(cur_test_base)
-                name_parser.file_name = cur_test
+                name_parser.filename = cur_test
             else:
                 cur_test = cur_test_base
             if VERBOSE or verbose:
@@ -590,7 +590,7 @@ class BasicFailedTests(test.SickChillTestDBCase):
         name_parser = parser.NameParser(False)
         self._test_names(name_parser, 'no_season')
 
-    def test_no_s_file_names(self):
+    def test_no_s_filenames(self):
         """
         Test no season file names
         """
@@ -606,7 +606,7 @@ class BasicFailedTests(test.SickChillTestDBCase):
         self._test_names(name_parser, 'bare')
 
     @unittest.expectedFailure
-    def test_bare_file_names(self):
+    def test_bare_filenames(self):
         """
         Test bare file names
         """
@@ -629,7 +629,7 @@ class BasicFailedTests(test.SickChillTestDBCase):
         self._test_names(name_parser, 'scene_date_format')
 
     @unittest.skip('Not trying indexer')
-    def test_scene_date_fmt_file_names(self):
+    def test_scene_date_fmt_filenames(self):
         """
         Test scene date format file names
         """

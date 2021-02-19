@@ -99,9 +99,9 @@ class TIVOMetadata(generic.GenericMetadata):
         ep_obj: a TVEpisode object to get the path for
         """
         if os.path.isfile(ep_obj.location):
-            metadata_file_name = os.path.basename(ep_obj.location) + "." + self._ep_nfo_extension
+            metadata_filename = os.path.basename(ep_obj.location) + "." + self._ep_nfo_extension
             metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), '.meta')
-            metadata_file_path = os.path.join(metadata_dir_name, metadata_file_name)
+            metadata_file_path = os.path.join(metadata_dir_name, metadata_filename)
         else:
             logger.debug("Episode location doesn't exist: " + str(ep_obj.location))
             return ''
@@ -237,7 +237,7 @@ class TIVOMetadata(generic.GenericMetadata):
 
         ep_obj: TVEpisode object for which to create the metadata
 
-        file_name_path: The file name to use for this metadata. Note that the extension
+        filename_path: The file name to use for this metadata. Note that the extension
                 will be automatically added based on _ep_nfo_extension. This should
                 include an absolute path.
         """

@@ -2,6 +2,8 @@ import fnmatch
 import os
 import re
 
+import validators
+
 from sickchill import logger, settings
 
 from . import common
@@ -138,14 +140,18 @@ def allPossibleShowNames(show, season=-1):
     return set(showNames)
 
 
-def determineReleaseName(dir_name=None, nzb_name=None):
+def determine_release_name(directory=None, release_name=None):
     """Determine a release name from an nzb and/or folder name"""
 
-    if nzb_name is not None:
-        logger.info("Using nzb_name for release name.")
-        return nzb_name.rpartition('.')[0]
+    if release_name is not None:
+        if validators.url(release_name):
+            logger.info(_('Downloader returned a download url rather than a release name'))
+            return release_name
 
-    if dir_name is None:
+        logger.info(_("Using release for release name."))
+        return release_name.rpartition('.')[0]
+
+    if directory is None:
         return None
 
     # try to get the release name from nzb/nfo
@@ -154,8 +160,8 @@ def determineReleaseName(dir_name=None, nzb_name=None):
     for search in file_types:
 
         reg_expr = re.compile(fnmatch.translate(search), re.I)
-        files = [file_name for file_name in os.listdir(dir_name) if
-                 os.path.isfile(os.path.join(dir_name, file_name))]
+        files = [filename for filename in os.listdir(directory) if
+                 os.path.isfile(os.path.join(directory, filename))]
 
         results = [f for f in files if reg_expr.search(f)]
 
@@ -167,7 +173,7 @@ def determineReleaseName(dir_name=None, nzb_name=None):
                 return found_file.rpartition('.')[0]
 
     # If that fails, we try the folder
-    folder = os.path.basename(dir_name)
+    folder = os.path.basename(directory)
     if filter_bad_releases(folder):
         # NOTE: Multiple failed downloads will change the folder name.
         # (e.g., appending #s)

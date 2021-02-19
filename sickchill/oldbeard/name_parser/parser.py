@@ -24,10 +24,10 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, file_name=True, showObj=None, tryIndexers=False,
+    def __init__(self, filename=True, showObj=None, tryIndexers=False,
                  naming_pattern=False, parse_method=None):
 
-        self.file_name = file_name
+        self.filename = filename
         self.showObj = showObj
         self.tryIndexers = tryIndexers
 
@@ -411,18 +411,18 @@ class NameParser(object):
             return cached
 
         # break it into parts if there are any (dirname, file name, extension)
-        dir_name, file_name = os.path.split(name)
+        dir_name, filename = os.path.split(name)
 
-        if self.file_name:
-            base_file_name = remove_extension(file_name)
+        if self.filename:
+            base_filename = remove_extension(filename)
         else:
-            base_file_name = file_name
+            base_filename = filename
 
         # set up a result to use
         final_result = ParseResult(name)
 
         # try parsing the file name
-        file_name_result = self._parse_string(base_file_name, skip_scene_detection)
+        filename_result = self._parse_string(base_filename, skip_scene_detection)
 
         # use only the direct parent dir
         dir_name = os.path.basename(dir_name)
@@ -431,40 +431,40 @@ class NameParser(object):
         dir_name_result = self._parse_string(dir_name, skip_scene_detection)
 
         # build the ParseResult object
-        final_result.air_date = self._combine_results(file_name_result, dir_name_result, 'air_date')
+        final_result.air_date = self._combine_results(filename_result, dir_name_result, 'air_date')
 
         # anime absolute numbers
-        final_result.ab_episode_numbers = self._combine_results(file_name_result, dir_name_result, 'ab_episode_numbers')
+        final_result.ab_episode_numbers = self._combine_results(filename_result, dir_name_result, 'ab_episode_numbers')
 
         # season and episode numbers
-        final_result.season_number = self._combine_results(file_name_result, dir_name_result, 'season_number')
-        final_result.episode_numbers = self._combine_results(file_name_result, dir_name_result, 'episode_numbers')
-        final_result.scene_season = self._combine_results(file_name_result, dir_name_result, 'scene_season')
+        final_result.season_number = self._combine_results(filename_result, dir_name_result, 'season_number')
+        final_result.episode_numbers = self._combine_results(filename_result, dir_name_result, 'episode_numbers')
+        final_result.scene_season = self._combine_results(filename_result, dir_name_result, 'scene_season')
 
         # if the dirname has a release group/show name I believe it over the filename
-        final_result.series_name = self._combine_results(dir_name_result, file_name_result, 'series_name')
-        final_result.extra_info = self._combine_results(dir_name_result, file_name_result, 'extra_info')
-        final_result.release_group = self._combine_results(dir_name_result, file_name_result, 'release_group')
-        final_result.version = self._combine_results(dir_name_result, file_name_result, 'version')
+        final_result.series_name = self._combine_results(dir_name_result, filename_result, 'series_name')
+        final_result.extra_info = self._combine_results(dir_name_result, filename_result, 'extra_info')
+        final_result.release_group = self._combine_results(dir_name_result, filename_result, 'release_group')
+        final_result.version = self._combine_results(dir_name_result, filename_result, 'version')
 
         final_result.which_regex = []
-        if final_result == file_name_result:
-            final_result.which_regex = file_name_result.which_regex
-            final_result.score = file_name_result.score
+        if final_result == filename_result:
+            final_result.which_regex = filename_result.which_regex
+            final_result.score = filename_result.score
         elif final_result == dir_name_result:
             final_result.which_regex = dir_name_result.which_regex
             final_result.score = dir_name_result.score
         else:
             final_result.score = 0
-            if file_name_result:
-                final_result.which_regex += file_name_result.which_regex
-                final_result.score += file_name_result.score
+            if filename_result:
+                final_result.which_regex += filename_result.which_regex
+                final_result.score += filename_result.score
             if dir_name_result:
                 final_result.which_regex += dir_name_result.which_regex
                 final_result.score += dir_name_result.score
 
-        final_result.show = self._combine_results(file_name_result, dir_name_result, 'show')
-        final_result.quality = self._combine_results(file_name_result, dir_name_result, 'quality')
+        final_result.show = self._combine_results(filename_result, dir_name_result, 'show')
+        final_result.quality = self._combine_results(filename_result, dir_name_result, 'quality')
 
         if not final_result.show:
             raise InvalidShowException(f"Unable to match {name} to a show in your database. Parser result: {final_result}")

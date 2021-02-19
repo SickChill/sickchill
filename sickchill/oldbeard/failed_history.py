@@ -15,7 +15,7 @@ def prepareFailedName(release):
     """Standardizes release name for failed DB"""
 
     fixed = urllib.parse.unquote(release)
-    if fixed.endswith(".nzb"):
+    if fixed.endswith((".nzb", ".torrent")):
         fixed = fixed.rpartition(".")[0]
 
     fixed = re.sub(r"[\.\-\+\ ]", "_", fixed)
@@ -68,7 +68,7 @@ def logSuccess(release):
     release = prepareFailedName(release)
 
     failed_db_con = db.DBConnection('failed.db')
-    failed_db_con.action("DELETE FROM history WHERE release=?", [release])
+    failed_db_con.action("DELETE FROM history WHERE release = ?", [release])
 
 
 def hasFailed(release, size, provider="%"):

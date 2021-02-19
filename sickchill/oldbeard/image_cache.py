@@ -39,8 +39,8 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached poster file for the given Indexer ID
         """
-        poster_file_name = str(indexer_id) + '.poster.jpg'
-        return os.path.join(self._cache_dir(), poster_file_name)
+        poster_filename = str(indexer_id) + '.poster.jpg'
+        return os.path.join(self._cache_dir(), poster_filename)
 
     def banner_path(self, indexer_id):
         """
@@ -49,8 +49,8 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached banner file for the given Indexer ID
         """
-        banner_file_name = str(indexer_id) + '.banner.jpg'
-        return os.path.join(self._cache_dir(), banner_file_name)
+        banner_filename = str(indexer_id) + '.banner.jpg'
+        return os.path.join(self._cache_dir(), banner_filename)
 
     def fanart_path(self, indexer_id):
         """
@@ -59,8 +59,8 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached fanart file for the given Indexer ID
         """
-        fanart_file_name = str(indexer_id) + '.fanart.jpg'
-        return os.path.join(self._cache_dir(), fanart_file_name)
+        fanart_filename = str(indexer_id) + '.fanart.jpg'
+        return os.path.join(self._cache_dir(), fanart_filename)
 
     def poster_thumb_path(self, indexer_id):
         """
@@ -69,8 +69,8 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached poster thumb file for the given Indexer ID
         """
-        posterthumb_file_name = str(indexer_id) + '.poster.jpg'
-        return os.path.join(self._thumbnails_dir(), posterthumb_file_name)
+        posterthumb_filename = str(indexer_id) + '.poster.jpg'
+        return os.path.join(self._thumbnails_dir(), posterthumb_filename)
 
     def banner_thumb_path(self, indexer_id):
         """
@@ -79,8 +79,8 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached banner thumb file for the given Indexer ID
         """
-        bannerthumb_file_name = str(indexer_id) + '.banner.jpg'
-        return os.path.join(self._thumbnails_dir(), bannerthumb_file_name)
+        bannerthumb_filename = str(indexer_id) + '.banner.jpg'
+        return os.path.join(self._thumbnails_dir(), bannerthumb_filename)
 
     def has_poster(self, indexer_id):
         """
@@ -322,20 +322,20 @@ class ImageCache(object):
                     for method in (cur_provider.get_poster_path, cur_provider.get_banner_path, cur_provider.get_fanart_path):
                         current_path = method(show_obj)
                         if os.path.isfile(current_path):
-                            cur_file_name = os.path.abspath(current_path)
-                            cur_file_type = self.which_type(cur_file_name)
+                            cur_filename = os.path.abspath(current_path)
+                            cur_file_type = self.which_type(cur_filename)
 
                             if cur_file_type is None:
-                                logger.warning("Unable to retrieve image type, not using the image from " + str(cur_file_name))
+                                logger.warning("Unable to retrieve image type, not using the image from " + str(cur_filename))
                                 continue
 
                             logger.debug("[{}] Checking if {} ({}) needs cached: {}".format(
-                                show_obj.indexerid, cur_file_name, self.image_str[cur_file_type], need_images[cur_file_type]))
+                                show_obj.indexerid, cur_filename, self.image_str[cur_file_type], need_images[cur_file_type]))
 
                             if cur_file_type in need_images and need_images[cur_file_type]:
                                 logger.debug("[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
                                     show_obj.indexerid, self.image_str[cur_file_type]))
-                                self._cache_image_from_file(cur_file_name, cur_file_type, show_obj.indexerid)
+                                self._cache_image_from_file(cur_filename, cur_file_type, show_obj.indexerid)
                                 need_images[cur_file_type] = False
 
             except ShowDirectoryNotFoundException:

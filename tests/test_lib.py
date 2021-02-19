@@ -270,12 +270,12 @@ def teardown_test_db():
     #     db_cons[connection].close()
     #
     # for current_db in [ TEST_DB_NAME, TEST_CACHE_DB_NAME, TEST_FAILED_DB_NAME ]:
-    #    file_name = os.path.join(TEST_DIR, current_db)
-    #    if os.path.exists(file_name):
+    #    filename = os.path.join(TEST_DIR, current_db)
+    #    if os.path.exists(filename):
     #        try:
-    #            os.remove(file_name)
+    #            os.remove(filename)
     #        except Exception as e:
-    #            print 'ERROR: Failed to remove ' + file_name
+    #            print 'ERROR: Failed to remove ' + filename
     #            print(exception(e))
 
 

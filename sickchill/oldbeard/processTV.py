@@ -6,6 +6,8 @@ import traceback
 
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
+import validators
+
 from sickchill import logger, settings
 from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
@@ -145,32 +147,36 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         directories_from_rars = set()
 
         # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
-        if release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):
+        if release_name and validators.url(release_name):
+            result.output += log_helper("Processing {}".format(release_name), logger.INFO)
+            generator_to_use = [('', [], [release_name])]
+        elif release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):
             result.output += log_helper("Processing {}".format(release_name), logger.INFO)
             generator_to_use = [(process_path, [], [release_name])]
         else:
             result.output += log_helper("Processing {}".format(process_path), logger.INFO)
             generator_to_use = os.walk(process_path, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS)
 
-        for current_directory, directory_names, file_names in generator_to_use:
+        for current_directory, directory_names, filenames in generator_to_use:
             result.result = True
 
-            file_names = [f for f in file_names if not is_torrent_or_nzb_file(f)]
-            rar_files = [x for x in file_names if helpers.is_rar_file(os.path.join(current_directory, x))]
-            if rar_files:
-                extracted_directories = unrar(current_directory, rar_files, force, result)
-                if extracted_directories:
-                    for extracted_directory in extracted_directories:
-                        if extracted_directory.split(current_directory)[-1] not in directory_names:
-                            result.output += log_helper(
-                                "Adding extracted directory to the list of directories to process: {0}".format(extracted_directory), logger.DEBUG
-                            )
-                            directories_from_rars.add(extracted_directory)
+            if current_directory:
+                filenames = [f for f in filenames if not is_torrent_or_nzb_file(f)]
+                rar_files = [x for x in filenames if helpers.is_rar_file(os.path.join(current_directory, x))]
+                if rar_files:
+                    extracted_directories = unrar(current_directory, rar_files, force, result)
+                    if extracted_directories:
+                        for extracted_directory in extracted_directories:
+                            if extracted_directory.split(current_directory)[-1] not in directory_names:
+                                result.output += log_helper(
+                                    "Adding extracted directory to the list of directories to process: {0}".format(extracted_directory), logger.DEBUG
+                                )
+                                directories_from_rars.add(extracted_directory)
 
             if not validate_dir(current_directory, release_name, failed, result):
                 continue
 
-            video_files = list(filter(helpers.is_media_file, file_names))
+            video_files = list(filter(helpers.is_media_file, filenames))
             if video_files:
                 process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
             else:
@@ -181,7 +187,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                 continue
 
             # noinspection PyTypeChecker
-            unwanted_files = [x for x in file_names if x in video_files + rar_files]
+            unwanted_files = [x for x in filenames if x in video_files + rar_files]
             if unwanted_files:
                 result.output += log_helper("Found unwanted files: {0}".format(unwanted_files), logger.DEBUG)
 
@@ -237,16 +243,15 @@ def validate_dir(process_path, release_name, failed, result):
     """
 
     result.output += log_helper("Processing folder " + process_path, logger.DEBUG)
-
     upper_name = os.path.basename(process_path).upper()
     if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_') or (os.sep + '_FAILED_') in upper_name or ('_FAILED_' + os.sep) in upper_name:
-        result.output += log_helper("The directory name indicates it failed to extract.", logger.DEBUG)
+        result.output += log_helper(_("The directory name indicates it failed to extract."), logger.DEBUG)
         failed = True
     elif upper_name.startswith('_UNDERSIZED_') or upper_name.endswith('_UNDERSIZED_') or (os.sep + '_UNDERSIZED_') in upper_name or ('_UNDERSIZED_' + os.sep) in upper_name:
-        result.output += log_helper("The directory name indicates that it was previously rejected for being undersized.", logger.DEBUG)
+        result.output += log_helper(_("The directory name indicates that it was previously rejected for being undersized."), logger.DEBUG)
         failed = True
     elif upper_name.startswith('_UNPACK') or upper_name.endswith('_UNPACK') or (os.sep + '_UNPACK') in upper_name or ('_UNPACK' + os.sep) in upper_name:
-        result.output += log_helper("The directory name indicates that this release is in the process of being unpacked.", logger.DEBUG)
+        result.output += log_helper(_("The directory name indicates that this release is in the process of being unpacked."), logger.DEBUG)
         result.missed_files.append("{0} : Being unpacked".format(process_path))
         return False
 
@@ -273,17 +278,17 @@ def validate_dir(process_path, release_name, failed, result):
                 logger.WARNING)
             return False
 
-    for current_directory, directory_names, file_names in os.walk(process_path, topdown=False, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS):
-        sync_files = list(filter(is_sync_file, file_names))
+    for current_directory, directory_names, filenames in os.walk(process_path, topdown=False, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS):
+        sync_files = list(filter(is_sync_file, filenames))
         if sync_files and settings.POSTPONE_IF_SYNC_FILES:
             result.output += log_helper("Found temporary sync files: {0} in path: {1}".format(sync_files, os.path.join(process_path, sync_files[0])))
             result.output += log_helper("Skipping post processing for folder: {0}".format(process_path))
             result.missed_files.append("{0} : Sync files found".format(os.path.join(process_path, sync_files[0])))
             continue
 
-        found_files = list(filter(helpers.is_media_file, file_names))
+        found_files = list(filter(helpers.is_media_file, filenames))
         if settings.UNPACK == settings.UNPACK_PROCESS_CONTENTS:
-            found_files += list(filter(helpers.is_rar_file, file_names))
+            found_files += list(filter(helpers.is_rar_file, filenames))
 
         if current_directory != settings.TV_DOWNLOAD_DIR and found_files:
             found_files.append(os.path.basename(current_directory))
