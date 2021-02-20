@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 23:46\n"
+"PO-Revision-Date: 2021-02-20 23:57\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -1428,11 +1428,11 @@ msgstr "Impossible de trouver l'exécutable de git - Arrêtez SickChill et SOIT 
 
 #: sickchill/update_manager/git.py:246 sickchill/update_manager/source.py:123
 msgid "There is a <a href=\"{url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> (you're {commits_behind} commit{s} behind) &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Il y a une <a href=\"{url}\" onclick=\"window.open(this.href); return false;\">nouvelle version disponible</a> (vous êtes {commits_behind} commit{s} derrière) &mdash; <a href=\"{update_url}\">Mettre à jour maintenant</a>"
 
 #: sickchill/update_manager/pip.py:56
 msgid "There is a <a href=\"{url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Il y a une <a href=\"{url}\" onclick=\"window.open(this.href); return false;\">nouvelle version disponible</a> &mdash; <a href=\"{update_url}\">Mettre à jour maintenant</a>"
 
 #: sickchill/update_manager/runner.py:48
 msgid "New update found for SickChill, starting auto-updater"
@@ -1477,19 +1477,19 @@ msgstr "Se connecter"
 
 #: sickchill/views/authentication.py:27
 msgid "User logged into the SickChill web interface"
-msgstr ""
+msgstr "Utilisateur connecté à l'interface web de SickChill"
 
 #: sickchill/views/authentication.py:29
 msgid "User attempted a failed login to the SickChill web interface from IP: "
-msgstr ""
+msgstr "L'utilisateur a échoué en tentant une connexion à l'interface web de SickChill à partir de l'IP: "
 
 #: sickchill/views/authentication.py:30
 msgid "Incorrect username or password! Both username and password are case sensitive!"
-msgstr ""
+msgstr "Nom d'utilisateur ou mot de passe incorrect ! Le nom d'utilisateur et le mot de passe sont sensibles à la casse!"
 
 #: sickchill/views/changelog.py:22
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]"
-msgstr ""
+msgstr "Impossible de charger les modifications depuis le dépôt. [Cliquez ici pour consulter CHANGES.md]"
 
 #: sickchill/views/changelog.py:25 sickchill/views/news.py:29
 msgid "The was a problem connecting to github, please refresh and try again"
@@ -1674,11 +1674,11 @@ msgstr "Échec de l’envoi du message"
 
 #: sickchill/views/home.py:357
 msgid "Rocket.Chat message successful"
-msgstr ""
+msgstr "Message de Rocket.Chat réussi"
 
 #: sickchill/views/home.py:359
 msgid "Rocket.Chat message failed"
-msgstr ""
+msgstr "Échec du message Rocket.Chat"
 
 #: sickchill/views/home.py:365
 msgid "Matrix message successful"
@@ -2049,19 +2049,19 @@ msgstr "Impossible de renommer les épisodes, le dossier de la série est introu
 
 #: sickchill/views/home.py:1594
 msgid "Manual Snatch"
-msgstr ""
+msgstr "Récupération manuelle"
 
 #: sickchill/views/home.py:1614
 msgid "Result provider not found, cannot determine type"
-msgstr ""
+msgstr "Fournisseur de résultat introuvable, impossible de déterminer le type"
 
 #: sickchill/views/home.py:1616
 msgid "Result not found in the cache"
-msgstr ""
+msgstr "Résultat introuvable dans la cache"
 
 #: sickchill/views/home.py:1619
 msgid "Could not snatch manually selected result: {}"
-msgstr ""
+msgstr "Impossible de récupérer le résultat sélectionné manuellement : {}"
 
 #: sickchill/views/home.py:1761 sickchill/views/home.py:1791
 msgid "New subtitles downloaded: {new_subtitle_languages}"
@@ -2073,7 +2073,7 @@ msgstr "Aucun sous-titres téléchargé"
 
 #: sickchill/views/imageSelector.py:49
 msgid "Invalid image provider"
-msgstr ""
+msgstr "Fournisseur d'image invalide"
 
 #: sickchill/views/index.py:61
 msgid "Oops: 404 Not Found"
@@ -2146,23 +2146,23 @@ msgstr "Journaux"
 #: sickchill/views/movies.py:22 sickchill/views/movies.py:33
 #: sickchill/views/movies.py:59 sickchill/views/movies.py:67
 msgid "Movies"
-msgstr ""
+msgstr "Films"
 
 #: sickchill/views/movies.py:22
 msgid "Movie List"
-msgstr ""
+msgstr "Liste des films"
 
 #: sickchill/views/movies.py:33
 msgid "Movie Search"
-msgstr ""
+msgstr "Recherche de film"
 
 #: sickchill/views/movies.py:54 sickchill/views/movies.py:64
 msgid "Movie not found"
-msgstr ""
+msgstr "Film introuvable"
 
 #: sickchill/views/movies.py:59 sickchill/views/movies.py:67
 msgid "Movie Remove"
-msgstr ""
+msgstr "Suppression de Film"
 
 #: sickchill/views/news.py:22
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -2174,15 +2174,15 @@ msgstr "Échec de l'authentification lors de l'obtention de la clé api"
 
 #: sickchill/views/api/authentication.py:23
 msgid "Authentication failed during api key request: {traceback}"
-msgstr ""
+msgstr "L'authentification a échouée lors de la demande de clé api: {traceback}"
 
 #: sickchill/views/api/webapi.py:1539
 msgid "API: sb.backup backing up to {location}"
-msgstr ""
+msgstr "API: sb.backup sauvegardée dans {location}"
 
 #: sickchill/views/api/webapi.py:1542
 msgid "API: sb.backup successful!"
-msgstr ""
+msgstr "API: sb.backup réussie!"
 
 #: sickchill/views/api/webapi.py:1545
 msgid "API: sb.backup failed!"
