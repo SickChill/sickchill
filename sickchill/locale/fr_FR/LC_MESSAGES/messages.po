@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 23:07\n"
+"PO-Revision-Date: 2021-02-20 23:15\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -698,51 +698,51 @@ msgstr "Impossible de déterminer l'espace libre"
 
 #: sickchill/oldbeard/network_timezones.py:103
 msgid "Missing time zone for network: {orig_network}. Check valid network is set in indexer (theTVDB) before filing issue."
-msgstr ""
+msgstr "Fuseau horaire manquant pour la chaîne: {orig_network}. Vérifiez qu'une chaîne valide est définie dans l'indexeur (theTVDB) avant de déposer le problème."
 
 #: sickchill/oldbeard/postProcessor.py:103
 msgid "There is no existing file so there's no worries about replacing it"
-msgstr ""
+msgstr "Il n'y a pas de fichier existant, il n'y a donc aucune inquiétude à vouloir le remplacer"
 
 #: sickchill/oldbeard/postProcessor.py:111
 msgid "File {0} is larger than {1}"
-msgstr ""
+msgstr "Le fichier {0} est plus grand que {1}"
 
 #: sickchill/oldbeard/postProcessor.py:115
 msgid "File {0} is the same size as {1}"
-msgstr ""
+msgstr "Le fichier {0} a la même taille que {1}"
 
 #: sickchill/oldbeard/postProcessor.py:119
 msgid "File {0} is smaller than {1}"
-msgstr ""
+msgstr "Le fichier {0} est plus petit que {1}"
 
 #: sickchill/oldbeard/postProcessor.py:123
 msgid "File {0} doesn't exist so there's no worries about replacing it"
-msgstr ""
+msgstr "Le fichier {0} est inexistant, il n'y a donc aucune inquiétude à vouloir le remplacer"
 
 #: sickchill/oldbeard/postProcessor.py:208
 msgid "Found the following associated files for {0}: {1}"
-msgstr ""
+msgstr "Trouvé les fichiers associés suivants pour {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:210
 msgid "Deleting non allowed associated files for {0}: {1}"
-msgstr ""
+msgstr "Suppression des fichiers associés non autorisés pour {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:214
 msgid "Allowing associated files for {0}: {1}"
-msgstr ""
+msgstr "Autoriser les fichiers associés pour {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:216
 msgid "No associated files for {0} were found during this pass"
-msgstr ""
+msgstr "Aucun fichier associé pour {0} n'a été trouvé lors de cette analyse"
 
 #: sickchill/oldbeard/postProcessor.py:242
 msgid "There were no files associated with {0}, not deleting anything"
-msgstr ""
+msgstr "Il n'y avait aucun fichier associé avec {0}, aucune suppression"
 
 #: sickchill/oldbeard/postProcessor.py:248
 msgid "Deleting file {0}"
-msgstr ""
+msgstr "Suppression du fichier {0}"
 
 #: sickchill/oldbeard/postProcessor.py:253
 msgid "Read only mode on file {0} Will try to make it writeable"
