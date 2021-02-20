@@ -554,7 +554,7 @@ class GenericProvider(object):
 
         return urls, filename
 
-    def _verify_download(self, file_name):
+    def _verify_download(self, filename):
         return True
 
     def add_cookies_from_ui(self):

@@ -449,15 +449,15 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
     if old_path_length == 0 or old_path_length > len(cur_path):
         # approach from the right
-        cur_file_name, cur_file_ext = os.path.splitext(cur_path)
+        cur_filename, cur_file_ext = os.path.splitext(cur_path)
     else:
         # approach from the left
         cur_file_ext = cur_path[old_path_length:]
-        cur_file_name = cur_path[:old_path_length]
+        cur_filename = cur_path[:old_path_length]
 
     if cur_file_ext[1:] in SUBTITLE_EXTENSIONS:
         # Extract subtitle language from filename
-        sublang = os.path.splitext(cur_file_name)[1][1:]
+        sublang = os.path.splitext(cur_filename)[1][1:]
 
         # Check if the language extracted from filename is a valid language
         if sublang in sickchill.oldbeard.subtitles.subtitle_code_filter():
@@ -1617,12 +1617,6 @@ def is_ip_local(ip):
             if request_ip in network:
                 return True
     return False
-
-
-def recursive_listdir(path):
-    for directory_path, directory_names, file_names in os.walk(path, topdown=False):
-        for filename in file_names:
-            yield os.path.join(directory_path, filename)
 
 
 MESSAGE_COUNTER = 0

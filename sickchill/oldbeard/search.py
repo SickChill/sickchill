@@ -36,18 +36,18 @@ def _downloadResult(result):
     elif result.resultType == GenericProvider.NZBDATA:
 
         # get the final file path to the nzb
-        file_name = os.path.join(settings.NZB_DIR, result.name + ".nzb")
+        filename = os.path.join(settings.NZB_DIR, result.name + ".nzb")
 
-        logger.info("Saving NZB to " + file_name)
+        logger.info("Saving NZB to " + filename)
 
         newResult = True
 
         # save the data to disk
         try:
-            with open(file_name, 'w') as fileOut:
+            with open(filename, 'w') as fileOut:
                 fileOut.write(result.extraInfo[0])
 
-            helpers.chmodAsParent(file_name)
+            helpers.chmodAsParent(filename)
 
         except EnvironmentError as e:
             logger.exception("Error trying to save NZB to black hole: " + str(e))

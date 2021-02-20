@@ -1,7 +1,6 @@
 import gettext
 import os
 import sys
-import sysconfig
 
 
 def setup_lib_path(additional=None):
