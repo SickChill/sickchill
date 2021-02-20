@@ -11,7 +11,6 @@ from sqlite3 import OperationalError
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
-import babelfish
 import imdb
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError

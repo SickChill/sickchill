@@ -1619,12 +1619,6 @@ def is_ip_local(ip):
     return False
 
 
-def recursive_listdir(path):
-    for directory_path, directory_names, filenames in os.walk(path, topdown=False):
-        for filename in filenames:
-            yield os.path.join(directory_path, filename)
-
-
 MESSAGE_COUNTER = 0
 
 
