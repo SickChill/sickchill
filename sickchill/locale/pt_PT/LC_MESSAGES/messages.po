@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2021-02-19 14:45-0500\n"
-"PO-Revision-Date: 2021-02-19 19:59\n"
+"POT-Creation-Date: 2021-02-20 06:40-0500\n"
+"PO-Revision-Date: 2021-02-20 11:45\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese\n"
 "MIME-Version: 1.0\n"
@@ -248,19 +248,19 @@ msgstr ""
 msgid "Automatic update failed: {0}"
 msgstr ""
 
-#: sickchill/tv.py:488
+#: sickchill/tv.py:487
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
 msgstr ""
 
-#: sickchill/tv.py:1769
+#: sickchill/tv.py:1768
 msgid "Deleting {show} {ep} from the DB"
 msgstr ""
 
-#: sickchill/tv.py:1773
+#: sickchill/tv.py:1772
 msgid "Removing myself from my show's list"
 msgstr ""
 
-#: sickchill/tv.py:1777
+#: sickchill/tv.py:1776
 msgid "Deleting myself from the database"
 msgstr ""
 
@@ -434,6 +434,14 @@ msgstr ""
 
 #: sickchill/oldbeard/db.py:348
 msgid "Control dict to upsert cannot have values of None!"
+msgstr ""
+
+#: sickchill/oldbeard/failedProcessor.py:31
+msgid "Failed download detected:"
+msgstr ""
+
+#: sickchill/oldbeard/failedProcessor.py:41
+msgid "Warning: unable to find a valid release name."
 msgstr ""
 
 #: sickchill/oldbeard/helpers.py:236
@@ -692,11 +700,298 @@ msgstr ""
 msgid "Missing time zone for network: {orig_network}. Check valid network is set in indexer (theTVDB) before filing issue."
 msgstr ""
 
+#: sickchill/oldbeard/postProcessor.py:103
+msgid "There is no existing file so there's no worries about replacing it"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:111
+msgid "File {0} is larger than {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:115
+msgid "File {0} is the same size as {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:119
+msgid "File {0} is smaller than {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:123
+msgid "File {0} doesn't exist so there's no worries about replacing it"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:208
+msgid "Found the following associated files for {0}: {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:210
+msgid "Deleting non allowed associated files for {0}: {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:214
+msgid "Allowing associated files for {0}: {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:216
+msgid "No associated files for {0} were found during this pass"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:242
+msgid "There were no files associated with {0}, not deleting anything"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:248
+msgid "Deleting file {0}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:253
+msgid "Read only mode on file {0} Will try to make it writeable"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:257
+msgid "Cannot change permissions of {0}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:280
+msgid "Must provide an action for the combined file operation"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:291
+msgid "There were no files associated with {0}, not moving anything"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:325
+msgid "Unable to create subtitles folder {0}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:346
+msgid "Moving file from {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:351
+msgid "Unable to move file from {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:369
+msgid "Copying file from {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:374
+msgid "Unable to copy file from {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:392
+msgid "Hard linking file from {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:397 sickchill/oldbeard/postProcessor.py:419
+msgid "Unable to link file from {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:414
+msgid "Moving then symbolically linking file from {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:437
+msgid "Creating then symbolically linking file from {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:442
+msgid "Unable to link file {0} to {1}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:495
+msgid "Found result in history for {0} - Season: {1} - Quality: {2} - Version: {3}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:598
+msgid "Adding the file to the anidb mylist"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:669
+msgid "Could not convert to a valid airdate: {0}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:706
+msgid "Don't have a season number, but this show appears to only have 1 season, setting season number to 1..."
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:737
+msgid "Unable to create episode: "
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:763
+msgid "The old status had a quality in it, using that: "
+msgstr ""
+
 #: sickchill/oldbeard/notifiers/synoindex.py:39
 #: sickchill/oldbeard/notifiers/synoindex.py:64
 #: sickchill/oldbeard/notifiers/synologynotifier.py:41
-#: sickchill/oldbeard/postProcessor.py:841
+#: sickchill/oldbeard/postProcessor.py:839
 msgid "Script result: {0}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:872
+msgid "SC snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:879
+msgid "This was manually downloaded but it appears to be better quality than what we have so I'm marking it as priority"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:884
+msgid "This was manually downloaded but it appears to be a proper so I'm marking it as priority"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:920
+msgid "This show isn't in your list, you need to add it to SC before post-processing an episode"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:923
+msgid "Not enough information to determine what episode this is. Quitting post-processing"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:932
+msgid "Snatch history had a quality in it, using that: "
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:938
+msgid "Quality of the episode we're processing: {0}"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:942
+msgid "Is ep a priority download: "
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:946
+msgid "Snatch history had a version in it, using that: v"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:962
+msgid "New file is a proper/repack, marking it safe to replace"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:966
+msgid "File exists and new file quality is not in a preferred quality list, marking it unsafe to replace"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:986
+msgid "File has season {0}, while the indexer is on season {1}. Try forcing a full update on the show and process this file again. The file may be incorrectly labeled or fake, aborting."
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:994
+msgid "This download is marked a priority download so I'm going to replace an existing file if I find one"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1000
+msgid "Not enough disk space to continue processing, exiting"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1003
+msgid "Unable to determine needed file space as the source file is locked for access"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1017
+msgid "Unable to delete the existing files"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1025
+msgid "Show directory doesn't exist, creating it"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1033
+msgid "Unable to create the show directory: "
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1045
+msgid "Found release name "
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1049
+msgid "Using original release name "
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1078
+msgid "Couldn't find release in snatch history"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1088
+msgid "Unable to post-process an episode if the show dir doesn't exist, quitting"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1090
+msgid "Destination folder for this episode: "
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1114
+msgid "File is locked for reading"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1119
+#: sickchill/oldbeard/postProcessor.py:1127
+msgid "File is locked for reading/writing"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1134
+msgid "Unknown process method: "
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1135
+#: sickchill/oldbeard/postProcessor.py:1137
+msgid "Unable to move the files to their new home"
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1163
+msgid "Could not create/update meta files. Continuing with postProcessing..."
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1194
+msgid "Some notifications could not be sent. Continuing with postProcessing..."
+msgstr ""
+
+#: sickchill/oldbeard/postProcessor.py:1203
+msgid "Some notifications could not be sent. Finishing postProcessing..."
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:150 sickchill/oldbeard/processTV.py:153
+#: sickchill/oldbeard/processTV.py:156
+msgid "Processing {0}"
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:171
+msgid "Adding extracted directory to the list of directories to process: {0}"
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:191
+msgid "Found unwanted files: {0}"
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:196
+msgid "Deleted folder: {0}"
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:221
+msgid "Processing Failed"
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:221
+msgid "Successfully processed"
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:223
+msgid "Some items were not processed."
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:247
+msgid "The directory name indicates it failed to extract."
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:250
+msgid "The directory name indicates that it was previously rejected for being undersized."
+msgstr ""
+
+#: sickchill/oldbeard/processTV.py:253
+msgid "The directory name indicates that this release is in the process of being unpacked."
 msgstr ""
 
 #: sickchill/oldbeard/search.py:456
@@ -713,6 +1008,14 @@ msgstr "episódio"
 
 #: sickchill/oldbeard/search_queue.py:255
 msgid "No needed movie results found during backlog search for: [{name}]"
+msgstr ""
+
+#: sickchill/oldbeard/show_name_helpers.py:148
+msgid "Downloader returned a download url rather than a release name"
+msgstr ""
+
+#: sickchill/oldbeard/show_name_helpers.py:151
+msgid "Using release for release name."
 msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:181
