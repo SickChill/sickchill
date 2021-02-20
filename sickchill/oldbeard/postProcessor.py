@@ -137,9 +137,9 @@ class PostProcessor(object):
             for base, dirnames_, files in os.walk(treeroot, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS):
                 goodfiles = fnmatch.filter(files, pattern)
                 for f in goodfiles:
-                    found_file = os.path.join(base, f)
-                    if found_file != file_path:
-                        results.append(found_file)
+                    found = os.path.join(base, f)
+                    if found != file_path:
+                        results.append(found)
             return results
 
         if not file_path:
@@ -162,10 +162,10 @@ class PostProcessor(object):
         # subfolders are only checked in show folder, so names will always be exactly alike
         if subfolders:
             # just create the list of all files starting with the basename
-            filelist = recursive_glob(dirname, glob.escape(base_name) + '*')
+            file_list = recursive_glob(dirname, glob.escape(base_name) + '*')
         # this is called when PP, so we need to do the filename check case-insensitive
         else:
-            filelist = []
+            file_list = []
 
             # loop through all the files in the folder, and check if they are the same name even when the cases don't match
             for found_file in glob.glob(os.path.join(glob.escape(dirname), '*')):
@@ -173,12 +173,12 @@ class PostProcessor(object):
 
                 # Handles subtitles with language code
                 if file_extension in SUBTITLE_EXTENSIONS and filename.rpartition('.')[0].lower() == base_name.lower():
-                    filelist.append(found_file)
+                    file_list.append(found_file)
                 # Handles all files with same basename, including subtitles without language code
                 elif filename.lower() == base_name.lower():
-                    filelist.append(found_file)
+                    file_list.append(found_file)
 
-        for associated_file_path in filelist:
+        for associated_file_path in file_list:
             # Exclude the video file we are post-processing
             if os.path.abspath(associated_file_path) == os.path.abspath(file_path):
                 continue
@@ -236,7 +236,7 @@ class PostProcessor(object):
 
         # figure out which files we want to delete
         if associated_files:
-            file_list = file_list + self.list_associated_files(file_path, subfolders=True)
+            file_list += self.list_associated_files(file_path, subfolders=True)
 
         if not file_list:
             self._log(_("There were no files associated with {0}, not deleting anything").format(file_path), logger.DEBUG)
@@ -550,7 +550,7 @@ class PostProcessor(object):
 
         # parse the name to break it into show name, season, and episode
         try:
-            parse_result = NameParser(True, tryIndexers=True).parse(name)
+            parse_result = NameParser(tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
             logger.debug("{0}".format(error))
             return to_return
@@ -760,7 +760,7 @@ class PostProcessor(object):
             ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
             if ep_quality != common.Quality.UNKNOWN:
                 self._log(
-                   _ ("The old status had a quality in it, using that: ") + common.Quality.qualityStrings[ep_quality],
+                   _("The old status had a quality in it, using that: ") + common.Quality.qualityStrings[ep_quality],
                     logger.DEBUG)
                 return ep_quality
 
@@ -881,7 +881,7 @@ class PostProcessor(object):
 
         # if the user downloaded it manually and it appears to be a PROPER/REPACK then it's priority
         if self.is_proper and new_ep_quality >= old_ep_quality and new_ep_quality != common.Quality.UNKNOWN:
-            self._log("This was manually downloaded but it appears to be a proper so I'm marking it as priority", logger.DEBUG)
+            self._log(_("This was manually downloaded but it appears to be a proper so I'm marking it as priority"), logger.DEBUG)
             return True
 
         return False
@@ -1110,7 +1110,7 @@ class PostProcessor(object):
         try:
             # move the episode and associated files to the show dir
             if self.process_method == METHOD_COPY:
-                if helpers.is_file_locked(self.directory, False):
+                if helpers.is_file_locked(self.directory):
                     raise EpisodePostProcessingFailedException(_("File is locked for reading"))
                 self._copy(self.directory, dest_path, new_base_name, settings.MOVE_ASSOCIATED_FILES,
                            settings.USE_SUBTITLES and ep_obj.show.subtitles)
