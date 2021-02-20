@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 23:15\n"
+"PO-Revision-Date: 2021-02-20 23:26\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -746,39 +746,39 @@ msgstr "Suppression du fichier {0}"
 
 #: sickchill/oldbeard/postProcessor.py:253
 msgid "Read only mode on file {0} Will try to make it writeable"
-msgstr ""
+msgstr "Lecture seule sur le fichier {0} J'essaie de le rendre accessible en écriture"
 
 #: sickchill/oldbeard/postProcessor.py:257
 msgid "Cannot change permissions of {0}"
-msgstr ""
+msgstr "Impossible de modifier les permissions de {0}"
 
 #: sickchill/oldbeard/postProcessor.py:280
 msgid "Must provide an action for the combined file operation"
-msgstr ""
+msgstr "Doit fournir une action pour l'opération de fichier combiné"
 
 #: sickchill/oldbeard/postProcessor.py:291
 msgid "There were no files associated with {0}, not moving anything"
-msgstr ""
+msgstr "Il n'y avait aucun fichier associé avec {0}, rien ne sera déplacé"
 
 #: sickchill/oldbeard/postProcessor.py:325
 msgid "Unable to create subtitles folder {0}"
-msgstr ""
+msgstr "Impossible de créer le répertoire des sous-titres {0}"
 
 #: sickchill/oldbeard/postProcessor.py:346
 msgid "Moving file from {0} to {1}"
-msgstr ""
+msgstr "Déplacement du fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:351
 msgid "Unable to move file from {0} to {1}"
-msgstr ""
+msgstr "Impossible de déplacer le fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:369
 msgid "Copying file from {0} to {1}"
-msgstr ""
+msgstr "Copie du fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:374
 msgid "Unable to copy file from {0} to {1}"
-msgstr ""
+msgstr "Impossible de copier le fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:392
 msgid "Hard linking file from {0} to {1}"
@@ -786,39 +786,39 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:397 sickchill/oldbeard/postProcessor.py:419
 msgid "Unable to link file from {0} to {1}"
-msgstr ""
+msgstr "Impossible de lier le fichier de {0} à {1}"
 
 #: sickchill/oldbeard/postProcessor.py:414
 msgid "Moving then symbolically linking file from {0} to {1}"
-msgstr ""
+msgstr "Déplacement puis liaison symbolique du fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:437
 msgid "Creating then symbolically linking file from {0} to {1}"
-msgstr ""
+msgstr "Créer puis lier symboliquement le fichier de {0} à {1}"
 
 #: sickchill/oldbeard/postProcessor.py:442
 msgid "Unable to link file {0} to {1}"
-msgstr ""
+msgstr "Impossible de lier le fichier {0} à {1}"
 
 #: sickchill/oldbeard/postProcessor.py:495
 msgid "Found result in history for {0} - Season: {1} - Quality: {2} - Version: {3}"
-msgstr ""
+msgstr "Résultat trouvé dans l'historique pour {0} - Saison : {1} - Qualité : {2} - Version : {3}"
 
 #: sickchill/oldbeard/postProcessor.py:598
 msgid "Adding the file to the anidb mylist"
-msgstr ""
+msgstr "Ajout du fichier à la mylist anidb"
 
 #: sickchill/oldbeard/postProcessor.py:669
 msgid "Could not convert to a valid airdate: {0}"
-msgstr ""
+msgstr "Impossible de convertir en une date de diffusion valide : {0}"
 
 #: sickchill/oldbeard/postProcessor.py:706
 msgid "Don't have a season number, but this show appears to only have 1 season, setting season number to 1..."
-msgstr ""
+msgstr "N'a pas de numéro de saison, mais cette série ne semble avoir qu'une seule saison, définit le numéro de saison à 1..."
 
 #: sickchill/oldbeard/postProcessor.py:737
 msgid "Unable to create episode: "
-msgstr ""
+msgstr "Impossible de créer l'épisode : "
 
 #: sickchill/oldbeard/postProcessor.py:763
 msgid "The old status had a quality in it, using that: "
