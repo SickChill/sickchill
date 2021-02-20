@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 11:45\n"
+"PO-Revision-Date: 2021-02-20 23:07\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -254,15 +254,15 @@ msgstr "{show_id}: Chargement de tous les épisodes à partir de {indexer_name}.
 
 #: sickchill/tv.py:1768
 msgid "Deleting {show} {ep} from the DB"
-msgstr ""
+msgstr "Suppression de {show} {ep} de la base de données"
 
 #: sickchill/tv.py:1772
 msgid "Removing myself from my show's list"
-msgstr ""
+msgstr "Je me suis supprimé de ma liste de séries"
 
 #: sickchill/tv.py:1776
 msgid "Deleting myself from the database"
-msgstr ""
+msgstr "Je me supprime de la base de données"
 
 #: sickchill/helper/common.py:337
 msgid "Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}"
@@ -338,7 +338,7 @@ msgstr "Répéter (Séparé)"
 
 #: sickchill/oldbeard/common.py:85
 msgid "Duplicate"
-msgstr ""
+msgstr "Doublon"
 
 #: sickchill/oldbeard/common.py:86
 msgid "Extend"
@@ -378,7 +378,7 @@ msgstr "Archivé"
 
 #: sickchill/oldbeard/config.py:179
 msgid "Disabling UNPACK setting because no unrar/unar/bsdtar is found and accessible in the path or setting."
-msgstr ""
+msgstr "Désactivation du paramètre UNPACK car aucun unrar/unar/bsdtar n'est trouvé et accessible dans le chemin ou le paramètre."
 
 #: sickchill/oldbeard/dailysearcher.py:27
 msgid "Searching for new released episodes ..."
@@ -398,7 +398,7 @@ msgstr "Si ça se produit dans cache.db, vous pouvez arrêter SickChill et suppr
 
 #: sickchill/oldbeard/db.py:85
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables}"
-msgstr ""
+msgstr "Voici les arguments qui ont été passés à cette fonction (c’est ce que les développeurs doivent savoir) : {local_variables}"
 
 #: sickchill/oldbeard/db.py:93
 msgid "unable to open database file"
@@ -438,11 +438,11 @@ msgstr "Le dictionnaire de contrôle à upsert ne peut pas avoir de valeurs vide
 
 #: sickchill/oldbeard/failedProcessor.py:31
 msgid "Failed download detected:"
-msgstr ""
+msgstr "Échec du téléchargement détecté:"
 
 #: sickchill/oldbeard/failedProcessor.py:41
 msgid "Warning: unable to find a valid release name."
-msgstr ""
+msgstr "Avertissement : impossible de trouver un nom de release valide."
 
 #: sickchill/oldbeard/helpers.py:236
 msgid "Invalid filename. Filename must be a string. {0}"
@@ -522,15 +522,15 @@ msgstr "module pyopenssl manquant, veuillez installer pour un accès https"
 
 #: sickchill/oldbeard/helpers.py:767
 msgid "Error creating SSL key and certificate {error}"
-msgstr ""
+msgstr "Erreur lors de la création de la clé et du certificat SSL {error}"
 
 #: sickchill/oldbeard/helpers.py:770
 msgid "Created https key: {ssl_key}"
-msgstr ""
+msgstr "Clé https créée : {ssl_key}"
 
 #: sickchill/oldbeard/helpers.py:771
 msgid "Created https cert: {ssl_cert}"
-msgstr ""
+msgstr "Certificat https créé : {ssl_cert}"
 
 #: sickchill/oldbeard/helpers.py:790
 msgid "Not creating backup, {0} doesn't exist"
@@ -622,7 +622,7 @@ msgstr "Erreur d'extraction du Zip : {0}"
 
 #: sickchill/oldbeard/helpers.py:1213
 msgid "Using global proxy for indexers: {}"
-msgstr ""
+msgstr "Utilisation du proxy global pour les indexeurs : {}"
 
 #: sickchill/oldbeard/helpers.py:1230
 msgid "Using global proxy: {}"
