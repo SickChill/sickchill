@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 11:45\n"
+"PO-Revision-Date: 2021-02-21 00:05\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -254,15 +254,15 @@ msgstr "{show_id}: Chargement de tous les épisodes à partir de {indexer_name}.
 
 #: sickchill/tv.py:1768
 msgid "Deleting {show} {ep} from the DB"
-msgstr ""
+msgstr "Suppression de {show} {ep} de la base de données"
 
 #: sickchill/tv.py:1772
 msgid "Removing myself from my show's list"
-msgstr ""
+msgstr "Je me suis supprimé de ma liste de séries"
 
 #: sickchill/tv.py:1776
 msgid "Deleting myself from the database"
-msgstr ""
+msgstr "Je me supprime de la base de données"
 
 #: sickchill/helper/common.py:337
 msgid "Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}"
@@ -338,7 +338,7 @@ msgstr "Répéter (Séparé)"
 
 #: sickchill/oldbeard/common.py:85
 msgid "Duplicate"
-msgstr ""
+msgstr "Doublon"
 
 #: sickchill/oldbeard/common.py:86
 msgid "Extend"
@@ -378,7 +378,7 @@ msgstr "Archivé"
 
 #: sickchill/oldbeard/config.py:179
 msgid "Disabling UNPACK setting because no unrar/unar/bsdtar is found and accessible in the path or setting."
-msgstr ""
+msgstr "Désactivation du paramètre UNPACK car aucun unrar/unar/bsdtar n'est trouvé et accessible dans le chemin ou le paramètre."
 
 #: sickchill/oldbeard/dailysearcher.py:27
 msgid "Searching for new released episodes ..."
@@ -398,7 +398,7 @@ msgstr "Si ça se produit dans cache.db, vous pouvez arrêter SickChill et suppr
 
 #: sickchill/oldbeard/db.py:85
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables}"
-msgstr ""
+msgstr "Voici les arguments qui ont été passés à cette fonction (c’est ce que les développeurs doivent savoir) : {local_variables}"
 
 #: sickchill/oldbeard/db.py:93
 msgid "unable to open database file"
@@ -418,7 +418,7 @@ msgstr "{filename} : {query}"
 
 #: sickchill/oldbeard/db.py:208
 msgid "{filename}: {query} with args {args}"
-msgstr ""
+msgstr "{filename} : {query} avec les paramètres {args}"
 
 #: sickchill/oldbeard/db.py:212
 msgid "Transaction with {count:d} of queries executed successfully"
@@ -430,7 +430,7 @@ msgstr "Impossible de récupérer tout et seulement un seul élément à la fois
 
 #: sickchill/oldbeard/db.py:333
 msgid "{filename}: {query} [{control}]"
-msgstr ""
+msgstr "{filename}: {query} [{control}]"
 
 #: sickchill/oldbeard/db.py:348
 msgid "Control dict to upsert cannot have values of None!"
@@ -438,11 +438,11 @@ msgstr "Le dictionnaire de contrôle à upsert ne peut pas avoir de valeurs vide
 
 #: sickchill/oldbeard/failedProcessor.py:31
 msgid "Failed download detected:"
-msgstr ""
+msgstr "Échec du téléchargement détecté:"
 
 #: sickchill/oldbeard/failedProcessor.py:41
 msgid "Warning: unable to find a valid release name."
-msgstr ""
+msgstr "Avertissement : impossible de trouver un nom de release valide."
 
 #: sickchill/oldbeard/helpers.py:236
 msgid "Invalid filename. Filename must be a string. {0}"
@@ -522,15 +522,15 @@ msgstr "module pyopenssl manquant, veuillez installer pour un accès https"
 
 #: sickchill/oldbeard/helpers.py:767
 msgid "Error creating SSL key and certificate {error}"
-msgstr ""
+msgstr "Erreur lors de la création de la clé et du certificat SSL {error}"
 
 #: sickchill/oldbeard/helpers.py:770
 msgid "Created https key: {ssl_key}"
-msgstr ""
+msgstr "Clé https créée : {ssl_key}"
 
 #: sickchill/oldbeard/helpers.py:771
 msgid "Created https cert: {ssl_cert}"
-msgstr ""
+msgstr "Certificat https créé : {ssl_cert}"
 
 #: sickchill/oldbeard/helpers.py:790
 msgid "Not creating backup, {0} doesn't exist"
@@ -622,7 +622,7 @@ msgstr "Erreur d'extraction du Zip : {0}"
 
 #: sickchill/oldbeard/helpers.py:1213
 msgid "Using global proxy for indexers: {}"
-msgstr ""
+msgstr "Utilisation du proxy global pour les indexeurs : {}"
 
 #: sickchill/oldbeard/helpers.py:1230
 msgid "Using global proxy: {}"
@@ -698,87 +698,87 @@ msgstr "Impossible de déterminer l'espace libre"
 
 #: sickchill/oldbeard/network_timezones.py:103
 msgid "Missing time zone for network: {orig_network}. Check valid network is set in indexer (theTVDB) before filing issue."
-msgstr ""
+msgstr "Fuseau horaire manquant pour la chaîne: {orig_network}. Vérifiez qu'une chaîne valide est définie dans l'indexeur (theTVDB) avant de déposer le problème."
 
 #: sickchill/oldbeard/postProcessor.py:103
 msgid "There is no existing file so there's no worries about replacing it"
-msgstr ""
+msgstr "Il n'y a pas de fichier existant, il n'y a donc aucune inquiétude à vouloir le remplacer"
 
 #: sickchill/oldbeard/postProcessor.py:111
 msgid "File {0} is larger than {1}"
-msgstr ""
+msgstr "Le fichier {0} est plus grand que {1}"
 
 #: sickchill/oldbeard/postProcessor.py:115
 msgid "File {0} is the same size as {1}"
-msgstr ""
+msgstr "Le fichier {0} a la même taille que {1}"
 
 #: sickchill/oldbeard/postProcessor.py:119
 msgid "File {0} is smaller than {1}"
-msgstr ""
+msgstr "Le fichier {0} est plus petit que {1}"
 
 #: sickchill/oldbeard/postProcessor.py:123
 msgid "File {0} doesn't exist so there's no worries about replacing it"
-msgstr ""
+msgstr "Le fichier {0} est inexistant, il n'y a donc aucune inquiétude à vouloir le remplacer"
 
 #: sickchill/oldbeard/postProcessor.py:208
 msgid "Found the following associated files for {0}: {1}"
-msgstr ""
+msgstr "Trouvé les fichiers associés suivants pour {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:210
 msgid "Deleting non allowed associated files for {0}: {1}"
-msgstr ""
+msgstr "Suppression des fichiers associés non autorisés pour {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:214
 msgid "Allowing associated files for {0}: {1}"
-msgstr ""
+msgstr "Autoriser les fichiers associés pour {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:216
 msgid "No associated files for {0} were found during this pass"
-msgstr ""
+msgstr "Aucun fichier associé pour {0} n'a été trouvé lors de cette analyse"
 
 #: sickchill/oldbeard/postProcessor.py:242
 msgid "There were no files associated with {0}, not deleting anything"
-msgstr ""
+msgstr "Il n'y avait aucun fichier associé avec {0}, aucune suppression"
 
 #: sickchill/oldbeard/postProcessor.py:248
 msgid "Deleting file {0}"
-msgstr ""
+msgstr "Suppression du fichier {0}"
 
 #: sickchill/oldbeard/postProcessor.py:253
 msgid "Read only mode on file {0} Will try to make it writeable"
-msgstr ""
+msgstr "Lecture seule sur le fichier {0} J'essaie de le rendre accessible en écriture"
 
 #: sickchill/oldbeard/postProcessor.py:257
 msgid "Cannot change permissions of {0}"
-msgstr ""
+msgstr "Impossible de modifier les permissions de {0}"
 
 #: sickchill/oldbeard/postProcessor.py:280
 msgid "Must provide an action for the combined file operation"
-msgstr ""
+msgstr "Doit fournir une action pour l'opération de fichier combiné"
 
 #: sickchill/oldbeard/postProcessor.py:291
 msgid "There were no files associated with {0}, not moving anything"
-msgstr ""
+msgstr "Il n'y avait aucun fichier associé avec {0}, rien ne sera déplacé"
 
 #: sickchill/oldbeard/postProcessor.py:325
 msgid "Unable to create subtitles folder {0}"
-msgstr ""
+msgstr "Impossible de créer le répertoire des sous-titres {0}"
 
 #: sickchill/oldbeard/postProcessor.py:346
 msgid "Moving file from {0} to {1}"
-msgstr ""
+msgstr "Déplacement du fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:351
 msgid "Unable to move file from {0} to {1}"
-msgstr ""
+msgstr "Impossible de déplacer le fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:369
 msgid "Copying file from {0} to {1}"
-msgstr ""
+msgstr "Copie du fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:374
 msgid "Unable to copy file from {0} to {1}"
-msgstr ""
+msgstr "Impossible de copier le fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:392
 msgid "Hard linking file from {0} to {1}"
@@ -786,82 +786,82 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:397 sickchill/oldbeard/postProcessor.py:419
 msgid "Unable to link file from {0} to {1}"
-msgstr ""
+msgstr "Impossible de lier le fichier de {0} à {1}"
 
 #: sickchill/oldbeard/postProcessor.py:414
 msgid "Moving then symbolically linking file from {0} to {1}"
-msgstr ""
+msgstr "Déplacement puis liaison symbolique du fichier de {0} vers {1}"
 
 #: sickchill/oldbeard/postProcessor.py:437
 msgid "Creating then symbolically linking file from {0} to {1}"
-msgstr ""
+msgstr "Créer puis lier symboliquement le fichier de {0} à {1}"
 
 #: sickchill/oldbeard/postProcessor.py:442
 msgid "Unable to link file {0} to {1}"
-msgstr ""
+msgstr "Impossible de lier le fichier {0} à {1}"
 
 #: sickchill/oldbeard/postProcessor.py:495
 msgid "Found result in history for {0} - Season: {1} - Quality: {2} - Version: {3}"
-msgstr ""
+msgstr "Résultat trouvé dans l'historique pour {0} - Saison : {1} - Qualité : {2} - Version : {3}"
 
 #: sickchill/oldbeard/postProcessor.py:598
 msgid "Adding the file to the anidb mylist"
-msgstr ""
+msgstr "Ajout du fichier à la mylist anidb"
 
 #: sickchill/oldbeard/postProcessor.py:669
 msgid "Could not convert to a valid airdate: {0}"
-msgstr ""
+msgstr "Impossible de convertir en une date de diffusion valide : {0}"
 
 #: sickchill/oldbeard/postProcessor.py:706
 msgid "Don't have a season number, but this show appears to only have 1 season, setting season number to 1..."
-msgstr ""
+msgstr "N'a pas de numéro de saison, mais cette série ne semble avoir qu'une seule saison, définit le numéro de saison à 1..."
 
 #: sickchill/oldbeard/postProcessor.py:737
 msgid "Unable to create episode: "
-msgstr ""
+msgstr "Impossible de créer l'épisode : "
 
 #: sickchill/oldbeard/postProcessor.py:763
 msgid "The old status had a quality in it, using that: "
-msgstr ""
+msgstr "L'ancien statut avait une qualité définie, je l'utilise: "
 
 #: sickchill/oldbeard/notifiers/synoindex.py:39
 #: sickchill/oldbeard/notifiers/synoindex.py:64
 #: sickchill/oldbeard/notifiers/synologynotifier.py:41
 #: sickchill/oldbeard/postProcessor.py:839
 msgid "Script result: {0}"
-msgstr ""
+msgstr "Résultat du script: {0}"
 
 #: sickchill/oldbeard/postProcessor.py:872
 msgid "SC snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority"
-msgstr ""
+msgstr "SC a récupéré cet épisode et c'est un Proper de qualité égale ou supérieure, donc je le marque comme prioritaire"
 
 #: sickchill/oldbeard/postProcessor.py:879
 msgid "This was manually downloaded but it appears to be better quality than what we have so I'm marking it as priority"
-msgstr ""
+msgstr "Cela a été téléchargé manuellement, mais il semble être de meilleure qualité que ce que nous avons donc je le marque comme prioritaire"
 
 #: sickchill/oldbeard/postProcessor.py:884
 msgid "This was manually downloaded but it appears to be a proper so I'm marking it as priority"
-msgstr ""
+msgstr "Ceci a été téléchargé manuellement, mais il semble que ce soit un Proper, donc je le marque comme prioritaire"
 
 #: sickchill/oldbeard/postProcessor.py:920
 msgid "This show isn't in your list, you need to add it to SC before post-processing an episode"
-msgstr ""
+msgstr "Cette série n'est pas dans votre liste, vous devez l'ajouter à SC avant de post-traiter un épisode"
 
 #: sickchill/oldbeard/postProcessor.py:923
 msgid "Not enough information to determine what episode this is. Quitting post-processing"
-msgstr ""
+msgstr "Pas assez d'informations pour déterminer quel épisode c'est. Arrêt du post-traitement"
 
 #: sickchill/oldbeard/postProcessor.py:932
 msgid "Snatch history had a quality in it, using that: "
-msgstr ""
+msgstr "L'historique de récupération avait une qualité définie, je l'utilise: "
 
 #: sickchill/oldbeard/postProcessor.py:938
 msgid "Quality of the episode we're processing: {0}"
-msgstr ""
+msgstr "Qualité de l'épisode que nous traitons : {0}"
 
 #: sickchill/oldbeard/postProcessor.py:942
 msgid "Is ep a priority download: "
-msgstr ""
+msgstr "Est-ce que l'épisode est un téléchargement prioritaire : "
 
 #: sickchill/oldbeard/postProcessor.py:946
 msgid "Snatch history had a version in it, using that: v"
@@ -869,7 +869,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:962
 msgid "New file is a proper/repack, marking it safe to replace"
-msgstr ""
+msgstr "Le nouveau fichier est un repack/proper, je le marque comme sûr à remplacer"
 
 #: sickchill/oldbeard/postProcessor.py:966
 msgid "File exists and new file quality is not in a preferred quality list, marking it unsafe to replace"
@@ -1140,47 +1140,47 @@ msgstr ""
 
 #: sickchill/oldbeard/databases/main.py:31
 msgid "Found {count} shows with bare archived status, attempting automatic conversion..."
-msgstr ""
+msgstr "Trouvé {count} séries avec un statut archivé nu, tentative de conversion automatique..."
 
 #: sickchill/oldbeard/databases/main.py:48
 msgid "Changing status from {old_status} to {new_status} for {archived_episode}: {ep} at {location} (File {result})"
-msgstr ""
+msgstr "Changement du statut de {old_status} à {new_status} pour {archived_episode}: {ep} à {location} (File {result})"
 
 #: sickchill/oldbeard/databases/main.py:61
 msgid "Duplicate show detected! {column}: {dupe} count: {count}"
-msgstr ""
+msgstr "Doublon de série détecté! {column}: {dupe} nombre: {count}"
 
 #: sickchill/oldbeard/databases/main.py:69
 msgid "Deleting duplicate show with {column}: {dupe} showid: {show}"
-msgstr ""
+msgstr "Suppression de la série en double avec {column}: {dupe} showid : {show}"
 
 #: sickchill/oldbeard/databases/main.py:82
 msgid "Duplicate episode detected! showid: {dupe_id} season: {dupe_season} episode {dupe_episode} count: {dupe_count}"
-msgstr ""
+msgstr "Doublon d'épisode détecté! showid: {dupe_id} saison: {dupe_season} épisode {dupe_episode} nombre: {dupe_count}"
 
 #: sickchill/oldbeard/databases/main.py:94
 msgid "Deleting duplicate episode with episode_id: {current_episode_id}"
-msgstr ""
+msgstr "Suppression de l'épisode dupliqué avec l'épisode_id: {current_episode_id}"
 
 #: sickchill/oldbeard/databases/main.py:106
 msgid "Orphan episode detected! episode_id: {current_episode_id} showid: {current_show_id}"
-msgstr ""
+msgstr "Épisode orphelin détecté! épisode_id: {current_episode_id} showid: {current_show_id}"
 
 #: sickchill/oldbeard/databases/main.py:109
 msgid "Deleting orphan episode with episode_id: {current_episode_id}"
-msgstr ""
+msgstr "Suppression de l'épisode orphelin avec l'épisode_id: {current_episode_id}"
 
 #: sickchill/oldbeard/databases/main.py:114
 msgid "Missing idx_indexer_id for TV Shows table detected!, fixing..."
-msgstr ""
+msgstr "idx_indexer_id manquant pour la table des séries TV détectée ! Réparation..."
 
 #: sickchill/oldbeard/databases/main.py:118
 msgid "Missing idx_tv_episodes_showid_airdate for TV Episodes table detected!, fixing..."
-msgstr ""
+msgstr "Il manque idx_tv_episodes_showid_airdate pour la table des épisodes de TV détectée ! Réparation..."
 
 #: sickchill/oldbeard/databases/main.py:122
 msgid "Missing idx_showid for TV Episodes table detected!, fixing..."
-msgstr ""
+msgstr "idx_showid manquant pour la table des épisodes TV détectée ! Réparation..."
 
 #: sickchill/oldbeard/databases/main.py:126
 msgid "Missing idx_status for TV Episodes table detected!, fixing..."
@@ -1196,7 +1196,7 @@ msgstr ""
 
 #: sickchill/oldbeard/databases/main.py:146
 msgid "Fixing unaired episode status for episode_id: {current_episode_id}"
-msgstr ""
+msgstr "Réparation du statut d'épisode non diffusé pour l'épisode_id: {current_episode_id}"
 
 #: sickchill/oldbeard/databases/main.py:154
 msgid "MALFORMED episode status detected! episode_id: {current_episode_id} showid: {current_show_id}"
@@ -1217,12 +1217,14 @@ msgstr ""
 #: sickchill/oldbeard/databases/main.py:223
 msgid "Your database version ({cur_db_version}) is too old to migrate from what this version of SickChill supports ({MIN_DB_VERSION}).\n"
 "Upgrade using a previous version (tag) build 496 to build 501 of SickChill first or remove database file to begin fresh."
-msgstr ""
+msgstr "La version de votre base de données ({cur_db_version}) est trop ancienne pour migrer depuis ce que prend en charge cette version de SickChill ({MIN_DB_VERSION}).\n"
+"Mettre à jour en utilisant une version précédente (tag) build 496 pour construire la version 501 de SickChill en premier ou supprimer le fichier de base de données pour commencer à zéro."
 
 #: sickchill/oldbeard/databases/main.py:227
 msgid "Your database version ({cur_db_version}) has been incremented past what this version of SickChill supports ({MAX_DB_VERSION}).\n"
 "If you have used other forks of SickChill, your database may be unusable due to their modifications."
-msgstr ""
+msgstr "La version de votre base de données ({cur_db_version}) a été incrémentée au-delà de ce que prend en charge cette version de SickChill ({MAX_DB_VERSION}).\n"
+"Si vous avez utilisé d'autres forks de SickChill, votre base de données peut être inutilisable en raison de leurs modifications."
 
 #: sickchill/oldbeard/notifiers/twilio_notify.py:44
 msgid "This is a test notification from SickChill"
@@ -1290,7 +1292,7 @@ msgstr "Aucun fournisseur de NZB/Torrent trouvé ou activé pour les {searches}.
 #: sickchill/oldbeard/providers/xthor.py:43
 #: sickchill/oldbeard/providers/yggtorrent.py:102
 msgid "Search Mode: {mode}"
-msgstr ""
+msgstr "Mode de recherche : {mode}"
 
 #: sickchill/oldbeard/providers/abnormal.py:133
 #: sickchill/oldbeard/providers/archetorrent.py:151
@@ -1303,7 +1305,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/xthor.py:92
 #: sickchill/oldbeard/providers/yggtorrent.py:173
 msgid "Found result: {title} with {seeders} seeders and {leechers} leechers"
-msgstr ""
+msgstr "Résultat trouvé: {title} avec {seeders} seeders et {leechers} leechers"
 
 #: sickchill/oldbeard/providers/bjshare.py:106
 #: sickchill/oldbeard/providers/hdspace.py:84
@@ -1340,7 +1342,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/tvchaosuk.py:89
 #: sickchill/oldbeard/providers/yggtorrent.py:107
 msgid "Search String: {search_string}"
-msgstr ""
+msgstr "Chaîne de recherche : {search_string}"
 
 #: sickchill/oldbeard/providers/bjshare.py:121
 #: sickchill/oldbeard/providers/ilcorsaronero.py:205
@@ -1348,17 +1350,17 @@ msgstr ""
 #: sickchill/oldbeard/providers/tvchaosuk.py:94
 #: sickchill/oldbeard/providers/xthor.py:54
 msgid "No data returned from provider"
-msgstr ""
+msgstr "Aucune donnée retournée par le fournisseur"
 
 #: sickchill/oldbeard/providers/horriblesubs.py:83
 msgid "Found result: {title}"
-msgstr ""
+msgstr "Résultat trouvé : {title}"
 
 #: sickchill/oldbeard/providers/horriblesubs.py:182
 #: sickchill/oldbeard/providers/newpct.py:103
 #: sickchill/oldbeard/providers/omgwtfnzbs.py:90
 msgid "Found result: "
-msgstr ""
+msgstr "Résultat trouvé: "
 
 #: sickchill/providers/GenericProvider.py:33
 msgid "Not working"
@@ -1378,11 +1380,11 @@ msgstr "Recherches quotidiennes/RSS et Backlog/manuelles en cours"
 
 #: sickchill/providers/GenericProvider.py:282
 msgid "Ignoring result "
-msgstr ""
+msgstr "Résultat ignoré "
 
 #: sickchill/providers/GenericProvider.py:285
 msgid "Found result {title} at {url}"
-msgstr ""
+msgstr "Résultat trouvé {title} à {url}"
 
 #: sickchill/providers/metadata/generic.py:710
 msgid "Can't load the metadata file from {0}, it doesn't exist"
@@ -1426,11 +1428,11 @@ msgstr "Impossible de trouver l'exécutable de git - Arrêtez SickChill et SOIT 
 
 #: sickchill/update_manager/git.py:246 sickchill/update_manager/source.py:123
 msgid "There is a <a href=\"{url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> (you're {commits_behind} commit{s} behind) &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Il y a une <a href=\"{url}\" onclick=\"window.open(this.href); return false;\">nouvelle version disponible</a> (vous êtes {commits_behind} commit{s} derrière) &mdash; <a href=\"{update_url}\">Mettre à jour maintenant</a>"
 
 #: sickchill/update_manager/pip.py:56
 msgid "There is a <a href=\"{url}\" onclick=\"window.open(this.href); return false;\">newer version available</a> &mdash; <a href=\"{update_url}\">Update Now</a>"
-msgstr ""
+msgstr "Il y a une <a href=\"{url}\" onclick=\"window.open(this.href); return false;\">nouvelle version disponible</a> &mdash; <a href=\"{update_url}\">Mettre à jour maintenant</a>"
 
 #: sickchill/update_manager/runner.py:48
 msgid "New update found for SickChill, starting auto-updater"
@@ -1475,19 +1477,19 @@ msgstr "Se connecter"
 
 #: sickchill/views/authentication.py:27
 msgid "User logged into the SickChill web interface"
-msgstr ""
+msgstr "Utilisateur connecté à l'interface web de SickChill"
 
 #: sickchill/views/authentication.py:29
 msgid "User attempted a failed login to the SickChill web interface from IP: "
-msgstr ""
+msgstr "L'utilisateur a échoué en tentant une connexion à l'interface web de SickChill à partir de l'IP: "
 
 #: sickchill/views/authentication.py:30
 msgid "Incorrect username or password! Both username and password are case sensitive!"
-msgstr ""
+msgstr "Nom d'utilisateur ou mot de passe incorrect ! Le nom d'utilisateur et le mot de passe sont sensibles à la casse!"
 
 #: sickchill/views/changelog.py:22
 msgid "Could not load changes from the repo. [Click here for CHANGES.md]"
-msgstr ""
+msgstr "Impossible de charger les modifications depuis le dépôt. [Cliquez ici pour consulter CHANGES.md]"
 
 #: sickchill/views/changelog.py:25 sickchill/views/news.py:29
 msgid "The was a problem connecting to github, please refresh and try again"
@@ -1672,11 +1674,11 @@ msgstr "Échec de l’envoi du message"
 
 #: sickchill/views/home.py:357
 msgid "Rocket.Chat message successful"
-msgstr ""
+msgstr "Message de Rocket.Chat réussi"
 
 #: sickchill/views/home.py:359
 msgid "Rocket.Chat message failed"
-msgstr ""
+msgstr "Échec du message Rocket.Chat"
 
 #: sickchill/views/home.py:365
 msgid "Matrix message successful"
@@ -2047,19 +2049,19 @@ msgstr "Impossible de renommer les épisodes, le dossier de la série est introu
 
 #: sickchill/views/home.py:1594
 msgid "Manual Snatch"
-msgstr ""
+msgstr "Récupération manuelle"
 
 #: sickchill/views/home.py:1614
 msgid "Result provider not found, cannot determine type"
-msgstr ""
+msgstr "Fournisseur de résultat introuvable, impossible de déterminer le type"
 
 #: sickchill/views/home.py:1616
 msgid "Result not found in the cache"
-msgstr ""
+msgstr "Résultat introuvable dans la cache"
 
 #: sickchill/views/home.py:1619
 msgid "Could not snatch manually selected result: {}"
-msgstr ""
+msgstr "Impossible de récupérer le résultat sélectionné manuellement : {}"
 
 #: sickchill/views/home.py:1761 sickchill/views/home.py:1791
 msgid "New subtitles downloaded: {new_subtitle_languages}"
@@ -2071,7 +2073,7 @@ msgstr "Aucun sous-titres téléchargé"
 
 #: sickchill/views/imageSelector.py:49
 msgid "Invalid image provider"
-msgstr ""
+msgstr "Fournisseur d'image invalide"
 
 #: sickchill/views/index.py:61
 msgid "Oops: 404 Not Found"
@@ -2144,23 +2146,23 @@ msgstr "Journaux"
 #: sickchill/views/movies.py:22 sickchill/views/movies.py:33
 #: sickchill/views/movies.py:59 sickchill/views/movies.py:67
 msgid "Movies"
-msgstr ""
+msgstr "Films"
 
 #: sickchill/views/movies.py:22
 msgid "Movie List"
-msgstr ""
+msgstr "Liste des films"
 
 #: sickchill/views/movies.py:33
 msgid "Movie Search"
-msgstr ""
+msgstr "Recherche de film"
 
 #: sickchill/views/movies.py:54 sickchill/views/movies.py:64
 msgid "Movie not found"
-msgstr ""
+msgstr "Film introuvable"
 
 #: sickchill/views/movies.py:59 sickchill/views/movies.py:67
 msgid "Movie Remove"
-msgstr ""
+msgstr "Suppression de Film"
 
 #: sickchill/views/news.py:22
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -2172,15 +2174,15 @@ msgstr "Échec de l'authentification lors de l'obtention de la clé api"
 
 #: sickchill/views/api/authentication.py:23
 msgid "Authentication failed during api key request: {traceback}"
-msgstr ""
+msgstr "L'authentification a échouée lors de la demande de clé api: {traceback}"
 
 #: sickchill/views/api/webapi.py:1539
 msgid "API: sb.backup backing up to {location}"
-msgstr ""
+msgstr "API: sb.backup sauvegardée dans {location}"
 
 #: sickchill/views/api/webapi.py:1542
 msgid "API: sb.backup successful!"
-msgstr ""
+msgstr "API: sb.backup réussie!"
 
 #: sickchill/views/api/webapi.py:1545
 msgid "API: sb.backup failed!"
