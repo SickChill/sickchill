@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 23:57\n"
+"PO-Revision-Date: 2021-02-21 00:05\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -418,7 +418,7 @@ msgstr "{filename} : {query}"
 
 #: sickchill/oldbeard/db.py:208
 msgid "{filename}: {query} with args {args}"
-msgstr ""
+msgstr "{filename} : {query} avec les paramètres {args}"
 
 #: sickchill/oldbeard/db.py:212
 msgid "Transaction with {count:d} of queries executed successfully"
@@ -430,7 +430,7 @@ msgstr "Impossible de récupérer tout et seulement un seul élément à la fois
 
 #: sickchill/oldbeard/db.py:333
 msgid "{filename}: {query} [{control}]"
-msgstr ""
+msgstr "{filename}: {query} [{control}]"
 
 #: sickchill/oldbeard/db.py:348
 msgid "Control dict to upsert cannot have values of None!"
@@ -822,7 +822,7 @@ msgstr "Impossible de créer l'épisode : "
 
 #: sickchill/oldbeard/postProcessor.py:763
 msgid "The old status had a quality in it, using that: "
-msgstr ""
+msgstr "L'ancien statut avait une qualité définie, je l'utilise: "
 
 #: sickchill/oldbeard/notifiers/synoindex.py:39
 #: sickchill/oldbeard/notifiers/synoindex.py:64
@@ -845,23 +845,23 @@ msgstr "Ceci a été téléchargé manuellement, mais il semble que ce soit un P
 
 #: sickchill/oldbeard/postProcessor.py:920
 msgid "This show isn't in your list, you need to add it to SC before post-processing an episode"
-msgstr ""
+msgstr "Cette série n'est pas dans votre liste, vous devez l'ajouter à SC avant de post-traiter un épisode"
 
 #: sickchill/oldbeard/postProcessor.py:923
 msgid "Not enough information to determine what episode this is. Quitting post-processing"
-msgstr ""
+msgstr "Pas assez d'informations pour déterminer quel épisode c'est. Arrêt du post-traitement"
 
 #: sickchill/oldbeard/postProcessor.py:932
 msgid "Snatch history had a quality in it, using that: "
-msgstr ""
+msgstr "L'historique de récupération avait une qualité définie, je l'utilise: "
 
 #: sickchill/oldbeard/postProcessor.py:938
 msgid "Quality of the episode we're processing: {0}"
-msgstr ""
+msgstr "Qualité de l'épisode que nous traitons : {0}"
 
 #: sickchill/oldbeard/postProcessor.py:942
 msgid "Is ep a priority download: "
-msgstr ""
+msgstr "Est-ce que l'épisode est un téléchargement prioritaire : "
 
 #: sickchill/oldbeard/postProcessor.py:946
 msgid "Snatch history had a version in it, using that: v"
@@ -869,7 +869,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:962
 msgid "New file is a proper/repack, marking it safe to replace"
-msgstr ""
+msgstr "Le nouveau fichier est un repack/proper, je le marque comme sûr à remplacer"
 
 #: sickchill/oldbeard/postProcessor.py:966
 msgid "File exists and new file quality is not in a preferred quality list, marking it unsafe to replace"
