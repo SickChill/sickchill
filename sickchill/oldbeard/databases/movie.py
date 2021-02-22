@@ -1,37 +1,90 @@
 import datetime
 import logging
+import re
+from pathlib import Path
 
 import guessit
 from slugify import slugify
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, JSON, SmallInteger, String
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, JSON, PickleType, SmallInteger, Unicode
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.types import TypeDecorator
 
 logger = logging.getLogger('sickchill.movie')
 
 Base = declarative_base()
 Session = sessionmaker()
 
+IGNORED = _('Ignored')
+PREFERRED = _('Preferred')
+REQUIRED = _('Required')
+DesireTypes = {IGNORED: 0, REQUIRED: 1, PREFERRED: 2}
+
+
+class RegexType(TypeDecorator):
+    impl = Unicode
+    python_type = re.Pattern
+
+    def process_bind_param(self, value, dialect):
+        if isinstance(value, re.Pattern):
+            return value.pattern
+        return value
+
+    def process_result_value(self, value, dialect):
+        return re.compile(value, re.IGNORECASE | re.UNICODE)
+
+
+class PathType(TypeDecorator):
+    impl = Unicode
+    python_type = Path
+
+    def process_bind_param(self, value, dialect):
+        if isinstance(value, Path):
+            value = value.resolve()
+            assert value.exists()
+
+        return value
+
+    def process_result_value(self, value, dialect):
+        return Path(value).resolve()
+
+
+class ChoiceType(TypeDecorator):
+
+    impl = Integer
+
+    def __init__(self, choices, **kw):
+        self.choices = dict(choices)
+        super(ChoiceType, self).__init__(**kw)
+
+    def process_bind_param(self, value, dialect):
+        for key, val in self.choices.items():
+            if value in (key, val):
+                return val
+
+    def process_result_value(self, value, dialect):
+        return self.choices[value]
+
 
 class Movie(Base):
     __tablename__ = "movie"
     pk = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(Unicode)
     date = Column(Date)
     year = Column(SmallInteger)
     status = Column(Integer)
     paused = Column(Boolean, default=False)
-    location = Column(String)
+    location = Column(PathType)
     start = Column(Interval, default=datetime.timedelta(days=-7))
     interval = Column(Interval, default=datetime.timedelta(days=1))
     added = Column(DateTime, default=datetime.datetime.now)
     updated = Column(DateTime, onupdate=datetime.datetime.now)
     completed = Column(DateTime)
     searched = Column(DateTime)
-    slug = Column(String)
+    slug = Column(Unicode)
 
-    language = Column(String)
+    language = Column(Unicode)
 
     result = relationship("Result", uselist=False, backref="downloaded")
     results: list = relationship("Result", backref="movie")
@@ -130,17 +183,17 @@ listen(Movie.name, 'set', Movie.slugify, retval=False)
 class Result(Base):
     __tablename__ = "result"
     pk = Column(Integer, primary_key=True)
-    name = Column(String)
-    title = Column(String)
-    url = Column(String)
+    name = Column(Unicode)
+    title = Column(Unicode)
+    url = Column(Unicode)
     size = Column(Integer)
     year = Column(SmallInteger)
-    provider = Column(String)
+    provider = Column(Unicode)
     seeders = Column(Integer)
     leechers = Column(Integer)
-    info_hash = Column(String)
-    group = Column(String)
-    type = Column(String)
+    info_hash = Column(Unicode)
+    group = Column(Unicode)
+    type = Column(Unicode)
     guess = Column(JSON)
     found = Column(DateTime, default=datetime.datetime.now)
     updated = Column(DateTime, onupdate=datetime.datetime.now)
@@ -152,13 +205,22 @@ class Result(Base):
     def __init__(self, result: dict, movie: Movie, provider):
         name = result['title']
         guess = guessit.guessit(name)
-        if not (guess and guess["type"] == "movie"):
+        if not guess:
+            logging.debug(f"Unable to determine a credible guess for {name}")
+            return
+
+        if guess["type"] != "movie":
             logging.debug(f"This is an episode, not a movie: {name}")
             return
 
-        if not self.session.query(Movie).filter(Movie.name.like(f"{guess['title']}%")).count():
-            logging.debug(f"This result does not match any of our movies")
-            return
+        if not movie.name.startswith(guess['title']):
+            if not self.session.query(Movie).filter(Movie.name.like(f"{guess['title']}%")).count():
+                logging.debug(f"This result does not match any of our movies")
+                return
+
+        # if guess['year'] != movie.year:
+        #     logging.debug(f"This result has a year that does not match our movie: {guess['year']}")
+        #     return
 
         self.info_hash = result['hash']
         self.url = result['link']
@@ -177,6 +239,10 @@ class Result(Base):
 
         self.movie = movie
 
+        self.session.add(self)
+        self.session.flush()
+        self.session.commit()
+
     def __repr__(self):
         return f"{self.name}"
 
@@ -184,9 +250,9 @@ class Result(Base):
 class Images(Base):
     __tablename__ = 'images'
 
-    url = Column(String, primary_key=True)
-    path = Column(String)
-    site = Column(String)
+    url = Column(Unicode, primary_key=True)
+    path = Column(Unicode)
+    site = Column(Unicode)
     style = Column(Integer)
 
     movie_pk = Column(Integer, ForeignKey('movie.pk'))
@@ -201,8 +267,8 @@ class Images(Base):
 
 class IndexerData(Base):
     __tablename__ = 'indexer_data'
-    pk = Column(String, primary_key=True)
-    site = Column(String)
+    pk = Column(Integer, primary_key=True)
+    site = Column(Unicode)
     data = Column(JSON)
 
     movie_pk = Column(Integer, ForeignKey('movie.pk'))
@@ -215,6 +281,57 @@ class IndexerData(Base):
 
 class Genres(Base):
     __tablename__ = 'genres'
-    pk = Column(String, primary_key=True)
+    pk = Column(Integer, primary_key=True)
     indexer_data_pk = Column(Integer, ForeignKey('indexer_data.pk'))
 
+
+class Settings(Base):
+    __tablename__ = 'settings'
+    pk = Column(Integer, primary_key=True)
+
+    roots: list = relationship('Roots', backref='settings')
+    qualities: list = relationship('Qualities', backref='settings')
+    release_groups: list = relationship('Roots', backref='settings')
+
+    @property
+    def ignored_groups(self):
+        return self.release_groups.filter_by(status=DesireTypes[IGNORED]).all()
+
+    @property
+    def preferred_groups(self):
+        return self.release_groups.filter_by(status=DesireTypes[PREFERRED]).all()
+
+    @property
+    def required_groups(self):
+        return self.release_groups.filter_by(status=DesireTypes[REQUIRED]).all()
+
+
+class ReleaseGroups(Base):
+    __tablename__ = 'release_groups'
+    pk = Column(Integer, primary_key=True)
+    name = Column(Unicode)
+    status = Column(ChoiceType(DesireTypes))
+    settings_pk = Column(Integer, ForeignKey('settings.pk'))
+
+
+class Qualities(Base):
+    __tablename__ = 'qualities'
+    pk = Column(Integer, primary_key=True)
+    name = Column(Unicode)
+    regex = Column(RegexType)
+    min_size = Column(Integer)
+    max_size = Column(Integer)
+
+    settings_pk = Column(Integer, ForeignKey('settings.pk'))
+
+    def default_data(target, connection, **kw):
+        connection.execute(target.insert(), {'pk': 1, 'name': 'HDWEB-DL'}, {'pk': 2, 'name': 'FULLHD-WEBDL'})
+
+
+class Roots(Base):
+    __tablename__ = 'roots'
+    pk = Column(Integer, primary_key=True)
+    path = Column(PathType)
+    name = Column(Unicode)
+
+    settings_pk = Column(Integer, ForeignKey('settings.pk'))

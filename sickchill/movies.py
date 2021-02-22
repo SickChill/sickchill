@@ -185,10 +185,9 @@ class MovieList:
         for provider in settings.providerList:
             if provider.can_backlog and provider.backlog_enabled and provider.supports_movies:
                 results = provider.search(strings)
-                for result in results:
-                    movie.Result(result=result, provider=provider, movie=movie_object)
+                for item in results:
+                    movie.Result(result=item, provider=provider, movie=movie_object)
 
-            self.commit(movie_object)
             # TODO: Check if we need to break out here and stop hitting providers if we found a good result
 
     def snatch_movie(self, result: movie.Result):
