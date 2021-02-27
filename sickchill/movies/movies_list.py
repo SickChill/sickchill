@@ -187,11 +187,11 @@ class MoviesList:
             if provider.can_backlog and provider.backlog_enabled and provider.supports_movies:
                 results = provider.search(strings)
                 for item in results:
-                    models.Result(result=item, provider=provider, movie=movie_object)
+                    models.Results(result=item, provider=provider, movie=movie_object)
 
             # TODO: Check if we need to break out here and stop hitting providers if we found a good result
 
-    def snatch_movie(self, result: models.Result):
+    def snatch_movie(self, result: models.Results):
         pass
 
     def search_thread(self):

@@ -1,11 +1,8 @@
-import logging
 import re
 from pathlib import Path
 
 from sqlalchemy import Integer, Unicode
 from sqlalchemy.types import TypeDecorator
-
-logger = logging.getLogger('sickchill.movie')
 
 
 class RegexType(TypeDecorator):

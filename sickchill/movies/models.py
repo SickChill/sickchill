@@ -1,17 +1,21 @@
 import datetime
+import logging
 
 import guessit
 from slugify import slugify
-from sqlalchemy import Boolean, Date, DateTime, Interval, JSON, SmallInteger
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, JSON, SmallInteger, Unicode
 from sqlalchemy.event import listen
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
-from .types import *
-from .relation_tables import *
+from .relation_tables import (indexer_data_genres_table, movies_groups_table, movies_qualities_table, qualities_codecs_table, qualities_resolutions_table,
+                              qualities_sources_table)
+from .types import ChoiceType, DesireTypes, HistoryActions, ImageTypes, IMDB, IndexerNames, PathType, RegexType, TMDB
 
 logger = logging.getLogger('sickchill.movies')
 
 Session = sessionmaker()
+Base = declarative_base()
 
 
 class Timestamp:
@@ -135,7 +139,7 @@ class Movies(Base, Timestamp):
 listen(Movies.name, 'set', Movies.slugify, retval=False)
 
 
-class Result(Base, Timestamp):
+class Results(Base, Timestamp):
     __tablename__ = "results"
     name = Column(Unicode, primary_key=True)
     title = Column(Unicode)
@@ -160,20 +164,20 @@ class Result(Base, Timestamp):
         name = result['title']
         guess = guessit.guessit(name)
         if not guess:
-            logging.debug(f"Unable to determine a credible guess for {name}")
+            logger.debug(f"Unable to determine a credible guess for {name}")
             return
 
         if guess["type"] != "movie":
-            logging.debug(f"This is an episode, not a movie: {name}")
+            logger.debug(f"This is an episode, not a movie: {name}")
             return
 
         if not movie.name.startswith(guess['title']):
             if not self.session.query(Movies).filter(Movies.name.like(f"{guess['title']}%")).count():
-                logging.debug(f"This result does not match any of our movies")
+                logger.debug(f"This result does not match any of our movies")
                 return
 
         # if guess['year'] != movie.year:
-        #     logging.debug(f"This result has a year that does not match our movie: {guess['year']}")
+        #     logger.debug(f"This result has a year that does not match our movie: {guess['year']}")
         #     return
 
         self.info_hash = result['hash']
@@ -264,6 +268,8 @@ class Qualities(Base):
     # @staticmethod
     # def default_data(target, connection, **kw):
     #     connection.execute(target.insert(), {'pk': 1, 'name': 'HDWEB-DL'}, {'pk': 2, 'name': 'FULLHD-WEBDL'})
+
+
 # event.listen(Qualities.__table__, 'after_create', Qualities.default_data)
 
 

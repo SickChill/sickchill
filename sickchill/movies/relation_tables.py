@@ -15,12 +15,6 @@ movies_groups_table = Table(
     Column('groups_name', Integer, ForeignKey('groups.name'))
 )
 
-movies_indexer_data_table = Table(
-    'movies_indexer_data', Base.metadata,
-    Column('movies_pk', Integer, ForeignKey('movies.pk')),
-    Column('indexer_data.pk', Integer, ForeignKey('indexer_data.pk'))
-)
-
 indexer_data_genres_table = Table(
     'indexer_data_genres', Base.metadata,
     Column('indexer_data_pk', Integer, ForeignKey('indexer_data.pk')),
