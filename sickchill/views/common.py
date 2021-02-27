@@ -1,5 +1,4 @@
 import os
-import re
 import time
 
 from mako.exceptions import RichTraceback

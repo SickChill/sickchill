@@ -1,10 +1,10 @@
 import logging
+import os
 
 from sickchill import settings
 from sickchill.oldbeard import config
-
-from .common import PageTemplate
-from .index import WebRoot
+from sickchill.views.common import mako_lookup, PageTemplate
+from sickchill.views.index import WebRoot
 
 logger = logging.getLogger('sickchill.movie')
 
@@ -12,6 +12,7 @@ logger = logging.getLogger('sickchill.movie')
 class MoviesHandler(WebRoot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        mako_lookup['mako'].directories.append(os.path.join(os.path.dirname(__file__), 'templates'))
 
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
@@ -25,7 +26,7 @@ class MoviesHandler(WebRoot):
         query = self.get_body_argument('query', '')
         year = self.get_body_argument('year', '')
         language = self.get_body_argument('language', '')
-        adult = config.checkbox_to_value(self.get_body_argument('adult', False))
+        adult = config.checkbox_to_value(self.get_body_argument('adult', '0'))
         search_results = []
         if query:
             search_results = settings.movie_list.search_tmdb(query=query, year=year, language=language, adult=adult)

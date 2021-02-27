@@ -12,7 +12,7 @@ from sickchill.oldbeard.common import SD
 from sickchill.oldbeard.numdict import NumDict
 
 if TYPE_CHECKING:
-    from .movies import MovieList
+    from .movies import MoviesList
 
 setup_gettext()
 
@@ -537,7 +537,7 @@ WEB_USE_GZIP = True
 WEB_USERNAME = None
 WINDOWS_SHARES = {}
 
-movie_list: 'MovieList' = None
+movie_list: 'MoviesList' = None
 
 
 def get_backlog_cycle_time():

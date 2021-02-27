@@ -68,7 +68,7 @@ class BaseParser(type):
 
             self.provider.username = self.username
             self.provider.password = self.password
-            settings.movie_list = movies.MovieList()
+            settings.movie_list = movies.MoviesList()
 
         @property
         def username(self):

@@ -10,14 +10,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from tmdbsimple import movies, search
 
-from . import settings
-from .oldbeard.databases import movie
-from .oldbeard.db import db_cons, db_full_path, db_locks
+from .. import settings
+from ..oldbeard.db import db_cons, db_full_path, db_locks
+from . import models
 
-logger = logging.getLogger('sickchill.movie')
+logger = logging.getLogger('sickchill.movies')
 
 
-class MovieList:
+class MoviesList:
     def __init__(self):
         tmdbsimple.API_KEY = settings.TMDB_API_KEY
 
@@ -25,7 +25,7 @@ class MovieList:
         self.full_path = db_full_path(self.filename)
 
         if self.filename not in db_cons or not db_cons[self.filename]:
-            movie.Session.configure(
+            models.Session.configure(
                 bind=create_engine(
                     f"sqlite:///{self.full_path}",
                     echo=True,
@@ -33,8 +33,8 @@ class MovieList:
                     json_serializer=lambda obj: json.dumps(obj, ensure_ascii=False)
                 )
             )
-            self.session: Session = movie.Session()
-            movie.Base.metadata.create_all(self.session.bind, checkfirst=True)
+            self.session: Session = models.Session()
+            models.Base.metadata.create_all(self.session.bind, checkfirst=True)
 
             db_locks[self.filename] = threading.Lock()
             db_cons[self.filename] = self.session
@@ -92,21 +92,22 @@ class MovieList:
 
     def add_from_tmdb(self, tmdb_id: str, language: str = settings.INDEXER_DEFAULT_LANGUAGE):
         logger.debug(f'Adding movie from tmdb with id: {tmdb_id}')
-        existing = self.session.query(movie.IndexerData).filter_by(pk=tmdb_id).first()
+        existing = self.session.query(models.IndexerData).filter_by(code=tmdb_id).first()
         if existing:
-            logger.debug(f'Movie already existed as {existing.movie.name}')
+            logger.debug(f'Movie already existed as {existing.models.name}')
             return existing.movie
 
         tmdb_object = tmdbsimple.movies.Movies(id=tmdb_id).info()
         return self.add_from_imdb(tmdb_object['imdb_id'], language, tmdb_primary=True)
 
     def add_from_imdb(self, imdb_id: str, language: str = settings.INDEXER_DEFAULT_LANGUAGE, tmdb_primary=False):
+        imdb_id = imdb_id.strip('tt')
         if not tmdb_primary:
             logger.debug(f'Adding movie from imdb id: {imdb_id}')
 
-        existing = self.session.query(movie.IndexerData).filter_by(pk=imdb_id).first()
+        existing = self.session.query(models.IndexerData).filter_by(pk=imdb_id).first()
         if existing:
-            logger.debug(f'Movie already existed as {existing.movie.name}')
+            logger.debug(f'Movie already existed as {existing.models.name}')
             return existing.movie
 
         imdb_object = self.imdb.get_movie(imdb_id)
@@ -114,11 +115,11 @@ class MovieList:
         tmdb_object = tmdbsimple.movies.Movies(id=tmdb_id).info()
 
         if tmdb_primary:
-            instance = movie.Movie(tmdb_object['title'], year=tmdb_object['release_date'].split('-')[0])
+            instance = models.Movies(tmdb_object['title'], year=tmdb_object['release_date'].split('-')[0])
             if imdb_object['title'] and not instance.name:
                 instance.name = imdb_object['title']
         else:
-            instance = movie.Movie(imdb_object['title'], year=imdb_object['year'] or tmdb_object)
+            instance = models.Movies(imdb_object['title'], year=imdb_object['year'] or tmdb_object)
             if tmdb_object['release_date'] and not instance.year:
                 instance.year = tmdb_object['release_date'].split('-')[0]
             if tmdb_object['title'] and not instance.name:
@@ -129,22 +130,22 @@ class MovieList:
 
         instance.language = tmdb_object['original_language'] or language
 
-        tmdb_data = movie.IndexerData(site='tmdb', data=tmdb_object, pk=tmdb_id)
-        imdb_data = movie.IndexerData(site='imdb', data=imdb_object, pk=imdb_id)
+        tmdb_data = models.IndexerData(site='tmdb', data=tmdb_object, code=tmdb_id)
+        imdb_data = models.IndexerData(site='imdb', data=imdb_object, code=int(imdb_id))
 
         imdb_genres = self.imdb.get_title_genres(imdb_id)['genres']
 
         def add_imdb_genres():
             for genre in imdb_genres:
                 logger.debug(f'Adding imdb genre {genre}')
-                imdb_data.genres.append(movie.Genres(pk=genre))
+                imdb_data.genres.append(models.Genres(name=genre))
             instance.indexer_data.append(imdb_data)
 
         def add_tmdb_genres():
             for genre in tmdb_object['genres']:
                 if genre['name'] not in imdb_genres:
                     logger.debug(f'Adding tmdb genre {genre["name"]}')
-                    tmdb_data.genres.append(movie.Genres(pk=genre['name']))
+                    tmdb_data.genres.append(models.Genres(name=genre['name']))
             instance.indexer_data.append(tmdb_data)
 
         if tmdb_primary:
@@ -173,12 +174,12 @@ class MovieList:
 
     @property
     def query(self):
-        return self.session.query(movie.Movie)
+        return self.session.query(models.Movies)
 
     def by_slug(self, slug):
         return self.query.filter_by(slug=slug).first()
 
-    def search_providers(self, movie_object: movie.Movie):
+    def search_providers(self, movie_object: models.Movies):
         # We should only need to support backlog for movies manually
         # Movies should be returned in the existing RSS searches if we have movies in our list
         strings = movie_object.search_strings()
@@ -186,11 +187,11 @@ class MovieList:
             if provider.can_backlog and provider.backlog_enabled and provider.supports_movies:
                 results = provider.search(strings)
                 for item in results:
-                    movie.Result(result=item, provider=provider, movie=movie_object)
+                    models.Result(result=item, provider=provider, movie=movie_object)
 
             # TODO: Check if we need to break out here and stop hitting providers if we found a good result
 
-    def snatch_movie(self, result: movie.Result):
+    def snatch_movie(self, result: models.Result):
         pass
 
     def search_thread(self):

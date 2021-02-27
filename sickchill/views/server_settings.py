@@ -11,8 +11,9 @@ from tornado.web import Application, RedirectHandler, StaticFileHandler, url
 
 import sickchill.start
 from sickchill import logger, settings
+from sickchill.movies.views import MoviesHandler
 from sickchill.oldbeard.helpers import create_https_certificates, generateApiKey
-from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler, MoviesHandler
+from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler
 from sickchill.views.api import ApiHandler, KeyHandler
 
 from .routes import Route

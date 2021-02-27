@@ -13,6 +13,5 @@ from .index import BaseHandler, WebHandler, WebRoot
 from .irc import HomeIRC
 from .logs import ErrorLogs
 from .manage import AddShows, Manage, ManageSearches, PostProcess
-from .movies import MoviesHandler
 from .news import HomeNews
 from .routes import Route

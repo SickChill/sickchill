@@ -14,7 +14,7 @@ import traceback
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.init_helpers import check_installed, setup_gettext, setup_lib_path
-from sickchill.movies import MovieList
+from sickchill.movies.movies_list import MoviesList
 
 setup_lib_path()
 setup_gettext()
@@ -197,7 +197,7 @@ class SickChill(object):
         self.clear_cache()
 
         if settings.DEVELOPER:
-            settings.movie_list = MovieList()
+            settings.movie_list = MoviesList()
 
         web_options = {}
         if self.forced_port:
