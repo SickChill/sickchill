@@ -16,7 +16,7 @@ Session = sessionmaker()
 
 class Timestamp:
     created = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated = Column(DateTime, onupdate=datetime.datetime.utcnow, nullable=False)
+    updated = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
 
 
 class Movies(Base, Timestamp):
@@ -35,7 +35,7 @@ class Movies(Base, Timestamp):
     searched = Column(DateTime, nullable=True, default=None)
     slug = Column(Unicode)
 
-    root_pk = Column(Integer, ForeignKey('roots.name'))
+    roots_pk = Column(Integer, ForeignKey('roots.name'))
 
     qualities = relationship("Qualities", secondary=movies_qualities_table, backref='movies')
     groups = relationship("Groups", secondary=movies_groups_table, backref='movies')
