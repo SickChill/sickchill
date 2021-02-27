@@ -3,13 +3,11 @@ import logging
 
 import guessit
 from slugify import slugify
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, JSON, SmallInteger, Unicode
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, JSON, SmallInteger, Table, Unicode
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
-from .relation_tables import (indexer_data_genres_table, movies_groups_table, movies_qualities_table, qualities_codecs_table, qualities_resolutions_table,
-                              qualities_sources_table)
 from .types import ChoiceType, DesireTypes, HistoryActions, ImageTypes, IMDB, IndexerNames, PathType, RegexType, TMDB
 
 logger = logging.getLogger('sickchill.movies')
@@ -21,6 +19,43 @@ Base = declarative_base()
 class Timestamp:
     created = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
+
+
+movies_qualities_table = Table(
+    'movies_qualities', Base.metadata,
+    Column('movies_pk', Integer, ForeignKey('movies.pk')),
+    Column('qualities_name', Integer, ForeignKey('qualities.name'))
+)
+
+movies_groups_table = Table(
+    'movies_groups', Base.metadata,
+    Column('movies_pk', Integer, ForeignKey('movies.pk')),
+    Column('groups_name', Integer, ForeignKey('groups.name'))
+)
+
+indexer_data_genres_table = Table(
+    'indexer_data_genres', Base.metadata,
+    Column('indexer_data_pk', Integer, ForeignKey('indexer_data.pk')),
+    Column('genres_name', Integer, ForeignKey('genres.name'))
+)
+
+qualities_resolutions_table = Table(
+    'qualities_resolutions', Base.metadata,
+    Column('qualities_name', Integer, ForeignKey('qualities.name')),
+    Column('resolutions_name', Integer, ForeignKey('resolutions.name'))
+)
+
+qualities_sources_table = Table(
+    'qualities_sources', Base.metadata,
+    Column('qualities_name', Integer, ForeignKey('qualities.name')),
+    Column('sources_name', Integer, ForeignKey('sources.name'))
+)
+
+qualities_codecs_table = Table(
+    'qualities_codecs', Base.metadata,
+    Column('qualities_name', Integer, ForeignKey('qualities.name')),
+    Column('codecs_name', Integer, ForeignKey('codecs.name'))
+)
 
 
 class Movies(Base, Timestamp):
@@ -46,7 +81,7 @@ class Movies(Base, Timestamp):
 
     language = Column(Unicode)
 
-    results: list = relationship("Result", backref='movie')
+    results: list = relationship("Results", backref='movie')
 
     images: list = relationship("Images", backref='movie')
     indexer_data: list = relationship("IndexerData", backref='movie')
@@ -305,3 +340,4 @@ class History(Base, Timestamp):
     pk = Column(Integer, primary_key=True)
     action = Column(ChoiceType(HistoryActions), nullable=False)
     item = None  # Fixme
+
