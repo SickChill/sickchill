@@ -1,14 +1,15 @@
 import datetime
 import logging
+import re
 
 import guessit
 from slugify import slugify
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, JSON, SmallInteger, Table, Unicode
+from sqlalchemy import Boolean, Column, Date, DateTime, event, ForeignKey, Integer, Interval, JSON, SmallInteger, Table, Unicode
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
-from .types import ChoiceType, DesireTypes, HistoryActions, ImageTypes, IMDB, IndexerNames, PathType, RegexType, TMDB
+from .types import ChoiceType, DesireTypes, HistoryActions, ImageTypes, IMDB, IndexerNames, PathType, RegexType, ReleaseTypeNames, reverse_key, TMDB
 
 logger = logging.getLogger('sickchill.movies')
 
@@ -55,6 +56,12 @@ qualities_codecs_table = Table(
     'qualities_codecs', Base.metadata,
     Column('qualities_name', Integer, ForeignKey('qualities.name')),
     Column('codecs_name', Integer, ForeignKey('codecs.name'))
+)
+
+qualities_release_types_table = Table(
+    'qualities_release_types', Base.metadata,
+    Column('qualities_name', Integer, ForeignKey('qualities.name')),
+    Column('release_types_value', Integer, ForeignKey('release_types.value'))
 )
 
 
@@ -193,6 +200,8 @@ class Results(Base, Timestamp):
 
     movies_pk = Column(Integer, ForeignKey('movies.pk'))
 
+    release_type_pk = Column(Integer, ForeignKey('release_types.value'))
+
     session = Session()
 
     def __init__(self, result: dict, movie: Movies, provider):
@@ -299,13 +308,12 @@ class Qualities(Base):
     resolutions = relationship('Resolutions', secondary=qualities_resolutions_table, backref='qualities')
     sources = relationship('Sources', secondary=qualities_sources_table, backref='qualities')
     codecs = relationship('Codecs', secondary=qualities_codecs_table, backref='qualities')
+    release_types = relationship('ReleaseTypes', secondary=qualities_release_types_table, backref='qualities')
 
-    # @staticmethod
-    # def default_data(target, connection, **kw):
-    #     connection.execute(target.insert(), {'pk': 1, 'name': 'HDWEB-DL'}, {'pk': 2, 'name': 'FULLHD-WEBDL'})
-
-
-# event.listen(Qualities.__table__, 'after_create', Qualities.default_data)
+    @staticmethod
+    def default_data(target, session, **kw):
+        # no event for this one, called directly after create_all
+        pass
 
 
 class Resolutions(Base):
@@ -313,17 +321,68 @@ class Resolutions(Base):
     name = Column(Unicode, primary_key=True)
     regex = Column(RegexType, unique=True, nullable=False)
 
+    @staticmethod
+    def default_data(target, connection, **kw):
+        connection.execute(
+            target.insert(),
+            dict(name='720p', regex=r'\.720p?\.'),
+            dict(name='1080p', regex=r'\.1080p?\.'),
+            dict(name='1080i', regex=r'\.1080i\.'),
+            dict(name='4k', regex=r'\.4k\.'),
+            dict(name='8k', regex=r'\.8k\.'),
+            dict(name='2160p', regex=r'\.2160p?\.'),
+            dict(name='UltraHD', regex=r'\.UltraHD\.'),
+            dict(name='10bit', regex=r'\.10-?bit\.'),
+            dict(name='HEVC', regex=r'\.HEVC\.')
+        )
+
 
 class Sources(Base):
     __tablename__ = 'sources'
     name = Column(Unicode, primary_key=True)
     regex = Column(RegexType, unique=True, nullable=False)
 
+    @staticmethod
+    def default_data(target, connection, **kw):
+        connection.execute(
+            target.insert(),
+            dict(name='HDTV', regex=r'HDTV'),
+            dict(name='WEB', regex='WEB'),
+            dict(name='Bluray', regex='Blu-?ray')
+        )
+
 
 class Codecs(Base):
     __tablename__ = 'codecs'
     name = Column(Unicode, primary_key=True)
     regex = Column(RegexType, unique=True, nullable=False)
+
+    @staticmethod
+    def default_data(target, connection, **kw):
+        connection.execute(
+            target.insert(),
+            dict(name='x264', regex=r'x264'),
+            dict(name='H264', regex=r'H.?264'),
+            dict(name='x265', regex='x265'),
+            dict(name='XViD', regex='xvid'),
+            dict(name='divx', regex='divx')
+        )
+
+
+class ReleaseTypes(Base):
+    __tablename__ = 'release_types'
+    value = Column(Integer, primary_key=True)
+    results = relationship('Results', backref='release_type')
+
+    @property
+    def name(self):
+        # Do not store name in the DB, because it may change with language switching.
+        return reverse_key(ReleaseTypeNames, self.value)
+
+    @staticmethod
+    def default_data(target, connection, **kw):
+        for value in ReleaseTypeNames.values():
+            connection.execute(target.insert(), {'value': value})
 
 
 class Roots(Base, Timestamp):

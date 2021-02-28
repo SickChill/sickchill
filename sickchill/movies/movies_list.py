@@ -1,7 +1,9 @@
 import datetime
 import json
 import logging
+import os
 import threading
+import traceback
 
 import imdb
 import tmdbsimple
@@ -25,16 +27,38 @@ class MoviesList:
         self.full_path = db_full_path(self.filename)
 
         if self.filename not in db_cons or not db_cons[self.filename]:
+
+            load_defaults = not os.path.exists(self.full_path)
+
             models.Session.configure(
                 bind=create_engine(
                     f"sqlite:///{self.full_path}",
-                    echo=True,
+                    echo=settings.DBDEBUG,
                     connect_args={"check_same_thread": False},
                     json_serializer=lambda obj: json.dumps(obj, ensure_ascii=False)
                 )
             )
             self.session: Session = models.Session()
+
             models.Base.metadata.create_all(self.session.bind, checkfirst=True)
+
+            if load_defaults:
+                from .utils import find_table_mapper
+                for table in models.Base.metadata.sorted_tables:
+                    try:
+                        model = find_table_mapper(table)
+                        if hasattr(model.class_, 'default_data'):
+                            model.class_.default_data(target=table, connection=self.session)
+                    except ValueError:
+                        # A relationship table has no model
+                        pass
+                    except Exception as e:
+                        logger.info('Error on loading defaults for table', table)
+                        logger.debug(traceback.format_exc())
+                        raise e
+
+                self.session.flush()
+                self.session.commit()
 
             db_locks[self.filename] = threading.Lock()
             db_cons[self.filename] = self.session
@@ -49,7 +73,7 @@ class MoviesList:
                     extractor=Path('./td[@class="posterColumn"]/a/img/@src')
                 )
             )
-        except:
+        except Exception:
             pass
 
     def __iter__(self):

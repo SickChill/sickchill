@@ -76,3 +76,13 @@ OMDB = _('oMDB')
 IMDB = _('IMDb')
 MAZE = _('TvMAZE')
 IndexerNames = {TVDB: 0, TMDB: 1, OMDB: 2, IMDB: 3, MAZE: 4}
+
+SERIES = _('Show')
+SEASON = _('Season')
+EPISODE = _('Episode')
+MOVIE = _('Movie')
+ReleaseTypeNames = {SERIES: 0, SEASON: 1, EPISODE: 2, MOVIE: 3}
+
+
+def reverse_key(info, value):
+    return list(info.keys())[list(info.values()).index(value)]
