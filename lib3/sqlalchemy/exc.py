@@ -1,5 +1,5 @@
 # sqlalchemy/exc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -13,6 +13,7 @@ raised as a result of DBAPI exceptions are all subclasses of
 
 """
 
+from .util import _preloaded
 from .util import compat
 
 _version_token = None
@@ -35,7 +36,11 @@ class SQLAlchemyError(Exception):
         else:
             return (
                 "(Background on this error at: "
-                "http://sqlalche.me/e/%s/%s)" % (_version_token, self.code,)
+                "http://sqlalche.me/e/%s/%s)"
+                % (
+                    _version_token,
+                    self.code,
+                )
             )
 
     def _message(self, as_unicode=compat.py3k):
@@ -56,10 +61,18 @@ class SQLAlchemyError(Exception):
         #
         if len(self.args) == 1:
             text = self.args[0]
+
             if as_unicode and isinstance(text, compat.binary_types):
-                return compat.decode_backslashreplace(text, "utf-8")
+                text = compat.decode_backslashreplace(text, "utf-8")
+            # This is for when the argument is not a string of any sort.
+            # Otherwise, converting this exception to string would fail for
+            # non-string arguments.
+            elif compat.py3k or not as_unicode:
+                text = str(text)
             else:
-                return self.args[0]
+                text = compat.text_type(text)
+
+            return text
         else:
             # this is not a normal case within SQLAlchemy but is here for
             # compatibility with Exception.args - the str() comes out as
@@ -166,10 +179,10 @@ class UnsupportedCompilationError(CompileError):
 
     code = "l7de"
 
-    def __init__(self, compiler, element_type):
+    def __init__(self, compiler, element_type, message=None):
         super(UnsupportedCompilationError, self).__init__(
-            "Compiler %r can't render element of type %s"
-            % (compiler, element_type)
+            "Compiler %r can't render element of type %s%s"
+            % (compiler, element_type, ": %s" % message if message else "")
         )
 
 
@@ -372,8 +385,8 @@ class StatementError(SQLAlchemyError):
             ),
         )
 
-    def _sql_message(self, as_unicode):
-        from sqlalchemy.sql import util
+    @_preloaded.dependencies("sqlalchemy.sql.util")
+    def _sql_message(self, util, as_unicode):
 
         details = [self._message(as_unicode=as_unicode)]
         if self.statement:

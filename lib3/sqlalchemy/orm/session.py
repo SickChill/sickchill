@@ -1,5 +1,5 @@
 # orm/session.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -803,6 +803,10 @@ class Session(_SessionClassMethods):
            so that all attribute/object access subsequent to a completed
            transaction will load from the most recent database state.
 
+            .. seealso::
+
+                :ref:`session_committing`
+
         :param extension: An optional
            :class:`~.SessionExtension` instance, or a list
            of such instances, which will receive pre- and post- commit and
@@ -1539,7 +1543,8 @@ class Session(_SessionClassMethods):
             except sa_exc.NoInspectionAvailable as err:
                 if isinstance(mapper, type):
                     util.raise_(
-                        exc.UnmappedClassError(mapper), replace_context=err,
+                        exc.UnmappedClassError(mapper),
+                        replace_context=err,
                     )
                 else:
                     raise
@@ -1678,12 +1683,15 @@ class Session(_SessionClassMethods):
 
             :meth:`.Session.expire_all`
 
+            :meth:`_orm.Query.populate_existing`
+
         """
         try:
             state = attributes.instance_state(instance)
         except exc.NO_STATE as err:
             util.raise_(
-                exc.UnmappedInstanceError(instance), replace_context=err,
+                exc.UnmappedInstanceError(instance),
+                replace_context=err,
             )
 
         self._expire_state(state, attribute_names)
@@ -1748,6 +1756,8 @@ class Session(_SessionClassMethods):
 
             :meth:`.Session.refresh`
 
+            :meth:`_orm.Query.populate_existing`
+
         """
         for state in self.identity_map.all_states():
             state._expire(state.dict, self.identity_map._modified)
@@ -1786,12 +1796,15 @@ class Session(_SessionClassMethods):
 
             :meth:`.Session.refresh`
 
+            :meth:`_orm.Query.populate_existing`
+
         """
         try:
             state = attributes.instance_state(instance)
         except exc.NO_STATE as err:
             util.raise_(
-                exc.UnmappedInstanceError(instance), replace_context=err,
+                exc.UnmappedInstanceError(instance),
+                replace_context=err,
             )
         self._expire_state(state, attribute_names)
 
@@ -1848,7 +1861,8 @@ class Session(_SessionClassMethods):
             state = attributes.instance_state(instance)
         except exc.NO_STATE as err:
             util.raise_(
-                exc.UnmappedInstanceError(instance), replace_context=err,
+                exc.UnmappedInstanceError(instance),
+                replace_context=err,
             )
         if state.session_id is not self.hash_key:
             raise sa_exc.InvalidRequestError(
@@ -2002,7 +2016,8 @@ class Session(_SessionClassMethods):
             state = attributes.instance_state(instance)
         except exc.NO_STATE as err:
             util.raise_(
-                exc.UnmappedInstanceError(instance), replace_context=err,
+                exc.UnmappedInstanceError(instance),
+                replace_context=err,
             )
 
         self._save_or_update_state(state)
@@ -2039,7 +2054,8 @@ class Session(_SessionClassMethods):
             state = attributes.instance_state(instance)
         except exc.NO_STATE as err:
             util.raise_(
-                exc.UnmappedInstanceError(instance), replace_context=err,
+                exc.UnmappedInstanceError(instance),
+                replace_context=err,
             )
 
         self._delete_impl(state, instance, head=True)
@@ -2470,7 +2486,8 @@ class Session(_SessionClassMethods):
             state = attributes.instance_state(instance)
         except exc.NO_STATE as err:
             util.raise_(
-                exc.UnmappedInstanceError(instance), replace_context=err,
+                exc.UnmappedInstanceError(instance),
+                replace_context=err,
             )
         return self._contains_state(state)
 
@@ -2569,7 +2586,8 @@ class Session(_SessionClassMethods):
 
                 except exc.NO_STATE as err:
                     util.raise_(
-                        exc.UnmappedInstanceError(o), replace_context=err,
+                        exc.UnmappedInstanceError(o),
+                        replace_context=err,
                     )
                 objset.add(state)
         else:
@@ -2695,9 +2713,10 @@ class Session(_SessionClassMethods):
             and SQL clause support are **silently omitted** in favor of raw
             INSERT/UPDATES of records.
 
-            **Please read the list of caveats at** :ref:`bulk_operations`
-            **before using this method, and fully test and confirm the
-            functionality of all code developed using these systems.**
+            **Please read the list of caveats at**
+            :ref:`bulk_operations_caveats` **before using this method, and
+            fully test and confirm the functionality of all code developed
+            using these systems.**
 
         :param objects: a sequence of mapped object instances.  The mapped
          objects are persisted as is, and are **not** associated with the
@@ -2795,9 +2814,10 @@ class Session(_SessionClassMethods):
             and SQL clause support are **silently omitted** in favor of raw
             INSERT of records.
 
-            **Please read the list of caveats at** :ref:`bulk_operations`
-            **before using this method, and fully test and confirm the
-            functionality of all code developed using these systems.**
+            **Please read the list of caveats at**
+            :ref:`bulk_operations_caveats` **before using this method, and
+            fully test and confirm the functionality of all code developed
+            using these systems.**
 
         :param mapper: a mapped class, or the actual :class:`_orm.Mapper`
          object,
@@ -2887,9 +2907,10 @@ class Session(_SessionClassMethods):
             and SQL clause support are **silently omitted** in favor of raw
             UPDATES of records.
 
-            **Please read the list of caveats at** :ref:`bulk_operations`
-            **before using this method, and fully test and confirm the
-            functionality of all code developed using these systems.**
+            **Please read the list of caveats at**
+            :ref:`bulk_operations_caveats` **before using this method, and
+            fully test and confirm the functionality of all code developed
+            using these systems.**
 
         :param mapper: a mapped class, or the actual :class:`_orm.Mapper`
          object,
@@ -3241,8 +3262,10 @@ class sessionmaker(_SessionClassMethods):
          :class:`.Session` objects.
         :param autocommit: The autocommit setting to use with newly created
          :class:`.Session` objects.
-        :param expire_on_commit=True: the expire_on_commit setting to use
+        :param expire_on_commit=True: the
+         :paramref:`_orm.Session.expire_on_commit` setting to use
          with newly created :class:`.Session` objects.
+
         :param info: optional dictionary of information that will be available
          via :attr:`.Session.info`.  Note this dictionary is *updated*, not
          replaced, when the ``info`` parameter is specified to the specific
@@ -3439,7 +3462,8 @@ def object_session(instance):
         state = attributes.instance_state(instance)
     except exc.NO_STATE as err:
         util.raise_(
-            exc.UnmappedInstanceError(instance), replace_context=err,
+            exc.UnmappedInstanceError(instance),
+            replace_context=err,
         )
     else:
         return _state_session(state)

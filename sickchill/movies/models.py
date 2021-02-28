@@ -1,16 +1,17 @@
 import datetime
 import logging
-import re
 
+import arrow
 import guessit
 from slugify import slugify
-from sqlalchemy import Boolean, Column, Date, DateTime, event, ForeignKey, Integer, Interval, JSON, SmallInteger, Table, Unicode
+from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, Interval, JSON, SmallInteger, Table, Unicode
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy_utils import ArrowType, ChoiceType, generic_relationship, generic_repr
 
-from .types import ChoiceType, DesireTypes, HistoryActions, ImageTypes, IMDB, IndexerNames, PathType, RegexType, ReleaseTypeNames, TMDB
-from .utils import reverse_key
+from .types import DesireTypes, HistoryActions, ImageTypes, IndexerNames, PathType, RegexType, ReleaseTypeNames
+from .utils import reverse_enum
 
 logger = logging.getLogger('sickchill.movies')
 
@@ -19,8 +20,8 @@ Base = declarative_base()
 
 
 class Timestamp:
-    created = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
+    created = Column(ArrowType, default=arrow.utcnow, nullable=False)
+    updated = Column(ArrowType, default=arrow.utcnow, onupdate=arrow.utcnow, nullable=False)
 
 
 movies_qualities_table = Table(
@@ -77,9 +78,9 @@ class Movies(Base, Timestamp):
     location = Column(PathType)
     start = Column(Interval, default=datetime.timedelta(days=-7))
     interval = Column(Interval, default=datetime.timedelta(days=1))
-    completed = Column(DateTime, nullable=True, default=None)
-    processed = Column(DateTime, nullable=True, default=None)
-    searched = Column(DateTime, nullable=True, default=None)
+    completed = Column(ArrowType, nullable=True, default=None)
+    processed = Column(ArrowType, nullable=True, default=None)
+    searched = Column(ArrowType, nullable=True, default=None)
     slug = Column(Unicode)
 
     roots_pk = Column(Integer, ForeignKey('roots.name'))
@@ -105,33 +106,33 @@ class Movies(Base, Timestamp):
     def __get_named_indexer_data(self, name):
         if self.indexer_data:
             for data in self.indexer_data:
-                if data.site == IndexerNames[name]:
+                if data.site == getattr(IndexerNames, name):
                     return data
 
     @property
     def imdb_data(self):
-        data = self.__get_named_indexer_data(IMDB)
+        data = self.__get_named_indexer_data(IndexerNames.IMDB)
         if data:
             return data.data
         return dict()
 
     @property
     def imdb_id(self):
-        data = self.__get_named_indexer_data(IMDB)
+        data = self.__get_named_indexer_data(IndexerNames.IMDB)
         if data:
             return data.code
         return ''
 
     @property
     def tmdb_id(self):
-        data = self.__get_named_indexer_data(TMDB)
+        data = self.__get_named_indexer_data(IndexerNames.TMDB)
         if data:
             return data.code
         return ''
 
     @property
     def imdb_genres(self):
-        data = self.__get_named_indexer_data(IMDB)
+        data = self.__get_named_indexer_data(IndexerNames.IMDB)
         if data:
             return data.genres
         return []
@@ -250,6 +251,7 @@ class Results(Base, Timestamp):
         return f"{self.name}"
 
 
+@generic_repr
 class Images(Base, Timestamp):
     __tablename__ = 'images'
 
@@ -284,12 +286,14 @@ class IndexerData(Base, Timestamp):
         return f"[{self.__tablename__.replace('_', ' ').title()}] {self.site}: {self.pk} - {self.movie.name}"
 
 
+@generic_repr
 class Genres(Base):
     __tablename__ = 'genres'
     name = Column(Unicode, primary_key=True)
     description = Column(Unicode)
 
 
+@generic_repr
 class Groups(Base):
     __tablename__ = 'groups'
     name = Column(Unicode, primary_key=True)
@@ -297,6 +301,7 @@ class Groups(Base):
     default = Column(Boolean, default=False)
 
 
+@generic_repr
 class Qualities(Base):
     __tablename__ = 'qualities'
     name = Column(Unicode, unique=True, primary_key=True)
@@ -317,75 +322,85 @@ class Qualities(Base):
         pass
 
 
+@generic_repr
 class Resolutions(Base):
     __tablename__ = 'resolutions'
     name = Column(Unicode, primary_key=True)
     regex = Column(RegexType, unique=True, nullable=False)
 
     @staticmethod
-    def default_data(target, connection, **kw):
-        connection.execute(
+    def default_data(target, session, **kw):
+        session.execute(
             target.insert(),
-            dict(name='720p', regex=r'\.720p?\.'),
-            dict(name='1080p', regex=r'\.1080p?\.'),
-            dict(name='1080i', regex=r'\.1080i\.'),
-            dict(name='4k', regex=r'\.4k\.'),
-            dict(name='8k', regex=r'\.8k\.'),
-            dict(name='2160p', regex=r'\.2160p?\.'),
-            dict(name='UltraHD', regex=r'\.UltraHD\.'),
-            dict(name='10bit', regex=r'\.10-?bit\.'),
-            dict(name='HEVC', regex=r'\.HEVC\.')
+            [
+                dict(name='720p', regex=r'\.720p?\.'),
+                dict(name='1080p', regex=r'\.1080p?\.'),
+                dict(name='1080i', regex=r'\.1080i\.'),
+                dict(name='4k', regex=r'\.4k\.'),
+                dict(name='8k', regex=r'\.8k\.'),
+                dict(name='2160p', regex=r'\.2160p?\.'),
+                dict(name='UltraHD', regex=r'\.UltraHD\.'),
+                dict(name='10bit', regex=r'\.10-?bit\.'),
+                dict(name='HEVC', regex=r'\.HEVC\.')
+            ]
         )
 
 
+@generic_repr
 class Sources(Base):
     __tablename__ = 'sources'
     name = Column(Unicode, primary_key=True)
     regex = Column(RegexType, unique=True, nullable=False)
 
     @staticmethod
-    def default_data(target, connection, **kw):
-        connection.execute(
+    def default_data(target, session, **kw):
+        session.execute(
             target.insert(),
-            dict(name='HDTV', regex=r'HDTV'),
-            dict(name='WEB', regex='WEB'),
-            dict(name='Bluray', regex='Blu-?ray')
+            [
+                dict(name='HDTV', regex=r'HDTV'),
+                dict(name='WEB', regex='WEB'),
+                dict(name='Bluray', regex='Blu-?ray')
+            ]
         )
 
 
+@generic_repr
 class Codecs(Base):
     __tablename__ = 'codecs'
     name = Column(Unicode, primary_key=True)
     regex = Column(RegexType, unique=True, nullable=False)
 
     @staticmethod
-    def default_data(target, connection, **kw):
-        connection.execute(
+    def default_data(target, session, **kw):
+        session.execute(
             target.insert(),
-            dict(name='x264', regex=r'x264'),
-            dict(name='H264', regex=r'H.?264'),
-            dict(name='x265', regex='x265'),
-            dict(name='XViD', regex='xvid'),
-            dict(name='divx', regex='divx')
+            [
+                dict(name='x264', regex=r'x264'),
+                dict(name='H264', regex=r'H.?264'),
+                dict(name='x265', regex='x265'),
+                dict(name='XViD', regex='xvid'),
+                dict(name='divx', regex='divx')
+            ]
         )
 
 
+@generic_repr
 class ReleaseTypes(Base):
     __tablename__ = 'release_types'
     value = Column(Integer, primary_key=True)
     results = relationship('Results', backref='release_type')
 
     @property
-    def name(self):
-        # Do not store name in the DB, because it may change with language switching.
-        return reverse_key(ReleaseTypeNames, self.value)
+    def label(self):
+        # Do not store label in the DB, because it may change with language switching.
+        return reverse_enum(ReleaseTypeNames, self.value).label
 
     @staticmethod
-    def default_data(target, connection, **kw):
-        for value in ReleaseTypeNames.values():
-            connection.execute(target.insert(), {'value': value})
+    def default_data(target, session, **kw):
+        session.execute(target.insert(), [{'value': item.value} for item in ReleaseTypeNames])
 
 
+@generic_repr
 class Roots(Base, Timestamp):
     __tablename__ = 'roots'
     name = Column(Unicode, primary_key=True)
@@ -395,9 +410,13 @@ class Roots(Base, Timestamp):
     movies = relationship('Movies', backref='root')
 
 
+@generic_repr
 class History(Base, Timestamp):
     __tablename__ = 'history'
     pk = Column(Integer, primary_key=True)
     action = Column(ChoiceType(HistoryActions), nullable=False)
-    item = None  # Fixme
+
+    item_type = Column(Unicode)
+    item_pk = Column(Integer)
+    item = generic_relationship(item_type, item_pk)
 

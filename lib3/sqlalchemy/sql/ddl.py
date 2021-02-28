@@ -1,5 +1,5 @@
 # sql/ddl.py
-# Copyright (C) 2009-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2009-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -1038,7 +1038,9 @@ class SchemaDropper(DDLBase):
 
 
 def sort_tables(
-    tables, skip_fn=None, extra_dependencies=None,
+    tables,
+    skip_fn=None,
+    extra_dependencies=None,
 ):
     """Sort a collection of :class:`_schema.Table` objects based on
     dependency.

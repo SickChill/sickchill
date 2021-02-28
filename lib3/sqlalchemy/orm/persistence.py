@@ -1,5 +1,5 @@
 # orm/persistence.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -1786,7 +1786,9 @@ class BulkEvaluate(BulkUD):
                 pk,
                 identity_token,
             ), obj in query.session.identity_map.items()
-            if issubclass(cls, target_cls) and eval_condition(obj)
+            if issubclass(cls, target_cls)
+            and not attributes.instance_state(obj).expired
+            and eval_condition(obj)
         ]
 
 
@@ -1957,7 +1959,8 @@ class BulkUpdateEvaluate(BulkEvaluate, BulkUpdate):
             # only evaluate unmodified attributes
             to_evaluate = state.unmodified.intersection(evaluated_keys)
             for key in to_evaluate:
-                dict_[key] = self.value_evaluators[key](obj)
+                if key in dict_:
+                    dict_[key] = self.value_evaluators[key](obj)
 
             state.manager.dispatch.refresh(state, None, to_evaluate)
 

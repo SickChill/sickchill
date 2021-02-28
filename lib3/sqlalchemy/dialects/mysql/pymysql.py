@@ -1,5 +1,5 @@
 # mysql/pymysql.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -60,6 +60,13 @@ class MySQLDialect_pymysql(MySQLDialect_mysqldb):
     @classmethod
     def dbapi(cls):
         return __import__("pymysql")
+
+    def create_connect_args(self, url, _translate_args=None):
+        if _translate_args is None:
+            _translate_args = dict(username="user")
+        return super(MySQLDialect_pymysql, self).create_connect_args(
+            url, _translate_args=_translate_args
+        )
 
     def is_disconnect(self, e, connection, cursor):
         if super(MySQLDialect_pymysql, self).is_disconnect(

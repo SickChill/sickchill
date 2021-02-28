@@ -1,5 +1,5 @@
 # mysql/types.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -440,9 +440,7 @@ class TIME(sqltypes.TIME):
 
 
 class TIMESTAMP(sqltypes.TIMESTAMP):
-    """MySQL TIMESTAMP type.
-
-    """
+    """MySQL TIMESTAMP type."""
 
     __visit_name__ = "TIMESTAMP"
 
@@ -467,9 +465,7 @@ class TIMESTAMP(sqltypes.TIMESTAMP):
 
 
 class DATETIME(sqltypes.DATETIME):
-    """MySQL DATETIME type.
-
-    """
+    """MySQL DATETIME type."""
 
     __visit_name__ = "DATETIME"
 

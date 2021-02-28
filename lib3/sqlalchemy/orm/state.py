@@ -1,5 +1,5 @@
 # orm/state.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -212,7 +212,7 @@ class InstanceState(interfaces.InspectionAttrInfo):
 
             :ref:`session_object_states`
 
-            """
+        """
         return self.key is not None and self._attached and not self._deleted
 
     @property
@@ -529,7 +529,7 @@ class InstanceState(interfaces.InspectionAttrInfo):
 
     def _reset(self, dict_, key):
         """Remove the given attribute and any
-           callables associated with it."""
+        callables associated with it."""
 
         old = dict_.pop(key, None)
         if old is not None and self.manager[key].impl.collection:

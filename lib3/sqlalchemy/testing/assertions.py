@@ -1,5 +1,5 @@
 # testing/assertions.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -21,6 +21,7 @@ from .util import fail
 from .. import exc as sa_exc
 from .. import pool
 from .. import schema
+from .. import sql
 from .. import types as sqltypes
 from .. import util
 from ..engine import default
@@ -264,9 +265,13 @@ def is_(a, b, msg=None):
     assert a is b, msg or "%r is not %r" % (a, b)
 
 
-def is_not_(a, b, msg=None):
+def is_not(a, b, msg=None):
     """Assert a is not b, with repr messaging on failure."""
     assert a is not b, msg or "%r is %r" % (a, b)
+
+
+# deprecated.  See #5429
+is_not_ = is_not
 
 
 def in_(a, b, msg=None):
@@ -274,9 +279,13 @@ def in_(a, b, msg=None):
     assert a in b, msg or "%r not in %r" % (a, b)
 
 
-def not_in_(a, b, msg=None):
+def not_in(a, b, msg=None):
     """Assert a in not b, with repr messaging on failure."""
     assert a not in b, msg or "%r is in %r" % (a, b)
+
+
+# deprecated.  See #5429
+not_in_ = not_in
 
 
 def startswith_(a, fragment, msg=None):
@@ -326,7 +335,10 @@ def assert_raises(except_cls, callable_, *args, **kw):
 
 def assert_raises_context_ok(except_cls, callable_, *args, **kw):
     _assert_raises(
-        except_cls, callable_, args, kw,
+        except_cls,
+        callable_,
+        args,
+        kw,
     )
 
 
@@ -361,7 +373,10 @@ def _assert_raises(
         if msg is not None:
             assert re.search(
                 msg, util.text_type(err), re.UNICODE
-            ), "%r !~ %s" % (msg, err,)
+            ), "%r !~ %s" % (
+                msg,
+                err,
+            )
         if check_context and not are_we_already_in_a_traceback:
             _assert_proper_exception_context(err)
         print(util.text_type(err).encode("utf-8"))
@@ -430,7 +445,60 @@ class AssertsCompiledSQL(object):
         if compile_kwargs:
             kw["compile_kwargs"] = compile_kwargs
 
-        c = clause.compile(dialect=dialect, **kw)
+        class DontAccess(object):
+            def __getattribute__(self, key):
+                raise NotImplementedError(
+                    "compiler accessed .statement; use "
+                    "compiler.current_executable"
+                )
+
+        class CheckCompilerAccess(object):
+            def __init__(self, test_statement):
+                self.test_statement = test_statement
+                self.supports_execution = getattr(
+                    test_statement, "supports_execution", False
+                )
+                if self.supports_execution:
+                    self._execution_options = test_statement._execution_options
+
+                    if isinstance(
+                        test_statement, (sql.Insert, sql.Update, sql.Delete)
+                    ):
+                        self._returning = test_statement._returning
+                    if isinstance(test_statement, (sql.Insert, sql.Update)):
+                        self.inline = test_statement.inline
+                        self._return_defaults = test_statement._return_defaults
+
+            def _default_dialect(self):
+                return self.test_statement._default_dialect()
+
+            def compile(self, dialect, **kw):
+                return self.test_statement.compile.__func__(
+                    self, dialect=dialect, **kw
+                )
+
+            def _compiler(self, dialect, **kw):
+                return self.test_statement._compiler.__func__(
+                    self, dialect, **kw
+                )
+
+            def _compiler_dispatch(self, compiler, **kwargs):
+                if hasattr(compiler, "statement"):
+                    with mock.patch.object(
+                        compiler, "statement", DontAccess()
+                    ):
+                        return self.test_statement._compiler_dispatch(
+                            compiler, **kwargs
+                        )
+                else:
+                    return self.test_statement._compiler_dispatch(
+                        compiler, **kwargs
+                    )
+
+        # no construct can assume it's the "top level" construct in all cases
+        # as anything can be nested.  ensure constructs don't assume they
+        # are the "self.statement" element
+        c = CheckCompilerAccess(clause).compile(dialect=dialect, **kw)
 
         param_str = repr(getattr(c, "params", {}))
 
@@ -496,9 +564,12 @@ class ComparesTables(object):
             assert reflected_table.primary_key.columns[c.name] is not None
 
     def assert_types_base(self, c1, c2):
-        assert c1.type._compare_type_affinity(c2.type), (
-            "On column %r, type '%s' doesn't correspond to type '%s'"
-            % (c1.name, c1.type, c2.type)
+        assert c1.type._compare_type_affinity(
+            c2.type
+        ), "On column %r, type '%s' doesn't correspond to type '%s'" % (
+            c1.name,
+            c1.type,
+            c2.type,
         )
 
 

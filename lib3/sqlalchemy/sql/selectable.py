@@ -1,5 +1,5 @@
 # sql/selectable.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -1979,6 +1979,13 @@ class TableClause(Immutable, FromClause):
             return self.name.encode("ascii", "backslashreplace")
 
     def append_column(self, c):
+        existing = c.table
+        if existing is not None and existing is not self:
+            raise exc.ArgumentError(
+                "column object '%s' already assigned to table %r"
+                % (c.key, getattr(existing, "description", existing))
+            )
+
         self._columns[c.key] = c
         c.table = self
 
@@ -2278,8 +2285,7 @@ class GenerativeSelect(SelectBase):
 
     @property
     def for_update(self):
-        """Provide legacy dialect support for the ``for_update`` attribute.
-        """
+        """Provide legacy dialect support for the ``for_update`` attribute."""
         if self._for_update_arg is not None:
             return self._for_update_arg.legacy_for_update_value
         else:
@@ -4033,9 +4039,7 @@ class ScalarSelect(Generative, Grouping):
 
 
 class Exists(UnaryExpression):
-    """Represent an ``EXISTS`` clause.
-
-    """
+    """Represent an ``EXISTS`` clause."""
 
     __visit_name__ = UnaryExpression.__visit_name__
     _from_objects = []

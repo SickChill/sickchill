@@ -1,5 +1,5 @@
 # postgresql/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -82,38 +82,46 @@ Will generate on the backing database as::
 Transaction Isolation Level
 ---------------------------
 
-All PostgreSQL dialects support setting of transaction isolation level
-both via a dialect-specific parameter
-:paramref:`_sa.create_engine.isolation_level` accepted by
-:func:`_sa.create_engine`,
-as well as the :paramref:`.Connection.execution_options.isolation_level`
-argument as passed to :meth:`_engine.Connection.execution_options`.
-When using a non-psycopg2 dialect, this feature works by issuing the command
-``SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL <level>`` for
-each new connection.  For the special AUTOCOMMIT isolation level,
-DBAPI-specific techniques are used.
+Most SQLAlchemy dialects support setting of transaction isolation level
+using the :paramref:`_sa.create_engine.execution_options` parameter
+at the :func:`_sa.create_engine` level, and at the :class:`_engine.Connection`
+level via the :paramref:`.Connection.execution_options.isolation_level`
+parameter.
+
+For PostgreSQL dialects, this feature works either by making use of the
+DBAPI-specific features, such as psycopg2's isolation level flags which will
+embed the isolation level setting inline with the ``"BEGIN"`` statement, or for
+DBAPIs with no direct support by emitting ``SET SESSION CHARACTERISTICS AS
+TRANSACTION ISOLATION LEVEL <level>`` ahead of the ``"BEGIN"`` statement
+emitted by the DBAPI.   For the special AUTOCOMMIT isolation level,
+DBAPI-specific techniques are used which is typically an ``.autocommit``
+flag on the DBAPI connection object.
 
 To set isolation level using :func:`_sa.create_engine`::
 
     engine = create_engine(
         "postgresql+pg8000://scott:tiger@localhost/test",
-        isolation_level="READ UNCOMMITTED"
+        execution_options={
+            "isolation_level": "REPEATABLE READ"
+        }
     )
 
 To set using per-connection execution options::
 
-    connection = engine.connect()
-    connection = connection.execution_options(
-        isolation_level="READ COMMITTED"
-    )
+    with engine.connect() as conn:
+        conn = conn.execution_options(
+            isolation_level="REPEATABLE READ"
+        )
+        with conn.begin():
+            # ... work with transaction
 
-Valid values for ``isolation_level`` include:
+Valid values for ``isolation_level`` on most PostgreSQL dialects include:
 
 * ``READ COMMITTED``
 * ``READ UNCOMMITTED``
 * ``REPEATABLE READ``
 * ``SERIALIZABLE``
-* ``AUTOCOMMIT`` - on psycopg2 / pg8000 only
+* ``AUTOCOMMIT``
 
 .. seealso::
 
@@ -606,6 +614,8 @@ using the ``postgresql_where`` keyword argument::
 
   Index('my_index', my_table.c.id, postgresql_where=my_table.c.value > 10)
 
+.. _postgresql_operator_classes:
+
 Operator Classes
 ^^^^^^^^^^^^^^^^
 
@@ -622,11 +632,10 @@ The :class:`.Index` construct allows these to be specified via the
             'id': 'int4_ops'
         })
 
-Note that the keys in the ``postgresql_ops`` dictionary are the "key" name of
-the :class:`_schema.Column`, i.e. the name used to access it from the ``.c``
-collection of :class:`_schema.Table`,
-which can be configured to be different than
-the actual name of the column as expressed in the database.
+Note that the keys in the ``postgresql_ops`` dictionaries are the
+"key" name of the :class:`_schema.Column`, i.e. the name used to access it from
+the ``.c`` collection of :class:`_schema.Table`, which can be configured to be
+different than the actual name of the column as expressed in the database.
 
 If ``postgresql_ops`` is to be used against a complex SQL expression such
 as a function call, then to apply to the column it must be given a label
@@ -639,6 +648,14 @@ that is identified in the dictionary by name, e.g.::
             'data_lower': 'text_pattern_ops',
             'id': 'int4_ops'
         })
+
+Operator classes are also supported by the
+:class:`_postgresql.ExcludeConstraint` construct using the
+:paramref:`_postgresql.ExcludeConstraint.ops` parameter. See that parameter for
+details.
+
+.. versionadded:: 1.3.21 added support for operator classes with
+   :class:`_postgresql.ExcludeConstraint`.
 
 
 Index Types
@@ -1008,6 +1025,7 @@ from ...sql import elements
 from ...sql import expression
 from ...sql import sqltypes
 from ...sql import util as sql_util
+from ...sql.ddl import DDLBase
 from ...types import BIGINT
 from ...types import BOOLEAN
 from ...types import CHAR
@@ -1302,7 +1320,7 @@ class UUID(sqltypes.TypeEngine):
          as Python uuid objects, converting to/from string via the
          DBAPI.
 
-         """
+        """
         if as_uuid and _python_UUID is None:
             raise NotImplementedError(
                 "This version of Python does not support "
@@ -1502,10 +1520,7 @@ class ENUM(sqltypes.NativeForEmulated, sqltypes.Enum):
         if not bind.dialect.supports_native_enum:
             return
 
-        if not checkfirst or not bind.dialect.has_type(
-            bind, self.name, schema=self.schema
-        ):
-            bind.execute(CreateEnumType(self))
+        bind._run_visitor(self.EnumGenerator, self, checkfirst=checkfirst)
 
     def drop(self, bind=None, checkfirst=True):
         """Emit ``DROP TYPE`` for this
@@ -1525,10 +1540,49 @@ class ENUM(sqltypes.NativeForEmulated, sqltypes.Enum):
         if not bind.dialect.supports_native_enum:
             return
 
-        if not checkfirst or bind.dialect.has_type(
-            bind, self.name, schema=self.schema
-        ):
-            bind.execute(DropEnumType(self))
+        bind._run_visitor(self.EnumDropper, self, checkfirst=checkfirst)
+
+    class EnumGenerator(DDLBase):
+        def __init__(self, dialect, connection, checkfirst=False, **kwargs):
+            super(ENUM.EnumGenerator, self).__init__(connection, **kwargs)
+            self.checkfirst = checkfirst
+
+        def _can_create_enum(self, enum):
+            if not self.checkfirst:
+                return True
+
+            effective_schema = self.connection.schema_for_object(enum)
+
+            return not self.connection.dialect.has_type(
+                self.connection, enum.name, schema=effective_schema
+            )
+
+        def visit_enum(self, enum):
+            if not self._can_create_enum(enum):
+                return
+
+            self.connection.execute(CreateEnumType(enum))
+
+    class EnumDropper(DDLBase):
+        def __init__(self, dialect, connection, checkfirst=False, **kwargs):
+            super(ENUM.EnumDropper, self).__init__(connection, **kwargs)
+            self.checkfirst = checkfirst
+
+        def _can_drop_enum(self, enum):
+            if not self.checkfirst:
+                return True
+
+            effective_schema = self.connection.schema_for_object(enum)
+
+            return self.connection.dialect.has_type(
+                self.connection, enum.name, schema=effective_schema
+            )
+
+        def visit_enum(self, enum):
+            if not self._can_drop_enum(enum):
+                return
+
+            self.connection.execute(DropEnumType(enum))
 
     def _check_for_name_in_memos(self, checkfirst, kw):
         """Look in the 'ddl runner' for 'memos', then
@@ -1554,14 +1608,14 @@ class ENUM(sqltypes.NativeForEmulated, sqltypes.Enum):
             return False
 
     def _on_table_create(self, target, bind, checkfirst=False, **kw):
+
         if (
             checkfirst
             or (
                 not self.metadata
                 and not kw.get("_is_metadata_operation", False)
             )
-            and not self._check_for_name_in_memos(checkfirst, kw)
-        ):
+        ) and not self._check_for_name_in_memos(checkfirst, kw):
             self.create(bind=bind, checkfirst=checkfirst)
 
     def _on_table_drop(self, target, bind, checkfirst=False, **kw):
@@ -1906,7 +1960,7 @@ class PGCompiler(compiler.SQLCompiler):
                 "Additional column names not matching "
                 "any column keys in table '%s': %s"
                 % (
-                    self.statement.table.name,
+                    self.current_executable.table.name,
                     (", ".join("'%s'" % c for c in set_parameters)),
                 )
             )
@@ -2125,9 +2179,13 @@ class PGDDLCompiler(compiler.DDLCompiler):
         elements = []
         for expr, name, op in constraint._render_exprs:
             kw["include_table"] = False
-            elements.append(
-                "%s WITH %s" % (self.sql_compiler.process(expr, **kw), op)
+            exclude_element = self.sql_compiler.process(expr, **kw) + (
+                (" " + constraint.ops[expr.key])
+                if hasattr(expr, "key") and expr.key in constraint.ops
+                else ""
             )
+
+            elements.append("%s WITH %s" % (exclude_element, op))
         text += "EXCLUDE USING %s (%s)" % (
             self.preparer.validate_sql_phrase(
                 constraint.using, IDX_USING
@@ -2554,16 +2612,24 @@ class PGDialect(default.DefaultDialect):
         **kwargs
     ):
         default.DefaultDialect.__init__(self, **kwargs)
+
+        # the isolation_level parameter to the PGDialect itself is legacy.
+        # still works however the execution_options method is the one that
+        # is documented.
         self.isolation_level = isolation_level
         self._json_deserializer = json_deserializer
         self._json_serializer = json_serializer
 
     def initialize(self, connection):
         super(PGDialect, self).initialize(connection)
-        self.implicit_returning = self.server_version_info > (
-            8,
-            2,
-        ) and self.__dict__.get("implicit_returning", True)
+        self.implicit_returning = (
+            self.server_version_info
+            > (
+                8,
+                2,
+            )
+            and self.__dict__.get("implicit_returning", True)
+        )
         self.supports_native_enum = self.server_version_info >= (8, 3)
         if not self.supports_native_enum:
             self.colspecs = self.colspecs.copy()

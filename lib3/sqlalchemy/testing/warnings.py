@@ -1,5 +1,5 @@
 # testing/warnings.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -25,8 +25,7 @@ def setup_filters():
     warnings.filterwarnings(
         "ignore",
         category=sa_exc.SAWarning,
-        message=r"Oracle compatibility version .* is known to have a "
-        "maximum identifier",
+        message=r"Oracle version .* is known to have a " "maximum identifier",
     )
 
     # some selected deprecations...

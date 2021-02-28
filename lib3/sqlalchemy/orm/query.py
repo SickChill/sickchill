@@ -1,5 +1,5 @@
 # orm/query.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -1188,6 +1188,11 @@ class Query(object):
         after rollback or commit handles object state automatically.
         This method is not intended for general use.
 
+        .. seealso::
+
+            :ref:`session_expire` - in the ORM :class:`_orm.Session`
+            documentation
+
         """
         self._populate_existing = True
 
@@ -1700,7 +1705,7 @@ class Query(object):
         return self.with_hint(None, text, dialect_name)
 
     def get_execution_options(self):
-        """ Get the non-SQL options which will take effect during execution.
+        """Get the non-SQL options which will take effect during execution.
 
         .. versionadded:: 1.3
 
@@ -1712,7 +1717,7 @@ class Query(object):
 
     @_generative()
     def execution_options(self, **kwargs):
-        """ Set non-SQL options which take effect during execution.
+        """Set non-SQL options which take effect during execution.
 
         The options are the same as those accepted by
         :meth:`_engine.Connection.execution_options`.
@@ -1777,7 +1782,7 @@ class Query(object):
         ``FOR UPDATE`` clause.
 
         The behavior of this method is identical to that of
-        :meth:`_expression.SelectBase.with_for_update`.
+        :meth:`_expression.GenerativeSelect.with_for_update`.
         When called with no arguments,
         the resulting ``SELECT`` statement will have a ``FOR UPDATE`` clause
         appended.  When additional arguments are specified, backend-specific
@@ -1786,7 +1791,7 @@ class Query(object):
 
         E.g.::
 
-            q = sess.query(User).with_for_update(nowait=True, of=User)
+            q = sess.query(User).populate_existing().with_for_update(nowait=True, of=User)
 
         The above query on a PostgreSQL backend will render like::
 
@@ -1796,13 +1801,24 @@ class Query(object):
            supersedes
            the :meth:`_query.Query.with_lockmode` method.
 
+        .. note::  It is generally a good idea to combine the use of the
+           :meth:`_orm.Query.populate_existing` method when using the
+           :meth:`_orm.Query.with_for_update` method.   The purpose of
+           :meth:`_orm.Query.populate_existing` is to force all the data read
+           from the SELECT to be populated into the ORM objects returned,
+           even if these objects are already in the :term:`identity map`.
+
         .. seealso::
 
             :meth:`_expression.GenerativeSelect.with_for_update`
             - Core level method with
             full argument and behavioral description.
 
-        """
+            :meth:`_orm.Query.populate_existing` - overwrites attributes of
+            objects already loaded in the identity map.
+
+        """  # noqa: E501
+
         self._for_update_arg = LockmodeArg(
             read=read,
             nowait=nowait,
@@ -2512,7 +2528,18 @@ class Query(object):
                     if of_type:
                         right = of_type
                     else:
-                        right = onclause.property.entity
+                        right = onclause.property
+
+                        try:
+                            right = right.entity
+                        except AttributeError as err:
+                            util.raise_(
+                                sa_exc.ArgumentError(
+                                    "Join target %s does not refer to a "
+                                    "mapped entity" % right
+                                ),
+                                replace_context=err,
+                            )
 
                 left = onclause._parententity
 

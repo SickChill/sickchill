@@ -1,5 +1,5 @@
 # sql/types_api.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -1013,8 +1013,7 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
 
         In most cases this returns a dialect-adapted form of
         the :class:`.TypeEngine` type represented by ``self.impl``.
-        Makes usage of :meth:`dialect_impl` but also traverses
-        into wrapped :class:`.TypeDecorator` instances.
+        Makes usage of :meth:`dialect_impl`.
         Behavior can be customized here by overriding
         :meth:`load_dialect_impl`.
 
@@ -1022,8 +1021,6 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
         adapted = dialect.type_descriptor(self)
         if not isinstance(adapted, type(self)):
             return adapted
-        elif isinstance(self.impl, TypeDecorator):
-            return self.impl.type_engine(dialect)
         else:
             return self.load_dialect_impl(dialect)
 
@@ -1144,10 +1141,7 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
 
     @util.memoized_property
     def _has_literal_processor(self):
-        """memoized boolean, check if process_literal_param is implemented.
-
-
-        """
+        """memoized boolean, check if process_literal_param is implemented."""
 
         return (
             self.__class__.process_literal_param.__code__

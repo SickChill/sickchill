@@ -110,8 +110,7 @@ def drop_db(cfg, eng, ident):
 
 @register.init
 def update_db_opts(db_url, db_opts):
-    """Set database options (db_opts) for a test database that we created.
-    """
+    """Set database options (db_opts) for a test database that we created."""
     pass
 
 
@@ -193,3 +192,8 @@ def temp_table_keyword_args(cfg, eng):
     raise NotImplementedError(
         "no temp table keyword args routine for cfg: %s" % eng.url
     )
+
+
+@register.init
+def stop_test_class(config, db, testcls):
+    pass

@@ -1,5 +1,5 @@
 # event/attr.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -373,7 +373,7 @@ class _ListenerCollection(_CompoundListener):
 
     def _update(self, other, only_propagate=True):
         """Populate from the listeners in another :class:`_Dispatch`
-            object."""
+        object."""
 
         existing_listeners = self.listeners
         existing_listener_set = set(existing_listeners)

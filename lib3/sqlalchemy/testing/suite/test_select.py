@@ -407,7 +407,7 @@ class ExpandingBoundInTest(fixtures.TablesTest):
 
         self._assert_result(stmt, [], params={"q": [], "p": []})
 
-    @testing.requires.tuple_in
+    @testing.requires.tuple_in_w_empty
     def test_empty_heterogeneous_tuples(self):
         table = self.tables.some_table
 
@@ -423,7 +423,7 @@ class ExpandingBoundInTest(fixtures.TablesTest):
 
         self._assert_result(stmt, [], params={"q": []})
 
-    @testing.requires.tuple_in
+    @testing.requires.tuple_in_w_empty
     def test_empty_homogeneous_tuples(self):
         table = self.tables.some_table
 
@@ -789,7 +789,8 @@ class IsOrIsNotDistinctFromTest(fixtures.TablesTest):
             tbl.select(tbl.c.col_a.is_distinct_from(tbl.c.col_b))
         ).fetchall()
         eq_(
-            len(result), expected_row_count_for_is,
+            len(result),
+            expected_row_count_for_is,
         )
 
         expected_row_count_for_isnot = (
@@ -799,5 +800,6 @@ class IsOrIsNotDistinctFromTest(fixtures.TablesTest):
             tbl.select(tbl.c.col_a.isnot_distinct_from(tbl.c.col_b))
         ).fetchall()
         eq_(
-            len(result), expected_row_count_for_isnot,
+            len(result),
+            expected_row_count_for_isnot,
         )

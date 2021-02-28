@@ -1,5 +1,5 @@
 # engine/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -344,7 +344,7 @@ class Connection(Connectable):
         return c
 
     def get_execution_options(self):
-        """ Get the non-SQL options which will take effect during execution.
+        """Get the non-SQL options which will take effect during execution.
 
         .. versionadded:: 1.3
 
@@ -1746,9 +1746,7 @@ class Transaction(object):
         self.connection._discard_transaction(self)
 
     def rollback(self):
-        """Roll back this :class:`.Transaction`.
-
-        """
+        """Roll back this :class:`.Transaction`."""
         if self._parent.is_active:
             self._do_rollback()
             self.is_active = False
@@ -2020,7 +2018,7 @@ class Engine(Connectable, log.Identified):
         return OptionEngine(self, opt)
 
     def get_execution_options(self):
-        """ Get the non-SQL options which will take effect during execution.
+        """Get the non-SQL options which will take effect during execution.
 
         .. versionadded: 1.3
 

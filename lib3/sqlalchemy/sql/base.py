@@ -1,5 +1,5 @@
 # sql/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -403,9 +403,7 @@ class Executable(Generative):
         return self._execution_options
 
     def execute(self, *multiparams, **params):
-        """Compile and execute this :class:`.Executable`.
-
-        """
+        """Compile and execute this :class:`.Executable`."""
         e = self.bind
         if e is None:
             label = getattr(self, "description", self.__class__.__name__)
@@ -492,18 +490,18 @@ class ColumnCollection(util.OrderedProperties):
 
     def replace(self, column):
         """Add the given column to this collection, removing unaliased
-           versions of this column  as well as existing columns with the
-           same key.
+        versions of this column  as well as existing columns with the
+        same key.
 
-           E.g.::
+        E.g.::
 
-                t = Table('sometable', metadata, Column('col1', Integer))
-                t.columns.replace(Column('col1', Integer, key='columnone'))
+             t = Table('sometable', metadata, Column('col1', Integer))
+             t.columns.replace(Column('col1', Integer, key='columnone'))
 
-           will remove the original 'col1' from the collection, and add
-           the new column under the name 'columnname'.
+        will remove the original 'col1' from the collection, and add
+        the new column under the name 'columnname'.
 
-           Used by schema.Column to override columns during table reflection.
+        Used by schema.Column to override columns during table reflection.
 
         """
         remove_col = None

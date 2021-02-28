@@ -1,5 +1,5 @@
 # util/compat.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -303,8 +303,7 @@ else:
 if py35:
 
     def _formatannotation(annotation, base_module=None):
-        """vendored from python 3.7
-        """
+        """vendored from python 3.7"""
 
         if getattr(annotation, "__module__", None) == "typing":
             return repr(annotation).replace("typing.", "")

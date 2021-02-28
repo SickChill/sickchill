@@ -1,5 +1,5 @@
 # connectors/mxodbc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -54,7 +54,7 @@ class MxODBCConnector(Connector):
 
     @classmethod
     def _load_mx_exceptions(cls):
-        """ Import mxODBC exception classes into the module namespace,
+        """Import mxODBC exception classes into the module namespace,
         as if they had been imported normally. This is done here
         to avoid requiring all SQLAlchemy users to install mxODBC.
         """
@@ -72,7 +72,7 @@ class MxODBCConnector(Connector):
         return connect
 
     def _error_handler(self):
-        """ Return a handler that adjusts mxODBC's raised Warnings to
+        """Return a handler that adjusts mxODBC's raised Warnings to
         emit Python standard warnings.
         """
         from mx.ODBC.Error import Warning as MxOdbcWarning

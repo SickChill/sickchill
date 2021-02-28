@@ -1,5 +1,5 @@
 # testing/__init__.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -27,10 +27,12 @@ from .assertions import in_  # noqa
 from .assertions import is_  # noqa
 from .assertions import is_false  # noqa
 from .assertions import is_instance_of  # noqa
+from .assertions import is_not  # noqa
 from .assertions import is_not_  # noqa
 from .assertions import is_true  # noqa
 from .assertions import le_  # noqa
 from .assertions import ne_  # noqa
+from .assertions import not_in  # noqa
 from .assertions import not_in_  # noqa
 from .assertions import startswith_  # noqa
 from .assertions import uses_deprecated  # noqa

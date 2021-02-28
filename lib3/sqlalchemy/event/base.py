@@ -1,5 +1,5 @@
 # event/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -142,7 +142,7 @@ class _Dispatch(object):
 
     def _update(self, other, only_propagate=True):
         """Populate from the listeners in another :class:`_Dispatch`
-            object."""
+        object."""
         for ls in other._event_descriptors:
             if isinstance(ls, _EmptyListener):
                 continue

@@ -93,7 +93,10 @@ class QuotedNameArgumentTest(fixtures.TablesTest):
             Column("related_id", Integer),
             sa.PrimaryKeyConstraint("id", name="pk quote ' one"),
             sa.Index("ix quote ' one", "name"),
-            sa.UniqueConstraint("data", name="uq quote' one",),
+            sa.UniqueConstraint(
+                "data",
+                name="uq quote' one",
+            ),
             sa.ForeignKeyConstraint(
                 ["id"], ["related.id"], name="fk quote ' one"
             ),
@@ -112,7 +115,10 @@ class QuotedNameArgumentTest(fixtures.TablesTest):
                 Column("related_id", Integer),
                 sa.PrimaryKeyConstraint("id", name='pk quote " two'),
                 sa.Index('ix quote " two', "name"),
-                sa.UniqueConstraint("data", name='uq quote" two',),
+                sa.UniqueConstraint(
+                    "data",
+                    name='uq quote" two',
+                ),
                 sa.ForeignKeyConstraint(
                     ["id"], ["related.id"], name='fk quote " two'
                 ),
@@ -1298,11 +1304,17 @@ class ComputedReflectionTest(fixtures.ComputedReflectionFixtureTest):
         )
         if testing.requires.computed_columns_virtual.enabled:
             self.check_column(
-                data, "computed_virtual", "normal+2", False,
+                data,
+                "computed_virtual",
+                "normal+2",
+                False,
             )
         if testing.requires.computed_columns_stored.enabled:
             self.check_column(
-                data, "computed_stored", "normal-42", True,
+                data,
+                "computed_stored",
+                "normal-42",
+                True,
             )
 
     @testing.requires.schemas
@@ -1322,12 +1334,71 @@ class ComputedReflectionTest(fixtures.ComputedReflectionFixtureTest):
         )
         if testing.requires.computed_columns_virtual.enabled:
             self.check_column(
-                data, "computed_virtual", "normal/2", False,
+                data,
+                "computed_virtual",
+                "normal/2",
+                False,
             )
         if testing.requires.computed_columns_stored.enabled:
             self.check_column(
-                data, "computed_stored", "normal*42", True,
+                data,
+                "computed_stored",
+                "normal*42",
+                True,
             )
+
+
+class CompositeKeyReflectionTest(fixtures.TablesTest):
+    __backend__ = True
+
+    @classmethod
+    def define_tables(cls, metadata):
+        tb1 = Table(
+            "tb1",
+            metadata,
+            Column("id", Integer),
+            Column("attr", Integer),
+            Column("name", sql_types.VARCHAR(20)),
+            sa.PrimaryKeyConstraint("name", "id", "attr", name="pk_tb1"),
+            schema=None,
+            test_needs_fk=True,
+        )
+        Table(
+            "tb2",
+            metadata,
+            Column("id", Integer, primary_key=True),
+            Column("pid", Integer),
+            Column("pattr", Integer),
+            Column("pname", sql_types.VARCHAR(20)),
+            sa.ForeignKeyConstraint(
+                ["pname", "pid", "pattr"],
+                [tb1.c.name, tb1.c.id, tb1.c.attr],
+                name="fk_tb1_name_id_attr",
+            ),
+            schema=None,
+            test_needs_fk=True,
+        )
+
+    @testing.requires.primary_key_constraint_reflection
+    @testing.provide_metadata
+    def test_pk_column_order(self):
+        # test for issue #5661
+        meta = self.metadata
+        insp = inspect(meta.bind)
+        primary_key = insp.get_pk_constraint(self.tables.tb1.name)
+        eq_(primary_key.get("constrained_columns"), ["name", "id", "attr"])
+
+    @testing.requires.foreign_key_constraint_reflection
+    @testing.provide_metadata
+    def test_fk_column_order(self):
+        # test for issue #5661
+        meta = self.metadata
+        insp = inspect(meta.bind)
+        foreign_keys = insp.get_foreign_keys(self.tables.tb2.name)
+        eq_(len(foreign_keys), 1)
+        fkey1 = foreign_keys[0]
+        eq_(fkey1.get("referred_columns"), ["name", "id", "attr"])
+        eq_(fkey1.get("constrained_columns"), ["pname", "pid", "pattr"])
 
 
 __all__ = (
@@ -1336,4 +1407,5 @@ __all__ = (
     "HasTableTest",
     "NormalizedNameTest",
     "ComputedReflectionTest",
+    "CompositeKeyReflectionTest",
 )

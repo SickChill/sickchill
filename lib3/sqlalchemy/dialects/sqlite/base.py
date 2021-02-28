@@ -1,5 +1,5 @@
 # sqlite/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -584,6 +584,21 @@ or on a per-:class:`_engine.Engine` basis::
 When using the per-:class:`_engine.Engine` execution option, note that
 **Core and ORM queries that use UNION may not function properly**.
 
+SQLite-specific table options
+-----------------------------
+
+One option for CREATE TABLE is supported directly by the SQLite
+dialect in conjunction with the :class:`_schema.Table` construct:
+
+* ``WITHOUT ROWID``::
+
+    Table("some_table", metadata, ..., sqlite_with_rowid=False)
+
+.. seealso::
+
+    `SQLite CREATE TABLE options
+    <https://www.sqlite.org/lang_createtable.html>`_
+
 """  # noqa
 
 import datetime
@@ -603,6 +618,7 @@ from ...engine import default
 from ...engine import reflection
 from ...sql import ColumnElement
 from ...sql import compiler
+from ...sql import schema
 from ...types import BLOB  # noqa
 from ...types import BOOLEAN  # noqa
 from ...types import CHAR  # noqa
@@ -1172,9 +1188,11 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
             "on_conflict"
         ]
         if on_conflict_clause is None and len(constraint.columns) == 1:
-            on_conflict_clause = list(constraint)[0].dialect_options["sqlite"][
-                "on_conflict_unique"
-            ]
+            col1 = list(constraint)[0]
+            if isinstance(col1, schema.SchemaItem):
+                on_conflict_clause = list(constraint)[0].dialect_options[
+                    "sqlite"
+                ]["on_conflict_unique"]
 
         if on_conflict_clause is not None:
             text += " ON CONFLICT " + on_conflict_clause
@@ -1253,6 +1271,11 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
             text += " WHERE " + where_compiled
 
         return text
+
+    def post_create_table(self, table):
+        if table.dialect_options["sqlite"]["with_rowid"] is False:
+            return "\n WITHOUT ROWID"
+        return ""
 
 
 class SQLiteTypeCompiler(compiler.GenericTypeCompiler):
@@ -1461,7 +1484,13 @@ class SQLiteDialect(default.DefaultDialect):
     isolation_level = None
 
     construct_arguments = [
-        (sa_schema.Table, {"autoincrement": False}),
+        (
+            sa_schema.Table,
+            {
+                "autoincrement": False,
+                "with_rowid": True,
+            },
+        ),
         (sa_schema.Index, {"where": None}),
         (
             sa_schema.Column,
@@ -1839,6 +1868,7 @@ class SQLiteDialect(default.DefaultDialect):
             constraint_name = result.group(1) if result else None
 
         cols = self.get_columns(connection, table_name, schema, **kw)
+        cols.sort(key=lambda col: col.get("primary_key"))
         pkeys = []
         for col in cols:
             if col["primary_key"]:

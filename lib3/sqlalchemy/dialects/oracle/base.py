@@ -1,5 +1,5 @@
 # oracle/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -38,18 +38,15 @@ This step is also required when using table reflection, i.e. autoload=True::
         autoload=True
   )
 
+
+.. _oracle_isolation_level:
+
 Transaction Isolation Level / Autocommit
 ----------------------------------------
 
-The Oracle database supports "READ COMMITTED" and "SERIALIZABLE" modes
-of isolation, however the SQLAlchemy Oracle dialect currently only has
-explicit support for "READ COMMITTED".  It is possible to emit a
-"SET TRANSACTION" statement on a connection in order to use SERIALIZABLE
-isolation, however the SQLAlchemy dialect will remain unaware of this setting,
-such as if the :meth:`_engine.Connection.get_isolation_level` method is used;
-this method is hardcoded to return "READ COMMITTED" right now.
-
-The AUTOCOMMIT isolation level is also supported by the cx_Oracle dialect.
+The Oracle database supports "READ COMMITTED" and "SERIALIZABLE" modes of
+isolation. The AUTOCOMMIT isolation level is also supported by the cx_Oracle
+dialect.
 
 To set using per-connection execution options::
 
@@ -58,15 +55,50 @@ To set using per-connection execution options::
         isolation_level="AUTOCOMMIT"
     )
 
+For ``READ COMMITTED`` and ``SERIALIZABLE``, the Oracle dialect sets the
+level at the session level using ``ALTER SESSION``, which is reverted back
+to its default setting when the connection is returned to the connection
+pool.
+
 Valid values for ``isolation_level`` include:
 
 * ``READ COMMITTED``
 * ``AUTOCOMMIT``
+* ``SERIALIZABLE``
 
+.. note:: The implementation for the
+   :meth:`_engine.Connection.get_isolation_level` method as implemented by the
+   Oracle dialect necessarily forces the start of a transaction using the
+   Oracle LOCAL_TRANSACTION_ID function; otherwise no level is normally
+   readable.
+
+   Additionally, the :meth:`_engine.Connection.get_isolation_level` method will
+   raise an exception if the ``v$transaction`` view is not available due to
+   permissions or other reasons, which is a common occurrence in Oracle
+   installations.
+
+   The cx_Oracle dialect attempts to call the
+   :meth:`_engine.Connection.get_isolation_level` method when the dialect makes
+   its first connection to the database in order to acquire the
+   "default"isolation level.  This default level is necessary so that the level
+   can be reset on a connection after it has been temporarily modified using
+   :meth:`_engine.Connection.execution_options` method.   In the common event
+   that the :meth:`_engine.Connection.get_isolation_level` method raises an
+   exception due to ``v$transaction`` not being readable as well as any other
+   database-related failure, the level is assumed to be "READ COMMITTED".  No
+   warning is emitted for this initial first-connect condition as it is
+   expected to be a common restriction on Oracle databases.
 
 .. versionadded:: 1.3.16 added support for AUTOCOMMIT to the cx_oracle dialect
-   as well as the notion of a default isolation level, currently hardcoded
-   to "READ COMMITTED".
+   as well as the notion of a default isolation level
+
+.. versionadded:: 1.3.21 Added support for SERIALIZABLE as well as live
+   reading of the isolation level.
+
+.. versionchanged:: 1.3.22 In the event that the default isolation
+   level cannot be read due to permissions on the v$transaction view as
+   is common in Oracle installations, the default isolation level is hardcoded
+   to "READ COMMITTED" which was the behavior prior to 1.3.21.
 
 .. seealso::
 
@@ -942,7 +974,12 @@ class OracleCompiler(compiler.SQLCompiler):
         for i, column in enumerate(
             expression._select_iterables(returning_cols)
         ):
-            if self.isupdate and isinstance(column.server_default, Computed):
+            if (
+                self.isupdate
+                and isinstance(column, sa_schema.Column)
+                and isinstance(column.server_default, Computed)
+                and not self.dialect._supports_update_returning_computed_cols
+            ):
                 util.warn(
                     "Computed columns don't work with Oracle UPDATE "
                     "statements that use RETURNING; the value of the column "
@@ -1356,6 +1393,12 @@ class OracleDialect(default.DefaultDialect):
     def _supports_char_length(self):
         return not self._is_oracle_8
 
+    @property
+    def _supports_update_returning_computed_cols(self):
+        # on version 18 this error is no longet present while it happens on 11
+        # it may work also on versions before the 18
+        return self.server_version_info and self.server_version_info >= (18,)
+
     def do_release_savepoint(self, connection, name):
         # Oracle does not support RELEASE SAVEPOINT
         pass
@@ -1394,19 +1437,21 @@ class OracleDialect(default.DefaultDialect):
             connection, additional_tests
         )
 
-    _isolation_lookup = ["READ COMMITTED"]
+    _isolation_lookup = ["READ COMMITTED", "SERIALIZABLE"]
 
     def get_isolation_level(self, connection):
-        return "READ COMMITTED"
+        raise NotImplementedError("implemented by cx_Oracle dialect")
+
+    def get_default_isolation_level(self, dbapi_conn):
+        try:
+            return self.get_isolation_level(dbapi_conn)
+        except NotImplementedError:
+            raise
+        except:
+            return "READ COMMITTED"
 
     def set_isolation_level(self, connection, level):
-        # prior to adding AUTOCOMMIT support for cx_Oracle, the Oracle dialect
-        # had no notion of setting the isolation level.  As Oracle
-        # does not have a straightforward way of getting the isolation level
-        # if a server-side transaction is not yet in progress, we currently
-        # hardcode to only support "READ COMMITTED" and "AUTOCOMMIT" at the
-        # cx_oracle level.  See #5200.
-        pass
+        raise NotImplementedError("implemented by cx_Oracle dialect")
 
     def has_table(self, connection, table_name, schema=None):
         if not schema:

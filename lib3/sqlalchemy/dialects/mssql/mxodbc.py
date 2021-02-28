@@ -1,5 +1,5 @@
 # mssql/mxodbc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -55,8 +55,7 @@ from ...connectors.mxodbc import MxODBCConnector
 
 
 class _MSNumeric_mxodbc(_MSNumeric_pyodbc):
-    """Include pyodbc's numeric processor.
-    """
+    """Include pyodbc's numeric processor."""
 
 
 class _MSDate_mxodbc(_MSDate):

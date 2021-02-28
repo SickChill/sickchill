@@ -1,5 +1,5 @@
 # sqlalchemy/inspect.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -54,7 +54,7 @@ def inspect(subject, raiseerr=True):
      :class:`sqlalchemy.exc.NoInspectionAvailable`
      is raised.  If ``False``, ``None`` is returned.
 
-     """
+    """
     type_ = type(subject)
     for cls in type_.__mro__:
         if cls in _registrars:

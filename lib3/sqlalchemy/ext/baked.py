@@ -1,5 +1,5 @@
 # sqlalchemy/ext/baked.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -171,8 +171,7 @@ class BakedQuery(object):
         return self._cache_key + (session._query_cls,)
 
     def _with_lazyload_options(self, options, effective_path, cache_path=None):
-        """Cloning version of _add_lazyload_options.
-        """
+        """Cloning version of _add_lazyload_options."""
         q = self._clone()
         q._add_lazyload_options(options, effective_path, cache_path=cache_path)
         return q

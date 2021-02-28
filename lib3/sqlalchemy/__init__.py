@@ -1,5 +1,5 @@
 # sqlalchemy/__init__.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -124,7 +124,7 @@ from .engine import create_engine  # noqa nosort
 from .engine import engine_from_config  # noqa nosort
 
 
-__version__ = '1.3.19'
+__version__ = "1.3.23"
 
 
 def __go(lcls):

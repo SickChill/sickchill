@@ -1,5 +1,5 @@
 # ext/hybrid.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -64,9 +64,10 @@ mechanics::
 When dealing with the ``Interval`` class itself, the :class:`.hybrid_property`
 descriptor evaluates the function body given the ``Interval`` class as
 the argument, which when evaluated with SQLAlchemy expression mechanics
+(here using the :attr:`.QueryableAttribute.expression` accessor)
 returns a new SQL expression::
 
-    >>> print(Interval.length)
+    >>> print(Interval.length.expression)
     interval."end" - interval.start
 
     >>> print(Session().query(Interval).filter(Interval.length > 10))
@@ -950,7 +951,7 @@ class hybrid_property(interfaces.InspectionAttrInfo):
 
             :ref:`hybrid_reuse_subclass`
 
-         """
+        """
         return self
 
     def getter(self, fget):

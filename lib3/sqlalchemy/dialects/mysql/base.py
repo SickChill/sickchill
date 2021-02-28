@@ -1,5 +1,5 @@
 # mysql/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -893,6 +893,8 @@ from ...engine import default
 from ...engine import reflection
 from ...sql import compiler
 from ...sql import elements
+from ...sql import functions
+from ...sql import operators
 from ...sql import util as sql_util
 from ...types import BINARY
 from ...types import BLOB
@@ -905,7 +907,7 @@ from ...util import topological
 RESERVED_WORDS = set(
     [
         "accessible",
-        "accessible",
+        "action",
         "add",
         "admin",
         "all",
@@ -939,6 +941,7 @@ RESERVED_WORDS = set(
         "convert",
         "create",
         "cross",
+        "cube",
         "cume_dist",
         "current_date",
         "current_time",
@@ -1030,9 +1033,11 @@ RESERVED_WORDS = set(
         "keys",
         "kill",
         "last_value",
+        "lateral",
         "leading",
         "leave",
         "left",
+        "level",
         "like",
         "limit",
         "linear",
@@ -1061,6 +1066,7 @@ RESERVED_WORDS = set(
         "minute_microsecond",
         "minute_second",
         "mod",
+        "mode",
         "modifies",
         "natural",
         "no_write_to_binlog",
@@ -1144,13 +1150,16 @@ RESERVED_WORDS = set(
         "sqlwarning",
         "ssl",
         "starting",
+        "status",
         "stored",
         "straight_join",
         "system",
         "table",
         "tables",  # 4.1
         "terminated",
+        "text",
         "then",
+        "time",
         "tinyblob",
         "tinyint",
         "tinytext",
@@ -1380,6 +1389,8 @@ class MySQLCompiler(compiler.SQLCompiler):
         return self._render_json_extract_from_binary(binary, operator, **kw)
 
     def visit_on_duplicate_key_update(self, on_duplicate, **kw):
+        statement = self.current_executable
+
         if on_duplicate._parameter_ordering:
             parameter_ordering = [
                 elements._column_as_key(key)
@@ -1387,14 +1398,12 @@ class MySQLCompiler(compiler.SQLCompiler):
             ]
             ordered_keys = set(parameter_ordering)
             cols = [
-                self.statement.table.c[key]
+                statement.table.c[key]
                 for key in parameter_ordering
-                if key in self.statement.table.c
-            ] + [
-                c for c in self.statement.table.c if c.key not in ordered_keys
-            ]
+                if key in statement.table.c
+            ] + [c for c in statement.table.c if c.key not in ordered_keys]
         else:
-            cols = self.statement.table.c
+            cols = statement.table.c
 
         clauses = []
         # traverses through all table columns to preserve table column order
@@ -1496,6 +1505,11 @@ class MySQLCompiler(compiler.SQLCompiler):
             return self.dialect.type_compiler.process(type_).replace(
                 "NUMERIC", "DECIMAL"
             )
+        elif (
+            isinstance(type_, sqltypes.Float)
+            and self.dialect._support_float_cast
+        ):
+            return self.dialect.type_compiler.process(type_)
         else:
             return None
 
@@ -1511,7 +1525,7 @@ class MySQLCompiler(compiler.SQLCompiler):
         type_ = self.process(cast.typeclause)
         if type_ is None:
             util.warn(
-                "Datatype %s does not support CAST on MySQL; "
+                "Datatype %s does not support CAST on MySQL/MariaDb; "
                 "the CAST will be skipped."
                 % self.dialect.type_compiler.process(cast.typeclause.type)
             )
@@ -1588,8 +1602,14 @@ class MySQLCompiler(compiler.SQLCompiler):
         if select._for_update_arg.nowait:
             tmp += " NOWAIT"
 
-        if select._for_update_arg.skip_locked and self.dialect._is_mysql:
-            tmp += " SKIP LOCKED"
+        if select._for_update_arg.skip_locked:
+            if self.dialect._is_mysql:
+                tmp += " SKIP LOCKED"
+            else:
+                util.warn(
+                    "SKIP LOCKED ignored on non-supporting MariaDB backend. "
+                    "This will raise an error in SQLAlchemy 1.4."
+                )
 
         return tmp
 
@@ -1834,9 +1854,22 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
         self._verify_index_table(index)
         preparer = self.preparer
         table = preparer.format_table(index.table)
+
         columns = [
             self.sql_compiler.process(
-                expr, include_table=False, literal_binds=True
+                elements.Grouping(expr)
+                if (
+                    isinstance(expr, elements.BinaryExpression)
+                    or (
+                        isinstance(expr, elements.UnaryExpression)
+                        and expr.modifier
+                        not in (operators.desc_op, operators.asc_op)
+                    )
+                    or isinstance(expr, functions.FunctionElement)
+                )
+                else expr,
+                include_table=False,
+                literal_binds=True,
             )
             for expr in index.expressions
         ]
@@ -2304,6 +2337,7 @@ class MySQLDialect(default.DefaultDialect):
     # identifiers are 64, however aliases can be 255...
     max_identifier_length = 255
     max_index_name_length = 64
+    max_constraint_name_length = 64
 
     supports_native_enum = True
 
@@ -2630,6 +2664,17 @@ class MySQLDialect(default.DefaultDialect):
                     "MariaDB 10.2.9 or greater, or use the MariaDB 10.1 "
                     "series, to avoid these issues." % (mdb_version,)
                 )
+
+    @property
+    def _support_float_cast(self):
+        if not self.server_version_info:
+            return False
+        elif self._is_mariadb:
+            # ref https://mariadb.com/kb/en/mariadb-1045-release-notes/
+            return self.server_version_info >= (10, 4, 5)
+        else:
+            # ref https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-17.html#mysqld-8-0-17-feature  # noqa
+            return self.server_version_info >= (8, 0, 17)
 
     @property
     def _is_mariadb(self):

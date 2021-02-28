@@ -1,5 +1,5 @@
 # testing/engines.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -337,6 +337,12 @@ class DBAPIProxyCursor(object):
 
     def __getattr__(self, key):
         return getattr(self.cursor, key)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
 
 
 class DBAPIProxyConnection(object):

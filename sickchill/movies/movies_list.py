@@ -10,6 +10,7 @@ import tmdbsimple
 from imdb.parser.http.piculet import Path, Rule
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+from sqlalchemy_utils import get_mapper
 from tmdbsimple import movies, search
 
 from .. import settings
@@ -43,17 +44,16 @@ class MoviesList:
             models.Base.metadata.create_all(self.session.bind, checkfirst=True)
 
             if load_defaults:
-                from .utils import find_table_mapper
                 for table in models.Base.metadata.sorted_tables:
                     try:
-                        model = find_table_mapper(table)
+                        model = get_mapper(table)
                         if hasattr(model.class_, 'default_data'):
-                            model.class_.default_data(target=table, connection=self.session)
+                            model.class_.default_data(target=table, session=self.session)
                     except ValueError:
                         # A relationship table has no model
                         pass
                     except Exception as e:
-                        logger.info('Error on loading defaults for table', table)
+                        logger.info('Error on loading defaults for table %s', table)
                         logger.debug(traceback.format_exc())
                         raise e
 

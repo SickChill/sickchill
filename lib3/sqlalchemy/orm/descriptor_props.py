@@ -1,5 +1,5 @@
 # orm/descriptor_props.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -27,7 +27,7 @@ from ..sql import expression
 
 class DescriptorProperty(MapperProperty):
     """:class:`.MapperProperty` which proxies access to a
-        user-defined descriptor."""
+    user-defined descriptor."""
 
     doc = None
 

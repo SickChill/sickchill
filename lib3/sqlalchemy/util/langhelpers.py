@@ -1,5 +1,5 @@
 # util/langhelpers.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -66,7 +66,8 @@ class safe_reraise(object):
             self._exc_info = None  # remove potential circular references
             if not self.warn_only:
                 compat.raise_(
-                    exc_value, with_traceback=exc_tb,
+                    exc_value,
+                    with_traceback=exc_tb,
                 )
         else:
             if not compat.py3k and self._exc_info and self._exc_info[1]:
@@ -169,15 +170,19 @@ def public_factory(target, location, class_location=None):
     class can serve as documentation for the function.
 
     """
+
     if isinstance(target, type):
         fn = target.__init__
         callable_ = target
         doc = (
-            "Construct a new :class:`.%s` object. \n\n"
+            "Construct a new :class:`%s` object. \n\n"
             "This constructor is mirrored as a public API function; "
             "see :func:`sqlalchemy%s` "
             "for a full usage and argument description."
-            % (target.__name__, location)
+            % (
+                class_location if class_location else ".%s" % target.__name__,
+                location,
+            )
         )
     else:
         fn = callable_ = target
@@ -201,6 +206,7 @@ def %(name)s(%(args)s):
     env = {"cls": callable_, "symbol": symbol}
     exec(code, env)
     decorated = env[location_name]
+
     if hasattr(fn, "_linked_to"):
         linked_to, linked_to_location = fn._linked_to
         linked_to_doc = linked_to.__doc__
@@ -210,9 +216,11 @@ def %(name)s(%(args)s):
         linked_to_doc = inject_docstring_text(
             linked_to_doc,
             ".. container:: inherited_member\n\n    "
-            "Inherited from :func:`sqlalchemy%s`; this constructor "
-            "creates a :class:`%s` object"
-            % (linked_to_location, class_location),
+            "This documentation is inherited from :func:`sqlalchemy%s`; "
+            "this constructor, :func:`sqlalchemy%s`,   "
+            "creates a :class:`sqlalchemy%s` object.  See that class for "
+            "additional details describing this subclass."
+            % (linked_to_location, location, class_location),
             1,
         )
         decorated.__doc__ = linked_to_doc
@@ -225,6 +233,7 @@ def %(name)s(%(args)s):
             "public_factory location %s is not in sys.modules"
             % (decorated.__module__,)
         )
+
     if compat.py2k or hasattr(fn, "__func__"):
         fn.__func__.__doc__ = doc
         if not hasattr(fn.__func__, "_linked_to"):
@@ -233,6 +242,7 @@ def %(name)s(%(args)s):
         fn.__doc__ = doc
         if not hasattr(fn, "_linked_to"):
             fn._linked_to = (decorated, location)
+
     return decorated
 
 
@@ -698,10 +708,10 @@ def class_hierarchy(cls):
 
 def iterate_attributes(cls):
     """iterate all the keys and attributes associated
-       with a class, without using getattr().
+    with a class, without using getattr().
 
-       Does not use getattr() so that class-sensitive
-       descriptors (i.e. property.__get__()) are not called.
+    Does not use getattr() so that class-sensitive
+    descriptors (i.e. property.__get__()) are not called.
 
     """
     keys = dir(cls)
@@ -992,123 +1002,6 @@ def dependency_for(modulename, add_to_all=False):
     return decorate
 
 
-class dependencies(object):
-    """Apply imported dependencies as arguments to a function.
-
-    E.g.::
-
-        @util.dependencies(
-            "sqlalchemy.sql.widget",
-            "sqlalchemy.engine.default"
-        );
-        def some_func(self, widget, default, arg1, arg2, **kw):
-            # ...
-
-    Rationale is so that the impact of a dependency cycle can be
-    associated directly with the few functions that cause the cycle,
-    and not pollute the module-level namespace.
-
-    """
-
-    def __init__(self, *deps):
-        self.import_deps = []
-        for dep in deps:
-            tokens = dep.split(".")
-            self.import_deps.append(
-                dependencies._importlater(".".join(tokens[0:-1]), tokens[-1])
-            )
-
-    def __call__(self, fn):
-        import_deps = self.import_deps
-        spec = compat.inspect_getfullargspec(fn)
-
-        spec_zero = list(spec[0])
-        hasself = spec_zero[0] in ("self", "cls")
-
-        for i in range(len(import_deps)):
-            spec[0][i + (1 if hasself else 0)] = "import_deps[%r]" % i
-
-        inner_spec = format_argspec_plus(spec, grouped=False)
-
-        for impname in import_deps:
-            del spec_zero[1 if hasself else 0]
-        spec[0][:] = spec_zero
-
-        outer_spec = format_argspec_plus(spec, grouped=False)
-
-        code = "lambda %(args)s: fn(%(apply_kw)s)" % {
-            "args": outer_spec["args"],
-            "apply_kw": inner_spec["apply_kw"],
-        }
-
-        decorated = eval(code, locals())
-        decorated.__defaults__ = getattr(fn, "im_func", fn).__defaults__
-        return update_wrapper(decorated, fn)
-
-    @classmethod
-    def resolve_all(cls, path):
-        for m in list(dependencies._unresolved):
-            if m._full_path.startswith(path):
-                m._resolve()
-
-    _unresolved = set()
-    _by_key = {}
-
-    class _importlater(object):
-        _unresolved = set()
-
-        _by_key = {}
-
-        def __new__(cls, path, addtl):
-            key = path + "." + addtl
-            if key in dependencies._by_key:
-                return dependencies._by_key[key]
-            else:
-                dependencies._by_key[key] = imp = object.__new__(cls)
-                return imp
-
-        def __init__(self, path, addtl):
-            self._il_path = path
-            self._il_addtl = addtl
-            dependencies._unresolved.add(self)
-
-        @property
-        def _full_path(self):
-            return self._il_path + "." + self._il_addtl
-
-        @memoized_property
-        def module(self):
-            if self in dependencies._unresolved:
-                raise ImportError(
-                    "importlater.resolve_all() hasn't "
-                    "been called (this is %s %s)"
-                    % (self._il_path, self._il_addtl)
-                )
-
-            return getattr(self._initial_import, self._il_addtl)
-
-        def _resolve(self):
-            dependencies._unresolved.discard(self)
-            self._initial_import = compat.import_(
-                self._il_path, globals(), locals(), [self._il_addtl]
-            )
-
-        def __getattr__(self, key):
-            if key == "module":
-                raise ImportError(
-                    "Could not resolve module %s" % self._full_path
-                )
-            try:
-                attr = getattr(self.module, key)
-            except AttributeError:
-                raise AttributeError(
-                    "Module %s has no attribute '%s'" % (self._full_path, key)
-                )
-            self.__dict__[key] = attr
-            return attr
-
-
-# from paste.deploy.converters
 def asbool(obj):
     if isinstance(obj, compat.string_types):
         obj = obj.strip().lower()
@@ -1739,8 +1632,8 @@ def inject_param_text(doctext, inject_params):
 
 
 def repr_tuple_names(names):
-    """ Trims a list of strings from the middle and return a string of up to
-        four elements. Strings greater than 11 characters will be truncated"""
+    """Trims a list of strings from the middle and return a string of up to
+    four elements. Strings greater than 11 characters will be truncated"""
     if len(names) == 0:
         return None
     flag = len(names) <= 4

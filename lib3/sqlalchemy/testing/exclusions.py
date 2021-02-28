@@ -1,5 +1,5 @@
 # testing/exclusions.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -39,6 +39,13 @@ class compound(object):
 
     def __add__(self, other):
         return self.add(other)
+
+    def as_skips(self):
+        rule = compound()
+        rule.skips.update(self.skips)
+        rule.skips.update(self.fails)
+        rule.tags.update(self.tags)
+        return rule
 
     def add(self, *others):
         copy = compound()

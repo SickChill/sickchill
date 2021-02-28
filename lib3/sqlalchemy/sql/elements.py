@@ -1,5 +1,5 @@
 # sql/elements.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -3351,8 +3351,8 @@ class Slice(ColumnElement):
 
 
 class IndexExpression(BinaryExpression):
-    """Represent the class of expressions that are like an "index" operation.
-    """
+    """Represent the class of expressions that are like an "index"
+    operation."""
 
     pass
 
@@ -3546,6 +3546,15 @@ class Over(ColumnElement):
             self.range_ = None
         else:
             self.rows = self.range_ = None
+
+    def __reduce__(self):
+        return self.__class__, (
+            self.element,
+            self.partition_by,
+            self.order_by,
+            self.range_,
+            self.rows,
+        )
 
     def _interpret_range(self, range_):
         if not isinstance(range_, tuple) or len(range_) != 2:

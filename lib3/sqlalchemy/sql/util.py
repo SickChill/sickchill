@@ -1,5 +1,5 @@
 # sql/util.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -351,6 +351,19 @@ def clause_is_present(clause, search):
         return False
 
 
+def tables_from_leftmost(clause):
+    if isinstance(clause, Join):
+        for t in tables_from_leftmost(clause.left):
+            yield t
+        for t in tables_from_leftmost(clause.right):
+            yield t
+    elif isinstance(clause, FromGrouping):
+        for t in tables_from_leftmost(clause.element):
+            yield t
+    else:
+        yield clause
+
+
 def surface_selectables(clause):
     stack = [clause]
     while stack:
@@ -373,7 +386,12 @@ def surface_selectables_only(clause):
         elif isinstance(elem, FromGrouping):
             stack.append(elem.element)
         elif isinstance(elem, ColumnClause):
-            stack.append(elem.table)
+            if elem.table is not None:
+                stack.append(elem.table)
+            else:
+                yield elem
+        elif elem is not None:
+            yield elem
 
 
 def surface_column_elements(clause, include_scalar_selects=True):

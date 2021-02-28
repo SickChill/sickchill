@@ -1,5 +1,5 @@
 # ext/orderinglist.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -377,7 +377,7 @@ class OrderingList(list):
 
 
 def _reconstitute(cls, dict_, items):
-    """ Reconstitute an :class:`.OrderingList`.
+    """Reconstitute an :class:`.OrderingList`.
 
     This is the adjoint to :meth:`.OrderingList.__reduce__`.  It is used for
     unpickling :class:`.OrderingList` objects.

@@ -1,5 +1,5 @@
 # engine/default.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -114,12 +114,11 @@ class DefaultDialect(interfaces.Dialect):
     max_identifier_length = 9999
     _user_defined_max_identifier_length = None
 
-    # length at which to truncate
-    # the name of an index.
-    # Usually None to indicate
-    # 'use max_identifier_length'.
-    # thanks to MySQL, sigh
+    # sub-categories of max_identifier_length.
+    # currently these accommodate for MySQL which allows alias names
+    # of 255 but DDL names only of 64.
     max_index_name_length = None
+    max_constraint_name_length = None
 
     supports_sane_rowcount = True
     supports_sane_multi_rowcount = True
@@ -322,7 +321,7 @@ class DefaultDialect(interfaces.Dialect):
             self.default_schema_name = None
 
         try:
-            self.default_isolation_level = self.get_isolation_level(
+            self.default_isolation_level = self.get_default_isolation_level(
                 connection.connection
             )
         except NotImplementedError:
@@ -366,6 +365,22 @@ class DefaultDialect(interfaces.Dialect):
 
         """
         return None
+
+    def get_default_isolation_level(self, dbapi_conn):
+        """Given a DBAPI connection, return its isolation level, or
+        a default isolation level if one cannot be retrieved.
+
+        May be overridden by subclasses in order to provide a
+        "fallback" isolation level for databases that cannot reliably
+        retrieve the actual isolation level.
+
+        By default, calls the :meth:`_engine.Interfaces.get_isolation_level`
+        method, propagating any exceptions raised.
+
+        .. versionadded:: 1.3.22
+
+        """
+        return self.get_isolation_level(dbapi_conn)
 
     def _check_unicode_returns(self, connection, additional_tests=None):
         if util.py2k and not self.supports_unicode_statements:

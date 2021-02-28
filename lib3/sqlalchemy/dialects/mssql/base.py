@@ -1,5 +1,5 @@
 # mssql/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -8,6 +8,16 @@
 .. dialect:: mssql
     :name: Microsoft SQL Server
 
+
+.. _mssql_external_dialects:
+
+External Dialects
+-----------------
+
+In addition to the above DBAPI layers with native SQLAlchemy support, there
+are third-party dialects for other DBAPI layers that are compatible
+with SQL Server. See the "External Dialects" list on the
+:ref:`dialect_toplevel` page. 
 
 .. _mssql_identity:
 
@@ -968,7 +978,7 @@ class TIME(sqltypes.TIME):
                     self.__zero_date, value.time()
                 )
             elif isinstance(value, datetime.time):
-                """ issue #5339
+                """issue #5339
                 per: https://github.com/mkleehammer/pyodbc/wiki/Tips-and-Tricks-by-Database-Platform#time-columns
                 pass TIME value as string
                 """  # noqa
@@ -1195,9 +1205,7 @@ class SQL_VARIANT(sqltypes.TypeEngine):
 
 
 class TryCast(sql.elements.Cast):
-    """Represent a SQL Server TRY_CAST expression.
-
-    """
+    """Represent a SQL Server TRY_CAST expression."""
 
     __visit_name__ = "try_cast"
 
@@ -2045,14 +2053,6 @@ class MSDDLCompiler(compiler.DDLCompiler):
             ),
         )
 
-        whereclause = index.dialect_options["mssql"]["where"]
-
-        if whereclause is not None:
-            where_compiled = self.sql_compiler.process(
-                whereclause, include_table=False, literal_binds=True
-            )
-            text += " WHERE " + where_compiled
-
         # handle other included columns
         if index.dialect_options["mssql"]["include"]:
             inclusions = [
@@ -2065,6 +2065,14 @@ class MSDDLCompiler(compiler.DDLCompiler):
             text += " INCLUDE (%s)" % ", ".join(
                 [preparer.quote(c.name) for c in inclusions]
             )
+
+        whereclause = index.dialect_options["mssql"]["where"]
+
+        if whereclause is not None:
+            where_compiled = self.sql_compiler.process(
+                whereclause, include_table=False, literal_binds=True
+            )
+            text += " WHERE " + where_compiled
 
         return text
 
@@ -2798,7 +2806,7 @@ class MSDialect(default.DefaultDialect):
                 C.c.table_name == tablename,
                 C.c.table_schema == owner,
             ),
-        )
+        ).order_by(TC.c.constraint_name, C.c.ordinal_position)
         c = connection.execute(s)
         constraint_name = None
         for row in c:

@@ -1,5 +1,5 @@
 # testing/fixtures.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -28,10 +28,6 @@ from ..schema import sort_tables_and_constraints
 
 
 class TestBase(object):
-    # A sequence of database names to always run, regardless of the
-    # constraints below.
-    __whitelist__ = ()
-
     # A sequence of requirement names matching testing.requires decorators
     __requires__ = ()
 

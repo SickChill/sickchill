@@ -1,5 +1,5 @@
 # engine/interfaces.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -532,7 +532,7 @@ class Dialect(object):
         :param dbapi_connection: a DBAPI connection, typically
          proxied within a :class:`.ConnectionFairy`.
 
-         """
+        """
 
         raise NotImplementedError()
 
@@ -543,7 +543,7 @@ class Dialect(object):
         :param dbapi_connection: a DBAPI connection, typically
          proxied within a :class:`.ConnectionFairy`.
 
-         """
+        """
 
         raise NotImplementedError()
 
@@ -870,6 +870,26 @@ class Dialect(object):
 
         """
 
+        raise NotImplementedError()
+
+    def get_default_isolation_level(self, dbapi_conn):
+        """Given a DBAPI connection, return its isolation level, or
+        a default isolation level if one cannot be retrieved.
+
+        This method may only raise NotImplementedError and
+        **must not raise any other exception**, as it is used implicitly upon
+        first connect.
+
+        The method **must return a value** for a dialect that supports
+        isolation level settings, as this level is what will be reverted
+        towards when a per-connection isolation level change is made.
+
+        The method defaults to using the :meth:`.Dialect.get_isolation_level`
+        method unless overridden by a dialect.
+
+        .. versionadded:: 1.3.22
+
+        """
         raise NotImplementedError()
 
     @classmethod
@@ -1294,8 +1314,7 @@ class Connectable(object):
         ":meth:`_schema.MetaData.create_all`.",
     )
     def create(self, entity, **kwargs):
-        """Emit CREATE statements for the given schema entity.
-        """
+        """Emit CREATE statements for the given schema entity."""
 
         raise NotImplementedError()
 
@@ -1308,8 +1327,7 @@ class Connectable(object):
         ":meth:`_schema.MetaData.drop_all`.",
     )
     def drop(self, entity, **kwargs):
-        """Emit DROP statements for the given schema entity.
-        """
+        """Emit DROP statements for the given schema entity."""
 
         raise NotImplementedError()
 
@@ -1448,6 +1466,16 @@ class ExceptionContext(object):
     assigning to this flag, a "disconnect" event which then results in
     a connection and pool invalidation can be invoked or prevented by
     changing this flag.
+
+
+    .. note:: The pool "pre_ping" handler enabled using the
+        :paramref:`_sa.create_engine.pool_pre_ping` parameter does **not**
+        consult this event before deciding if the "ping" returned false,
+        as opposed to receiving an unhandled error.   For this use case, the
+        :ref:`legacy recipe based on engine_connect() may be used
+        <pool_disconnects_pessimistic_custom>`.  A future API allow more
+        comprehensive customization of the "disconnect" detection mechanism
+        across all functions.
 
     """
 

@@ -1,5 +1,5 @@
 # orm/loading.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -362,7 +362,7 @@ def _instance_processor(
     _polymorphic_from=None,
 ):
     """Produce a mapper level row processor callable
-       which processes rows into mapped instances."""
+    which processes rows into mapped instances."""
 
     # note that this method, most of which exists in a closure
     # called _instance(), resists being broken out, as
@@ -878,9 +878,7 @@ def _decorate_polymorphic_switch(
 
 
 class PostLoad(object):
-    """Track loaders and states for "post load" operations.
-
-    """
+    """Track loaders and states for "post load" operations."""
 
     __slots__ = "loaders", "states", "load_keys"
 

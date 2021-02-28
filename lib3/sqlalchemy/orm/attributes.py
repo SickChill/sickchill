@@ -1,5 +1,5 @@
 # orm/attributes.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -176,6 +176,13 @@ class QueryableAttribute(
 
     @property
     def expression(self):
+        """The SQL expression object represented by this
+        :class:`.QueryableAttribute`.
+
+        This will typically be an instance of a :class:`.ColumnElement`
+        subclass representing a column expression.
+
+        """
         return self.comparator.__clause_element__()
 
     def __clause_element__(self):
@@ -886,9 +893,9 @@ class ScalarAttributeImpl(AttributeImpl):
 
 class ScalarObjectAttributeImpl(ScalarAttributeImpl):
     """represents a scalar-holding InstrumentedAttribute,
-       where the target object is also instrumented.
+    where the target object is also instrumented.
 
-       Adds events to delete/set operations.
+    Adds events to delete/set operations.
 
     """
 
@@ -983,9 +990,7 @@ class ScalarObjectAttributeImpl(ScalarAttributeImpl):
         check_old=None,
         pop=False,
     ):
-        """Set a value on the given InstanceState.
-
-        """
+        """Set a value on the given InstanceState."""
         if self.dispatch._active_history:
             old = self.get(
                 state,

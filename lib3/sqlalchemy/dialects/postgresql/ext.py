@@ -1,5 +1,5 @@
 # postgresql/ext.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -9,6 +9,7 @@ from .array import ARRAY
 from ...sql import elements
 from ...sql import expression
 from ...sql import functions
+from ...sql import schema
 from ...sql.schema import ColumnCollectionConstraint
 
 
@@ -105,7 +106,8 @@ class ExcludeConstraint(ColumnCollectionConstraint):
             const = ExcludeConstraint(
                 (Column('period'), '&&'),
                 (Column('group'), '='),
-                where=(Column('group') != 'some group')
+                where=(Column('group') != 'some group'),
+                ops={'group': 'my_operator_class'}
             )
 
         The constraint is normally embedded into the :class:`_schema.Table`
@@ -124,7 +126,8 @@ class ExcludeConstraint(ColumnCollectionConstraint):
                     (some_table.c.period, '&&'),
                     (some_table.c.group, '='),
                     where=some_table.c.group != 'some group',
-                    name='some_table_excl_const'
+                    name='some_table_excl_const',
+                    ops={'group': 'my_operator_class'}
                 )
             )
 
@@ -161,6 +164,19 @@ class ExcludeConstraint(ColumnCollectionConstraint):
           Optional SQL expression construct or literal SQL string.
           If set, emit WHERE <predicate> when issuing DDL
           for this constraint.
+
+        :param ops:
+          Optional dictionary.  Used to define operator classes for the
+          elements; works the same way as that of the
+          :ref:`postgresql_ops <postgresql_operator_classes>`
+          parameter specified to the :class:`_schema.Index` construct.
+
+          .. versionadded:: 1.3.21
+
+          .. seealso::
+
+            :ref:`postgresql_operator_classes` - general description of how
+            PostgreSQL operator classes are specified.
 
         """
         columns = []
@@ -201,8 +217,16 @@ class ExcludeConstraint(ColumnCollectionConstraint):
                 where, allow_coercion_to_text=True
             )
 
-    def copy(self, **kw):
-        elements = [(col, self.operators[col]) for col in self.columns.keys()]
+        self.ops = kw.get("ops", {})
+
+    def copy(self, target_table=None, **kw):
+        elements = [
+            (
+                schema._copy_expression(expr, self.parent, target_table),
+                self.operators[expr.name],
+            )
+            for expr in self.columns
+        ]
         c = self.__class__(
             *elements,
             name=self.name,

@@ -1,5 +1,5 @@
 # mysql/cymysql.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -28,8 +28,8 @@ from ... import util
 
 class _cymysqlBIT(BIT):
     def result_processor(self, dialect, coltype):
-        """Convert a MySQL's 64 bit, variable length binary string to a long.
-        """
+        """Convert a MySQL's 64 bit, variable length binary string to a
+        long."""
 
         def process(value):
             if value is not None:
