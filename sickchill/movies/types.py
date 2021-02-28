@@ -82,7 +82,3 @@ SEASON = _('Season')
 EPISODE = _('Episode')
 MOVIE = _('Movie')
 ReleaseTypeNames = {SERIES: 0, SEASON: 1, EPISODE: 2, MOVIE: 3}
-
-
-def reverse_key(info, value):
-    return list(info.keys())[list(info.values()).index(value)]

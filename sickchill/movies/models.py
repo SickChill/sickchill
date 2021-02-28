@@ -9,7 +9,8 @@ from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
-from .types import ChoiceType, DesireTypes, HistoryActions, ImageTypes, IMDB, IndexerNames, PathType, RegexType, ReleaseTypeNames, reverse_key, TMDB
+from .types import ChoiceType, DesireTypes, HistoryActions, ImageTypes, IMDB, IndexerNames, PathType, RegexType, ReleaseTypeNames, TMDB
+from .utils import reverse_key
 
 logger = logging.getLogger('sickchill.movies')
 

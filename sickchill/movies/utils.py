@@ -16,3 +16,7 @@ def find_table_mapper(table):
         )
     else:
         return mappers[0]
+
+
+def reverse_key(info, value):
+    return list(info.keys())[list(info.values()).index(value)]
