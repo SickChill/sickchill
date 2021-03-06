@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 11:45\n"
+"PO-Revision-Date: 2021-03-06 04:29\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -438,11 +438,11 @@ msgstr "Controleer dict to upsert; mogen geen waardes 'None' bevatten!"
 
 #: sickchill/oldbeard/failedProcessor.py:31
 msgid "Failed download detected:"
-msgstr ""
+msgstr "Mislukte download gedetecteerd:"
 
 #: sickchill/oldbeard/failedProcessor.py:41
 msgid "Warning: unable to find a valid release name."
-msgstr ""
+msgstr "Waarschuwing: niet mogelijk om een geldige uitgavenaam te vinden."
 
 #: sickchill/oldbeard/helpers.py:236
 msgid "Invalid filename. Filename must be a string. {0}"
@@ -702,23 +702,23 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:103
 msgid "There is no existing file so there's no worries about replacing it"
-msgstr ""
+msgstr "Er is geen bestaand bestand dus er bestaat geen zorgen over het te vervangen"
 
 #: sickchill/oldbeard/postProcessor.py:111
 msgid "File {0} is larger than {1}"
-msgstr ""
+msgstr "Bestand {0} is groter dan {1}"
 
 #: sickchill/oldbeard/postProcessor.py:115
 msgid "File {0} is the same size as {1}"
-msgstr ""
+msgstr "Bestand {0} heeft dezelfde grootte als {1}"
 
 #: sickchill/oldbeard/postProcessor.py:119
 msgid "File {0} is smaller than {1}"
-msgstr ""
+msgstr "Bestand {0} is kleiner dan {1}"
 
 #: sickchill/oldbeard/postProcessor.py:123
 msgid "File {0} doesn't exist so there's no worries about replacing it"
-msgstr ""
+msgstr "Bestand {0} bestaat niet, dus er bestaat geen bezorgdheid over het vervangen ervan"
 
 #: sickchill/oldbeard/postProcessor.py:208
 msgid "Found the following associated files for {0}: {1}"
