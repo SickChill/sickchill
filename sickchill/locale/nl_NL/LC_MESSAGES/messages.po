@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 11:45\n"
+"PO-Revision-Date: 2021-03-06 04:35\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -246,7 +246,7 @@ msgstr ""
 
 #: sickchill/show_updater.py:72
 msgid "Automatic update failed: {0}"
-msgstr ""
+msgstr "Automatische update mislukt: {0}"
 
 #: sickchill/tv.py:487
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
@@ -254,7 +254,7 @@ msgstr ""
 
 #: sickchill/tv.py:1768
 msgid "Deleting {show} {ep} from the DB"
-msgstr ""
+msgstr "{show} {ep} uit de database verwijderen"
 
 #: sickchill/tv.py:1772
 msgid "Removing myself from my show's list"
@@ -266,11 +266,11 @@ msgstr ""
 
 #: sickchill/helper/common.py:337
 msgid "Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}"
-msgstr ""
+msgstr "Kan GitHub niet correct instellen met je GitHub token. Controleer je inloggegevens. Fout: {0}"
 
 #: sickchill/helper/common.py:340
 msgid "Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}"
-msgstr ""
+msgstr "Kan GitHub niet correct instellen als gevolg van 2FA - Controleer of dit token werkt met 2FA. Fout: {0}"
 
 #: sickchill/helper/common.py:346
 msgid "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}"
@@ -438,11 +438,11 @@ msgstr "Controleer dict to upsert; mogen geen waardes 'None' bevatten!"
 
 #: sickchill/oldbeard/failedProcessor.py:31
 msgid "Failed download detected:"
-msgstr ""
+msgstr "Mislukte download gedetecteerd:"
 
 #: sickchill/oldbeard/failedProcessor.py:41
 msgid "Warning: unable to find a valid release name."
-msgstr ""
+msgstr "Waarschuwing: niet mogelijk om een geldige uitgavenaam te vinden."
 
 #: sickchill/oldbeard/helpers.py:236
 msgid "Invalid filename. Filename must be a string. {0}"
@@ -702,23 +702,23 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:103
 msgid "There is no existing file so there's no worries about replacing it"
-msgstr ""
+msgstr "Er is geen bestaand bestand dus er bestaat geen zorgen over het te vervangen"
 
 #: sickchill/oldbeard/postProcessor.py:111
 msgid "File {0} is larger than {1}"
-msgstr ""
+msgstr "Bestand {0} is groter dan {1}"
 
 #: sickchill/oldbeard/postProcessor.py:115
 msgid "File {0} is the same size as {1}"
-msgstr ""
+msgstr "Bestand {0} heeft dezelfde grootte als {1}"
 
 #: sickchill/oldbeard/postProcessor.py:119
 msgid "File {0} is smaller than {1}"
-msgstr ""
+msgstr "Bestand {0} is kleiner dan {1}"
 
 #: sickchill/oldbeard/postProcessor.py:123
 msgid "File {0} doesn't exist so there's no worries about replacing it"
-msgstr ""
+msgstr "Bestand {0} bestaat niet, dus er bestaat geen bezorgdheid over het vervangen ervan"
 
 #: sickchill/oldbeard/postProcessor.py:208
 msgid "Found the following associated files for {0}: {1}"
@@ -742,7 +742,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:248
 msgid "Deleting file {0}"
-msgstr ""
+msgstr "Bestand {0} verwijderen"
 
 #: sickchill/oldbeard/postProcessor.py:253
 msgid "Read only mode on file {0} Will try to make it writeable"
@@ -766,27 +766,27 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:346
 msgid "Moving file from {0} to {1}"
-msgstr ""
+msgstr "Bestand verplaatsen van {0} naar {1}"
 
 #: sickchill/oldbeard/postProcessor.py:351
 msgid "Unable to move file from {0} to {1}"
-msgstr ""
+msgstr "Kan bestand niet verplaatsen van {0} naar {1}"
 
 #: sickchill/oldbeard/postProcessor.py:369
 msgid "Copying file from {0} to {1}"
-msgstr ""
+msgstr "Bestand kopiëren van {0} naar {1}"
 
 #: sickchill/oldbeard/postProcessor.py:374
 msgid "Unable to copy file from {0} to {1}"
-msgstr ""
+msgstr "Kan bestand niet kopiëren van {0} naar {1}"
 
 #: sickchill/oldbeard/postProcessor.py:392
 msgid "Hard linking file from {0} to {1}"
-msgstr ""
+msgstr "Bestand hard linken van {0} naar {1}"
 
 #: sickchill/oldbeard/postProcessor.py:397 sickchill/oldbeard/postProcessor.py:419
 msgid "Unable to link file from {0} to {1}"
-msgstr ""
+msgstr "Kan bestand van {0} niet linken aan {1}"
 
 #: sickchill/oldbeard/postProcessor.py:414
 msgid "Moving then symbolically linking file from {0} to {1}"
@@ -798,7 +798,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:442
 msgid "Unable to link file {0} to {1}"
-msgstr ""
+msgstr "Kan bestand {0} niet linken aan {1}"
 
 #: sickchill/oldbeard/postProcessor.py:495
 msgid "Found result in history for {0} - Season: {1} - Quality: {2} - Version: {3}"
@@ -806,7 +806,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:598
 msgid "Adding the file to the anidb mylist"
-msgstr ""
+msgstr "Het bestand aan de anidb mylist toevoegen"
 
 #: sickchill/oldbeard/postProcessor.py:669
 msgid "Could not convert to a valid airdate: {0}"
@@ -956,7 +956,7 @@ msgstr ""
 #: sickchill/oldbeard/processTV.py:150 sickchill/oldbeard/processTV.py:153
 #: sickchill/oldbeard/processTV.py:156
 msgid "Processing {0}"
-msgstr ""
+msgstr "Verwerkt {0}"
 
 #: sickchill/oldbeard/processTV.py:171
 msgid "Adding extracted directory to the list of directories to process: {0}"
@@ -968,19 +968,19 @@ msgstr ""
 
 #: sickchill/oldbeard/processTV.py:196
 msgid "Deleted folder: {0}"
-msgstr ""
+msgstr "Map verwijderd: {0}"
 
 #: sickchill/oldbeard/processTV.py:221
 msgid "Processing Failed"
-msgstr ""
+msgstr "Verwerking mislukt"
 
 #: sickchill/oldbeard/processTV.py:221
 msgid "Successfully processed"
-msgstr ""
+msgstr "Succesvol verwerkt"
 
 #: sickchill/oldbeard/processTV.py:223
 msgid "Some items were not processed."
-msgstr ""
+msgstr "Sommige items zijn niet verwerkt."
 
 #: sickchill/oldbeard/processTV.py:247
 msgid "The directory name indicates it failed to extract."
