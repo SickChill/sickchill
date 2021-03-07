@@ -180,7 +180,7 @@ class sbdatetime(datetime.datetime):
                     strd = self.strftime(d_preset)
                 else:
                     strd = self.strftime(settings.DATE_PRESET)
-        except ValueError:
+        except (ValueError, OSError):
             strd = 'UNK'
 
         finally:
@@ -254,7 +254,7 @@ class sbdatetime(datetime.datetime):
                     strd += ', ' + self.strftime(settings.TIME_PRESET_W_SECONDS)
                 else:
                     strd += ', ' + self.strftime(settings.TIME_PRESET)
-        except ValueError:
+        except (ValueError, OSError):
             strd = 'UNK'
         finally:
             try:
