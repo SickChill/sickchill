@@ -126,11 +126,11 @@ class DiscordTask(generic_queue.QueueItem):
     def __len__(self):
         return len(self.embed['fields'])
 
-    def _send_discord(self):
-        discord_webhook = settings.DISCORD_WEBHOOK
-        discord_name = settings.DISCORD_NAME
-        avatar_icon = settings.DISCORD_AVATAR_URL
-        discord_tts = bool(settings.DISCORD_TTS)
+    def _send_discord(self, webhook: str = None, name: str = None, avatar: str = None, tts=None):
+        discord_webhook = webhook or settings.DISCORD_WEBHOOK
+        discord_name = name or settings.DISCORD_NAME
+        avatar_icon = avatar or settings.DISCORD_AVATAR_URL
+        discord_tts = bool(settings.DISCORD_TTS if tts is None else tts)
 
         logger.info("Sending discord message: " + ', '.join(f['value'] for f in self.embed['fields']))
         logger.info("Sending discord message to url: " + discord_webhook)
@@ -141,6 +141,9 @@ class DiscordTask(generic_queue.QueueItem):
                               data=json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, tts=discord_tts)),
                               headers=headers)
             r.raise_for_status()
+        except requests.exceptions.ConnectionError as error:
+            logger.info('Could not reach the webhook url')
+            return False
         except requests.exceptions.RequestException as error:
             if error.response.status_code != 429 or int(error.response.headers.get('X-RateLimit-Remaining')) != 0:
                 raise error

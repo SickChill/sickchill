@@ -745,8 +745,29 @@ const SICKCHILL = {
             });
 
             $('#testDiscord').on('click', () => {
-                $.get(scRoot + '/home/testDiscord', data => {
+                const discord = {}
+                const discord_webhook = $('#discord_webhook');
+                discord.webhook = discord_webhook.val();
+                if (!discord.webhook) {
+                    discord_webhook.focus();
+                    notifyModal('Please fill in the webhook address');
+                    return;
+                }
+
+                discord.name = $('#discord_name').val();
+                discord.avatar = $('#discord_avatar_url').val();
+                discord.tts = $('#discord_tts').val();
+
+                $('#testDiscord').prop('disabled', true);
+                $('#testDiscord-result').html(loading);
+                $.get(scRoot + '/home/testDiscord', {
+                    webhook: discord.webhook,
+                    name: discord.name,
+                    avatar: discord.avatar,
+                    tts: discord.tts,
+                }).done(data => {
                     $('#testDiscord-result').html(data);
+                    $('#testDiscord').prop('disabled', false);
                 });
             });
 
