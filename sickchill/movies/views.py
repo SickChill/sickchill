@@ -6,6 +6,9 @@ from sickchill.oldbeard import config
 from sickchill.views.common import mako_lookup, PageTemplate
 from sickchill.views.index import WebRoot
 
+from .forms import QualitiesForm
+from .models import Qualities
+
 logger = logging.getLogger('sickchill.movie')
 
 
@@ -67,3 +70,11 @@ class MoviesHandler(WebRoot):
         t = PageTemplate(rh=self, filename="movies/details.mako")
         return t.render(title=_("Movies"), header=_("Movie Remove"), topmenu="movies", controller="movies", action="details",
                         movie=movie, movie_message=None)
+
+    def qualities_details(self):
+        pass
+
+    def qualities_edit(self):
+        name = self.get_argument('name')
+        form = QualitiesForm(obj=settings.movie_list.query(f'qualities__name=={name}').first())
+

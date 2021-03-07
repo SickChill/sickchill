@@ -1,4 +1,5 @@
 import datetime
+import locale
 import logging
 
 import arrow
@@ -7,8 +8,9 @@ from slugify import slugify
 from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, Interval, JSON, SmallInteger, Table, Unicode
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy_utils import ArrowType, ChoiceType, generic_relationship, generic_repr
+from sqlalchemy.orm import mapper, relationship, sessionmaker
+from sqlalchemy_i18n import make_translatable, Translatable
+from sqlalchemy_utils import ArrowType, ChoiceType, generic_relationship, generic_repr, i18n
 
 from .types import DesireTypes, HistoryActions, ImageTypes, IndexerNames, PathType, RegexType, ReleaseTypeNames
 from .utils import reverse_enum
@@ -17,6 +19,9 @@ logger = logging.getLogger('sickchill.movies')
 
 Session = sessionmaker()
 Base = declarative_base()
+
+i18n.get_locale = locale.getlocale
+make_translatable(mapper)
 
 
 class Timestamp:
@@ -67,7 +72,7 @@ qualities_release_types_table = Table(
 )
 
 
-class Movies(Base, Timestamp):
+class Movies(Base, Timestamp, Translatable):
     __tablename__ = "movies"
     pk = Column(Integer, primary_key=True)
     name = Column(Unicode)

@@ -1,4 +1,4 @@
-#  SR User Related   #
+#  SC User Related   #
 ######################
 /cache/
 /gui/slick/cache
@@ -17,7 +17,7 @@ autoProcessTV.cfg
 server.crt
 server.key
 
-#  SR Test Related   #
+#  SC Test Related   #
 ######################
 /tests/Logs/
 /tests/cache/

@@ -49,7 +49,10 @@ qbittorrent-api
 packaging
 timeago
 sqlalchemy
-sqlalchemy-utils
+sqlalchemy_utils
+sqlalchemy-i18n
+wtforms-sqlalchemy
+wtforms-alchemy
 arrow
 python-slugify
 guessit
