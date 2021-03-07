@@ -745,7 +745,7 @@ const SICKCHILL = {
             });
 
             $('#testDiscord').on('click', () => {
-                const discord = {}
+                const discord = {};
                 const discordWebhook = $('#discord_webhook');
                 discord.webhook = discordWebhook.val();
                 if (!discord.webhook) {
