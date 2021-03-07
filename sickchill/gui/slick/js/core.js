@@ -746,10 +746,10 @@ const SICKCHILL = {
 
             $('#testDiscord').on('click', () => {
                 const discord = {}
-                const discord_webhook = $('#discord_webhook');
-                discord.webhook = discord_webhook.val();
+                const discordWebhook = $('#discord_webhook');
+                discord.webhook = discordWebhook.val();
                 if (!discord.webhook) {
-                    discord_webhook.focus();
+                    discordWebhook.focus();
                     notifyModal('Please fill in the webhook address');
                     return;
                 }
@@ -764,7 +764,7 @@ const SICKCHILL = {
                     webhook: discord.webhook,
                     name: discord.name,
                     avatar: discord.avatar,
-                    tts: discord.tts,
+                    tts: discord.tts
                 }).done(data => {
                     $('#testDiscord-result').html(data);
                     $('#testDiscord').prop('disabled', false);
