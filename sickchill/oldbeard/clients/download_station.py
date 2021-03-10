@@ -2,7 +2,7 @@
 # Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 import os
 import re
-from urllib.parse import urljoin, unquote
+from urllib.parse import unquote, urljoin
 
 from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
