@@ -76,6 +76,7 @@ package-lock.json
 .tox
 .coverage
 htmlcov
+coverage.xml
 
 # nzbToMedia #
 ######################
