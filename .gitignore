@@ -103,3 +103,7 @@ lib[23]/bin
 lib[23]/.libs_cffi_backend
 lib[23]/cffi.libs
 atlassian-ide-plugin.xml
+
+# Readynas
+config.xml
+fvapp-sickchill.service
