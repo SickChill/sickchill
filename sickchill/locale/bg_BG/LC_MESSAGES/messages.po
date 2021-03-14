@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-03-14 15:46\n"
+"PO-Revision-Date: 2021-03-14 16:01\n"
 "Last-Translator: \n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -254,31 +254,31 @@ msgstr "{show_id}: Зарежда всички епизоди от {indexer_name
 
 #: sickchill/tv.py:1768
 msgid "Deleting {show} {ep} from the DB"
-msgstr ""
+msgstr "Изтрива {show} {ep} от база данни"
 
 #: sickchill/tv.py:1772
 msgid "Removing myself from my show's list"
-msgstr ""
+msgstr "Премахвам себе си от списъка с мои предавания"
 
 #: sickchill/tv.py:1776
 msgid "Deleting myself from the database"
-msgstr ""
+msgstr "Изтривам себе си от базата данни"
 
 #: sickchill/helper/common.py:337
 msgid "Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}"
-msgstr ""
+msgstr "Невъзможна настройката на GitHub с вашия github token. Моля проверете вашите данни. Грешка: {0}"
 
 #: sickchill/helper/common.py:340
 msgid "Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}"
-msgstr ""
+msgstr "Невъзможна настройката на GitHub с вашия github token поради 2FA. Уверете се че вашия token работи с 2FA. Грешка: {0}"
 
 #: sickchill/helper/common.py:346
 msgid "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}"
-msgstr ""
+msgstr "Невъзможна настройката на GitHub. В момента сте ограничен поради голям брой опити. Грешка: {0}"
 
 #: sickchill/helper/common.py:349
 msgid "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}"
-msgstr ""
+msgstr "Невъзможна настройката на GitHub. В момента сте ограничен поради голям брой опити. Пробвайте да добавите token за достъп. Грешка: {0}"
 
 #: sickchill/helper/common.py:352
 msgid "Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}"
@@ -326,7 +326,7 @@ msgstr "Нов вход от IP адрес: {0}. http://geomaplookup.net/?IP={0}
 
 #: sickchill/oldbeard/common.py:58
 msgid "Finished Post Processing"
-msgstr ""
+msgstr "Приключи обработката"
 
 #: sickchill/oldbeard/common.py:83
 msgid "Repeat"
@@ -338,7 +338,7 @@ msgstr "Repeat (Separated)"
 
 #: sickchill/oldbeard/common.py:85
 msgid "Duplicate"
-msgstr ""
+msgstr "Дублирай"
 
 #: sickchill/oldbeard/common.py:86
 msgid "Extend"
@@ -382,7 +382,7 @@ msgstr ""
 
 #: sickchill/oldbeard/dailysearcher.py:27
 msgid "Searching for new released episodes ..."
-msgstr ""
+msgstr "Търсене за нови издадени епизоди ..."
 
 #: sickchill/oldbeard/db.py:65
 msgid "Please check your database owner/permissions: {db_filename}"
@@ -418,7 +418,7 @@ msgstr "{filename}: {query}"
 
 #: sickchill/oldbeard/db.py:208
 msgid "{filename}: {query} with args {args}"
-msgstr ""
+msgstr "{filename}: {query} с аргументи {args}"
 
 #: sickchill/oldbeard/db.py:212
 msgid "Transaction with {count:d} of queries executed successfully"
@@ -426,11 +426,11 @@ msgstr ""
 
 #: sickchill/oldbeard/db.py:249
 msgid "Cannot fetch all and only one at the same time!"
-msgstr ""
+msgstr "Не може да прихване всички и един едновременно!"
 
 #: sickchill/oldbeard/db.py:333
 msgid "{filename}: {query} [{control}]"
-msgstr ""
+msgstr "{filename}: {query} [{control}]"
 
 #: sickchill/oldbeard/db.py:348
 msgid "Control dict to upsert cannot have values of None!"
@@ -438,11 +438,11 @@ msgstr ""
 
 #: sickchill/oldbeard/failedProcessor.py:31
 msgid "Failed download detected:"
-msgstr ""
+msgstr "Засечено пропаднало изтегляне:"
 
 #: sickchill/oldbeard/failedProcessor.py:41
 msgid "Warning: unable to find a valid release name."
-msgstr ""
+msgstr "Внимание: не е намерено валидно име на издание."
 
 #: sickchill/oldbeard/helpers.py:236
 msgid "Invalid filename. Filename must be a string. {0}"
@@ -462,27 +462,27 @@ msgstr ""
 
 #: sickchill/oldbeard/helpers.py:405 sickchill/oldbeard/helpers.py:425
 msgid "Folder {0} didn't exist, creating it"
-msgstr ""
+msgstr "Папка {0} не съществува, създава я"
 
 #: sickchill/oldbeard/helpers.py:408 sickchill/oldbeard/helpers.py:432
 msgid "Failed creating {0} : {1}"
-msgstr ""
+msgstr "Пропадна създаването {0} : {1}"
 
 #: sickchill/oldbeard/helpers.py:473
 msgid "Renaming file from {0} to {1}"
-msgstr ""
+msgstr "Преименува файл от {0} на {1}"
 
 #: sickchill/oldbeard/helpers.py:476
 msgid "Failed renaming {0} to {1} : {2}"
-msgstr ""
+msgstr "Пропадна преименуването от {0} на {1} : {2}"
 
 #: sickchill/oldbeard/helpers.py:496
 msgid "Trying to clean any empty folders under "
-msgstr ""
+msgstr "Опит да се почисти всяка празна папка в "
 
 #: sickchill/oldbeard/helpers.py:506
 msgid "Deleting empty folder: "
-msgstr ""
+msgstr "Изтрива празна папка: "
 
 #: sickchill/oldbeard/helpers.py:512
 msgid "Unable to delete {0}. Error: {1}"
@@ -526,11 +526,11 @@ msgstr ""
 
 #: sickchill/oldbeard/helpers.py:770
 msgid "Created https key: {ssl_key}"
-msgstr ""
+msgstr "Създаден https ключ: {ssl_key}"
 
 #: sickchill/oldbeard/helpers.py:771
 msgid "Created https cert: {ssl_cert}"
-msgstr ""
+msgstr "Създаден https сертификат: {ssl_cert}"
 
 #: sickchill/oldbeard/helpers.py:790
 msgid "Not creating backup, {0} doesn't exist"
@@ -646,23 +646,23 @@ msgstr ""
 
 #: sickchill/oldbeard/helpers.py:1324
 msgid "SSL Error requesting url: '{0}' Try disabling Cert Verification on the advanced tab of /config/general"
-msgstr ""
+msgstr "SSL Грешка при заявката на url адрес: '{0}' Пробвайте да забраните проверката на сертификати в Разширени настройки на /config/general"
 
 #: sickchill/oldbeard/helpers.py:1343
 msgid "url is {0}"
-msgstr ""
+msgstr "url адреса е {0}"
 
 #: sickchill/oldbeard/helpers.py:1371
 msgid "Unable to get size for file {0} because the link to the file is not valid"
-msgstr ""
+msgstr "Не може да прихване размер на файл {0} понеже пътя към файла не е валиден"
 
 #: sickchill/oldbeard/helpers.py:1376
 msgid "Unable to get size for file {0} Error: {1}"
-msgstr ""
+msgstr "Не може да прихване размер на файл {0} Грешка: {1}"
 
 #: sickchill/oldbeard/helpers.py:1383
 msgid "Generating New API key"
-msgstr ""
+msgstr "Генерира нов API ключ"
 
 #: sickchill/oldbeard/helpers.py:1439
 msgid "Trying to determine free space on the destination drive"
@@ -686,7 +686,7 @@ msgstr ""
 
 #: sickchill/oldbeard/helpers.py:1463 sickchill/oldbeard/helpers.py:1496
 msgid "Error: {error}"
-msgstr ""
+msgstr "Грешка: {error}"
 
 #: sickchill/oldbeard/helpers.py:1481
 msgid "Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )"
@@ -706,11 +706,11 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:111
 msgid "File {0} is larger than {1}"
-msgstr ""
+msgstr "Файл {0} е по-голям от {1}"
 
 #: sickchill/oldbeard/postProcessor.py:115
 msgid "File {0} is the same size as {1}"
-msgstr ""
+msgstr "Файл {0} е същия размер като {1}"
 
 #: sickchill/oldbeard/postProcessor.py:119
 msgid "File {0} is smaller than {1}"
