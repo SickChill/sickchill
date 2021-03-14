@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-20 11:45\n"
+"PO-Revision-Date: 2021-03-14 15:46\n"
 "Last-Translator: \n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -238,19 +238,19 @@ msgstr "Разопаковай (обработи съдържанието)"
 
 #: sickchill/settings.py:551
 msgid "Treat as video (process archive as-is)"
-msgstr ""
+msgstr "Третирай като видео (обработи архива както е)"
 
 #: sickchill/show_updater.py:49
 msgid "No last update time from the cache, so we do a full update for all shows"
-msgstr ""
+msgstr "В кеша липсва време на последно обновяване, затова ще направим пълно обновяване на всички предавания"
 
 #: sickchill/show_updater.py:72
 msgid "Automatic update failed: {0}"
-msgstr ""
+msgstr "Автоматичното обновяване пропадна: {0}"
 
 #: sickchill/tv.py:487
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
-msgstr ""
+msgstr "{show_id}: Зарежда всички епизоди от {indexer_name}..."
 
 #: sickchill/tv.py:1768
 msgid "Deleting {show} {ep} from the DB"
