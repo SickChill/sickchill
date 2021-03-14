@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-03-14 16:29\n"
+"PO-Revision-Date: 2021-03-14 16:39\n"
 "Last-Translator: \n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -853,7 +853,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:932
 msgid "Snatch history had a quality in it, using that: "
-msgstr ""
+msgstr "Статус на прихващане съдържа данни за качество, ще използвам тях: "
 
 #: sickchill/oldbeard/postProcessor.py:938
 msgid "Quality of the episode we're processing: {0}"
@@ -885,7 +885,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1000
 msgid "Not enough disk space to continue processing, exiting"
-msgstr ""
+msgstr "Няма достатъчно място за да продължи обработката, прекратява"
 
 #: sickchill/oldbeard/postProcessor.py:1003
 msgid "Unable to determine needed file space as the source file is locked for access"
@@ -893,15 +893,15 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1017
 msgid "Unable to delete the existing files"
-msgstr ""
+msgstr "Не успя да изтрие съществуващия файл"
 
 #: sickchill/oldbeard/postProcessor.py:1025
 msgid "Show directory doesn't exist, creating it"
-msgstr ""
+msgstr "Папката на предаването не съществува, създава я"
 
 #: sickchill/oldbeard/postProcessor.py:1033
 msgid "Unable to create the show directory: "
-msgstr ""
+msgstr "Не може да създаде папка за предаването: "
 
 #: sickchill/oldbeard/postProcessor.py:1045
 msgid "Found release name "
@@ -917,11 +917,11 @@ msgstr "Не успя да намери изданието в историята
 
 #: sickchill/oldbeard/postProcessor.py:1088
 msgid "Unable to post-process an episode if the show dir doesn't exist, quitting"
-msgstr ""
+msgstr "Не може да обработи епизод ако папката за предаването не съществува, прекратява"
 
 #: sickchill/oldbeard/postProcessor.py:1090
 msgid "Destination folder for this episode: "
-msgstr ""
+msgstr "Папка цел за този епизод: "
 
 #: sickchill/oldbeard/postProcessor.py:1114
 msgid "File is locked for reading"
@@ -930,7 +930,7 @@ msgstr "Файлът е заключен за четене"
 #: sickchill/oldbeard/postProcessor.py:1119
 #: sickchill/oldbeard/postProcessor.py:1127
 msgid "File is locked for reading/writing"
-msgstr ""
+msgstr "Файлът е заключен за четене/записване"
 
 #: sickchill/oldbeard/postProcessor.py:1134
 msgid "Unknown process method: "
@@ -939,7 +939,7 @@ msgstr "Непознат метод на обработка: "
 #: sickchill/oldbeard/postProcessor.py:1135
 #: sickchill/oldbeard/postProcessor.py:1137
 msgid "Unable to move the files to their new home"
-msgstr ""
+msgstr "Не успя да премести файловете в новата им папка"
 
 #: sickchill/oldbeard/postProcessor.py:1163
 msgid "Could not create/update meta files. Continuing with postProcessing..."
