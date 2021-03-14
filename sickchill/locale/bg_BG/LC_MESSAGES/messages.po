@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-03-14 16:21\n"
+"PO-Revision-Date: 2021-03-14 16:29\n"
 "Last-Translator: \n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -518,11 +518,11 @@ msgstr ""
 
 #: sickchill/oldbeard/helpers.py:738
 msgid "pyopenssl module missing, please install for https access"
-msgstr ""
+msgstr "липсва модул pyopenssl, моля инсталирайте за https достъп"
 
 #: sickchill/oldbeard/helpers.py:767
 msgid "Error creating SSL key and certificate {error}"
-msgstr ""
+msgstr "Грешка при създаването на SSL ключ и сертификат {error}"
 
 #: sickchill/oldbeard/helpers.py:770
 msgid "Created https key: {ssl_key}"
@@ -534,11 +534,11 @@ msgstr "Създаден https сертификат: {ssl_cert}"
 
 #: sickchill/oldbeard/helpers.py:790
 msgid "Not creating backup, {0} doesn't exist"
-msgstr ""
+msgstr "Не създава резервно копие, {0} не съществува"
 
 #: sickchill/oldbeard/helpers.py:794
 msgid "Trying to back up {0} to {1}"
-msgstr ""
+msgstr "Опитва да създаде резервно копие на {0} в {1}"
 
 #: sickchill/oldbeard/helpers.py:796
 msgid "Backup done"
@@ -546,7 +546,7 @@ msgstr "Завършено резервно копие"
 
 #: sickchill/oldbeard/helpers.py:799
 msgid "Error while trying to back up {0} to {1} : {2}"
-msgstr ""
+msgstr "Грешка при опит за резервно копие на {0} в{1} : {2}"
 
 #: sickchill/oldbeard/helpers.py:802
 msgid "Trying again."
@@ -590,7 +590,7 @@ msgstr "Не може да възстанови файл {0} в {1}"
 
 #: sickchill/oldbeard/helpers.py:1004
 msgid "Error when attempting to find show: {0} in SickChill. Error: {1} "
-msgstr ""
+msgstr "Грешка при опит да открие предаване: {0} в SickChill. Грешка: {1} "
 
 #: sickchill/oldbeard/helpers.py:1062
 msgid "Usage of anidb disabled. Skiping"
@@ -598,7 +598,7 @@ msgstr "Изключено използването на anidb. Пропуска
 
 #: sickchill/oldbeard/helpers.py:1066
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
-msgstr ""
+msgstr "anidb не са зададени потр.име и/или парола. Прекратява търсенето в anidb."
 
 #: sickchill/oldbeard/helpers.py:1071
 msgid "anidb: {0} "
@@ -606,7 +606,7 @@ msgstr "anidb: {0} "
 
 #: sickchill/oldbeard/helpers.py:1076 sickchill/oldbeard/helpers.py:1085
 msgid "anidb exception msg: {0} "
-msgstr ""
+msgstr "anidb msg за изключение: {0} "
 
 #: sickchill/oldbeard/helpers.py:1106 sickchill/oldbeard/helpers.py:1159
 msgid "Zip creation error: {0} "
@@ -762,7 +762,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:325
 msgid "Unable to create subtitles folder {0}"
-msgstr ""
+msgstr "Не успя да създаде папка за надписи {0}"
 
 #: sickchill/oldbeard/postProcessor.py:346
 msgid "Moving file from {0} to {1}"
@@ -810,7 +810,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:669
 msgid "Could not convert to a valid airdate: {0}"
-msgstr ""
+msgstr "Не успя да конвертира във валидна дата на излъчване: {0}"
 
 #: sickchill/oldbeard/postProcessor.py:706
 msgid "Don't have a season number, but this show appears to only have 1 season, setting season number to 1..."
@@ -861,7 +861,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:942
 msgid "Is ep a priority download: "
-msgstr ""
+msgstr "Дали епизода е свален с предимство: "
 
 #: sickchill/oldbeard/postProcessor.py:946
 msgid "Snatch history had a version in it, using that: v"
@@ -905,15 +905,15 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1045
 msgid "Found release name "
-msgstr ""
+msgstr "Намерено име на издание "
 
 #: sickchill/oldbeard/postProcessor.py:1049
 msgid "Using original release name "
-msgstr ""
+msgstr "Използва допълнително име на издание "
 
 #: sickchill/oldbeard/postProcessor.py:1078
 msgid "Couldn't find release in snatch history"
-msgstr ""
+msgstr "Не успя да намери изданието в историята с прихванати"
 
 #: sickchill/oldbeard/postProcessor.py:1088
 msgid "Unable to post-process an episode if the show dir doesn't exist, quitting"
@@ -925,7 +925,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1114
 msgid "File is locked for reading"
-msgstr ""
+msgstr "Файлът е заключен за четене"
 
 #: sickchill/oldbeard/postProcessor.py:1119
 #: sickchill/oldbeard/postProcessor.py:1127
@@ -934,7 +934,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1134
 msgid "Unknown process method: "
-msgstr ""
+msgstr "Непознат метод на обработка: "
 
 #: sickchill/oldbeard/postProcessor.py:1135
 #: sickchill/oldbeard/postProcessor.py:1137
@@ -1016,7 +1016,7 @@ msgstr ""
 
 #: sickchill/oldbeard/show_name_helpers.py:151
 msgid "Using release for release name."
-msgstr ""
+msgstr "Използва издание за име на издание."
 
 #: sickchill/oldbeard/show_queue.py:181
 msgid "Refresh"
