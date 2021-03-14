@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-03-14 16:01\n"
+"PO-Revision-Date: 2021-03-14 16:09\n"
 "Last-Translator: \n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -714,23 +714,23 @@ msgstr "Файл {0} е същия размер като {1}"
 
 #: sickchill/oldbeard/postProcessor.py:119
 msgid "File {0} is smaller than {1}"
-msgstr ""
+msgstr "Файл {0} е по-малък от {1}"
 
 #: sickchill/oldbeard/postProcessor.py:123
 msgid "File {0} doesn't exist so there's no worries about replacing it"
-msgstr ""
+msgstr "Файл {0} не съществува така че няма проблем да бъде заменен"
 
 #: sickchill/oldbeard/postProcessor.py:208
 msgid "Found the following associated files for {0}: {1}"
-msgstr ""
+msgstr "Намери следните свързани файлове за {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:210
 msgid "Deleting non allowed associated files for {0}: {1}"
-msgstr ""
+msgstr "Изтрива непозволените свързани файлове за {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:214
 msgid "Allowing associated files for {0}: {1}"
-msgstr ""
+msgstr "Позволява свързани файлове за {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:216
 msgid "No associated files for {0} were found during this pass"
@@ -742,7 +742,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:248
 msgid "Deleting file {0}"
-msgstr ""
+msgstr "Изтриване на файл {0}"
 
 #: sickchill/oldbeard/postProcessor.py:253
 msgid "Read only mode on file {0} Will try to make it writeable"
@@ -750,7 +750,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:257
 msgid "Cannot change permissions of {0}"
-msgstr ""
+msgstr "Неуспешна промяна на права на {0}"
 
 #: sickchill/oldbeard/postProcessor.py:280
 msgid "Must provide an action for the combined file operation"
@@ -766,19 +766,19 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:346
 msgid "Moving file from {0} to {1}"
-msgstr ""
+msgstr "Премества файл от {0} в {1}"
 
 #: sickchill/oldbeard/postProcessor.py:351
 msgid "Unable to move file from {0} to {1}"
-msgstr ""
+msgstr "Не възможно преместването на файл от {0} в {1}"
 
 #: sickchill/oldbeard/postProcessor.py:369
 msgid "Copying file from {0} to {1}"
-msgstr ""
+msgstr "Копира файл от {0} в {1}"
 
 #: sickchill/oldbeard/postProcessor.py:374
 msgid "Unable to copy file from {0} to {1}"
-msgstr ""
+msgstr "Не възможно копирането на файл от {0} в {1}"
 
 #: sickchill/oldbeard/postProcessor.py:392
 msgid "Hard linking file from {0} to {1}"
@@ -818,18 +818,18 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:737
 msgid "Unable to create episode: "
-msgstr ""
+msgstr "Невъзможно създаването на епизод: "
 
 #: sickchill/oldbeard/postProcessor.py:763
 msgid "The old status had a quality in it, using that: "
-msgstr ""
+msgstr "Стария статус съдържа данни за качество, ще използвам тях: "
 
 #: sickchill/oldbeard/notifiers/synoindex.py:39
 #: sickchill/oldbeard/notifiers/synoindex.py:64
 #: sickchill/oldbeard/notifiers/synologynotifier.py:41
 #: sickchill/oldbeard/postProcessor.py:839
 msgid "Script result: {0}"
-msgstr ""
+msgstr "Резултат от скрипт: {0}"
 
 #: sickchill/oldbeard/postProcessor.py:872
 msgid "SC snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority"
@@ -956,7 +956,7 @@ msgstr ""
 #: sickchill/oldbeard/processTV.py:150 sickchill/oldbeard/processTV.py:153
 #: sickchill/oldbeard/processTV.py:156
 msgid "Processing {0}"
-msgstr ""
+msgstr "Обработва {0}"
 
 #: sickchill/oldbeard/processTV.py:171
 msgid "Adding extracted directory to the list of directories to process: {0}"
@@ -964,23 +964,23 @@ msgstr ""
 
 #: sickchill/oldbeard/processTV.py:191
 msgid "Found unwanted files: {0}"
-msgstr ""
+msgstr "Намери нежелани файлове: {0}"
 
 #: sickchill/oldbeard/processTV.py:196
 msgid "Deleted folder: {0}"
-msgstr ""
+msgstr "Изтрита папка: {0}"
 
 #: sickchill/oldbeard/processTV.py:221
 msgid "Processing Failed"
-msgstr ""
+msgstr "Обработката пропадна"
 
 #: sickchill/oldbeard/processTV.py:221
 msgid "Successfully processed"
-msgstr ""
+msgstr "Успешна обработка"
 
 #: sickchill/oldbeard/processTV.py:223
 msgid "Some items were not processed."
-msgstr ""
+msgstr "Някои елементи не бяха обработени."
 
 #: sickchill/oldbeard/processTV.py:247
 msgid "The directory name indicates it failed to extract."
@@ -1000,7 +1000,7 @@ msgstr ""
 
 #: sickchill/oldbeard/search.py:457
 msgid "season pack"
-msgstr ""
+msgstr "пакет с цял сезон"
 
 #: sickchill/oldbeard/search.py:457
 msgid "episode"
@@ -1020,7 +1020,7 @@ msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:181
 msgid "Refresh"
-msgstr ""
+msgstr "Опресни"
 
 #: sickchill/oldbeard/show_queue.py:182
 msgid "Add"
@@ -1032,7 +1032,7 @@ msgstr "Актуализация"
 
 #: sickchill/oldbeard/show_queue.py:184
 msgid "Force Update"
-msgstr ""
+msgstr "Изпълни актуализиране"
 
 #: sickchill/oldbeard/show_queue.py:185
 msgid "Rename"
@@ -1056,11 +1056,11 @@ msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:282
 msgid "by ShowDir: {0}"
-msgstr ""
+msgstr "по ShowDir: {0}"
 
 #: sickchill/oldbeard/show_queue.py:282
 msgid "by Indexer Id: {0}"
-msgstr ""
+msgstr "по Indexer Id: {0}"
 
 #: sickchill/oldbeard/show_queue.py:287
 msgid "Could not find show with id:{0} on {1}, skipping"
