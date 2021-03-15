@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-03-06 04:35\n"
+"PO-Revision-Date: 2021-03-15 14:23\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -258,11 +258,11 @@ msgstr "{show} {ep} uit de database verwijderen"
 
 #: sickchill/tv.py:1772
 msgid "Removing myself from my show's list"
-msgstr ""
+msgstr "Verwijder mezelf uit de lijst van mijn series"
 
 #: sickchill/tv.py:1776
 msgid "Deleting myself from the database"
-msgstr ""
+msgstr "Mezelf uit de database verwijderen"
 
 #: sickchill/helper/common.py:337
 msgid "Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}"
@@ -338,7 +338,7 @@ msgstr "Herhaal (apart)"
 
 #: sickchill/oldbeard/common.py:85
 msgid "Duplicate"
-msgstr ""
+msgstr "Dubbel"
 
 #: sickchill/oldbeard/common.py:86
 msgid "Extend"
@@ -378,7 +378,7 @@ msgstr "Gearchiveerd"
 
 #: sickchill/oldbeard/config.py:179
 msgid "Disabling UNPACK setting because no unrar/unar/bsdtar is found and accessible in the path or setting."
-msgstr ""
+msgstr "UNPACK instelling uitschakelen omdat er geen unrar/unar/bsdtar gevonden en toegankelijk is in het pad of de instelling."
 
 #: sickchill/oldbeard/dailysearcher.py:27
 msgid "Searching for new released episodes ..."
