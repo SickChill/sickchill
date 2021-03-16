@@ -63,7 +63,7 @@ class Provider(TorrentProvider):
             logger.warning("Unable to connect to provider")
             return False
 
-        if re.search('Username Incorrect', response) or re.search('Password Incorrect', response):
+        if re.search('Your username or password was incorrect.', response):
             logger.warning("Invalid username or password. Check your settings")
             return False
 

@@ -366,9 +366,17 @@ class Home(WebRoot):
         else:
             return _("Matrix message failed")
 
-    @staticmethod
-    def testDiscord():
-        result = notifiers.discord_notifier.test_notify()
+    def testDiscord(self):
+        webhook = self.get_query_argument('webhook')
+        name = self.get_query_argument('name')
+        avatar = self.get_query_argument('avatar')
+        tts = self.get_query_argument('tts')
+
+        import validators
+        if not validators.url(webhook):
+            return _('Invalid URL for webhook')
+
+        result = notifiers.discord_notifier.test_notify(webhook, name, avatar, tts)
         if result:
             return _("Discord message successful")
         else:

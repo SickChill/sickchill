@@ -2,7 +2,7 @@
 # Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 import os
 import re
-from urllib.parse import urljoin
+from urllib.parse import unquote, urljoin
 
 from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
@@ -136,7 +136,11 @@ class Client(GenericClient):
         params: :result: an object subclassing oldbeard.classes.SearchResult
         """
         data = self._task_post_data
-        data['uri'] = result.url
+
+        if '%3A%2F%2F' in result.url:
+            data['uri'] = unquote(result.url)
+        else:
+            data['uri'] = result.url
 
         if result.resultType == 'torrent':
             if settings.TORRENT_PATH:
