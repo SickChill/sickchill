@@ -1218,7 +1218,7 @@ def make_indexer_session():
 def make_session():
     session = requests.Session()
     session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
-    session = cloudscraper.create_scraper(sess=session)
+    session = cloudscraper.create_scraper(sess=session, delay=6)
     return CacheControl(sess=session, cache_etags=True)
 
 
