@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: certifi
-Version: 2020.6.20
+Version: 2020.12.5
 Summary: Python package for providing Mozilla's CA Bundle.
 Home-page: https://certifiio.readthedocs.io/en/latest/
 Author: Kenneth Reitz
@@ -21,6 +21,7 @@ Classifier: Programming Language :: Python :: 3.5
 Classifier: Programming Language :: Python :: 3.6
 Classifier: Programming Language :: Python :: 3.7
 Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
 
 Certifi: Python SSL Certificates
 ================================
