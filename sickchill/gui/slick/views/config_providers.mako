@@ -12,6 +12,11 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#config-components').tabs();
+            $('#config-components').on( "tabsactivate", function( event, ui ){
+                if(ui.newPanel.selector === '#provider-options') {
+                    //TODO: Reload provider options list
+                }
+            });
             % if settings.USE_NZBS:
                 % for curNewznabProvider in settings.newznabProviderList:
                     $(this).addProvider('${curNewznabProvider.get_id()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)});
@@ -525,7 +530,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="number" min="-1" step="0.1" name="${curTorrentProvider.get_id("_ratio")}"
-                                                           id="${curTorrentProvider.get_id("_ratio")}" value="${curTorrentProvider.ratio}"
+                                                           id="${curTorrentProvider.get_id("_ratio")}" value="${curTorrentProvider.ratio or 0}"
                                                            class="form-control input-sm input75"/>
                                                 </div>
                                             </div>
