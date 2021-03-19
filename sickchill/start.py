@@ -576,6 +576,9 @@ def initialize(consoleLogging=True):
         settings.DISCORD_NOTIFY_SNATCH = check_setting_bool(settings.CFG, 'Discord', 'discord_notify_snatch')
         settings.DISCORD_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, 'Discord', 'discord_notify_download')
         settings.DISCORD_WEBHOOK = check_setting_str(settings.CFG, 'Discord', 'discord_webhook')
+        settings.DISCORD_NAME = check_setting_str(settings.CFG, 'Discord', 'discord_name')
+        settings.DISCORD_AVATAR_URL = check_setting_str(settings.CFG, 'Discord', 'discord_avatar_url')
+        settings.DISCORD_TTS = check_setting_str(settings.CFG, 'Discord', 'discord_tts')
 
         settings.USE_TRAKT = check_setting_bool(settings.CFG, 'Trakt', 'use_trakt')
         settings.TRAKT_USERNAME = check_setting_str(settings.CFG, 'Trakt', 'trakt_username', censor_log=True)
@@ -1529,7 +1532,10 @@ def save_config():
             'use_discord': int(settings.USE_DISCORD),
             'discord_notify_snatch': int(settings.DISCORD_NOTIFY_SNATCH),
             'discord_notify_download': int(settings.DISCORD_NOTIFY_DOWNLOAD),
-            'discord_webhook': settings.DISCORD_WEBHOOK
+            'discord_webhook': settings.DISCORD_WEBHOOK,
+            'discord_name': settings.DISCORD_NAME,
+            'discord_avatar_url': settings.DISCORD_AVATAR_URL,
+            'discord_tts': settings.DISCORD_TTS
         },
 
         'Trakt': {
