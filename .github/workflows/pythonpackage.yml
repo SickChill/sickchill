@@ -21,6 +21,8 @@ jobs:
           persist-credentials: false
       - name: Shellcheck
         uses: ludeeus/action-shellcheck@master
+#        with:
+#          additional_files: 'init.*'
   Test:
     strategy:
       matrix:
