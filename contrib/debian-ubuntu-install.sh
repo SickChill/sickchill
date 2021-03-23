@@ -54,70 +54,70 @@ fi
 
 # Check to see if sickchill exists; If not make user/group
 if [[ ! "$(getent group sickchill)" ]]; then
-	echo "Adding SickChill Group"
-    	addgroup --system sickchill
+  echo "Adding SickChill Group"
+      addgroup --system sickchill
 fi
 if [[ ! "$(getent passwd sickchill)" ]]; then
-	echo "Adding SickChill User"
-	adduser --disabled-password --system --home /var/lib/sickchill --gecos "SickChill" --ingroup sickchill sickchill
+  echo "Adding SickChill User"
+  adduser --disabled-password --system --home /var/lib/sickchill --gecos "SickChill" --ingroup sickchill sickchill
 fi
 
 # Check to see if /opt/sickchill exists. If it does ask if they want to overwrite it. if they do not exit 1
 # if they do, remove the whole directory and recreate
 if [[ ! -d /opt/sickchill ]]; then
-	echo "Creating New SickChill Folder"
-	mkdir /opt/sickchill && chown sickchill:sickchill /opt/sickchill
-	echo "Git Cloning In Progress"
-	su -c "cd /opt && git clone -q https://github.com/SickChill/SickChill.git /opt/sickchill" -s /bin/bash sickchill
+  echo "Creating New SickChill Folder"
+  mkdir /opt/sickchill && chown sickchill:sickchill /opt/sickchill
+  echo "Git Cloning In Progress"
+  su -c "cd /opt && git clone -q https://github.com/SickChill/SickChill.git /opt/sickchill" -s /bin/bash sickchill
 else
-	whiptail --title 'Overwrite?' --yesno "/opt/sickchill already exists, do you want to overwrite it?" 8 40
-	choice=$?
-	if [[ ${choice} == 0 ]]; then
-		echo "Removing Old SickChill Folder And Creating New SickChill Folder"
-        	rm -rf /opt/sickchill && mkdir /opt/sickchill && chown sickchill:sickchill /opt/sickchill
-		echo "Git Cloning In Progress"
-        	su -c "cd /opt && git clone -q https://github.com/SickChill/SickChill.git /opt/sickchill" -s /bin/bash sickchill
-    	else
-        	echo
-        	exit 1
-    	fi
+  whiptail --title 'Overwrite?' --yesno "/opt/sickchill already exists, do you want to overwrite it?" 8 40
+  choice=$?
+  if [[ ${choice} == 0 ]]; then
+    echo "Removing Old SickChill Folder And Creating New SickChill Folder"
+          rm -rf /opt/sickchill && mkdir /opt/sickchill && chown sickchill:sickchill /opt/sickchill
+    echo "Git Cloning In Progress"
+          su -c "cd /opt && git clone -q https://github.com/SickChill/SickChill.git /opt/sickchill" -s /bin/bash sickchill
+      else
+          echo
+          exit 1
+      fi
 fi
 
 # Depending on Distro, Cp the service script, then change the owner/group and change the permissions. Finally
 # start the service
 if [[ ${distro} = ubuntu ]]; then
     if [[ $(/sbin/init --version 2> /dev/null) =~ upstart ]]; then
-    	echo "Copying Startup Script To Upstart"
+      echo "Copying Startup Script To Upstart"
         cp /opt/sickchill/contrib/runscripts/init.upstart /etc/init/sickchill.conf
-	chown root:root /etc/init/sickchill.conf && chmod 644 /etc/init/sickchill.conf
-	echo "Starting SickChill"
+  chown root:root /etc/init/sickchill.conf && chmod 644 /etc/init/sickchill.conf
+  echo "Starting SickChill"
         service sickchill start
 
     elif [[ $(systemctl) =~ -\.mount ]]; then
-    	echo "Copying Startup Script To systemd"
+      echo "Copying Startup Script To systemd"
         cp /opt/sickchill/contrib/runscripts/init.systemd /etc/systemd/system/sickchill.service
         chown root:root /etc/systemd/system/sickchill.service && chmod 644 /etc/systemd/system/sickchill.service
-	echo "Starting SickChill"
+  echo "Starting SickChill"
         systemctl -q enable sickchill && systemctl -q start sickchill
     else
-    	echo "Copying Startup Script To init"
+      echo "Copying Startup Script To init"
         cp /opt/sickchill/contrib/runscripts/init.ubuntu /etc/init.d/sickchill
         chown root:root /etc/init.d/sickchill && chmod 644 /etc/init.d/sickchill
-	echo "Starting SickChill"
+  echo "Starting SickChill"
         update-rc.d sickchill defaults && service sickchill start
     fi
 elif [[ ${distro} = debian ]]; then
     if [[ $(systemctl) =~ -\.mount ]]; then
-    	echo "Copying Startup Script To systemd"
+      echo "Copying Startup Script To systemd"
         cp /opt/sickchill/contrib/runscripts/init.systemd /etc/systemd/system/sickchill.service
         chown root:root /etc/systemd/system/sickchill.service && chmod 644 /etc/systemd/system/sickchill.service
-	echo "Starting SickChill"
+  echo "Starting SickChill"
         systemctl -q enable sickchill && systemctl -q start sickchill
     else
-    	echo "Copying Startup Script To init"
+      echo "Copying Startup Script To init"
         cp /opt/sickchill/contrib/runscripts/init.debian /etc/init.d/sickchill
         chown root:root /etc/init.d/sickchill && chmod 755 /etc/init.d/sickchill
-	echo "Starting SickChill"
+  echo "Starting SickChill"
         update-rc.d sickchill defaults && service sickchill start
     fi
 fi
