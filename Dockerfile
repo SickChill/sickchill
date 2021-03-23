@@ -20,7 +20,7 @@ WORKDIR /app/sickchill
 VOLUME /data /downloads /tv
 COPY requirements.txt /app/sickchill
 
-RUN CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install --no-cache-dir --no-input -Ur requirements.txt &&\
+RUN pip install -U wheel && DISABLE_SQLALCHEMY_CEXT=1 CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install --no-cache-dir --no-input -Ur requirements.txt &&\
  apk del .build-deps gcc libffi-dev libxml2-dev libxslt-dev openssl-dev musl-dev python3-dev
 
 COPY . /app/sickchill

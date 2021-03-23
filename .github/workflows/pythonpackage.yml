@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -48,45 +48,43 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '14.x'
-    - name: Determine npm cache directory
-      id: npm-cache
+    - name: Prepare
+      id: prepare
       run: |
-        echo "::set-output name=dir::$(npm config get cache)"
+        echo "::set-output name=npm_cache::$(npm config get cache)"
+        echo "::set-output name=yarn_cache::$(yarn cache dir)"
+        echo "::set-output name=pip_cache::$(python -m pip cache dir)"
+        echo "::set-output name=os::$(echo "print('${{ runner.os }}'.lower())" | python)"
     - name: Restore npm cache
       uses: actions/cache@v2
       with:
-        path: ${{ steps.npm-cache.outputs.dir }}
+        path: ${{ steps.prepare.outputs.npm_cache }}
         key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
     - name: Restore yarn cache
       uses: actions/cache@v2
       with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        path: ${{ steps.prepare.outputs.yarn_cache }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
     - name: Restore pip cache
       uses: actions/cache@v2
       with:
-        path: ~/.cache/pip
+        path: ${{ steps.prepare.outputs.pip_cache }}
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
         yarn --silent
+        pip install wheel
         pip install --upgrade pip tox babel crowdin-cli-py
-    - name: Get tox workdir
-      id: tox-workdir-path
-      run: echo "::set-output name=dir::$(tox --showconfig | grep '^toxworkdir = .*$' | tail -c+14)"
     - name: Restore tox workdir
       uses: actions/cache@v2
       with:
-        path: ${{ steps.tox-workdir-path.outputs.dir }}
+        path: $(tox --showconfig | grep '^toxworkdir = .*$' | tail -c+14)
         key: ${{ runner.os }}-tox-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ runner.os }}-tox-
@@ -95,9 +93,11 @@ jobs:
     - name: Test with XO
       run: xo
     - name: Test with tox
+      id: tox
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: tox -v --recreate -e "py37-{flake8,linux}"
+      run: |
+        tox -v --recreate -e "py38-{flake8,${{ steps.prepare.outputs.os }}}"
   Deploy:
     needs: [Shellcheck, Test]
     runs-on: ubuntu-latest
