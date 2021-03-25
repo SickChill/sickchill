@@ -102,7 +102,7 @@ jobs:
       run: |
         tox -v --recreate -e "py38-{flake8,${{ steps.prepare.outputs.os }}}"
   Deploy:
-#    needs: [Shellcheck, Test]
+    needs: [Shellcheck, Test]
     runs-on: ubuntu-latest
     steps:
     - name: Cancel Previous Runs

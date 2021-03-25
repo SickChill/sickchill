@@ -17,9 +17,9 @@ before_install:
   - bower install
 
 install:
-  - pip install --upgrade pip
-  - pip install --upgrade tox
-  - pip install --upgrade babel mako crowdin-cli-py
+  - pip install -Uq pip
+  - pip install -Uq tox
+  - pip install -Uq babel mako crowdin-cli-py
 
 script:
   - xo && tox -v --recreate -e "py37-{flake8,linux}"

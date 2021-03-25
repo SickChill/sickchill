@@ -17,13 +17,13 @@ WORKDIR /app/sickchill
 COPY requirements.txt /app/sickchill
 
 # Buster default python3-dev is python3.7 headers, do not change base image until default python3-dev changes in buster.
-RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list && \
- apt-get update && \
- apt-get install -yq build-essential cargo curl git libssl-dev libffi-dev libxml2 libxml2-dev libxslt1.1 libxslt-dev \
- mediainfo python3-dev unrar && \
- pip install -U pip wheel && pip install --no-cache-dir --no-input -Ur requirements.txt && \
- apt-get purge -yq --autoremove build-essential cargo libssl-dev libffi-dev libxml2-dev libxslt-dev python3-dev && \
- apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
+RUN apt-get update -q && \
+ apt-get install -yq build-essential curl git libssl-dev libffi-dev libxml2 libxml2-dev libxslt1.1 libxslt-dev libz-dev mediainfo python3-dev unrar && \
+ pip install -U pip wheel && \
+ CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install --no-cache-dir --no-input -Ur requirements.txt && \
+ apt-get purge -yq --autoremove build-essential libssl-dev libffi-dev libxml2-dev libxslt-dev libz-dev python3-dev && \
+ apt-get clean -yq && rm -rf /var/lib/apt/lists/*
 
 COPY . /app/sickchill
 RUN chmod -R 777 /app/sickchill
