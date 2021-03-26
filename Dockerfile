@@ -17,12 +17,16 @@ WORKDIR /app/sickchill
 COPY requirements.txt /app/sickchill
 
 # Buster default python3-dev is python3.7 headers, do not change base image until default python3-dev changes in buster.
+# rust installer needs patched to get the correct binaries for ARMv6 and i686
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -q && \
- apt-get install -yq build-essential curl git libssl-dev libffi-dev libxml2 libxml2-dev libxslt1.1 libxslt-dev libz-dev mediainfo python3-dev unrar && \
+ apt-get install -yq build-essential curl git libssl-dev libffi-dev libxml2 libxml2-dev libxslt1.1 libxslt-dev libz-dev mediainfo python3-dev unrar nano && \
  pip install -U pip wheel && \
- curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs >> rustup-init.sh && \
- sh rustup-init.sh -y --default-host=$(gcc -dumpmachine | sed 's/-/-unknown-/') && \
+ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup-init.sh && \
+ sed -i 's#/proc/self/exe#$(which head)#g' rustup-init.sh && \
+ sed -i 's#/proc/cpuinfo#/proc/cpuinfo 2> /dev/null || echo ''#g' rustup-init.sh && \
+ sed -i 's#get_architecture || return 1#RETVAL=$(gcc -dumpmachine | sed "s/-/-unknown-/") #g' rustup-init.sh && \
+ sh -x rustup-init.sh -y --default-host=$(gcc -dumpmachine | sed 's/-/-unknown-/') && \
  rm rustup-init.sh && \
  PATH=$PATH:$HOME/.cargo/bin pip install --no-cache-dir --no-input -Ur requirements.txt && \
  PATH=$PATH:$HOME/.cargo/bin rustup self uninstall -y && \
