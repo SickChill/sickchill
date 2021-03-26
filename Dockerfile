@@ -25,7 +25,7 @@ RUN apt-get update -q && \
  sh rustup-init.sh -y --default-host=$(gcc -dumpmachine | sed 's/-/-unknown-/') && \
  rm rustup-init.sh && \
  PATH=$PATH:$HOME/.cargo/bin pip install --no-cache-dir --no-input -Ur requirements.txt && \
- PATH=$PATH:$HOME/.cargo/bin/rustup self uninstall -y && \
+ PATH=$PATH:$HOME/.cargo/bin rustup self uninstall -y && \
  apt-get purge -yq --autoremove build-essential libssl-dev libffi-dev libxml2-dev libxslt-dev libz-dev python3-dev && \
  apt-get clean -yq && rm -rf /var/lib/apt/lists/*
 
