@@ -21,7 +21,11 @@ RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -q && \
  apt-get install -yq build-essential curl git libssl-dev libffi-dev libxml2 libxml2-dev libxslt1.1 libxslt-dev libz-dev mediainfo python3-dev unrar && \
  pip install -U pip wheel && \
- CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install --no-cache-dir --no-input -Ur requirements.txt && \
+ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs >> rustup-init.sh && \
+ sh rustup-init.sh -y --default-host=$(gcc -dumpmachine | sed 's/-/-unknown-/') && \
+ rm rustup-init.sh && \
+ PATH=$PATH:$HOME/.cargo/bin pip install --no-cache-dir --no-input -Ur requirements.txt && \
+ PATH=$PATH:$HOME/.cargo/bin/rustup self uninstall -y && \
  apt-get purge -yq --autoremove build-essential libssl-dev libffi-dev libxml2-dev libxslt-dev libz-dev python3-dev && \
  apt-get clean -yq && rm -rf /var/lib/apt/lists/*
 

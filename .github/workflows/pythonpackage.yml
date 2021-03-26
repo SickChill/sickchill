@@ -145,25 +145,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
     - name: Login to DockerHub
-      if: success()
+      if: success() && github.actor == 'miigotu'
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Login to GitHub Container Registry
-      if: success()
+      if: success() && github.actor == 'miigotu'
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Login to GitHub Packages
-      if: success()
-      uses: docker/login-action@v1
-      with:
-        registry: docker.pkg.github.com
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.GHCR_PAT }}
     - name: Build and Push (master)
       if: success() && contains(steps.prepare.outputs.version, 'master') && github.actor == 'miigotu'
       uses: docker/build-push-action@v2
@@ -171,7 +164,6 @@ jobs:
         context: .
         platforms: ${{ steps.prepare.outputs.docker_platforms }}
         push: true
-        pull: true
         tags: |
           ghcr.io/sickchill/sickchill:master
           ghcr.io/ps3dev/ps3dev:latest
@@ -186,7 +178,6 @@ jobs:
         context: .
         platforms: ${{ steps.prepare.outputs.docker_platforms }}
         push: true
-        pull: true
         tags: |
           ghcr.io/sickchill/sickchill:${{ steps.prepare.outputs.version }}
           sickchill/sickchill:${{ steps.prepare.outputs.version }}
