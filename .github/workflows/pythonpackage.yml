@@ -137,6 +137,13 @@ jobs:
         echo ::set-output name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/ppc64le,linux/s390x
         VERSION_TAG=${GITHUB_REF#refs/*/}
         echo ::set-output name=version::${VERSION_TAG%/merge}
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
     - name: Login to DockerHub
       if: success()
       uses: docker/login-action@v1
@@ -172,8 +179,8 @@ jobs:
           docker.pkg.github.com/sickchill/sickchill/sickchill:latest
           sickchill/sickchill:master
           sickchill/sickchill:latest
-        cache-from: ghcr.io/sickchill/sickchill
-        cache-to: ghcr.io/sickchill/sickchill
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
     - name: Build and Push (non-master)
       if: success() && !contains(steps.prepare.outputs.version, 'master')
       uses: docker/build-push-action@v2
@@ -186,5 +193,11 @@ jobs:
           ghcr.io/sickchill/sickchill:${{ steps.prepare.outputs.version }}
           docker.pkg.github.com/sickchill/sickchill/sickchill:${{ steps.prepare.outputs.version }}
           sickchill/sickchill:${{ steps.prepare.outputs.version }}
-        cache-from: ghcr.io/sickchill/sickchill
-        cache-to: ghcr.io/sickchill/sickchill
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache; fi
