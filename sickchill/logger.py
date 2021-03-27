@@ -100,6 +100,7 @@ class Logger(object):
             logging.getLogger('tornado.application'),
             logging.getLogger('subliminal'),
             logging.getLogger('tornado.access'),
+            logging.getLogger('imdbpy.parser.http.piculet')
         ]
 
         self.console_logging = False
@@ -142,7 +143,7 @@ class Logger(object):
 
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
-            if logger.name in ('subliminal', 'tornado.access', 'tornado.general'):
+            if logger.name in ('subliminal', 'tornado.access', 'tornado.general', 'imdbpy.parser.http.piculet'):
                 logger.setLevel('CRITICAL')
             else:
                 logger.setLevel(log_level)
