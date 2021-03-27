@@ -134,7 +134,7 @@ jobs:
       if: success()
       id: prepare
       run: |
-        echo ::set-output name=docker_platforms::linux/amd64,linux/arm64,linux/ppc64le
+        echo ::set-output name=docker_platforms::linux/amd64,linux/arm64
         VERSION_TAG=${GITHUB_REF#refs/*/}
         echo ::set-output name=version::${VERSION_TAG%/merge}
     - name: Cache Docker layers
