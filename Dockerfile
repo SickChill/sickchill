@@ -1,4 +1,4 @@
-FROM python:3.7-slim-buster
+FROM python:slim-buster
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
@@ -16,21 +16,11 @@ RUN mkdir /app /var/run/sickchill
 WORKDIR /app/sickchill
 COPY requirements.txt /app/sickchill
 
-# Buster default python3-dev is python3.7 headers, do not change base image until default python3-dev changes in buster.
-# rust installer needs patched to get the correct binaries for ARMv6 and i686
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -q && \
- apt-get install -yq build-essential curl git libssl-dev libffi-dev libxml2 libxml2-dev libxslt1.1 libxslt-dev libz-dev mediainfo python3-dev unrar nano
-RUN pip install -U pip wheel && \
- curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup-init.sh && \
- sed -i 's#/proc/self/exe#$(which head)#g' rustup-init.sh && \
- sed -i 's#/proc/cpuinfo#/proc/cpuinfo 2> /dev/null || echo ''#g' rustup-init.sh && \
- sed -i 's#get_architecture || return 1#RETVAL=$(gcc -dumpmachine | sed "s/-/-unknown-/") #g' rustup-init.sh && \
- sh -x rustup-init.sh -y --default-host=$(gcc -dumpmachine | sed 's/-/-unknown-/') && rm rustup-init.sh
-RUN PATH=$PATH:$HOME/.cargo/bin pip install --no-cache-dir --no-input -Ur requirements.txt
-RUN PATH=$PATH:$HOME/.cargo/bin rustup self uninstall -y
-RUN apt-get purge -yq --autoremove build-essential libssl-dev libffi-dev libxml2-dev libxslt-dev libz-dev python3-dev
-RUN apt-get clean -yq && rm -rf /var/lib/apt/lists/*
+ apt-get install -yq git libxml2 libxslt1.1 mediainfo unrar && \
+ pip install -U pip wheel && pip install --no-cache-dir --no-input -Ur requirements.txt && \
+ apt-get clean -yq && rm -rf /var/lib/apt/lists/*
 
 COPY . /app/sickchill
 RUN chmod -R 777 /app/sickchill
