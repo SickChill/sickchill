@@ -8,6 +8,27 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'miigotu'
     steps:
+      - name: Restore npm cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.prepare.outputs.npm_cache }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Restore pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.prepare.outputs.pip_cache }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Restore tox workdir
+        uses: actions/cache@v2
+        with:
+          path: $(tox --showconfig | grep '^toxworkdir = .*$' | tail -c+14)
+          key: ${{ runner.os }}-tox-${{ hashFiles('**/tox.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-tox-
       - name: Set up node
         uses: actions/setup-node@v2
         with:
@@ -19,7 +40,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools wheel twine
+          pip install -U setuptools wheel twine tox
+          npm config set strict-ssl false
+          npm config set registry "http://registry.npmjs.org/"
+          npm install -D
+          npm install -g grunt bower xo
       - name: Checkout changelog repo
         uses: actions/checkout@v2
         with:
@@ -31,6 +56,14 @@ jobs:
           ref: develop
           fetch-depth: 0
           path: sickchill
+      - name: Test with XO
+        run: xo
+      - name: Test with tox
+        id: tox
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          tox -v --recreate -e "py38-{flake8,${{ steps.prepare.outputs.os }}}"
       - name: Publish
         env:
           SICKCHILL_CHANGES_FILE: "sickchill.github.io/sickchill-news/CHANGES.md"
@@ -40,8 +73,6 @@ jobs:
         run: |
           git config --global user.name miigotu
           git config --global user.email miigotu@gmail.com
-          npm install -g grunt
-          npm install grunt-cli grunt-exec
           grunt publish
           git checkout master
           python setup.py sdist bdist_wheel
@@ -52,4 +83,3 @@ jobs:
           git checkout develop
           git reset --hard master
           git push origin develop
-
