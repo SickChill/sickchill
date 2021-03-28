@@ -64,7 +64,7 @@ class Client(GenericClient):
 
         self._task_post_data = {
             'api': 'SYNO.DownloadStation.Task',
-            'version': '1',
+            'version': '3',
             'method': 'create',
             'session': 'DownloadStation',
         }
@@ -117,7 +117,7 @@ class Client(GenericClient):
 
         params = {
             'api': 'SYNO.API.Auth',
-            'version': 2,
+            'version': 3,
             'method': 'login',
             'account': self.username,
             'passwd': self.password,
