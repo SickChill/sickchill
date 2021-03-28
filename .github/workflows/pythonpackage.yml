@@ -144,6 +144,10 @@ jobs:
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
+    - name: Docker Log out fix
+      run: |
+        docker logout
+        docker logout ghcr.io
     - name: Login to DockerHub
       if: success() && github.actor == 'miigotu'
       uses: docker/login-action@v1

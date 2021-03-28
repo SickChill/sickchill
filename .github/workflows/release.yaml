@@ -40,9 +40,8 @@ jobs:
         run: |
           git config --global user.name miigotu
           git config --global user.email miigotu@gmail.com
-          npm install -D
-          npm install -g grunt bower xo
-          bower install
+          npm install -g grunt
+          npm install grunt-cli grunt-exec
           grunt publish
           git checkout master
           python setup.py sdist bdist_wheel
