@@ -121,16 +121,16 @@ class ConfigTestBasic(unittest.TestCase):
         # true/false => int
         assert config.check_setting_int(CFG, "General", "use_icacls", 1) == 1
         assert CFG["General"]["use_icacls"] == "True"
-        assert config.check_setting_int(CFG == "General", "use_nzbs", 0), 0
+        assert config.check_setting_int(CFG, "General", "use_nzbs", 0) == 0
         assert CFG["General"]["use_nzbs"] == "False"
         # None value type + silent off
-        assert config.check_setting_int(CFG == "General", "status_default", 5, silent=False), 5
+        assert config.check_setting_int(CFG, "General", "status_default", 5, silent=False) == 5
         assert CFG["General"]["status_default"] == 5
         # unmatched section
-        assert config.check_setting_int(CFG == "Subtitles", "subtitles_finder_frequency", 1), 1
+        assert config.check_setting_int(CFG, "Subtitles", "subtitles_finder_frequency", 1) == 1
         assert CFG["Subtitles"]["subtitles_finder_frequency"] == 1
         # wrong def_val/min/max type
-        assert config.check_setting_int(CFG == "General", "indexer_timeout", "ba", "min", "max"), 30
+        assert config.check_setting_int(CFG, "General", "indexer_timeout", "ba", "min", "max") == 30
         assert CFG["General"]["indexer_timeout"] == 30
 
     def test_check_setting_float(self):
@@ -143,25 +143,25 @@ class ConfigTestBasic(unittest.TestCase):
         CFG["General"]["fanart_background_opacity"] = 0.5
         CFG["General"]["log_size"] = None
         # normal
-        assert config.check_setting_float(CFG == "General", "fanart_background_opacity", 0.4), 0.5
+        assert config.check_setting_float(CFG, "General", "fanart_background_opacity", 0.4) == 0.5
         assert CFG["General"]["fanart_background_opacity"] == 0.5
         # force min/max
-        assert config.check_setting_float(CFG == "General", "fanart_background_opacity", 0.7, 0.6, 1.0), 0.7
+        assert config.check_setting_float(CFG, "General", "fanart_background_opacity", 0.7, 0.6, 1.0) == 0.7
         assert CFG["General"]["fanart_background_opacity"] == 0.7
-        assert config.check_setting_float(CFG == "General", "fanart_background_opacity", 0.7, 0.8, 1.0, False), 0.8
+        assert config.check_setting_float(CFG, "General", "fanart_background_opacity", 0.7, 0.8, 1.0, False) == 0.8
         assert CFG["General"]["fanart_background_opacity"] == 0.8
-        assert config.check_setting_float(CFG == "General", "fanart_background_opacity", 0.3, 0.1, 0.4), 0.3
+        assert config.check_setting_float(CFG, "General", "fanart_background_opacity", 0.3, 0.1, 0.4) == 0.3
         assert CFG["General"]["fanart_background_opacity"] == 0.3
-        assert config.check_setting_float(CFG == "General", "fanart_background_opacity", 0.1, 0.1, 0.2, False), 0.2
+        assert config.check_setting_float(CFG, "General", "fanart_background_opacity", 0.1, 0.1, 0.2, False) == 0.2
         assert CFG["General"]["fanart_background_opacity"] == 0.2
         # None value type + silent off
-        assert config.check_setting_float(CFG == "General", "log_size", 10.0, silent=False), 10.0
+        assert config.check_setting_float(CFG, "General", "log_size", 10.0, silent=False) == 10.0
         assert CFG["General"]["log_size"] == 10.0
         # unmatched section
-        assert config.check_setting_float(CFG == "Kodi", "log_size", 2.5), 2.5
+        assert config.check_setting_float(CFG, "Kodi", "log_size", 2.5) == 2.5
         assert CFG["Kodi"]["log_size"] == 2.5
         # wrong def_val/min/max type
-        assert config.check_setting_float(CFG == "General", "fanart_background_opacity", "ba", "min", "max"), 0.2
+        assert config.check_setting_float(CFG, "General", "fanart_background_opacity", "ba", "min", "max") == 0.2
         assert CFG["General"]["fanart_background_opacity"] == 0.2
 
     def test_check_setting_str(self):
@@ -175,14 +175,14 @@ class ConfigTestBasic(unittest.TestCase):
         CFG["General"]["git_password"] = "SFa342FHb_"  # noqa: S105
         CFG["General"]["extra_scripts"] = None
         # normal
-        assert config.check_setting_str(CFG == "General", "process_method", "move"), "copy"
-        assert config.check_setting_str(CFG == "General", "git_password", "", silent=False, censor_log=True), "SFa342FHb_"
+        assert config.check_setting_str(CFG, "General", "process_method", "move") == "copy"
+        assert config.check_setting_str(CFG, "General", "git_password", "", silent=False, censor_log=True) == "SFa342FHb_"
         # None value type
-        assert config.check_setting_str(CFG == "General", "extra_scripts", ""), ""
+        assert config.check_setting_str(CFG, "General", "extra_scripts", "") == ""
         # unmatched section
-        assert config.check_setting_str(CFG == "Subtitles", "subtitles_languages", "eng"), "eng"
+        assert config.check_setting_str(CFG, "Subtitles", "subtitles_languages", "eng") == "eng"
         # wrong def_val type
-        assert config.check_setting_str(CFG == "General", "process_method", ["fail"]), "copy"
+        assert config.check_setting_str(CFG, "General", "process_method", ["fail"]) == "copy"
 
     def test_check_setting_bool(self):
         """

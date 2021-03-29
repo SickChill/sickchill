@@ -51,6 +51,7 @@ remove_imports = "from __future__ import absolute_import, from __future__ import
 known_first_party = "sickchill"
 extra_standard_library = [ "posixpath", "ntpath" ]
 use_parentheses = true
+src_paths = ["sickchill", "tests", "SickChill.py", "setup.py"]
 
 [tool.setuptools_scm]
 write_to = "sickchill/version.py"
@@ -97,6 +98,9 @@ show_source = "True"
 no-accept-encodings = "True"
 builtins = ["_"]
 #select = 'C103'
+
+[tool.pytest]
+testpaths = ["tests", "sickchill", "SickChill.py", "setup.py"]
 
 [tool.black]
 line-length = 160

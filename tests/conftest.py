@@ -22,6 +22,7 @@ import shutil
 import unittest
 
 import pytest
+import os
 from configobj import ConfigObj
 
 import sickchill.logger
@@ -361,3 +362,25 @@ def vcr_cassette_dir(request):
 def vcr_cassette_name(request):
     """Name of the VCR cassette"""
     return request.cls.provider.get_id() + ".yaml"
+
+
+def patch_open(open_func, files):
+    def open_patched(path, mode='r', buffering=-1, encoding=None,
+                     errors=None, newline=None, closefd=True,
+                     opener=None):
+        if 'w' in mode and not os.path.isfile(path):
+            files.append(path)
+        return open_func(path, mode=mode, buffering=buffering,
+                         encoding=encoding, errors=errors,
+                         newline=newline, closefd=closefd,
+                         opener=opener)
+    return open_patched
+
+
+@pytest.fixture(autouse=True, scope="session")
+def cleanup_files():
+    # yield
+    for file in [ "tests/sickchill.db", "tests/cache.db", "tests/failed.db"]:
+        if os.path.exists(file):
+            print(f"Removing {file}")
+            os.remove(file)

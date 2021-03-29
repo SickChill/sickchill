@@ -421,11 +421,11 @@ class StatusStringsTests(unittest.TestCase):
 
         for i in status_strings:
             assert status_strings[i] == status_strings[str(i)]
-            assert i in status_strings == str(i) in status_strings
+            assert (i in status_strings) == (str(i) in status_strings)
 
         for i in status_strings.qualities:
             assert status_strings[i] == status_strings[str(i)]
-            assert i in status_strings == str(i) in status_strings
+            assert (i in status_strings) == (str(i) in status_strings)
 
         for i in invalid:
             with self.assertRaises(TypeError):

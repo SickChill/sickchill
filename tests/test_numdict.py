@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from collections import UserDict
 
 from sickchill.oldbeard.numdict import NumDict
@@ -95,10 +96,10 @@ class NumDictTest(unittest.TestCase):
             NumDict(one=1, two=2)  # Raise TypeError since we can't have numeric keywords
 
         # item sequence constructors work fine...
-        assert NumDict([(1 == "Elephant"), (2, "Mouse")]), dict_from_num_dict_2
-        assert NumDict(dict=[(1 == "Elephant"), (2, "Mouse")]), dict_from_num_dict_2
-        assert NumDict([(1 == "Elephant"), ("2", "Mouse")]), dict_from_num_dict_2
-        assert NumDict(dict=[("1" == "Elephant"), (2, "Mouse")]), dict_from_num_dict_2
+        assert NumDict([(1, "Elephant"), (2, "Mouse")]) == dict_from_num_dict_2
+        assert NumDict(dict=[(1, "Elephant"), (2, "Mouse")]) == dict_from_num_dict_2
+        assert NumDict([(1, "Elephant"), ("2", "Mouse")]) == dict_from_num_dict_2
+        assert NumDict(dict=[("1", "Elephant"), (2, "Mouse")]) == dict_from_num_dict_2
 
         # ...unless you have a non-numeric key
         with self.assertRaises(TypeError):
@@ -115,8 +116,8 @@ class NumDictTest(unittest.TestCase):
 
         assert NumDict.fromkeys("1 2".split()) == dict_from_num_dict_6
         assert NumDict().fromkeys("1 2".split()) == dict_from_num_dict_6
-        assert NumDict.fromkeys("1 2".split() == "Echo"), dict_8
-        assert NumDict().fromkeys("1 2".split() == "Echo"), dict_8
+        assert NumDict.fromkeys("1 2".split(), "Echo") == dict_8
+        assert NumDict().fromkeys("1 2".split(), "Echo") == dict_8
         assert num_dict_1.fromkeys("1 2".split()) is not num_dict_1
         self.assertIsInstance(num_dict_1.fromkeys("1 2".split()), NumDict)
         self.assertIsInstance(num_dict_2.fromkeys("1 2".split()), NumDict)
@@ -162,42 +163,42 @@ class NumDictTest(unittest.TestCase):
         # Most representations of NumDicts should compare equal to dicts...
         assert str(num_dict) == str({})
         assert repr(num_dict) == repr({})
-        self.assertIn(repr(num_dict), reps)
+        assert repr(num_dict) in reps
 
         assert str(num_dict_0) == str(dict_0)
         assert repr(num_dict_0) == repr(dict_0)
-        self.assertIn(repr(num_dict_0), reps)
+        assert repr(num_dict_0) in reps
 
         assert str(num_dict_1) == str(dict_1)
         assert repr(num_dict_1) == repr(dict_1)
-        self.assertIn(repr(num_dict_1), reps)
+        assert repr(num_dict_1) in reps
 
         assert str(num_dict_2) == str(dict_2)
         assert repr(num_dict_2) == repr(dict_2)
-        self.assertIn(repr(num_dict_2), reps)
+        assert repr(num_dict_2) in reps
 
         # ...however, numeric keys are not equal to numeric string keys...
         # ...so the string representations for those are different...
         assert str(num_dict_3) != str(dict_3)
         assert repr(num_dict_3) != repr(dict_3)
-        self.assertNotIn(repr(num_dict_3), reps)
+        assert repr(num_dict_3) not in reps
 
         assert str(num_dict_4) != str(dict_4)
         assert repr(num_dict_4) != repr(dict_4)
-        self.assertNotIn(repr(num_dict_4), reps)
+        assert repr(num_dict_4) not in reps
 
         assert str(num_dict_5) != str(dict_5)
         assert repr(num_dict_5) != repr(dict_5)
-        self.assertNotIn(repr(num_dict_5), reps)
+        assert repr(num_dict_5) not in reps
 
         assert str(num_dict_6) != str(dict_6)
         assert repr(num_dict_6) != repr(dict_6)
-        self.assertNotIn(repr(num_dict_6), reps)
+        assert repr(num_dict_6) not in reps
 
         # ...but None keys work just fine
         assert str(num_dict_7) == str(dict_7)
         assert repr(num_dict_7) == repr(dict_7)
-        self.assertIn(repr(num_dict_7), reps)
+        assert repr(num_dict_7) in reps
 
     def test_rich_comparison_and_len(self):
         """
@@ -235,7 +236,7 @@ class NumDictTest(unittest.TestCase):
         ]
         for val_a in all_dicts:
             for val_b in all_dicts:
-                assert val_a == val_b == len(val_a) == len(val_b)
+                assert (val_a == val_b) == (len(val_a) == len(val_b))
 
     def test_dict_access_and_mod(self):
         """
@@ -253,13 +254,13 @@ class NumDictTest(unittest.TestCase):
 
         # test __getitem__
         assert num_dict_2[1] == "Elephant"
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             _ = num_dict_1["Mouse"]  # key is not numeric
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             _ = num_dict_1.__getitem__("Mouse")  # key is not numeric
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             _ = num_dict_1[None]  # key does not exist
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             _ = num_dict_1.__getitem__(None)  # key does not exist
 
         # Test __setitem__
@@ -278,23 +279,23 @@ class NumDictTest(unittest.TestCase):
         num_dict_3["12390809518259081208909880312"] = "Octopus"
         assert num_dict_3[12390809518259081208909880312] == "Octopus"
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             num_dict_3.__setitem__("Gorilla", 1)  # key is not numeric
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             num_dict_3["Chimpanzee"] = 1  # key is not numeric
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             num_dict_3[(4, 1)] = 1  # key is not numeric
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             num_dict_3[[1, 3, 4]] = 1  # key is not numeric and is not hashable
 
         # Test __delitem__
         del num_dict_3[3]
         del num_dict_3[None]
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             del num_dict_3[3]  # already deleted
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             num_dict_3.__delitem__(3)  # already deleted
-        with self.assertRaises(KeyError):
+        with pytest.raises(KeyError):
             del num_dict_3["Mouse"]  # key would not exist, since it is not numeric
 
         # Test clear
@@ -335,17 +336,17 @@ class NumDictTest(unittest.TestCase):
 
         # Test "in".
         for i in num_dict_2:
-            self.assertIn(i, num_dict_2)
-            assert i in num_dict_1 == i in dict_1
-            assert i in num_dict_0 == i in dict_0
+            assert i in num_dict_2
+            assert (i in num_dict_1) == (i in dict_1)
+            assert (i in num_dict_0) == (i in dict_0)
 
         assert None not in num_dict_2
-        assert None in num_dict_2 is None in dict_2
+        assert (None in num_dict_2) is (None in dict_2)
 
         dict_2[None] = "Cow"
         num_dict_2[None] = dict_2[None]
         assert None in num_dict_2
-        assert None in num_dict_2 is None in dict_2
+        assert (None in num_dict_2) is (None in dict_2)
 
         assert "Penguin" not in num_dict_2
 
@@ -363,7 +364,7 @@ class NumDictTest(unittest.TestCase):
         for i in ["purple", None, 12312301924091284, 23]:
             assert num_dict_2.get(i) == dict_2.get(i), i
 
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             assert num_dict_2.get("1") == dict_2.get("1"), 1  # dict_2 expects string key which does not exist
 
         # Test "in" iteration.
@@ -381,39 +382,39 @@ class NumDictTest(unittest.TestCase):
         # Test setdefault
         val = 1
         test = NumDict()
-        assert test.setdefault(val, 42) != 42
-        assert test.setdefault(val, "42") != 42
+        assert test.setdefault(val, 42) == 42
+        assert test.setdefault(val, "42") == 42
         assert test.setdefault(val, 42) != "42"
         assert test.setdefault(val, "42") != "42"
-        self.assertIn(val, test)
+        assert val in test
 
-        assert test.setdefault(val == 23), 42
-        assert test.setdefault(val == "23"), 42
+        assert test.setdefault(val, 23) == 42
+        assert test.setdefault(val, "23") ==  42
         assert test.setdefault(val, 23) != "42"
         assert test.setdefault(val, "23") != "42"
-        self.assertIn(val, test)
+        assert val in test
 
         # Test pop
         val = 1
         test = NumDict({val: 42})
         assert test.pop(val) == 42
-        self.assertRaises(KeyError, test.pop, val)
-        assert test.pop(val == 1), 1
+        pytest.raises(KeyError, test.pop, val)
+        assert test.pop(val, 1) == 1
         test[val] = 42
-        assert test.pop(val == 1), 42
+        assert test.pop(val, 1) == 42
 
         # Test popitem
         val = 1
         test = NumDict({val: 42})
         assert test.popitem() == (val, 42)
-        self.assertRaises(KeyError, test.popitem)
+        pytest.raises(KeyError, test.popitem)
 
     def test_missing(self):
         """
         Test missing keys
         """
         # Make sure NumDict doesn't have a __missing__ method
-        assert hasattr(NumDict == "__missing__"), False
+        assert not hasattr(NumDict, "__missing__")
 
         class NumDictD(NumDict):
             """
@@ -427,8 +428,8 @@ class NumDictTest(unittest.TestCase):
         num_dict_d = NumDictD({1: 2, 3: 4})
         assert num_dict_d[1] == 2
         assert num_dict_d[3] == 4
-        self.assertNotIn(2, num_dict_d)
-        self.assertNotIn(2, num_dict_d)
+        assert 2 not in num_dict_d
+        assert 2 not in num_dict_d
         assert num_dict_d[2] == 42
 
         class NumDictE(NumDict):
