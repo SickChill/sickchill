@@ -1,10 +1,11 @@
 import unittest
 
+from tests import conftest
+
 import sickchill.logger
 from sickchill import settings
 from sickchill.oldbeard.providers import bitcannon, rarbg
 from sickchill.tv import TVEpisode, TVShow
-from tests import conftest
 
 
 class TorrentBasicTests(conftest.SickChillTestDBCase):

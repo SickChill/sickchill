@@ -4,10 +4,11 @@ Test XEM
 
 import unittest
 
+from tests import conftest
+
 import sickchill.oldbeard.db
 from sickchill import settings
 from sickchill.tv import TVShow
-from tests import conftest
 
 
 class XEMBasicTests(conftest.SickChillTestDBCase):

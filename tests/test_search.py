@@ -1,11 +1,12 @@
 import unittest
 
+from tests import conftest
+
 import sickchill.oldbeard.providers
 from sickchill import settings
 from sickchill.oldbeard import common as common
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.tv import TVEpisode, TVShow
-from tests import conftest
 
 TESTS = {
     "Game of Thrones": {

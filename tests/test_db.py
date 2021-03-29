@@ -10,8 +10,9 @@ import time
 import unittest
 from datetime import datetime
 
-import sickchill.oldbeard
 from tests import conftest
+
+import sickchill.oldbeard
 
 
 class DBBasicTests(conftest.SickChillTestDBCase):

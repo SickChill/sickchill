@@ -5,12 +5,13 @@ Test notifiers
 
 import unittest
 
+from tests import conftest
+
 from sickchill.oldbeard import db
 from sickchill.oldbeard.notifiers.emailnotify import Notifier as EmailNotifier
 from sickchill.oldbeard.notifiers.prowl import Notifier as ProwlNotifier
 from sickchill.tv import TVEpisode, TVShow
 from sickchill.views.home import Home
-from tests import conftest
 
 
 # noinspection PyProtectedMember

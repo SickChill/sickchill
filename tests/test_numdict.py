@@ -1,6 +1,7 @@
 import unittest
-import pytest
 from collections import UserDict
+
+import pytest
 
 from sickchill.oldbeard.numdict import NumDict
 

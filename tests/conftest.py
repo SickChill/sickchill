@@ -17,12 +17,12 @@ Classes:
     TestCacheDBConnection
 """
 
+import os
 import os.path
 import shutil
 import unittest
 
 import pytest
-import os
 from configobj import ConfigObj
 
 import sickchill.logger
