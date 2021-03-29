@@ -107,7 +107,7 @@ class Notifier(object):
                     logger.debug("Updating library in KODI for show " + show_name)
 
                     # let's try letting kodi filter the shows
-                    response = connection.VideoLibrary.GetTVShows(filter={"field": "title", "operator": "is", "value": show_name}, properties=["file"])
+                    response = connection.VideoLibrary.GetTVShows(filter={"field": "title", "operator": "is", "value": unquote_plus(show_name)}, properties=["file"])
                     if response and "result" in response and "tvshows" in response["result"]:
                         shows = response["result"]["tvshows"]
                     else:
