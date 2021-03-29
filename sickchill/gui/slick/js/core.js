@@ -50,10 +50,7 @@ function notifyModal(message) {
     $('#site-notification-modal').modal();
 }
 
-function addSiteMessage(level, tag, message) {
-    level = level || 'danger';
-    tag = tag || '';
-    message = message || '';
+function addSiteMessage(level = 'danger', tag = '', message = '') {
     $.post(scRoot + '/ui/set_site_message', {level, tag, message}, siteMessages => {
         const messagesDiv = $('#site-messages');
         if (messagesDiv !== undefined) {
