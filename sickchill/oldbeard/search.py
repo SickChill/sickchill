@@ -44,7 +44,7 @@ def _downloadResult(result):
 
         # save the data to disk
         try:
-            with open(filename, 'w') as fileOut:
+            with open(filename, "w") as fileOut:
                 fileOut.write(result.extraInfo[0])
 
             helpers.chmodAsParent(filename)
@@ -79,12 +79,12 @@ def snatchEpisode(result, endStatus=SNATCHED):
             if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
                 result.priority = 1
 
-    endStatus = SNATCHED_PROPER if re.search(r'\b(proper|repack|real)\b', result.name, re.I) else endStatus
+    endStatus = SNATCHED_PROPER if re.search(r"\b(proper|repack|real)\b", result.name, re.I) else endStatus
 
     # This is breaking if newznab protocol, expecting a torrent from a url and getting a magnet instead.
-    if result.url and 'jackett_apikey' in result.url:
-        response = result.provider.get_url(result.url, allow_redirects=False, returns='response')
-        if response.next and response.next.url and response.next.url.startswith('magnet'):
+    if result.url and "jackett_apikey" in result.url:
+        response = result.provider.get_url(result.url, allow_redirects=False, returns="response")
+        if response.next and response.next.url and response.next.url.startswith("magnet"):
             result.url = response.next.url
 
     # NZBs can be sent straight to SAB or saved to disk
@@ -97,8 +97,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
             is_proper = True if endStatus == SNATCHED_PROPER else False
             dlResult = nzbget.sendNZB(result, is_proper)
         elif settings.NZB_METHOD == "download_station":
-            client = clients.getClientInstance(settings.NZB_METHOD)(
-                settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
+            client = clients.getClientInstance(settings.NZB_METHOD)(settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
             dlResult = client.sendNZB(result)
         else:
             logger.exception("Unknown NZB action specified in config: " + settings.NZB_METHOD)
@@ -110,11 +109,11 @@ def snatchEpisode(result, endStatus=SNATCHED):
         if settings.TORRENT_METHOD == "blackhole":
             dlResult = _downloadResult(result)
         else:
-            if not result.content and not result.url.startswith('magnet'):
+            if not result.content and not result.url.startswith("magnet"):
                 if result.provider.login():
-                    result.content = result.provider.get_url(result.url, returns='content')
+                    result.content = result.provider.get_url(result.url, returns="content")
 
-            if result.content or result.url.startswith('magnet'):
+            if result.content or result.url.startswith("magnet"):
                 client = clients.getClientInstance(settings.TORRENT_METHOD)()
                 dlResult = client.sendTORRENT(result)
             else:
@@ -130,7 +129,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
     if settings.USE_FAILED_DOWNLOADS:
         failed_history.logSnatch(result)
 
-    ui.notifications.message('Episode snatched', result.name)
+    ui.notifications.message("Episode snatched", result.name)
 
     history.logSnatch(result)
 
@@ -148,7 +147,7 @@ def snatchEpisode(result, endStatus=SNATCHED):
 
         if curEpObj.status not in Quality.DOWNLOADED:
             try:
-                notifiers.notify_snatch("{0} from {1}".format(curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN'), result.provider.name))
+                notifiers.notify_snatch("{0} from {1}".format(curEpObj._format_pattern("%SN - %Sx%0E - %EN - %QN"), result.provider.name))
             except Exception:
                 # Without this, when notification fail, it crashes the snatch thread and SR will
                 # keep snatching until notification is sent
@@ -208,9 +207,8 @@ def pickBestResult(results, show):
         if not show_name_helpers.filter_bad_releases(cur_result.name, parse=False, show=show):
             continue
 
-        if hasattr(cur_result, 'size'):
-            if settings.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size,
-                                                                          cur_result.provider.name):
+        if hasattr(cur_result, "size"):
+            if settings.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size, cur_result.provider.name):
                 logger.info(cur_result.name + " has previously failed, rejecting it")
                 continue
 
@@ -309,8 +307,7 @@ def wantedEpisodes(show, fromDate):
     con = db.DBConnection()
 
     sql_results = con.select(
-        "SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?",
-        [show.indexerid, fromDate.toordinal()]
+        "SELECT status, season, episode FROM tv_episodes WHERE showid = ? AND season > 0 and airdate > ?", [show.indexerid, fromDate.toordinal()]
     )
 
     # check through the list of statuses to see if we want any
@@ -447,14 +444,17 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         search_mode = curProvider.search_mode
 
         # Always search for episode when manually searching when in sponly
-        if search_mode == 'sponly' and manualSearch is True:
-            search_mode = 'eponly'
+        if search_mode == "sponly" and manualSearch is True:
+            search_mode = "eponly"
 
         while True:
             searchCount += 1
 
-            logger.info(_("Performing {episode_or_season} search for {show}").format(
-                episode_or_season=(_('season pack'), _('episode'))[search_mode == 'eponly'], show=show.name))
+            logger.info(
+                _("Performing {episode_or_season} search for {show}").format(
+                    episode_or_season=(_("season pack"), _("episode"))[search_mode == "eponly"], show=show.name
+                )
+            )
 
             try:
                 searchResults = curProvider.find_search_results(show, episodes, search_mode, manualSearch, downCurQuality)
@@ -480,12 +480,12 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             elif searchCount == 2 or not curProvider.search_fallback:
                 break
 
-            if search_mode == 'sponly':
+            if search_mode == "sponly":
                 logger.debug("Fallback episode search initiated")
-                search_mode = 'eponly'
+                search_mode = "eponly"
             else:
                 logger.debug("Fallback season pack search initiate")
-                search_mode = 'sponly'
+                search_mode = "sponly"
 
         # skip to next provider if we have no results to process
         if not foundResults[curProvider.name]:
@@ -512,12 +512,16 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
             logger.info("The quality of the season " + bestSeasonResult.provider.provider_type + " is " + Quality.qualityStrings[seasonQual])
 
             main_db_con = db.DBConnection()
-            allEps = [int(x["episode"])
-                      for x in main_db_con.select("SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ','.join(searchedSeasons) + " ) )",
-                                                  [show.indexerid])]
+            allEps = [
+                int(x["episode"])
+                for x in main_db_con.select(
+                    "SELECT episode FROM tv_episodes WHERE showid = ? AND ( season IN ( " + ",".join(searchedSeasons) + " ) )", [show.indexerid]
+                )
+            ]
 
             logger.info(
-                "Executed query: [SELECT episode FROM tv_episodes WHERE showid = {0} AND season in  {1}]".format(show.indexerid, ','.join(searchedSeasons)))
+                "Executed query: [SELECT episode FROM tv_episodes WHERE showid = {0} AND season in  {1}]".format(show.indexerid, ",".join(searchedSeasons))
+            )
             logger.debug("Episode list: " + str(allEps))
 
             allWanted = True
@@ -531,8 +535,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
             # if we need every ep in the season and there's nothing better then just download this and be done with it (unless single episodes are preferred)
             if allWanted and bestSeasonResult.quality == highest_quality_overall:
-                logger.info(
-                    "Every ep in this season is needed, downloading the whole " + bestSeasonResult.provider.provider_type + " " + bestSeasonResult.name)
+                logger.info("Every ep in this season is needed, downloading the whole " + bestSeasonResult.provider.provider_type + " " + bestSeasonResult.name)
                 epObjs = []
                 for curEpNum in allEps:
                     for season in {x.season for x in episodes}:
@@ -570,7 +573,8 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
                     # Season result from Torrent Provider must be a full-season torrent, creating multi-ep result for it.
                     logger.info(
-                        "Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!")
+                        "Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!"
+                    )
                     epObjs = []
                     for curEpNum in allEps:
                         for season in {x.season for x in episodes}:
@@ -619,13 +623,10 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                     else:
                         multiNeededEps.append(epObj.episode)
 
-                logger.debug(
-                    "Multi-ep check result is multiNeededEps: " + str(multiNeededEps) + ", multiNotNeededEps: " + str(
-                        multiNotNeededEps))
+                logger.debug("Multi-ep check result is multiNeededEps: " + str(multiNeededEps) + ", multiNotNeededEps: " + str(multiNotNeededEps))
 
                 if not multiNeededEps:
-                    logger.debug(
-                        "All of these episodes were covered by another multi-episode nzbs, ignoring this multi-ep result")
+                    logger.debug("All of these episodes were covered by another multi-episode nzbs, ignoring this multi-ep result")
                     continue
 
                 # don't bother with the single result if we're going to get it with a multi result
@@ -633,8 +634,10 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                     multiResults[epObj.episode] = multiResult
                     if epObj.episode in foundResults[curProvider.name]:
                         logger.debug(
-                            "A needed multi-episode result overlaps with a single-episode result for ep #" + str(
-                                epObj.episode) + ", removing the single-episode results from the list")
+                            "A needed multi-episode result overlaps with a single-episode result for ep #"
+                            + str(epObj.episode)
+                            + ", removing the single-episode results from the list"
+                        )
                         del foundResults[curProvider.name][epObj.episode]
 
         # of all the single ep results narrow it down to the best one for each episode

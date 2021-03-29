@@ -7,28 +7,13 @@ from . import common
 from .common import DOWNLOADED, Quality
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
-name_presets = (
-    '%SN - %Sx%0E',
-    '%SN - %Sx%0E - %EN',
-    '%S.N.S%0SE%0E.%E.N',
-    '%Sx%0E - %EN',
-    'S%0SE%0E - %EN',
-    'Season %0S/%S.N.S%0SE%0E.%Q.N-%RG'
-)
+name_presets = ("%SN - %Sx%0E", "%SN - %Sx%0E - %EN", "%S.N.S%0SE%0E.%E.N", "%Sx%0E - %EN", "S%0SE%0E - %EN", "Season %0S/%S.N.S%0SE%0E.%Q.N-%RG")
 
 name_anime_presets = name_presets
 
-name_abd_presets = (
-    '%SN - %A-D - %EN',
-    '%S.N.%A.D.%E.N.%Q.N',
-    '%Y/%0M/%S.N.%A.D.%E.N-%RG'
-)
+name_abd_presets = ("%SN - %A-D - %EN", "%S.N.%A.D.%E.N.%Q.N", "%Y/%0M/%S.N.%A.D.%E.N-%RG")
 
-name_sports_presets = (
-    '%SN - %A-D - %EN',
-    '%S.N.%A.D.%E.N.%Q.N',
-    '%Y/%0M/%S.N.%A.D.%E.N-%RG'
-)
+name_sports_presets = ("%SN - %A-D - %EN", "%S.N.%A.D.%E.N.%Q.N", "%Y/%0M/%S.N.%A.D.%E.N-%RG")
 
 
 class TVShow(object):
@@ -79,7 +64,7 @@ class TVEpisode(tv.TVEpisode):
         self.airdate = datetime.date(2010, 3, 9)
         self.show = TVShow()
         self.status = Quality.compositeStatus(common.DOWNLOADED, common.Quality.SDTV)
-        self.release_name = 'Show.Name.S02E03.HDTV.XviD-SICKCHILL'
+        self.release_name = "Show.Name.S02E03.HDTV.XviD-SICKCHILL"
         self.is_proper = True
 
 
@@ -150,8 +135,7 @@ def check_valid_sports_naming(pattern=None):
     return valid
 
 
-def validate_name(pattern, multi=None, anime_type=None,
-                  file_only=False, abd=False, sports=False):
+def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=False, sports=False):
     """
     See if we understand a name
 
@@ -165,7 +149,7 @@ def validate_name(pattern, multi=None, anime_type=None,
     """
     ep = generate_sample_ep(multi, abd, sports, anime_type)
 
-    new_name = ep.formatted_filename(pattern, multi, anime_type) + '.ext'
+    new_name = ep.formatted_filename(pattern, multi, anime_type) + ".ext"
     new_path = ep.formatted_dir(pattern, multi, anime_type)
     if not file_only:
         new_name = os.path.join(new_path, new_name)
@@ -211,17 +195,17 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
     ep._airdate = datetime.date(2011, 3, 9)
 
     if abd:
-        ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-SICKCHILL'
+        ep._release_name = "Show.Name.2011.03.09.HDTV.XviD-SICKCHILL"
         ep.show.air_by_date = 1
     elif sports:
-        ep._release_name = 'Show.Name.2011.03.09.HDTV.XviD-SICKCHILL'
+        ep._release_name = "Show.Name.2011.03.09.HDTV.XviD-SICKCHILL"
         ep.show.sports = 1
     else:
         if anime_type != 3:
             ep.show.anime = 1
-            ep._release_name = 'Show.Name.003.HDTV.XviD-SICKCHILL'
+            ep._release_name = "Show.Name.003.HDTV.XviD-SICKCHILL"
         else:
-            ep._release_name = 'Show.Name.S02E03.HDTV.XviD-SICKCHILL'
+            ep._release_name = "Show.Name.S02E03.HDTV.XviD-SICKCHILL"
 
     if multi is not None:
         ep._name = "Ep Name (1)"
@@ -229,7 +213,7 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
         if anime_type != 3:
             ep.show.anime = 1
 
-            ep._release_name = 'Show.Name.003-004.HDTV.XviD-SICKCHILL'
+            ep._release_name = "Show.Name.003-004.HDTV.XviD-SICKCHILL"
 
             secondEp = TVEpisode(2, 4, 4, "Ep Name (2)")
             secondEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
@@ -237,7 +221,7 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
 
             ep.relatedEps.append(secondEp)
         else:
-            ep._release_name = 'Show.Name.S02E03E04E05.HDTV.XviD-SICKCHILL'
+            ep._release_name = "Show.Name.S02E03E04E05.HDTV.XviD-SICKCHILL"
 
             secondEp = TVEpisode(2, 4, 4, "Ep Name (2)")
             secondEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
@@ -256,4 +240,4 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
 def test_name(pattern, multi=None, abd=False, sports=False, anime_type=None):
     ep = generate_sample_ep(multi, abd, sports, anime_type)
 
-    return {'name': ep.formatted_filename(pattern, multi, anime_type), 'dir': ep.formatted_dir(pattern, multi, anime_type)}
+    return {"name": ep.formatted_filename(pattern, multi, anime_type), "dir": ep.formatted_dir(pattern, multi, anime_type)}

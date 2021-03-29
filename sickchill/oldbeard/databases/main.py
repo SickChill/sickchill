@@ -22,7 +22,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.convert_archived_to_compound()
 
     def convert_archived_to_compound(self):
-        logger.debug(_('Checking for archived episodes not qualified'))
+        logger.debug(_("Checking for archived episodes not qualified"))
 
         sql_results = self.connection.select(
             "SELECT episode_id, showid, status, location, season, episode FROM tv_episodes WHERE status = ?", [common.ARCHIVED]
@@ -32,61 +32,75 @@ class MainSanityCheck(db.DBSanityCheck):
 
         for archivedEp in sql_results:
             fixed_status = common.Quality.compositeStatus(common.ARCHIVED, common.Quality.UNKNOWN)
-            existing = archivedEp['location'] and os.path.exists(archivedEp['location'])
+            existing = archivedEp["location"] and os.path.exists(archivedEp["location"])
             if existing:
-                quality = common.Quality.nameQuality(archivedEp['location'])
+                quality = common.Quality.nameQuality(archivedEp["location"])
                 fixed_status = common.Quality.compositeStatus(common.ARCHIVED, quality)
 
             old_status = common.statusStrings[common.ARCHIVED]
             new_status = common.statusStrings[fixed_status]
-            archived_episode = archivedEp['showid']
-            ep = episode_num(archivedEp['season'])
-            episode_id = archivedEp['episode_id']
-            location = archivedEp['location'] or 'unknown location'
-            result = ('NOT FOUND', 'EXISTS')[bool(existing)]
+            archived_episode = archivedEp["showid"]
+            ep = episode_num(archivedEp["season"])
+            episode_id = archivedEp["episode_id"]
+            location = archivedEp["location"] or "unknown location"
+            result = ("NOT FOUND", "EXISTS")[bool(existing)]
 
-            logger.info(_('Changing status from {old_status} to {new_status} for {archived_episode}: {ep} at {location} (File {result})'.format(
-                old_status=old_status, new_status=new_status, archived_episode=archived_episode, ep=ep, location=location, result=result
-            )))
+            logger.info(
+                _(
+                    "Changing status from {old_status} to {new_status} for {archived_episode}: {ep} at {location} (File {result})".format(
+                        old_status=old_status, new_status=new_status, archived_episode=archived_episode, ep=ep, location=location, result=result
+                    )
+                )
+            )
 
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [fixed_status, episode_id])
 
-    def fix_duplicate_shows(self, column='indexer_id'):
+    def fix_duplicate_shows(self, column="indexer_id"):
 
-        sql_results = self.connection.select(
-            f"SELECT show_id, {column}, COUNT({column}) as count FROM tv_shows GROUP BY {column} HAVING count > 1")
+        sql_results = self.connection.select(f"SELECT show_id, {column}, COUNT({column}) as count FROM tv_shows GROUP BY {column} HAVING count > 1")
 
         for cur_duplicate in sql_results:
 
-            logger.debug(_("Duplicate show detected! {column}: {dupe} count: {count}".format(column=column, dupe=cur_duplicate[column], count=cur_duplicate['count'])))
+            logger.debug(
+                _("Duplicate show detected! {column}: {dupe} count: {count}".format(column=column, dupe=cur_duplicate[column], count=cur_duplicate["count"]))
+            )
 
             cur_dupe_results = self.connection.select(
-                "SELECT show_id, " + column + " FROM tv_shows WHERE " + column + " = ? LIMIT ?",
-                [cur_duplicate[column], int(cur_duplicate["count"]) - 1]
+                "SELECT show_id, " + column + " FROM tv_shows WHERE " + column + " = ? LIMIT ?", [cur_duplicate[column], int(cur_duplicate["count"]) - 1]
             )
 
             for cur_dupe_id in cur_dupe_results:
-                logger.info(_("Deleting duplicate show with {column}: {dupe} showid: {show}".format(column=column, dupe=cur_dupe_id[column], show=cur_dupe_id['show_id'])))
+                logger.info(
+                    _(
+                        "Deleting duplicate show with {column}: {dupe} showid: {show}".format(
+                            column=column, dupe=cur_dupe_id[column], show=cur_dupe_id["show_id"]
+                        )
+                    )
+                )
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
 
     def fix_duplicate_episodes(self):
 
         sql_results = self.connection.select(
-            "SELECT showid, season, episode, COUNT(showid) as count FROM tv_episodes GROUP BY showid, season, episode HAVING count > 1")
+            "SELECT showid, season, episode, COUNT(showid) as count FROM tv_episodes GROUP BY showid, season, episode HAVING count > 1"
+        )
 
         for cur_duplicate in sql_results:
             dupe_id = cur_duplicate["showid"]
             dupe_season = cur_duplicate["season"]
-            dupe_episode = cur_duplicate["episode"],
+            dupe_episode = (cur_duplicate["episode"],)
             dupe_count = cur_duplicate["count"]
-            logger.debug(_("Duplicate episode detected! showid: {dupe_id} season: {dupe_season} episode {dupe_episode} count: {dupe_count}".format(
-                dupe_id=dupe_id, dupe_season=dupe_season, dupe_episode=dupe_episode, dupe_count=dupe_count))
+            logger.debug(
+                _(
+                    "Duplicate episode detected! showid: {dupe_id} season: {dupe_season} episode {dupe_episode} count: {dupe_count}".format(
+                        dupe_id=dupe_id, dupe_season=dupe_season, dupe_episode=dupe_episode, dupe_count=dupe_count
+                    )
+                )
             )
 
             cur_dupe_results = self.connection.select(
                 "SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? and episode = ? ORDER BY episode_id DESC LIMIT ?",
-                [cur_duplicate["showid"], cur_duplicate["season"], cur_duplicate["episode"],
-                 int(cur_duplicate["count"]) - 1]
+                [cur_duplicate["showid"], cur_duplicate["season"], cur_duplicate["episode"], int(cur_duplicate["count"]) - 1],
             )
 
             for cur_dupe_id in cur_dupe_results:
@@ -98,13 +112,18 @@ class MainSanityCheck(db.DBSanityCheck):
 
         sql_results = self.connection.select(
             "SELECT episode_id, showid, tv_shows.indexer_id FROM tv_episodes "
-            "LEFT JOIN tv_shows ON tv_episodes.showid=tv_shows.indexer_id WHERE tv_shows.indexer_id is NULL")
+            "LEFT JOIN tv_shows ON tv_episodes.showid=tv_shows.indexer_id WHERE tv_shows.indexer_id is NULL"
+        )
 
         for cur_orphan in sql_results:
             current_episode_id = cur_orphan["episode_id"]
             current_show_id = cur_orphan["showid"]
-            logger.debug(_("Orphan episode detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
-                current_episode_id=current_episode_id, current_show_id=current_show_id))
+            logger.debug(
+                _(
+                    "Orphan episode detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
+                        current_episode_id=current_episode_id, current_show_id=current_show_id
+                    )
+                )
             )
             logger.info(_("Deleting orphan episode with episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
             self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [current_episode_id])
@@ -139,7 +158,8 @@ class MainSanityCheck(db.DBSanityCheck):
         current_date = datetime.date.today()
         sql_results = self.connection.select(
             "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
-            [current_date.toordinal(), common.SKIPPED, common.WANTED])
+            [current_date.toordinal(), common.SKIPPED, common.WANTED],
+        )
 
         for cur_unaired in sql_results:
             current_episode_id = cur_unaired["episode_id"]
@@ -151,21 +171,30 @@ class MainSanityCheck(db.DBSanityCheck):
         for cur_ep in sql_results:
             current_episode_id = cur_ep["episode_id"]
             current_show_id = cur_ep["showid"]
-            logger.debug(_("MALFORMED episode status detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
-                current_episode_id=current_episode_id, current_show_id=current_show_id)))
+            logger.debug(
+                _(
+                    "MALFORMED episode status detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
+                        current_episode_id=current_episode_id, current_show_id=current_show_id
+                    )
+                )
+            )
             logger.info(_("Fixing malformed episode status with episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNKNOWN, current_episode_id])
 
     def fix_invalid_airdates(self):
 
-        sql_results = self.connection.select(
-            "SELECT episode_id, showid FROM tv_episodes WHERE airdate >= ? OR airdate < 1", [datetime.date.max.toordinal()])
+        sql_results = self.connection.select("SELECT episode_id, showid FROM tv_episodes WHERE airdate >= ? OR airdate < 1", [datetime.date.max.toordinal()])
 
         for bad_airdate in sql_results:
             current_episode_id = bad_airdate["episode_id"]
             current_show_id = bad_airdate["showid"]
-            logger.debug(_("Bad episode airdate detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
-                current_episode_id=current_episode_id, current_show_id=current_show_id)))
+            logger.debug(
+                _(
+                    "Bad episode airdate detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
+                        current_episode_id=current_episode_id, current_show_id=current_show_id
+                    )
+                )
+            )
             logger.info(_("Fixing bad episode airdate for episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
             self.connection.action("UPDATE tv_episodes SET airdate = '1' WHERE episode_id = ?", [current_episode_id])
 
@@ -185,6 +214,7 @@ def backup_database(version):
 # = Main DB Migrations =
 # ======================
 # Add new migrations at the bottom of the list; subclass the previous migration.
+
 
 class InitialSchema(db.SchemaUpgrade):
     def test(self):
@@ -210,7 +240,7 @@ class InitialSchema(db.SchemaUpgrade):
                 "CREATE INDEX idx_sta_epi_sta_air ON tv_episodes(season, episode, status, airdate);",
                 "CREATE INDEX idx_status ON tv_episodes(status,season,episode,airdate);",
                 "CREATE INDEX idx_tv_episodes_showid_airdate ON tv_episodes(showid, airdate);",
-                "INSERT INTO db_version(db_version, db_minor_version) VALUES (44, 3);"
+                "INSERT INTO db_version(db_version, db_minor_version) VALUES (44, 3);",
             ]
             for query in queries:
                 self.connection.action(query)
@@ -219,12 +249,22 @@ class InitialSchema(db.SchemaUpgrade):
             cur_db_version = self.get_db_version()
 
             if cur_db_version < MIN_DB_VERSION:
-                logger.log_error_and_exit(_(
-                    "Your database version ({cur_db_version}) is too old to migrate from what this version of SickChill supports ({MIN_DB_VERSION}).\nUpgrade using a previous version (tag) build 496 to build 501 of SickChill first or remove database file to begin fresh.".format(cur_db_version=cur_db_version, MIN_DB_VERSION=MIN_DB_VERSION)))
+                logger.log_error_and_exit(
+                    _(
+                        "Your database version ({cur_db_version}) is too old to migrate from what this version of SickChill supports ({MIN_DB_VERSION}).\nUpgrade using a previous version (tag) build 496 to build 501 of SickChill first or remove database file to begin fresh.".format(
+                            cur_db_version=cur_db_version, MIN_DB_VERSION=MIN_DB_VERSION
+                        )
+                    )
+                )
 
             if cur_db_version > MAX_DB_VERSION:
-                logger.log_error_and_exit(_(
-                    "Your database version ({cur_db_version}) has been incremented past what this version of SickChill supports ({MAX_DB_VERSION}).\nIf you have used other forks of SickChill, your database may be unusable due to their modifications.".format(cur_db_version=cur_db_version, MAX_DB_VERSION=MAX_DB_VERSION)))
+                logger.log_error_and_exit(
+                    _(
+                        "Your database version ({cur_db_version}) has been incremented past what this version of SickChill supports ({MAX_DB_VERSION}).\nIf you have used other forks of SickChill, your database may be unusable due to their modifications.".format(
+                            cur_db_version=cur_db_version, MAX_DB_VERSION=MAX_DB_VERSION
+                        )
+                    )
+                )
 
 
 class AddPreferWords(InitialSchema):
@@ -239,7 +279,7 @@ class AddPreferWords(InitialSchema):
         logger.info("Adding column rls_prefer_words to tvshows")
         self.add_column("tv_shows", "rls_prefer_words", "TEXT", "")
         self.inc_minor_version()
-        logger.info('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
+        logger.info("Updated to: {0:d}.{1:d}".format(*self.connection.version))
 
 
 class AddCustomNameToShow(AddPreferWords):
@@ -254,4 +294,4 @@ class AddCustomNameToShow(AddPreferWords):
         logger.info("Adding column custom_name to tvshows")
         self.add_column("tv_shows", "custom_name", "TEXT", "")
         self.inc_minor_version()
-        logger.info('Updated to: {0:d}.{1:d}'.format(*self.connection.version))
+        logger.info("Updated to: {0:d}.{1:d}".format(*self.connection.version))

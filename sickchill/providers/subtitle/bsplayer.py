@@ -23,8 +23,7 @@ from sickchill.oldbeard.helpers import make_context
 logger = logging.getLogger(__name__)
 
 # s1-9, s101-109
-SUB_DOMAINS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9',
-               's101', 's102', 's103', 's104', 's105', 's106', 's107', 's108', 's109']
+SUB_DOMAINS = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s101", "s102", "s103", "s104", "s105", "s106", "s107", "s108", "s109"]
 API_URL_TEMPLATE = "http://{sub_domain}.api.bsplayer-subtitles.com/v1.php"
 
 
@@ -35,12 +34,31 @@ def get_sub_domain():
 
 class BSPlayerSubtitle(Subtitle):
     """BSPlayer Subtitle."""
-    provider_name = 'bsplayer'
+
+    provider_name = "bsplayer"
     series_re = re.compile(r'^"(?P<series_name>.*)" (?P<series_title>.*)$')
 
-    def __init__(self, subtitle_id, size, page_link, language, filename, subtitle_source, subtitle_hash, rating,
-                 season, episode, encoding, imdb_id, imdb_rating, movie_year, movie_name, movie_hash, movie_size,
-                 movie_fps):
+    def __init__(
+        self,
+        subtitle_id,
+        size,
+        page_link,
+        language,
+        filename,
+        subtitle_source,
+        subtitle_hash,
+        rating,
+        season,
+        episode,
+        encoding,
+        imdb_id,
+        imdb_rating,
+        movie_year,
+        movie_name,
+        movie_hash,
+        movie_size,
+        movie_fps,
+    ):
         super().__init__(language, page_link=page_link, encoding=encoding)
         self.subtitle_id = subtitle_id
         self.size = size
@@ -75,22 +93,22 @@ class BSPlayerSubtitle(Subtitle):
 
     @property
     def series_name(self):
-        return self.series_re.match(self.movie_name).group('series_name')
+        return self.series_re.match(self.movie_name).group("series_name")
 
     @property
     def series_title(self):
-        return self.series_re.match(self.movie_name).group('series_title')
+        return self.series_re.match(self.movie_name).group("series_title")
 
     def get_matches(self, video):
-        return {'hash'}
+        return {"hash"}
 
 
 class BSPlayerProvider(Provider):
-    """BSPlayer Provider.
-    """
-    languages = {Language.fromalpha3b(l) for l in language_converters['alpha3b'].codes}
-    server_url = 'https://api.bsplayer.org/xml-rpc'
-    user_agent = 'subliminal v%s' % __short_version__
+    """BSPlayer Provider."""
+
+    languages = {Language.fromalpha3b(l) for l in language_converters["alpha3b"].codes}
+    server_url = "https://api.bsplayer.org/xml-rpc"
+    user_agent = "subliminal v%s" % __short_version__
 
     def __init__(self, search_url=None):
         self.server = ServerProxy(self.server_url, TimeoutSafeTransport(10), context=make_context(settings.SSL_VERIFY))
@@ -99,12 +117,12 @@ class BSPlayerProvider(Provider):
         self.session = Session()
         self.search_url = search_url or get_sub_domain()
 
-    def _api_request(self, func_name='logIn', params='', tries=5):
+    def _api_request(self, func_name="logIn", params="", tries=5):
         headers = {
-            'User-Agent': 'BSPlayer/2.x (1022.12360)',
-            'Content-Type': 'text/xml; charset=utf-8',
-            'Connection': 'close',
-            'SOAPAction': '"http://api.bsplayer-subtitles.com/v1.php#{func_name}"'.format(func_name=func_name)
+            "User-Agent": "BSPlayer/2.x (1022.12360)",
+            "Content-Type": "text/xml; charset=utf-8",
+            "Connection": "close",
+            "SOAPAction": '"http://api.bsplayer-subtitles.com/v1.php#{func_name}"'.format(func_name=func_name),
         }
         data = (
             '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -113,7 +131,7 @@ class BSPlayerProvider(Provider):
             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
             f'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="{self.search_url}">'
             '<SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'
-            f'<ns1:{func_name}>{params}</ns1:{func_name}></SOAP-ENV:Body></SOAP-ENV:Envelope>'
+            f"<ns1:{func_name}>{params}</ns1:{func_name}></SOAP-ENV:Body></SOAP-ENV:Envelope>"
         )
 
         for i in range(tries):
@@ -124,76 +142,84 @@ class BSPlayerProvider(Provider):
                 logger.warning(f"[BSPlayer]: {res.content}")
             except Exception as ex:
                 logger.error("[BSPlayer] ERROR: %s." % ex)
-                if func_name == 'logIn':
+                if func_name == "logIn":
                     self.search_url = get_sub_domain()
                 sleep(2)
-        logger.error('[BSPlayer] ERROR: Too many tries (%d)...' % tries)
+        logger.error("[BSPlayer] ERROR: Too many tries (%d)..." % tries)
 
     def initialize(self):
-        root = self._api_request(
-            func_name='logIn',
-            params=('<username></username>'
-                    '<password></password>'
-                    '<AppID>BSPlayer v2.67</AppID>')
-        )
-        res = root.find('.//return')
-        if res.find('status').text == 'OK':
-            self.token = res.find('data').text
+        root = self._api_request(func_name="logIn", params=("<username></username>" "<password></password>" "<AppID>BSPlayer v2.67</AppID>"))
+        res = root.find(".//return")
+        if res.find("status").text == "OK":
+            self.token = res.find("data").text
 
     def terminate(self):
-        root = self._api_request(
-            func_name='logOut',
-            params=f'<handle>{self.token}</handle>'
-        )
-        res = root.find('.//return')
-        if res.find('status').text != 'OK':
-            logger.error('[BSPlayer] ERROR: Unable to close session.')
+        root = self._api_request(func_name="logOut", params=f"<handle>{self.token}</handle>")
+        res = root.find(".//return")
+        if res.find("status").text != "OK":
+            logger.error("[BSPlayer] ERROR: Unable to close session.")
         self.token = None
 
     def query(self, languages, name_hash=None, size=None):
         # fill the search criteria
         root = self._api_request(
-            func_name='searchSubtitles',
+            func_name="searchSubtitles",
             params=(
-                '<handle>{token}</handle>'
-                '<movieHash>{movie_hash}</movieHash>'
-                '<movieSize>{movie_size}</movieSize>'
-                '<languageId>{language_ids}</languageId>'
-                '<imdbId>*</imdbId>'
-            ).format(token=self.token, movie_hash=name_hash,
-                     movie_size=size, language_ids=','.join([l.alpha3 for l in languages]))
+                "<handle>{token}</handle>"
+                "<movieHash>{movie_hash}</movieHash>"
+                "<movieSize>{movie_size}</movieSize>"
+                "<languageId>{language_ids}</languageId>"
+                "<imdbId>*</imdbId>"
+            ).format(token=self.token, movie_hash=name_hash, movie_size=size, language_ids=",".join([l.alpha3 for l in languages])),
         )
-        res = root.find('.//return/result')
-        if res.find('status').text != 'OK':
+        res = root.find(".//return/result")
+        if res.find("status").text != "OK":
             return []
 
-        items = root.findall('.//return/data/item')
+        items = root.findall(".//return/data/item")
         subtitles = []
         if items:
             for item in items:
-                subtitle_id = item.find('subID').text
-                size = item.find('subSize').text
-                download_link = item.find('subDownloadLink').text
-                language = Language.fromalpha3b(item.find('subLang').text)
-                filename = item.find('subName').text
-                subtitle_source = item.find('subFormat').text
-                subtitle_hash = item.find('subHash').text
-                rating = item.find('subRating').text
-                season = item.find('season').text
-                episode = item.find('episode').text
-                encoding = item.find('encsubtitle').text
-                imdb_id = item.find('movieIMBDID').text
-                imdb_rating = item.find('movieIMBDRating').text
-                movie_year = item.find('movieYear').text
-                movie_name = item.find('movieName').text
-                movie_hash = item.find('movieHash').text
-                movie_size = item.find('movieSize').text
-                movie_fps = item.find('movieFPS').text
+                subtitle_id = item.find("subID").text
+                size = item.find("subSize").text
+                download_link = item.find("subDownloadLink").text
+                language = Language.fromalpha3b(item.find("subLang").text)
+                filename = item.find("subName").text
+                subtitle_source = item.find("subFormat").text
+                subtitle_hash = item.find("subHash").text
+                rating = item.find("subRating").text
+                season = item.find("season").text
+                episode = item.find("episode").text
+                encoding = item.find("encsubtitle").text
+                imdb_id = item.find("movieIMBDID").text
+                imdb_rating = item.find("movieIMBDRating").text
+                movie_year = item.find("movieYear").text
+                movie_name = item.find("movieName").text
+                movie_hash = item.find("movieHash").text
+                movie_size = item.find("movieSize").text
+                movie_fps = item.find("movieFPS").text
 
-                subtitle = BSPlayerSubtitle(subtitle_id, size, download_link, language, filename, subtitle_source,
-                                            subtitle_hash, rating, season, episode, encoding, imdb_id, imdb_rating,
-                                            movie_year, movie_name, movie_hash, movie_size, movie_fps)
-                logger.debug('Found subtitle %s', subtitle)
+                subtitle = BSPlayerSubtitle(
+                    subtitle_id,
+                    size,
+                    download_link,
+                    language,
+                    filename,
+                    subtitle_source,
+                    subtitle_hash,
+                    rating,
+                    season,
+                    episode,
+                    encoding,
+                    imdb_id,
+                    imdb_rating,
+                    movie_year,
+                    movie_name,
+                    movie_hash,
+                    movie_size,
+                    movie_fps,
+                )
+                logger.debug("Found subtitle %s", subtitle)
 
                 subtitles.append(subtitle)
 
@@ -203,10 +229,10 @@ class BSPlayerProvider(Provider):
         return self.query(languages, name_hash=self.hash_bsplayer(video.name), size=video.size)
 
     def download_subtitle(self, subtitle):
-        logger.info('Downloading subtitle %r', subtitle)
+        logger.info("Downloading subtitle %r", subtitle)
         headers = {
-            'User-Agent': 'BSPlayer/2.x (1022.12360)',
-            'Content-Length': '0',
+            "User-Agent": "BSPlayer/2.x (1022.12360)",
+            "Content-Length": "0",
         }
 
         response = self.session.get(subtitle.page_link, headers=headers)
@@ -220,10 +246,10 @@ class BSPlayerProvider(Provider):
         :return: the name_hash.
         :rtype: str
         """
-        little_endian_long_long = '<q'  # little-endian long long
+        little_endian_long_long = "<q"  # little-endian long long
         byte_size = struct.calcsize(little_endian_long_long)
 
-        with open(video_path, 'rb') as f:
+        with open(video_path, "rb") as f:
             file_size = os.path.getsize(video_path)
             file_hash = file_size
 

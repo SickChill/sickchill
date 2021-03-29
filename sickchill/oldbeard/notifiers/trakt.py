@@ -37,29 +37,29 @@ class Notifier(object):
             try:
                 # URL parameters
                 data = {
-                    'shows': [
+                    "shows": [
                         {
-                            'title': ep_obj.show.name,
-                            'year': ep_obj.show.startyear,
-                            'ids': {ep_obj.idxr.slug: ep_obj.show.indexerid},
+                            "title": ep_obj.show.name,
+                            "year": ep_obj.show.startyear,
+                            "ids": {ep_obj.idxr.slug: ep_obj.show.indexerid},
                         }
                     ]
                 }
 
                 if settings.TRAKT_SYNC_WATCHLIST and settings.TRAKT_REMOVE_SERIESLIST:
-                    trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                    trakt_api.traktRequest("sync/watchlist/remove", data, method="POST")
 
                 # Add Season and Episode + Related Episodes
-                data['shows'][0]['seasons'] = [{'number': ep_obj.season, 'episodes': []}]
+                data["shows"][0]["seasons"] = [{"number": ep_obj.season, "episodes": []}]
 
                 for relEp_Obj in [ep_obj] + ep_obj.relatedEps:
-                    data['shows'][0]['seasons'][0]['episodes'].append({'number': relEp_Obj.episode})
+                    data["shows"][0]["seasons"][0]["episodes"].append({"number": relEp_Obj.episode})
 
                 if settings.TRAKT_SYNC_WATCHLIST and settings.TRAKT_REMOVE_WATCHLIST:
-                    trakt_api.traktRequest("sync/watchlist/remove", data, method='POST')
+                    trakt_api.traktRequest("sync/watchlist/remove", data, method="POST")
 
                 # update library
-                trakt_api.traktRequest("sync/collection", data, method='POST')
+                trakt_api.traktRequest("sync/collection", data, method="POST")
 
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
@@ -86,11 +86,11 @@ class Notifier(object):
                 # URL parameters
                 if show_obj is not None:
                     data = {
-                        'shows': [
+                        "shows": [
                             {
-                                'title': show_obj.name,
-                                'year': show_obj.startyear,
-                                'ids': {show_obj.idxr.slug: show_obj.indexerid},
+                                "title": show_obj.name,
+                                "year": show_obj.startyear,
+                                "ids": {show_obj.idxr.slug: show_obj.indexerid},
                             }
                         ]
                     }
@@ -101,37 +101,31 @@ class Notifier(object):
                     return False
 
                 if data_episode is not None:
-                    data['shows'][0].update(data_episode)
+                    data["shows"][0].update(data_episode)
 
                 elif s is not None:
                     # trakt URL parameters
                     season = {
-                        'season': [
+                        "season": [
                             {
-                                'number': s,
+                                "number": s,
                             }
                         ]
                     }
 
                     if e is not None:
                         # trakt URL parameters
-                        episode = {
-                            'episodes': [
-                                {
-                                    'number': e
-                                }
-                            ]
-                        }
+                        episode = {"episodes": [{"number": e}]}
 
-                        season['season'][0].update(episode)
+                        season["season"][0].update(episode)
 
-                    data['shows'][0].update(season)
+                    data["shows"][0].update(season)
 
                 trakt_url = "sync/watchlist"
                 if update == "remove":
                     trakt_url += "/remove"
 
-                trakt_api.traktRequest(trakt_url, data, method='POST')
+                trakt_api.traktRequest(trakt_url, data, method="POST")
 
             except (traktException, traktAuthException, traktServerBusy) as e:
                 logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
@@ -145,10 +139,10 @@ class Notifier(object):
         showList = []
         # TODO: is indexer and indexerid swapped here or in traktChecker:591? !Important
         for indexer, indexerid, title, year in data:
-            show = {'title': title, 'year': year, 'ids': {sickchill.indexer.slug(indexer): indexerid}}
+            show = {"title": title, "year": year, "ids": {sickchill.indexer.slug(indexer): indexerid}}
             showList.append(show)
 
-        post_data = {'shows': showList}
+        post_data = {"shows": showList}
 
         return post_data
 
@@ -167,10 +161,10 @@ class Notifier(object):
             episodesList = []
             for season, episode in data:
                 if season == searchedSeason:
-                    episodesList.append({'number': episode})
-            seasonsList.append({'number': searchedSeason, 'episodes': episodesList})
+                    episodesList.append({"number": episode})
+            seasonsList.append({"number": searchedSeason, "episodes": episodesList})
 
-        post_data = {'seasons': seasonsList}
+        post_data = {"seasons": seasonsList}
 
         return post_data
 
@@ -193,7 +187,7 @@ class Notifier(object):
                 trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
                 found = False
                 for trakt_list in trakt_lists:
-                    if trakt_list['ids']['slug'] == blacklist_name:
+                    if trakt_list["ids"]["slug"] == blacklist_name:
                         return "Test notice sent successfully to Trakt"
                 if not found:
                     return "Trakt blacklist doesn't exists"

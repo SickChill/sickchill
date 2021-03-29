@@ -11,7 +11,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         # Provider Init
@@ -28,9 +27,7 @@ class Provider(TorrentProvider):
         # URLs
         self.url = "https://thepiratebay.org"
         self.api = "https://apibay.org"
-        self.queries = {
-            'top': ['top100:208', 'top100:205']
-        }
+        self.queries = {"top": ["top100:208", "top100:205"]}
         self.script_url = "https://torrindex.net/static/main.js"
 
         # "https://apibay.org/precompiled/data_top100_48h_205.json"
@@ -41,10 +38,7 @@ class Provider(TorrentProvider):
 
         self.urls = {
             "search": urljoin(self.api, "q.php"),
-            "rss": [
-                urljoin(self.api, "precompiled/data_top100_48h_208.json"),
-                urljoin(self.api, "precompiled/data_top100_48h_205.json")
-            ]
+            "rss": [urljoin(self.api, "precompiled/data_top100_48h_208.json"), urljoin(self.api, "precompiled/data_top100_48h_205.json")],
         }
 
         # Cache
@@ -72,7 +66,7 @@ class Provider(TorrentProvider):
             context.execute(script)
             return context.print_trackers()
         except Exception:
-            return ''
+            return ""
 
     def make_magnet(self, name, info_hash):
         trackers = self.tracker_cache.get_trackers()
@@ -80,10 +74,7 @@ class Provider(TorrentProvider):
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
-        search_params = {
-            "cat": '208,205',
-            "q": None
-        }
+        search_params = {"cat": "208,205", "q": None}
 
         if not (self.tracker_cache.get_trackers() or self._custom_trackers):
             logger.info("Set some custom trackers in config/search on the torrents tab. Re-enable this provider after fixing this issue.")
@@ -118,45 +109,53 @@ class Provider(TorrentProvider):
 
                     for result in data:
                         try:
-                            title = result['name']
+                            title = result["name"]
                             if title == "No results returned":
                                 logger.debug(title)
                                 continue
 
-                            info_hash = result['info_hash']
+                            info_hash = result["info_hash"]
                             if not all([title, info_hash]):
                                 continue
 
-                            seeders = result['seeders']
-                            leechers = result['leechers']
+                            seeders = result["seeders"]
+                            leechers = result["leechers"]
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                                 (title, seeders, leechers))
+                                    logger.debug(
+                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                            title, seeders, leechers
+                                        )
+                                    )
                                 continue
 
                             # Accept Torrent only from Good People for every Episode Search
-                            if self.confirmed and not result['status'] in ('trusted', 'vip'):
+                            if self.confirmed and not result["status"] in ("trusted", "vip"):
                                 if mode != "RSS":
                                     logger.debug("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title))
                                 continue
 
-                            torrent_size = try_int(result['size'])
+                            torrent_size = try_int(result["size"])
 
-                            item = {'title': title, 'link': self.make_magnet(title, info_hash), 'size': torrent_size, 'seeders': seeders, 'leechers': leechers,
-                                    'hash': info_hash}
+                            item = {
+                                "title": title,
+                                "link": self.make_magnet(title, info_hash),
+                                "size": torrent_size,
+                                "seeders": seeders,
+                                "leechers": leechers,
+                                "hash": info_hash,
+                            }
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                             (title, seeders, leechers))
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
                         except Exception:
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
 
         return results
@@ -164,8 +163,8 @@ class Provider(TorrentProvider):
 
 class TrackerCacheDBConnection(db.DBConnection):
     def __init__(self, provider_instance=None, update_frequency=datetime.timedelta(hours=8)):
-        super().__init__('cache.db')
-        if not self.has_table('trackers'):
+        super().__init__("cache.db")
+        if not self.has_table("trackers"):
             self.action("CREATE TABLE trackers (provider TEXT, time NUMERIC, trackers TEXT)")
 
         self.provider = provider_instance
@@ -186,11 +185,11 @@ class TrackerCacheDBConnection(db.DBConnection):
 
             self.upsert(
                 "trackers",
-                {'time': int(time.mktime(datetime.datetime.now().timetuple())), 'trackers': trackers},
-                {'provider': self.provider_id},
+                {"time": int(time.mktime(datetime.datetime.now().timetuple())), "trackers": trackers},
+                {"provider": self.provider_id},
             )
             result = trackers
         else:
-            result = sql_result['trackers']
+            result = sql_result["trackers"]
 
         return result

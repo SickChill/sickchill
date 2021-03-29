@@ -8,20 +8,20 @@ from sickchill.oldbeard import common
 
 class Notifier(object):
 
-    SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/'
-    SLACK_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png'
+    SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/"
+    SLACK_ICON_URL = "https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png"
 
     def notify_snatch(self, ep_name):
         if settings.SLACK_NOTIFY_SNATCH:
-            self._notify_slack(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
+            self._notify_slack(common.notifyStrings[common.NOTIFY_SNATCH] + ": " + ep_name)
 
     def notify_download(self, ep_name):
         if settings.SLACK_NOTIFY_DOWNLOAD:
-            self._notify_slack(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
+            self._notify_slack(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ": " + ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
         if settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD:
-            self._notify_slack(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
+            self._notify_slack(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " " + ep_name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
         if settings.USE_SLACK:
@@ -39,7 +39,7 @@ class Notifier(object):
         return self._notify_slack("This is a test notification from SickChill", force=True)
 
     def _send_slack(self, message=None):
-        slack_webhook = self.SLACK_WEBHOOK_URL + settings.SLACK_WEBHOOK.replace(self.SLACK_WEBHOOK_URL, '')
+        slack_webhook = self.SLACK_WEBHOOK_URL + settings.SLACK_WEBHOOK.replace(self.SLACK_WEBHOOK_URL, "")
         slack_icon_emoji = settings.SLACK_ICON_EMOJI
 
         logger.info("Sending slack message: " + message)
@@ -47,7 +47,11 @@ class Notifier(object):
 
         headers = {"Content-Type": "application/json"}
         try:
-            r = requests.post(slack_webhook, data=json.dumps(dict(text=message, username="SickChillBot", icon_emoji=slack_icon_emoji, icon_url=self.SLACK_ICON_URL)), headers=headers)
+            r = requests.post(
+                slack_webhook,
+                data=json.dumps(dict(text=message, username="SickChillBot", icon_emoji=slack_icon_emoji, icon_url=self.SLACK_ICON_URL)),
+                headers=headers,
+            )
             r.raise_for_status()
         except Exception as e:
             logger.exception("Error Sending Slack message: " + str(e))
@@ -55,7 +59,7 @@ class Notifier(object):
 
         return True
 
-    def _notify_slack(self, message='', force=False):
+    def _notify_slack(self, message="", force=False):
         if not settings.USE_SLACK and not force:
             return False
 

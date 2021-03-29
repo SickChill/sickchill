@@ -16,10 +16,7 @@ class imdbPopular(object):
         self.imdb = imdb.IMDb()
         try:
             self.imdb.topBottomProxy.tvmeter100_parser.rules[0].extractor.rules.append(
-                Rule(
-                    key='cover url',
-                    extractor=Path('./td[@class="posterColumn"]/a/img/@src')
-                )
+                Rule(key="cover url", extractor=Path('./td[@class="posterColumn"]/a/img/@src'))
             )
         except Exception:
             pass
@@ -45,8 +42,9 @@ class imdbPopular(object):
             matches[6] = int(matches[6]) * factor
             matches[7] = int(matches[7]) * factor
 
-            return "{0}V1._{1}{2}_{3}{4},{5},{6},{7}_.jpg".format(matches[0], matches[1], matches[2], matches[3], matches[4],
-                                                                  matches[5], matches[6], matches[7])
+            return "{0}V1._{1}{2}_{3}{4},{5},{6},{7}_.jpg".format(
+                matches[0], matches[1], matches[2], matches[3], matches[4], matches[5], matches[6], matches[7]
+            )
         else:
             return image_url
 
@@ -55,7 +53,7 @@ class imdbPopular(object):
         Store cache of image in cache dir
         :param image_url: Source URL
         """
-        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', 'imdb_popular'))
+        path = os.path.abspath(os.path.join(settings.CACHE_DIR, "images", "imdb_popular"))
 
         if not os.path.exists(path):
             os.makedirs(path)

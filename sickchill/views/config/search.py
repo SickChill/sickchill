@@ -12,7 +12,7 @@ from sickchill.views.routes import Route
 from . import Config
 
 
-@Route('/config/search(/?.*)', name='config:search')
+@Route("/config/search(/?.*)", name="config:search")
 class ConfigSearch(Config):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,22 +21,71 @@ class ConfigSearch(Config):
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_search.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title=_('Config - Episode Search'),
-                        header=_('Search Settings'), topmenu='config',
-                        controller="config", action="search")
+        return t.render(
+            submenu=self.ConfigMenu(), title=_("Config - Episode Search"), header=_("Search Settings"), topmenu="config", controller="config", action="search"
+        )
 
-    def saveSearch(self, use_nzbs=None, use_torrents=None, nzb_dir=None, sab_username=None, sab_password=None,
-                   sab_apikey=None, sab_category=None, sab_category_anime=None, sab_category_backlog=None, sab_category_anime_backlog=None, sab_host=None,
-                   nzbget_username=None, nzbget_password=None, nzbget_category=None, nzbget_category_backlog=None, nzbget_category_anime=None,
-                   nzbget_category_anime_backlog=None, nzbget_priority=None, nzbget_host=None, nzbget_use_https=None,
-                   backlog_days=None, backlog_frequency=None, dailysearch_frequency=None, nzb_method=None, torrent_method=None, usenet_retention=None,
-                   download_propers=None, check_propers_interval=None, allow_high_priority=None, sab_forced=None,
-                   randomize_providers=None, use_failed_downloads=None, delete_failed=None, backlog_missing_only=None,
-                   torrent_dir=None, torrent_username=None, torrent_password=None, torrent_host=None,
-                   torrent_label=None, torrent_label_anime=None, torrent_path=None, torrent_path_incomplete=None, torrent_verify_cert=None,
-                   torrent_seed_time=None, torrent_paused=None, torrent_high_bandwidth=None,
-                   torrent_rpcurl=None, torrent_auth_type=None, ignore_words=None, trackers_list=None, require_words=None, ignored_subs_list=None,
-                   syno_dsm_host=None, syno_dsm_user=None, syno_dsm_pass=None, syno_dsm_path=None, quality_allow_hevc=False, prefer_words=None):
+    def saveSearch(
+        self,
+        use_nzbs=None,
+        use_torrents=None,
+        nzb_dir=None,
+        sab_username=None,
+        sab_password=None,
+        sab_apikey=None,
+        sab_category=None,
+        sab_category_anime=None,
+        sab_category_backlog=None,
+        sab_category_anime_backlog=None,
+        sab_host=None,
+        nzbget_username=None,
+        nzbget_password=None,
+        nzbget_category=None,
+        nzbget_category_backlog=None,
+        nzbget_category_anime=None,
+        nzbget_category_anime_backlog=None,
+        nzbget_priority=None,
+        nzbget_host=None,
+        nzbget_use_https=None,
+        backlog_days=None,
+        backlog_frequency=None,
+        dailysearch_frequency=None,
+        nzb_method=None,
+        torrent_method=None,
+        usenet_retention=None,
+        download_propers=None,
+        check_propers_interval=None,
+        allow_high_priority=None,
+        sab_forced=None,
+        randomize_providers=None,
+        use_failed_downloads=None,
+        delete_failed=None,
+        backlog_missing_only=None,
+        torrent_dir=None,
+        torrent_username=None,
+        torrent_password=None,
+        torrent_host=None,
+        torrent_label=None,
+        torrent_label_anime=None,
+        torrent_path=None,
+        torrent_path_incomplete=None,
+        torrent_verify_cert=None,
+        torrent_seed_time=None,
+        torrent_paused=None,
+        torrent_high_bandwidth=None,
+        torrent_rpcurl=None,
+        torrent_auth_type=None,
+        ignore_words=None,
+        trackers_list=None,
+        require_words=None,
+        ignored_subs_list=None,
+        syno_dsm_host=None,
+        syno_dsm_user=None,
+        syno_dsm_pass=None,
+        syno_dsm_path=None,
+        quality_allow_hevc=False,
+        prefer_words=None,
+    ):
 
         results = []
 
@@ -104,8 +153,8 @@ class ConfigSearch(Config):
         settings.TORRENT_LABEL_ANIME = torrent_label_anime
         settings.TORRENT_VERIFY_CERT = config.checkbox_to_value(torrent_verify_cert)
 
-        settings.TORRENT_PATH = torrent_path.rstrip('/\\')
-        settings.TORRENT_PATH_INCOMPLETE = torrent_path_incomplete.rstrip('/\\')
+        settings.TORRENT_PATH = torrent_path.rstrip("/\\")
+        settings.TORRENT_PATH_INCOMPLETE = torrent_path_incomplete.rstrip("/\\")
 
         settings.TORRENT_SEED_TIME = torrent_seed_time
         settings.TORRENT_PAUSED = config.checkbox_to_value(torrent_paused)
@@ -117,10 +166,10 @@ class ConfigSearch(Config):
         settings.SYNOLOGY_DSM_HOST = config.clean_url(syno_dsm_host)
         settings.SYNOLOGY_DSM_USERNAME = syno_dsm_user
         settings.SYNOLOGY_DSM_PASSWORD = filters.unhide(settings.SYNOLOGY_DSM_PASSWORD, syno_dsm_pass)
-        settings.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip('/\\')
+        settings.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip("/\\")
 
         # This is a PITA, but lets merge the settings if they only set DSM up in one section to save them some time
-        if settings.TORRENT_METHOD == 'download_station':
+        if settings.TORRENT_METHOD == "download_station":
             if not settings.SYNOLOGY_DSM_HOST:
                 settings.SYNOLOGY_DSM_HOST = settings.TORRENT_HOST
             if not settings.SYNOLOGY_DSM_USERNAME:
@@ -130,7 +179,7 @@ class ConfigSearch(Config):
             if not settings.SYNOLOGY_DSM_PATH:
                 settings.SYNOLOGY_DSM_PATH = settings.TORRENT_PATH
 
-        if settings.NZB_METHOD == 'download_station':
+        if settings.NZB_METHOD == "download_station":
             if not settings.TORRENT_HOST:
                 settings.TORRENT_HOST = settings.SYNOLOGY_DSM_HOST
             if not settings.TORRENT_USERNAME:
@@ -147,9 +196,8 @@ class ConfigSearch(Config):
         if len(results) > 0:
             for x in results:
                 logger.exception(x)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
+            ui.notifications.error(_("Error(s) Saving Configuration"), "<br>\n".join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
+            ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
         return self.redirect("/config/search/")

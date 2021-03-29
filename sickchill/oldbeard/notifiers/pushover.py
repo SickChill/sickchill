@@ -5,8 +5,16 @@ import time
 import requests
 
 from sickchill import logger, settings
-from sickchill.oldbeard.common import (NOTIFY_DOWNLOAD, NOTIFY_GIT_UPDATE, NOTIFY_GIT_UPDATE_TEXT, NOTIFY_LOGIN, NOTIFY_LOGIN_TEXT, NOTIFY_SNATCH,
-                                       NOTIFY_SUBTITLE_DOWNLOAD, notifyStrings)
+from sickchill.oldbeard.common import (
+    NOTIFY_DOWNLOAD,
+    NOTIFY_GIT_UPDATE,
+    NOTIFY_GIT_UPDATE_TEXT,
+    NOTIFY_LOGIN,
+    NOTIFY_LOGIN_TEXT,
+    NOTIFY_SNATCH,
+    NOTIFY_SUBTITLE_DOWNLOAD,
+    notifyStrings,
+)
 from sickchill.oldbeard.helpers import make_session
 
 API_URL = "https://api.pushover.net/1/messages.json"
@@ -18,7 +26,7 @@ class Notifier(object):
         self.session = make_session()
 
     def test_notify(self, userKey=None, apiKey=None):
-        return self._notify_pushover("This is a test notification from SickChill", 'Test', userKey=userKey, apiKey=apiKey, force=True)
+        return self._notify_pushover("This is a test notification from SickChill", "Test", userKey=userKey, apiKey=apiKey, force=True)
 
     def _send_pushover(self, msg, title, sound=None, userKey=None, apiKey=None, priority=None):
         """
@@ -38,7 +46,7 @@ class Notifier(object):
         priority = priority or settings.PUSHOVER_PRIORITY
 
         if not (userKey and apiKey):
-            logger.warning('You must set a user key and api key to use pushover')
+            logger.warning("You must set a user key and api key to use pushover")
             return False
 
         logger.debug("Pushover API KEY in use: " + apiKey)

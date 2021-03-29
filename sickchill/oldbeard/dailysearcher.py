@@ -37,8 +37,9 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
         curTime = datetime.datetime.now(network_timezones.sb_timezone)
 
         main_db_con = db.DBConnection()
-        sql_results = main_db_con.select("SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
-                                         [common.UNAIRED, curDate])
+        sql_results = main_db_con.select(
+            "SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)", [common.UNAIRED, curDate]
+        )
 
         sql_l = []
         show = None
@@ -53,12 +54,12 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
                     continue
 
             except MultipleShowObjectsException:
-                logger.info("ERROR: expected to find a single show matching " + str(sqlEp['showid']))
+                logger.info("ERROR: expected to find a single show matching " + str(sqlEp["showid"]))
                 continue
 
             if show.airs and show.network:
                 # This is how you assure it is always converted to local time
-                air_time = network_timezones.parse_date_time(sqlEp['airdate'], show.airs, show.network).astimezone(network_timezones.sb_timezone)
+                air_time = network_timezones.parse_date_time(sqlEp["airdate"], show.airs, show.network).astimezone(network_timezones.sb_timezone)
 
                 # filter out any episodes that haven't started airing yet,
                 # but set them to the default status while they are airing
@@ -72,7 +73,11 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
                     logger.info("New episode " + ep.pretty_name() + " airs today, setting status to SKIPPED because is a special season")
                     ep.status = common.SKIPPED
                 else:
-                    logger.info("New episode {0} airs today, setting to default episode status for this show: {1}".format(ep.pretty_name(), common.statusStrings[ep.show.default_ep_status]))
+                    logger.info(
+                        "New episode {0} airs today, setting to default episode status for this show: {1}".format(
+                            ep.pretty_name(), common.statusStrings[ep.show.default_ep_status]
+                        )
+                    )
                     ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())

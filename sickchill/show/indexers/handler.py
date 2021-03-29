@@ -36,9 +36,7 @@ class ShowIndexer(object):
             yield i
 
     def __build_indexer_attribute_getters(self):
-        indexers_attributes = (
-            'name', 'show_url', 'slug', 'languages', 'lang_dict', 'api_key', 'base_url', 'icon'
-        )
+        indexers_attributes = ("name", "show_url", "slug", "languages", "lang_dict", "api_key", "base_url", "icon")
 
         def make_attribute_getter(_attribute):
             def indexer_attribute(indexer=None):
@@ -62,6 +60,7 @@ class ShowIndexer(object):
                     indexer = settings.INDEXER_DEFAULT
 
                 return getattr(self.indexers[indexer], _attribute)
+
             return indexer_attribute
 
         for attribute in indexers_attributes:
@@ -103,7 +102,7 @@ class ShowIndexer(object):
         assert bool(indexerid) or bool(name), "Must provide either a name or an indexer id to search indexers with"
 
         for n in name or "X":
-            n = [re.sub('[. -]', ' ', n)]
+            n = [re.sub("[. -]", " ", n)]
             for i in indexer:
                 search = (name, indexerid)[bool(indexerid)]
                 # noinspection PyUnresolvedReferences
@@ -160,6 +159,7 @@ class ShowIndexer(object):
                 self.indexerid = __indexerid
                 self.indexer = __indexer or settings.INDEXER_DEFAULT
                 self.lang = __language or settings.INDEXER_DEFAULT_LANGUAGE
+
         return self.series_poster_url(__TVShow(indexerid, language, indexer), thumb)
 
     def series_poster_url(self, show, thumb=False, multiple=False):

@@ -15,8 +15,17 @@ class PS3Metadata(generic.GenericMetadata):
     """
 
     def __init__(
-        self, show_metadata=False, episode_metadata=False, fanart=False, poster=False, banner=False, episode_thumbnails=False,
-        season_posters=False, season_banners=False, season_all_poster=False, season_all_banner=False
+        self,
+        show_metadata=False,
+        episode_metadata=False,
+        fanart=False,
+        poster=False,
+        banner=False,
+        episode_thumbnails=False,
+        season_posters=False,
+        season_banners=False,
+        season_all_poster=False,
+        season_all_banner=False,
     ):
 
         super().__init__(

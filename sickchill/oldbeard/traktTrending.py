@@ -23,7 +23,7 @@ class traktTrending(object):
 
         try:
             not_liked_show = ""
-            if settings.TRAKT_ACCESS_TOKEN != '':
+            if settings.TRAKT_ACCESS_TOKEN != "":
                 library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
                 if settings.TRAKT_BLACKLIST_NAME:
                     not_liked_show = trakt_api.traktRequest("users/" + settings.TRAKT_USERNAME + "/lists/" + settings.TRAKT_BLACKLIST_NAME + "/items") or []
@@ -37,24 +37,24 @@ class traktTrending(object):
 
             shows = trakt_api.traktRequest(page_url + limit_show + "extended=full") or []
 
-            if settings.TRAKT_ACCESS_TOKEN != '':
+            if settings.TRAKT_ACCESS_TOKEN != "":
                 library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
 
             for show in shows:
                 try:
-                    if 'show' not in show:
-                        show['show'] = show
+                    if "show" not in show:
+                        show["show"] = show
 
-                    if settings.TRAKT_ACCESS_TOKEN != '':
-                        if show['show']['ids']['tvdb'] not in (lshow['show']['ids']['tvdb'] for lshow in library_shows):
+                    if settings.TRAKT_ACCESS_TOKEN != "":
+                        if show["show"]["ids"]["tvdb"] not in (lshow["show"]["ids"]["tvdb"] for lshow in library_shows):
                             if not_liked_show:
-                                if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
+                                if show["show"]["ids"]["tvdb"] not in (show["show"]["ids"]["tvdb"] for show in not_liked_show if show["type"] == "show"):
                                     trending_shows += [show]
                             else:
                                 trending_shows += [show]
                     else:
                         if not_liked_show:
-                            if show['show']['ids']['tvdb'] not in (show['show']['ids']['tvdb'] for show in not_liked_show if show['type'] == 'show'):
+                            if show["show"]["ids"]["tvdb"] not in (show["show"]["ids"]["tvdb"] for show in not_liked_show if show["type"] == "show"):
                                 trending_shows += [show]
                         else:
                             trending_shows += [show]
@@ -62,7 +62,7 @@ class traktTrending(object):
                 except MultipleShowObjectsException:
                     continue
 
-            if settings.TRAKT_BLACKLIST_NAME != '':
+            if settings.TRAKT_BLACKLIST_NAME != "":
                 black_list = True
             else:
                 black_list = False
@@ -72,16 +72,16 @@ class traktTrending(object):
 
         for trending_show in trending_shows:
             # get indexer id
-            indexer_id = trending_show['show']['ids']['tvdb']
-            trending_show['indexer_id'] = indexer_id
+            indexer_id = trending_show["show"]["ids"]["tvdb"]
+            trending_show["indexer_id"] = indexer_id
             # set image path to show (needed to show it on the screen from the cache)
             image_name = self.get_image_name(indexer_id)
-            image_path_relative = posixpath.join('images', 'trakt_trending', image_name)
-            trending_show['image_path'] = image_path_relative
+            image_path_relative = posixpath.join("images", "trakt_trending", image_name)
+            trending_show["image_path"] = image_path_relative
             # clear indexer_id if we already have the image in the cache so we don't retrieve it again
             image_path = self.get_image_path(image_name)
             if os.path.isfile(image_path):
-                trending_show['indexer_id'] = ''
+                trending_show["indexer_id"] = ""
 
         return trending_shows, black_list
 
@@ -91,7 +91,7 @@ class traktTrending(object):
 
     @staticmethod
     def get_image_path(image_name):
-        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', 'trakt_trending'))
+        path = os.path.abspath(os.path.join(settings.CACHE_DIR, "images", "trakt_trending"))
 
         if not os.path.exists(path):
             os.makedirs(path)

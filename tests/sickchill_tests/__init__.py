@@ -1,5 +1,3 @@
-
-
 """
 Tests for SickChill
 """
@@ -8,7 +6,7 @@ import unittest
 
 from . import helper, providers, show, system
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print('=====> Running all test in "sickchill_tests" <=====')
 
     TEST_MODULES = [

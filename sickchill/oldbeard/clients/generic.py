@@ -35,7 +35,7 @@ class GenericClient(object):
         self.session = helpers.make_session()
         self.session.auth = (self.username, self.password)
 
-    def _request(self, method='get', params=None, data=None, files=None, cookies=None):
+    def _request(self, method="get", params=None, data=None, files=None, cookies=None):
         """
         Makes the actual request for the client, for everything except auth
         """
@@ -44,34 +44,29 @@ class GenericClient(object):
             self.last_time = time.time()
             self._get_auth()
 
-        log_string = '{0}: Requested a {1} connection to url {2}'.format(
-            self.name, method.upper(), self.url)
+        log_string = "{0}: Requested a {1} connection to url {2}".format(self.name, method.upper(), self.url)
 
         if params:
-            log_string += '?{0}'.format(urlencode(params))
+            log_string += "?{0}".format(urlencode(params))
 
         if data:
-            log_string += ' and data: {0}{1}'.format(
-                str(data)[0:99], '...' if len(str(data)) > 100 else '')
+            log_string += " and data: {0}{1}".format(str(data)[0:99], "..." if len(str(data)) > 100 else "")
 
         logger.debug(log_string)
 
         if not (self.auth or self._get_auth()):
-            logger.warning('{0}: Authentication Failed'.format(self.name))
+            logger.warning("{0}: Authentication Failed".format(self.name))
             return False
 
         try:
-            self.response = self.session.request(
-                method.upper(), self.url, params=params, data=data,
-                files=files, cookies=cookies, timeout=120, verify=False)
+            self.response = self.session.request(method.upper(), self.url, params=params, data=data, files=files, cookies=cookies, timeout=120, verify=False)
 
             self.response.raise_for_status()
         except Exception as error:
             helpers.handle_requests_exception(error)
             return False
 
-        logger.debug('{0}: Response to the {1} request is {2}'.format
-                     (self.name, method.upper(), self.response.text))
+        logger.debug("{0}: Response to the {1} request is {2}".format(self.name, method.upper(), self.response.text))
 
         return True
 
@@ -145,37 +140,37 @@ class GenericClient(object):
         Gets the torrent hash from either the magnet or torrent file content
         params: :result: an instance of the searchResult class
         """
-        if result.url.startswith('magnet'):
-            result.hash = re.findall(r'urn:btih:([\w]{32,40})', result.url)[0]
+        if result.url.startswith("magnet"):
+            result.hash = re.findall(r"urn:btih:([\w]{32,40})", result.url)[0]
             if len(result.hash) == 32:
                 result.hash = b16encode(b32decode(result.hash)).lower()
         else:
             if not result.content:
-                logger.exception('Torrent without content')
-                raise Exception('Torrent without content')
+                logger.exception("Torrent without content")
+                raise Exception("Torrent without content")
 
             try:
                 torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
             except (bencodepy.BencodeDecodeError, Exception) as error:
-                logger.exception('Unable to bdecode torrent')
-                logger.info('Error is: {0}'.format(error))
-                logger.info('Torrent bencoded data: {0!r}'.format(result.content))
+                logger.exception("Unable to bdecode torrent")
+                logger.info("Error is: {0}".format(error))
+                logger.info("Torrent bencoded data: {0!r}".format(result.content))
                 raise
 
             try:
-                info = torrent_bdecode[b'info']
+                info = torrent_bdecode[b"info"]
             except Exception:
-                logger.exception('Unable to find info field in torrent')
-                logger.info('Torrent bencoded data: {0!r}'.format(result.content))
+                logger.exception("Unable to find info field in torrent")
+                logger.info("Torrent bencoded data: {0!r}".format(result.content))
                 raise
 
             try:
                 result.hash = sha1(bencodepy.encode(info)).hexdigest()
-                logger.debug('Result Hash is {0}'.format(result.hash))
+                logger.debug("Result Hash is {0}".format(result.hash))
             except (bencodepy.Ben, Exception) as error:
-                logger.exception('Unable to bencode torrent info')
-                logger.info('Error is: {0}'.format(error))
-                logger.info('Torrent bencoded data: {0!r}'.format(result.content))
+                logger.exception("Unable to bencode torrent info")
+                logger.info("Error is: {0}".format(error))
+                logger.info("Torrent bencoded data: {0!r}".format(result.content))
                 raise
 
         return result
@@ -188,10 +183,10 @@ class GenericClient(object):
 
         r_code = False
 
-        logger.debug(f'Calling {self.name} Client')
+        logger.debug(f"Calling {self.name} Client")
 
         if not (self.auth or self._get_auth()):
-            logger.warning('{0}: Authentication Failed'.format(self.name))
+            logger.warning("{0}: Authentication Failed".format(self.name))
             return r_code
 
         try:
@@ -201,36 +196,36 @@ class GenericClient(object):
             # lazy fix for now, I'm sure we already do this somewhere else too
             result = self._get_torrent_hash(result)
 
-            if result.url.startswith('magnet'):
+            if result.url.startswith("magnet"):
                 r_code = self._add_torrent_uri(result)
             else:
                 r_code = self._add_torrent_file(result)
 
             if not r_code:
-                logger.warning('{0}: Unable to send Torrent'.format(self.name))
+                logger.warning("{0}: Unable to send Torrent".format(self.name))
                 return False
 
             if not self._set_torrent_pause(result):
-                logger.exception('{0}: Unable to set the pause for Torrent'.format(self.name))
+                logger.exception("{0}: Unable to set the pause for Torrent".format(self.name))
 
             if not self._set_torrent_label(result):
-                logger.exception('{0}: Unable to set the label for Torrent'.format(self.name))
+                logger.exception("{0}: Unable to set the label for Torrent".format(self.name))
 
             if not self._set_torrent_ratio(result):
-                logger.exception('{0}: Unable to set the ratio for Torrent'.format(self.name))
+                logger.exception("{0}: Unable to set the ratio for Torrent".format(self.name))
 
             if not self._set_torrent_seed_time(result):
-                logger.exception('{0}: Unable to set the seed time for Torrent'.format(self.name))
+                logger.exception("{0}: Unable to set the seed time for Torrent".format(self.name))
 
             if not self._set_torrent_path(result):
-                logger.exception('{0}: Unable to set the path for Torrent'.format(self.name))
+                logger.exception("{0}: Unable to set the path for Torrent".format(self.name))
 
             if result.priority != 0 and not self._set_torrent_priority(result):
-                logger.exception('{0}: Unable to set priority for Torrent'.format(self.name))
+                logger.exception("{0}: Unable to set priority for Torrent".format(self.name))
 
         except Exception as error:
-            logger.exception('{0}: Failed Sending Torrent'.format(self.name))
-            logger.debug('{0}: Exception raised when sending torrent: {1}. Error {2}'.format(self.name, result, error))
+            logger.exception("{0}: Failed Sending Torrent".format(self.name))
+            logger.debug("{0}: Exception raised when sending torrent: {1}. Error {2}".format(self.name, result, error))
             logger.debug(traceback.format_exc())
             return r_code
 
@@ -248,13 +243,13 @@ class GenericClient(object):
         try:
             self._get_auth()
             if not self.response:
-                raise requests.exceptions.HTTPError(404, 'Not Found')
+                raise requests.exceptions.HTTPError(404, "Not Found")
 
             self.response.raise_for_status()
             if self.auth:
-                return True, 'Success: Connected and Authenticated'
+                return True, "Success: Connected and Authenticated"
             else:
-                return False, 'Failed to authenticate with {0}'.format(self.name)
+                return False, "Failed to authenticate with {0}".format(self.name)
         except Exception as error:
             helpers.handle_requests_exception(error)
-            return False, '{0}'.format(error)
+            return False, "{0}".format(error)

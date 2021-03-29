@@ -18,7 +18,7 @@ from .name_parser.parser import InvalidNameException, InvalidShowException, Name
 class ProcessResult(object):
     def __init__(self):
         self.result = True
-        self.output = ''
+        self.output = ""
         self.missed_files = []
         self.aggresult = True
 
@@ -127,18 +127,20 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             result.output += log_helper("Processing in folder {0}".format(process_path), logger.DEBUG)
 
         # if the client and SickChill are not on the same machine translate the directory into a network directory
-        elif all([settings.TV_DOWNLOAD_DIR,
-                  os.path.isdir(settings.TV_DOWNLOAD_DIR),
-                  os.path.normpath(process_path) == os.path.normpath(settings.TV_DOWNLOAD_DIR)]):
+        elif all(
+            [settings.TV_DOWNLOAD_DIR, os.path.isdir(settings.TV_DOWNLOAD_DIR), os.path.normpath(process_path) == os.path.normpath(settings.TV_DOWNLOAD_DIR)]
+        ):
             process_path = os.path.join(settings.TV_DOWNLOAD_DIR, os.path.abspath(process_path).split(os.path.sep)[-1])
             result.output += log_helper("Trying to use folder: {0} ".format(process_path), logger.DEBUG)
 
         # if we didn't find a real dir then quit
         if not os.path.isdir(process_path):
-            result.output += log_helper("Unable to figure out what folder to process. "
-                                        "If your downloader and SickChill aren't on the same PC "
-                                        "make sure you fill out your TV download dir in the config.",
-                                        logger.DEBUG)
+            result.output += log_helper(
+                "Unable to figure out what folder to process. "
+                "If your downloader and SickChill aren't on the same PC "
+                "make sure you fill out your TV download dir in the config.",
+                logger.DEBUG,
+            )
             return result.output
 
         process_method = process_method or settings.PROCESS_METHOD
@@ -148,7 +150,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
         if release_name and validators.url(release_name):
             result.output += log_helper(_("Processing {0}").format(release_name), logger.INFO)
-            generator_to_use = [('', [], [release_name])]
+            generator_to_use = [("", [], [release_name])]
         elif release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):
             result.output += log_helper(_("Processing {0}").format(release_name), logger.INFO)
             generator_to_use = [(process_path, [], [release_name])]
@@ -182,7 +184,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                 result.result = False
 
             # Delete all file not needed and avoid deleting files if Manual PostProcessing
-            if not(process_method == "move" and result.result) or (mode == "manual" and not delete_on):
+            if not (process_method == "move" and result.result) or (mode == "manual" and not delete_on):
                 continue
 
             # noinspection PyTypeChecker
@@ -190,14 +192,14 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             if unwanted_files:
                 result.output += log_helper(_("Found unwanted files: {0}").format(unwanted_files), logger.DEBUG)
 
-            delete_folder(os.path.join(current_directory, '@eaDir'), False)
+            delete_folder(os.path.join(current_directory, "@eaDir"), False)
             delete_files(current_directory, unwanted_files, result)
             if delete_folder(current_directory, check_empty=not delete_on):
                 result.output += log_helper(_("Deleted folder: {0}").format(current_directory), logger.DEBUG)
 
         # For processing extracted rars, only allow methods 'move' and 'copy'.
         # On different methods fall back to 'move'.
-        method_fallback = ('move', process_method)[process_method in ('move', 'copy')]
+        method_fallback = ("move", process_method)[process_method in ("move", "copy")]
 
         for directory_from_rar in directories_from_rars:
             process_dir(
@@ -206,14 +208,14 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                 process_method=method_fallback,
                 force=force,
                 is_priority=is_priority,
-                delete_on=settings.DELRARCONTENTS or delete_on or method_fallback == 'move',
+                delete_on=settings.DELRARCONTENTS or delete_on or method_fallback == "move",
                 failed=failed,
-                mode=mode
+                mode=mode,
             )
 
             # Delete rar file only if the extracted dir was successfully processed
-            if mode == 'auto' and method_fallback == 'move' or mode == 'manual' and delete_on:
-                this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == os.path.basename(rar_file).rpartition('.')[0]]
+            if mode == "auto" and method_fallback == "move" or mode == "manual" and delete_on:
+                this_rar = [rar_file for rar_file in rar_files if os.path.basename(directory_from_rar) == os.path.basename(rar_file).rpartition(".")[0]]
                 delete_files(current_directory, this_rar, result)  # Deletes only if result.result == True
 
             delete_folder(directory_from_rar, settings.DELRARCONTENTS)
@@ -243,13 +245,18 @@ def validate_dir(process_path, release_name, failed, result):
 
     result.output += log_helper("Processing folder " + process_path, logger.DEBUG)
     upper_name = os.path.basename(process_path).upper()
-    if upper_name.startswith('_FAILED_') or upper_name.endswith('_FAILED_') or (os.sep + '_FAILED_') in upper_name or ('_FAILED_' + os.sep) in upper_name:
+    if upper_name.startswith("_FAILED_") or upper_name.endswith("_FAILED_") or (os.sep + "_FAILED_") in upper_name or ("_FAILED_" + os.sep) in upper_name:
         result.output += log_helper(_("The directory name indicates it failed to extract."), logger.DEBUG)
         failed = True
-    elif upper_name.startswith('_UNDERSIZED_') or upper_name.endswith('_UNDERSIZED_') or (os.sep + '_UNDERSIZED_') in upper_name or ('_UNDERSIZED_' + os.sep) in upper_name:
+    elif (
+        upper_name.startswith("_UNDERSIZED_")
+        or upper_name.endswith("_UNDERSIZED_")
+        or (os.sep + "_UNDERSIZED_") in upper_name
+        or ("_UNDERSIZED_" + os.sep) in upper_name
+    ):
         result.output += log_helper(_("The directory name indicates that it was previously rejected for being undersized."), logger.DEBUG)
         failed = True
-    elif upper_name.startswith('_UNPACK') or upper_name.endswith('_UNPACK') or (os.sep + '_UNPACK') in upper_name or ('_UNPACK' + os.sep) in upper_name:
+    elif upper_name.startswith("_UNPACK") or upper_name.endswith("_UNPACK") or (os.sep + "_UNPACK") in upper_name or ("_UNPACK" + os.sep) in upper_name:
         result.output += log_helper(_("The directory name indicates that this release is in the process of being unpacked."), logger.DEBUG)
         result.missed_files.append("{0} : Being unpacked".format(process_path))
         return False
@@ -269,12 +276,12 @@ def validate_dir(process_path, release_name, failed, result):
     sql_results = main_db_con.select("SELECT location FROM tv_shows")
 
     for sqlShow in sql_results:
-        if process_path.lower().startswith(os.path.realpath(sqlShow["location"]).lower() + os.sep) or \
-                process_path.lower() == os.path.realpath(sqlShow["location"]).lower():
+        if (
+            process_path.lower().startswith(os.path.realpath(sqlShow["location"]).lower() + os.sep)
+            or process_path.lower() == os.path.realpath(sqlShow["location"]).lower()
+        ):
 
-            result.output += log_helper(
-                "Cannot process an episode that's already been moved to its show dir, skipping " + process_path,
-                logger.WARNING)
+            result.output += log_helper("Cannot process an episode that's already been moved to its show dir, skipping " + process_path, logger.WARNING)
             return False
 
     for current_directory, directory_names, filenames in os.walk(process_path, topdown=False, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS):
@@ -296,7 +303,7 @@ def validate_dir(process_path, release_name, failed, result):
             try:
                 NameParser().parse(found_file, cache_result=False)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.debug('Could not properly parse a show and episode from [{}]: {}'.format(found_file, str(error)))
+                logger.debug("Could not properly parse a show and episode from [{}]: {}".format(found_file, str(error)))
             else:
                 return True
 
@@ -325,9 +332,7 @@ def unrar(path, rar_files, force, result):
             try:
                 archive_path = os.path.join(path, archive)
                 if already_processed(path, archive, force, result):
-                    result.output += log_helper(
-                        "Archive file already post-processed, extraction skipped: {0}".format
-                        (archive_path), logger.DEBUG)
+                    result.output += log_helper("Archive file already post-processed, extraction skipped: {0}".format(archive_path), logger.DEBUG)
                     continue
 
                 if not helpers.is_rar_file(archive_path):
@@ -337,7 +342,7 @@ def unrar(path, rar_files, force, result):
                 rar_handle = RarFile(archive_path)
                 if rar_handle.needs_password():
                     # TODO: Add support in settings for a list of passwords to try here with rar_handle.set_password(x)
-                    result.output += log_helper('Archive needs a password, skipping: {0}'.format(archive_path))
+                    result.output += log_helper("Archive needs a password, skipping: {0}".format(archive_path))
                     continue
 
                 rar_handle.testrar()
@@ -347,7 +352,7 @@ def unrar(path, rar_files, force, result):
                 if not rar_media_files:
                     continue
 
-                rar_release_name = archive.rpartition('.')[0]
+                rar_release_name = archive.rpartition(".")[0]
 
                 # Choose the directory we'll unpack to:
                 if settings.UNPACK_DIR and os.path.isdir(settings.UNPACK_DIR):  # verify the unpack dir exists
@@ -355,7 +360,7 @@ def unrar(path, rar_files, force, result):
                 else:
                     unpack_base_dir = path
                     if settings.UNPACK_DIR:  # Let user know if we can't unpack there
-                        result.output += log_helper('Unpack directory cannot be verified. Using {0}'.format(path), logger.DEBUG)
+                        result.output += log_helper("Unpack directory cannot be verified. Using {0}".format(path), logger.DEBUG)
 
                 # Fix up the list for checking if already processed
                 rar_media_files = [os.path.join(unpack_base_dir, rar_release_name, rar_media_file) for rar_media_file in rar_media_files]
@@ -364,9 +369,7 @@ def unrar(path, rar_files, force, result):
                 for rar_media_file in rar_media_files:
                     check_path, check_file = os.path.split(rar_media_file)
                     if already_processed(check_path, check_file, force, result):
-                        result.output += log_helper(
-                            "Archive file already post-processed, extraction skipped: {0}".format
-                            (rar_media_file), logger.DEBUG)
+                        result.output += log_helper("Archive file already post-processed, extraction skipped: {0}".format(rar_media_file), logger.DEBUG)
                         skip_rar = True
                         break
 
@@ -379,29 +382,31 @@ def unrar(path, rar_files, force, result):
                 unpacked_dirs.append(rar_extract_path)
 
             except RarCRCError:
-                failure = ('Archive Broken', 'Unpacking failed because of a CRC error')
+                failure = ("Archive Broken", "Unpacking failed because of a CRC error")
             except RarWrongPassword:
-                failure = ('Incorrect RAR Password', 'Unpacking failed because of an Incorrect Rar Password')
+                failure = ("Incorrect RAR Password", "Unpacking failed because of an Incorrect Rar Password")
             except PasswordRequired:
-                failure = ('Rar is password protected', 'Unpacking failed because it needs a password')
+                failure = ("Rar is password protected", "Unpacking failed because it needs a password")
             except RarOpenError:
-                failure = ('Rar Open Error, check the parent folder and destination file permissions.',
-                           'Unpacking failed with a File Open Error (file permissions?)')
+                failure = (
+                    "Rar Open Error, check the parent folder and destination file permissions.",
+                    "Unpacking failed with a File Open Error (file permissions?)",
+                )
             except RarExecError:
-                failure = ('Invalid Rar Archive Usage', 'Unpacking Failed with Invalid Rar Archive Usage. Is unrar installed and on the system PATH?')
+                failure = ("Invalid Rar Archive Usage", "Unpacking Failed with Invalid Rar Archive Usage. Is unrar installed and on the system PATH?")
             except BadRarFile:
-                failure = ('Invalid Rar Archive', 'Unpacking Failed with an Invalid Rar Archive Error')
+                failure = ("Invalid Rar Archive", "Unpacking Failed with an Invalid Rar Archive Error")
             except NeedFirstVolume:
                 continue
             except (Exception, Error) as e:
-                failure = (str(e), 'Unpacking failed')
+                failure = (str(e), "Unpacking failed")
             finally:
                 if rar_handle:
                     del rar_handle
 
             if failure:
-                result.output += log_helper('Failed to extract the archive {0}: {1}'.format(archive, failure[0]), logger.WARNING)
-                result.missed_files.append('{0} : Unpacking failed: {1}'.format(archive, failure[1]))
+                result.output += log_helper("Failed to extract the archive {0}: {1}".format(archive, failure[0]), logger.WARNING)
+                result.missed_files.append("{0} : Unpacking failed: {1}".format(archive, failure[1]))
                 result.result = False
                 continue
 
@@ -423,7 +428,7 @@ def already_processed(process_path, video_file, force, result):
 
     # Avoid processing the same dir again if we use a process method <> move
     main_db_con = db.DBConnection()
-    sql_result = main_db_con.select("SELECT release_name FROM tv_episodes WHERE release_name IN (?, ?) LIMIT 1", [process_path, video_file.rpartition('.')[0]])
+    sql_result = main_db_con.select("SELECT release_name FROM tv_episodes WHERE release_name IN (?, ?) LIMIT 1", [process_path, video_file.rpartition(".")[0]])
     if sql_result:
         # result.output += log_helper("You're trying to post process a dir that's already been processed, skipping", logger.DEBUG)
         return True
@@ -432,7 +437,10 @@ def already_processed(process_path, video_file, force, result):
     # But we need to make sure we check the history of the episode we're going to PP, and not others
     try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
         parse_result = NameParser(process_path, tryIndexers=True).parse(process_path)
-    except (InvalidNameException, InvalidShowException):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
+    except (
+        InvalidNameException,
+        InvalidShowException,
+    ):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
         parse_result = False
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
@@ -441,11 +449,12 @@ def already_processed(process_path, video_file, force, result):
     # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
     if parse_result and parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number:
         search_sql += " AND tv_episodes.showid={0} AND tv_episodes.season={1} AND tv_episodes.episode={2}".format(
-            parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0])
+            parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0]
+        )
 
     search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED + common.Quality.ARCHIVED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
-    sql_result = main_db_con.select(search_sql, ['%' + video_file])
+    sql_result = main_db_con.select(search_sql, ["%" + video_file])
     if sql_result:
         result.output += log_helper("You're trying to post process a video that's already been processed, skipping", logger.DEBUG)
         return True
@@ -517,7 +526,9 @@ def process_failed(process_path, release_name, result):
         if result.result:
             result.output += log_helper("Failed Download Processing succeeded: ({0}, {1})".format(release_name, process_path))
         else:
-            result.output += log_helper("Failed Download Processing failed: ({0}, {1}): {2}".format(release_name, process_path, process_fail_message), logger.WARNING)
+            result.output += log_helper(
+                "Failed Download Processing failed: ({0}, {1}): {2}".format(release_name, process_path, process_fail_message), logger.WARNING
+            )
 
 
 def subtitles_enabled(video):
@@ -530,7 +541,7 @@ def subtitles_enabled(video):
     try:
         parse_result = NameParser().parse(video, cache_result=True)
     except (InvalidNameException, InvalidShowException):
-        logger.warning('Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {0}'.format(video))
+        logger.warning("Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {0}".format(video))
         return False
 
     if parse_result.show.indexerid:
@@ -538,5 +549,5 @@ def subtitles_enabled(video):
         sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
         return bool(sql_results[0]["subtitles"]) if sql_results else False
     else:
-        logger.warning('Empty indexer ID for: {0}'.format(video))
+        logger.warning("Empty indexer ID for: {0}".format(video))
         return False

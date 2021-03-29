@@ -17,12 +17,35 @@ if TYPE_CHECKING:
 setup_gettext()
 
 dynamic_strings = (
-    _('Drama'), _('Mystery'), _('Science-Fiction'), _('Crime'), _('Action'),
-    _('Comedy'), _('Thriller'), _('Animation'), _('Family'), _('Fantasy'),
-    _('Adventure'), _('Horror'), _('Film-Noir'), _('Sci-Fi'), _('Romance'),
-    _('Sport'), _('War'), _('Biography'), _('History'), _('Music'), _('Western'),
-    _('News'), _('Sitcom'), _('Reality-TV'), _('Documentary'), _('Game-Show'), _('Musical'),
-    _('Talk-Show'), _('Science-Fiction')
+    _("Drama"),
+    _("Mystery"),
+    _("Science-Fiction"),
+    _("Crime"),
+    _("Action"),
+    _("Comedy"),
+    _("Thriller"),
+    _("Animation"),
+    _("Family"),
+    _("Fantasy"),
+    _("Adventure"),
+    _("Horror"),
+    _("Film-Noir"),
+    _("Sci-Fi"),
+    _("Romance"),
+    _("Sport"),
+    _("War"),
+    _("Biography"),
+    _("History"),
+    _("Music"),
+    _("Western"),
+    _("News"),
+    _("Sitcom"),
+    _("Reality-TV"),
+    _("Documentary"),
+    _("Game-Show"),
+    _("Musical"),
+    _("Talk-Show"),
+    _("Science-Fiction"),
 )
 
 __INITIALIZED__ = {}
@@ -55,16 +78,16 @@ BOXCAR2_ACCESSTOKEN = None
 BOXCAR2_NOTIFY_ONDOWNLOAD = False
 BOXCAR2_NOTIFY_ONSNATCH = False
 BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = False
-BRANCH = ''
+BRANCH = ""
 BSDTAR_TOOL = rarfile.BSDTAR_TOOL
 CACHE_DIR = None
 CALENDAR_ICONS = False
 CALENDAR_UNPROTECTED = False
-CF_AUTH_DOMAIN = ''
-CF_POLICY_AUD = ''
+CF_AUTH_DOMAIN = ""
+CF_POLICY_AUD = ""
 CFG = None
 CHECK_PROPERS_INTERVAL = None
-CLIENT_WEB_URLS = {'torrent': '', 'newznab': ''}
+CLIENT_WEB_URLS = {"torrent": "", "newznab": ""}
 COMING_EPS_DISPLAY_PAUSED = False
 COMING_EPS_DISPLAY_SNATCHED = False
 COMING_EPS_LAYOUT = None
@@ -75,29 +98,29 @@ CONFIG_VERSION = 8
 CPU_PRESET = None
 CREATE_MISSING_SHOW_DIRS = False
 CREATEPID = False
-CUR_COMMIT_BRANCH = ''
+CUR_COMMIT_BRANCH = ""
 CUR_COMMIT_HASH = None
 CUSTOM_CSS = None
 CUSTOM_CSS_PATH = None
 DAEMON = None
 DAILYSEARCH_FREQUENCY = 40
 dailySearchScheduler = None
-DATA_DIR = ''
+DATA_DIR = ""
 DATE_PRESET = None
 DBDEBUG = False
 DEBUG = False
 DEFAULT_AUTOPOSTPROCESSOR_FREQUENCY = 10
 DEFAULT_BACKLOG_FREQUENCY = 21
 DEFAULT_DAILYSEARCH_FREQUENCY = 40
-DEFAULT_PAGE = 'home'
+DEFAULT_PAGE = "home"
 DEFAULT_SHOWUPDATE_HOUR = random.randint(2, 4)
 DEFAULT_UPDATE_FREQUENCY = 1
 DELETE_FAILED = False
 DELETE_NON_ASSOCIATED_FILES = False
 DELRARCONTENTS = False
 DEVELOPER = False
-DISCORD_AVATAR_URL = 'https://raw.githubusercontent.com/SickChill/SickChill/master/sickchill/gui/slick/images/sickchill-sc.png'
-DISCORD_NAME = 'SickChill'
+DISCORD_AVATAR_URL = "https://raw.githubusercontent.com/SickChill/SickChill/master/sickchill/gui/slick/images/sickchill-sc.png"
+DISCORD_NAME = "SickChill"
 DISCORD_NOTIFY_DOWNLOAD = None
 DISCORD_NOTIFY_SNATCH = None
 DISCORD_NOTIFY_SUBTITLEDOWNLOAD = None
@@ -129,26 +152,26 @@ ENDED_SHOWS_UPDATE_INTERVAL = 7
 EP_DEFAULT_DELETED_STATUS = None
 events = None
 EXTRA_SCRIPTS = []
-FANART_API_KEY = '9b3afaf26f6241bdb57d6cc6bd798da7'
+FANART_API_KEY = "9b3afaf26f6241bdb57d6cc6bd798da7"
 FANART_BACKGROUND = None
 FANART_BACKGROUND_OPACITY = None
 FILE_TIMESTAMP_TIMEZONE = None
-FREEMOBILE_APIKEY = ''
-FREEMOBILE_ID = ''
+FREEMOBILE_APIKEY = ""
+FREEMOBILE_ID = ""
 FREEMOBILE_NOTIFY_ONDOWNLOAD = False
 FREEMOBILE_NOTIFY_ONSNATCH = False
 FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = False
 FUZZY_DATING = False
 gh = None
-GIT_ORG = 'SickChill'
+GIT_ORG = "SickChill"
 GIT_PATH = None
-GIT_REMOTE = ''
-GIT_REMOTE_URL = ''
-GIT_REPO = 'SickChill'
+GIT_REMOTE = ""
+GIT_REMOTE_URL = ""
+GIT_REPO = "SickChill"
 GIT_RESET = True
 GIT_TOKEN = None
 GIT_USERNAME = None
-GROWL_HOST = ''
+GROWL_HOST = ""
 GROWL_NOTIFY_ONDOWNLOAD = False
 GROWL_NOTIFY_ONSNATCH = False
 GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = False
@@ -171,14 +194,14 @@ INDEXER_TIMEOUT = None
 INIT_LOCK = Lock()
 ITASA_PASS = None
 ITASA_USER = None
-JOIN_APIKEY = ''
-JOIN_ID = ''
+JOIN_APIKEY = ""
+JOIN_ID = ""
 JOIN_NOTIFY_ONDOWNLOAD = False
 JOIN_NOTIFY_ONSNATCH = False
 JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = False
 KEEP_PROCESSED_DIR = False
 KODI_ALWAYS_ON = True
-KODI_HOST = ''
+KODI_HOST = ""
 KODI_NOTIFY_ONDOWNLOAD = False
 KODI_NOTIFY_ONSNATCH = False
 KODI_NOTIFY_ONSUBTITLEDOWNLOAD = False
@@ -198,7 +221,7 @@ LOCALHOST_IP = None
 LOG_DIR = None
 LOG_NR = 5
 LOG_SIZE = 10.0
-LOGO_URL = 'https://sickchill.github.io/images/ico/favicon-64.png'
+LOGO_URL = "https://sickchill.github.io/images/ico/favicon-64.png"
 MATRIX_API_TOKEN = None
 MATRIX_NOTIFY_DOWNLOAD = None
 MATRIX_NOTIFY_SNATCH = None
@@ -236,7 +259,7 @@ NAMING_STRIP_YEAR = False
 NEWS_LAST_READ = None
 NEWS_LATEST = None
 NEWS_UNREAD = 0
-NEWS_URL = 'https://sickchill.github.io/sickchill-news/news.md'
+NEWS_URL = "https://sickchill.github.io/sickchill-news/news.md"
 NEWZBIN = False
 NEWZBIN_PASSWORD = None
 NEWZBIN_USERNAME = None
@@ -280,7 +303,7 @@ OMGWTFNZBS_USERNAME = None
 OPENSUBTITLES_PASS = None
 OPENSUBTITLES_USER = None
 PID = None
-PIDFILE = ''
+PIDFILE = ""
 PLEX_CLIENT_HOST = None
 PLEX_CLIENT_PASSWORD = None
 PLEX_CLIENT_USERNAME = None
@@ -306,7 +329,7 @@ properFinderScheduler = None
 PROVIDER_ORDER = []
 providerList = []
 PROWL_API = None
-PROWL_MESSAGE_TITLE = 'SickChill'
+PROWL_MESSAGE_TITLE = "SickChill"
 PROWL_NOTIFY_ONDOWNLOAD = False
 PROWL_NOTIFY_ONSNATCH = False
 PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = False
@@ -331,12 +354,12 @@ PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = False
 PUSHOVER_PRIORITY = 0
 PUSHOVER_SOUND = None
 PUSHOVER_USERKEY = None
-PYTIVO_HOST = ''
+PYTIVO_HOST = ""
 PYTIVO_NOTIFY_ONDOWNLOAD = False
 PYTIVO_NOTIFY_ONSNATCH = False
 PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD = False
-PYTIVO_SHARE_NAME = ''
-PYTIVO_TIVO_NAME = ''
+PYTIVO_SHARE_NAME = ""
+PYTIVO_TIVO_NAME = ""
 PYTIVO_UPDATE_LIBRARY = False
 QUALITY_ALLOW_HEVC = None
 QUALITY_DEFAULT = SD
@@ -355,7 +378,7 @@ SAB_CATEGORY_ANIME = None
 SAB_CATEGORY_ANIME_BACKLOG = None
 SAB_CATEGORY_BACKLOG = None
 SAB_FORCED = False
-SAB_HOST = ''
+SAB_HOST = ""
 SAB_PASSWORD = None
 SAB_USERNAME = None
 SCENE_DEFAULT = False
@@ -384,7 +407,7 @@ STATUS_DEFAULT_AFTER = None
 SUBSCENTER_PASS = None
 SUBSCENTER_USER = None
 SUBTITLES_DEFAULT = False
-SUBTITLES_DIR = ''
+SUBTITLES_DIR = ""
 SUBTITLES_EXTRA_SCRIPTS = []
 SUBTITLES_FINDER_FREQUENCY = 1
 SUBTITLES_HEARING_IMPAIRED = False
@@ -405,8 +428,8 @@ SYNOLOGY_DSM_USERNAME = None
 SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = False
 SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = False
 SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = False
-TELEGRAM_APIKEY = ''
-TELEGRAM_ID = ''
+TELEGRAM_APIKEY = ""
+TELEGRAM_ID = ""
 TELEGRAM_NOTIFY_ONDOWNLOAD = False
 TELEGRAM_NOTIFY_ONSNATCH = False
 TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = False
@@ -414,19 +437,19 @@ THEME_NAME = None
 TIME_PRESET = None
 TIME_PRESET_W_SECONDS = None
 TIMEZONE_DISPLAY = None
-TMDB_API_KEY = 'edc5f123313769de83a71e157758030b'
-TORRENT_AUTH_TYPE = 'none'
+TMDB_API_KEY = "edc5f123313769de83a71e157758030b"
+TORRENT_AUTH_TYPE = "none"
 TORRENT_DIR = None
 TORRENT_HIGH_BANDWIDTH = False
-TORRENT_HOST = ''
-TORRENT_LABEL = ''
-TORRENT_LABEL_ANIME = ''
+TORRENT_HOST = ""
+TORRENT_LABEL = ""
+TORRENT_LABEL_ANIME = ""
 TORRENT_METHOD = None
 TORRENT_PASSWORD = None
-TORRENT_PATH = ''
-TORRENT_PATH_INCOMPLETE = ''
+TORRENT_PATH = ""
+TORRENT_PATH_INCOMPLETE = ""
 TORRENT_PAUSED = False
-TORRENT_RPCURL = 'transmission'
+TORRENT_RPCURL = "transmission"
 TORRENT_SEED_TIME = None
 TORRENT_USERNAME = None
 TORRENT_VERIFY_CERT = False
@@ -438,14 +461,14 @@ TRACKERS_LIST += "udp://glotorrents.pw:6969/announce,udp://tracker.openbittorren
 TRACKERS_LIST += "udp://tracker.opentrackr.org:1337/announce,udp://tracker.internetwarriors.net:1337"
 TRAKT_ACCESS_TOKEN = None
 # TRAKT_API_KEY = 'd4161a7a106424551add171e5470112e4afdaf2438e6ef2fe0548edc75924868'
-TRAKT_API_KEY = '5c65f55e11d48c35385d9e8670615763a605fad28374c8ae553a7b7a50651ddd'
-TRAKT_API_SECRET = 'b53e32045ac122a445ef163e6d859403301ffe9b17fb8321d428531b69022a82'
-TRAKT_API_URL = 'https://api-v2launch.trakt.tv/'
+TRAKT_API_KEY = "5c65f55e11d48c35385d9e8670615763a605fad28374c8ae553a7b7a50651ddd"
+TRAKT_API_SECRET = "b53e32045ac122a445ef163e6d859403301ffe9b17fb8321d428531b69022a82"
+TRAKT_API_URL = "https://api-v2launch.trakt.tv/"
 TRAKT_BLACKLIST_NAME = None
 TRAKT_DEFAULT_INDEXER = None
 TRAKT_METHOD_ADD = None
-TRAKT_OAUTH_URL = 'https://trakt.tv/'
-TRAKT_PIN_URL = 'https://trakt.tv/pin/4562'
+TRAKT_OAUTH_URL = "https://trakt.tv/"
+TRAKT_PIN_URL = "https://trakt.tv/pin/4562"
 TRAKT_REFRESH_TOKEN = None
 TRAKT_REMOVE_SERIESLIST = False
 TRAKT_REMOVE_SHOW_FROM_SICKCHILL = False
@@ -464,13 +487,13 @@ TRIM_ZERO = False
 TV_DOWNLOAD_DIR = None
 TVDB_USER = None
 TVDB_USER_KEY = None
-TWILIO_ACCOUNT_SID = ''
-TWILIO_AUTH_TOKEN = ''
+TWILIO_ACCOUNT_SID = ""
+TWILIO_AUTH_TOKEN = ""
 TWILIO_NOTIFY_ONDOWNLOAD = False
 TWILIO_NOTIFY_ONSNATCH = False
 TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = False
-TWILIO_PHONE_SID = ''
-TWILIO_TO_NUMBER = ''
+TWILIO_PHONE_SID = ""
+TWILIO_TO_NUMBER = ""
 TWITTER_DMTO = None
 TWITTER_NOTIFY_ONDOWNLOAD = False
 TWITTER_NOTIFY_ONSNATCH = False
@@ -482,7 +505,7 @@ TWITTER_USERNAME = None
 UNAR_TOOL = rarfile.UNAR_TOOL
 UNPACK_DISABLED = 0
 UNPACK = UNPACK_DISABLED
-UNPACK_DIR = ''
+UNPACK_DIR = ""
 UNPACK_PROCESS_CONTENTS = 1
 UNPACK_PROCESS_INTACT = 2
 UNRAR_TOOL = rarfile.UNRAR_TOOL
@@ -537,7 +560,7 @@ WEB_USE_GZIP = True
 WEB_USERNAME = None
 WINDOWS_SHARES = {}
 
-movie_list: 'MovieList' = None
+movie_list: "MovieList" = None
 
 
 def get_backlog_cycle_time():
@@ -545,8 +568,10 @@ def get_backlog_cycle_time():
     return max([cycletime, 720])
 
 
-unpackStrings = NumDict({
-    UNPACK_DISABLED: _('Ignore (do not process contents)'),
-    UNPACK_PROCESS_CONTENTS: _('Unpack (process contents)'),
-    UNPACK_PROCESS_INTACT: _('Treat as video (process archive as-is)')
-})
+unpackStrings = NumDict(
+    {
+        UNPACK_DISABLED: _("Ignore (do not process contents)"),
+        UNPACK_PROCESS_CONTENTS: _("Unpack (process contents)"),
+        UNPACK_PROCESS_INTACT: _("Treat as video (process archive as-is)"),
+    }
+)

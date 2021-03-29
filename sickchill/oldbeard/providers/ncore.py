@@ -8,7 +8,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         super().__init__("ncore.cc")
@@ -17,19 +16,17 @@ class Provider(TorrentProvider):
         self.minseed = 0
         self.minleech = 0
 
-        categories = [
-            'xvidser_hun', 'xvidser',
-            'dvdser_hun', 'dvdser',
-            'hdser_hun', 'hdser'
-        ]
-        categories = '&kivalasztott_tipus=' + ','.join([x for x in categories])
+        categories = ["xvidser_hun", "xvidser", "dvdser_hun", "dvdser", "hdser_hun", "hdser"]
+        categories = "&kivalasztott_tipus=" + ",".join([x for x in categories])
 
-        self.url = 'https://ncore.cc/'
+        self.url = "https://ncore.cc/"
         self.urls = {
-            'login': 'https://ncore.cc/login.php',
-            'search': ('https://ncore.cc/torrents.php?nyit_sorozat_resz=true&{cats}&mire=%s&miben=name'
-                       '&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok'
-                       '&tags=&searchedfrompotato=true&jsons=true').format(cats=categories),
+            "login": "https://ncore.cc/login.php",
+            "search": (
+                "https://ncore.cc/torrents.php?nyit_sorozat_resz=true&{cats}&mire=%s&miben=name"
+                "&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok"
+                "&tags=&searchedfrompotato=true&jsons=true"
+            ).format(cats=categories),
         }
 
         self.cache = tvcache.TVCache(self)
@@ -37,9 +34,9 @@ class Provider(TorrentProvider):
     def login(self):
 
         login_params = {
-            'nev': self.username,
-            'pass': self.password,
-            'submitted': '1',
+            "nev": self.username,
+            "pass": self.password,
+            "submitted": "1",
         }
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
@@ -47,7 +44,7 @@ class Provider(TorrentProvider):
             logger.warning("Unable to connect to provider")
             return False
 
-        if re.search('images/warning.png', response):
+        if re.search("images/warning.png", response):
             logger.warning("Invalid username or password. Check your settings")
             return False
 
@@ -66,7 +63,7 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
 
-                url = self.urls['search'] % search_string
+                url = self.urls["search"] % search_string
                 data = self.get_url(url, returns="text")
 
                 try:
@@ -78,15 +75,15 @@ class Provider(TorrentProvider):
                     logger.debug("No data returned from provider")
                     continue
 
-                torrent_results = parsed_json['total_results']
+                torrent_results = parsed_json["total_results"]
 
                 if not torrent_results:
                     logger.debug("Data returned from provider does not contain any torrents")
                     continue
 
-                logger.info('Number of torrents found on nCore = ' + str(torrent_results))
+                logger.info("Number of torrents found on nCore = " + str(torrent_results))
 
-                for item in parsed_json['results']:
+                for item in parsed_json["results"]:
                     try:
                         title = item.pop("release_name")
                         download_url = item.pop("download_url")
@@ -98,7 +95,11 @@ class Provider(TorrentProvider):
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
-                                logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))
+                                logger.debug(
+                                    "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        title, seeders, leechers
+                                    )
+                                )
                             continue
 
                         torrent_size = item.pop("size", -1)
@@ -107,13 +108,13 @@ class Provider(TorrentProvider):
                         if mode != "RSS":
                             logger.debug("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size))
 
-                        result = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         items.append(result)
 
                     except Exception:
                         continue
 
             # For each search mode sort all the items by seeders
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
         return results

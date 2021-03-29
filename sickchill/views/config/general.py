@@ -14,7 +14,7 @@ from sickchill.views.routes import Route
 from .index import Config
 
 
-@Route('/config/general(/?.*)', name='config:general')
+@Route("/config/general(/?.*)", name="config:general")
 class ConfigGeneral(Config):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,9 +23,9 @@ class ConfigGeneral(Config):
     def index(self):
         t = PageTemplate(rh=self, filename="config_general.mako")
 
-        return t.render(title=_('Config - General'), header=_('General Configuration'),
-                        topmenu='config', submenu=self.ConfigMenu(),
-                        controller="config", action="index")
+        return t.render(
+            title=_("Config - General"), header=_("General Configuration"), topmenu="config", submenu=self.ConfigMenu(), controller="config", action="index"
+        )
 
     @staticmethod
     def generateApiKey():
@@ -36,16 +36,17 @@ class ConfigGeneral(Config):
         settings.ROOT_DIRS = rootDirString
 
     @staticmethod
-    def saveAddShowDefaults(defaultStatus, anyQualities, bestQualities, defaultSeasonFolders, subtitles=False,
-                            anime=False, scene=False, defaultStatusAfter=WANTED):
+    def saveAddShowDefaults(
+        defaultStatus, anyQualities, bestQualities, defaultSeasonFolders, subtitles=False, anime=False, scene=False, defaultStatusAfter=WANTED
+    ):
 
         if anyQualities:
-            anyQualities = anyQualities.split(',')
+            anyQualities = anyQualities.split(",")
         else:
             anyQualities = []
 
         if bestQualities:
-            bestQualities = bestQualities.split(',')
+            bestQualities = bestQualities.split(",")
         else:
             bestQualities = []
 
@@ -63,22 +64,74 @@ class ConfigGeneral(Config):
         settings.SCENE_DEFAULT = config.checkbox_to_value(scene)
         sickchill.start.save_config()
 
-        ui.notifications.message(_('Saved Defaults'), _('Your "add show" defaults have been set to your current selections.'))
+        ui.notifications.message(_("Saved Defaults"), _('Your "add show" defaults have been set to your current selections.'))
 
     def saveGeneral(
-            self, log_nr=5, log_size=1, web_port=None, notify_on_login=None, web_log=None, encryption_version=None, web_ipv6=None,
-            trash_remove_show=None, trash_rotate_logs=None, update_frequency=None, skip_removed_files=None,
-            indexerDefaultLang='en', ep_default_deleted_status=None, launch_browser=None, showupdate_hour=3, web_username=None,
-            api_key=None, indexer_default=None, timezone_display=None, cpu_preset='NORMAL',
-            web_password=None, version_notify=None, enable_https=None, https_cert=None, https_key=None,
-            handle_reverse_proxy=None, sort_article=None, auto_update=None, notify_on_update=None,
-            proxy_setting=None, proxy_indexers=None, anon_redirect=None, git_path=None, git_remote=None,
-            calendar_unprotected=None, calendar_icons=None, debug=None, ssl_verify=None, no_restart=None, coming_eps_missed_range=None,
-            fuzzy_dating=None, trim_zero=None, date_preset=None, date_preset_na=None, time_preset=None,
-            indexer_timeout=None, download_url=None, rootDir=None, theme_name=None, default_page=None, fanart_background=None, fanart_background_opacity=None,
-            sickchill_background=None, sickchill_background_path=None, custom_css=None, custom_css_path=None,
-            git_reset=None, git_username=None, git_token=None,
-            display_all_seasons=None, gui_language=None, ignore_broken_symlinks=None, ended_shows_update_interval=None):
+        self,
+        log_nr=5,
+        log_size=1,
+        web_port=None,
+        notify_on_login=None,
+        web_log=None,
+        encryption_version=None,
+        web_ipv6=None,
+        trash_remove_show=None,
+        trash_rotate_logs=None,
+        update_frequency=None,
+        skip_removed_files=None,
+        indexerDefaultLang="en",
+        ep_default_deleted_status=None,
+        launch_browser=None,
+        showupdate_hour=3,
+        web_username=None,
+        api_key=None,
+        indexer_default=None,
+        timezone_display=None,
+        cpu_preset="NORMAL",
+        web_password=None,
+        version_notify=None,
+        enable_https=None,
+        https_cert=None,
+        https_key=None,
+        handle_reverse_proxy=None,
+        sort_article=None,
+        auto_update=None,
+        notify_on_update=None,
+        proxy_setting=None,
+        proxy_indexers=None,
+        anon_redirect=None,
+        git_path=None,
+        git_remote=None,
+        calendar_unprotected=None,
+        calendar_icons=None,
+        debug=None,
+        ssl_verify=None,
+        no_restart=None,
+        coming_eps_missed_range=None,
+        fuzzy_dating=None,
+        trim_zero=None,
+        date_preset=None,
+        date_preset_na=None,
+        time_preset=None,
+        indexer_timeout=None,
+        download_url=None,
+        rootDir=None,
+        theme_name=None,
+        default_page=None,
+        fanart_background=None,
+        fanart_background_opacity=None,
+        sickchill_background=None,
+        sickchill_background_path=None,
+        custom_css=None,
+        custom_css_path=None,
+        git_reset=None,
+        git_username=None,
+        git_token=None,
+        display_all_seasons=None,
+        gui_language=None,
+        ignore_broken_symlinks=None,
+        ended_shows_update_interval=None,
+    ):
 
         results = []
 
@@ -110,7 +163,7 @@ class ConfigGeneral(Config):
         settings.ANON_REDIRECT = anon_redirect
         settings.PROXY_SETTING = proxy_setting
         if settings.PROXY_SETTING:
-            settings.PROXY_SETTING = config.clean_url(settings.PROXY_SETTING).rstrip('/')
+            settings.PROXY_SETTING = config.clean_url(settings.PROXY_SETTING).rstrip("/")
         settings.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
 
         settings.GIT_USERNAME = git_username
@@ -168,12 +221,10 @@ class ConfigGeneral(Config):
         settings.ENABLE_HTTPS = config.checkbox_to_value(enable_https)
 
         if not config.change_https_cert(https_cert):
-            results += [
-                _("Unable to create directory {directory}, https cert directory not changed.").format(directory=os.path.normpath(https_cert))]
+            results += [_("Unable to create directory {directory}, https cert directory not changed.").format(directory=os.path.normpath(https_cert))]
 
         if not config.change_https_key(https_key):
-            results += [
-                _("Unable to create directory {directory}, https key directory not changed.").format(directory=os.path.normpath(https_key))]
+            results += [_("Unable to create directory {directory}, https key directory not changed.").format(directory=os.path.normpath(https_key))]
 
         settings.HANDLE_REVERSE_PROXY = config.checkbox_to_value(handle_reverse_proxy)
 
@@ -194,9 +245,8 @@ class ConfigGeneral(Config):
         if len(results) > 0:
             for x in results:
                 logger.exception(x)
-            ui.notifications.error(_('Error(s) Saving Configuration'),
-                                   '<br>\n'.join(results))
+            ui.notifications.error(_("Error(s) Saving Configuration"), "<br>\n".join(results))
         else:
-            ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
+            ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
         return self.redirect("/config/general/")

@@ -12,11 +12,11 @@ class UpdateManagerBase(ABC):
 
     @staticmethod
     def _clean_pyc(path):
-        path_parts = [os.path.dirname(settings.PROG_DIR), path, '*.pyc']
+        path_parts = [os.path.dirname(settings.PROG_DIR), path, "*.pyc"]
         for f in glob.iglob(os.path.join(*path_parts)):
             os.remove(f)
 
-        path_parts.insert(-1, '**')
+        path_parts.insert(-1, "**")
         for f in glob.iglob(os.path.join(*path_parts)):
             os.remove(f)
 

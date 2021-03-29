@@ -25,11 +25,11 @@ class UpdateManager(object):
         self.amActive = False
         if settings.gh:
             self.install_type = self.find_install_type()
-            if self.install_type == 'git':
+            if self.install_type == "git":
                 self.updater = GitUpdateManager()
-            elif self.install_type == 'source':
+            elif self.install_type == "source":
                 self.updater = SourceUpdateManager()
-            elif self.install_type == 'pip':
+            elif self.install_type == "pip":
                 self.updater = PipUpdateManager()
 
         self.session = helpers.make_session()
@@ -45,15 +45,15 @@ class UpdateManager(object):
             if self.check_for_new_version(force):
                 if settings.AUTO_UPDATE:
                     logger.info("New update found for SickChill, starting auto-updater ...")
-                    ui.notifications.message(_('New update found for SickChill, starting auto-updater'))
+                    ui.notifications.message(_("New update found for SickChill, starting auto-updater"))
                     if self.run_backup_if_safe():
                         if settings.versionCheckScheduler.action.update():
                             logger.info("Update was successful!")
-                            ui.notifications.message(_('Update was successful'))
+                            ui.notifications.message(_("Update was successful"))
                             settings.events.put(settings.events.SystemEvent.RESTART)
                         else:
                             logger.info("Update failed!")
-                            ui.notifications.message(_('Update failed!'))
+                            ui.notifications.message(_("Update failed!"))
 
         self.check_for_new_news()
 
@@ -65,23 +65,23 @@ class UpdateManager(object):
     def _run_backup(self):
         # Do a system backup before update
         logger.info("Config backup in progress...")
-        ui.notifications.message(_('Backup'), _('Config backup in progress...'))
+        ui.notifications.message(_("Backup"), _("Config backup in progress..."))
         try:
-            backup_dir = os.path.join(settings.DATA_DIR, 'backup')
+            backup_dir = os.path.join(settings.DATA_DIR, "backup")
             if not os.path.isdir(backup_dir):
                 os.mkdir(backup_dir)
 
             if self._keep_latest_backup(backup_dir) and self._backup(backup_dir):
                 logger.info("Config backup successful, updating...")
-                ui.notifications.message(_('Backup'), _('Config backup successful, updating...'))
+                ui.notifications.message(_("Backup"), _("Config backup successful, updating..."))
                 return True
             else:
                 logger.exception("Config backup failed, aborting update")
-                ui.notifications.message(_('Backup'), _('Config backup failed, aborting update'))
+                ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
                 return False
         except Exception as error:
-            logger.exception('Update: Config backup failed. Error: {}'.format(error))
-            ui.notifications.message(_('Backup'), _('Config backup failed, aborting update'))
+            logger.exception("Update: Config backup failed. Error: {}".format(error))
+            ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
             return False
 
     @staticmethod
@@ -89,7 +89,7 @@ class UpdateManager(object):
         if not backup_dir:
             return False
 
-        files = glob.glob(os.path.join(glob.escape(backup_dir), '*.zip'))
+        files = glob.glob(os.path.join(glob.escape(backup_dir), "*.zip"))
         if not files:
             return True
 
@@ -111,16 +111,16 @@ class UpdateManager(object):
         if not backup_dir:
             return False
         source = [
-            os.path.join(settings.DATA_DIR, 'sickchill.db'),
+            os.path.join(settings.DATA_DIR, "sickchill.db"),
             settings.CONFIG_FILE,
-            os.path.join(settings.DATA_DIR, 'failed.db'),
-            os.path.join(settings.DATA_DIR, 'cache.db')
+            os.path.join(settings.DATA_DIR, "failed.db"),
+            os.path.join(settings.DATA_DIR, "cache.db"),
         ]
-        target = os.path.join(backup_dir, 'sickchill-' + time.strftime('%Y%m%d%H%M%S') + '.zip')
+        target = os.path.join(backup_dir, "sickchill-" + time.strftime("%Y%m%d%H%M%S") + ".zip")
 
         for (path, dirs, files) in os.walk(settings.CACHE_DIR):
             for dirname in dirs:
-                if path == settings.CACHE_DIR and dirname not in ['images']:
+                if path == settings.CACHE_DIR and dirname not in ["images"]:
                     dirs.remove(dirname)
             for filename in files:
                 source.append(os.path.join(path, filename))
@@ -128,29 +128,22 @@ class UpdateManager(object):
         return helpers.backup_config_zip(source, target, settings.DATA_DIR)
 
     def safe_to_update(self):
-
         def db_safe():
             message = {
-                'equal': {
-                    'type': logger.DEBUG,
-                    'text': "We can proceed with the update. New update has same DB version"
-                },
-                'upgrade': {
-                    'type': logger.WARNING,
-                    'text': "We can't proceed with the update. New update has a new DB version. Please manually update"
-                },
-                'downgrade': {
-                    'type': logger.ERROR,
-                    'text': "We can't proceed with the update. New update has a old DB version. It's not possible to downgrade"
+                "equal": {"type": logger.DEBUG, "text": "We can proceed with the update. New update has same DB version"},
+                "upgrade": {"type": logger.WARNING, "text": "We can't proceed with the update. New update has a new DB version. Please manually update"},
+                "downgrade": {
+                    "type": logger.ERROR,
+                    "text": "We can't proceed with the update. New update has a old DB version. It's not possible to downgrade",
                 },
             }
             try:
                 result = self.compare_db_version()
                 if result in message:
-                    logger.log(message[result]['type'], message[result]['text'])  # unpack the result message into a log entry
+                    logger.log(message[result]["type"], message[result]["text"])  # unpack the result message into a log entry
                 else:
                     logger.warning("We can't proceed with the update. Unable to check remote DB version. Error: {0}".format(result))
-                return result in ['equal']  # add future True results to the list
+                return result in ["equal"]  # add future True results to the list
             except Exception as error:
                 logger.warning("We can't proceed with the update. Unable to compare DB version. Error: {0}".format(repr(error)))
                 return False
@@ -194,27 +187,29 @@ class UpdateManager(object):
 
             response = helpers.getURL(
                 f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/{newest_version}/sickchill/oldbeard/databases/main.py",
-                session=self.session, returns='text'
+                session=self.session,
+                returns="text",
             )
             if not response:
                 response = helpers.getURL(
                     f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/master/sickchill/oldbeard/databases/main.py",
-                    session=self.session, returns='text'
+                    session=self.session,
+                    returns="text",
                 )
 
             if not response:
                 raise UpdaterException(f"Empty response from GitHub for {newest_version}")
 
             match = re.search(r"MAX_DB_VERSION\s=\s(?P<version>\d{2,3})", response)
-            destination_db_version = int(match.group('version'))
+            destination_db_version = int(match.group("version"))
             main_db_con = db.DBConnection()
             current_db_version = main_db_con.get_db_version()
             if destination_db_version > current_db_version:
-                return 'upgrade'
+                return "upgrade"
             elif destination_db_version == current_db_version:
-                return 'equal'
+                return "equal"
             else:
-                return 'downgrade'
+                return "downgrade"
         except Exception as e:
             return repr(e)
 
@@ -229,12 +224,12 @@ class UpdateManager(object):
             'source': running from source without git
         """
 
-        if os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), '.git')):
-            install_type = 'git'
+        if os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), ".git")):
+            install_type = "git"
         elif check_installed():
-            install_type = 'pip'
+            install_type = "pip"
         else:
-            install_type = 'source'
+            install_type = "source"
 
         return install_type
 
@@ -257,7 +252,7 @@ class UpdateManager(object):
 
         if not self.need_update():
             if force:
-                ui.notifications.message(_('No update needed'))
+                ui.notifications.message(_("No update needed"))
                 logger.info("No update needed")
 
             # no updates needed
@@ -277,30 +272,30 @@ class UpdateManager(object):
         """
 
         # Grab a copy of the news
-        logger.debug('check_for_new_news: Checking GitHub for latest news.')
+        logger.debug("check_for_new_news: Checking GitHub for latest news.")
         try:
-            news = helpers.getURL(settings.NEWS_URL, session=self.session, returns='text')
+            news = helpers.getURL(settings.NEWS_URL, session=self.session, returns="text")
         except Exception:
-            logger.warning('check_for_new_news: Could not load news from repo.')
-            news = ''
+            logger.warning("check_for_new_news: Could not load news from repo.")
+            news = ""
 
         if not news:
-            return ''
+            return ""
 
         try:
-            last_read = datetime.datetime.strptime(settings.NEWS_LAST_READ, '%Y-%m-%d')
+            last_read = datetime.datetime.strptime(settings.NEWS_LAST_READ, "%Y-%m-%d")
         except Exception:
             last_read = 0
 
         settings.NEWS_UNREAD = 0
         found_news = False
-        for match in re.finditer(r'^####\s*(\d{4}-\d{2}-\d{2})\s*####', news, re.M):
+        for match in re.finditer(r"^####\s*(\d{4}-\d{2}-\d{2})\s*####", news, re.M):
             if not found_news:
                 found_news = True
                 settings.NEWS_LATEST = match.group(1)
 
             try:
-                if datetime.datetime.strptime(match.group(1), '%Y-%m-%d') > last_read:
+                if datetime.datetime.strptime(match.group(1), "%Y-%m-%d") > last_read:
                     settings.NEWS_UNREAD += 1
             except Exception:
                 pass

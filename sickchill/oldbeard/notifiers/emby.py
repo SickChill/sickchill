@@ -6,7 +6,6 @@ from sickchill import logger, settings
 
 
 class Notifier(object):
-
     def __init__(self):
         self.session = None
 
@@ -14,7 +13,7 @@ class Notifier(object):
         if not self.session:
             self.session = requests.Session()
 
-        self.session.headers.update({'X-Emby-Token': emby_apikey or settings.EMBY_APIKEY, 'Content-Type': 'application/json'})
+        self.session.headers.update({"X-Emby-Token": emby_apikey or settings.EMBY_APIKEY, "Content-Type": "application/json"})
         return self.session
 
     def _notify_emby(self, message, host=None, emby_apikey=None):
@@ -24,14 +23,14 @@ class Notifier(object):
             Returns True for no issue or False if there was an error
 
         """
-        url = urljoin(host or settings.EMBY_HOST, 'emby/Notifications/Admin')
-        params = {'Name': 'SickChill', 'Description': message, 'ImageUrl': settings.LOGO_URL}
+        url = urljoin(host or settings.EMBY_HOST, "emby/Notifications/Admin")
+        params = {"Name": "SickChill", "Description": message, "ImageUrl": settings.LOGO_URL}
 
         try:
             session = self.__make_session(emby_apikey)
             response = session.get(url, params=params)
             if response:
-                logger.debug("EMBY: HTTP response: {0}".format(response.text.replace('\n', '')))
+                logger.debug("EMBY: HTTP response: {0}".format(response.text.replace("\n", "")))
             response.raise_for_status()
 
             return True
@@ -39,12 +38,12 @@ class Notifier(object):
             logger.warning(f"EMBY: Warning: Could not contact Emby at {url} {error}")
             return False
 
-##############################################################################
-# Public functions
-##############################################################################
+    ##############################################################################
+    # Public functions
+    ##############################################################################
 
     def test_notify(self, host, emby_apikey):
-        return self._notify_emby('This is a test notification from SickChill', host, emby_apikey)
+        return self._notify_emby("This is a test notification from SickChill", host, emby_apikey)
 
     def update_library(self, show=None):
         """Handles updating the Emby Media Server host via HTTP API
@@ -56,26 +55,21 @@ class Notifier(object):
 
         if settings.USE_EMBY:
             if not settings.EMBY_HOST:
-                logger.debug('EMBY: No host specified, check your settings')
+                logger.debug("EMBY: No host specified, check your settings")
                 return False
 
             params = {}
             if show:
-                params.update({
-                    'Updates': [{
-                        'Path': show.location,
-                        'UpdateType': "Created"
-                    }]
-                })
-                url = urljoin(settings.EMBY_HOST, 'emby/Library/Media/Updated')
+                params.update({"Updates": [{"Path": show.location, "UpdateType": "Created"}]})
+                url = urljoin(settings.EMBY_HOST, "emby/Library/Media/Updated")
             else:
-                url = urljoin(settings.EMBY_HOST, 'emby/Library/Refresh')
+                url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
 
             try:
                 session = self.__make_session()
                 response = session.post(url, json=params)
                 response.raise_for_status()
-                logger.debug('EMBY: HTTP response: {0}'.format(response.text.replace('\n', '')))
+                logger.debug("EMBY: HTTP response: {0}".format(response.text.replace("\n", "")))
                 return True
 
             except requests.exceptions.RequestException as error:

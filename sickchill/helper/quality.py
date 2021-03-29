@@ -13,4 +13,4 @@ def get_quality_string(quality):
     if quality in Quality.qualityStrings:
         return Quality.qualityStrings[quality]
 
-    return 'Custom'
+    return "Custom"

@@ -2,11 +2,11 @@ import sys
 
 from . import generic, helpers, kodi, mede8er, mediabrowser, ps3, tivo, wdtv
 
-__all__ = ['generic', 'helpers', 'kodi', 'mede8er', 'mediabrowser', 'ps3', 'tivo', 'wdtv']
+__all__ = ["generic", "helpers", "kodi", "mede8er", "mediabrowser", "ps3", "tivo", "wdtv"]
 
 
 def available_generators():
-    return [x for x in __all__ if x not in ['generic', 'helpers']]
+    return [x for x in __all__ if x not in ["generic", "helpers"]]
 
 
 def _getMetadataModule(name):

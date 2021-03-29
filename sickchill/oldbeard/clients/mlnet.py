@@ -4,7 +4,7 @@ from sickchill.oldbeard.clients.generic import GenericClient
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
-        super().__init__('mlnet', host, username, password)
+        super().__init__("mlnet", host, username, password)
 
         self.url = self.host
         # self.session.auth = HTTPDigestAuth(self.username, self.password);
@@ -21,12 +21,12 @@ class Client(GenericClient):
 
     def _add_torrent_uri(self, result):
 
-        self.url = self.host + 'submit'
-        params = {'q': 'dllink ' + result.url}
-        return self._request(method='get', params=params)
+        self.url = self.host + "submit"
+        params = {"q": "dllink " + result.url}
+        return self._request(method="get", params=params)
 
     def _add_torrent_file(self, result):
 
-        self.url = self.host + 'submit'
-        params = {'q': 'dllink ' + result.url}
-        return self._request(method='get', params=params)
+        self.url = self.host + "submit"
+        params = {"q": "dllink " + result.url}
+        return self._request(method="get", params=params)

@@ -19,18 +19,11 @@ setup_gettext()
 # It is no different than us going to a provider if we have questions or issues. Be a team player here.
 # This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
 INSTANCE_ID = str(uuid.uuid1())
-USER_AGENT = 'SickChill/{version} ({os} {architecture} {os_version}; {instance})'.format(
-    version=version.__version__,
-    os=platform.system(),
-    architecture=platform.machine(),
-    os_version=platform.release(),
-    instance=INSTANCE_ID)
+USER_AGENT = "SickChill/{version} ({os} {architecture} {os_version}; {instance})".format(
+    version=version.__version__, os=platform.system(), architecture=platform.machine(), os_version=platform.release(), instance=INSTANCE_ID
+)
 
-cpu_presets = {
-    'HIGH': 5,
-    'NORMAL': 2,
-    'LOW': 1
-}
+cpu_presets = {"HIGH": 5, "NORMAL": 2, "LOW": 1}
 
 # Other constants
 MULTI_EP_RESULT = -1
@@ -46,17 +39,18 @@ NOTIFY_LOGIN = 6
 NOTIFY_LOGIN_TEXT = 7
 NOTIFY_POSTPROCESS = 8
 
-notifyStrings = NumDict({
-
-    NOTIFY_SNATCH: _("Started Download"),
-    NOTIFY_DOWNLOAD: _("Finished Download"),
-    NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
-    NOTIFY_GIT_UPDATE: _("SickChill Updated"),
-    NOTIFY_GIT_UPDATE_TEXT: _("SickChill Updated To Commit#: "),
-    NOTIFY_LOGIN: _("SickChill new login"),
-    NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}"),
-    NOTIFY_POSTPROCESS: _("Finished Post Processing")
-})
+notifyStrings = NumDict(
+    {
+        NOTIFY_SNATCH: _("Started Download"),
+        NOTIFY_DOWNLOAD: _("Finished Download"),
+        NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
+        NOTIFY_GIT_UPDATE: _("SickChill Updated"),
+        NOTIFY_GIT_UPDATE_TEXT: _("SickChill Updated To Commit#: "),
+        NOTIFY_LOGIN: _("SickChill new login"),
+        NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}"),
+        NOTIFY_POSTPROCESS: _("Finished Post Processing"),
+    }
+)
 
 # Episode statuses
 UNKNOWN = -1  # should never happen
@@ -79,20 +73,23 @@ NAMING_LIMITED_EXTEND = 8
 NAMING_SEPARATED_REPEAT = 16
 NAMING_LIMITED_EXTEND_E_PREFIXED = 32
 
-MULTI_EP_STRINGS = NumDict({
-    NAMING_REPEAT: _("Repeat"),
-    NAMING_SEPARATED_REPEAT: _("Repeat (Separated)"),
-    NAMING_DUPLICATE: _("Duplicate"),
-    NAMING_EXTEND: _("Extend"),
-    NAMING_LIMITED_EXTEND: _("Extend (Limited)"),
-    NAMING_LIMITED_EXTEND_E_PREFIXED: _("Extend (Limited, E-prefixed)")
-})
+MULTI_EP_STRINGS = NumDict(
+    {
+        NAMING_REPEAT: _("Repeat"),
+        NAMING_SEPARATED_REPEAT: _("Repeat (Separated)"),
+        NAMING_DUPLICATE: _("Duplicate"),
+        NAMING_EXTEND: _("Extend"),
+        NAMING_LIMITED_EXTEND: _("Extend (Limited)"),
+        NAMING_LIMITED_EXTEND_E_PREFIXED: _("Extend (Limited, E-prefixed)"),
+    }
+)
 
 
 class Quality(object):
     """
     Determine quality and set status codes
     """
+
     NONE = 0  # 0
     SDTV = 1  # 1
     SDDVD = 1 << 1  # 2
@@ -116,86 +113,90 @@ class Quality(object):
     # put these bits at the other end of the spectrum, far enough out that they shouldn't interfere
     UNKNOWN = 1 << 15  # 32768
 
-    qualityStrings = NumDict({
-        # None: "None",
-        NONE: "N/A",
-        UNKNOWN: "Unknown",
-        SDTV: "SDTV",
-        SDDVD: "SD DVD",
-        HDTV: "720p HDTV",
-        RAWHDTV: "RawHD",
-        FULLHDTV: "1080p HDTV",
-        HDWEBDL: "720p WEB-DL",
-        FULLHDWEBDL: "1080p WEB-DL",
-        HDBLURAY: "720p BluRay",
-        FULLHDBLURAY: "1080p BluRay",
-        UHD_4K_TV: "4K UHD TV",
-        UHD_8K_TV: "8K UHD TV",
-        UHD_4K_WEBDL: "4K UHD WEB-DL",
-        UHD_8K_WEBDL: "8K UHD WEB-DL",
-        UHD_4K_BLURAY: "4K UHD BluRay",
-        UHD_8K_BLURAY: "8K UHD BluRay",
-    })
+    qualityStrings = NumDict(
+        {
+            # None: "None",
+            NONE: "N/A",
+            UNKNOWN: "Unknown",
+            SDTV: "SDTV",
+            SDDVD: "SD DVD",
+            HDTV: "720p HDTV",
+            RAWHDTV: "RawHD",
+            FULLHDTV: "1080p HDTV",
+            HDWEBDL: "720p WEB-DL",
+            FULLHDWEBDL: "1080p WEB-DL",
+            HDBLURAY: "720p BluRay",
+            FULLHDBLURAY: "1080p BluRay",
+            UHD_4K_TV: "4K UHD TV",
+            UHD_8K_TV: "8K UHD TV",
+            UHD_4K_WEBDL: "4K UHD WEB-DL",
+            UHD_8K_WEBDL: "8K UHD WEB-DL",
+            UHD_4K_BLURAY: "4K UHD BluRay",
+            UHD_8K_BLURAY: "8K UHD BluRay",
+        }
+    )
 
-    sceneQualityStrings = NumDict({
-        # None: "None",
-        NONE: "N/A",
-        UNKNOWN: "Unknown",
-        SDTV: "HDTV",
-        SDDVD: "",
-        HDTV: "720p HDTV",
-        RAWHDTV: "1080i HDTV",
-        FULLHDTV: "1080p HDTV",
-        HDWEBDL: "720p WEB-DL",
-        FULLHDWEBDL: "1080p WEB-DL",
-        HDBLURAY: "720p BluRay",
-        FULLHDBLURAY: "1080p BluRay",
-        UHD_4K_TV: "4K UHD TV",
-        UHD_8K_TV: "8K UHD TV",
-        UHD_4K_WEBDL: "4K UHD WEB-DL",
-        UHD_8K_WEBDL: "8K UHD WEB-DL",
-        UHD_4K_BLURAY: "4K UHD BluRay",
-        UHD_8K_BLURAY: "8K UHD BluRay",
-    })
+    sceneQualityStrings = NumDict(
+        {
+            # None: "None",
+            NONE: "N/A",
+            UNKNOWN: "Unknown",
+            SDTV: "HDTV",
+            SDDVD: "",
+            HDTV: "720p HDTV",
+            RAWHDTV: "1080i HDTV",
+            FULLHDTV: "1080p HDTV",
+            HDWEBDL: "720p WEB-DL",
+            FULLHDWEBDL: "1080p WEB-DL",
+            HDBLURAY: "720p BluRay",
+            FULLHDBLURAY: "1080p BluRay",
+            UHD_4K_TV: "4K UHD TV",
+            UHD_8K_TV: "8K UHD TV",
+            UHD_4K_WEBDL: "4K UHD WEB-DL",
+            UHD_8K_WEBDL: "8K UHD WEB-DL",
+            UHD_4K_BLURAY: "4K UHD BluRay",
+            UHD_8K_BLURAY: "8K UHD BluRay",
+        }
+    )
 
-    combinedQualityStrings = NumDict({
-        ANYHDTV: "HDTV",
-        ANYWEBDL: "WEB-DL",
-        ANYBLURAY: "BluRay"
-    })
+    combinedQualityStrings = NumDict({ANYHDTV: "HDTV", ANYWEBDL: "WEB-DL", ANYBLURAY: "BluRay"})
 
-    cssClassStrings = NumDict({
-        # None: "None",
-        NONE: "N/A",
-        UNKNOWN: "Unknown",
-        SDTV: "SDTV",
-        SDDVD: "SDDVD",
-        HDTV: "HD720p",
-        RAWHDTV: "RawHD",
-        FULLHDTV: "HD1080p",
-        HDWEBDL: "HD720p",
-        FULLHDWEBDL: "HD1080p",
-        HDBLURAY: "HD720p",
-        FULLHDBLURAY: "HD1080p",
-        UHD_4K_TV: "UHD-4K",
-        UHD_8K_TV: "UHD-8K",
-        UHD_4K_WEBDL: "UHD-4K",
-        UHD_8K_WEBDL: "UHD-8K",
-        UHD_4K_BLURAY: "UHD-4K",
-        UHD_8K_BLURAY: "UHD-8K",
-        ANYHDTV: "any-hd",
-        ANYWEBDL: "any-hd",
-        ANYBLURAY: "any-hd"
-    })
+    cssClassStrings = NumDict(
+        {
+            # None: "None",
+            NONE: "N/A",
+            UNKNOWN: "Unknown",
+            SDTV: "SDTV",
+            SDDVD: "SDDVD",
+            HDTV: "HD720p",
+            RAWHDTV: "RawHD",
+            FULLHDTV: "HD1080p",
+            HDWEBDL: "HD720p",
+            FULLHDWEBDL: "HD1080p",
+            HDBLURAY: "HD720p",
+            FULLHDBLURAY: "HD1080p",
+            UHD_4K_TV: "UHD-4K",
+            UHD_8K_TV: "UHD-8K",
+            UHD_4K_WEBDL: "UHD-4K",
+            UHD_8K_WEBDL: "UHD-8K",
+            UHD_4K_BLURAY: "UHD-4K",
+            UHD_8K_BLURAY: "UHD-8K",
+            ANYHDTV: "any-hd",
+            ANYWEBDL: "any-hd",
+            ANYBLURAY: "any-hd",
+        }
+    )
 
-    statusPrefixes = NumDict({
-        DOWNLOADED: _("Downloaded"),
-        SNATCHED: _("Snatched"),
-        SNATCHED_PROPER: _("Snatched (Proper)"),
-        FAILED: _("Failed"),
-        SNATCHED_BEST: _("Snatched (Best)"),
-        ARCHIVED: _("Archived")
-    })
+    statusPrefixes = NumDict(
+        {
+            DOWNLOADED: _("Downloaded"),
+            SNATCHED: _("Snatched"),
+            SNATCHED_PROPER: _("Snatched (Proper)"),
+            FAILED: _("Failed"),
+            SNATCHED_BEST: _("Snatched (Best)"),
+            ARCHIVED: _("Archived"),
+        }
+    )
 
     @staticmethod
     def _getStatusStrings(status):
@@ -211,7 +212,7 @@ class Quality(object):
                 stat = Quality.statusPrefixes[status]
                 qual = Quality.qualityStrings[quality]
                 comp = Quality.compositeStatus(status, quality)
-                to_return[comp] = '{0} ({1})'.format(stat, qual)
+                to_return[comp] = "{0} ({1})".format(stat, qual)
         return to_return
 
     @staticmethod
@@ -287,7 +288,7 @@ class Quality(object):
             sd_options = tags.anime_sd.search(name)
             hd_options = tags.anime_hd.search(name)
             full_hd = tags.anime_fullhd.search(name)
-            ep.rex['bluray'] = tags.anime_bluray
+            ep.rex["bluray"] = tags.anime_bluray
 
             # BluRay
             if ep.bluray and (full_hd or hd_options):
@@ -306,35 +307,35 @@ class Quality(object):
         elif ep.mpeg:
             result = Quality.RAWHDTV
         # Is it UHD?
-        elif ep.vres in {2160, 4320} and ep.scan == 'p':
+        elif ep.vres in {2160, 4320} and ep.scan == "p":
             # BluRay
-            full_res = (ep.vres == 4320)
+            full_res = ep.vres == 4320
             if ep.bluray:
                 result = (Quality.UHD_4K_BLURAY, Quality.UHD_8K_BLURAY)[full_res]
             # WEB-DL
             elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                 result = (Quality.UHD_4K_WEBDL, Quality.UHD_8K_WEBDL)[full_res]
             # HDTV
-            elif ep.tv == 'hd':
+            elif ep.tv == "hd":
                 result = (Quality.UHD_4K_TV, Quality.UHD_8K_TV)[full_res]
         elif ep.vres in {1080, 720}:
-            if ep.scan == 'p':
+            if ep.scan == "p":
                 # BluRay
-                full_res = (ep.vres == 1080)
+                full_res = ep.vres == 1080
                 if ep.bluray or ep.hddvd:
                     result = (Quality.HDBLURAY, Quality.FULLHDBLURAY)[full_res]
                 # WEB-DL
                 elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                     result = (Quality.HDWEBDL, Quality.FULLHDWEBDL)[full_res]
                 # HDTV
-                elif ep.tv == 'hd' or ep.hevc:
+                elif ep.tv == "hd" or ep.hevc:
                     result = (Quality.HDTV, Quality.FULLHDTV)[full_res]  # 1080 HDTV h264
                 # MPEG2 encoded
-                elif all([full_res, ep.tv == 'hd', ep.mpeg]):
+                elif all([full_res, ep.tv == "hd", ep.mpeg]):
                     result = Quality.RAWHDTV
-                elif all([not full_res, ep.tv == 'hd', ep.mpeg]):
+                elif all([not full_res, ep.tv == "hd", ep.mpeg]):
                     result = Quality.RAWHDTV
-            elif (ep.res == '1080i') and ep.tv == 'hd' and (ep.mpeg or (ep.raw and ep.avc_non_free)):
+            elif (ep.res == "1080i") and ep.tv == "hd" and (ep.mpeg or (ep.raw and ep.avc_non_free)):
                 result = Quality.RAWHDTV
         elif not ep.vres and ep.netflix or ep.amazon or ep.itunes:
             result = Quality.HDWEBDL
@@ -347,14 +348,14 @@ class Quality(object):
             if ep.dvd or ep.bluray:
                 result = Quality.SDDVD
             # SDTV
-            elif ep.res == '480p' or any([ep.tv, ep.sat, ep.web]):
+            elif ep.res == "480p" or any([ep.tv, ep.sat, ep.web]):
                 result = Quality.SDTV
         elif ep.dvd:
             # SD DVD
             result = Quality.SDDVD
         elif ep.tv:
             # SD TV/HD TV
-            result = (Quality.SDTV, Quality.HDTV)[ep.tv == 'hd']
+            result = (Quality.SDTV, Quality.HDTV)[ep.tv == "hd"]
         elif ep.raw or ep.mpeg:
             # RawHD
             result = Quality.RAWHDTV
@@ -388,7 +389,7 @@ class Quality(object):
         elif 680 < height <= 800:
             ret = ((Quality.HDTV, Quality.HDBLURAY)[bluray], Quality.HDWEBDL)[webdl]
         elif height <= 680:
-            ret = (Quality.SDTV, Quality.SDDVD)[re.search(r'dvd|b[rd]rip|blue?-?ray', base_filename, re.I) is not None]
+            ret = (Quality.SDTV, Quality.SDDVD)[re.search(r"dvd|b[rd]rip|blue?-?ray", base_filename, re.I) is not None]
 
         return ret
 
@@ -429,11 +430,11 @@ class Quality(object):
         :param quality: int of quality to make sure we get the right rip type
         :return: encoder type for scene quality naming
         """
-        codec_list = ['xvid', 'divx']
-        x264_list = ['x264', 'x 264', 'x.264']
-        h264_list = ['h264', 'h 264', 'h.264', 'avc']
-        x265_list = ['x265', 'x 265', 'x.265']
-        h265_list = ['h265', 'h 265', 'h.265', 'hevc']
+        codec_list = ["xvid", "divx"]
+        x264_list = ["x264", "x 264", "x.264"]
+        h264_list = ["h264", "h 264", "h.264", "avc"]
+        x265_list = ["x265", "x 265", "x.265"]
+        h265_list = ["h265", "h 265", "h.265", "hevc"]
         codec_list += x264_list + h264_list + x265_list + h265_list
 
         found_codecs = {}
@@ -458,9 +459,9 @@ class Quality(object):
 
         if found_codec:
             if codec_list[0] in found_codec:
-                found_codec = 'XviD'
+                found_codec = "XviD"
             elif codec_list[1] in found_codec:
-                found_codec = 'DivX'
+                found_codec = "DivX"
             elif found_codec in x264_list:
                 found_codec = x264_list[0]
             elif found_codec in h264_list:
@@ -528,26 +529,33 @@ BEST = Quality.combineQualities([Quality.SDTV, Quality.HDTV, Quality.HDWEBDL], [
 qualityPresets = (
     ANY,
     SD,
-    HD, HD720p, HD1080p,
-    UHD, UHD_4K, UHD_8K,
+    HD,
+    HD720p,
+    HD1080p,
+    UHD,
+    UHD_4K,
+    UHD_8K,
 )
 
-qualityPresetStrings = NumDict({
-    SD: "SD",
-    HD: "HD",
-    HD720p: "HD720p",
-    HD1080p: "HD1080p",
-    UHD: "UHD",
-    UHD_4K: "UHD-4K",
-    UHD_8K: "UHD-8K",
-    ANY: "Any",
-})
+qualityPresetStrings = NumDict(
+    {
+        SD: "SD",
+        HD: "HD",
+        HD720p: "HD720p",
+        HD1080p: "HD1080p",
+        UHD: "UHD",
+        UHD_4K: "UHD-4K",
+        UHD_8K: "UHD-8K",
+        ANY: "Any",
+    }
+)
 
 
 class StatusStrings(NumDict):
     """
     Dictionary containing strings for status codes
     """
+
     # todo: Make views return Qualities too
 
     qualities = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.ARCHIVED + Quality.FAILED
@@ -575,32 +583,36 @@ class StatusStrings(NumDict):
 
 
 # Assign strings to statuses
-statusStrings_bare = StatusStrings({
-    UNKNOWN: "Unknown",
-    UNAIRED: "Unaired",
-    SNATCHED: "Snatched",
-    DOWNLOADED: "Downloaded",
-    SKIPPED: "Skipped",
-    SNATCHED_PROPER: "Snatched (Proper)",
-    WANTED: "Wanted",
-    ARCHIVED: "Archived",
-    IGNORED: "Ignored",
-    SUBTITLED: "Subtitled",
-    FAILED: "Failed",
-    SNATCHED_BEST: "Snatched (Best)"
-})
+statusStrings_bare = StatusStrings(
+    {
+        UNKNOWN: "Unknown",
+        UNAIRED: "Unaired",
+        SNATCHED: "Snatched",
+        DOWNLOADED: "Downloaded",
+        SKIPPED: "Skipped",
+        SNATCHED_PROPER: "Snatched (Proper)",
+        WANTED: "Wanted",
+        ARCHIVED: "Archived",
+        IGNORED: "Ignored",
+        SUBTITLED: "Subtitled",
+        FAILED: "Failed",
+        SNATCHED_BEST: "Snatched (Best)",
+    }
+)
 
 statusStrings = StatusStrings({key: _(value) for key, value in statusStrings_bare.items()})
 
-cssStatusStrings = NumDict({
-    DOWNLOADED: 'downloaded',
-    SNATCHED: 'snatched',
-    SNATCHED_PROPER: 'snatched-proper',
-    FAILED: 'failed',
-    SNATCHED_BEST: 'snatched-best',
-    ARCHIVED: 'archived',
-    WANTED: 'wanted'
-})
+cssStatusStrings = NumDict(
+    {
+        DOWNLOADED: "downloaded",
+        SNATCHED: "snatched",
+        SNATCHED_PROPER: "snatched-proper",
+        FAILED: "failed",
+        SNATCHED_BEST: "snatched-best",
+        ARCHIVED: "archived",
+        WANTED: "wanted",
+    }
+)
 
 
 class Overview(object):
@@ -615,22 +627,20 @@ class Overview(object):
     # Should suffice!
     QUAL = 50
 
-    overviewStrings = NumDict({
-        SKIPPED: "skipped",
-        WANTED: "wanted",
-        QUAL: "qual",
-        GOOD: "good",
-        UNAIRED: "unaired",
-        SNATCHED: "snatched",
-        # we can give these a different class later, otherwise
-        # breaks checkboxes in displayShow for showing different statuses
-        SNATCHED_BEST: "snatched",
-        SNATCHED_PROPER: "snatched"
-    })
+    overviewStrings = NumDict(
+        {
+            SKIPPED: "skipped",
+            WANTED: "wanted",
+            QUAL: "qual",
+            GOOD: "good",
+            UNAIRED: "unaired",
+            SNATCHED: "snatched",
+            # we can give these a different class later, otherwise
+            # breaks checkboxes in displayShow for showing different statuses
+            SNATCHED_BEST: "snatched",
+            SNATCHED_PROPER: "snatched",
+        }
+    )
 
 
-countryList = {
-    'Australia': 'AU',
-    'Canada': 'CA',
-    'USA': 'US'
-}
+countryList = {"Australia": "AU", "Canada": "CA", "USA": "US"}

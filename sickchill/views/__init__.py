@@ -4,8 +4,17 @@ from .browser import WebFileBrowser
 from .calendar import CalendarHandler
 from .changelog import HomeChangeLog
 from .common import PageTemplate
-from .config import (Config, ConfigAnime, ConfigBackupRestore, ConfigNotifications, ConfigPostProcessing, ConfigProviders, ConfigSearch, ConfigShares,
-                     ConfigSubtitles)
+from .config import (
+    Config,
+    ConfigAnime,
+    ConfigBackupRestore,
+    ConfigNotifications,
+    ConfigPostProcessing,
+    ConfigProviders,
+    ConfigSearch,
+    ConfigShares,
+    ConfigSubtitles,
+)
 from .history import History
 from .home import Home
 from .imageSelector import ImageSelector

@@ -7,13 +7,12 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         super().__init__("HD4Free")
 
-        self.url = 'https://hd4free.xyz'
-        self.urls = {'search': urljoin(self.url, '/searchapi.php')}
+        self.url = "https://hd4free.xyz"
+        self.urls = {"search": urljoin(self.url, "/searchapi.php")}
 
         self.freeleech = None
         self.username = None
@@ -27,7 +26,7 @@ class Provider(TorrentProvider):
         if self.username and self.api_key:
             return True
 
-        logger.warning('Your authentication credentials for {0} are missing, check your config.'.format(self.name))
+        logger.warning("Your authentication credentials for {0} are missing, check your config.".format(self.name))
         return False
 
     def search(self, search_strings, age=0, ep_obj=None):
@@ -35,29 +34,25 @@ class Provider(TorrentProvider):
         if not self._check_auth:
             return results
 
-        search_params = {
-            'tv': 'true',
-            'username': self.username,
-            'apikey': self.api_key
-        }
+        search_params = {"tv": "true", "username": self.username, "apikey": self.api_key}
 
         for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}".format(mode=mode)))
             for search_string in {*search_strings[mode]}:
                 if self.freeleech:
-                    search_params['fl'] = 'true'
+                    search_params["fl"] = "true"
                 else:
-                    search_params.pop('fl', '')
+                    search_params.pop("fl", "")
 
-                if mode != 'RSS':
+                if mode != "RSS":
                     logger.debug("Search string: " + search_string.strip())
-                    search_params['search'] = search_string
+                    search_params["search"] = search_string
                 else:
-                    search_params.pop('search', '')
+                    search_params.pop("search", "")
 
                 try:
-                    jdata = self.get_url(self.urls['search'], params=search_params, returns='json')
+                    jdata = self.get_url(self.urls["search"], params=search_params, returns="json")
                 except ValueError:
                     logger.debug("No data returned from provider")
                     continue
@@ -66,13 +61,13 @@ class Provider(TorrentProvider):
                     logger.debug("No data returned from provider")
                     continue
 
-                error = jdata.get('error')
+                error = jdata.get("error")
                 if error:
                     logger.debug("{}".format(error))
                     return results
 
                 try:
-                    if jdata['0']['total_results'] == 0:
+                    if jdata["0"]["total_results"] == 0:
                         logger.debug("Provider has no results for this search")
                         continue
                 except Exception:
@@ -88,16 +83,19 @@ class Provider(TorrentProvider):
                         seeders = jdata[i]["seeders"]
                         leechers = jdata[i]["leechers"]
                         if seeders < self.minseed or leechers < self.minleech:
-                            if mode != 'RSS':
-                                logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                             (title, seeders, leechers))
+                            if mode != "RSS":
+                                logger.debug(
+                                    "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        title, seeders, leechers
+                                    )
+                                )
                             continue
 
-                        torrent_size = str(jdata[i]["size"]) + ' MB'
+                        torrent_size = str(jdata[i]["size"]) + " MB"
                         size = convert_size(torrent_size) or -1
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
 
-                        if mode != 'RSS':
+                        if mode != "RSS":
                             logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
@@ -105,7 +103,7 @@ class Provider(TorrentProvider):
                         continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
 
             results += items
 

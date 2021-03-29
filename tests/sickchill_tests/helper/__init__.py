@@ -4,10 +4,10 @@ Tests for SickChill helpers
 
 import unittest
 
-from .common_tests import CommonTests
-from .quality_tests import QualityTests
+from .test_common import CommonTests
+from .test_quality import QualityTests
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print('=====> Running all test in "sickchill_tests.helper" <=====')
 
     TEST_CLASSES = [

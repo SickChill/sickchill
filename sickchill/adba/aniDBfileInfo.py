@@ -12,7 +12,7 @@ def get_file_hash(filePath):
     """ Returns the ed2k hash of a given file."""
     if not filePath:
         return None
-    md4 = hashlib.new('md4').copy
+    md4 = hashlib.new("md4").copy
 
     def gen(f):
         while True:
@@ -27,13 +27,13 @@ def get_file_hash(filePath):
         m.update(data)
         return m
 
-    with open(filePath, 'rb') as f:
+    with open(filePath, "rb") as f:
         a = gen(f)
         hashes = [md4_hash(data).digest() for data in a]
         if len(hashes) == 1:
             return hashes[0].hex()
         else:
-            return md4_hash(reduce(lambda b, c: b + c, hashes, b'')).hexdigest()
+            return md4_hash(reduce(lambda b, c: b + c, hashes, b"")).hexdigest()
 
 
 def get_file_size(path):
@@ -52,7 +52,7 @@ def download_file(url, filename):
     try:
         r = requests.get(url, stream=True, verify=False)
         r.raise_for_status()
-        with open(filename, 'wb') as fp:
+        with open(filename, "wb") as fp:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
                     fp.write(chunk)

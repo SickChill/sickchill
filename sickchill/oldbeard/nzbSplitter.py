@@ -21,35 +21,35 @@ def get_season_nzbs(name, url_data, season):
         # Match the xmlns in an nzb
         # Example:  nzbElement.getchildren()[1].tag == '{http://www.newzbin.com/DTD/2003/nzb}file'
         #           regex match returns  'http://www.newzbin.com/DTD/2003/nzb'
-        'nzb_xmlns': r"{(http://[\w_\./]+nzb)}file",
-        'scene_name': r'([\w\._\ ]+)[\. ]S%02d[\. ]([\w\._\-\ ]+)[\- ]([\w_\-\ ]+?)',
-        'episode': r'\.S%02d(?:[E0-9]+)\.[\w\._]+\-\w+',
+        "nzb_xmlns": r"{(http://[\w_\./]+nzb)}file",
+        "scene_name": r"([\w\._\ ]+)[\. ]S%02d[\. ]([\w\._\-\ ]+)[\- ]([\w_\-\ ]+?)",
+        "episode": r"\.S%02d(?:[E0-9]+)\.[\w\._]+\-\w+",
     }
 
     try:
         show_xml = ElementTree.ElementTree(ElementTree.XML(url_data))
     except SyntaxError:
         logger.exception("Unable to parse the XML of " + name + ", not splitting it")
-        return {}, ''
+        return {}, ""
 
     nzb_element = show_xml.getroot()
 
-    scene_name_match = re.search(regex_string['scene_name'] % season, name, re.I)
+    scene_name_match = re.search(regex_string["scene_name"] % season, name, re.I)
     if scene_name_match:
         show_name = scene_name_match.groups()[0]
     else:  # Make sure we aren't missing valid results after changing name_parser and the quality detection
         # Most of these will likely be invalid shows
         logger.debug("Unable to parse " + name + " into a scene name.")
-        return {}, ''
+        return {}, ""
 
-    regex = '(' + re.escape(show_name) + regex_string['episode'] % season + ')'
-    regex = regex.replace(' ', '.')
+    regex = "(" + re.escape(show_name) + regex_string["episode"] % season + ")"
+    regex = regex.replace(" ", ".")
 
     ep_files = {}
     xmlns = None
 
     for cur_file in nzb_element.iter():
-        xmlns_match = re.match(regex_string['nzb_xmlns'], cur_file.tag)
+        xmlns_match = re.match(regex_string["nzb_xmlns"], cur_file.tag)
         if not xmlns_match:
             continue
         else:
@@ -122,7 +122,7 @@ def split_result(obj):
     :param obj: to search for results
     :return: a list of episode objects or an empty list
     """
-    url_data = helpers.getURL(obj.url, session=helpers.make_session(), returns='content')
+    url_data = helpers.getURL(obj.url, session=helpers.make_session(), returns="content")
     if url_data is None:
         logger.warning("Unable to load url " + obj.url + ", can't download season NZB")
         return []

@@ -27,13 +27,13 @@ class BacklogSearcher(object):
         self.amActive = False
         self.amPaused = False
         self.amWaiting = False
-        self.currentSearchInfo = {'title': 'Initializing'}
+        self.currentSearchInfo = {"title": "Initializing"}
 
         self._resetPI()
 
     def _resetPI(self):
         self.percentDone = 0
-        self.currentSearchInfo = {'title': 'Initializing'}
+        self.currentSearchInfo = {"title": "Initializing"}
 
     def getProgressIndicator(self):
         if self.amActive:
@@ -77,7 +77,7 @@ class BacklogSearcher(object):
             segments = self._get_segments(curShow, fromDate)
 
             for season, segment in segments.items():
-                self.currentSearchInfo = {'title': curShow.name + " Season " + str(season)}
+                self.currentSearchInfo = {"title": curShow.name + " Season " + str(season)}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)
                 settings.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
@@ -124,10 +124,7 @@ class BacklogSearcher(object):
         logger.debug("Seeing if we need anything from {0}".format(show.name))
 
         con = db.DBConnection()
-        sql_results = con.select(
-            "SELECT status, season, episode FROM tv_episodes WHERE airdate > ? AND showid = ?",
-            [fromDate.toordinal(), show.indexerid]
-        )
+        sql_results = con.select("SELECT status, season, episode FROM tv_episodes WHERE airdate > ? AND showid = ?", [fromDate.toordinal(), show.indexerid])
 
         # check through the list of statuses to see if we want any
         for sql_result in sql_results:

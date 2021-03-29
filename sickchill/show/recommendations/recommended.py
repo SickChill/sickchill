@@ -13,8 +13,7 @@ class RecommendedShow(object):
     Base class for show recommendations
     """
 
-    def __init__(self, show_id, title, indexer, indexer_id, cache_subfolder='recommended',
-                 rating=None, votes=None, image_href=None, image_src=None):
+    def __init__(self, show_id, title, indexer, indexer_id, cache_subfolder="recommended", rating=None, votes=None, image_href=None, image_src=None):
         """
         Create a show recommendation
 
@@ -51,9 +50,9 @@ class RecommendedShow(object):
         if not self.cache_subfolder:
             return
 
-        self.image_src = posixpath.join('images', self.cache_subfolder, os.path.basename(image_url))
+        self.image_src = posixpath.join("images", self.cache_subfolder, os.path.basename(image_url))
 
-        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', self.cache_subfolder))
+        path = os.path.abspath(os.path.join(settings.CACHE_DIR, "images", self.cache_subfolder))
 
         if not os.path.exists(path):
             os.makedirs(path)

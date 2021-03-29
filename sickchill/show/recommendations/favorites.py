@@ -8,7 +8,7 @@ from sickchill.show.Show import Show
 
 class IndexerFavorites(object):
     def __init__(self):
-        self.cache_subfolder = __name__.split('.')[-1] if '.' in __name__ else __name__
+        self.cache_subfolder = __name__.split(".")[-1] if "." in __name__ else __name__
         self.session = helpers.make_indexer_session()
 
     def fetch_indexer_favorites(self):
@@ -29,7 +29,7 @@ class IndexerFavorites(object):
         Store cache of image in cache dir
         :param indexerid: Source indexer id
         """
-        path = os.path.abspath(os.path.join(settings.CACHE_DIR, 'images', 'favorites'))
+        path = os.path.abspath(os.path.join(settings.CACHE_DIR, "images", "favorites"))
 
         if not os.path.exists(path):
             os.makedirs(path)

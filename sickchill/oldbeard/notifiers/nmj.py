@@ -103,9 +103,9 @@ class Notifier(object):
                 logger.debug("Try to mount network drive via url: {0}".format(mount))
                 handle = urllib.request.urlopen(req)
             except IOError as e:
-                if hasattr(e, 'reason'):
+                if hasattr(e, "reason"):
                     logger.warning("NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason))
-                elif hasattr(e, 'code'):
+                elif hasattr(e, "code"):
                     logger.warning("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code))
                 return False
             except Exception as e:
@@ -114,12 +114,7 @@ class Notifier(object):
 
         # build up the request URL and parameters
         UPDATE_URL = "http://%(host)s:8008/metadata_database?%(params)s"
-        params = {
-            "arg0": "scanner_start",
-            "arg1": database,
-            "arg2": "background",
-            "arg3": ""
-        }
+        params = {"arg0": "scanner_start", "arg1": database, "arg2": "background", "arg3": ""}
         params = urllib.parse.urlencode(params)
         updateUrl = UPDATE_URL % {"host": host, "params": params}
 
@@ -130,9 +125,9 @@ class Notifier(object):
             handle = urllib.request.urlopen(req)
             response = handle.read()
         except IOError as e:
-            if hasattr(e, 'reason'):
+            if hasattr(e, "reason"):
                 logger.warning("NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason))
-            elif hasattr(e, 'code'):
+            elif hasattr(e, "code"):
                 logger.warning("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code))
             return False
         except Exception as e:

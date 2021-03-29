@@ -31,10 +31,19 @@ class GenericMetadata(object):
     - season all banner
     """
 
-    def __init__(self, show_metadata=False, episode_metadata=False, fanart=False,
-                 poster=False, banner=False, episode_thumbnails=False,
-                 season_posters=False, season_banners=False,
-                 season_all_poster=False, season_all_banner=False):
+    def __init__(
+        self,
+        show_metadata=False,
+        episode_metadata=False,
+        fanart=False,
+        poster=False,
+        banner=False,
+        episode_thumbnails=False,
+        season_posters=False,
+        season_banners=False,
+        season_all_poster=False,
+        season_all_banner=False,
+    ):
 
         self.name = "Generic"
 
@@ -60,10 +69,19 @@ class GenericMetadata(object):
         self.season_all_banner = season_all_banner
 
     def get_config(self):
-        config_list = [self.show_metadata, self.episode_metadata, self.fanart, self.poster, self.banner,
-                       self.episode_thumbnails, self.season_posters, self.season_banners, self.season_all_poster,
-                       self.season_all_banner]
-        return '|'.join([str(int(x)) for x in config_list])
+        config_list = [
+            self.show_metadata,
+            self.episode_metadata,
+            self.fanart,
+            self.poster,
+            self.banner,
+            self.episode_thumbnails,
+            self.season_posters,
+            self.season_banners,
+            self.season_all_poster,
+            self.season_all_banner,
+        ]
+        return "|".join([str(int(x)) for x in config_list])
 
     def get_id(self):
         return GenericMetadata.makeID(self.name)
@@ -75,7 +93,7 @@ class GenericMetadata(object):
         return name_id
 
     def set_config(self, config_string):
-        config_list = [bool(int(x)) for x in config_string.split('|')]
+        config_list = [bool(int(x)) for x in config_string.split("|")]
         self.show_metadata = config_list[0]
         self.episode_metadata = config_list[1]
         self.fanart = config_list[2]
@@ -171,11 +189,11 @@ class GenericMetadata(object):
 
         # Our specials thumbnail is, well, special
         if season == 0:
-            season_poster_filename = 'season-specials'
+            season_poster_filename = "season-specials"
         else:
-            season_poster_filename = 'season' + str(season).zfill(2)
+            season_poster_filename = "season" + str(season).zfill(2)
 
-        return os.path.join(show_obj.location, season_poster_filename + '-poster.jpg')
+        return os.path.join(show_obj.location, season_poster_filename + "-poster.jpg")
 
     @staticmethod
     def get_season_banner_path(show_obj, season):
@@ -189,11 +207,11 @@ class GenericMetadata(object):
 
         # Our specials thumbnail is, well, special
         if season == 0:
-            season_banner_filename = 'season-specials'
+            season_banner_filename = "season-specials"
         else:
-            season_banner_filename = 'season' + str(season).zfill(2)
+            season_banner_filename = "season" + str(season).zfill(2)
 
-        return os.path.join(show_obj.location, season_banner_filename + '-banner.jpg')
+        return os.path.join(show_obj.location, season_banner_filename + "-banner.jpg")
 
     def get_season_all_poster_path(self, show_obj):
         return os.path.join(show_obj.location, self.season_all_poster_name)
@@ -223,16 +241,15 @@ class GenericMetadata(object):
 
     def update_show_indexer_metadata(self, show_obj):
         if self.show_metadata and show_obj and self._has_show_metadata(show_obj):
-            logger.debug(
-                "Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name)
+            logger.debug("Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name)
 
             nfo_file_path = self.get_show_file_path(show_obj)
 
             try:
-                with open(nfo_file_path, 'rb') as xmlFileObj:
+                with open(nfo_file_path, "rb") as xmlFileObj:
                     showXML = ElementTree.ElementTree(file=xmlFileObj)
 
-                indexerid = showXML.find('id')
+                indexerid = showXML.find("id")
 
                 root = showXML.getroot()
                 if indexerid is not None:
@@ -245,7 +262,7 @@ class GenericMetadata(object):
                 # Make it purdy
                 helpers.indentXML(root)
 
-                showXML.write(nfo_file_path, encoding='UTF-8')
+                showXML.write(nfo_file_path, encoding="UTF-8")
                 helpers.chmodAsParent(nfo_file_path)
 
                 return True
@@ -264,16 +281,16 @@ class GenericMetadata(object):
             nfo_file_path = self.get_episode_file_path(ep_obj)
 
             attribute_map = {
-                'title': 'name',
-                'aired': 'airdate',
-                'season': 'season',
-                'episode': 'episode',
-                'showtitle': 'show.name',
-                'runtime': 'show.runtime',
-                'plot': 'description'
+                "title": "name",
+                "aired": "airdate",
+                "season": "season",
+                "episode": "episode",
+                "showtitle": "show.name",
+                "runtime": "show.runtime",
+                "plot": "description",
             }
             try:
-                with open(nfo_file_path, 'rb') as xmlFileObj:
+                with open(nfo_file_path, "rb") as xmlFileObj:
                     episodeXML = ElementTree.ElementTree(file=xmlFileObj)
 
                 changed = False
@@ -299,7 +316,7 @@ class GenericMetadata(object):
                 # Make it purdy
                 helpers.indentXML(root)
 
-                episodeXML.write(nfo_file_path, encoding='UTF-8')
+                episodeXML.write(nfo_file_path, encoding="UTF-8")
                 helpers.chmodAsParent(nfo_file_path)
 
                 return True
@@ -395,8 +412,8 @@ class GenericMetadata(object):
 
             logger.debug("Writing show nfo file to " + nfo_file_path)
 
-            nfo_file = open(nfo_file_path, 'wb')
-            data.write(nfo_file, encoding='UTF-8')
+            nfo_file = open(nfo_file_path, "wb")
+            data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
@@ -442,8 +459,8 @@ class GenericMetadata(object):
                 helpers.chmodAsParent(nfo_file_dir)
 
             logger.debug("Writing episode nfo file to " + nfo_file_path)
-            nfo_file = open(nfo_file_path, 'wb')
-            data.write(nfo_file, encoding='UTF-8')
+            nfo_file = open(nfo_file_path, "wb")
+            data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as e:
@@ -502,7 +519,7 @@ class GenericMetadata(object):
 
         fanart_url = sickchill.indexer.series_fanart_url(show_obj)
         if not fanart_url:
-            fanart_url = self._retrieve_show_image_urls_from_fanart(show_obj, 'fanart')
+            fanart_url = self._retrieve_show_image_urls_from_fanart(show_obj, "fanart")
             if not fanart_url:
                 logger.debug("Fanart url not found for show {}, skipping this image".format(show_obj.name))
                 return False
@@ -530,7 +547,7 @@ class GenericMetadata(object):
 
         poster_url = sickchill.indexer.series_poster_url(show_obj)
         if not poster_url:
-            poster_url = self._retrieve_show_image_urls_from_fanart(show_obj, 'poster')
+            poster_url = self._retrieve_show_image_urls_from_fanart(show_obj, "poster")
             if not poster_url:
                 logger.debug("Poster url not found for show {}, skipping this image".format(show_obj.name))
                 return False
@@ -557,7 +574,7 @@ class GenericMetadata(object):
 
         banner_url = sickchill.indexer.series_banner_url(show_obj)
         if not banner_url:
-            banner_url = self._retrieve_show_image_urls_from_fanart(show_obj, 'banner')
+            banner_url = self._retrieve_show_image_urls_from_fanart(show_obj, "banner")
             if not banner_url:
                 logger.debug("Banner url not found for show {}, skipping this image".format(show_obj.name))
                 return False
@@ -578,7 +595,7 @@ class GenericMetadata(object):
 
         season_poster_url = sickchill.indexer.season_poster_url(show_obj, season)
         if not season_poster_url:
-            season_poster_url = self._retrieve_show_image_urls_from_fanart(show_obj, 'season_poster', season=season)
+            season_poster_url = self._retrieve_show_image_urls_from_fanart(show_obj, "season_poster", season=season)
             if not season_poster_url:
                 logger.debug("Season poster url not found for season {}, skipping this season".format(season))
                 return False
@@ -603,7 +620,7 @@ class GenericMetadata(object):
         """
         season_banner_url = sickchill.indexer.season_banner_url(show_obj, season)
         if not season_banner_url:
-            season_banner_url = self._retrieve_show_image_urls_from_fanart(show_obj, 'season_banner', season=season)
+            season_banner_url = self._retrieve_show_image_urls_from_fanart(show_obj, "season_banner", season=season)
             if not season_banner_url:
                 logger.debug("Url for season banner {} came back blank, skipping this season".format(season))
                 return False
@@ -623,7 +640,7 @@ class GenericMetadata(object):
     def save_season_all_poster(self, show_obj):
         poster_url = sickchill.indexer.series_poster_url(show_obj)
         if not poster_url:
-            poster_url = self._retrieve_show_image_urls_from_fanart(show_obj, 'season_poster', season=0)
+            poster_url = self._retrieve_show_image_urls_from_fanart(show_obj, "season_poster", season=0)
             if not poster_url:
                 logger.debug("Url for season all poster came back blank, skipping this season")
                 return False
@@ -643,7 +660,7 @@ class GenericMetadata(object):
     def save_season_all_banner(self, show_obj):
         banner_url = sickchill.indexer.series_banner_url(show_obj)
         if not banner_url:
-            banner_url = self._retrieve_show_image_urls_from_fanart(show_obj, 'season_banner', season=0)
+            banner_url = self._retrieve_show_image_urls_from_fanart(show_obj, "season_banner", season=0)
             if not banner_url:
                 logger.debug("Url for season all banner came back blank, skipping this season")
                 return False
@@ -687,7 +704,7 @@ class GenericMetadata(object):
                 os.makedirs(image_dir)
                 helpers.chmodAsParent(image_dir)
 
-            outFile = open(image_path, 'wb')
+            outFile = open(image_path, "wb")
             outFile.write(image_data)
             outFile.close()
             helpers.chmodAsParent(image_path)
@@ -713,7 +730,7 @@ class GenericMetadata(object):
         logger.debug(_("Loading show info from metadata file in {0}").format(metadata_path))
 
         def read_xml():
-            with open(metadata_path, 'rb') as __xml_file:
+            with open(metadata_path, "rb") as __xml_file:
                 try:
                     __show_xml = ElementTree.ElementTree(file=__xml_file)
                 except (ElementTree.ParseError, IOError):
@@ -721,14 +738,17 @@ class GenericMetadata(object):
             return __show_xml
 
         def fix_xml():
-            logger.info(_("There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file "
-                          "manually").format(metadata_path))
+            logger.info(
+                _(
+                    "There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file " "manually"
+                ).format(metadata_path)
+            )
             with open(metadata_path) as __xml_file:
                 output = __xml_file.read()
 
             regex = re.compile(r"&(?!amp;|lt;|gt;)")
             output = regex.sub("&amp;", output)
-            with open(metadata_path, 'wb') as __xml_file:
+            with open(metadata_path, "wb") as __xml_file:
                 __xml_file.write(output)
 
             return True
@@ -739,14 +759,17 @@ class GenericMetadata(object):
                 logger.debug(_("Can't load the metadata file from {0}, error reading file").format(metadata_path))
                 return empty_return
 
-            if not (show_xml.findtext('title') or (show_xml.findtext('tvdbid') and show_xml.findtext('id'))):
-                logger.info(_("Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}").format(show_xml.findtext('title'), show_xml.findtext('tvdbid'),
-                                                                                                     show_xml.findtext('id')))
+            if not (show_xml.findtext("title") or (show_xml.findtext("tvdbid") and show_xml.findtext("id"))):
+                logger.info(
+                    _("Invalid info in tvshow.nfo (missing name or id): {0} {1} {2}").format(
+                        show_xml.findtext("title"), show_xml.findtext("tvdbid"), show_xml.findtext("id")
+                    )
+                )
                 return empty_return
 
-            name = show_xml.findtext('title')
+            name = show_xml.findtext("title")
 
-            indexer_id_text = show_xml.findtext('tvdbid') or show_xml.findtext('id')
+            indexer_id_text = show_xml.findtext("tvdbid") or show_xml.findtext("id")
             if indexer_id_text:
                 indexer_id = try_int(indexer_id_text, None)
                 if indexer_id is None or indexer_id < 1:
@@ -757,16 +780,16 @@ class GenericMetadata(object):
                 return empty_return
 
             indexer = 1
-            epg_url_text = show_xml.findtext('episodeguide/url')
+            epg_url_text = show_xml.findtext("episodeguide/url")
             if epg_url_text:
                 epg_url = epg_url_text.lower()
-                if str(indexer_id) in epg_url and 'tvrage' in epg_url:
+                if str(indexer_id) in epg_url and "tvrage" in epg_url:
                     if sickchill.indexer.TVRAGE not in sickchill.indexer:
                         logger.warning(_("Invalid Indexer ID ({0}), not using metadata file because it has TVRage info").format(indexer_id))
                         return empty_return
-                    return indexer_id, show_xml.findtext('title'), sickchill.indexer.TVRAGE
-                if str(indexer_id) in epg_url and 'tvdb' in epg_url:
-                    return indexer_id, show_xml.findtext('title'), sickchill.indexer.TVDB
+                    return indexer_id, show_xml.findtext("title"), sickchill.indexer.TVRAGE
+                if str(indexer_id) in epg_url and "tvdb" in epg_url:
+                    return indexer_id, show_xml.findtext("title"), sickchill.indexer.TVDB
 
         except Exception as e:
             logger.warning(_("There was an error parsing your existing metadata file: '{0}' error: {1}").format(metadata_path, str(e)))
@@ -776,11 +799,7 @@ class GenericMetadata(object):
 
     @staticmethod
     def _retrieve_show_image_urls_from_tmdb(show, img_type, multiple=False):
-        types = {'poster': 'posters',
-                 'banner': None,
-                 'fanart': 'backdrops',
-                 'poster_thumb': 'posters',
-                 'banner_thumb': None}
+        types = {"poster": "posters", "banner": None, "fanart": "backdrops", "poster_thumb": "posters", "banner_thumb": None}
 
         if not types[img_type]:
             return [] if multiple else ""
@@ -789,24 +808,24 @@ class GenericMetadata(object):
         tmdbsimple.API_KEY = settings.TMDB_API_KEY
         config = tmdbsimple.Configuration()
         response = config.info()
-        base_url = response['images']['base_url']
-        sizes = response['images']['poster_sizes']
+        base_url = response["images"]["base_url"]
+        sizes = response["images"]["poster_sizes"]
 
         def size_str_to_int(x):
-            return float("inf") if x == 'original' else int(x[1:])
+            return float("inf") if x == "original" else int(x[1:])
 
         max_size = max(sizes, key=size_str_to_int)
 
         try:
             results = []
             find = tmdbsimple.Find(show.indexerid)
-            found = find.info(external_source='tvdb_id')
-            if found['tv_results']:
-                tmdb_show = tmdbsimple.TV(found['tv_results'][0]['id'])
+            found = find.info(external_source="tvdb_id")
+            if found["tv_results"]:
+                tmdb_show = tmdbsimple.TV(found["tv_results"][0]["id"])
                 images = tmdb_show.images()
                 if types[img_type] in images:
                     for result in images[types[img_type]]:
-                        results.append("{0}{1}{2}".format(base_url, max_size, result['file_path']))
+                        results.append("{0}{1}{2}".format(base_url, max_size, result["file_path"]))
                         if not multiple:
                             return results[0]
                     return results
@@ -818,13 +837,13 @@ class GenericMetadata(object):
     @staticmethod
     def _retrieve_show_image_urls_from_fanart(show, img_type, thumb=False, season=None, multiple=False):
         types = {
-            'poster': fanart.TYPE.TV.POSTER,
-            'banner': fanart.TYPE.TV.BANNER,
-            'poster_thumb': fanart.TYPE.TV.POSTER,
-            'banner_thumb': fanart.TYPE.TV.BANNER,
-            'fanart': fanart.TYPE.TV.BACKGROUND,
-            'season_poster': fanart.TYPE.TV.SEASONPOSTER,
-            'season_banner': fanart.TYPE.TV.SEASONBANNER,
+            "poster": fanart.TYPE.TV.POSTER,
+            "banner": fanart.TYPE.TV.BANNER,
+            "poster_thumb": fanart.TYPE.TV.POSTER,
+            "banner_thumb": fanart.TYPE.TV.BANNER,
+            "fanart": fanart.TYPE.TV.BACKGROUND,
+            "season_poster": fanart.TYPE.TV.SEASONPOSTER,
+            "season_banner": fanart.TYPE.TV.SEASONBANNER,
         }
 
         try:
@@ -841,18 +860,18 @@ class GenericMetadata(object):
                 resp = request.response()
                 results = resp[types[img_type]]
                 if season:
-                    results = [x for x in results if try_int(x['season'], default_value=None) == season]
+                    results = [x for x in results if try_int(x["season"], default_value=None) == season]
 
                 def _to_preview_url(url):
-                    return re.sub('/fanart/', '/preview/', url)
+                    return re.sub("/fanart/", "/preview/", url)
 
                 if multiple:
-                    urls = [result['url'] for result in results]
+                    urls = [result["url"] for result in results]
                     if thumb:
                         urls = [_to_preview_url(url) for url in urls]
                     return urls
                 else:
-                    url = results[0]['url']
+                    url = results[0]["url"]
                     if thumb:
                         url = _to_preview_url(url)
                     return url

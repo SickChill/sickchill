@@ -8,19 +8,19 @@ from sickchill.oldbeard import common
 
 class Notifier(object):
 
-    ROCKETCHAT_ICON_URL = 'https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png'
+    ROCKETCHAT_ICON_URL = "https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png"
 
     def notify_snatch(self, ep_name):
         if settings.ROCKETCHAT_NOTIFY_SNATCH:
-            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_SNATCH] + ': ' + ep_name)
+            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_SNATCH] + ": " + ep_name)
 
     def notify_download(self, ep_name):
         if settings.ROCKETCHAT_NOTIFY_DOWNLOAD:
-            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ': ' + ep_name)
+            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ": " + ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
         if settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD:
-            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + ' ' + ep_name + ": " + lang)
+            self._notify_rocketchat(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " " + ep_name + ": " + lang)
 
     def notify_git_update(self, new_version="??"):
         if settings.USE_ROCKETCHAT:
@@ -46,7 +46,11 @@ class Notifier(object):
 
         headers = {"Content-Type": "application/json"}
         try:
-            r = requests.post(rocketchat_webhook, data=json.dumps(dict(text=message, attachments=(dict(icon_emoji=rocketchat_icon_emoji, author_icon=self.ROCKETCHAT_ICON_URL)))), headers=headers)
+            r = requests.post(
+                rocketchat_webhook,
+                data=json.dumps(dict(text=message, attachments=(dict(icon_emoji=rocketchat_icon_emoji, author_icon=self.ROCKETCHAT_ICON_URL)))),
+                headers=headers,
+            )
             r.raise_for_status()
         except Exception as e:
             logger.exception("Error Sending RocketChat message: " + str(e))
@@ -54,7 +58,7 @@ class Notifier(object):
 
         return True
 
-    def _notify_rocketchat(self, message='', force=False):
+    def _notify_rocketchat(self, message="", force=False):
         if not settings.USE_ROCKETCHAT and not force:
             return False
 

@@ -11,7 +11,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         # Provider Init
@@ -28,10 +27,7 @@ class Provider(TorrentProvider):
 
         # URLs
         self.url = "https://www.torrentbytes.net"
-        self.urls = {
-            "login": urljoin(self.url, "takelogin.php"),
-            "search": urljoin(self.url, "browse.php")
-        }
+        self.urls = {"login": urljoin(self.url, "takelogin.php"), "search": urljoin(self.url, "browse.php")}
 
         # Proper Strings
         self.proper_strings = ["PROPER", "REPACK"]
@@ -43,9 +39,7 @@ class Provider(TorrentProvider):
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        login_params = {"username": self.username,
-                        "password": self.password,
-                        "login": "Log in!"}
+        login_params = {"username": self.username, "password": self.password, "login": "Log in!"}
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
@@ -63,10 +57,7 @@ class Provider(TorrentProvider):
         if not self.login():
             return results
 
-        search_params = {
-            "Episode": {"c33": 1, "c38": 1, "c32": 1, "c37": 1},
-            "Season": {"c41": 1}
-        }
+        search_params = {"Episode": {"c33": 1, "c38": 1, "c32": 1, "c37": 1}, "Season": {"c41": 1}}
 
         for mode in search_strings:
             items = []
@@ -116,25 +107,27 @@ class Provider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                                 (title, seeders, leechers))
+                                    logger.debug(
+                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                            title, seeders, leechers
+                                        )
+                                    )
                                 continue
 
                             # Need size for failed downloads handling
                             torrent_size = cells[labels.index("Size")].get_text(strip=True)
                             size = convert_size(torrent_size) or -1
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                            item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
 
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                             (title, seeders, leechers))
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
                         except (AttributeError, TypeError, ValueError):
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
 
         return results

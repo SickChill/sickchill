@@ -43,16 +43,18 @@ class Notifier(object):
         """
         try:
 
-            url = "http://{0}:8008/file_operation?arg0=list_user_storage_file&arg1=&arg2={1}&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false".format(host, instance)
+            url = "http://{0}:8008/file_operation?arg0=list_user_storage_file&arg1=&arg2={1}&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false".format(
+                host, instance
+            )
             response = requests.get(url)
             et = ElementTree.fromstring(response.text)
             time.sleep(300.0 / 1000.0)
-            for node in et.iter('path'):
-                url = "http://{}:8008/metadata_database?arg0=check_database&arg1={}".format(host, node.text.replace('[=]', ''))
+            for node in et.iter("path"):
+                url = "http://{}:8008/metadata_database?arg0=check_database&arg1={}".format(host, node.text.replace("[=]", ""))
                 response = requests.get(url)
                 xml_db = ElementTree.fromstring(response.text)
-                if xml_db.findtext('returnValue') == "0":
-                    db_path = xml_db.findtext('database_path')
+                if xml_db.findtext("returnValue") == "0":
+                    db_path = xml_db.findtext("database_path")
                     if dbloc == "local" and "localhost" in db_path:
                         settings.NMJv2_HOST = host
                         settings.NMJv2_DATABASE = db_path
@@ -107,13 +109,15 @@ class Notifier(object):
 
         # if the result was a number then consider that an error
         error_codes = ["8", "11", "22", "49", "50", "51", "60"]
-        error_messages = ["Invalid parameter(s)/argument(s)",
-                          "Invalid database path",
-                          "Insufficient size",
-                          "Database write error",
-                          "Database read error",
-                          "Open fifo pipe failed",
-                          "Read only file system"]
+        error_messages = [
+            "Invalid parameter(s)/argument(s)",
+            "Invalid database path",
+            "Insufficient size",
+            "Database write error",
+            "Database read error",
+            "Open fifo pipe failed",
+            "Read only file system",
+        ]
         if int(result1) > 0:
             index = error_codes.index(result1)
             logger.exception("Popcorn Hour returned an error: {0}".format((error_messages[index])))

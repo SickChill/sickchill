@@ -9,7 +9,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         super().__init__("BitCannon")
@@ -45,8 +44,7 @@ class Provider(TorrentProvider):
             for search_string in {*search_strings[mode]}:
                 search_params["q"] = search_string
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format
-                                 (search_string))
+                    logger.debug("Search string: {0}".format(search_string))
 
                 search_url = urljoin(url, "api/search")
                 parsed_json = self.get_url(search_url, params=search_params, returns="json")
@@ -75,32 +73,30 @@ class Provider(TorrentProvider):
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
-                                logger.debug("Discarding torrent because it doesn't meet the "
-                                             "minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                             (title, seeders, leechers))
+                                logger.debug(
+                                    "Discarding torrent because it doesn't meet the "
+                                    "minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                )
                             continue
 
                         size = convert_size(result.pop("size", -1)) or -1
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                         (title, seeders, leechers))
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
                     except (AttributeError, TypeError, KeyError, ValueError):
                         continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
 
         return results
 
     @staticmethod
     def _check_auth_from_data(data):
-        if not all([isinstance(data, dict),
-                    data.pop("status", 200) != 401,
-                    data.pop("message", "") != "Invalid API key"]):
+        if not all([isinstance(data, dict), data.pop("status", 200) != 401, data.pop("message", "") != "Invalid API key"]):
 
             logger.warning("Invalid api key. Check your settings")
             return False

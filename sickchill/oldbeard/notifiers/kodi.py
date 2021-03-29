@@ -15,15 +15,15 @@ class Notifier(object):
 
     def setup(self, hosts=None, username=None, password=None):
         self._connections = []
-        for host in (x.strip() for x in (hosts or settings.KODI_HOST or '').split(",") if x.strip()):
+        for host in (x.strip() for x in (hosts or settings.KODI_HOST or "").split(",") if x.strip()):
             try:
-                if ':' in host:
-                    bare_host, port = host.split(':')
+                if ":" in host:
+                    bare_host, port = host.split(":")
                     kodi = Kodi(bare_host, username or settings.KODI_USERNAME, password or settings.KODI_PASSWORD, port=try_int(port, 8080))
                 else:
                     kodi = Kodi(host, username or settings.KODI_USERNAME, password or settings.KODI_PASSWORD)
-                kodi.host = kodi.variables()['hostname']['value']
-                kodi.name = kodi.Settings.GetSettingValue(setting="services.devicename")['result']['value']
+                kodi.host = kodi.variables()["hostname"]["value"]
+                kodi.name = kodi.Settings.GetSettingValue(setting="services.devicename")["result"]["value"]
                 if kodi not in self._connections:
                     self._connections.append(kodi)
             except (URLError, RequestTimeout, KeyError, IndexError):
@@ -43,9 +43,9 @@ class Notifier(object):
     @staticmethod
     def success(result):
         try:
-            return result['result'] == 'OK'
+            return result["result"] == "OK"
         except (AttributeError, KeyError, ValueError):
-            print(result['error'])
+            print(result["error"])
 
         return False
 
@@ -73,15 +73,15 @@ class Notifier(object):
         for connection in self.connections:
             logger.debug("Sending {0} notification to '{1}' - {2}".format(dest_app, connection.host, message))
             response = connection.GUI.ShowNotification(title=title, message=message, image=settings.LOGO_URL)
-            if response and response.get('result'):
+            if response and response.get("result"):
                 results[connection.host] = self.success(response)
             else:
                 if settings.KODI_ALWAYS_ON or force:
                     logger.warning("Failed to send notification to {0} for '{1}', check configuration and try again.".format(dest_app, connection.host))
                 results[connection.host] = False
 
-        for host in [x.strip() for x in (hosts or settings.KODI_HOST or '').split(",") if x.strip()]:
-            base_host = host.split(':')[0]
+        for host in [x.strip() for x in (hosts or settings.KODI_HOST or "").split(",") if x.strip()]:
+            base_host = host.split(":")[0]
             if base_host not in results and host not in results:
                 results[host] = False
 
@@ -102,7 +102,7 @@ class Notifier(object):
 
                 if show_name:
                     tvshowid = -1
-                    path = ''
+                    path = ""
 
                     logger.debug("Updating library in KODI for show " + show_name)
 
@@ -130,7 +130,7 @@ class Notifier(object):
 
                     # we didn't find the show (exact match), thus revert to just doing a full update if enabled
                     if tvshowid == -1:
-                        logger.debug('Exact show name not matched in KODI TV show list')
+                        logger.debug("Exact show name not matched in KODI TV show list")
 
                     if not path:
                         logger.warning("No valid path found for " + show_name + " with ID: " + str(tvshowid) + " on " + connection.host)
@@ -182,7 +182,7 @@ class Notifier(object):
         try:
             connection = self.connections[int(connection_index)]
         except IndexError:
-            logger.warning('Incorrect KODI host passed to play an episode, aborting play')
+            logger.warning("Incorrect KODI host passed to play an episode, aborting play")
             return False
 
         logger.debug("Trying to play episode on Kodi for host: " + connection.host)
@@ -202,26 +202,23 @@ class Notifier(object):
         del shows
 
         if tvshowid is None:
-            logger.info('Could not play the item, could not find the show on Kodi')
+            logger.info("Could not play the item, could not find the show on Kodi")
             return
 
         response = connection.VideoLibrary.GetEpisodes(
-            filter={"field": "title", "operator": "is", "value": episode.name},
-            season=episode.season,
-            tvshowid=tvshowid,
-            properties=["file"]
+            filter={"field": "title", "operator": "is", "value": episode.name}, season=episode.season, tvshowid=tvshowid, properties=["file"]
         )
 
         if response and "result" in response and "episodes" in response["result"]:
             episodes = response["result"]["episodes"]
 
             if len(episodes) > 1:
-                logger.info('Could not play the item, too many files were returned as options and we could not choose')
+                logger.info("Could not play the item, too many files were returned as options and we could not choose")
 
             if episodes:
-                connection.Player.Open(item={'file': episodes[0]['file']})
+                connection.Player.Open(item={"file": episodes[0]["file"]})
             else:
-                logger.info('Could not find the episode on Kodi to play')
+                logger.info("Could not find the episode on Kodi to play")
 
     def notify_snatch(self, ep_name):
         if settings.KODI_NOTIFY_ONSNATCH:

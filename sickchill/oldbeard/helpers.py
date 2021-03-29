@@ -43,10 +43,12 @@ from sickchill.show.Show import Show
 from . import db
 
 # Add some missing languages
-LOCALE_NAMES.update({
-    "ar_SA": {"name_en": "Arabic (Saudi Arabia)", "name": "(العربية (المملكة العربية السعودية"},
-    "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
-})
+LOCALE_NAMES.update(
+    {
+        "ar_SA": {"name_en": "Arabic (Saudi Arabia)", "name": "(العربية (المملكة العربية السعودية"},
+        "no_NO": {"name_en": "Norwegian", "name": "Norsk"},
+    }
+)
 
 
 _context = None
@@ -68,13 +70,15 @@ def set_opener(verify: bool):
     disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     try:
         from urllib.request import HTTPSHandler
+
         https_handler = HTTPSHandler(context=make_context(verify), check_hostname=True)
         opener = urllib.request.build_opener(https_handler)
     except ImportError:
         opener = urllib.request.build_opener()
 
-    opener.addheaders = [('User-agent', sickchill.oldbeard.common.USER_AGENT)]
+    opener.addheaders = [("User-agent", sickchill.oldbeard.common.USER_AGENT)]
     urllib.request.install_opener(opener)
+
 
 set_opener(settings.SSL_VERIFY)
 
@@ -121,78 +125,78 @@ def remove_non_release_groups(name):
     # select release_name from tv_episodes WHERE LENGTH(release_name);
     # [eSc], [SSG], [GWC] are valid release groups for non-anime
     removeWordsList = {
-        r'\[rartv\]$': 'searchre',
-        r'\[rarbg\]$': 'searchre',
-        r'\.\[eztv\]$': 'searchre',
-        r'\[eztv\]$': 'searchre',
-        r'\[ettv\]$': 'searchre',
-        r'\[cttv\]$': 'searchre',
-        r'\.\[vtv\]$': 'searchre',
-        r'\[vtv\]$': 'searchre',
-        r'\[EtHD\]$': 'searchre',
-        r'\[GloDLS\]$': 'searchre',
-        r'\[silv4\]$': 'searchre',
-        r'\[Seedbox\]$': 'searchre',
-        r'\[PublicHD\]$': 'searchre',
-        r'\.\[PublicHD\]$': 'searchre',
-        r'\.\[NO.RAR\]$': 'searchre',
-        r'\[NO.RAR\]$': 'searchre',
-        r'-\=\{SPARROW\}\=-$': 'searchre',
-        r'\=\{SPARR$': 'searchre',
-        r'\.\[720P\]\[HEVC\]$': 'searchre',
-        r'\[AndroidTwoU\]$': 'searchre',
-        r'\[brassetv\]$': 'searchre',
-        r'\[Talamasca32\]$': 'searchre',
-        r'\(musicbolt\.com\)$': 'searchre',
-        r'\.\(NLsub\)$': 'searchre',
-        r'\(NLsub\)$': 'searchre',
-        r'\.\[BT\]$': 'searchre',
-        r' \[1044\]$': 'searchre',
-        r'\.RiPSaLoT$': 'searchre',
-        r'\.GiuseppeTnT$': 'searchre',
-        r'\.Renc$': 'searchre',
-        r'\.gz$': 'searchre',
-        r'\.English$': 'searchre',
-        r'\.German$': 'searchre',
-        r'\.\.Italian$': 'searchre',
-        r'\.Italian$': 'searchre',
-        r'(?<![57])\.1$': 'searchre',
-        r'-NZBGEEK$': 'searchre',
-        r'-Siklopentan$': 'searchre',
-        r'-Chamele0n$': 'searchre',
-        r'-Obfuscated$': 'searchre',
-        r'-Pre$': 'searchre',
-        r'-postbot$': 'searchre',
-        r'-BUYMORE$': 'searchre',
-        r'-\[SpastikusTV\]$': 'searchre',
-        r'-RP$': 'searchre',
-        r'-20-40$': 'searchre',
-        r'\.\[www\.usabit\.com\]$': 'searchre',
-        r'^\[www\.Cpasbien\.pe\] ': 'searchre',
-        r'^\[www\.Cpasbien\.com\] ': 'searchre',
-        r'^\[ www\.Cpasbien\.pw \] ': 'searchre',
-        r'^\.www\.Cpasbien\.pw': 'searchre',
-        r'^\[www\.newpct1\.com\]': 'searchre',
-        r'^\[ www\.Cpasbien\.com \] ': 'searchre',
-        r'- \{ www\.SceneTime\.com \}$': 'searchre',
-        r'^\{ www\.SceneTime\.com \} - ': 'searchre',
-        r'^\]\.\[www\.tensiontorrent.com\] - ': 'searchre',
-        r'^\]\.\[ www\.tensiontorrent.com \] - ': 'searchre',
-        r'- \[ www\.torrentday\.com \]$': 'searchre',
-        r'^\[ www\.TorrentDay\.com \] - ': 'searchre',
-        r'\[NO-RAR\] - \[ www\.torrentday\.com \]$': 'searchre',
-        r'^www\.Torrenting\.com\.-\.': 'searchre',
-        r'-Scrambled$': 'searchre',
-        r'^Torrent9\.PH ---> ': 'searchre',
-        r'-xpost$': 'searchre'
+        r"\[rartv\]$": "searchre",
+        r"\[rarbg\]$": "searchre",
+        r"\.\[eztv\]$": "searchre",
+        r"\[eztv\]$": "searchre",
+        r"\[ettv\]$": "searchre",
+        r"\[cttv\]$": "searchre",
+        r"\.\[vtv\]$": "searchre",
+        r"\[vtv\]$": "searchre",
+        r"\[EtHD\]$": "searchre",
+        r"\[GloDLS\]$": "searchre",
+        r"\[silv4\]$": "searchre",
+        r"\[Seedbox\]$": "searchre",
+        r"\[PublicHD\]$": "searchre",
+        r"\.\[PublicHD\]$": "searchre",
+        r"\.\[NO.RAR\]$": "searchre",
+        r"\[NO.RAR\]$": "searchre",
+        r"-\=\{SPARROW\}\=-$": "searchre",
+        r"\=\{SPARR$": "searchre",
+        r"\.\[720P\]\[HEVC\]$": "searchre",
+        r"\[AndroidTwoU\]$": "searchre",
+        r"\[brassetv\]$": "searchre",
+        r"\[Talamasca32\]$": "searchre",
+        r"\(musicbolt\.com\)$": "searchre",
+        r"\.\(NLsub\)$": "searchre",
+        r"\(NLsub\)$": "searchre",
+        r"\.\[BT\]$": "searchre",
+        r" \[1044\]$": "searchre",
+        r"\.RiPSaLoT$": "searchre",
+        r"\.GiuseppeTnT$": "searchre",
+        r"\.Renc$": "searchre",
+        r"\.gz$": "searchre",
+        r"\.English$": "searchre",
+        r"\.German$": "searchre",
+        r"\.\.Italian$": "searchre",
+        r"\.Italian$": "searchre",
+        r"(?<![57])\.1$": "searchre",
+        r"-NZBGEEK$": "searchre",
+        r"-Siklopentan$": "searchre",
+        r"-Chamele0n$": "searchre",
+        r"-Obfuscated$": "searchre",
+        r"-Pre$": "searchre",
+        r"-postbot$": "searchre",
+        r"-BUYMORE$": "searchre",
+        r"-\[SpastikusTV\]$": "searchre",
+        r"-RP$": "searchre",
+        r"-20-40$": "searchre",
+        r"\.\[www\.usabit\.com\]$": "searchre",
+        r"^\[www\.Cpasbien\.pe\] ": "searchre",
+        r"^\[www\.Cpasbien\.com\] ": "searchre",
+        r"^\[ www\.Cpasbien\.pw \] ": "searchre",
+        r"^\.www\.Cpasbien\.pw": "searchre",
+        r"^\[www\.newpct1\.com\]": "searchre",
+        r"^\[ www\.Cpasbien\.com \] ": "searchre",
+        r"- \{ www\.SceneTime\.com \}$": "searchre",
+        r"^\{ www\.SceneTime\.com \} - ": "searchre",
+        r"^\]\.\[www\.tensiontorrent.com\] - ": "searchre",
+        r"^\]\.\[ www\.tensiontorrent.com \] - ": "searchre",
+        r"- \[ www\.torrentday\.com \]$": "searchre",
+        r"^\[ www\.TorrentDay\.com \] - ": "searchre",
+        r"\[NO-RAR\] - \[ www\.torrentday\.com \]$": "searchre",
+        r"^www\.Torrenting\.com\.-\.": "searchre",
+        r"-Scrambled$": "searchre",
+        r"^Torrent9\.PH ---> ": "searchre",
+        r"-xpost$": "searchre",
     }
 
     _name = name
     for remove_string, remove_type in removeWordsList.items():
-        if remove_type == 'search':
-            _name = _name.replace(remove_string, '')
-        elif remove_type == 'searchre':
-            _name = re.sub(r'(?i){}'.format(remove_string), '', _name)
+        if remove_type == "search":
+            _name = _name.replace(remove_string, "")
+        elif remove_type == "searchre":
+            _name = re.sub(r"(?i){}".format(remove_string), "", _name)
 
     return _name.strip()
 
@@ -211,29 +215,29 @@ def is_media_file(filename):
         is_rar = is_rar_file(filename)
         filename = os.path.basename(filename)
 
-        if re.search(r'(^|[\W_])(?<!shomin.)(sample\d*)[\W_]', filename, re.I):
+        if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", filename, re.I):
             return False
 
         # ignore RARBG release intro
-        if re.search(r'^RARBG\.(\w+\.)?(mp4|avi|txt)$', filename, re.I):
+        if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", filename, re.I):
             return False
 
         # ignore Kodi tvshow trailers
-        if filename == 'tvshow-trailer.mp4':
+        if filename == "tvshow-trailer.mp4":
             return False
 
         # ignore MAC OS's retarded "resource fork" files
-        if filename.startswith('._'):
+        if filename.startswith("._"):
             return False
 
         filname_parts = filename.rpartition(".")
 
-        if re.search('extras?$', filname_parts[0], re.I):
+        if re.search("extras?$", filname_parts[0], re.I):
             return False
 
         return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (settings.UNPACK == settings.UNPACK_PROCESS_INTACT and is_rar)
     except (TypeError, AssertionError) as error:  # Not a string
-        logger.debug(_('Invalid filename. Filename must be a string. {0}').format(error))
+        logger.debug(_("Invalid filename. Filename must be a string. {0}").format(error))
         return False
 
 
@@ -244,7 +248,7 @@ def is_rar_file(filename):
     :param filename: Filename to check
     :return: True if this is RAR/Part file, False if not
     """
-    archive_regex = r'(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)'
+    archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
     ret = re.search(archive_regex, filename) is not None
     try:
         if ret and os.path.exists(filename) and os.path.isfile(filename):
@@ -303,7 +307,7 @@ def list_media_files(path):
         full_entry = os.path.join(path, entry)
 
         # if it's a folder do it recursively
-        if os.path.isdir(full_entry) and not entry.startswith('.') and not entry == 'Extras':
+        if os.path.isdir(full_entry) and not entry.startswith(".") and not entry == "Extras":
             files += list_media_files(full_entry)
 
         elif is_media_file(entry):
@@ -325,10 +329,10 @@ def copyFile(srcFile, destFile):
     except shutil.SameFileError:
         return
     except (shutil.SpecialFileError, shutil.Error) as error:
-        logger.warning('{0}'.format(error))
+        logger.warning("{0}".format(error))
         raise error
     except Exception as error:
-        logger.exception('{0}'.format(error))
+        logger.exception("{0}".format(error))
         raise error
 
     try:
@@ -364,12 +368,10 @@ def hardlinkFile(srcFile, destFile):
     try:
         os.link(srcFile, destFile)
     except Exception as error:
-        logger.warning(_("Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead").format
-                       (srcFile, destFile, error))
+        logger.warning(_("Failed to create hardlink of {0} at {1}. Error: {2}. Copying instead").format(srcFile, destFile, error))
         copyFile(srcFile, destFile)
 
     fixSetGroupID(destFile)
-
 
 
 def moveAndSymlinkFile(srcFile, destFile):
@@ -385,8 +387,7 @@ def moveAndSymlinkFile(srcFile, destFile):
         moveFile(srcFile, destFile)
         os.symlink(destFile, srcFile)
     except Exception as error:
-        logger.warning(_("Failed to create symlink of {0} at {1}. Error: {2}. Copying instead").format
-                       (srcFile, destFile, error))
+        logger.warning(_("Failed to create symlink of {0} at {1}. Error: {2}. Copying instead").format(srcFile, destFile, error))
         copyFile(srcFile, destFile)
 
 
@@ -400,7 +401,7 @@ def make_dirs(path):
 
     if not os.path.isdir(path):
         # Windows, create all missing folders
-        if platform.system() == 'Windows':
+        if platform.system() == "Windows":
             try:
                 logger.debug(_("Folder {0} didn't exist, creating it").format(path))
                 os.makedirs(path)
@@ -410,7 +411,7 @@ def make_dirs(path):
 
         # not Windows, create all missing folders and set permissions
         else:
-            sofar = ''
+            sofar = ""
             folder_list = path.split(os.path.sep)
 
             # look through each subfolder and make sure they all exist
@@ -461,7 +462,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
         # Check if the language extracted from filename is a valid language
         if sublang in sickchill.oldbeard.subtitles.subtitle_code_filter():
-            cur_file_ext = '.' + sublang + cur_file_ext
+            cur_file_ext = "." + sublang + cur_file_ext
 
     # put the extension on the incoming file
     new_path += cur_file_ext
@@ -499,8 +500,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     while os.path.isdir(check_empty_dir) and check_empty_dir != keep_dir:
         check_files = os.listdir(check_empty_dir)
 
-        if not check_files or (len(check_files) <= len(ignore_items) and all(
-                check_file in ignore_items for check_file in check_files)):
+        if not check_files or (len(check_files) <= len(ignore_items) and all(check_file in ignore_items for check_file in check_files)):
             # directory is empty or contains only ignore_items
             try:
                 logger.info(_("Deleting empty folder: ") + check_empty_dir)
@@ -539,7 +539,7 @@ def chmodAsParent(childPath):
     :param childPath: Child Path to change permissions to sync from parent
     """
 
-    if platform.system() == 'Windows':
+    if platform.system() == "Windows":
         return
 
     parentPath = os.path.dirname(childPath)
@@ -585,7 +585,7 @@ def fixSetGroupID(childPath):
     :param childPath: Path to inherit SGID permissions from parent
     """
 
-    if platform.system() == 'Windows':
+    if platform.system() == "Windows":
         return
 
     try:
@@ -616,7 +616,7 @@ def fixSetGroupID(childPath):
             except (OSError, PermissionError):
                 logger.debug("Failed to respect the set-group-ID bit on the parent directory for {0} (setting group ID {1})".format(childPath, parentGID))
     except Exception as error:
-        logger.debug(f'Error setting set-group-id on the parent directory. {error}')
+        logger.debug(f"Error setting set-group-id on the parent directory. {error}")
 
 
 def is_anime_in_show_list():
@@ -657,12 +657,11 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
 
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0]["absolute_number"])
-            logger.debug(_("Found absolute number {absolute} for show {show} {ep}").format
-                         (absolute=absolute_number, show=show.name,
-                          ep=episode_num(season, episode)))
+            logger.debug(
+                _("Found absolute number {absolute} for show {show} {ep}").format(absolute=absolute_number, show=show.name, ep=episode_num(season, episode))
+            )
         else:
-            logger.debug(_("No entries for absolute number for show {show} {ep}").format
-                         (show=show.name, ep=episode_num(season, episode)))
+            logger.debug(_("No entries for absolute number for show {show} {ep}").format(show=show.name, ep=episode_num(season, episode)))
 
     return absolute_number
 
@@ -695,9 +694,9 @@ def sanitizeSceneName(name, anime=False):
     # assert isinstance(name, unicode), name + ' is not unicode'
 
     if not name:
-        return ''
+        return ""
 
-    bad_chars = ',:()!?\u2019'
+    bad_chars = ",:()!?\u2019"
     if not anime:
         bad_chars += "'"
 
@@ -710,7 +709,7 @@ def sanitizeSceneName(name, anime=False):
     name = re.sub(r"[- /]+", ".", name)
     name = re.sub(r"[.]+", ".", name)
 
-    if name.endswith('.'):
+    if name.endswith("."):
         name = name[:-1]
 
     return name
@@ -739,36 +738,36 @@ def create_https_certificates(ssl_cert, ssl_key):
         return False
 
     cakey = createKeyPair(TYPE_RSA, 4096)
-    careq = createCertRequest(cakey, CN='Certificate Authority')
+    careq = createCertRequest(cakey, CN="Certificate Authority")
     params = {
-        'req': careq,
-        'issuerCert': careq,
-        'issuerKey': cakey,
-        'serial': int(time.time()),
-        'notBefore': 0,
-        'notAfter': 60 * 60 * 24 * 365 * 10,  # ten years
-        'digest': 'sha256'
+        "req": careq,
+        "issuerCert": careq,
+        "issuerKey": cakey,
+        "serial": int(time.time()),
+        "notBefore": 0,
+        "notAfter": 60 * 60 * 24 * 365 * 10,  # ten years
+        "digest": "sha256",
     }
     # Create the CA Certificate
-    params['issuerCert'] = createCertificate(**params)
+    params["issuerCert"] = createCertificate(**params)
 
     pkey = createKeyPair(TYPE_RSA, 4096)
-    params['req'] = createCertRequest(pkey, CN='SickChill')
+    params["req"] = createCertRequest(pkey, CN="SickChill")
     cert = createCertificate(**params)
 
     # Save the key and certificate to disk
     # noinspection PyBroadException
     try:
         # Module has no member
-        open(ssl_key, 'wb').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        open(ssl_cert, 'wb').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        open(ssl_key, "wb").write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
+        open(ssl_cert, "wb").write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
         logger.info(traceback.format_exc())
         logger.warning(_("Error creating SSL key and certificate {error}").format(error))
         return False
 
-    logger.info(_('Created https key: {ssl_key}').format(ssl_key=ssl_key))
-    logger.info(_('Created https cert: {ssl_cert}').format(ssl_cert=ssl_cert))
+    logger.info(_("Created https key: {ssl_key}").format(ssl_key=ssl_key))
+    logger.info(_("Created https cert: {ssl_cert}").format(ssl_cert=ssl_cert))
     return True
 
 
@@ -783,7 +782,7 @@ def backupVersionedFile(old_file, version):
 
     numTries = 0
 
-    new_file = old_file + '.' + 'v' + str(version)
+    new_file = old_file + "." + "v" + str(version)
 
     while not os.path.isfile(new_file):
         if not os.path.isfile(old_file):
@@ -820,20 +819,18 @@ def restoreVersionedFile(backup_file, version):
     numTries = 0
 
     new_file, ext_ = os.path.splitext(backup_file)
-    restore_file = new_file + '.' + 'v' + str(version)
+    restore_file = new_file + "." + "v" + str(version)
 
     if not os.path.isfile(new_file):
         logger.debug(_("Not restoring, {0} doesn't exist").format(new_file))
         return False
 
     try:
-        logger.debug(_("Trying to backup {0} to {1}.r{2} before restoring backup").format
-                     (new_file, new_file, version))
+        logger.debug(_("Trying to backup {0} to {1}.r{2} before restoring backup").format(new_file, new_file, version))
 
-        shutil.move(new_file, new_file + '.' + 'r' + str(version))
+        shutil.move(new_file, new_file + "." + "r" + str(version))
     except Exception as error:
-        logger.warning(_("Error while trying to backup DB file {0} before proceeding with restore: {1}").format
-                       (restore_file, error))
+        logger.warning(_("Error while trying to backup DB file {0} before proceeding with restore: {1}").format(restore_file, error))
         return False
 
     while not os.path.isfile(new_file):
@@ -887,7 +884,7 @@ def anon_url(*url):
     """
     Return a URL string consisting of the Anonymous redirect URL and an arbitrary number of values appended.
     """
-    return '' if None in url else '{0}{1}'.format(settings.ANON_REDIRECT, ''.join(str(s) for s in url))
+    return "" if None in url else "{0}{1}".format(settings.ANON_REDIRECT, "".join(str(s) for s in url))
 
 
 """
@@ -920,9 +917,9 @@ def encrypt(data: str, encryption_version=0, _decrypt=False):
     secret_cycle = cycle((unique_key1, settings.ENCRYPTION_SECRET)[encryption_version > 1].encode())
     if encryption_version in (1, 2):
         if _decrypt:
-            result = ''.join(chr(x ^ y) for (x, y) in zip(base64.decodebytes(data), secret_cycle))
+            result = "".join(chr(x ^ y) for (x, y) in zip(base64.decodebytes(data), secret_cycle))
         else:
-            result = base64.encodebytes(''.join(chr(x ^ y) for (x, y) in zip(data, secret_cycle)).encode()).decode().strip()
+            result = base64.encodebytes("".join(chr(x ^ y) for (x, y) in zip(data, secret_cycle)).encode()).decode().strip()
 
     if isinstance(result, bytes):
         result = result.decode()
@@ -935,7 +932,7 @@ def decrypt(data, encryption_version=0):
 
 
 def full_sanitizeSceneName(name):
-    return re.sub('[. -]', ' ', sanitizeSceneName(name)).lower().strip()
+    return re.sub("[. -]", " ", sanitizeSceneName(name)).lower().strip()
 
 
 def _check_against_names(nameInQuestion, show, season=-1):
@@ -970,14 +967,12 @@ def get_show(name, tryIndexers=False):
             fromCache = True
             showObj = Show.find(settings.showList, int(cache))
         else:
-            check_names = [
-                full_sanitizeSceneName(name),
-                name
-            ]
+            check_names = [full_sanitizeSceneName(name), name]
             show_matches = [
-                show for show in settings.showList
+                show
+                for show in settings.showList
                 if (show.show_name and full_sanitizeSceneName(show.show_name) in check_names)
-                   or (show.custom_name and full_sanitizeSceneName(show.custom_name) in check_names)
+                or (show.custom_name and full_sanitizeSceneName(show.custom_name) in check_names)
             ]
 
             if len(show_matches) == 1:
@@ -985,8 +980,7 @@ def get_show(name, tryIndexers=False):
 
         # try indexers
         if not showObj and tryIndexers:
-            showObj = Show.find(
-                settings.showList, sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1].id)
+            showObj = Show.find(settings.showList, sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1].id)
 
         # try scene exceptions
         if not showObj:
@@ -1013,9 +1007,10 @@ def is_hidden_folder(folder):
     On Linux based systems hidden folders start with . (dot)
     :param folder: Full path of folder to check
     """
+
     def is_hidden(filepath):
         name = os.path.basename(os.path.abspath(filepath))
-        return name == '@eaDir' or name.startswith('.') or has_hidden_attribute(filepath)
+        return name == "@eaDir" or name.startswith(".") or has_hidden_attribute(filepath)
 
     def has_hidden_attribute(filepath):
         try:
@@ -1067,6 +1062,7 @@ def set_up_anidb_connection():
         return False
 
     if not settings.ADBA_CONNECTION:
+
         def anidb_logger(msg):
             return logger.debug(_("anidb: {0} ").format(msg))
 
@@ -1097,7 +1093,7 @@ def makeZip(fileList, archive):
     """
 
     try:
-        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, allowZip64=True)
+        a = zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, allowZip64=True)
         for f in fileList:
             a.write(f)
         a.close()
@@ -1119,7 +1115,7 @@ def extractZip(archive, targetDir):
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
 
-        zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
+        zip_file = zipfile.ZipFile(archive, "r", allowZip64=True)
         for member in zip_file.namelist():
             filename = os.path.basename(member)
             # skip directories
@@ -1150,7 +1146,7 @@ def backup_config_zip(fileList, archive, arcname=None):
     """
 
     try:
-        a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED)
+        a = zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED)
         for f in fileList:
             a.write(f, os.path.relpath(f, arcname))
         a.close()
@@ -1173,13 +1169,15 @@ def restore_config_zip(archive, targetDir):
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
         else:
+
             def path_leaf(path):
                 head, tail = os.path.split(path)
                 return tail or os.path.basename(head)
-            bakFilename = '{0}-{1}'.format(path_leaf(targetDir), datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
+
+            bakFilename = "{0}-{1}".format(path_leaf(targetDir), datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
             shutil.move(targetDir, os.path.join(os.path.dirname(targetDir), bakFilename))
 
-        zip_file = zipfile.ZipFile(archive, 'r', allowZip64=True)
+        zip_file = zipfile.ZipFile(archive, "r", allowZip64=True)
         for member in zip_file.namelist():
             zip_file.extract(member, targetDir)
         zip_file.close()
@@ -1217,40 +1215,56 @@ def make_indexer_session():
 
 def make_session():
     session = requests.Session()
-    session.headers.update({'User-Agent': USER_AGENT, 'Accept-Encoding': 'gzip,deflate'})
+    session.headers.update({"User-Agent": USER_AGENT, "Accept-Encoding": "gzip,deflate"})
     session = cloudscraper.create_scraper(sess=session, delay=6)
     return CacheControl(sess=session, cache_etags=True)
 
 
 def request_defaults(kwargs):
-    verify = certifi.where() if all([settings.SSL_VERIFY, kwargs.pop('verify', True)]) else False
+    verify = certifi.where() if all([settings.SSL_VERIFY, kwargs.pop("verify", True)]) else False
 
     # request session proxies
-    if kwargs.pop('allow_proxy', True) and settings.PROXY_SETTING:
+    if kwargs.pop("allow_proxy", True) and settings.PROXY_SETTING:
         logger.debug(_("Using global proxy: {}").format(settings.PROXY_SETTING))
         proxies = {"http": settings.PROXY_SETTING, "https": settings.PROXY_SETTING}
     else:
         proxies = None
 
-    return kwargs.pop('hooks', None), kwargs.pop('cookies', None), verify, proxies
+    return kwargs.pop("hooks", None), kwargs.pop("cookies", None), verify, proxies
 
 
-def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches, too-many-locals
-           timeout=30, session=None, **kwargs):
+def getURL(
+    url,
+    post_data=None,
+    params=None,
+    headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches, too-many-locals
+    timeout=30,
+    session=None,
+    **kwargs,
+):
     """
     Returns data retrieved from the url provider.
     """
     try:
-        response_type = kwargs.pop('returns', 'text')
-        stream = kwargs.pop('stream', False)
-        allow_redirects = kwargs.pop('allow_redirects', True)
+        response_type = kwargs.pop("returns", "text")
+        stream = kwargs.pop("stream", False)
+        allow_redirects = kwargs.pop("allow_redirects", True)
 
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
         resp = session.request(
-            'POST' if post_data else 'GET', url, data=post_data or {}, params=params or {},
-            timeout=timeout, allow_redirects=allow_redirects, hooks=hooks, stream=stream,
-            headers=headers, cookies=cookies, proxies=proxies, verify=verify
+            "POST" if post_data else "GET",
+            url,
+            data=post_data or {},
+            params=params or {},
+            timeout=timeout,
+            allow_redirects=allow_redirects,
+            hooks=hooks,
+            stream=stream,
+            headers=headers,
+            cookies=cookies,
+            proxies=proxies,
+            verify=verify,
         )
         resp.raise_for_status()
     except Exception as error:
@@ -1259,9 +1273,9 @@ def getURL(url, post_data=None, params=None, headers=None,  # pylint:disable=too
         return None
 
     try:
-        return resp if response_type == 'response' or response_type is None else resp.json() if response_type == 'json' else getattr(resp, response_type, resp)
+        return resp if response_type == "response" or response_type is None else resp.json() if response_type == "json" else getattr(resp, response_type, resp)
     except ValueError:
-        logger.debug(_('Requested a json response but response was not json, check the url: {0}').format(url))
+        logger.debug(_("Requested a json response but response was not json, check the url: {0}").format(url))
         return None
 
 
@@ -1276,23 +1290,23 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
     :return: True on success, False on failure
     """
 
-    return_filename = kwargs.get('return_filename', False)
+    return_filename = kwargs.get("return_filename", False)
 
     try:
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
-        with closing(session.get(url, allow_redirects=True, stream=True,
-                                 verify=verify, headers=headers, cookies=cookies,
-                                 hooks=hooks, proxies=proxies)) as resp:
+        with closing(
+            session.get(url, allow_redirects=True, stream=True, verify=verify, headers=headers, cookies=cookies, hooks=hooks, proxies=proxies)
+        ) as resp:
 
             resp.raise_for_status()
 
             # Workaround for jackett.
-            if filename.endswith('nzb') and resp.headers.get('content-type') == 'application/x-bittorrent':
-                filename = replace_extension(filename, 'torrent')
+            if filename.endswith("nzb") and resp.headers.get("content-type") == "application/x-bittorrent":
+                filename = replace_extension(filename, "torrent")
 
             try:
-                with open(filename, 'wb') as fp:
+                with open(filename, "wb") as fp:
                     for chunk in resp.iter_content(chunk_size=1024):
                         if chunk:
                             fp.write(chunk)
@@ -1312,7 +1326,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
 def handle_requests_exception(requests_exception):
     def get_level(exception):
-        return (logger.ERROR, logger.WARNING)[exception and 's,t,o,p,b,r,e,a,k,i,n,g,f' in str(exception)]
+        return (logger.ERROR, logger.WARNING)[exception and "s,t,o,p,b,r,e,a,k,i,n,g,f" in str(exception)]
 
     default = _("Request failed: {0} ({1})")
     try:
@@ -1328,22 +1342,27 @@ def handle_requests_exception(requests_exception):
         logger.info(default.format(error, type(error.__class__.__name__)))
         logger.debug(traceback.format_exc())
     except urllib3.exceptions.ProxySchemeUnknown as error:
-        logger.info(default.format('You must prefix your proxy setting with a scheme (http/https/etc)', error))
+        logger.info(default.format("You must prefix your proxy setting with a scheme (http/https/etc)", error))
     except CloudflareException as error:
         logger.info(default.format(error, type(error.__class__.__name__)))
     except requests.exceptions.RequestException as error:
-        if not (hasattr(error, 'response') and error.response and
-                hasattr(error.response, 'status_code') and error.response.status_code == 404 and
-                hasattr(error.response, 'headers') and error.response.headers.get('X-Content-Type-Options') == 'nosniff'):
+        if not (
+            hasattr(error, "response")
+            and error.response
+            and hasattr(error.response, "status_code")
+            and error.response.status_code == 404
+            and hasattr(error.response, "headers")
+            and error.response.headers.get("X-Content-Type-Options") == "nosniff"
+        ):
             logger.info(default.format(error, type(error.__class__.__name__)))
     except (TypeError, ValueError) as error:
         level = get_level(error)
         logger.log(level, default.format(error, type(error.__class__.__name__)))
         if requests_exception.request:
-            logger.info(_('url is {0}').format(repr(requests_exception.request.url)))
-            logger.info('headers are {0}'.format(repr(requests_exception.request.headers)))
-            logger.info('params are {0}'.format(repr(requests_exception.request.params)))
-            logger.info('post_data is {0}'.format(repr(requests_exception.request.data)))
+            logger.info(_("url is {0}").format(repr(requests_exception.request.url)))
+            logger.info("headers are {0}".format(repr(requests_exception.request.headers)))
+            logger.info("params are {0}".format(repr(requests_exception.request.params)))
+            logger.info("post_data is {0}".format(repr(requests_exception.request.data)))
         if level == logger.WARNING:
             logger.debug(traceback.format_exc())
     except Exception as error:
@@ -1351,7 +1370,7 @@ def handle_requests_exception(requests_exception):
         logger.debug(traceback.format_exc())
 
 
-def get_size(start_path='.'):
+def get_size(start_path="."):
     """
     Find the total dir and filesize of a path
 
@@ -1386,10 +1405,10 @@ def generateApiKey():
     return secure_hash.hexdigest()[:32]
 
 
-def remove_article(text=''):
+def remove_article(text=""):
     """Remove the english articles from a text string"""
 
-    return re.sub(r'(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)', r'\1', text)
+    return re.sub(r"(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)", r"\1", text)
 
 
 def generateCookieSecret():
@@ -1399,16 +1418,17 @@ def generateCookieSecret():
 
 
 def disk_usage(path):
-    if platform.system() == 'Windows':
+    if platform.system() == "Windows":
         free = ctypes.c_ulonglong(0)
         if ctypes.windll.kernel32.GetDiskFreeSpaceExW(ctypes.c_wchar_p(str(path)), None, None, ctypes.pointer(free)) == 0:
             raise ctypes.WinError()
         return free.value
 
-    elif hasattr(os, 'statvfs'):  # POSIX
-        if platform.system() == 'Darwin':
+    elif hasattr(os, "statvfs"):  # POSIX
+        if platform.system() == "Darwin":
             try:
                 import subprocess
+
                 call = subprocess.Popen(["df", "-k", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                 output = call.communicate()[0]
                 return int(output.split("\n")[1].split()[3]) * 1024
@@ -1443,8 +1463,11 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         return True
 
     if not (os.path.isdir(dest) or (settings.CREATE_MISSING_SHOW_DIRS and os.path.isdir(os.path.dirname(dest)))):
-        logger.warning(_("A path is required for the destination. Check that the root dir and show locations are correct for {0} (I got '{1}')").format(
-            oldfile[0].name, dest))
+        logger.warning(
+            _("A path is required for the destination. Check that the root dir and show locations are correct for {0} (I got '{1}')").format(
+                oldfile[0].name, dest
+            )
+        )
         return False
 
     dest = (os.path.dirname(dest), dest)[os.path.isdir(dest)]
@@ -1465,7 +1488,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         return True
 
     # Lets also do this for symlink and hardlink
-    if 'link' in method and disk_free > 1024**2:
+    if "link" in method and disk_free > 1024 ** 2:
         return True
 
     needed_space = os.path.getsize(src)
@@ -1478,8 +1501,11 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     if disk_free > needed_space:
         return True
     else:
-        logger.warning(_("Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )").format
-                       (needed_space, pretty_file_size(needed_space), disk_free, pretty_file_size(disk_free)))
+        logger.warning(
+            _("Not enough free space: Needed: {0} bytes ( {1} ), found: {2} bytes ( {3} )").format(
+                needed_space, pretty_file_size(needed_space), disk_free, pretty_file_size(disk_free)
+            )
+        )
         return False
 
 
@@ -1503,7 +1529,7 @@ def disk_usage_hr(diskPath=None):
 
 # https://gist.github.com/thatalextaylor/7408395
 def pretty_time_delta(seconds):
-    sign_string = '-' if seconds < 0 else ''
+    sign_string = "-" if seconds < 0 else ""
     seconds = abs(int(seconds))
     days, seconds = divmod(seconds, 86400)
     hours, seconds = divmod(seconds, 3600)
@@ -1511,13 +1537,13 @@ def pretty_time_delta(seconds):
     time_delta = sign_string
 
     if days > 0:
-        time_delta += '{0}d'.format(days)
+        time_delta += "{0}d".format(days)
     if hours > 0:
-        time_delta += '{0}h'.format(hours)
+        time_delta += "{0}h".format(hours)
     if minutes > 0:
-        time_delta += '{0}m'.format(minutes)
+        time_delta += "{0}m".format(minutes)
     if seconds > 0:
-        time_delta += '{0}s'.format(seconds)
+        time_delta += "{0}s".format(seconds)
 
     return time_delta
 
@@ -1540,7 +1566,7 @@ def is_file_locked(checkfile, write_check=False):
     if not os.path.exists(checkfile):
         return True
     try:
-        f = open(checkfile, 'rb')
+        f = open(checkfile, "rb")
         f.close()
     except IOError:
         return True
@@ -1562,10 +1588,10 @@ def is_file_locked(checkfile, write_check=False):
 def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-return-statements
 
     session = make_session()
-    tvdb_id = ''
-    if indexer == 'IMDB':
+    tvdb_id = ""
+    if indexer == "IMDB":
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid={0}".format(indexer_id)
-        data = getURL(url, session=session, returns='content')
+        data = getURL(url, session=session, returns="content")
         if data is None:
             return tvdb_id
         try:
@@ -1577,9 +1603,9 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
             pass
 
         return tvdb_id
-    elif indexer == 'ZAP2IT':
+    elif indexer == "ZAP2IT":
         url = "http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it={0}".format(indexer_id)
-        data = getURL(url, session=session, returns='content')
+        data = getURL(url, session=session, returns="content")
         if data is None:
             return tvdb_id
         try:
@@ -1591,12 +1617,12 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
             pass
 
         return tvdb_id
-    elif indexer == 'TVMAZE':
+    elif indexer == "TVMAZE":
         url = "http://api.tvmaze.com/shows/{0}".format(indexer_id)
-        data = getURL(url, session=session, returns='json')
+        data = getURL(url, session=session, returns="json")
         if data is None:
             return tvdb_id
-        tvdb_id = data['externals']['thetvdb']
+        tvdb_id = data["externals"]["thetvdb"]
         return tvdb_id
     else:
         return tvdb_id
@@ -1622,13 +1648,13 @@ def is_ip_local(ip):
 MESSAGE_COUNTER = 0
 
 
-def add_site_message(message, tag=None, level='danger'):
+def add_site_message(message, tag=None, level="danger"):
     with settings.MESSAGES_LOCK:
         to_add = dict(level=level, tag=tag, message=message)
 
         if tag:  # prevent duplicate messages of the same type
             # http://www.goodmami.org/2013/01/30/Getting-only-the-first-match-in-a-list-comprehension.html
-            existing = next((x for x, msg in settings.SITE_MESSAGES.items() if msg.get('tag') == tag), None)
+            existing = next((x for x, msg in settings.SITE_MESSAGES.items() if msg.get("tag") == tag), None)
             if existing:
                 settings.SITE_MESSAGES[existing] = to_add
                 return
@@ -1643,27 +1669,32 @@ def remove_site_message(key=None, tag=None):
         if key is not None and int(key) in settings.SITE_MESSAGES:
             del settings.SITE_MESSAGES[int(key)]
         elif tag is not None:
-            found = [idx for idx, msg in settings.SITE_MESSAGES.items() if msg.get('tag') == tag]
+            found = [idx for idx, msg in settings.SITE_MESSAGES.items() if msg.get("tag") == tag]
             for key in found:
                 del settings.SITE_MESSAGES[key]
 
 
 def sortable_name(name):
     if not settings.SORT_ARTICLE:
-        name = re.sub(r'(?:The|A|An)\s', '', name, flags=re.I)
+        name = re.sub(r"(?:The|A|An)\s", "", name, flags=re.I)
     return unidecode(name.lower())
 
 
 def manage_torrents_url(reset=False):
     if not reset:
-        return settings.CLIENT_WEB_URLS.get('torrent', '')
+        return settings.CLIENT_WEB_URLS.get("torrent", "")
 
-    if not settings.USE_TORRENTS or not settings.TORRENT_HOST.lower().startswith('http') or settings.TORRENT_METHOD == 'blackhole' or \
-            settings.ENABLE_HTTPS and not settings.TORRENT_HOST.lower().startswith('https'):
-        settings.CLIENT_WEB_URLS['torrent'] = ''
-        return settings.CLIENT_WEB_URLS.get('torrent')
+    if (
+        not settings.USE_TORRENTS
+        or not settings.TORRENT_HOST.lower().startswith("http")
+        or settings.TORRENT_METHOD == "blackhole"
+        or settings.ENABLE_HTTPS
+        and not settings.TORRENT_HOST.lower().startswith("https")
+    ):
+        settings.CLIENT_WEB_URLS["torrent"] = ""
+        return settings.CLIENT_WEB_URLS.get("torrent")
 
-    torrent_ui_url = re.sub('localhost|127.0.0.1', settings.LOCALHOST_IP or get_lan_ip(), settings.TORRENT_HOST or '', re.I)
+    torrent_ui_url = re.sub("localhost|127.0.0.1", settings.LOCALHOST_IP or get_lan_ip(), settings.TORRENT_HOST or "", re.I)
 
     def test_exists(url):
         try:
@@ -1672,20 +1703,17 @@ def manage_torrents_url(reset=False):
         except requests.exceptions.RequestException:
             return False
 
-    if settings.TORRENT_METHOD == 'utorrent':
-        torrent_ui_url = '/'.join(s.strip('/') for s in (torrent_ui_url, 'gui/'))
-    elif settings.TORRENT_METHOD == 'download_station':
-        if test_exists(urljoin(torrent_ui_url, 'download/')):
-            torrent_ui_url = urljoin(torrent_ui_url, 'download/')
+    if settings.TORRENT_METHOD == "utorrent":
+        torrent_ui_url = "/".join(s.strip("/") for s in (torrent_ui_url, "gui/"))
+    elif settings.TORRENT_METHOD == "download_station":
+        if test_exists(urljoin(torrent_ui_url, "download/")):
+            torrent_ui_url = urljoin(torrent_ui_url, "download/")
 
-    settings.CLIENT_WEB_URLS['torrent'] = ('', torrent_ui_url)[test_exists(torrent_ui_url)]
+    settings.CLIENT_WEB_URLS["torrent"] = ("", torrent_ui_url)[test_exists(torrent_ui_url)]
 
-    return settings.CLIENT_WEB_URLS.get('torrent')
+    return settings.CLIENT_WEB_URLS.get("torrent")
 
 
 def is_docker():
-    path = '/proc/self/cgroup'
-    return (
-        os.path.exists('/.dockerenv') or
-        os.path.isfile(path) and any('docker' in line for line in open(path))
-    )
+    path = "/proc/self/cgroup"
+    return os.path.exists("/.dockerenv") or os.path.isfile(path) and any("docker" in line for line in open(path))

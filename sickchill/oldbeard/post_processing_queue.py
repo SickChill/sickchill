@@ -89,17 +89,16 @@ class ProcessingQueue(generic_queue.GenericQueue):
         Returns a dict showing how many auto and manual tasks are in the queue
         :return: dict
         """
-        length = {'auto': 0, 'manual': 0}
+        length = {"auto": 0, "manual": 0}
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, PostProcessorTask):
-                if cur_item.mode == 'auto':
-                    length['auto'] += 1
+                if cur_item.mode == "auto":
+                    length["auto"] += 1
                 else:
-                    length['manual'] += 1
+                    length["manual"] += 1
         return length
 
-    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None,
-                 delete=None, failed=False, mode="auto", force_next=False):
+    def add_item(self, directory, filename=None, method=None, force=False, is_priority=None, delete=None, failed=False, mode="auto", force_next=False):
         """
         Adds a processing task to the queue
         :param directory: directory to process
@@ -115,8 +114,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
         """
         replacements = dict(mode=mode.title(), info=filename or directory)
         if not directory:
-            return log_helper("{mode} post-processing attempted but directory is not set: {info}".format(
-                **replacements), logger.WARNING)
+            return log_helper("{mode} post-processing attempted but directory is not set: {info}".format(**replacements), logger.WARNING)
 
         # if not os.path.isdir(directory):
         #     return log_helper("{mode} post-processing attempted but directory doesn't exist: {info}".format(
@@ -124,8 +122,9 @@ class ProcessingQueue(generic_queue.GenericQueue):
 
         if not os.path.isabs(directory):
             return log_helper(
-                "{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {info}".format(
-                    **replacements), logger.WARNING)
+                "{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {info}".format(**replacements),
+                logger.WARNING,
+            )
 
         item = self.find_in_queue(directory, filename, mode)
 
@@ -134,8 +133,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
 
         if item:
             if self.currentItem == item:
-                return log_helper(
-                    "{info} is already being processed right now, please wait until it completes before trying again".format(**replacements))
+                return log_helper("{info} is already being processed right now, please wait until it completes before trying again".format(**replacements))
 
             item.set_params(directory, filename, method, force, is_priority, delete, failed, mode)
             message = log_helper("A task for {info} was already in the processing queue, updating the settings for that task".format(**replacements))
@@ -170,7 +168,7 @@ class PostProcessorTask(generic_queue.QueueItem):
         :param mode: processing type: auto/manual
         :return: None
         """
-        super().__init__('{mode}'.format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
+        super().__init__("{mode}".format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
 
         self.directory = directory
         self.filename = filename
@@ -181,7 +179,7 @@ class PostProcessorTask(generic_queue.QueueItem):
         self.failed = config.checkbox_to_value(failed)
         self.mode = mode
 
-        self.priority = (generic_queue.QueuePriorities.HIGH, generic_queue.QueuePriorities.NORMAL)[mode == 'auto']
+        self.priority = (generic_queue.QueuePriorities.HIGH, generic_queue.QueuePriorities.NORMAL)[mode == "auto"]
 
         self.last_result = None
 
@@ -232,7 +230,7 @@ class PostProcessorTask(generic_queue.QueueItem):
                 is_priority=self.is_priority,
                 delete_on=self.delete,
                 failed=self.failed,
-                mode=self.mode
+                mode=self.mode,
             )
             logger.info("{mode} post processing task for {info} completed".format(mode=self.mode.title(), info=self.filename or self.directory))
 

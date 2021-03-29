@@ -44,7 +44,7 @@ class AniDBLink(threading.Thread):
         portlist = [myport] + [7654]
         for port in portlist:
             try:
-                self.sock.bind(('', port))
+                self.sock.bind(("", port))
             except Exception:
                 continue
             else:
@@ -87,15 +87,15 @@ class AniDBLink(threading.Thread):
                     try:
                         tmp = data
                         resp = None
-                        if tmp[:2] == b'\x00\x00':
-                            self.log('Attempting inflation')
+                        if tmp[:2] == b"\x00\x00":
+                            self.log("Attempting inflation")
                             tmp = zlib.decompressobj().decompress(tmp[2:])
                             self.log("UnZip | %s" % repr(tmp))
-                        self.log('Decoding')
-                        tmp = tmp.decode('utf8')
-                        self.log('Parsing')
+                        self.log("Decoding")
+                        tmp = tmp.decode("utf8")
+                        self.log("Parsing")
                         resp = ResponseResolver(tmp)
-                        self.log('Response success!')
+                        self.log("Response success!")
                     except Exception:
                         self.log("ResponseResolver Error")
                         sys.excepthook(*sys.exc_info())
@@ -108,16 +108,16 @@ class AniDBLink(threading.Thread):
                 cmd = self._cmd_dequeue(resp)
                 resp = resp.resolve(cmd)
                 resp.parse()
-                if resp.rescode in ('200', '201'):
-                    self.session = resp.attrs['sesskey']
-                if resp.rescode in ('209',):
+                if resp.rescode in ("200", "201"):
+                    self.session = resp.attrs["sesskey"]
+                if resp.rescode in ("209",):
                     print("sorry encryption is not supported")
                     raise Exception
                     # self.crypt=aes(md5(resp.req.apipassword+resp.attrs['salt']).digest())
-                if resp.rescode in ('203', '403', '500', '501', '503', '506'):
+                if resp.rescode in ("203", "403", "500", "501", "503", "506"):
                     self.session = None
                     self.crypt = None
-                if resp.rescode in ('504', '555'):
+                if resp.rescode in ("504", "555"):
                     self.banned = True
                     print("AniDB API informs that user or client is banned:", resp.resstr)
                 resp.handle()
@@ -198,11 +198,11 @@ class AniDBLink(threading.Thread):
         command.started = time()
         data = command.raw_data()
 
-        encoded_data = data.encode('utf-8')
+        encoded_data = data.encode("utf-8")
 
         self.sock.sendto(encoded_data, self.target)
 
-        if command.command == 'AUTH' and self.log_private:
+        if command.command == "AUTH" and self.log_private:
             self.log("NetIO > sensitive data is not logged!")
         else:
             self.log("NetIO > %s" % repr(data))
@@ -217,10 +217,10 @@ class AniDBLink(threading.Thread):
 
     def request(self, command):
         if not self.sock and self.connectSocket(self.myport, self.timeout):
-            self.log('Not connected to aniDB, not sending command')
-            raise AniDBError('No Socket')
+            self.log("Not connected to aniDB, not sending command")
+            raise AniDBError("No Socket")
 
-        if not (self.session and command.session) and command.command not in ('AUTH', 'PING', 'ENCRYPT'):
+        if not (self.session and command.session) and command.command not in ("AUTH", "PING", "ENCRYPT"):
             raise AniDBMustAuthError("You must be authed to execute commands besides AUTH and PING")
         command.started = time()
         self._cmd_queue(command)

@@ -1,24 +1,20 @@
 #!/usr/bin/env python3
 import sys
-from pathlib import Path
 
+import toml
 from setuptools import setup
 
-info_dict = {'commands': {}}
+with open("pyproject.toml", "r") as f:
+    requirements = toml.loads(f.read())
 
-
-with open(Path('requirements.txt').absolute()) as fp:
-    info_dict['install_requires'] = [line for line in fp.readlines() if not line.startswith('#') and not line.startswith('git+')]
-
+prod = requirements["tool"]["poetry"]["dependencies"]
+dev = requirements["tool"]["poetry"]["dev-dependencies"]
 
 if 'setup.py' in sys.argv[0]:
     setup(
         packages=['sickchill'],
-        install_requires=info_dict['install_requires'],
-        dependency_links=[
-            'https://github.com/alberanid/imdbpy/tarball/bfdbdd0#egg=imdbpy-2020.09.20'
-        ],
-        cmdclass=info_dict['commands'],
+        install_requires=[item + prod[item].replace('^', '>=') if prod[item] != '*' else item for item in prod],
+        extras_require={'dev': [item + dev[item].replace('^', '>=') if dev[item] != '*' else item for item in dev]},
         message_extractors={
             'gui': [
                 ('**/views/**.mako', 'mako', {'input_encoding': 'utf-8'}),
@@ -28,9 +24,4 @@ if 'setup.py' in sys.argv[0]:
             'sickchill': [('**.py', 'python', None)],
         },
         include_package_data=True,
-        use_scm_version={
-            'write_to': 'sickchill/version.py',
-            'write_to_template': '__version__ = "{version}"',
-            'tag_regex': r'^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$'
-        }
     )

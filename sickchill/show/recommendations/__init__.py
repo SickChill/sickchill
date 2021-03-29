@@ -1,1 +1,1 @@
-__all__ = ['anidb', 'imdb']
+__all__ = ["anidb", "imdb"]

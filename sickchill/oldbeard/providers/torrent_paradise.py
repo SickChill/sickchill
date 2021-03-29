@@ -7,7 +7,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         super().__init__("torrent-paradise")
@@ -17,9 +16,7 @@ class Provider(TorrentProvider):
         self.ability_status = self.PROVIDER_BACKLOG
 
         self.url = "https://torrent-paradise.ml"
-        self.urls = {
-            "search": "https://torrent-paradise.ml/api/search"
-        }
+        self.urls = {"search": "https://torrent-paradise.ml/api/search"}
 
         self.cache = tvcache.TVCache(self)
 
@@ -64,11 +61,16 @@ class Provider(TorrentProvider):
                     size = item.pop("len")
                     logger.debug(f"Found result: {title} with {seeders} seeders and {leechers} leechers with a file size {size}")
 
-                    items.append({
-                        "title": title, "size": size, "seeders": seeders, "leechers": leechers, "hash": info_hash,
-                        "link": f"magnet:?xt=urn:btih:{info_hash}&dn={title}{self._custom_trackers}"
-
-                    })
+                    items.append(
+                        {
+                            "title": title,
+                            "size": size,
+                            "seeders": seeders,
+                            "leechers": leechers,
+                            "hash": info_hash,
+                            "link": f"magnet:?xt=urn:btih:{info_hash}&dn={title}{self._custom_trackers}",
+                        }
+                    )
                 except Exception as error:
                     raise error
 

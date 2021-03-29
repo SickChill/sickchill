@@ -1,8 +1,33 @@
 from sickchill import settings
 from sickchill.oldbeard import helpers
-from sickchill.oldbeard.notifiers import (boxcar2, discord, emailnotify, emby, freemobile, growl, join, kodi, libnotify, matrix, nmj, nmjv2, plex, prowl,
-                                          pushalot, pushbullet, pushover, pytivo, rocketchat, slack, synoindex, synologynotifier, telegram, trakt, tweet,
-                                          twilio_notify)
+from sickchill.oldbeard.notifiers import (
+    boxcar2,
+    discord,
+    emailnotify,
+    emby,
+    freemobile,
+    growl,
+    join,
+    kodi,
+    libnotify,
+    matrix,
+    nmj,
+    nmjv2,
+    plex,
+    prowl,
+    pushalot,
+    pushbullet,
+    pushover,
+    pytivo,
+    rocketchat,
+    slack,
+    synoindex,
+    synologynotifier,
+    telegram,
+    trakt,
+    tweet,
+    twilio_notify,
+)
 
 # home theater / nas
 kodi_notifier = kodi.Notifier()
@@ -87,7 +112,7 @@ def notify_snatch(ep_name):
 def notify_git_update(new_version=""):
     if settings.NOTIFY_ON_UPDATE:
         for n in notifiers:
-            if hasattr(n, 'notify_git_update'):
+            if hasattr(n, "notify_git_update"):
                 n.notify_git_update(new_version)
             else:
                 print(n.__module__)
@@ -96,7 +121,7 @@ def notify_git_update(new_version=""):
 def notify_login(ipaddress):
     if settings.NOTIFY_ON_LOGIN and not helpers.is_ip_local(ipaddress):
         for n in notifiers:
-            if hasattr(n, 'notify_login'):
+            if hasattr(n, "notify_login"):
                 n.notify_login(ipaddress)
             else:
                 print(n.__module__)

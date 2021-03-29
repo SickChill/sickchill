@@ -41,8 +41,7 @@ class ProperFinder(object):
             run_in = settings.properFinderScheduler.lastRun + settings.properFinderScheduler.cycleTime - datetime.datetime.now()
             hours, remainder = divmod(run_in.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
-            run_at = ", next check in approx. " + (
-                "{0:d}h, {1:d}m".format(hours, minutes) if hours > 0 else "{0:d}m, {1:d}s".format(minutes, seconds))
+            run_at = ", next check in approx. " + ("{0:d}h, {1:d}m".format(hours, minutes) if hours > 0 else "{0:d}m, {1:d}s".format(minutes, seconds))
 
         logger.info("Completed the search for new propers{0}".format(run_at))
 
@@ -76,8 +75,8 @@ class ProperFinder(object):
 
             # if they haven't been added by a different provider than add the proper to the list
             for x in curPropers:
-                if not re.search(r'\b(proper|repack|real)\b', x.name, re.I):
-                    logger.debug('find_propers returned a non-proper, we have caught and skipped it.')
+                if not re.search(r"\b(proper|repack|real)\b", x.name, re.I):
+                    logger.debug("find_propers returned a non-proper, we have caught and skipped it.")
                     continue
 
                 name = self._genericName(x.name)
@@ -89,7 +88,7 @@ class ProperFinder(object):
             threading.currentThread().name = origThreadName
 
         # take the list of unique propers and get it sorted by
-        sortedPropers = sorted(list(propers.values()), key=operator.attrgetter('date'), reverse=True)
+        sortedPropers = sorted(list(propers.values()), key=operator.attrgetter("date"), reverse=True)
         finalPropers = []
 
         for curProper in sortedPropers:
@@ -141,8 +140,9 @@ class ProperFinder(object):
 
             # check if we actually want this proper (if it's the right quality)
             main_db_con = db.DBConnection()
-            sql_results = main_db_con.select("SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                                             [bestResult.indexerid, bestResult.season, bestResult.episode])
+            sql_results = main_db_con.select(
+                "SELECT status FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", [bestResult.indexerid, bestResult.season, bestResult.episode]
+            )
             if not sql_results:
                 continue
 
@@ -156,10 +156,11 @@ class ProperFinder(object):
                 main_db_con = db.DBConnection()
                 sql_results = main_db_con.select(
                     "SELECT release_group, version FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?",
-                    [bestResult.indexerid, bestResult.season, bestResult.episode])
+                    [bestResult.indexerid, bestResult.season, bestResult.episode],
+                )
 
                 oldVersion = int(sql_results[0]["version"])
-                oldRelease_group = (sql_results[0]["release_group"])
+                oldRelease_group = sql_results[0]["release_group"]
 
                 if -1 < oldVersion < bestResult.version:
                     logger.info("Found new anime v" + str(bestResult.version) + " to replace existing v" + str(oldVersion))
@@ -168,11 +169,14 @@ class ProperFinder(object):
 
                 if oldRelease_group != bestResult.release_group:
                     logger.info(
-                        "Skipping proper from release group: " + bestResult.release_group + ", does not match existing release group: " + oldRelease_group)
+                        "Skipping proper from release group: " + bestResult.release_group + ", does not match existing release group: " + oldRelease_group
+                    )
                     continue
 
             # if the show is in our list and there hasn't been a proper already added for that particular episode then add it to our list of propers
-            if bestResult.indexerid != -1 and (bestResult.indexerid, bestResult.season, bestResult.episode) not in {(p.indexerid, p.season, p.episode) for p in finalPropers}:
+            if bestResult.indexerid != -1 and (bestResult.indexerid, bestResult.season, bestResult.episode) not in {
+                (p.indexerid, p.season, p.episode) for p in finalPropers
+            }:
                 logger.info("Found a proper that we need: " + str(bestResult.name))
                 finalPropers.append(bestResult)
 
@@ -191,16 +195,17 @@ class ProperFinder(object):
             # make sure the episode has been downloaded before
             main_db_con = db.DBConnection()
             historyResults = main_db_con.select(
-                "SELECT resource FROM history " +
-                "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? " +
-                "AND action IN (" + ",".join([str(x) for x in Quality.SNATCHED + Quality.DOWNLOADED]) + ")",
-                [curProper.indexerid, curProper.season, curProper.episode, curProper.quality,
-                 historyLimit.strftime(History.date_format)])
+                "SELECT resource FROM history "
+                + "WHERE showid = ? AND season = ? AND episode = ? AND quality = ? AND date >= ? "
+                + "AND action IN ("
+                + ",".join([str(x) for x in Quality.SNATCHED + Quality.DOWNLOADED])
+                + ")",
+                [curProper.indexerid, curProper.season, curProper.episode, curProper.quality, historyLimit.strftime(History.date_format)],
+            )
 
             # if we didn't download this episode in the first place we don't know what quality to use for the proper so we can't do it
             if not historyResults:
-                logger.info(
-                    "Unable to find an original history entry for proper " + curProper.name + " so I'm not downloading it.")
+                logger.info("Unable to find an original history entry for proper " + curProper.name + " so I'm not downloading it.")
                 continue
 
             else:
@@ -252,8 +257,7 @@ class ProperFinder(object):
         sql_results = main_db_con.select("SELECT last_proper_search FROM info")
 
         if not sql_results:
-            main_db_con.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)",
-                               [0, 0, str(when)])
+            main_db_con.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)", [0, 0, str(when)])
         else:
             main_db_con.action("UPDATE info SET last_proper_search=" + str(when))
 

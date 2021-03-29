@@ -10,7 +10,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         # Provider Init
@@ -73,8 +72,7 @@ class Provider(TorrentProvider):
             for search_string in {*search_strings[mode]}:
 
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format
-                                 (search_string))
+                    logger.debug("Search string: {0}".format(search_string))
 
                     categories = ["2", "7", "35"]
                     categories += ["26", "32"] if mode == "Episode" else ["27"]
@@ -84,18 +82,18 @@ class Provider(TorrentProvider):
                     categories = ["2", "26", "27", "32", "7", "34", "35"]
 
                 # Craft the query URL
-                categories_url = 'categories/{categories}/'.format(categories=",".join(categories))
-                query_url = 'query/{query_string}'.format(query_string=search_string)
+                categories_url = "categories/{categories}/".format(categories=",".join(categories))
+                query_url = "query/{query_string}".format(query_string=search_string)
                 params_url = urljoin(categories_url, query_url)
-                search_url = urljoin(self.urls['search'], params_url)
+                search_url = urljoin(self.urls["search"], params_url)
 
-                data = self.get_url(search_url, returns='json')
+                data = self.get_url(search_url, returns="json")
                 if not data:
                     logger.debug("No data returned from provider")
                     continue
 
                 # TODO: Handle more than 35 torrents in return. (Max 35 per call)
-                torrent_list = data['torrentList']
+                torrent_list = data["torrentList"]
 
                 if len(torrent_list) < 1:
                     logger.debug("Data returned from provider does not contain any torrents")
@@ -103,33 +101,33 @@ class Provider(TorrentProvider):
 
                 for torrent in torrent_list:
                     try:
-                        title = torrent['name']
-                        download_url = urljoin(self.urls['download'], '{id}/{filename}'.format(id=torrent['fid'], filename=torrent['filename']))
+                        title = torrent["name"]
+                        download_url = urljoin(self.urls["download"], "{id}/{filename}".format(id=torrent["fid"], filename=torrent["filename"]))
 
-                        seeders = torrent['seeders']
-                        leechers = torrent['leechers']
+                        seeders = torrent["seeders"]
+                        leechers = torrent["leechers"]
 
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
-                                logger.debug("Discarding torrent because it doesn't meet the"
-                                             " minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                             (title, seeders, leechers))
+                                logger.debug(
+                                    "Discarding torrent because it doesn't meet the"
+                                    " minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                )
                                 continue
 
-                        size = torrent['size']
+                        size = torrent["size"]
 
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
+                        item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
 
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                         (title, seeders, leechers))
+                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                         items.append(item)
                     except Exception:
                         continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
 
         return results

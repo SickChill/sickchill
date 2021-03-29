@@ -38,7 +38,7 @@ class DBConnection(object):
         self.full_path = db_full_path(self.filename, self.suffix)
 
         if filename == "sickchill.db" and not os.path.isfile(self.full_path):
-            sickbeard_db = db_full_path('sickbeard.db', suffix)
+            sickbeard_db = db_full_path("sickbeard.db", suffix)
             if os.path.isfile(sickbeard_db):
                 os.rename(sickbeard_db, self.full_path)
 
@@ -64,18 +64,20 @@ class DBConnection(object):
             # noinspection PyUnresolvedReferences
             logger.warning(_("Please check your database owner/permissions: {db_filename}").format(db_filename=self.full_path))
         except Exception as e:
-            self._error_log_helper(e, logger.ERROR, locals(), None, 'DBConnection.__init__')
+            self._error_log_helper(e, logger.ERROR, locals(), None, "DBConnection.__init__")
             raise
 
     def _error_log_helper(self, exception, severity, local_variables, attempts, called_method):
         if attempts in (0, self.MAX_ATTEMPTS):  # Only log the first try and the final failure
             prefix = ("Database", "Fatal")[severity == logger.ERROR]
             # noinspection PyUnresolvedReferences
-            logger.log(severity,
-                       _("{exception_severity} error executing query with {method} in database {db_location}: ").format(
-                           db_location=self.full_path, method=called_method, exception_severity=prefix
-                       ) + str(exception)
-                       )
+            logger.log(
+                severity,
+                _("{exception_severity} error executing query with {method} in database {db_location}: ").format(
+                    db_location=self.full_path, method=called_method, exception_severity=prefix
+                )
+                + str(exception),
+            )
 
             # Lets print out all of the arguments so we can debug this better
             # noinspection PyUnresolvedReferences
@@ -90,8 +92,12 @@ class DBConnection(object):
     @staticmethod
     def _is_locked_or_denied(exception):
         # noinspection PyUnresolvedReferences
-        return _("unable to open database file") in exception.args[0] or _("database is locked") in exception.args[0] or \
-            "unable to open database file" in exception.args[0] or "database is locked" in exception.args[0]
+        return (
+            _("unable to open database file") in exception.args[0]
+            or _("database is locked") in exception.args[0]
+            or "unable to open database file" in exception.args[0]
+            or "database is locked" in exception.args[0]
+        )
 
     def _set_row_factory(self):
         """
@@ -161,7 +167,7 @@ class DBConnection(object):
             result = int(self.select_one("SELECT db_minor_version FROM db_version")[0])
             return result
         except Exception:
-            print('ERROR GETTING MINOR!')
+            print("ERROR GETTING MINOR!")
             return 0
 
     @property
@@ -347,6 +353,7 @@ class DBConnection(object):
 
         assert None not in list(key_dict.values()), _("Control dict to upsert cannot have values of None!")
         if key_dict:
+
             def make_string(my_dict, separator):
                 return separator.join(["{} = ?".format(x) for x in my_dict])
 
@@ -389,7 +396,7 @@ class DBConnection(object):
         :param table_name: table name to check
         :return: True if table exists, False if it does not
         """
-        return len(self.select("SELECT 1 FROM sqlite_master WHERE name = ?;", (table_name, ))) > 0
+        return len(self.select("SELECT 1 FROM sqlite_master WHERE name = ?;", (table_name,))) > 0
 
     def has_column(self, table_name, column):
         """
@@ -442,6 +449,7 @@ class DBSanityCheck(object):
 # ===============
 # = Upgrade API =
 # ===============
+
 
 def upgrade_database(connection, schema):
     """

@@ -12,7 +12,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         # Provider Init
@@ -30,13 +29,13 @@ class Provider(TorrentProvider):
         self.enable_cookies = True
 
         # URLs
-        self.url = 'https://speed.cd'
+        self.url = "https://speed.cd"
         self.urls = {
-            'login': urljoin(self.url, 'takeElogin.php'),
+            "login": urljoin(self.url, "takeElogin.php"),
         }
 
         # Proper Strings
-        self.proper_strings = ['PROPER', 'REPACK']
+        self.proper_strings = ["PROPER", "REPACK"]
 
         # Cache
         self.cache = tvcache.TVCache(self)
@@ -49,23 +48,23 @@ class Provider(TorrentProvider):
             return True
 
         login_params = {
-            'username': self.username,
-            'password': self.password,
+            "username": self.username,
+            "password": self.password,
         }
 
         # Yay lets add another request to the process since they are unreasonable.
-        response = self.get_url(self.url, returns='text')
-        with BS4Parser(response, 'html5lib') as html:
-            form = html.find('form', id='loginform')
+        response = self.get_url(self.url, returns="text")
+        with BS4Parser(response, "html5lib") as html:
+            form = html.find("form", id="loginform")
             if form:
-                self.urls['login'] = urljoin(self.url, form['action'])
+                self.urls["login"] = urljoin(self.url, form["action"])
 
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
+        response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
             logger.warning("Unable to connect to provider")
             return False
 
-        if re.search('Incorrect username or Password. Please try again.', response):
+        if re.search("Incorrect username or Password. Please try again.", response):
             logger.warning("Invalid username or password. Check your settings")
             return False
 
@@ -79,32 +78,32 @@ class Provider(TorrentProvider):
         # http://speed.cd/browse/49/50/52/41/55/2/30/freeleech/deep/q/arrow
         # Search Params
         search_params = [
-            'browse',
-            '41',  # TV/Packs
-            '2',   # Episodes
-            '49',  # TV/HD
-            '50',  # TV/Sports
-            '52',  # TV/B-Ray
-            '55',  # TV/Kids
-            '30',  # Anime
+            "browse",
+            "41",  # TV/Packs
+            "2",  # Episodes
+            "49",  # TV/HD
+            "50",  # TV/Sports
+            "52",  # TV/B-Ray
+            "55",  # TV/Kids
+            "30",  # Anime
         ]
         if self.freeleech:
-            search_params.append('freeleech')
-        search_params.append('deep')
+            search_params.append("freeleech")
+        search_params.append("deep")
 
         # Units
-        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+        units = ["B", "KB", "MB", "GB", "TB", "PB"]
 
         def process_column_header(td):
-            result = ''
-            img = td.find('img')
+            result = ""
+            img = td.find("img")
             if img:
-                result = img.get('alt')
+                result = img.get("alt")
                 if not result:
-                    result = img.get('title')
+                    result = img.get("title")
 
             if not result:
-                anchor = td.find('a')
+                anchor = td.find("a")
                 if anchor:
                     result = anchor.get_text(strip=True)
 
@@ -118,27 +117,27 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 current_params = search_params
-                if mode != 'RSS':
+                if mode != "RSS":
                     logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
-                    current_params += ['q', re.sub(r'[^\w\s]', '', search_string)]
+                    current_params += ["q", re.sub(r"[^\w\s]", "", search_string)]
 
-                data = self.get_url(urljoin(self.url, '/'.join(current_params)), returns='text')
+                data = self.get_url(urljoin(self.url, "/".join(current_params)), returns="text")
                 if not data:
                     continue
 
-                with BS4Parser(data, 'html5lib') as html:
-                    torrent_table = html.find('div', class_='boxContent')
-                    torrent_table = torrent_table.find('table') if torrent_table else []
+                with BS4Parser(data, "html5lib") as html:
+                    torrent_table = html.find("div", class_="boxContent")
+                    torrent_table = torrent_table.find("table") if torrent_table else []
                     # noinspection PyCallingNonCallable
-                    torrent_rows = torrent_table('tr') if torrent_table else []
+                    torrent_rows = torrent_table("tr") if torrent_table else []
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
                         logger.debug("Data returned from provider does not contain any torrents")
                         continue
 
-                    labels = [process_column_header(label) for label in torrent_rows[0]('th')]
-                    row_labels = [process_column_header(label) for label in torrent_rows[1]('td')]
+                    labels = [process_column_header(label) for label in torrent_rows[0]("th")]
+                    row_labels = [process_column_header(label) for label in torrent_rows[1]("td")]
 
                     def label_index(name):
                         if name in labels:
@@ -148,37 +147,40 @@ class Provider(TorrentProvider):
                     # Skip column headers
                     for result in torrent_rows[1:]:
                         try:
-                            cells = result('td')
-                            title = cells[label_index('Title')].find('a').get_text()
-                            download_url = urljoin(self.url, cells[label_index('Download')].a['href'])
+                            cells = result("td")
+                            title = cells[label_index("Title")].find("a").get_text()
+                            download_url = urljoin(self.url, cells[label_index("Download")].a["href"])
                             if not all([title, download_url]):
                                 continue
 
-                            seeders = try_int(cells[label_index('Seeders') - 1].get_text(strip=True))
-                            leechers = try_int(cells[label_index('Leechers') - 1].get_text(strip=True))
+                            seeders = try_int(cells[label_index("Seeders") - 1].get_text(strip=True))
+                            leechers = try_int(cells[label_index("Leechers") - 1].get_text(strip=True))
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
-                                if mode != 'RSS':
+                                if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers))
+                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                            title, seeders, leechers
+                                        )
+                                    )
                                 continue
 
-                            torrent_size = cells[label_index('Size') - 1].get_text()
+                            torrent_size = cells[label_index("Size") - 1].get_text()
                             size = convert_size(torrent_size, units=units) or -1
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': ''}
-                            if mode != 'RSS':
+                            item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
+                            if mode != "RSS":
                                 logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
                         except Exception as error:
-                            logger.debug(f'Speed.cd: {error}')
+                            logger.debug(f"Speed.cd: {error}")
                             logger.debug(traceback.format_exc())
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
 
         return results

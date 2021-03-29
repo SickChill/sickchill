@@ -1,5 +1,4 @@
 class Notifier(object):
-
     def notify_snatch(self, ep_name):
         raise NotImplementedError
 

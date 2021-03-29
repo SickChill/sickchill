@@ -4,11 +4,11 @@ Tests for SickChill providers
 
 import unittest
 
-from .generic_provider_tests import GenericProviderTests
-from .nzb_provider_tests import NZBProviderTests
-from .torrent_provider_tests import TorrentProviderTests
+from .test_generic_provider import GenericProviderTests
+from .test_nzb_provider import NZBProviderTests
+from .test_torrent_provider import TorrentProviderTests
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print('=====> Running all test in "sickchill_tests.providers" <=====')
 
     TEST_CLASSES = [

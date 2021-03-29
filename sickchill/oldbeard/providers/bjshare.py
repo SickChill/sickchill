@@ -15,21 +15,18 @@ class Provider(TorrentProvider):
 
     def __init__(self):
         """Initialize the class."""
-        super().__init__('BJ-Share')
+        super().__init__("BJ-Share")
 
         # URLs
-        self.url = 'https://bj-share.info'
-        self.urls = {
-            'login': "https://bj-share.info/login.php",
-            'search': urljoin(self.url, 'torrents.php')
-        }
+        self.url = "https://bj-share.info"
+        self.urls = {"login": "https://bj-share.info/login.php", "search": urljoin(self.url, "torrents.php")}
 
         # Credentials
         self.enable_cookies = True
-        self.cookies = ''
+        self.cookies = ""
         self.username = None
         self.password = None
-        self.required_cookies = ['session']
+        self.required_cookies = ["session"]
 
         # Torrent Stats
         self.minseed = 0
@@ -40,7 +37,7 @@ class Provider(TorrentProvider):
         self.max_back_pages = 2
 
         # Proper Strings
-        self.proper_strings = ['PROPER', 'REPACK', 'REAL', 'RERIP']
+        self.proper_strings = ["PROPER", "REPACK", "REAL", "RERIP"]
 
         # Cache
         self.cache = tvcache.TVCache(self)
@@ -55,9 +52,7 @@ class Provider(TorrentProvider):
         #
         # In this indexer, it looks that it is added "automatically", so all current and new releases will be broken
         # until they or the source from where they get that info fix it...
-        self.absolute_numbering = [
-            'One Piece', 'Boruto: Naruto Next Generations'
-        ]
+        self.absolute_numbering = ["One Piece", "Boruto: Naruto Next Generations"]
 
     def search(self, search_strings, age=0, ep_obj=None):
         """
@@ -77,53 +72,47 @@ class Provider(TorrentProvider):
         if ep_obj and ep_obj.show:
             anime = ep_obj.show.anime == 1
 
-        search_params = {
-            'order_by': 'time',
-            'order_way': 'desc',
-            'group_results': 0,
-            'action': 'basic',
-            'searchsubmit': 1
-        }
+        search_params = {"order_by": "time", "order_way": "desc", "group_results": 0, "action": "basic", "searchsubmit": 1}
 
-        if 'RSS' in list(search_strings):
-            search_params['filter_cat[14]'] = 1  # anime
-            search_params['filter_cat[2]'] = 1  # tv shows
+        if "RSS" in list(search_strings):
+            search_params["filter_cat[14]"] = 1  # anime
+            search_params["filter_cat[2]"] = 1  # tv shows
         elif anime:
-            search_params['filter_cat[14]'] = 1  # anime
+            search_params["filter_cat[14]"] = 1  # anime
         else:
-            search_params['filter_cat[2]'] = 1  # tv shows
+            search_params["filter_cat[2]"] = 1  # tv shows
 
         for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}".format(mode=mode)))
 
             # if looking for season, look for more pages
-            if mode == 'Season':
+            if mode == "Season":
                 self.max_back_pages = 10
 
             for search_string in {*search_strings[mode]}:
-                if mode != 'RSS':
+                if mode != "RSS":
                     logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
 
                 # Remove season / episode from search (not supported by tracker)
-                search_str = re.sub(r'\d+$' if anime else r'[S|E]\d\d', '', search_string).strip()
-                search_params['searchstr'] = search_str
+                search_str = re.sub(r"\d+$" if anime else r"[S|E]\d\d", "", search_string).strip()
+                search_params["searchstr"] = search_str
                 next_page = 1
                 has_next_page = True
 
                 while has_next_page and next_page <= self.max_back_pages:
-                    search_params['page'] = next_page
-                    logger.debug('Page Search: {0}'.format(next_page))
+                    search_params["page"] = next_page
+                    logger.debug("Page Search: {0}".format(next_page))
                     next_page += 1
 
-                    response = self.session.get(self.urls['search'], params=search_params)
+                    response = self.session.get(self.urls["search"], params=search_params)
                     if not response:
-                        logger.debug(_('No data returned from provider'))
+                        logger.debug(_("No data returned from provider"))
                         continue
 
                     result = self._parse(response.content, mode)
-                    has_next_page = result['has_next_page']
-                    items += result['items']
+                    has_next_page = result["has_next_page"]
+                    items += result["items"]
 
                 results += items
 
@@ -140,61 +129,60 @@ class Provider(TorrentProvider):
         """
 
         def process_column_header(td):
-            ret = ''
+            ret = ""
             if td.a and td.a.img:
-                ret = td.a.img.get('title', td.a.get_text(strip=True))
+                ret = td.a.img.get("title", td.a.get_text(strip=True))
             if not ret:
                 ret = td.get_text(strip=True)
             return ret
 
         items = []
         has_next_page = False
-        with BS4Parser(data, 'html5lib') as html:
-            torrent_table = html.find('table', id='torrent_table')
-            torrent_rows = torrent_table('tr') if torrent_table else []
+        with BS4Parser(data, "html5lib") as html:
+            torrent_table = html.find("table", id="torrent_table")
+            torrent_rows = torrent_table("tr") if torrent_table else []
 
             # ignore next page in RSS mode
-            has_next_page = mode != 'RSS' and html.find('a', class_='pager_next') is not None
-            logger.debug('More Pages? {0}'.format(has_next_page))
+            has_next_page = mode != "RSS" and html.find("a", class_="pager_next") is not None
+            logger.debug("More Pages? {0}".format(has_next_page))
 
             # Continue only if at least one Release is found
             if len(torrent_rows) < 2:
-                logger.debug('Data returned from provider does not contain any torrents')
-                return {'has_next_page': has_next_page, 'items': []}
+                logger.debug("Data returned from provider does not contain any torrents")
+                return {"has_next_page": has_next_page, "items": []}
 
             # '', '', 'Name /Year', 'Files', 'Time', 'Size', 'Snatches', 'Seeders', 'Leechers'
-            labels = [process_column_header(label) for label in torrent_rows[0]('td')]
-            group_title = ''
+            labels = [process_column_header(label) for label in torrent_rows[0]("td")]
+            group_title = ""
 
             # Skip column headers
             for result in torrent_rows[1:]:
-                cells = result('td')
-                result_class = result.get('class')
+                cells = result("td")
+                result_class = result.get("class")
                 # When "Grouping Torrents" is enabled, the structure of table change
-                group_index = -2 if 'group_torrent' in result_class else 0
+                group_index = -2 if "group_torrent" in result_class else 0
                 try:
                     title = result.select('a[href^="torrents.php?id="]')[0].get_text()
-                    title = re.sub(r'\s+', ' ', title).strip()  # clean empty lines and multiple spaces
+                    title = re.sub(r"\s+", " ", title).strip()  # clean empty lines and multiple spaces
 
-                    if 'group' in result_class or 'torrent' in result_class:
+                    if "group" in result_class or "torrent" in result_class:
                         # get international title if available
-                        title = re.sub(r'.* \[(.*?)\](.*)', r'\1\2', title)
+                        title = re.sub(r".* \[(.*?)\](.*)", r"\1\2", title)
 
-                    if 'group' in result_class:
+                    if "group" in result_class:
                         group_title = title
                         continue
 
                     # Clean dash between title and season/episode
-                    title = re.sub(r'- (S\d{2}(E\d{2,4})?)', r'\1', title)
+                    title = re.sub(r"- (S\d{2}(E\d{2,4})?)", r"\1", title)
 
                     for serie in self.absolute_numbering:
                         if serie in title:
                             # remove season from title when its in absolute format
-                            title = re.sub(r'S\d{2}E(\d{2,4})', r'\1', title)
+                            title = re.sub(r"S\d{2}E(\d{2,4})", r"\1", title)
                             break
 
-                    download_url = urljoin(self.url,
-                                           result.select('a[href^="torrents.php?action=download"]')[0]['href'])
+                    download_url = urljoin(self.url, result.select('a[href^="torrents.php?action=download"]')[0]["href"])
                     if not all([title, download_url]):
                         continue
 
@@ -207,75 +195,74 @@ class Provider(TorrentProvider):
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != "RSS":
-                            logger.debug("Discarding torrent because it doesn't meet the"
-                                         " minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                         (title, seeders, leechers))
+                            logger.debug(
+                                "Discarding torrent because it doesn't meet the"
+                                " minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                            )
                         continue
 
                     torrent_details = None
-                    if 'group_torrent' in result_class:
+                    if "group_torrent" in result_class:
                         # torrents belonging to a group
                         torrent_details = title
                         title = group_title
-                    elif 'torrent' in result_class:
+                    elif "torrent" in result_class:
                         # standalone/un grouped torrents
-                        torrent_details = cells[labels.index('Nome/Ano')].find('div', class_='torrent_info').get_text()
+                        torrent_details = cells[labels.index("Nome/Ano")].find("div", class_="torrent_info").get_text()
 
-                    torrent_details = torrent_details.replace('[', ' ').replace(']', ' ').replace('/', ' ')
-                    torrent_details = torrent_details.replace('Full HD ', '1080p').replace('HD ', '720p')
+                    torrent_details = torrent_details.replace("[", " ").replace("]", " ").replace("/", " ")
+                    torrent_details = torrent_details.replace("Full HD ", "1080p").replace("HD ", "720p")
 
                     # torrent_size = cells[labels.index('Tamanho') + group_index].get_text(strip=True)
                     torrent_size = cells[2].get_text(strip=True)
 
                     size = convert_size(torrent_size) or -1
 
-                    torrent_name = '{0} {1}'.format(title, torrent_details.strip()).strip()
-                    torrent_name = re.sub(r'\s+', ' ', torrent_name)
+                    torrent_name = "{0} {1}".format(title, torrent_details.strip()).strip()
+                    torrent_name = re.sub(r"\s+", " ", torrent_name)
 
-                    items.append({
-                        'title': torrent_name,
-                        'link': download_url,
-                        'size': size,
-                        'seeders': seeders,
-                        'leechers': leechers,
-                        'hash': ''
-                    })
+                    items.append({"title": torrent_name, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""})
 
-                    if mode != 'RSS':
-                        logger.debug(_('Found result: {title} with {seeders} seeders and {leechers} leechers'.format(
-                            title=torrent_name, seeders=seeders, leechers=leechers)))
+                    if mode != "RSS":
+                        logger.debug(
+                            _(
+                                "Found result: {title} with {seeders} seeders and {leechers} leechers".format(
+                                    title=torrent_name, seeders=seeders, leechers=leechers
+                                )
+                            )
+                        )
 
                 except (AttributeError, TypeError, KeyError, ValueError, IndexError):
-                    logger.exception('Failed parsing provider.')
+                    logger.exception("Failed parsing provider.")
 
-        return {'has_next_page': has_next_page, 'items': items}
+        return {"has_next_page": has_next_page, "items": items}
 
     def login(self):
         """Login method used for logging in before doing a search and torrent downloads."""
         cookie_dict = dict_from_cookiejar(self.session.cookies)
-        if cookie_dict.get('session'):
+        if cookie_dict.get("session"):
             return True
 
         if self.cookies:
             self.add_cookies_from_ui()
 
         cookie_dict = dict_from_cookiejar(self.session.cookies)
-        if cookie_dict.get('session'):
+        if cookie_dict.get("session"):
             return True
 
         login_params = {
-            'submit': 'Login',
-            'username': self.username,
-            'password': self.password,
-            'keeplogged': 1,
+            "submit": "Login",
+            "username": self.username,
+            "password": self.password,
+            "keeplogged": 1,
         }
 
-        response = self.get_url(self.urls['login'], post_data=login_params, returns='text')
+        response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
             logger.warning("Unable to connect to provider")
             return False
 
-        if re.search('<title>Login :: BJ-Share</title>', response):
+        if re.search("<title>Login :: BJ-Share</title>", response):
             logger.warning("Invalid username or password. Check your settings")
             return False
 

@@ -29,8 +29,7 @@ class Notifier(object):
     @staticmethod
     def moveObject(old_path, new_path):
         if settings.USE_SYNOINDEX:
-            synoindex_cmd = ['/usr/syno/bin/synoindex', '-N', os.path.abspath(new_path),
-                             os.path.abspath(old_path)]
+            synoindex_cmd = ["/usr/syno/bin/synoindex", "-N", os.path.abspath(new_path), os.path.abspath(old_path)]
             logger.debug("Executing command " + str(synoindex_cmd))
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
@@ -41,21 +40,21 @@ class Notifier(object):
                 logger.exception("Unable to run synoindex: " + str(e))
 
     def deleteFolder(self, cur_path):
-        self.makeObject('-D', cur_path)
+        self.makeObject("-D", cur_path)
 
     def addFolder(self, cur_path):
-        self.makeObject('-A', cur_path)
+        self.makeObject("-A", cur_path)
 
     def deleteFile(self, cur_file):
-        self.makeObject('-d', cur_file)
+        self.makeObject("-d", cur_file)
 
     def addFile(self, cur_file):
-        self.makeObject('-a', cur_file)
+        self.makeObject("-a", cur_file)
 
     @staticmethod
     def makeObject(cmd_arg, cur_path):
         if settings.USE_SYNOINDEX:
-            synoindex_cmd = ['/usr/syno/bin/synoindex', cmd_arg, os.path.abspath(cur_path)]
+            synoindex_cmd = ["/usr/syno/bin/synoindex", cmd_arg, os.path.abspath(cur_path)]
             logger.debug("Executing command " + str(synoindex_cmd))
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:

@@ -2,8 +2,8 @@ import datetime
 
 from sickchill import settings
 
-MESSAGE = 'notice'
-ERROR = 'error'
+MESSAGE = "notice"
+ERROR = "error"
 
 
 class Notifications(object):
@@ -15,7 +15,7 @@ class Notifications(object):
         self._messages = []
         self._errors = []
 
-    def message(self, title, message=''):
+    def message(self, title, message=""):
         """
         Add a regular notification to the queue
 
@@ -24,7 +24,7 @@ class Notifications(object):
         """
         self._messages.append(Notification(title, message, MESSAGE))
 
-    def error(self, title, message=''):
+    def error(self, title, message=""):
         """
         Add an error notification to the queue
 
@@ -33,7 +33,7 @@ class Notifications(object):
         """
         self._errors.append(Notification(title, message, ERROR))
 
-    def get_notifications(self, remote_ip='127.0.0.1'):
+    def get_notifications(self, remote_ip="127.0.0.1"):
         """
         Return all the available notifications in a list. Marks them all as seen
         as it returns them. Also removes timed out Notifications from the queue.
@@ -59,7 +59,7 @@ class Notification(object):
     seen it before.
     """
 
-    def __init__(self, title, message='', type=None, timeout=None):
+    def __init__(self, title, message="", type=None, timeout=None):
         self.title = title
         self.message = message
 
@@ -76,7 +76,7 @@ class Notification(object):
         else:
             self._timeout = datetime.timedelta(minutes=1)
 
-    def is_new(self, remote_ip='127.0.0.1'):
+    def is_new(self, remote_ip="127.0.0.1"):
         """
         Returns True if the notification hasn't been displayed to the current client (aka IP address).
         """
@@ -88,7 +88,7 @@ class Notification(object):
         """
         return datetime.datetime.now() - self._when > self._timeout
 
-    def see(self, remote_ip='127.0.0.1'):
+    def see(self, remote_ip="127.0.0.1"):
         """
         Returns this notification object and marks it as seen by the client ip
         """
@@ -97,17 +97,13 @@ class Notification(object):
 
 
 class ProgressIndicator(object):
-
     def __init__(self, percentComplete=0, currentStatus=None):
         self.percentComplete = percentComplete
-        self.currentStatus = currentStatus or {'title': ''}
+        self.currentStatus = currentStatus or {"title": ""}
 
 
 class ProgressIndicators(object):
-    _pi = {'massUpdate': [],
-           'massAdd': [],
-           'dailyUpdate': []
-           }
+    _pi = {"massUpdate": [], "massAdd": [], "dailyUpdate": []}
 
     @staticmethod
     def getIndicator(name):
