@@ -165,17 +165,17 @@ class Client(GenericClient):
         data = self._task_post_data
 
         data["type"] = '"file"'
-        data["file"] = f'["{result.resultType}"]'
+        data["file"] = f'["{result.resultType.replace("data", "")}"]'
         data['create_list'] = "false"
 
         if result.resultType == "torrent":
             files = {"file": (result.name + ".torrent", result.content)}
             if settings.TORRENT_PATH:
-                data["destination"] = settings.TORRENT_PATH
+                data["destination"] = f'"{settings.TORRENT_PATH}"'
         else:
             files = {"file": (result.name + ".nzb", result.extraInfo[0])}
             if settings.SYNOLOGY_DSM_PATH:
-                data["destination"] = settings.SYNOLOGY_DSM_PATH
+                data["destination"] = f'"{settings.SYNOLOGY_DSM_PATH}"'
 
         logger.info(data)
         self._request(method="post", data=data, files=files)
