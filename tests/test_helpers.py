@@ -66,9 +66,10 @@ Private Methods:
 
 import os
 import unittest
-import pytest
-from zipfile import BadZipFile
 from shutil import rmtree
+from zipfile import BadZipFile
+
+import pytest
 
 from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS

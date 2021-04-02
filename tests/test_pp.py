@@ -6,13 +6,12 @@ import os.path
 import shutil
 import unittest
 
-from tests import conftest
-
 from sickchill import settings
 from sickchill.oldbeard.helpers import make_dirs
 from sickchill.oldbeard.name_cache import add_name
 from sickchill.oldbeard.postProcessor import PostProcessor
 from sickchill.tv import TVEpisode, TVShow
+from tests import conftest
 
 
 class PPInitTests(unittest.TestCase):

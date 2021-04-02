@@ -4,12 +4,11 @@ Test snatching
 
 import unittest
 
-from tests import conftest
-
 import sickchill.oldbeard.providers
 from sickchill import settings
 from sickchill.oldbeard import common as common, search as search
 from sickchill.tv import TVEpisode, TVShow
+from tests import conftest
 
 TESTS = {
     "Dexter": {

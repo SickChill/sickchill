@@ -88,13 +88,13 @@ jobs:
         key: ${{ runner.os }}-tox-${{ hashFiles('**/tox.ini') }}
         restore-keys: |
           ${{ runner.os }}-tox-
-    - name: Install xo
-      run: |
-        npm config set strict-ssl false
-        npm config set registry "http://registry.npmjs.org/"
-        npm install -g xo
-    - name: Test with XO
-      run: xo
+#    - name: Install xo
+#      run: |
+#        npm config set strict-ssl false
+#        npm config set registry "http://registry.npmjs.org/"
+#        npm install -g xo
+#    - name: Test with XO
+#      run: xo
     - name: Test with tox
       id: tox
       env:

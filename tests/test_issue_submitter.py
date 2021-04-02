@@ -3,6 +3,7 @@ Test exception logging
 """
 
 import unittest
+
 import pytest
 
 from sickchill import logger

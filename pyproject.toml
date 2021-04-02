@@ -85,8 +85,19 @@ no-accept-encodings = "True"
 builtins = ["_"]
 #select = 'C103'
 
-[tool.pytest]
+[tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py", "setup.py"]
+
+[tool.isort]
+line_length = 160
+combine_as_imports = true
+order_by_type = false
+remove_imports = [ "from __future__ import absolute_import", "from __future__ import print_function", "from __future__ import unicode_literals" ]
+known_first_party = "sickchill"
+extra_standard_library = [ "posixpath", "ntpath" ]
+use_parentheses = true
+src_paths = [ "sickchill", "tests", "SickChill.py", "setup.py" ]
+profile = "hug"
 
 [tool.black]
 line-length = 160
@@ -131,8 +142,8 @@ commands =
     /bin/rm -f {toxinidir}/tests/sickchill.db
     /bin/rm -f {toxinidir}/tests/cache.db
     /bin/rm -f {toxinidir}/tests/failed.db
-    pytest tests/
-    - [ -n GITHUB_RUN_ID ] && codecov -e GITHUB_RUN_ID GITHUB_REF
+    pytest
+    - codecov -e GITHUB_RUN_ID GITHUB_REF
 
 [testenv:py38-windows]
 platform = win

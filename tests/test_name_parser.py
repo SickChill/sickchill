@@ -3,11 +3,10 @@ import os
 import sys
 import unittest
 
-from tests import conftest
-
 from sickchill import tv
 from sickchill.oldbeard import common
 from sickchill.oldbeard.name_parser import parser
+from tests import conftest
 
 DEBUG = os.getenv("DEBUG")
 VERBOSE = os.getenv("VERBOSE")

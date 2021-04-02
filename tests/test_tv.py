@@ -4,10 +4,9 @@ Test tv
 
 import unittest
 
-from tests import conftest
-
 from sickchill import settings
 from sickchill.tv import TVEpisode, TVShow
+from tests import conftest
 
 
 class TVShowTests(conftest.SickChillTestPostProcessorCase):

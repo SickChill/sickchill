@@ -6,11 +6,10 @@ import os.path
 import time
 import unittest
 
-from tests import conftest
-
 import sickchill.oldbeard
 from sickchill import settings
 from sickchill.oldbeard.post_processing_queue import PostProcessorTask, ProcessingQueue
+from tests import conftest
 
 CHECK_CLEARS = False
 

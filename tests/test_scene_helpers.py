@@ -1,11 +1,10 @@
 import sys
 import unittest
 
-from tests import conftest
-
 from sickchill import settings
 from sickchill.oldbeard import common, db, name_cache, scene_exceptions, show_name_helpers
 from sickchill.tv import TVShow as Show
+from tests import conftest
 
 
 class SceneTests(conftest.SickChillTestDBCase):
