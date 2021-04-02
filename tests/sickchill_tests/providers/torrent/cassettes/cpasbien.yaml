@@ -1,0 +1,33 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip,deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - SickChill/2021.3.28.post4.dev1 (Linux x86_64 5.8.0-48-generic; d075d85e-936b-11eb-a516-cd0a123064fd)
+    method: GET
+    uri: http://www.cpasbien.cx/recherche/The-100-S07E08.html,trie-seeds-d
+  response:
+    body:
+      string: "<html>\r\n<head><title>410 Gone</title></head>\r\n<body>\r\n<center><h1>410
+        Gone</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '136'
+      Content-Type:
+      - text/html
+      Date:
+      - Fri, 02 Apr 2021 04:28:52 GMT
+      Server:
+      - nginx
+    status:
+      code: 410
+      message: Gone
+version: 1

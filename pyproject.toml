@@ -126,12 +126,13 @@ deps =
     pytest
     pytest-vcr
     pytest-cov
+    codecov
 commands =
     /bin/rm -f {toxinidir}/tests/sickchill.db
     /bin/rm -f {toxinidir}/tests/cache.db
     /bin/rm -f {toxinidir}/tests/failed.db
     pytest tests/
-    - codecov -e GITHUB_RUN_ID GITHUB_REF
+    - [ -n GITHUB_RUN_ID ] && codecov -e GITHUB_RUN_ID GITHUB_REF
 
 [testenv:py38-windows]
 platform = win
@@ -144,6 +145,7 @@ deps =
     pytest
     pytest-vcr
     pytest-cov
+    codecov
 commands =
     cmd /c del /f /q {toxinidir}\\tests\\sickchill.db {toxinidir}\\tests\\cache.db {toxinidir}\\tests\\failed.db 2> nul
     pytest tests/

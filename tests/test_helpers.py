@@ -66,6 +66,8 @@ Private Methods:
 
 import os
 import unittest
+import pytest
+from zipfile import BadZipFile
 from shutil import rmtree
 
 from sickchill import settings
@@ -212,7 +214,7 @@ class HelpersZipTests(unittest.TestCase):
 
         helpers.backup_config_zip(files, zip_path, here)
         restore_container = os.path.join(here, "_restore_tests")
-        os.mkdir(restore_container)
+        os.path.exists(restore_container) or os.mkdir(restore_container)
         restore_path = os.path.join(restore_container, "test")
         assert not helpers.restore_config_zip(files[1], restore_path)  # test invalid zip
         assert helpers.restore_config_zip(zip_path, restore_path)

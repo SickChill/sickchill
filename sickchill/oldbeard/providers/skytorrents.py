@@ -19,9 +19,9 @@ class Provider(TorrentProvider):
         self.minseed = 0
         self.minleech = 0
 
-        self.url = "https://www.skytorrents.lol"
-        # https://www.skytorrents.lol/?query=arrow&category=show&tag=hd&sort=seeders&type=video
-        # https://www.skytorrents.lol/top100?category=show&type=video&sort=created
+        self.url = "https://www.skytorrents.org"
+        # https://www.skytorrents.org/?query=arrow&category=show&tag=hd&sort=seeders&type=video
+        # https://www.skytorrents.org/top100?category=show&type=video&sort=created
         self.urls = {"search": urljoin(self.url, "/"), "rss": urljoin(self.url, "/top100")}
 
         self.custom_url = None
@@ -45,7 +45,7 @@ class Provider(TorrentProvider):
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
                 if mode != "RSS":
-                    search_params = {"query": search_string, "sort": ("seeders", "created")[mode == "RSS"], "type": "video", "tag": "hd", "category": "show"}
+                    search_params = {"search": search_string, "sort": ("seeders", "created")[mode == "RSS"]}
                 else:
                     search_params = {"category": "show", "type": "video", "sort": "created"}
 

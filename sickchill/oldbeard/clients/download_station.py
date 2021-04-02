@@ -24,7 +24,7 @@ class Client(GenericClient):
 
         self.urls = {
             "login": urljoin(self.host, "webapi/auth.cgi"),
-            "task": urljoin(self.host, "webapi/DownloadStation/task.cgi"),
+            "task": urljoin(self.host, "webapi/entry.cgi"),
         }
 
         self.url = self.urls["task"]
@@ -63,8 +63,8 @@ class Client(GenericClient):
             self.error_map[api_method].update(generic_errors)
 
         self._task_post_data = {
-            "api": "SYNO.DownloadStation.Task",
-            "version": "3",
+            "api": "SYNO.DownloadStation2.Task",
+            "version": "2",
             "method": "create",
             "session": "DownloadStation",
         }
@@ -103,8 +103,11 @@ class Client(GenericClient):
         if not jdata.get("success"):
             error_code = jdata.get("error", {}).get("code")
             api_method = (data or {}).get("method", "login")
-            log_string = self.error_map.get(api_method)[error_code]
-            logger.info("{0}".format(log_string))
+            log_string = self.error_map.get(api_method).get(error_code, None)
+            if not log_string:
+                logger.info(jdata)
+            else:
+                logger.info("{0}".format(log_string))
 
         return jdata.get("success")
 
@@ -117,7 +120,7 @@ class Client(GenericClient):
 
         params = {
             "api": "SYNO.API.Auth",
-            "version": 3,
+            "version": 6,
             "method": "login",
             "account": self.username,
             "passwd": self.password,
@@ -138,16 +141,19 @@ class Client(GenericClient):
         data = self._task_post_data
 
         if "%3A%2F%2F" in result.url:
-            data["uri"] = unquote(result.url)
+            data["url"] = unquote(result.url)
         else:
-            data["uri"] = result.url
+            data["url"] = result.url
+
+        data["type"] = "url"
+        data['create_list'] = "false"
 
         if result.resultType == "torrent":
             if settings.TORRENT_PATH:
                 data["destination"] = settings.TORRENT_PATH
         elif settings.SYNOLOGY_DSM_PATH:
             data["destination"] = settings.SYNOLOGY_DSM_PATH
-
+        logger.info(data)
         self._request(method="post", data=data)
         return self._check_response(data)
 
@@ -158,6 +164,10 @@ class Client(GenericClient):
         """
         data = self._task_post_data
 
+        data["type"] = "file"
+        data["file"] = f'["{result.resultType}"]'
+        data['create_list'] = "false"
+
         if result.resultType == "torrent":
             files = {"file": (result.name + ".torrent", result.content)}
             if settings.TORRENT_PATH:
@@ -167,6 +177,7 @@ class Client(GenericClient):
             if settings.SYNOLOGY_DSM_PATH:
                 data["destination"] = settings.SYNOLOGY_DSM_PATH
 
+        logger.info(data)
         self._request(method="post", data=data, files=files)
         return self._check_response(data, files)
 

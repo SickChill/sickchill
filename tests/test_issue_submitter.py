@@ -3,20 +3,9 @@ Test exception logging
 """
 
 import unittest
+import pytest
 
 from sickchill import logger
-
-
-def exception_generator():
-    """
-    Dummy function to raise a fake exception and log it
-    """
-    try:
-        raise Exception("FAKE EXCEPTION")
-    except Exception as error:
-        logger.exception("FAKE ERROR: " + str(error))
-        logger.submit_errors()
-        raise
 
 
 class IssueSubmitterBasicTests(unittest.TestCase):
@@ -28,7 +17,14 @@ class IssueSubmitterBasicTests(unittest.TestCase):
         """
         Test that an exception is raised
         """
-        self.assertRaises(Exception, exception_generator)
+        try:
+            with pytest.raises(Exception):
+                raise Exception("FAKE EXCEPTION")
+        except Exception as error:
+            logger.exception("FAKE ERROR: " + str(error))
+            logger.submit_errors()
+            with pytest.raises(Exception):
+                raise
 
 
 if __name__ == "__main__":
