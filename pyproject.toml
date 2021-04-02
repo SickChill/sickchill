@@ -87,6 +87,7 @@ builtins = ["_"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py", "setup.py"]
+addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail"
 
 [tool.isort]
 line_length = 160
