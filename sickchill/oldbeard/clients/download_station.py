@@ -164,7 +164,7 @@ class Client(GenericClient):
         """
         data = self._task_post_data
 
-        data["type"] = "file"
+        data["type"] = '"file"'
         data["file"] = f'["{result.resultType}"]'
         data['create_list'] = "false"
 
