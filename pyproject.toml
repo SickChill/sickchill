@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sickchill"
-version = "v2021.04.05-1"
+version = "2021.4.6"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPLv3"
 
@@ -39,12 +39,12 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 "SickChill.py" = "SickChill.SickChill:start"
 
-[tool.setuptools_scm]
-write_to = "sickchill/version.py"
-#local_scheme = "no-local-version"
-'write_to_template' = '__version__ = "{version}"'
-'tag_regex' = '^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$'
-'local_scheme' = 'no-local-version'
+[tool.poetry.plugins."poetry.application.plugin"]
+plugin = "poetry_date_version_plugin.plugin:VersionPlugin"
+
+[tool.version-plugin]
+write_to = 'sickchill/version.py'
+regex = '__version__ = "{version}"'
 
 [tool.flake8]
 exclude = [
