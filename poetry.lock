@@ -637,7 +637,7 @@ colors = ["colorama (>=0.4.3,<0.5.0)"]
 
 [[package]]
 name = "js2py"
-version = "0.70"
+version = "0.71"
 description = "JavaScript to Python Translator & JavaScript interpreter written in 100% pure Python."
 category = "main"
 optional = false
@@ -1552,7 +1552,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<4"
-content-hash = "6489eaab0f31f63571ae4cc80961c8fc14a4e5b78d9955777f9a461b5a30585e"
+content-hash = "f3d47c96b140aa94d5293879220a8875c218c3d221c4a8df583982624f08e4ad"
 
 [metadata.files]
 appdirs = [
@@ -1910,8 +1910,8 @@ isort = [
     {file = "isort-5.8.0.tar.gz", hash = "sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6"},
 ]
 js2py = [
-    {file = "Js2Py-0.70-py3-none-any.whl", hash = "sha256:f78e76c88942585973129a0a10e7054b5ea1602d761d4c0ccfa0593bc819f0bb"},
-    {file = "Js2Py-0.70.tar.gz", hash = "sha256:7568b33f6bd15ee8ab1f3655928ed05481a6236ad2acca4598703ae501571661"},
+    {file = "Js2Py-0.71-py3-none-any.whl", hash = "sha256:7f3dfa30c4b8e3ac3edd64c361c950a8c2587a30a86854aeb8c1ffb6f4dd24b4"},
+    {file = "Js2Py-0.71.tar.gz", hash = "sha256:a41b1009dd1498ae7d436bfa5ac952a08ca92a4bb9e31dca6e8bb966b49f7fce"},
 ]
 jsonrpclib-pelix = [
     {file = "jsonrpclib-pelix-0.4.2.tar.gz", hash = "sha256:340915c17ebef7451948341542bf4789fc8d8c9fe604e86f00b722b6074a89f0"},
