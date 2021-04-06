@@ -117,7 +117,6 @@ sickchill.logger.init_logging(False, True)
 
 sickchill.indexer = ShowIndexer()
 
-from poetry.packages.project_package import ProjectPackage
 # =================
 #  dummy functions
 # =================
