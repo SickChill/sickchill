@@ -34,8 +34,8 @@ if "setup.py" in sys.argv[0] or 'poetry' in sys.argv[0]:
         url=config["homepage"],
         download_url=config["repository"],
         classifiers=config["classifiers"],
-        install_requires=[item + prod[item].replace("^", ">=") if prod[item] != "*" else item for item in prod],
-        extras_require={"dev": [item + dev[item].replace("^", ">=") if dev[item] != "*" else item for item in dev]},
+        install_requires=[item + prod[item].replace("^", ">=") if prod[item] != "*" else item for item in prod if item != "python"],
+        extras_require={"dev": [item + dev[item].replace("^", ">=") if dev[item] != "*" else item for item in dev if item != "python"]},
         message_extractors={
             "gui": [
                 ("**/views/**.mako", "mako", {"input_encoding": "utf-8"}),
