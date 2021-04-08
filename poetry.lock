@@ -1403,7 +1403,7 @@ requests = "*"
 
 [[package]]
 name = "twilio"
-version = "6.55.0"
+version = "6.56.0"
 description = "Twilio API client and TwiML generator"
 category = "main"
 optional = false
@@ -2464,7 +2464,7 @@ tvdbsimple = [
     {file = "tvdbsimple-1.0.6.tar.gz", hash = "sha256:a8665525fa8b7aaf1e15fc3eec18b6f181582e25468830f300ab3809dbe948fe"},
 ]
 twilio = [
-    {file = "twilio-6.55.0.tar.gz", hash = "sha256:766555e9f3bdfe9eb2fad9e2efa701f6f7644337a3f6b31a660293d2fbd54331"},
+    {file = "twilio-6.56.0.tar.gz", hash = "sha256:f3d65dcea106383e005460d1cd71703d4f106bcef1e8d289720009ef0f219f28"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:7703620125e4fb79b64aa52427ec192822e9f45d37d4b6625ab37ef403e1df70"},
