@@ -50,6 +50,8 @@ class SearchResult(object):
 
         self.resultType = ""
 
+        self.priority = 0
+
     def from_json(self, result_dict):
         self.name = result_dict.get("name")
         self.url = result_dict.get("url")

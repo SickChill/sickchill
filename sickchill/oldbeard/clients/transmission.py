@@ -1,12 +1,16 @@
 import json
 from base64 import b64encode
+from typing import TYPE_CHECKING
 
 from sickchill import settings
 from sickchill.oldbeard.clients.generic import GenericClient
 
+if TYPE_CHECKING:  # pragma: no cover
+    from sickchill.oldbeard.classes import TorrentSearchResult
+
 
 class Client(GenericClient):
-    def __init__(self, host=None, username=None, password=None):
+    def __init__(self, host: str = None, username: str = None, password: str = None):
 
         super().__init__("Transmission", host, username, password)
         self.url = "/".join((self.host.rstrip("/"), settings.TORRENT_RPCURL.strip("/"), "rpc"))
@@ -34,11 +38,11 @@ class Client(GenericClient):
 
         return self.auth
 
-    def _add_torrent_uri(self, result):
+    def _add_torrent_uri(self, result: "TorrentSearchResult"):
         self._request(method="post", data=self.__make_post(result, method="uri"))
         return self.response.json()["result"] == "success"
 
-    def _add_torrent_file(self, result):
+    def _add_torrent_file(self, result: "TorrentSearchResult"):
         self._request(method="post", data=self.__make_post(result, method="file"))
         return self.response.json()["result"] == "success"
 

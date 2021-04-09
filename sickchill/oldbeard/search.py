@@ -3,20 +3,22 @@ import os
 import re
 import threading
 import traceback
+from typing import TYPE_CHECKING
 
 import sickchill.oldbeard.name_cache
 import sickchill.oldbeard.providers
 from sickchill import logger, settings
-from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.GenericProvider import GenericProvider
 
+if TYPE_CHECKING:  # pragma: no cover
+    from sickchill.oldbeard.classes import TorrentSearchResult
+
 from . import clients, common, db, failed_history, helpers, history, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from .common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
-def _downloadResult(result):
+def _downloadResult(result: "TorrentSearchResult"):
     """
     Downloads a result to the appropriate black hole folder.
 
@@ -59,7 +61,7 @@ def _downloadResult(result):
     return newResult
 
 
-def snatchEpisode(result, endStatus=SNATCHED):
+def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
     """
     Contains the internal logic necessary to actually "snatch" a result that
     has been found.
@@ -72,7 +74,6 @@ def snatchEpisode(result, endStatus=SNATCHED):
     if result is None:
         return False
 
-    result.priority = 0  # -1 = low, 0 = normal, 1 = high
     if settings.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
         for curEp in result.episodes:
@@ -237,7 +238,7 @@ def pickBestResult(results, show):
     return bestResult
 
 
-def isFinalResult(result):
+def isFinalResult(result: "TorrentSearchResult"):
     """
     Checks if the given result is good enough quality that we can stop searching for other ones.
 
@@ -271,7 +272,7 @@ def isFinalResult(result):
         return False
 
 
-def isFirstBestMatch(result):
+def isFirstBestMatch(result: "TorrentSearchResult"):
     """
     Checks if the given result is a best quality match and if we want to stop searching providers here.
 
