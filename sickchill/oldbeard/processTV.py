@@ -268,7 +268,8 @@ def validate_dir(process_path, release_name, failed, result):
 
     if settings.TV_DOWNLOAD_DIR and helpers.real_path(process_path) != helpers.real_path(settings.TV_DOWNLOAD_DIR) and helpers.is_hidden_folder(process_path):
         result.output += log_helper("Ignoring hidden folder: {0}".format(process_path), logger.DEBUG)
-        result.missed_files.append("{0} : Hidden folder".format(process_path))
+        if not process_path.endswith("@eaDir"):
+            result.missed_files.append("{0} : Hidden folder".format(process_path))
         return False
 
     # make sure the dir isn't inside a show dir
