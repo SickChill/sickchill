@@ -934,14 +934,14 @@ test = ["pytest (>=4.0.1,<5.0.0)", "pytest-cov (>=2.6.0,<3.0.0)", "pytest-runner
 
 [[package]]
 name = "pymediainfo"
-version = "5.0.3"
+version = "5.0.4"
 description = "A Python wrapper for the mediainfo library."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-setuptools = "*"
+importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "pynma"
@@ -1215,20 +1215,6 @@ description = "Send file to trash natively under Mac OS X, Windows and Linux."
 category = "main"
 optional = false
 python-versions = "*"
-
-[[package]]
-name = "setuptools"
-version = "56.0.0"
-description = "Easily download, build, install, upgrade, and uninstall Python packages"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.extras]
-certs = ["certifi (==2016.9.26)"]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "pygments-github-lexers (==0.0.5)", "sphinx-inline-tabs"]
-ssl = ["wincertstore (==0.2)"]
-testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "mock", "flake8-2020", "virtualenv (>=13.0.0)", "pytest-virtualenv (>=1.2.7)", "wheel", "paver", "pip (>=19.1)", "jaraco.envs", "pytest-xdist", "sphinx", "jaraco.path (>=3.2.0)", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [[package]]
 name = "sgmllib3k"
@@ -1505,17 +1491,6 @@ description = "Character encoding aliases for legacy web content"
 category = "main"
 optional = false
 python-versions = "*"
-
-[[package]]
-name = "wheel"
-version = "0.36.2"
-description = "A built-package format for Python"
-category = "dev"
-optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
-
-[package.extras]
-test = ["pytest (>=3.0.0)", "pytest-cov"]
 
 [[package]]
 name = "win-inet-pton"
@@ -2185,10 +2160,10 @@ pyjwt = [
     {file = "PyJWT-1.7.1.tar.gz", hash = "sha256:8d59a976fb773f3e6a39c85636357c4f0e242707394cadadd9814f5cbaa20e96"},
 ]
 pymediainfo = [
-    {file = "pymediainfo-5.0.3-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:f625bdf6e9ccd5061115d5f0baadd7fb34256c6c6ae4f17d8d60bd5990667d21"},
-    {file = "pymediainfo-5.0.3-py3-none-win32.whl", hash = "sha256:3a64f558d09f757afe33ad0b756fb45b95d167350261b2636a2f803e785c8db4"},
-    {file = "pymediainfo-5.0.3-py3-none-win_amd64.whl", hash = "sha256:aadd69f4d5bac458b8635f4ad2c045f4e93d851f84cb71f0454419b700a85bfa"},
-    {file = "pymediainfo-5.0.3.tar.gz", hash = "sha256:ea61a3b0e0ed6de42ebb2233cf1a9312c57dce95101c025f9f081c10ecec48fb"},
+    {file = "pymediainfo-5.0.4-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:0eb0029e7326c84b0f1e8abdcb95d94b2d75ffa53014cdc191c785a73b19fa49"},
+    {file = "pymediainfo-5.0.4-py3-none-win32.whl", hash = "sha256:5969ed81af9df95094f3ca87c6738806352a6b9c8cebafc7a6c52c3d2d0e29be"},
+    {file = "pymediainfo-5.0.4-py3-none-win_amd64.whl", hash = "sha256:3f30f0fa6646f1006cf52fe167043e609ee6fda0d409e2ea0f5467cf847098c0"},
+    {file = "pymediainfo-5.0.4.tar.gz", hash = "sha256:5d196c09c3948d2efff699692415327d9bce31755cc54ed88ec5652c78dc9804"},
 ]
 pynma = [
     {file = "PyNMA-1.0.tar.gz", hash = "sha256:f90a7f612d508b628daf022068967d2a103ba9b2355b53df12600b8e86ce855b"},
@@ -2347,10 +2322,6 @@ requests-toolbelt = [
 send2trash = [
     {file = "Send2Trash-1.5.0-py3-none-any.whl", hash = "sha256:f1691922577b6fa12821234aeb57599d887c4900b9ca537948d2dac34aea888b"},
     {file = "Send2Trash-1.5.0.tar.gz", hash = "sha256:60001cc07d707fe247c94f74ca6ac0d3255aabcb930529690897ca2a39db28b2"},
-]
-setuptools = [
-    {file = "setuptools-56.0.0-py3-none-any.whl", hash = "sha256:7430499900e443375ba9449a9cc5d78506b801e929fef4a186496012f93683b5"},
-    {file = "setuptools-56.0.0.tar.gz", hash = "sha256:08a1c0f99455307c48690f00d5c2ac2c1ccfab04df00454fef854ec145b81302"},
 ]
 sgmllib3k = [
     {file = "sgmllib3k-1.0.0.tar.gz", hash = "sha256:7868fb1c8bfa764c1ac563d3cf369c381d1325d36124933a726f29fcdaa812e9"},
@@ -2543,10 +2514,6 @@ vcrpy = [
 webencodings = [
     {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
     {file = "webencodings-0.5.1.tar.gz", hash = "sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"},
-]
-wheel = [
-    {file = "wheel-0.36.2-py2.py3-none-any.whl", hash = "sha256:78b5b185f0e5763c26ca1e324373aadd49182ca90e825f7853f4b2509215dc0e"},
-    {file = "wheel-0.36.2.tar.gz", hash = "sha256:e11eefd162658ea59a60a0f6c7d493a7190ea4b9a85e335b33489d9f17e0245e"},
 ]
 win-inet-pton = [
     {file = "win_inet_pton-1.1.0-py2.py3-none-any.whl", hash = "sha256:eaf0193cbe7152ac313598a0da7313fb479f769343c0c16c5308f64887dc885b"},
