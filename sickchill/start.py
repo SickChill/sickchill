@@ -487,6 +487,8 @@ def initialize(consoleLogging=True):
         settings.USE_EMBY = check_setting_bool(settings.CFG, "Emby", "use_emby")
         settings.EMBY_HOST = check_setting_str(settings.CFG, "Emby", "emby_host")
         settings.EMBY_APIKEY = check_setting_str(settings.CFG, "Emby", "emby_apikey")
+        settings.EMBY_DIRECTORY_FROM = check_setting_str(settings.CFG, 'Emby', 'emby_dir_from')
+        settings.EMBY_DIRECTORY_TO = check_setting_str(settings.CFG, 'Emby', 'emby_dir_to')
 
         settings.USE_GROWL = check_setting_bool(settings.CFG, "Growl", "use_growl")
         settings.GROWL_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Growl", "growl_notify_onsnatch")
@@ -1375,6 +1377,8 @@ def save_config():
                 "use_emby": int(settings.USE_EMBY),
                 "emby_host": settings.EMBY_HOST,
                 "emby_apikey": settings.EMBY_APIKEY,
+                "emby_dir_from": settings.EMBY_DIRECTORY_FROM,
+                "emby_dir_to": settings.EMBY_DIRECTORY_TO,
             },
             "Growl": {
                 "use_growl": int(settings.USE_GROWL),

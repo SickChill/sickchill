@@ -216,6 +216,8 @@ class ConfigNotifications(Config):
         discord_name=None,
         discord_avatar_url=None,
         discord_tts=False,
+        emby_dir_from=None,
+        emby_dir_to=None,
     ):
 
         results = []
@@ -251,6 +253,8 @@ class ConfigNotifications(Config):
         settings.USE_EMBY = config.checkbox_to_value(use_emby)
         settings.EMBY_HOST = config.clean_url(emby_host)
         settings.EMBY_APIKEY = filters.unhide(settings.EMBY_APIKEY, emby_apikey)
+        settings.EMBY_DIRECTORY_FROM = emby_dir_from
+        settings.EMBY_DIRECTORY_TO = emby_dir_to
 
         settings.USE_GROWL = config.checkbox_to_value(use_growl)
         settings.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)

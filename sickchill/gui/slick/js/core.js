@@ -587,7 +587,16 @@ const SICKCHILL = {
                     $('#testPMS').prop('disabled', false);
                 });
             });
-
+            $('#emby_dir_from').fileBrowser({
+                    title: _('Select Sickchill shows directory'),
+                    key: 'emby_dir_from'
+                });
+            let embyClearButton = $('<input type="button" value="Clear" class="btn btn-inline">');
+            embyClearButton.on('click',function() {
+                $('#emby_dir_from').val('');
+                localStorage.removeItem('fileBrowser-emby_dir_from');
+            });
+            $('#emby_dir_from').after(embyClearButton);
             $('#testEMBY').on('click', function () {
                 const emby = {};
                 emby.host = $('#emby_host').val();

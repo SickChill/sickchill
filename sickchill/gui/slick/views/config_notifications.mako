@@ -529,6 +529,38 @@
                                     <input type="text" name="emby_apikey" id="emby_apikey" value="${settings.EMBY_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
                                 </div>
                             </div>
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Emby Directory mapping')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="emby_dir_from">${_('SickChill shows directory (empty to disable)')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="emby_dir_from" id="emby_dir_from" value="${settings.EMBY_DIRECTORY_FROM}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="emby_dir_to">${_('Emby shows directory')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="emby_dir_to" id="emby_dir_to" value="${settings.EMBY_DIRECTORY_TO}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="emby_dir_to">${_('Configuration to map a SickChill directory to an Emby directory for notifications (example if sickchil showDir is "/tv/anime/ShowName" and emby showDir is "/mnt/shows/animes/ShowName" config will be from "/tv" to "/mnt/shows" ) ')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="row">
                                 <div class="col-md-12">

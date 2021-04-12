@@ -60,7 +60,11 @@ class Notifier(object):
 
             params = {}
             if show:
-                params.update({"Updates": [{"Path": show.location, "UpdateType": "Created"}]})
+                if settings.EMBY_DIRECTORY_FROM:
+                    showPath = show.location.replace(settings.EMBY_DIRECTORY_FROM,settings.EMBY_DIRECTORY_TO)
+                else:
+                    showpath = show.location
+                params.update({"Updates": [{"Path": showpath, "UpdateType": "Created"}]})
                 url = urljoin(settings.EMBY_HOST, "emby/Library/Media/Updated")
             else:
                 url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
