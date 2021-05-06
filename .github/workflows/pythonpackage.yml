@@ -135,8 +135,15 @@ jobs:
       id: prepare
       run: |
         echo ::set-output name=docker_platforms::linux/amd64,linux/arm64
+        # Remove refs/heads and refs/tags
         VERSION_TAG=${GITHUB_REF#refs/*/}
-        echo ::set-output name=version::${VERSION_TAG%/merge}
+        # Remove /merge from the end
+        VERSION_TAG=${VERSION_TAG%/merge}
+        # Replace slashes
+        VERSION_TAG=${VERSION_TAG//\//_}
+        # Limit length to 128
+        VERSION_TAG=${VERSION_TAG:0:128}
+        echo ::set-output name=version::${VERSION_TAG}
     - name: Cache Docker layers
       uses: actions/cache@v2
       with:
