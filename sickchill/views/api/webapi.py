@@ -1948,6 +1948,7 @@ class CMDShow(ApiCall):
 
         show_dict["language"] = show_obj.lang
         show_dict["show_name"] = show_obj.name
+        show_dict["start_year"] = show_obj.startyear
         show_dict["paused"] = (0, 1)[show_obj.paused]
         show_dict["subtitles"] = (0, 1)[show_obj.subtitles]
         show_dict["air_by_date"] = (0, 1)[show_obj.air_by_date]

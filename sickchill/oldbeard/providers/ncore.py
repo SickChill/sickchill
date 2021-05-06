@@ -10,7 +10,7 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 class Provider(TorrentProvider):
     def __init__(self):
 
-        super().__init__("ncore.cc")
+        super().__init__("ncore")
         self.username = None
         self.password = None
         self.minseed = 0
@@ -19,11 +19,11 @@ class Provider(TorrentProvider):
         categories = ["xvidser_hun", "xvidser", "dvdser_hun", "dvdser", "hdser_hun", "hdser"]
         categories = "&kivalasztott_tipus=" + ",".join([x for x in categories])
 
-        self.url = "https://ncore.cc/"
+        self.url = "https://ncore.pro/"
         self.urls = {
-            "login": "https://ncore.cc/login.php",
+            "login": "https://ncore.pro/login.php",
             "search": (
-                "https://ncore.cc/torrents.php?nyit_sorozat_resz=true&{cats}&mire=%s&miben=name"
+                "https://ncore.pro/torrents.php?nyit_sorozat_resz=true&{cats}&mire=%s&miben=name"
                 "&tipus=kivalasztottak_kozott&submit.x=0&submit.y=0&submit=Ok"
                 "&tags=&searchedfrompotato=true&jsons=true"
             ).format(cats=categories),
