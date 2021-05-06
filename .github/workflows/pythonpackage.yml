@@ -80,7 +80,7 @@ jobs:
       run: |
         yarn --silent
         pip install wheel
-        pip install --upgrade pip tox babel crowdin-cli-py
+        pip install --upgrade --user pip tox babel crowdin-cli-py
     - name: Restore tox workdir
       uses: actions/cache@v2
       with:
