@@ -345,23 +345,23 @@ class Home(WebRoot):
 
     @staticmethod
     def testTwilio():
-        if not notifiers.twilio_notifier.account_regex.match(settings.TWILIO_ACCOUNT_SID):
-            return _("Please enter a valid account sid")
-
-        if not notifiers.twilio_notifier.auth_regex.match(settings.TWILIO_AUTH_TOKEN):
-            return _("Please enter a valid auth token")
-
-        if not notifiers.twilio_notifier.phone_regex.match(settings.TWILIO_PHONE_SID):
-            return _("Please enter a valid phone sid")
-
-        if not notifiers.twilio_notifier.number_regex.match(settings.TWILIO_TO_NUMBER):
-            return _('Please format the phone number as "+1-###-###-####"')
-
-        result = notifiers.twilio_notifier.test_notify()
-        if result:
-            return _("Authorization successful and number ownership verified")
-        else:
-            return _("Error sending sms")
+        # if not notifiers.twilio_notifier.account_regex.match(settings.TWILIO_ACCOUNT_SID):
+        #     return _("Please enter a valid account sid")
+        #
+        # if not notifiers.twilio_notifier.auth_regex.match(settings.TWILIO_AUTH_TOKEN):
+        #     return _("Please enter a valid auth token")
+        #
+        # if not notifiers.twilio_notifier.phone_regex.match(settings.TWILIO_PHONE_SID):
+        #     return _("Please enter a valid phone sid")
+        #
+        # if not notifiers.twilio_notifier.number_regex.match(settings.TWILIO_TO_NUMBER):
+        #     return _('Please format the phone number as "+1-###-###-####"')
+        #
+        # result = notifiers.twilio_notifier.test_notify()
+        # if result:
+        #     return _("Authorization successful and number ownership verified")
+        # else:
+        return _("Error sending sms")
 
     @staticmethod
     def testSlack():

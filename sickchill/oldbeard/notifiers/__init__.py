@@ -26,7 +26,7 @@ from sickchill.oldbeard.notifiers import (
     telegram,
     trakt,
     tweet,
-    twilio_notify,
+    # twilio_notify,
 )
 
 # home theater / nas
@@ -52,7 +52,7 @@ telegram_notifier = telegram.Notifier()
 join_notifier = join.Notifier()
 # social
 twitter_notifier = tweet.Notifier()
-twilio_notifier = twilio_notify.Notifier()
+# twilio_notifier = twilio_notify.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()
@@ -78,7 +78,7 @@ notifiers = [
     pushalot_notifier,
     pushbullet_notifier,
     twitter_notifier,
-    twilio_notifier,
+    # twilio_notifier,
     trakt_notifier,
     email_notifier,
     slack_notifier,
