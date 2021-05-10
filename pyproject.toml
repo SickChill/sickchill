@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sickchill"
-version = "2021.5.6-1"
+version = "2021.5.10"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPLv3"
 
@@ -31,6 +31,10 @@ packages = [
     { include = "sickchill" },
     { include = "SickChill.py" },
 ]
+
+[tool.poetry.scripts]
+SickChill = {reference = "SickChill.py", type = "file"}
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -236,7 +240,6 @@ imagesize = "^1.2.0"
 Send2Trash = "^1.5.0"
 deluge-client = "^1.9.0"
 ifaddr = "^0.1.7"
-twilio = "^6.55.0"
 pyaes = "^1.6.1"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = "^2021.3.18"

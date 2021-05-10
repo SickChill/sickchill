@@ -167,7 +167,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.GHCR_PAT }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build and Push (master)
       if: success() && contains(steps.prepare.outputs.version, 'master') && github.actor == 'miigotu'
       uses: docker/build-push-action@v2
