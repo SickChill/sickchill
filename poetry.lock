@@ -1146,7 +1146,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
 [[package]]
 name = "qbittorrent-api"
-version = "2021.5.21"
+version = "2021.5.22"
 description = "Python client for qBittorrent v4.1+ Web API"
 category = "main"
 optional = false
@@ -2297,8 +2297,8 @@ pyyaml = [
     {file = "PyYAML-5.4.1.tar.gz", hash = "sha256:607774cbba28732bfa802b54baa7484215f530991055bb562efbed5b2f20a45e"},
 ]
 qbittorrent-api = [
-    {file = "qbittorrent-api-2021.5.21.tar.gz", hash = "sha256:1af049447eabbdf81b1258dd66e4e17d0cd9f52ec24725eebca26a6cc78ab828"},
-    {file = "qbittorrent_api-2021.5.21-py3-none-any.whl", hash = "sha256:287057ab09ab4ed70281fe6b89145eb30eeb7ca3334e4493af57f76420adaeb3"},
+    {file = "qbittorrent-api-2021.5.22.tar.gz", hash = "sha256:91da426e36b5830cd0a38dc25a9e84f3cb5e731171f8ed70e6c12ba064f89b08"},
+    {file = "qbittorrent_api-2021.5.22-py3-none-any.whl", hash = "sha256:733c9e696f1a8acd95ae19c0fdac6826c2f26c5493113fe64f5613210e6d6e39"},
 ]
 rarfile = [
     {file = "rarfile-4.0-py3-none-any.whl", hash = "sha256:1094869119012f95c31a6f22cc3a9edbdca61861b805241116adbe2d737b68f8"},
