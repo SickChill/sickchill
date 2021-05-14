@@ -1,5 +1,7 @@
 #
-# Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
+# Uses the Synology Download Station API:
+# http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
+
 import os
 import re
 from urllib.parse import unquote, urljoin
@@ -25,6 +27,7 @@ class Client(GenericClient):
         self.urls = {
             "login": urljoin(self.host, "webapi/auth.cgi"),
             "task": urljoin(self.host, "webapi/entry.cgi"),
+            "info": urljoin(self.host, "webapi/DownloadStation/info.cgi"),
         }
 
         self.url = self.urls["task"]
@@ -69,6 +72,12 @@ class Client(GenericClient):
             "session": "DownloadStation",
         }
 
+        self._task_dest_data = {
+            "api": "SYNO.DownloadStation.Info",
+            "version": "2",
+            "method": "getconfig",
+        }
+
     def _check_response(self, data=None, files=None):
         """
         Checks the response from Download Station, and logs any errors
@@ -99,6 +108,15 @@ class Client(GenericClient):
                             settings.SYNOLOGY_DSM_PATH = data["destination"]
                         elif destination == settings.TORRENT_PATH:
                             settings.TORRENT_PATH = data["destination"]
+
+        if len(settings.TORRENT_PATH.strip()) == 0:
+        # If there is no string from Downloadstation path box then grab defaul_destination from host.
+            try:
+                dest_dsm = self.session.get(self.urls["info"], params=self._task_dest_data, verify=False)
+                dest_dsm_json = dest_dsm.json()
+                settings.TORRENT_PATH = dest_dsm_json['data']['default_destination']
+            except ValueError:
+                logger.info("DestDSM error {0}".format(ValueError))
 
         if not jdata.get("success"):
             error_code = jdata.get("error", {}).get("code")
@@ -153,6 +171,7 @@ class Client(GenericClient):
                 data["destination"] = settings.TORRENT_PATH
         elif settings.SYNOLOGY_DSM_PATH:
             data["destination"] = settings.SYNOLOGY_DSM_PATH
+
         logger.info(data)
         self._request(method="post", data=data)
         return self._check_response(data)
