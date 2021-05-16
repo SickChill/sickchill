@@ -2,8 +2,6 @@
 # Uses the Synology Download Station API:
 # http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
-import os
-import re
 from urllib.parse import unquote, urljoin
 
 from sickchill import logger, settings
@@ -78,7 +76,7 @@ class Client(GenericClient):
             "method": "getconfig",
         }
 
-    def _check_response(self, data=None, files=None):
+    def _check_response(self, data=None):
         """
         Checks the response from Download Station, and logs any errors
         params: :data: post data sent in the original request, in case we need to send it with adjusted parameters
@@ -90,31 +88,13 @@ class Client(GenericClient):
             logger.info("Could not convert response to json, check the host:port: {0!r}".format(self.response))
             return False
 
-        if not jdata.get("success"):
-            error_code = jdata.get("error", {}).get("code")
-            if error_code == 403:
-                destination = (data or {}).get("destination")
-                if destination and os.path.isabs(destination):
-                    data["destination"] = re.sub(r"^/volume\d/", "", destination).lstrip("/")
-                    self._request(method="post", data=data, files=files)
-
-                    try:
-                        jdata = self.response.json()
-                    except ValueError:
-                        return False
-
-                    if jdata.get("success"):
-                        if destination == settings.SYNOLOGY_DSM_PATH:
-                            settings.SYNOLOGY_DSM_PATH = data["destination"]
-                        elif destination == settings.TORRENT_PATH:
-                            settings.TORRENT_PATH = data["destination"]
-
-        if len(settings.TORRENT_PATH.strip()) == 0:
         # If there is no string from Downloadstation path box then grab defaul_destination from host.
+        if len(settings.TORRENT_PATH.strip()) == 0:
             try:
                 dest_dsm = self.session.get(self.urls["info"], params=self._task_dest_data, verify=False)
                 dest_dsm_json = dest_dsm.json()
                 settings.TORRENT_PATH = dest_dsm_json['data']['default_destination']
+                logger.info("Destination set to %s", settings.TORRENT_PATH)
             except ValueError:
                 logger.info("Get DownloadStation default path error: {0}".format(ValueError))
 
@@ -200,7 +180,7 @@ class Client(GenericClient):
 
         logger.info(data)
         self._request(method="post", data=data, files=files)
-        return self._check_response(data, files)
+        return self._check_response(data)
 
     def sendNZB(self, result):
         """
