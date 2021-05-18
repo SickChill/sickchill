@@ -60,16 +60,17 @@ class Notifier(object):
 
             params = {}
             if show:
-                params.update({"Updates": [{"Path": show.location, "UpdateType": "Created"}]})
-                url = urljoin(settings.EMBY_HOST, "emby/Library/Media/Updated")
+                params.update({"TvdbId": show.indexerid})
+                # Endpoint emby/Library/Series/Added is deprecated http://swagger.emby.media/?staticview=true#/LibraryService/postLibrarySeriesAdded
+                url = urljoin(settings.EMBY_HOST, "emby/Library/Series/Added")
             else:
                 url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
 
             try:
                 session = self.__make_session()
-                response = session.post(url, json=params)
+                response = session.post(url,params=params)
                 response.raise_for_status()
-                logger.debug("EMBY: HTTP response: {0}".format(response.text.replace("\n", "")))
+                logger.debug("EMBY: HTTP response: {0}".format(response.status_code))
                 return True
 
             except requests.exceptions.RequestException as error:
