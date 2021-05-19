@@ -88,16 +88,6 @@ class Client(GenericClient):
             logger.info("Could not convert response to json, check the host:port: {0!r}".format(self.response))
             return False
 
-        # If there is no string from Downloadstation path box then grab defaul_destination from host.
-        if len(settings.TORRENT_PATH.strip()) == 0:
-            try:
-                dest_dsm = self.session.get(self.urls["info"], params=self._task_dest_data, verify=False)
-                dest_dsm_json = dest_dsm.json()
-                settings.TORRENT_PATH = dest_dsm_json['data']['default_destination']
-                logger.info("Destination set to %s", settings.TORRENT_PATH)
-            except ValueError:
-                logger.info("Get DownloadStation default path error: {0}".format(ValueError))
-
         if not jdata.get("success"):
             error_code = jdata.get("error", {}).get("code")
             api_method = (data or {}).get("method", "login")
@@ -106,6 +96,16 @@ class Client(GenericClient):
                 logger.info(jdata)
             else:
                 logger.info("{0}".format(log_string))
+
+        # If there is no string from DownloadStation path box 'TORRENT_PATH' then grab default_destination from host.
+        if len(settings.TORRENT_PATH.strip()) == 0:
+            try:
+                dest_dsm = self.session.get(self.urls["info"], params=self._task_dest_data, verify=False)
+                dest_dsm_json = dest_dsm.json()
+                settings.TORRENT_PATH = dest_dsm_json['data']['default_destination']
+                logger.info("Destination blank, set to %s", settings.TORRENT_PATH)
+            except ValueError:
+                logger.info("Get DownloadStation default path error: {0}".format(ValueError))
 
         return jdata.get("success")
 
@@ -145,14 +145,9 @@ class Client(GenericClient):
 
         data["type"] = "url"
         data['create_list'] = "false"
+        data["destination"] = settings.TORRENT_PATH
 
-        if result.resultType == "torrent":
-            if settings.TORRENT_PATH:
-                data["destination"] = settings.TORRENT_PATH
-        elif settings.SYNOLOGY_DSM_PATH:
-            data["destination"] = settings.SYNOLOGY_DSM_PATH
-
-        logger.info(data)
+        logger.info("Post uri %s", data)
         self._request(method="post", data=data)
         return self._check_response(data)
 
@@ -168,17 +163,14 @@ class Client(GenericClient):
         data["type"] = '"file"'
         data["file"] = f'["{result_type}"]'
         data['create_list'] = "false"
+        data["destination"] = f'"{settings.TORRENT_PATH}"'
 
         if result.resultType == "torrent":
             files = {result_type: (result.name + ".torrent", result.content)}
-            if settings.TORRENT_PATH:
-                data["destination"] = f'"{settings.TORRENT_PATH}"'
         else:
             files = {result_type: (result.name + ".nzb", result.extraInfo[0])}
-            if settings.SYNOLOGY_DSM_PATH:
-                data["destination"] = f'"{settings.SYNOLOGY_DSM_PATH}"'
 
-        logger.info(data)
+        logger.info("Post file %s", data)
         self._request(method="post", data=data, files=files)
         return self._check_response(data)
 
