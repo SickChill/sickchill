@@ -68,9 +68,9 @@ class Notifier(object):
 
             try:
                 session = self.__make_session()
-                response = session.post(url,params=params)
+                response = session.post(url, params=params)
                 response.raise_for_status()
-                logger.debug("EMBY: HTTP response: {0}".format(response.status_code))
+                logger.debug("EMBY: HTTP status: {0}, response: {1}".format(response.status_code, response.text.replace("\n", "")))
                 return True
 
             except requests.exceptions.RequestException as error:
