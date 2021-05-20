@@ -198,7 +198,7 @@ class Client(GenericClient):
         data = self._task_post_data
 
         result_type = result.resultType.replace("data", "")
-        files = {result_type: (result.name + "." + result_type, result.content)}
+        files = {result_type: ('.'.join(result.name, result_type), result.content)}
 
         data["type"] = '"file"'
         data["file"] = f'["{result_type}"]'
