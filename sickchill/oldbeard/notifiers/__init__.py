@@ -1,6 +1,6 @@
 from sickchill import settings
 from sickchill.oldbeard import helpers
-from sickchill.oldbeard.notifiers import (
+from sickchill.oldbeard.notifiers import (  # twilio_notify,
     boxcar2,
     discord,
     emailnotify,
@@ -26,7 +26,6 @@ from sickchill.oldbeard.notifiers import (
     telegram,
     trakt,
     tweet,
-    # twilio_notify,
 )
 
 # home theater / nas
