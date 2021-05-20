@@ -118,20 +118,20 @@ class Client(GenericClient):
 
         return jdata.get("success")
 
-    def _get_path(self, result):
+    def _get_destination(self, result):
         """
-        Determines which path setting to use depending on result type
+        Determines which destination setting to use depending on result type
         """
         if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
-            path = settings.SYNOLOGY_DSM_PATH.strip()
+            destination = settings.SYNOLOGY_DSM_PATH.strip()
         elif result.resultType == GenericProvider.TORRENT:
-            path = settings.TORRENT_PATH.strip()
+            destination = settings.TORRENT_PATH.strip()
         else:
-            raise AttributeError('Invalid result passed to client when getting path: resultType {}'.format(result.resultType))
+            raise AttributeError('Invalid result passed to client when getting destination: resultType {}'.format(result.resultType))
 
-        return re.sub(r"^/volume\d/", "", path).lstrip("/")
+        return re.sub(r"^/volume\d/", "", destination).lstrip("/")
 
-    def _set_path(self, result, destination):
+    def _set_destination(self, result, destination):
         """
         Determines which destination setting to use depending on result type and sets it to `destination`
         params: :destination: DSM share name
@@ -142,11 +142,11 @@ class Client(GenericClient):
         elif result.resultType == GenericProvider.TORRENT:
             settings.TORRENT_PATH = destination
         else:
-            raise AttributeError('Invalid result passed to client when setting path')
+            raise AttributeError('Invalid result passed to client when setting destination')
 
-    def _check_path(self, result):
+    def _check_destination(self, result):
         """
-        If path is not set in configuration, grab it from the API
+        If destination is not set in configuration, grab it from the API
         params: :result: an object subclassing oldbeard.classes.SearchResult
         """
         params = {
@@ -155,15 +155,15 @@ class Client(GenericClient):
             "method": "getconfig",
         }
 
-        if not self._get_path(result):
+        if not self._get_destination(result):
             try:
                 response = self.session.get(self.urls["info"], params=params, verify=False)
                 response_json = response.json()
-                self._set_path(result, response_json['data']['default_destination'])
-                logger.info("Destination set to %s", self._get_path(result))
+                self._set_destination(result, response_json['data']['default_destination'])
+                logger.info("Destination set to %s", self._get_destination(result))
             except (ValueError, KeyError, JSONDecodeError) as error:
-                logger.debug("Get DownloadStation default path error: {0}".format(error))
-                logger.warning("Could not get share path from DownloadStation for {}, please set it in the settings", result.resultType)
+                logger.debug("Get DownloadStation default destination error: {0}".format(error))
+                logger.warning("Could not get share destination from DownloadStation for {}, please set it in the settings", result.resultType)
                 raise
 
     def _add_torrent_uri(self, result):
@@ -171,7 +171,7 @@ class Client(GenericClient):
         Sends a magnet, Torrent url or NZB url to DownloadStation
         params: :result: an object subclassing oldbeard.classes.SearchResult
         """
-        self._check_path(result)
+        self._check_destination(result)
 
         data = self._task_post_data
 
@@ -182,7 +182,7 @@ class Client(GenericClient):
 
         data["type"] = "url"
         data['create_list'] = "false"
-        data["destination"] = self._get_path(result)
+        data["destination"] = self._get_destination(result)
 
         logger.info("Post uri %s", data)
         self._request(method="post", data=data)
@@ -193,7 +193,7 @@ class Client(GenericClient):
         Sends a Torrent file or NZB file to DownloadStation
         params: :result: an object subclassing oldbeard.classes.SearchResult
         """
-        self._check_path(result)
+        self._check_destination(result)
 
         data = self._task_post_data
 
@@ -203,7 +203,7 @@ class Client(GenericClient):
         data["type"] = '"file"'
         data["file"] = f'["{result_type}"]'
         data['create_list'] = "false"
-        data["destination"] = f'"{self._get_path(result)}"'
+        data["destination"] = f'"{self._get_destination(result)}"'
 
         logger.info("Post file %s", data)
         self._request(method="post", data=data, files=files)
