@@ -1,7 +1,7 @@
 #
-# Uses the Synology Download Station API: http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
-import os
-import re
+# Uses the Synology Download Station API:
+# http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
+
 from urllib.parse import unquote, urljoin
 
 from sickchill import logger, settings
@@ -25,6 +25,7 @@ class Client(GenericClient):
         self.urls = {
             "login": urljoin(self.host, "webapi/auth.cgi"),
             "task": urljoin(self.host, "webapi/entry.cgi"),
+            "info": urljoin(self.host, "webapi/DownloadStation/info.cgi"),
         }
 
         self.url = self.urls["task"]
@@ -69,7 +70,13 @@ class Client(GenericClient):
             "session": "DownloadStation",
         }
 
-    def _check_response(self, data=None, files=None):
+        self._task_dest_data = {
+            "api": "SYNO.DownloadStation.Info",
+            "version": "2",
+            "method": "getconfig",
+        }
+
+    def _check_response(self, data=None):
         """
         Checks the response from Download Station, and logs any errors
         params: :data: post data sent in the original request, in case we need to send it with adjusted parameters
@@ -83,31 +90,22 @@ class Client(GenericClient):
 
         if not jdata.get("success"):
             error_code = jdata.get("error", {}).get("code")
-            if error_code == 403:
-                destination = (data or {}).get("destination")
-                if destination and os.path.isabs(destination):
-                    data["destination"] = re.sub(r"^/volume\d/", "", destination).lstrip("/")
-                    self._request(method="post", data=data, files=files)
-
-                    try:
-                        jdata = self.response.json()
-                    except ValueError:
-                        return False
-
-                    if jdata.get("success"):
-                        if destination == settings.SYNOLOGY_DSM_PATH:
-                            settings.SYNOLOGY_DSM_PATH = data["destination"]
-                        elif destination == settings.TORRENT_PATH:
-                            settings.TORRENT_PATH = data["destination"]
-
-        if not jdata.get("success"):
-            error_code = jdata.get("error", {}).get("code")
             api_method = (data or {}).get("method", "login")
             log_string = self.error_map.get(api_method).get(error_code, None)
             if not log_string:
                 logger.info(jdata)
             else:
                 logger.info("{0}".format(log_string))
+
+        # If there is no string from DownloadStation path box 'TORRENT_PATH' then grab default_destination from host.
+        if len(settings.TORRENT_PATH.strip()) == 0:
+            try:
+                dest_dsm = self.session.get(self.urls["info"], params=self._task_dest_data, verify=False)
+                dest_dsm_json = dest_dsm.json()
+                settings.TORRENT_PATH = dest_dsm_json['data']['default_destination']
+                logger.info("Destination blank, set to %s", settings.TORRENT_PATH)
+            except ValueError:
+                logger.info("Get DownloadStation default path error: {0}".format(ValueError))
 
         return jdata.get("success")
 
@@ -147,13 +145,9 @@ class Client(GenericClient):
 
         data["type"] = "url"
         data['create_list'] = "false"
+        data["destination"] = settings.TORRENT_PATH
 
-        if result.resultType == "torrent":
-            if settings.TORRENT_PATH:
-                data["destination"] = settings.TORRENT_PATH
-        elif settings.SYNOLOGY_DSM_PATH:
-            data["destination"] = settings.SYNOLOGY_DSM_PATH
-        logger.info(data)
+        logger.info("Post uri %s", data)
         self._request(method="post", data=data)
         return self._check_response(data)
 
@@ -169,19 +163,16 @@ class Client(GenericClient):
         data["type"] = '"file"'
         data["file"] = f'["{result_type}"]'
         data['create_list'] = "false"
+        data["destination"] = f'"{settings.TORRENT_PATH}"'
 
         if result.resultType == "torrent":
             files = {result_type: (result.name + ".torrent", result.content)}
-            if settings.TORRENT_PATH:
-                data["destination"] = f'"{settings.TORRENT_PATH}"'
         else:
             files = {result_type: (result.name + ".nzb", result.extraInfo[0])}
-            if settings.SYNOLOGY_DSM_PATH:
-                data["destination"] = f'"{settings.SYNOLOGY_DSM_PATH}"'
 
-        logger.info(data)
+        logger.info("Post file %s", data)
         self._request(method="post", data=data, files=files)
-        return self._check_response(data, files)
+        return self._check_response(data)
 
     def sendNZB(self, result):
         """
