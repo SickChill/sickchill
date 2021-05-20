@@ -2,10 +2,13 @@
 # Uses the Synology Download Station API:
 # http://download.synology.com/download/Document/DeveloperGuide/Synology_Download_Station_Web_API.pdf
 
+import re
+from json import JSONDecodeError
 from urllib.parse import unquote, urljoin
 
 from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
+from sickchill.providers.GenericProvider import GenericProvider
 
 
 class Client(GenericClient):
@@ -70,45 +73,6 @@ class Client(GenericClient):
             "session": "DownloadStation",
         }
 
-        self._task_dest_data = {
-            "api": "SYNO.DownloadStation.Info",
-            "version": "2",
-            "method": "getconfig",
-        }
-
-    def _check_response(self, data=None):
-        """
-        Checks the response from Download Station, and logs any errors
-        params: :data: post data sent in the original request, in case we need to send it with adjusted parameters
-                :file: file data being sent with the post request, if any
-        """
-        try:
-            jdata = self.response.json()
-        except (ValueError, AttributeError):
-            logger.info("Could not convert response to json, check the host:port: {0!r}".format(self.response))
-            return False
-
-        if not jdata.get("success"):
-            error_code = jdata.get("error", {}).get("code")
-            api_method = (data or {}).get("method", "login")
-            log_string = self.error_map.get(api_method).get(error_code, None)
-            if not log_string:
-                logger.info(jdata)
-            else:
-                logger.info("{0}".format(log_string))
-
-        # If there is no string from DownloadStation path box 'TORRENT_PATH' then grab default_destination from host.
-        if len(settings.TORRENT_PATH.strip()) == 0:
-            try:
-                dest_dsm = self.session.get(self.urls["info"], params=self._task_dest_data, verify=False)
-                dest_dsm_json = dest_dsm.json()
-                settings.TORRENT_PATH = dest_dsm_json['data']['default_destination']
-                logger.info("Destination blank, set to %s", settings.TORRENT_PATH)
-            except ValueError:
-                logger.info("Get DownloadStation default path error: {0}".format(ValueError))
-
-        return jdata.get("success")
-
     def _get_auth(self):
         """
         Authenticates the session with DownloadStation
@@ -131,11 +95,84 @@ class Client(GenericClient):
         self.auth = self._check_response()
         return self.auth
 
+    def _check_response(self, data=None):
+        """
+        Checks the response from Download Station, and logs any errors
+        params: :data: post data sent in the original request, in case we need to send it with adjusted parameters
+                :file: file data being sent with the post request, if any
+        """
+        try:
+            jdata = self.response.json()
+        except (ValueError, AttributeError):
+            logger.info("Could not convert response to json, check the host:port: {0!r}".format(self.response))
+            return False
+
+        if not jdata.get("success"):
+            error_code = jdata.get("error", {}).get("code")
+            api_method = (data or {}).get("method", "login")
+            log_string = self.error_map.get(api_method).get(error_code, None)
+            if not log_string:
+                logger.info(jdata)
+            else:
+                logger.info("{0}".format(log_string))
+
+        return jdata.get("success")
+
+    def _get_path(self, result):
+        """
+        Determines which path setting to use depending on result type
+        """
+        if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
+            path = settings.SYNOLOGY_DSM_PATH.strip()
+        elif result.resultType == GenericProvider.TORRENT:
+            path = settings.TORRENT_PATH.strip()
+        else:
+            raise AttributeError('Invalid result passed to client when getting path: resultType {}'.format(result.resultType))
+
+        return re.sub(r"^/volume\d/", "", path).lstrip("/")
+
+    def _set_path(self, result, destination):
+        """
+        Determines which destination setting to use depending on result type and sets it to `destination`
+        params: :destination: DSM share name
+        """
+        destination = destination.strip()
+        if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
+            settings.SYNOLOGY_DSM_PATH = destination
+        elif result.resultType == GenericProvider.TORRENT:
+            settings.TORRENT_PATH = destination
+        else:
+            raise AttributeError('Invalid result passed to client when setting path')
+
+    def _check_path(self, result):
+        """
+        If path is not set in configuration, grab it from the API
+        params: :result: an object subclassing oldbeard.classes.SearchResult
+        """
+        params = {
+            "api": "SYNO.DownloadStation.Info",
+            "version": "2",
+            "method": "getconfig",
+        }
+
+        if not self._get_path(result):
+            try:
+                response = self.session.get(self.urls["info"], params=params, verify=False)
+                response_json = response.json()
+                self._set_path(result, response_json['data']['default_destination'])
+                logger.info("Destination set to %s", self._get_path(result))
+            except (ValueError, KeyError, JSONDecodeError) as error:
+                logger.debug("Get DownloadStation default path error: {0}".format(error))
+                logger.warning("Could not get share path from DownloadStation for {}, please set it in the settings", result.resultType)
+                raise
+
     def _add_torrent_uri(self, result):
         """
         Sends a magnet, Torrent url or NZB url to DownloadStation
         params: :result: an object subclassing oldbeard.classes.SearchResult
         """
+        self._check_path(result)
+
         data = self._task_post_data
 
         if "%3A%2F%2F" in result.url:
@@ -145,7 +182,7 @@ class Client(GenericClient):
 
         data["type"] = "url"
         data['create_list'] = "false"
-        data["destination"] = settings.TORRENT_PATH
+        data["destination"] = self._get_path(result)
 
         logger.info("Post uri %s", data)
         self._request(method="post", data=data)
@@ -156,19 +193,17 @@ class Client(GenericClient):
         Sends a Torrent file or NZB file to DownloadStation
         params: :result: an object subclassing oldbeard.classes.SearchResult
         """
+        self._check_path(result)
+
         data = self._task_post_data
 
         result_type = result.resultType.replace("data", "")
+        files = {result_type: (result.name + "." + result_type, result.content)}
 
         data["type"] = '"file"'
         data["file"] = f'["{result_type}"]'
         data['create_list'] = "false"
-        data["destination"] = f'"{settings.TORRENT_PATH}"'
-
-        if result.resultType == "torrent":
-            files = {result_type: (result.name + ".torrent", result.content)}
-        else:
-            files = {result_type: (result.name + ".nzb", result.extraInfo[0])}
+        data["destination"] = f'"{self._get_path(result)}"'
 
         logger.info("Post file %s", data)
         self._request(method="post", data=data, files=files)
