@@ -184,7 +184,7 @@ class Client(GenericClient):
         data['create_list'] = "false"
         data["destination"] = self._get_destination(result)
 
-        logger.info("Post uri %s", data)
+        logger.info("Posted as url to {}".format(data['api']))
         self._request(method="post", data=data)
         return self._check_response(data)
 
@@ -205,7 +205,7 @@ class Client(GenericClient):
         data['create_list'] = "false"
         data["destination"] = f'"{self._get_destination(result)}"'
 
-        logger.info("Post file %s", data)
+        logger.info("Posted as file to {}".format(data['api']))
         self._request(method="post", data=data, files=files)
         return self._check_response(data)
 
