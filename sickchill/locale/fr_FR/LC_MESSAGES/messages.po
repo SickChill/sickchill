@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-02-21 00:05\n"
+"PO-Revision-Date: 2021-05-24 11:17\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -893,15 +893,15 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1017
 msgid "Unable to delete the existing files"
-msgstr ""
+msgstr "Impossible de supprimer les fichiers existants"
 
 #: sickchill/oldbeard/postProcessor.py:1025
 msgid "Show directory doesn't exist, creating it"
-msgstr ""
+msgstr "Le répertoire de la série n'existe pas, création"
 
 #: sickchill/oldbeard/postProcessor.py:1033
 msgid "Unable to create the show directory: "
-msgstr ""
+msgstr "Impossible de créer le répertoire de la série: "
 
 #: sickchill/oldbeard/postProcessor.py:1045
 msgid "Found release name "
@@ -2390,7 +2390,7 @@ msgstr ""
 
 #: sickchill/views/manage/add_shows.py:334
 msgid "Favorite Shows"
-msgstr ""
+msgstr "Séries favorites"
 
 #: sickchill/views/manage/add_shows.py:359 sickchill/views/manage/add_shows.py:360
 msgid "Existing Show"
