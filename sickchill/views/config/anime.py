@@ -11,7 +11,7 @@ from sickchill.views.routes import Route
 from .index import Config
 
 
-@Route('/config/anime(/?.*)', name='config:anime')
+@Route("/config/anime(/?.*)", name="config:anime")
 class ConfigAnime(Config):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,12 +21,9 @@ class ConfigAnime(Config):
 
         t = PageTemplate(rh=self, filename="config_anime.mako")
 
-        return t.render(submenu=self.ConfigMenu(), title=_('Config - Anime'),
-                        header=_('Anime'), topmenu='config',
-                        controller="config", action="anime")
+        return t.render(submenu=self.ConfigMenu(), title=_("Config - Anime"), header=_("Anime"), topmenu="config", controller="config", action="anime")
 
-    def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None,
-                  split_home=None, split_home_in_tabs=None):
+    def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None, split_home=None, split_home_in_tabs=None):
 
         settings.USE_ANIDB = config.checkbox_to_value(use_anidb)
         settings.ANIDB_USERNAME = anidb_username
@@ -36,6 +33,6 @@ class ConfigAnime(Config):
         settings.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(split_home_in_tabs)
 
         sickchill.start.save_config()
-        ui.notifications.message(_('Configuration Saved'), os.path.join(settings.CONFIG_FILE))
+        ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
 
         return self.redirect("/config/anime/")

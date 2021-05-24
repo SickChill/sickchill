@@ -41,7 +41,7 @@ class SearchQueue(generic_queue.GenericQueue):
                 return True
         return False
 
-    def is_movie_in_queue(self, movie: 'Movie'):
+    def is_movie_in_queue(self, movie: "Movie"):
         for cur_item in self.queue:
             if isinstance(cur_item, MovieQueueItem) and cur_item.movie.pk == movie.pk:
                 return True
@@ -83,16 +83,16 @@ class SearchQueue(generic_queue.GenericQueue):
         return False
 
     def queue_length(self):
-        length = {'backlog': 0, 'daily': 0, 'manual': 0, 'failed': 0}
+        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0}
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, DailySearchQueueItem):
-                length['daily'] += 1
+                length["daily"] += 1
             elif isinstance(cur_item, (BacklogQueueItem, MovieQueueItem)):
-                length['backlog'] += 1
+                length["backlog"] += 1
             elif isinstance(cur_item, ManualSearchQueueItem):
-                length['manual'] += 1
+                length["manual"] += 1
             elif isinstance(cur_item, FailedQueueItem):
-                length['failed'] += 1
+                length["failed"] += 1
         return length
 
     def add_item(self, item):
@@ -118,7 +118,7 @@ class SearchQueue(generic_queue.GenericQueue):
 
 class DailySearchQueueItem(generic_queue.QueueItem):
     def __init__(self):
-        super().__init__('Daily Search', DAILY_SEARCH)
+        super().__init__("Daily Search", DAILY_SEARCH)
         self.success = None
 
     def run(self):
@@ -150,9 +150,9 @@ class DailySearchQueueItem(generic_queue.QueueItem):
 
 class ManualSearchQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        super().__init__('Manual Search', MANUAL_SEARCH)
+        super().__init__("Manual Search", MANUAL_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.name = f'MANUAL-{show.indexerid}'
+        self.name = f"MANUAL-{show.indexerid}"
         self.success = None
         self.show = show
         self.segment = segment
@@ -177,8 +177,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
                 time.sleep(common.cpu_presets[settings.CPU_PRESET])
 
             else:
-                ui.notifications.message('No downloads were found',
-                                         "Couldn't find a download for <i>{0}</i>".format(self.segment.pretty_name()))
+                ui.notifications.message("No downloads were found", "Couldn't find a download for <i>{0}</i>".format(self.segment.pretty_name()))
 
                 logger.info(f"Unable to find a download for: [{self.segment.pretty_name()}]")
 
@@ -197,9 +196,9 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
 class BacklogQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment):
-        super().__init__('Backlog', BACKLOG_SEARCH)
+        super().__init__("Backlog", BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
-        self.name = f'BACKLOG-{show.indexerid}'
+        self.name = f"BACKLOG-{show.indexerid}"
         self.success = None
         self.show = show
         self.segment = segment
@@ -230,10 +229,10 @@ class BacklogQueueItem(generic_queue.QueueItem):
 
 
 class MovieQueueItem(generic_queue.QueueItem):
-    def __init__(self, movie: 'Movie'):
-        super().__init__('Movie', BACKLOG_SEARCH)
+    def __init__(self, movie: "Movie"):
+        super().__init__("Movie", BACKLOG_SEARCH)
         self.priority = generic_queue.QueuePriorities.LOW
-        self.name = f'BACKLOG-{movie.tmdb_id}'
+        self.name = f"BACKLOG-{movie.tmdb_id}"
         self.success = None
         self.movie = movie
 
@@ -262,9 +261,9 @@ class MovieQueueItem(generic_queue.QueueItem):
 
 class FailedQueueItem(generic_queue.QueueItem):
     def __init__(self, show, segment, downCurQuality=False):
-        super().__init__('Retry', FAILED_SEARCH)
+        super().__init__("Retry", FAILED_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
-        self.name = f'RETRY-{show.indexerid}'
+        self.name = f"RETRY-{show.indexerid}"
         self.show = show
         self.segment = segment
         self.success = None

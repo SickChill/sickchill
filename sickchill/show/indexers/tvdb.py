@@ -18,12 +18,12 @@ from .wrappers import ExceptionDecorator
 class TVDB(Indexer):
     def __init__(self):
         super(TVDB, self).__init__()
-        self.name = 'theTVDB'
-        self.slug = 'tvdb'
-        self.api_key = '6aa6e4ecae5b56e9644f6a303c0739b6'
-        self.show_url = 'https://thetvdb.com/?tab=series&id='
-        self.base_url = 'https://thetvdb.com/api/%(apikey)s/series/'
-        self.icon = 'images/indexers/thetvdb16.png'
+        self.name = "theTVDB"
+        self.slug = "tvdb"
+        self.api_key = "6aa6e4ecae5b56e9644f6a303c0739b6"
+        self.show_url = "https://thetvdb.com/?tab=series&id="
+        self.base_url = "https://thetvdb.com/api/%(apikey)s/series/"
+        self.icon = "images/indexers/thetvdb16.png"
         tvdbsimple.keys.API_KEY = self.api_key
         self._search = tvdbsimple.search.Search().series
         self._series = tvdbsimple.Series
@@ -35,7 +35,7 @@ class TVDB(Indexer):
     def series(self, *args, **kwargs):
         result = self._series(*args, **kwargs)
         if result:
-            result.info(language=kwargs.get('language'))
+            result.info(language=kwargs.get("language"))
         return result
 
     @ExceptionDecorator()
@@ -60,7 +60,7 @@ class TVDB(Indexer):
             return self.get_series_by_id(indexerid, language)
 
         # Just return the first result for now
-        result = self._series(self.search(name, language)[0]['id'])
+        result = self._series(self.search(name, language)[0]["id"])
         if result:
             result.info(language=language)
         return result
@@ -104,11 +104,11 @@ class TVDB(Indexer):
         if isinstance(name, bytes):
             name = name.decode()
 
-        if re.match(r'^t?t?\d{7,8}$', name) or re.match(r'^\d{6}$', name):
+        if re.match(r"^t?t?\d{7,8}$", name) or re.match(r"^\d{6}$", name):
             try:
-                if re.match(r'^t?t?\d{7,8}$', name):
+                if re.match(r"^t?t?\d{7,8}$", name):
                     result = self._search(imdbId=f'tt{name.strip("t")}', language=language)
-                elif re.match(r'^\d{6}$', name):
+                elif re.match(r"^\d{6}$", name):
                     series = self._series(name, language=language)
                     if series:
                         result = [series.info(language)]
@@ -119,15 +119,15 @@ class TVDB(Indexer):
             names = [name]
             if not exact:
                 # Name without year and separator
-                test = re.match(r'^(.+?)[. -]+\(\d{4}\)?$', name)
+                test = re.match(r"^(.+?)[. -]+\(\d{4}\)?$", name)
                 if test:
                     names.append(test.group(1).strip())
                 # Name with spaces
-                if re.match(r'[. -_]', name):
-                    names.append(re.sub(r'[. -_]', ' ', name).strip())
+                if re.match(r"[. -_]", name):
+                    names.append(re.sub(r"[. -_]", " ", name).strip())
                     if test:
                         # Name with spaces and without year
-                        names.append(re.sub(r'[. -_]', ' ', test.group(1)).strip())
+                        names.append(re.sub(r"[. -_]", " ", test.group(1)).strip())
 
             for attempt in set(n for n in names if n.strip()):
                 try:
@@ -141,18 +141,34 @@ class TVDB(Indexer):
 
     @property
     def languages(self):
-        return [
-            "da", "fi", "nl", "de", "it", "es", "fr", "pl", "hu", "el", "tr",
-            "ru", "he", "ja", "pt", "zh", "cs", "sl", "hr", "ko", "en", "sv", "no"
-        ]
+        return ["da", "fi", "nl", "de", "it", "es", "fr", "pl", "hu", "el", "tr", "ru", "he", "ja", "pt", "zh", "cs", "sl", "hr", "ko", "en", "sv", "no"]
 
     @property
     def lang_dict(self):
         return {
-            'el': 20, 'en': 7, 'zh': 27,
-            'it': 15, 'cs': 28, 'es': 16, 'ru': 22, 'nl': 13, 'pt': 26, 'no': 9,
-            'tr': 21, 'pl': 18, 'fr': 17, 'hr': 31, 'de': 14, 'da': 10, 'fi': 11,
-            'hu': 19, 'ja': 25, 'he': 24, 'ko': 32, 'sv': 8, 'sl': 30
+            "el": 20,
+            "en": 7,
+            "zh": 27,
+            "it": 15,
+            "cs": 28,
+            "es": 16,
+            "ru": 22,
+            "nl": 13,
+            "pt": 26,
+            "no": 9,
+            "tr": 21,
+            "pl": 18,
+            "fr": 17,
+            "hr": 31,
+            "de": 14,
+            "da": 10,
+            "fi": 11,
+            "hu": 19,
+            "ja": 25,
+            "he": 24,
+            "ko": 32,
+            "sv": 8,
+            "sl": 30,
         }
 
     @staticmethod
@@ -162,43 +178,43 @@ class TVDB(Indexer):
             return location
         return f'https://artworks.thetvdb.com/banners/{re.sub(r"^_cache/", "", location)}'
 
-    @ExceptionDecorator(default_return='', catch=(requests.exceptions.RequestException, KeyError), image_api=True)
+    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError), image_api=True)
     def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None, multiple=False):
         api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
         images = getattr(api_results, keyType)(lang or show.lang)
-        images = sorted(images, key=lambda img: img['ratingsInfo']['average'], reverse=True)
-        return [self.complete_image_url(image['fileName']) for image in images] if multiple else self.complete_image_url(images[0]['fileName'])
+        images = sorted(images, key=lambda img: img["ratingsInfo"]["average"], reverse=True)
+        return [self.complete_image_url(image["fileName"]) for image in images] if multiple else self.complete_image_url(images[0]["fileName"])
 
     @staticmethod
     @ExceptionDecorator()
     def actors(series):
-        if hasattr(series, 'actors') and callable(series.actors):
+        if hasattr(series, "actors") and callable(series.actors):
             series.actors(series.language)
         return series.actors
 
     def series_poster_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'poster', multiple=multiple)
+        return self.__call_images_api(show, thumb, "poster", multiple=multiple)
 
     def series_banner_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'series', multiple=multiple)
+        return self.__call_images_api(show, thumb, "series", multiple=multiple)
 
     def series_fanart_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'fanart', multiple=multiple)
+        return self.__call_images_api(show, thumb, "fanart", multiple=multiple)
 
     def season_poster_url(self, show, season, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'season', season, multiple=multiple)
+        return self.__call_images_api(show, thumb, "season", season, multiple=multiple)
 
     def season_banner_url(self, show, season, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, 'seasonwide', season, multiple=multiple)
+        return self.__call_images_api(show, thumb, "seasonwide", season, multiple=multiple)
 
-    @ExceptionDecorator(default_return='', catch=(requests.exceptions.RequestException, KeyError, TypeError))
+    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError, TypeError))
     def episode_image_url(self, episode):
-        return self.complete_image_url(self.episode(episode)['filename'])
+        return self.complete_image_url(self.episode(episode)["filename"])
 
     def episode_guide_url(self, show):
         # https://forum.kodi.tv/showthread.php?tid=323588
-        data = html.escape(json.dumps({'apikey': self.api_key, 'id': show.indexerid})).replace(' ', '')
-        return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url('login') + '?' + data + '|Content-Type=application/json'
+        data = html.escape(json.dumps({"apikey": self.api_key, "id": show.indexerid})).replace(" ", "")
+        return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url("login") + "?" + data + "|Content-Type=application/json"
 
     def get_favorites(self):
         results = []

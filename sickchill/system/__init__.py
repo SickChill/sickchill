@@ -1,1 +1,1 @@
-__all__ = ['Restart', 'Shutdown']
+__all__ = ["Restart", "Shutdown"]

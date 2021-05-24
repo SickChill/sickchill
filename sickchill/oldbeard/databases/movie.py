@@ -8,7 +8,7 @@ from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
-logger = logging.getLogger('sickchill.movie')
+logger = logging.getLogger("sickchill.movie")
 
 Base = declarative_base()
 Session = sessionmaker()
@@ -45,7 +45,7 @@ class Movie(Base):
 
     @property
     def poster(self):
-        return ''
+        return ""
 
     def __get_named_indexer_data(self, name):
         if self.indexer_data:
@@ -55,28 +55,28 @@ class Movie(Base):
 
     @property
     def imdb_data(self):
-        data = self.__get_named_indexer_data('imdb')
+        data = self.__get_named_indexer_data("imdb")
         if data:
             return data.data
         return dict()
 
     @property
     def imdb_id(self):
-        data = self.__get_named_indexer_data('imdb')
+        data = self.__get_named_indexer_data("imdb")
         if data:
             return data.pk
-        return ''
+        return ""
 
     @property
     def tmdb_id(self):
-        data = self.__get_named_indexer_data('tmdb')
+        data = self.__get_named_indexer_data("tmdb")
         if data:
             return data.pk
-        return ''
+        return ""
 
     @property
     def imdb_genres(self):
-        data = self.__get_named_indexer_data('imdb')
+        data = self.__get_named_indexer_data("imdb")
         if data:
             return data.genres
         return []
@@ -88,29 +88,29 @@ class Movie(Base):
                 data = data[key]
             return data
         except AttributeError:
-            logger.debug(f'We do not have data for {name}')
+            logger.debug(f"We do not have data for {name}")
         except (IndexError, KeyError):
             logger.debug(f"KeyError: {name}{''.join([f'[{k}]' for k in keys])}")
 
     @property
     def runtime(self):
-        return self.__get_indexer_values('imdb', ['base', 'runningTimeInMinutes'])
+        return self.__get_indexer_values("imdb", ["base", "runningTimeInMinutes"])
 
     @property
     def imdb_votes(self):
-        return self.__get_indexer_values('imdb', ['ratings', 'ratingCount'])
+        return self.__get_indexer_values("imdb", ["ratings", "ratingCount"])
 
     @property
     def imdb_rating(self):
-        return self.__get_indexer_values('imdb', ['ratings', 'rating'])
+        return self.__get_indexer_values("imdb", ["ratings", "rating"])
 
     @property
     def imdb_outline(self):
-        return self.__get_indexer_values('imdb', ['plot', 'outline', 'text'])
+        return self.__get_indexer_values("imdb", ["plot", "outline", "text"])
 
     @property
     def imdb_summary(self):
-        return self.__get_indexer_values('imdb', ['plot', 'summaries', 0, 'text'])
+        return self.__get_indexer_values("imdb", ["plot", "summaries", 0, "text"])
 
     @staticmethod
     def slugify(target, value, old_value, initiator):
@@ -118,13 +118,13 @@ class Movie(Base):
             target.slug = slugify(value)
 
     def search_strings(self):
-        return {'Movie': [f"{self.name} {self.year}"]}
+        return {"Movie": [f"{self.name} {self.year}"]}
 
     def __repr__(self):
         return f"{self.name}"
 
 
-listen(Movie.name, 'set', Movie.slugify, retval=False)
+listen(Movie.name, "set", Movie.slugify, retval=False)
 
 
 class Result(Base):
@@ -145,12 +145,12 @@ class Result(Base):
     found = Column(DateTime, default=datetime.datetime.now)
     updated = Column(DateTime, onupdate=datetime.datetime.now)
 
-    movie_pk = Column(Integer, ForeignKey('movie.pk'))
+    movie_pk = Column(Integer, ForeignKey("movie.pk"))
 
     session = Session()
 
     def __init__(self, result: dict, movie: Movie, provider):
-        name = result['title']
+        name = result["title"]
         guess = guessit.guessit(name)
         if not (guess and guess["type"] == "movie"):
             logging.debug(f"This is an episode, not a movie: {name}")
@@ -160,14 +160,14 @@ class Result(Base):
             logging.debug(f"This result does not match any of our movies")
             return
 
-        self.info_hash = result['hash']
-        self.url = result['link']
+        self.info_hash = result["hash"]
+        self.url = result["link"]
         self.name = name
         self.title = guess["title"]
         self.group = guess["release_group"]
-        self.seeders = result['seeders']
-        self.leechers = result['leechers']
-        self.size = result['size']
+        self.seeders = result["seeders"]
+        self.leechers = result["leechers"]
+        self.size = result["size"]
         self.year = guess["year"] or movie.year
         self.type = provider.provider_type
 
@@ -182,14 +182,14 @@ class Result(Base):
 
 
 class Images(Base):
-    __tablename__ = 'images'
+    __tablename__ = "images"
 
     url = Column(String, primary_key=True)
     path = Column(String)
     site = Column(String)
     style = Column(Integer)
 
-    movie_pk = Column(Integer, ForeignKey('movie.pk'))
+    movie_pk = Column(Integer, ForeignKey("movie.pk"))
 
     def __init__(self, site: str, movie_pk: int, url: str, path: str, style: int):
         self.url = url
@@ -200,21 +200,20 @@ class Images(Base):
 
 
 class IndexerData(Base):
-    __tablename__ = 'indexer_data'
+    __tablename__ = "indexer_data"
     pk = Column(String, primary_key=True)
     site = Column(String)
     data = Column(JSON)
 
-    movie_pk = Column(Integer, ForeignKey('movie.pk'))
+    movie_pk = Column(Integer, ForeignKey("movie.pk"))
 
-    genres: list = relationship('Genres', backref='indexer_data')
+    genres: list = relationship("Genres", backref="indexer_data")
 
     def __repr__(self):
         return f"[{self.__tablename__.replace('_', ' ').title()}] {self.site}: {self.pk} - {self.movie.name}"
 
 
 class Genres(Base):
-    __tablename__ = 'genres'
+    __tablename__ = "genres"
     pk = Column(String, primary_key=True)
-    indexer_data_pk = Column(Integer, ForeignKey('indexer_data.pk'))
-
+    indexer_data_pk = Column(Integer, ForeignKey("indexer_data.pk"))

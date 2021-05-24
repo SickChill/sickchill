@@ -3,7 +3,7 @@ from .home import Home
 from .routes import Route
 
 
-@Route('/IRC(/?.*)', name='irc')
+@Route("/IRC(/?.*)", name="irc")
 class HomeIRC(Home):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

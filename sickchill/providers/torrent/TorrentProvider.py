@@ -21,17 +21,17 @@ class TorrentProvider(GenericProvider):
     def find_propers(self, search_date=None):
         results = []
         db = DBConnection()
-        placeholders = ', '.join(['?'] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST))
+        placeholders = ", ".join(["?"] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST))
         sql_results = db.select(
-            f'SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) WHERE e.airdate >= ? AND e.status IN ({placeholders}) and e.is_proper = 0',
-            [search_date.toordinal(), *Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST]
+            f"SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) WHERE e.airdate >= ? AND e.status IN ({placeholders}) and e.is_proper = 0",
+            [search_date.toordinal(), *Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST],
         )
 
         for result in sql_results or []:
-            show = Show.find(settings.showList, int(result['showid']))
+            show = Show.find(settings.showList, int(result["showid"]))
 
             if show:
-                episode = show.getEpisode(result['season'], result['episode'])
+                episode = show.getEpisode(result["season"], result["episode"])
 
                 for term in self.proper_strings:
                     search_strings = self.get_episode_search_strings(episode, add_string=term)
@@ -51,16 +51,16 @@ class TorrentProvider(GenericProvider):
     @property
     def _custom_trackers(self):
         if not (settings.TRACKERS_LIST and self.public):
-            return ''
+            return ""
 
-        return '&tr=' + '&tr='.join({x.strip() for x in settings.TRACKERS_LIST.split(',') if x.strip()})
+        return "&tr=" + "&tr=".join({x.strip() for x in settings.TRACKERS_LIST.split(",") if x.strip()})
 
     def _get_result(self, episodes):
         return TorrentSearchResult(episodes)
 
     def _get_size(self, item):
         if isinstance(item, dict):
-            size = item.get('size', -1)
+            size = item.get("size", -1)
         elif isinstance(item, (list, tuple)) and len(item) > 2:
             size = item[2]
         else:
@@ -79,27 +79,27 @@ class TorrentProvider(GenericProvider):
 
     def _get_title_and_url(self, item):
         if isinstance(item, (dict, FeedParserDict)):
-            download_url = item.get('url', '')
-            title = item.get('title', '')
+            download_url = item.get("url", "")
+            title = item.get("title", "")
 
             if not download_url:
-                download_url = item.get('link', '')
+                download_url = item.get("link", "")
         elif isinstance(item, (list, tuple)) and len(item) > 1:
             download_url = item[1]
             title = item[0]
         else:
-            download_url = ''
-            title = ''
+            download_url = ""
+            title = ""
 
-        if title.endswith('DIAMOND'):
-            logger.info('Skipping DIAMOND release for mass fake releases.')
-            download_url = title = 'FAKERELEASE'
+        if title.endswith("DIAMOND"):
+            logger.info("Skipping DIAMOND release for mass fake releases.")
+            download_url = title = "FAKERELEASE"
 
         if download_url:
-            download_url = download_url.replace('&amp;', '&')
+            download_url = download_url.replace("&amp;", "&")
 
         if title:
-            title = title.replace(' ', '.')
+            title = title.replace(" ", ".")
 
         return title, download_url
 
@@ -107,8 +107,8 @@ class TorrentProvider(GenericProvider):
         try:
             bencodepy.bread(filename)
         except bencodepy.BencodeDecodeError as e:
-            logger.debug('Failed to validate torrent file: {0}'.format(str(e)))
-            logger.debug('Result is not a valid torrent file')
+            logger.debug("Failed to validate torrent file: {0}".format(str(e)))
+            logger.debug("Result is not a valid torrent file")
             return False
         return True
 

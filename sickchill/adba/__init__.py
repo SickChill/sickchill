@@ -3,11 +3,43 @@ from time import localtime, sleep, strftime, time
 from types import FunctionType, MethodType
 
 from .aniDBAbstracter import Anime, Episode
-from .aniDBcommands import (AnimeCommand, AuthCommand, BuddyAcceptCommand, BuddyAddCommand, BuddyDelCommand, BuddyDenyCommand, BuddyListCommand,
-                            BuddyStateCommand, EncryptCommand, EpisodeCommand, FileCommand, GroupCommand, GroupstatusCommand, LogoutCommand, MyListAddCommand,
-                            MyListCommand, MyListDelCommand, MyListStatsCommand, Notification, NotifyAckCommand, NotifyAddCommand, NotifyCommand,
-                            NotifyDelCommand, NotifyGetCommand, NotifyListCommand, PingCommand, ProducerCommand, PushAckCommand, PushCommand,
-                            RandomAnimeCommand, SendMsgCommand, UptimeCommand, UserCommand, VersionCommand, VoteCommand)
+from .aniDBcommands import (
+    AnimeCommand,
+    AuthCommand,
+    BuddyAcceptCommand,
+    BuddyAddCommand,
+    BuddyDelCommand,
+    BuddyDenyCommand,
+    BuddyListCommand,
+    BuddyStateCommand,
+    EncryptCommand,
+    EpisodeCommand,
+    FileCommand,
+    GroupCommand,
+    GroupstatusCommand,
+    LogoutCommand,
+    MyListAddCommand,
+    MyListCommand,
+    MyListDelCommand,
+    MyListStatsCommand,
+    Notification,
+    NotifyAckCommand,
+    NotifyAddCommand,
+    NotifyCommand,
+    NotifyDelCommand,
+    NotifyGetCommand,
+    NotifyListCommand,
+    PingCommand,
+    ProducerCommand,
+    PushAckCommand,
+    PushCommand,
+    RandomAnimeCommand,
+    SendMsgCommand,
+    UptimeCommand,
+    UserCommand,
+    VersionCommand,
+    VoteCommand,
+)
 from .aniDBerrors import AniDBBannedError, AniDBCommandTimeoutError, AniDBError, AniDBIncorrectParameterError, AniDBInternalError
 from .aniDBlink import AniDBLink
 
@@ -15,8 +47,19 @@ version = 100
 
 
 class Connection(threading.Thread):
-    def __init__(self, client_name='adba', server='api.anidb.info', port=9000, myport=9876, user=None, password=None,
-                 session=None, log=False, log_private=False, keep_alive=False):
+    def __init__(
+        self,
+        client_name="adba",
+        server="api.anidb.info",
+        port=9000,
+        myport=9876,
+        user=None,
+        password=None,
+        session=None,
+        log=False,
+        log_private=False,
+        keep_alive=False,
+    ):
         super().__init__()
         # setting the log function
         self.log_private = log_private
@@ -69,7 +112,7 @@ class Connection(threading.Thread):
         self.link.stop()
 
     def handle_response(self, response):
-        if response.rescode in ('501', '506') and response.req.command != 'AUTH':
+        if response.rescode in ("501", "506") and response.req.command != "AUTH":
             self.log("seams like the last command got a not authed error back tring to reconnect now")
             if self._reauthenticate():
                 response.req.resp = None
@@ -87,7 +130,7 @@ class Connection(threading.Thread):
                 elif self.counter >= 5:
                     self.link.delay = 6  # long term "A Client MUST NOT send more than one packet every four seconds over an extended amount of time."
 
-            if command.command not in ('AUTH', 'PING', 'ENCRYPT'):
+            if command.command not in ("AUTH", "PING", "ENCRYPT"):
                 self.counterAge = time()
                 self.counter += 1
                 if self.keepAlive:
@@ -134,7 +177,7 @@ class Connection(threading.Thread):
         if self._username and self._password:
             self.log("auto re authenticating !")
             resp = self.auth(self._username, self._password)
-            if resp.rescode not in ['500']:
+            if resp.rescode not in ["500"]:
                 return True
         else:
             return False
@@ -190,8 +233,7 @@ class Connection(threading.Thread):
                     self.log("not starting thread seams like it is already running. this must be a _reAuthenticate")
 
         self.lastAuth = time()
-        return self.handle(AuthCommand(username, password, 3, self.client_name, self.client_version, nat, 1, 'utf8', mtu),
-                           callback)
+        return self.handle(AuthCommand(username, password, 3, self.client_name, self.client_version, nat, 1, "utf8", mtu), callback)
 
     def logout(self, disconnect=False, callback=None):
         """
@@ -443,8 +485,7 @@ class Connection(threading.Thread):
         """
         return self.handle(EpisodeCommand(eid, aid, aname, epno), callback)
 
-    def file(self, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None, fmask=-1,
-             amask=0, callback=None):
+    def file(self, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None, fmask=-1, amask=0, callback=None):
         """
         Get information about a file
 
@@ -583,8 +624,7 @@ class Connection(threading.Thread):
 
         return self.handle(ProducerCommand(pid, pname), callback)
 
-    def mylist(self, lid=None, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None,
-               callback=None):
+    def mylist(self, lid=None, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None, callback=None):
         """
         Get information about your mylist
 
@@ -608,8 +648,25 @@ class Connection(threading.Thread):
         """
         return self.handle(MyListCommand(lid, fid, size, ed2k, aid, aname, gid, gname, epno), callback)
 
-    def mylistadd(self, lid=None, fid=None, size=None, ed2k=None, aid=None, aname=None, gid=None, gname=None, epno=None,
-                  edit=None, state=None, viewed=None, source=None, storage=None, other=None, callback=None):
+    def mylistadd(
+        self,
+        lid=None,
+        fid=None,
+        size=None,
+        ed2k=None,
+        aid=None,
+        aname=None,
+        gid=None,
+        gname=None,
+        epno=None,
+        edit=None,
+        state=None,
+        viewed=None,
+        source=None,
+        storage=None,
+        other=None,
+        callback=None,
+    ):
         """
         Add/Edit information to/in your mylist
 
@@ -651,9 +708,7 @@ class Connection(threading.Thread):
         -x    target all episodes upto x
 
         """
-        return self.handle(
-            MyListAddCommand(lid, fid, size, ed2k, aid, aname, gid, gname, epno, edit, state, viewed, source, storage,
-                             other), callback)
+        return self.handle(MyListAddCommand(lid, fid, size, ed2k, aid, aname, gid, gname, epno, edit, state, viewed, source, storage, other), callback)
 
     def mylistdel(self, lid=None, fid=None, aid=None, aname=None, gid=None, gname=None, epno=None, callback=None):
         """
@@ -777,7 +832,8 @@ class Connection(threading.Thread):
         """
         raise AniDBError(
             "pylibanidb sets the encoding to utf8 as default and it's stupid to use any other encoding. you WILL lose some data if you use other "
-            "encodings, and now you've been warned. you will need to modify the code yourself if you want to do something as stupid as changing the encoding")
+            "encodings, and now you've been warned. you will need to modify the code yourself if you want to do something as stupid as changing the encoding"
+        )
         # return self.handle(EncodingCommand(name), callback)
 
     def sendmsg(self, to, title, body, callback=None):

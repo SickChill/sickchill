@@ -72,8 +72,7 @@ class Notifier(object):
         filename = "/" + absPath.replace(root, "")
 
         # Finally create the url and make request
-        requestUrl = "http://" + host + "/TiVoConnect?" + urlencode(
-            {'Command': 'Push', 'Container': container, 'File': filename, 'tsn': tsn})
+        requestUrl = "http://" + host + "/TiVoConnect?" + urlencode({"Command": "Push", "Container": container, "File": filename, "tsn": tsn})
 
         logger.debug("pyTivo notification: Requesting " + requestUrl)
 
@@ -82,10 +81,10 @@ class Notifier(object):
         try:
             urlopen(request)
         except requests.exceptions.RequestException as e:
-            if hasattr(e, 'reason'):
+            if hasattr(e, "reason"):
                 logger.exception("pyTivo notification: Error, failed to reach a server - " + e.reason)
                 return False
-            elif hasattr(e, 'code'):
+            elif hasattr(e, "code"):
                 logger.exception("pyTivo notification: Error, the server couldn't fulfill the request - " + e.code)
             return False
         except Exception as e:

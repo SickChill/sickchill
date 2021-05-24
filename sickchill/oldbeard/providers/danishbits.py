@@ -7,7 +7,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         # Provider Init
@@ -23,10 +22,10 @@ class Provider(TorrentProvider):
         self.freeleech = True
 
         # URLs
-        self.url = 'https://danishbits.org/'
+        self.url = "https://danishbits.org/"
         self.urls = {
-            'login': self.url + 'login.php',
-            'search': self.url + 'couchpotato.php',
+            "login": self.url + "login.php",
+            "search": self.url + "couchpotato.php",
         }
 
         # Proper Strings
@@ -41,14 +40,14 @@ class Provider(TorrentProvider):
 
         # Search Params
         search_params = {
-            'user': self.username,
-            'passkey': self.passkey,
-            'search': '.',  # Dummy query for RSS search, needs the search param sent.
-            'latest': 'true'
+            "user": self.username,
+            "passkey": self.passkey,
+            "search": ".",  # Dummy query for RSS search, needs the search param sent.
+            "latest": "true",
         }
 
         # Units
-        units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+        units = ["B", "KB", "MB", "GB", "TB", "PB"]
 
         for mode in search_strings:
             items = []
@@ -56,46 +55,47 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
 
-                if mode != 'RSS':
-                    logger.debug("Search string: {0}".format
-                                 (search_string))
+                if mode != "RSS":
+                    logger.debug("Search string: {0}".format(search_string))
 
-                    search_params['latest'] = 'false'
-                    search_params['search'] = search_string
+                    search_params["latest"] = "false"
+                    search_params["search"] = search_string
 
-                data = self.get_url(self.urls['search'], params=search_params, returns='text')
+                data = self.get_url(self.urls["search"], params=search_params, returns="text")
                 if not data:
                     logger.debug("No data returned from provider")
                     continue
 
                 result = json.loads(data)
-                if 'results' in result:
-                    for torrent in result['results']:
-                        title = torrent['release_name']
-                        download_url = torrent['download_url']
-                        seeders = torrent['seeders']
-                        leechers = torrent['leechers']
+                if "results" in result:
+                    for torrent in result["results"]:
+                        title = torrent["release_name"]
+                        download_url = torrent["download_url"]
+                        seeders = torrent["seeders"]
+                        leechers = torrent["leechers"]
                         if seeders < self.minseed or leechers < self.minleech:
-                            logger.info("Discarded {0} because with {1}/{2} seeders/leechers does not meet the requirement of {3}/{4} seeders/leechers".format(title, seeders, leechers, self.minseed, self.minleech))
+                            logger.info(
+                                "Discarded {0} because with {1}/{2} seeders/leechers does not meet the requirement of {3}/{4} seeders/leechers".format(
+                                    title, seeders, leechers, self.minseed, self.minleech
+                                )
+                            )
                             continue
 
-                        freeleech = torrent['freeleech']
+                        freeleech = torrent["freeleech"]
                         if self.freeleech and not freeleech:
                             continue
 
-                        size = torrent['size']
+                        size = torrent["size"]
                         size = convert_size(size, units=units) or -1
-                        item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders,
-                                'leechers': leechers, 'hash': ''}
-                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                     (title, seeders, leechers))
+                        item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
+                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
                         items.append(item)
 
-                if 'error' in result:
-                    logger.warning(result['error'])
+                if "error" in result:
+                    logger.warning(result["error"])
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
 
         return results

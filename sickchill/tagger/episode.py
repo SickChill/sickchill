@@ -15,22 +15,22 @@ class EpisodeTags(object):
     def __init__(self, name):
         self.name = name
         self.rex = {
-            'res': tags.resolution,
-            'bluray': tags.bluray,
-            'web': tags.web,
-            'itunes': tags.itunes,
-            'dvd': tags.dvd,
-            'sat': tags.sat,
-            'tv': tags.tv,
-            'avc': tags.avc,
-            'mpeg': tags.mpeg,
-            'xvid': tags.xvid,
-            'netflix': tags.netflix,
-            'amazon': tags.amazon,
+            "res": tags.resolution,
+            "bluray": tags.bluray,
+            "web": tags.web,
+            "itunes": tags.itunes,
+            "dvd": tags.dvd,
+            "sat": tags.sat,
+            "tv": tags.tv,
+            "avc": tags.avc,
+            "mpeg": tags.mpeg,
+            "xvid": tags.xvid,
+            "netflix": tags.netflix,
+            "amazon": tags.amazon,
         }
 
     def _get_match_obj(self, attr, regex=None, flags=0):
-        match_obj = '{0}_match'.format(attr)
+        match_obj = "{0}_match".format(attr)
         try:
             return getattr(self, match_obj)
         except (KeyError, AttributeError):
@@ -52,9 +52,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'res'
+        attr = "res"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group().lower()
+        return "" if not match else match.group().lower()
 
     @property
     def vres(self):
@@ -63,9 +63,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'res'
+        attr = "res"
         match = self._get_match_obj(attr)
-        return None if not match else try_int(match.group('vres'))
+        return None if not match else try_int(match.group("vres"))
 
     @property
     def scan(self):
@@ -76,9 +76,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'res'
+        attr = "res"
         match = self._get_match_obj(attr)
-        return match.group('scan').lower() if match and match.group('scan') else ''
+        return match.group("scan").lower() if match and match.group("scan") else ""
 
     # SOURCES
     @property
@@ -88,9 +88,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'bluray'
+        attr = "bluray"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     @property
     def hddvd(self):
@@ -99,9 +99,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'dvd'
+        attr = "dvd"
         match = self._get_match_obj(attr)
-        return None if not match else match.group('hd')
+        return None if not match else match.group("hd")
 
     @property
     def itunes(self):
@@ -110,9 +110,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'itunes'
+        attr = "itunes"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     @property
     def web(self):
@@ -121,14 +121,14 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        if 'dlmux' in self.name.lower():
-            return 'dlmux'
+        if "dlmux" in self.name.lower():
+            return "dlmux"
         if self.netflix:
             return self.netflix
         else:
-            attr = 'web'
+            attr = "web"
             match = self._get_match_obj(attr)
-            return '' if not match else match.group('type') or 'dl'
+            return "" if not match else match.group("type") or "dl"
 
     @property
     def sat(self):
@@ -137,7 +137,7 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'sat'
+        attr = "sat"
         match = self._get_match_obj(attr)
         return None if not match else match.group()
 
@@ -148,9 +148,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'dvd'
+        attr = "dvd"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group('rip')
+        return "" if not match else match.group("rip")
 
     @property
     def dvd(self):
@@ -159,15 +159,15 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'dvd'
+        attr = "dvd"
         match = self._get_match_obj(attr)
-        return '' if not (match or self.hddvd) else match.group()
+        return "" if not (match or self.hddvd) else match.group()
 
     @property
     def tv(self):
-        attr = 'tv'
+        attr = "tv"
         match = self._get_match_obj(attr)
-        return '' if not match else (match.group(1) or match.group(2)).lower()
+        return "" if not match else (match.group(1) or match.group(2)).lower()
 
     # CODECS
     @property
@@ -178,8 +178,8 @@ class EpisodeTags(object):
         :returns: an empty string if not found
         """
         if not self.avc:
-            return ''
-        return '' if not (self.avc[-1] == '5') else self.avc
+            return ""
+        return "" if not (self.avc[-1] == "5") else self.avc
 
     @property
     def avc(self):
@@ -188,9 +188,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'avc'
+        attr = "avc"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     @property
     def avc_free(self):
@@ -200,7 +200,7 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        return '' if not self.avc.lower().startswith('x') else self.avc
+        return "" if not self.avc.lower().startswith("x") else self.avc
 
     @property
     def avc_non_free(self):
@@ -210,7 +210,7 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        return '' if not self.avc.lower().startswith('h') else self.avc
+        return "" if not self.avc.lower().startswith("h") else self.avc
 
     @property
     def mpeg(self):
@@ -219,9 +219,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'mpeg'
+        attr = "mpeg"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     @property
     def xvid(self):
@@ -230,9 +230,9 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'xvid'
+        attr = "xvid"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     # MISCELLANEOUS
     @property
@@ -246,12 +246,12 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        attr = 'hrws'
+        attr = "hrws"
         match = None
-        if self.avc and self.tv == 'pd':
-            regex = re.compile(r'(hr.ws.pdtv).{0}'.format(self.avc), re.I)
+        if self.avc and self.tv == "pd":
+            regex = re.compile(r"(hr.ws.pdtv).{0}".format(self.avc), re.I)
             match = self._get_match_obj(attr, regex)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     @property
     def raw(self):
@@ -260,15 +260,15 @@ class EpisodeTags(object):
 
         :return: an empty string if not found
         """
-        attr = 'raw'
+        attr = "raw"
         match = None
-        if self.res and self.tv == 'hd':
-            regex = re.compile(r'({0}.hdtv)'.format(self.res), re.I)
+        if self.res and self.tv == "hd":
+            regex = re.compile(r"({0}.hdtv)".format(self.res), re.I)
             match = self._get_match_obj(attr, regex)
         if not match:
-            regex = re.compile(r'(RawHD)', re.I)
+            regex = re.compile(r"(RawHD)", re.I)
             match = self._get_match_obj(attr, regex)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     @property
     def netflix(self):
@@ -276,9 +276,9 @@ class EpisodeTags(object):
         Netflix tage found in name
         :return: an empty string if not found
         """
-        attr = 'netflix'
+        attr = "netflix"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     @property
     def amazon(self):
@@ -286,13 +286,13 @@ class EpisodeTags(object):
         Amazon tage found in name
         :return: an empty string if not found
         """
-        attr = 'amazon'
+        attr = "amazon"
         match = self._get_match_obj(attr)
-        return '' if not match else match.group()
+        return "" if not match else match.group()
 
     def __str__(self):
         # TODO: Add other class properties into this output
         out = list()
         out.append(self.name)
-        out.extend('{}: {}'.format(attr, getattr(self, attr)) for attr in self.rex if getattr(self, attr))
-        return '\n'.join(out)
+        out.extend("{}: {}".format(attr, getattr(self, attr)) for attr in self.rex if getattr(self, attr))
+        return "\n".join(out)

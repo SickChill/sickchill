@@ -14,7 +14,7 @@ class AniDBabstractObject(object):
         self.aniDB = None
         self.rawData = None
         self.log = self._fake_log
-        
+
         self.set_connection(aniDB)
         if load:
             self.load_data()
@@ -153,23 +153,22 @@ class Anime(AniDBabstractObject):
         self.rawData = self.aniDB.groupstatus(aid=self.aid)
         for line in self.rawData.datalines:
             self.release_groups.append({"name": line["name"], "rating": line["rating"], "range": line["episode_range"]})
-        return sorted(self.release_groups, key=lambda x: x['name'].lower())
+        return sorted(self.release_groups, key=lambda x: x["name"].lower())
 
     # TODO: refactor and use the new functions in anidbFileinfo
     def _get_aid_from_xml(self, name):
         if not self.allAnimeXML:
             self.allAnimeXML = read_anidb_xml()
 
-        regex = re.compile(
-            '( \(\d{4}\))|[%s]' % re.escape(string.punctuation))  # remove any punctuation and e.g. ' (2011)'
+        regex = re.compile("( \(\d{4}\))|[%s]" % re.escape(string.punctuation))  # remove any punctuation and e.g. ' (2011)'
         # regex = re.compile('[%s]'  % re.escape(string.punctuation)) # remove any punctuation and e.g. ' (2011)'
-        name = regex.sub('', name.lower())
+        name = regex.sub("", name.lower())
         lastAid = 0
         for element in self.allAnimeXML.iter():
             if element.get("aid", False):
                 lastAid = int(element.get("aid"))
             if element.text:
-                testname = regex.sub('', element.text.lower())
+                testname = regex.sub("", element.text.lower())
 
                 if testname == name:
                     return lastAid
@@ -205,8 +204,7 @@ class Anime(AniDBabstractObject):
 
 
 class Episode(AniDBabstractObject):
-    def __init__(self, aniDB, number=None, epid=None, filePath=None, fid=None, epno=None, paramsA=None, paramsF=None,
-                 load=False, calculate=False):
+    def __init__(self, aniDB, number=None, epid=None, filePath=None, fid=None, epno=None, paramsA=None, paramsF=None, load=False, calculate=False):
         self.mapper = AniDBMapper()
         self.epid = epid
         self.filePath = filePath
@@ -236,8 +234,18 @@ class Episode(AniDBabstractObject):
         if self.filePath and not (self.ed2k or self.size):
             (self.ed2k, self.size) = self._calculate_file_stuff(self.filePath)
 
-        self.rawData = self.aniDB.file(fid=self.fid, size=self.size, ed2k=self.ed2k, aid=self.aid, aname=None, gid=None,
-                                       gname=None, epno=self.epno, fmask=self.bitCodeF, amask=self.bitCodeA)
+        self.rawData = self.aniDB.file(
+            fid=self.fid,
+            size=self.size,
+            ed2k=self.ed2k,
+            aid=self.aid,
+            aname=None,
+            gid=None,
+            gname=None,
+            epno=self.epno,
+            fmask=self.bitCodeF,
+            amask=self.bitCodeA,
+        )
         self._fill(self.rawData.datalines[0])
         self._build_names()
         self.laoded = True

@@ -11,7 +11,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         # Provider Init
@@ -42,19 +41,14 @@ class Provider(TorrentProvider):
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        login_params = {
-            "username": self.username,
-            "password": self.password
-        }
+        login_params = {"username": self.username, "password": self.password}
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
             logger.warning("Unable to connect to provider")
             return False
 
-        if re.search("Invalid Username/password", response) \
-                or re.search("<title> FileList :: Login </title>", response) \
-        or re.search("Login esuat!", response):
+        if re.search("Invalid Username/password", response) or re.search("<title> FileList :: Login </title>", response) or re.search("Login esuat!", response):
             logger.warning("Invalid username or password. Check your settings")
             return False
 
@@ -66,10 +60,7 @@ class Provider(TorrentProvider):
             return results
 
         # Search Params
-        search_params = {
-            "search": "",
-            "cat": 0
-        }
+        search_params = {"search": "", "cat": 0}
 
         # Units
         units = ["B", "KB", "MB", "GB", "TB", "PB"]
@@ -88,8 +79,7 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug("Search string: {search}".format
-                                 (search=search_string))
+                    logger.debug("Search string: {search}".format(search=search_string))
 
                 search_params["search"] = search_string
                 search_url = self.urls["search"]
@@ -118,7 +108,7 @@ class Provider(TorrentProvider):
                             lbl = column.find("img")
                             if lbl:
                                 if lbl.has_attr("alt"):
-                                    lbl = lbl['alt']
+                                    lbl = lbl["alt"]
                                     labels.append(str(lbl))
                             else:
                                 if index == 3:
@@ -145,25 +135,25 @@ class Provider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.debug("Discarding torrent because it doesn't meet the"
-                                                 " minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                                 (title, seeders, leechers))
+                                    logger.debug(
+                                        "Discarding torrent because it doesn't meet the"
+                                        " minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                    )
                                 continue
 
                             torrent_size = cells[labels.index("Size")].find("span").get_text(strip=True)
-                            size = convert_size(torrent_size, units=units, sep='') or -1
+                            size = convert_size(torrent_size, units=units, sep="") or -1
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': None}
+                            item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": None}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                             (title, seeders, leechers))
+                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
                         except Exception:
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
 
         return results

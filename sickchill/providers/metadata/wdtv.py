@@ -24,17 +24,26 @@ class WDTVMetadata(generic.GenericMetadata):
     """
 
     def __init__(
-        self, show_metadata=False, episode_metadata=False, fanart=False, poster=False, banner=False, episode_thumbnails=False,
-        season_posters=False, season_banners=False, season_all_poster=False, season_all_banner=False
+        self,
+        show_metadata=False,
+        episode_metadata=False,
+        fanart=False,
+        poster=False,
+        banner=False,
+        episode_thumbnails=False,
+        season_posters=False,
+        season_banners=False,
+        season_all_poster=False,
+        season_all_banner=False,
     ):
 
         super().__init__(
             show_metadata, episode_metadata, fanart, poster, banner, episode_thumbnails, season_posters, season_banners, season_all_poster, season_all_banner
         )
 
-        self.name = 'WDTV'
+        self.name = "WDTV"
 
-        self._ep_nfo_extension = 'xml'
+        self._ep_nfo_extension = "xml"
 
         self.poster_name = "folder.jpg"
 
@@ -88,7 +97,7 @@ class WDTVMetadata(generic.GenericMetadata):
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
         if os.path.isfile(ep_obj.location):
-            tbn_filename = replace_extension(ep_obj.location, 'metathumb')
+            tbn_filename = replace_extension(ep_obj.location, "metathumb")
         else:
             return None
 
@@ -102,10 +111,9 @@ class WDTVMetadata(generic.GenericMetadata):
         If no season folder exists, None is returned
         """
 
-        dir_list = [x for x in os.listdir(show_obj.location) if
-                    os.path.isdir(os.path.join(show_obj.location, x))]
+        dir_list = [x for x in os.listdir(show_obj.location) if os.path.isdir(os.path.join(show_obj.location, x))]
 
-        season_dir_regex = r'^Season\s+(\d+)$'
+        season_dir_regex = r"^Season\s+(\d+)$"
 
         season_dir = None
 
@@ -130,7 +138,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
         logger.debug("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season))
 
-        return os.path.join(show_obj.location, season_dir, 'folder.jpg')
+        return os.path.join(show_obj.location, season_dir, "folder.jpg")
 
     def _ep_data(self, ep_obj):
         """
@@ -150,15 +158,16 @@ class WDTVMetadata(generic.GenericMetadata):
         for curEpToWrite in eps_to_write:
             myEp = curEpToWrite.idxr.episode(curEpToWrite)
             if not myEp:
-                logger.info("Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
-                            "has it been removed? Should I delete from db?".format(
-                                curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name))
+                logger.info(
+                    "Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
+                    "has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name)
+                )
                 return None
 
-            if ep_obj.airdate != datetime.date.min and not myEp.get('firstAired'):
+            if ep_obj.airdate != datetime.date.min and not myEp.get("firstAired"):
                 myEp["firstAired"] = str(ep_obj.airdate)
 
-            if not (myEp.get('episodeName') and myEp.get('firstAired')):
+            if not (myEp.get("episodeName") and myEp.get("firstAired")):
                 return None
 
             if len(eps_to_write) > 1:
@@ -166,14 +175,14 @@ class WDTVMetadata(generic.GenericMetadata):
             else:
                 episode = rootNode
 
-            if myEp.get('id'):
+            if myEp.get("id"):
                 episodeID = ElementTree.SubElement(episode, "id")
-                episodeID.text = str(myEp['id'])
+                episodeID.text = str(myEp["id"])
 
             title = ElementTree.SubElement(episode, "title")
             title.text = ep_obj.pretty_name()
 
-            if getattr(myShow, 'seriesName', None):
+            if getattr(myShow, "seriesName", None):
                 seriesName = ElementTree.SubElement(episode, "series_name")
                 seriesName.text = myShow.seriesName
 
@@ -192,7 +201,7 @@ class WDTVMetadata(generic.GenericMetadata):
             if curEpToWrite.airdate != datetime.date.min:
                 firstAired.text = str(curEpToWrite.airdate)
 
-            if getattr(myShow, 'firstAired', None):
+            if getattr(myShow, "firstAired", None):
                 try:
                     year_text = str(datetime.datetime.strptime(myShow.firstAired, dateFormat).year)
                     if year_text:
@@ -201,32 +210,32 @@ class WDTVMetadata(generic.GenericMetadata):
                 except Exception:
                     pass
 
-            if curEpToWrite.season != 0 and getattr(myShow, 'runtime', None):
+            if curEpToWrite.season != 0 and getattr(myShow, "runtime", None):
                 runtime = ElementTree.SubElement(episode, "runtime")
                 runtime.text = myShow.runtime
 
-            if getattr(myShow, 'genre', None):
+            if getattr(myShow, "genre", None):
                 genre = ElementTree.SubElement(episode, "genre")
                 genre.text = " / ".join(myShow.genre)
 
-            if myEp.get('directors') and isinstance(myEp['directors'], list):
-                for director in myEp['directors']:
+            if myEp.get("directors") and isinstance(myEp["directors"], list):
+                for director in myEp["directors"]:
                     director_element = ElementTree.SubElement(episode, "director")
                     director_element.text = director
 
             data = ep_obj.idxr.actors(myShow)
             for actor in data:
-                if not ('name' in actor and actor['name'].strip()):
+                if not ("name" in actor and actor["name"].strip()):
                     continue
 
                 cur_actor = ElementTree.SubElement(episode, "actor")
 
                 cur_actor_name = ElementTree.SubElement(cur_actor, "name")
-                cur_actor_name.text = actor['name']
+                cur_actor_name.text = actor["name"]
 
-                if 'role' in actor and actor['role'].strip():
+                if "role" in actor and actor["role"].strip():
                     cur_actor_role = ElementTree.SubElement(cur_actor, "role")
-                    cur_actor_role.text = actor['role'].strip()
+                    cur_actor_role.text = actor["role"].strip()
 
             if curEpToWrite.description:
                 overview = ElementTree.SubElement(episode, "overview")

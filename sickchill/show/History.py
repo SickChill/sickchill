@@ -6,7 +6,7 @@ from sickchill.oldbeard.db import DBConnection
 
 
 class History(object):
-    date_format = '%Y%m%d%H%M%S'
+    date_format = "%Y%m%d%H%M%S"
 
     def __init__(self):
         self.db = DBConnection()
@@ -16,28 +16,21 @@ class History(object):
         Removes the selected history
         :param toRemove: Contains the properties of the log entries to remove
         """
-        query = ''
+        query = ""
 
         for item in toRemove:
-            query = query + ' OR ' if query != '' else ''
-            query = query + '(date IN ({0}) AND showid = {1} ' \
-                            'AND season = {2} AND episode = {3})' \
-                            .format(','.join(item['dates']), item['show_id'], \
-                                    item['season'], item['episode'])
+            query = query + " OR " if query != "" else ""
+            query = query + "(date IN ({0}) AND showid = {1} " "AND season = {2} AND episode = {3})".format(
+                ",".join(item["dates"]), item["show_id"], item["season"], item["episode"]
+            )
 
-        self.db.action(
-            'DELETE FROM history WHERE ' + query
-        )
+        self.db.action("DELETE FROM history WHERE " + query)
 
     def clear(self):
         """
         Clear all the history
         """
-        self.db.action(
-            'DELETE '
-            'FROM history '
-            'WHERE 1 = 1'
-        )
+        self.db.action("DELETE " "FROM history " "WHERE 1 = 1")
 
     def get(self, limit=100, action=None):
         """
@@ -50,11 +43,13 @@ class History(object):
         actions = History._get_actions(action)
         limit = History._get_limit(limit)
 
-        common_sql = 'SELECT action, date, episode, provider, h.quality, resource, season, show_name, showid ' \
-                     'FROM history h, tv_shows s ' \
-                     'WHERE h.showid = s.indexer_id '
-        filter_sql = 'AND action in (' + ','.join(['?'] * len(actions)) + ') '
-        order_sql = 'ORDER BY date DESC '
+        common_sql = (
+            "SELECT action, date, episode, provider, h.quality, resource, season, show_name, showid "
+            "FROM history h, tv_shows s "
+            "WHERE h.showid = s.indexer_id "
+        )
+        filter_sql = "AND action in (" + ",".join(["?"] * len(actions)) + ") "
+        order_sql = "ORDER BY date DESC "
 
         if limit == 0:
             if actions:
@@ -63,23 +58,25 @@ class History(object):
                 results = self.db.select(common_sql + order_sql)
         else:
             if actions:
-                results = self.db.select(common_sql + filter_sql + order_sql + 'LIMIT ?', actions + [limit])
+                results = self.db.select(common_sql + filter_sql + order_sql + "LIMIT ?", actions + [limit])
             else:
-                results = self.db.select(common_sql + order_sql + 'LIMIT ?', [limit])
+                results = self.db.select(common_sql + order_sql + "LIMIT ?", [limit])
 
         data = []
         for result in results:
-            data.append({
-                'action': result['action'],
-                'date': result['date'],
-                'episode': result['episode'],
-                'provider': result['provider'],
-                'quality': result['quality'],
-                'resource': result['resource'],
-                'season': result['season'],
-                'show_id': result['showid'],
-                'show_name': result['show_name']
-            })
+            data.append(
+                {
+                    "action": result["action"],
+                    "date": result["date"],
+                    "episode": result["episode"],
+                    "provider": result["provider"],
+                    "quality": result["quality"],
+                    "resource": result["resource"],
+                    "season": result["season"],
+                    "show_id": result["showid"],
+                    "show_name": result["show_name"],
+                }
+            )
 
         return data
 
@@ -89,21 +86,16 @@ class History(object):
         """
 
         # self.db.action("DELETE FROM history WHERE date < datetime('now', '-30 days')")
-        self.db.action(
-            'DELETE '
-            'FROM history '
-            'WHERE date < ?',
-            [(datetime.today() - timedelta(days=30)).strftime(History.date_format)]
-        )
+        self.db.action("DELETE " "FROM history " "WHERE date < ?", [(datetime.today() - timedelta(days=30)).strftime(History.date_format)])
 
     @staticmethod
     def _get_actions(action):
-        action = action.lower() if isinstance(action, str) else ''
+        action = action.lower() if isinstance(action, str) else ""
 
-        if action == 'downloaded':
+        if action == "downloaded":
             return Quality.DOWNLOADED
 
-        if action == 'snatched':
+        if action == "snatched":
             return Quality.SNATCHED
 
         return []

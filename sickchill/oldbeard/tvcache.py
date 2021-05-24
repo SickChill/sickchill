@@ -17,7 +17,7 @@ provider_cache_db = {}
 
 class CacheDBConnection(db.DBConnection):
     def __init__(self):
-        super().__init__('cache.db')
+        super().__init__("cache.db")
         db.upgrade_database(self, cache.InitialSchema)
         self.action("DELETE from results WHERE added < datetime('now','-30 days')")
 
@@ -27,15 +27,15 @@ class TVCache(object):
         self.provider = provider
         self.provider_id = self.provider.get_id()
         self.provider_db = None
-        self.min_time = kwargs.pop('min_time', 10)
-        self.search_params = kwargs.pop('search_params', dict(RSS=['']))
+        self.min_time = kwargs.pop("min_time", 10)
+        self.search_params = kwargs.pop("search_params", dict(RSS=[""]))
 
     def _get_db(self):
         # init provider database if not done already
-        if not provider_cache_db.get('instance'):
-            provider_cache_db['instance'] = CacheDBConnection()
+        if not provider_cache_db.get("instance"):
+            provider_cache_db["instance"] = CacheDBConnection()
 
-        return provider_cache_db.get('instance')
+        return provider_cache_db.get("instance")
 
     def _clear_cache(self):
         if self.should_clear_cache():
@@ -52,7 +52,7 @@ class TVCache(object):
         return self.provider._get_title_and_url(item)
 
     def _get_rss_data(self):
-        return {'entries': self.provider.search(self.search_params)} if self.search_params else None
+        return {"entries": self.provider.search(self.search_params)} if self.search_params else None
 
     def _check_auth(self, data):
         return True
@@ -72,14 +72,14 @@ class TVCache(object):
                 self.set_last_update()
 
                 cl = []
-                for item in data['entries'] or []:
+                for item in data["entries"] or []:
                     ci = self._parse_item(item)
                     if ci:
                         cl.append(ci)
 
                 if cl:
                     cache_db_con = self._get_db()
-                    cache_db_con.mass_upsert('results', cl)
+                    cache_db_con.mass_upsert("results", cl)
 
         except AuthException as e:
             logger.warning("Authentication error: " + str(e))
@@ -90,15 +90,15 @@ class TVCache(object):
     def get_rss_feed(self, url, params=None):
         if self.provider.login():
             return getFeed(url, params=params, request_hook=self.provider.get_url)
-        return {'entries': []}
+        return {"entries": []}
 
     @staticmethod
     def _translate_title(title):
-        return '' + title.replace(' ', '.')
+        return "" + title.replace(" ", ".")
 
     @staticmethod
     def _translate_link_url(url):
-        return url.replace('&amp;', '&')
+        return url.replace("&amp;", "&")
 
     def _parse_item(self, item):
         title, url = self._get_title_and_url(item)
@@ -113,8 +113,7 @@ class TVCache(object):
             return self._add_cache_entry(title, url, size, seeders, leechers)
 
         else:
-            logger.debug(
-                "The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable")
+            logger.debug("The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable")
 
         return False
 
@@ -156,11 +155,7 @@ class TVCache(object):
             to_date = datetime.datetime.today()
 
         cache_db_con = self._get_db()
-        cache_db_con.upsert(
-            "lastUpdate",
-            {'time': int(time.mktime(to_date.timetuple()))},
-            {'provider': self.provider_id}
-        )
+        cache_db_con.upsert("lastUpdate", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
 
     def set_last_search(self, to_date=None):
         """
@@ -172,11 +167,7 @@ class TVCache(object):
             to_date = datetime.datetime.today()
 
         cache_db_con = self._get_db()
-        cache_db_con.upsert(
-            "lastSearch",
-            {'time': int(time.mktime(to_date.timetuple()))},
-            {'provider': self.provider_id}
-        )
+        cache_db_con.upsert("lastSearch", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
 
     def should_update(self):
         # if we've updated recently then skip the update
@@ -235,21 +226,21 @@ class TVCache(object):
             logger.debug(_("Added RSS item: [{}] to cache: {}").format(name, self.provider_id))
             return (
                 {
-                    'provider': self.provider_id,
-                    'name': name,
-                    'season': season,
-                    'episodes': episode_text,
-                    'indexerid': parse_result.show.indexerid,
-                    'url': url,
-                    'time': cur_timestamp,
-                    'quality': quality,
-                    'release_group': release_group,
-                    'version': version,
-                    'seeders': seeders,
-                    'leechers': leechers,
-                    'size': size
+                    "provider": self.provider_id,
+                    "name": name,
+                    "season": season,
+                    "episodes": episode_text,
+                    "indexerid": parse_result.show.indexerid,
+                    "url": url,
+                    "time": cur_timestamp,
+                    "quality": quality,
+                    "release_group": release_group,
+                    "version": version,
+                    "seeders": seeders,
+                    "leechers": leechers,
+                    "size": size,
                 },
-                {'url': url}
+                {"url": url},
             )
 
     def search_cache(self, episode, manual_search=False, down_cur_quality=False):
@@ -260,11 +251,11 @@ class TVCache(object):
         cache_db_con = self._get_db()
         sql = "SELECT * FROM results WHERE provider = ? AND name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
         # Add specific provider proper_strings also, like REAL, RERIP, etc.
-        if hasattr(self.provider, 'proper_strings'):
+        if hasattr(self.provider, "proper_strings"):
             if self.provider.proper_strings:
                 for item in self.provider.proper_strings:
-                    if '|' in item:
-                        items = item.split('|')
+                    if "|" in item:
+                        items = item.split("|")
                         for _item in items:
                             if _item.upper() not in sql:
                                 sql += " OR name LIKE '%.{}.%'".format(_item)
@@ -275,7 +266,7 @@ class TVCache(object):
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
 
         propers_results = cache_db_con.select(sql, [self.provider_id])
-        return [x for x in propers_results if x['indexerid']]
+        return [x for x in propers_results if x["indexerid"]]
 
     def find_needed_episodes(self, episode, manualSearch=False, downCurQuality=False):
         needed_eps = {}
@@ -287,13 +278,18 @@ class TVCache(object):
         elif not isinstance(episode, list):
             sql_results = cache_db_con.select(
                 "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ?",
-                [self.provider_id, episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"])
+                [self.provider_id, episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"],
+            )
         else:
             for ep_obj in episode:
-                cl.append([
-                    "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ? AND quality IN (" + ",".join(
-                        [str(x) for x in ep_obj.wantedQuality]) + ")",
-                    [self.provider_id, ep_obj.show.indexerid, ep_obj.season, "%|" + str(ep_obj.episode) + "|%"]])
+                cl.append(
+                    [
+                        "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ? AND quality IN ("
+                        + ",".join([str(x) for x in ep_obj.wantedQuality])
+                        + ")",
+                        [self.provider_id, ep_obj.show.indexerid, ep_obj.season, "%|" + str(ep_obj.episode) + "|%"],
+                    ]
+                )
 
             sql_results = cache_db_con.mass_action(cl, fetchall=True)
             sql_results = list(itertools.chain(*sql_results))

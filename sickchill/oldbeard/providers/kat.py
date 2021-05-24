@@ -14,7 +14,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         super().__init__("KickAssTorrents")
@@ -49,11 +48,7 @@ class Provider(TorrentProvider):
                 return results
 
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
-        search_params = {
-            "field": "seeders",
-            "sorder": "desc",
-            "category": ("tv", "anime")[anime]
-        }
+        search_params = {"field": "seeders", "sorder": "desc", "category": ("tv", "anime")[anime]}
 
         for mode in search_strings:
             items = []
@@ -102,7 +97,7 @@ class Provider(TorrentProvider):
                             torrent_hash = self.hash_from_magnet(download_url)
                             title = result.find(class_="torrentname").find(class_="cellMainLink").get_text(strip=True)
                             if title.endswith("..."):
-                                title = parsed_magnet['dn'][0]
+                                title = parsed_magnet["dn"][0]
 
                             if not (title and download_url):
                                 if mode != "RSS":
@@ -115,8 +110,11 @@ class Provider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                                 (title, seeders, leechers))
+                                    logger.debug(
+                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                            title, seeders, leechers
+                                        )
+                                    )
                                 continue
 
                             if self.confirmed and not result.find(class_="ka-green"):
@@ -127,7 +125,7 @@ class Provider(TorrentProvider):
                             torrent_size = result("td")[labels.index("size")].get_text(strip=True)
                             size = convert_size(torrent_size) or -1
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
+                            item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":
                                 logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
@@ -138,7 +136,7 @@ class Provider(TorrentProvider):
                             continue
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
 
             results += items
 
@@ -148,7 +146,7 @@ class Provider(TorrentProvider):
         data = self.get_url("https://kickass2.help")
         if data:
             with BS4Parser(data, "html5lib") as html:
-                mirrors = html(class_='domainLink')
+                mirrors = html(class_="domainLink")
                 if mirrors:
                     self.mirrors = []
                 for mirror in mirrors:
@@ -160,8 +158,10 @@ class Provider(TorrentProvider):
             self.url = self.mirrors[0]
             logger.info("Setting mirror to use to {url}".format(url=self.url))
         else:
-            logger.warning("Unable to get a working mirror for kickasstorrents, you might need to enable another provider and disable KAT until KAT starts working "
-                           "again.")
+            logger.warning(
+                "Unable to get a working mirror for kickasstorrents, you might need to enable another provider and disable KAT until KAT starts working "
+                "again."
+            )
 
         self.urls = {"search": urljoin(self.url, "/usearch/{q}/"), "rss": urljoin(self.url, "/tv/")}
 

@@ -1,6 +1,6 @@
 import test from 'ava';
 
-test.failing('getMeta', t => {
+base.failing('getMeta', t => {
     const meta = document.createElement('meta', {
         'data-var': 'scRoot',
         content: '/sickchill'

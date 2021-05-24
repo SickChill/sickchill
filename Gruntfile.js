@@ -51,7 +51,7 @@ module.exports = function(grunt) {
     *  Admin only tasks                     *
     ****************************************/
     grunt.registerTask('publish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
-        'exec:test', // Run tests
+        // 'exec:test', // Run tests
         'newrelease', // Pull and merge develop to master, create and push a new release
         'genchanges' // Update CHANGES.md
     ]);

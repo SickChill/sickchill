@@ -13,7 +13,7 @@ class SourceUpdateManager(UpdateManagerBase):
     def __init__(self):
 
         self.branch = settings.BRANCH
-        if settings.BRANCH == '':
+        if settings.BRANCH == "":
             self.branch = self._find_installed_branch()
 
         self._cur_commit_hash = settings.CUR_COMMIT_HASH
@@ -96,28 +96,33 @@ class SourceUpdateManager(UpdateManagerBase):
                 # when _cur_commit_hash doesn't match anything _num_commits_behind == 100
                 self._num_commits_behind += 1
 
-        logger.debug("cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}".format
-                     (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind))
+        logger.debug(
+            "cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}".format(self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind)
+        )
 
     def set_newest_text(self):
         if not self._cur_commit_hash:
             logger.debug("Unknown current version number, don't know if we should update or not")
 
             update_url = self.get_update_url()
-            newest_tag = 'unknown_current_version'
-            newest_text = _('Unknown current version number: If you\'ve never used the SickChill upgrade system before then current version is not set. &mdash; <a href="{update_url}">Update Now</a>'.format(update_url=update_url))
+            newest_tag = "unknown_current_version"
+            newest_text = _(
+                'Unknown current version number: If you\'ve never used the SickChill upgrade system before then current version is not set. &mdash; <a href="{update_url}">Update Now</a>'.format(
+                    update_url=update_url
+                )
+            )
 
         elif self._num_commits_behind > 0:
             if self._newest_commit_hash:
                 current = self._cur_commit_hash
                 newest = self._newest_commit_hash
-                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}'
+                url = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}"
             else:
-                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/'
+                url = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/"
 
-            newest_tag = 'newer_version_available'
+            newest_tag = "newer_version_available"
             commits_behind = self._num_commits_behind
-            s = ('', 's')[commits_behind != 1]
+            s = ("", "s")[commits_behind != 1]
             update_url = self.get_update_url()
             newest_text = _(
                 'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> (you\'re {commits_behind} commit{s} behind) &mdash; <a href="{update_url}">Update Now</a>'.format(
@@ -127,18 +132,18 @@ class SourceUpdateManager(UpdateManagerBase):
         else:
             return
 
-        helpers.add_site_message(newest_text, tag=newest_tag, level='success')
+        helpers.add_site_message(newest_text, tag=newest_tag, level="success")
 
     def update(self):
         """
         Downloads the latest source tarball from github and installs it over the existing version.
         """
 
-        tar_download_url = 'https://github.com/' + settings.GIT_ORG + '/' + settings.GIT_REPO + '/tarball/' + self.branch
+        tar_download_url = "https://github.com/" + settings.GIT_ORG + "/" + settings.GIT_REPO + "/tarball/" + self.branch
 
         try:
             # prepare the update dir
-            sr_update_dir = os.path.join(settings.DATA_DIR, 'sr-update')
+            sr_update_dir = os.path.join(settings.DATA_DIR, "sr-update")
 
             if os.path.isdir(sr_update_dir):
                 logger.info("Clearing out update folder " + sr_update_dir + " before extracting")
@@ -149,7 +154,7 @@ class SourceUpdateManager(UpdateManagerBase):
 
             # retrieve file
             logger.info("Downloading update from {url}".format(url=tar_download_url))
-            tar_download_path = os.path.join(sr_update_dir, 'sr-update.tar')
+            tar_download_path = os.path.join(sr_update_dir, "sr-update.tar")
             helpers.download_file(tar_download_url, tar_download_path, session=self.session)
 
             if not os.path.isfile(tar_download_path):
@@ -171,8 +176,7 @@ class SourceUpdateManager(UpdateManagerBase):
             os.remove(tar_download_path)
 
             # find update dir name
-            update_dir_contents = [x for x in os.listdir(sr_update_dir) if
-                                   os.path.isdir(os.path.join(sr_update_dir, x))]
+            update_dir_contents = [x for x in os.listdir(sr_update_dir) if os.path.isdir(os.path.join(sr_update_dir, x))]
 
             if len(update_dir_contents) != 1:
                 logger.exception("Invalid update data, update failed: " + str(update_dir_contents))
@@ -182,7 +186,7 @@ class SourceUpdateManager(UpdateManagerBase):
             content_dir = os.path.join(sr_update_dir, update_dir_contents[0])
             logger.info("Moving files from " + content_dir + " to " + os.path.dirname(settings.PROG_DIR))
             for dirname, stderr_, filenames in os.walk(content_dir):
-                dirname = dirname[len(content_dir) + 1:]
+                dirname = dirname[len(content_dir) + 1 :]
                 for curfile in filenames:
                     old_path = os.path.join(content_dir, dirname, curfile)
                     new_path = os.path.join(os.path.dirname(settings.PROG_DIR), dirname, curfile)
@@ -206,7 +210,7 @@ class SourceUpdateManager(UpdateManagerBase):
         return True
 
     def _clean_libs(self):
-        lib_path = os.path.join(os.path.dirname(settings.PROG_DIR), 'lib3')
+        lib_path = os.path.join(os.path.dirname(settings.PROG_DIR), "lib3")
 
         def remove_empty_folders(path):
             if not os.path.isdir(path):
@@ -222,7 +226,7 @@ class SourceUpdateManager(UpdateManagerBase):
             if len(files) == 0 and path != lib_path:
                 os.rmdir(path)
 
-        self._clean_pyc('lib3')
+        self._clean_pyc("lib3")
         remove_empty_folders(lib_path)
 
     def list_remote_branches(self):

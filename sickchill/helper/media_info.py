@@ -6,7 +6,7 @@ from pkg_resources import DistributionNotFound, get_distribution
 import sickchill.oldbeard
 
 try:
-    get_distribution('pymediainfo')
+    get_distribution("pymediainfo")
     from pymediainfo import MediaInfo as mediainfo
 except (ImportError, DistributionNotFound):
     mediainfo = None
@@ -20,8 +20,8 @@ def _avi_screen_size(filename):
     :returns tuple: (width, height)
     """
     try:
-        if not filename.endswith('.avi'):
-            with open(filename, 'rb') as f:
+        if not filename.endswith(".avi"):
+            with open(filename, "rb") as f:
                 header = f.read(72)
 
             x = binascii.hexlify(header[68:72])
@@ -47,8 +47,8 @@ def _mkv_screen_size(filename):
     :returns tuple: (width, height)
     """
     try:
-        if filename.endswith('.mkv'):
-            with open(filename, 'rb') as f:
+        if filename.endswith(".mkv"):
+            with open(filename, "rb") as f:
                 mkv = MKV(f)
 
             return mkv.video_tracks[0].width, mkv.video_tracks[0].height
@@ -69,7 +69,7 @@ def _mediainfo_screen_size(filename):
         if mediainfo:
             _media_info = mediainfo.parse(filename)
             for track in _media_info.tracks:
-                if track.track_type == 'Video':
+                if track.track_type == "Video":
                     return track.width, track.height
     except (OSError, TypeError):
         pass

@@ -6,8 +6,8 @@ from sickchill import settings
 class Indexer(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __init__(self):
-        self.name = 'Generic'
-        self.slug = 'generic'
+        self.name = "Generic"
+        self.slug = "generic"
 
         self.language = settings.INDEXER_DEFAULT_LANGUAGE
         self.indexer = settings.INDEXER_DEFAULT

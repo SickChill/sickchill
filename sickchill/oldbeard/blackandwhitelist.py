@@ -18,9 +18,9 @@ class BlackAndWhiteList(object):
         """
         Builds black and whitelist
         """
-        logger.debug('Building black and white list for {id}'.format(id=self.show_id))
-        self.blacklist = self._load_list('blacklist')
-        self.whitelist = self._load_list('whitelist')
+        logger.debug("Building black and white list for {id}".format(id=self.show_id))
+        self.blacklist = self._load_list("blacklist")
+        self.whitelist = self._load_list("whitelist")
 
     def _add_keywords(self, table, values):
         """
@@ -31,7 +31,7 @@ class BlackAndWhiteList(object):
         """
         main_db_con = db.DBConnection()
         for value in values:
-            main_db_con.action('INSERT INTO [' + table + '] (show_id, keyword) VALUES (?,?)', [self.show_id, value])
+            main_db_con.action("INSERT INTO [" + table + "] (show_id, keyword) VALUES (?,?)", [self.show_id, value])
 
     def set_black_keywords(self, values):
         """
@@ -39,10 +39,10 @@ class BlackAndWhiteList(object):
 
         :param values: Complete list of keywords to be set as blacklist
         """
-        self._del_all_keywords('blacklist')
-        self._add_keywords('blacklist', values)
+        self._del_all_keywords("blacklist")
+        self._add_keywords("blacklist", values)
         self.blacklist = values
-        logger.debug('Blacklist set to: {blacklist}'.format(blacklist=self.blacklist))
+        logger.debug("Blacklist set to: {blacklist}".format(blacklist=self.blacklist))
 
     def set_white_keywords(self, values):
         """
@@ -50,10 +50,10 @@ class BlackAndWhiteList(object):
 
         :param values: Complete list of keywords to be set as whitelist
         """
-        self._del_all_keywords('whitelist')
-        self._add_keywords('whitelist', values)
+        self._del_all_keywords("whitelist")
+        self._add_keywords("whitelist", values)
         self.whitelist = values
-        logger.debug('Whitelist set to: {whitelist}'.format(whitelist=self.whitelist))
+        logger.debug("Whitelist set to: {whitelist}".format(whitelist=self.whitelist))
 
     def _del_all_keywords(self, table):
         """
@@ -62,7 +62,7 @@ class BlackAndWhiteList(object):
         :param table: SQL table remove keywords from
         """
         main_db_con = db.DBConnection()
-        main_db_con.action('DELETE FROM [' + table + '] WHERE show_id = ?', [self.show_id])
+        main_db_con.action("DELETE FROM [" + table + "] WHERE show_id = ?", [self.show_id])
 
     def _load_list(self, table):
         """
@@ -73,15 +73,14 @@ class BlackAndWhiteList(object):
         :return: keywords in list
         """
         main_db_con = db.DBConnection()
-        sql_results = main_db_con.select('SELECT keyword FROM [' + table + '] WHERE show_id = ?', [self.show_id])
+        sql_results = main_db_con.select("SELECT keyword FROM [" + table + "] WHERE show_id = ?", [self.show_id])
         if not sql_results or not len(sql_results):
             return []
         groups = []
         for result in sql_results:
-            groups.append(result['keyword'])
+            groups.append(result["keyword"])
 
-        logger.debug('BWL: {id} loaded keywords from {table}: {groups}'.format
-                     (id=self.show_id, table=table, groups=groups))
+        logger.debug("BWL: {id} loaded keywords from {table}: {groups}".format(id=self.show_id, table=table, groups=groups))
 
         return groups
 
@@ -95,7 +94,7 @@ class BlackAndWhiteList(object):
 
         if self.whitelist or self.blacklist:
             if not result.release_group:
-                logger.debug('Failed to detect release group, invalid result')
+                logger.debug("Failed to detect release group, invalid result")
                 return False
 
             if result.release_group.lower() in [x.lower() for x in self.whitelist]:
@@ -109,15 +108,14 @@ class BlackAndWhiteList(object):
             else:
                 black_result = True
 
-            logger.debug('Whitelist check passed: {white}. Blacklist check passed: {black}'.format
-                         (white=white_result, black=black_result))
+            logger.debug("Whitelist check passed: {white}. Blacklist check passed: {black}".format(white=white_result, black=black_result))
 
             if white_result and black_result:
                 return True
             else:
                 return False
         else:
-            logger.debug('No Whitelist and Blacklist defined, check passed.')
+            logger.debug("No Whitelist and Blacklist defined, check passed.")
             return True
 
 
@@ -132,20 +130,20 @@ def short_group_names(groups):
     :param groups: list of groups to find short group names for
     :return: list of shortened group names
     """
-    groups = groups.split(',')
+    groups = groups.split(",")
     short_group_list = []
     if helpers.set_up_anidb_connection():
         for groupName in groups:
             try:
                 group = settings.ADBA_CONNECTION.group(gname=groupName)
             except AniDBCommandTimeoutError:
-                logger.debug('Timeout while loading group from AniDB. Trying next group')
+                logger.debug("Timeout while loading group from AniDB. Trying next group")
             except Exception:
-                logger.debug('Failed while loading group from AniDB. Trying next group')
+                logger.debug("Failed while loading group from AniDB. Trying next group")
             else:
                 for line in group.datalines:
-                    if line['shortname']:
-                        short_group_list.append(line['shortname'])
+                    if line["shortname"]:
+                        short_group_list.append(line["shortname"])
                     else:
                         if groupName not in short_group_list:
                             short_group_list.append(groupName)

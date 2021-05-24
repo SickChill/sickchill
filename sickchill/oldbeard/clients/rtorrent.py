@@ -8,7 +8,7 @@ from sickchill.oldbeard.clients.generic import GenericClient
 
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
-        super().__init__('rTorrent', host, username, password)
+        super().__init__("rTorrent", host, username, password)
 
     def _get_auth(self):
 
@@ -18,14 +18,14 @@ class Client(GenericClient):
         if not self.host:
             return
 
-        self.host = self.host.rstrip('/')
+        self.host = self.host.rstrip("/")
 
         tp_kwargs = {}
-        if settings.TORRENT_AUTH_TYPE and settings.TORRENT_AUTH_TYPE.lower() != 'none':
-            tp_kwargs['authtype'] = settings.TORRENT_AUTH_TYPE
+        if settings.TORRENT_AUTH_TYPE and settings.TORRENT_AUTH_TYPE.lower() != "none":
+            tp_kwargs["authtype"] = settings.TORRENT_AUTH_TYPE
 
         if not settings.TORRENT_VERIFY_CERT:
-            tp_kwargs['check_ssl_cert'] = False
+            tp_kwargs["check_ssl_cert"] = False
 
         if self.username and self.password:
             self.auth = RTorrent(self.host, self.username, self.password, True, tp_kwargs=tp_kwargs or None)
@@ -49,7 +49,7 @@ class Client(GenericClient):
             return True
 
         except Exception as error:
-            logger.warning(_('Error while sending torrent: {error}'.format(error=error)))
+            logger.warning(_("Error while sending torrent: {error}".format(error=error)))
             return False
 
     def _add_torrent_file(self, result):
@@ -68,7 +68,7 @@ class Client(GenericClient):
 
         except Exception as error:
             logger.info(traceback.format_exc())
-            logger.warning(_('Error while sending torrent: {error}'.format(error=error)))
+            logger.warning(_("Error while sending torrent: {error}".format(error=error)))
             return False
 
     def testAuthentication(self):
@@ -76,11 +76,11 @@ class Client(GenericClient):
             self._get_auth()
 
             if self.auth is not None:
-                return True, _('Success: Connected and Authenticated')
+                return True, _("Success: Connected and Authenticated")
             else:
-                return False, _('Error: Unable to get {self.name} Authentication, check your config!')
+                return False, _("Error: Unable to get {self.name} Authentication, check your config!")
         except Exception as error:
-            return False, _('Error: Unable to connect to {name}: {error}'.format(name=self.name, error=error))
+            return False, _("Error: Unable to connect to {name}: {error}".format(name=self.name, error=error))
 
     @staticmethod
     def _get_params(result):
@@ -91,10 +91,10 @@ class Client(GenericClient):
         if result.show.is_anime:
             label = settings.TORRENT_LABEL_ANIME
         if label:
-            params.append(f'd.custom1.set={label}')
+            params.append(f"d.custom1.set={label}")
 
         # Set download folder
         if settings.TORRENT_PATH:
-            params.append(f'd.directory.set={settings.TORRENT_PATH}')
+            params.append(f"d.directory.set={settings.TORRENT_PATH}")
 
         return params

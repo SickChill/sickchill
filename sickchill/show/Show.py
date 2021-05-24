@@ -77,35 +77,29 @@ class Show(object):
         snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
         total_status = [SKIPPED, WANTED]
 
-        results = db.select(
-            'SELECT airdate, status '
-            'FROM tv_episodes '
-            'WHERE season > 0 '
-            'AND episode > 0 '
-            'AND airdate > 1'
-        )
+        results = db.select("SELECT airdate, status " "FROM tv_episodes " "WHERE season > 0 " "AND episode > 0 " "AND airdate > 1")
 
         stats = {
-            'episodes': {
-                'downloaded': 0,
-                'snatched': 0,
-                'total': 0,
+            "episodes": {
+                "downloaded": 0,
+                "snatched": 0,
+                "total": 0,
             },
-            'shows': {
-                'active': len([show for show in shows if show.paused == 0 and show.status == 'Continuing']),
-                'total': len(shows),
+            "shows": {
+                "active": len([show for show in shows if show.paused == 0 and show.status == "Continuing"]),
+                "total": len(shows),
             },
         }
 
         for result in results:
-            if result['status'] in downloaded_status:
-                stats['episodes']['downloaded'] += 1
-                stats['episodes']['total'] += 1
-            elif result['status'] in snatched_status:
-                stats['episodes']['snatched'] += 1
-                stats['episodes']['total'] += 1
-            elif result['airdate'] <= today and result['status'] in total_status:
-                stats['episodes']['total'] += 1
+            if result["status"] in downloaded_status:
+                stats["episodes"]["downloaded"] += 1
+                stats["episodes"]["total"] += 1
+            elif result["status"] in snatched_status:
+                stats["episodes"]["snatched"] += 1
+                stats["episodes"]["total"] += 1
+            elif result["airdate"] <= today and result["status"] in total_status:
+                stats["episodes"]["total"] += 1
 
         return stats
 
@@ -170,11 +164,11 @@ class Show(object):
         try:
             indexer_id = int(indexer_id)
         except (TypeError, ValueError):
-            return 'Invalid show ID', None
+            return "Invalid show ID", None
 
         try:
             show = Show.find(settings.showList, indexer_id)
         except MultipleShowObjectsException:
-            return 'Unable to find the specified show', None
+            return "Unable to find the specified show", None
 
         return None, show

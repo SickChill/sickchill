@@ -13,7 +13,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         super().__init__("Demonoid")
@@ -24,13 +23,11 @@ class Provider(TorrentProvider):
         self.minleech = 0
 
         self.url = "https://demonoid.is"
-        self.urls = {"RSS": urljoin(self.url, 'rss.php'), 'search': urljoin(self.url, 'files/')}
+        self.urls = {"RSS": urljoin(self.url, "rss.php"), "search": urljoin(self.url, "files/")}
 
         self.proper_strings = ["PROPER|REPACK"]
 
-        self.cache_rss_params = {
-            "category": 12, "quality": 58, "seeded": 0, "external": 2, "sort": "added", "order": "desc"
-        }
+        self.cache_rss_params = {"category": 12, "quality": 58, "seeded": 0, "external": 2, "sort": "added", "order": "desc"}
 
         self.cache = DemonoidCache(self)
 
@@ -42,7 +39,7 @@ class Provider(TorrentProvider):
             "seeded": 0,  # 0: True
             "external": 2,  # 0: Demonoid (Only works if logged in), 1: External, 2: Both
             "order": "desc",
-            "sort": self.sorting or "seeders"
+            "sort": self.sorting or "seeders",
         }
 
         for mode in search_strings:
@@ -54,12 +51,11 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 search_params["query"] = search_string
-                logger.debug("Search string: {0}".format
-                             (search_string))
+                logger.debug("Search string: {0}".format(search_string))
 
                 time.sleep(cpu_presets[settings.CPU_PRESET])
 
-                data = self.get_url(self.urls['search'], params=search_params)
+                data = self.get_url(self.urls["search"], params=search_params)
                 if not data:
                     logger.debug("No data returned from provider")
                     continue
@@ -67,19 +63,19 @@ class Provider(TorrentProvider):
                 with BS4Parser(data, "html5lib") as html:
                     for result in html("img", alt="Download torrent"):
                         try:
-                            data_row = result.find_parent('tr')
+                            data_row = result.find_parent("tr")
                             info_row = data_row.previous_sibling
 
-                            data_cells = data_row('td')
+                            data_cells = data_row("td")
 
-                            e_title = info_row('td')[1]('a')[0]
+                            e_title = info_row("td")[1]("a")[0]
                             e_download_links = data_cells[2]
                             e_file_size = data_cells[3]
                             e_seeders = data_cells[6]
                             e_leechers = data_cells[7]
 
                             title = e_title.get_text(strip=True)
-                            details_url = e_title['href']
+                            details_url = e_title["href"]
 
                             if not (title and details_url):
                                 if mode != "RSS":
@@ -93,22 +89,27 @@ class Provider(TorrentProvider):
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.debug("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format
-                                                 (title, seeders, leechers))
+                                    logger.debug(
+                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                            title, seeders, leechers
+                                        )
+                                    )
                                 continue
 
-                            e_download_torrent, e_download_magnet = e_download_links('a')
-                            download_url = urljoin(self.url, e_download_torrent['href'])
-                            magnet = urljoin(self.url, e_download_magnet['href'])
+                            e_download_torrent, e_download_magnet = e_download_links("a")
+                            download_url = urljoin(self.url, e_download_torrent["href"])
+                            magnet = urljoin(self.url, e_download_magnet["href"])
                             torrent_hash = self.get_torrent_hash(details_url)
 
                             if not all([download_url, magnet, torrent_hash]):
-                                logger.info("Failed to get all required information from the details page. url:{}, magnet:{}, hash:{}".format(
-                                    bool(download_url), bool(magnet), bool(torrent_hash))
+                                logger.info(
+                                    "Failed to get all required information from the details page. url:{}, magnet:{}, hash:{}".format(
+                                        bool(download_url), bool(magnet), bool(torrent_hash)
+                                    )
                                 )
                                 continue
 
-                            item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': torrent_hash}
+                            item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":
                                 logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
@@ -119,7 +120,7 @@ class Provider(TorrentProvider):
                             continue
 
                             # For each search mode sort all the items by seeders if available
-                items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+                items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
 
                 results += items
 
@@ -133,7 +134,7 @@ class Provider(TorrentProvider):
             return torrent_hash
 
         with BS4Parser(details_data, "html5lib") as html:
-            torrent_hash = html('td', string='Torrent hash:')[0].parent('td')[1].get_text(strip=True).replace(' ', '')
+            torrent_hash = html("td", string="Torrent hash:")[0].parent("td")[1].get_text(strip=True).replace(" ", "")
 
         return torrent_hash
 
@@ -141,6 +142,6 @@ class Provider(TorrentProvider):
 class DemonoidCache(tvcache.TVCache):
     def _get_rss_data(self):
         if self.provider.cookies:
-            add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit('=', 1) for x in self.provider.cookies.split(';')))
+            add_dict_to_cookiejar(self.provider.session.cookies, dict(x.rsplit("=", 1) for x in self.provider.cookies.split(";")))
 
-        return self.get_rss_feed(self.provider.urls['RSS'], self.provider.cache_rss_params)
+        return self.get_rss_feed(self.provider.urls["RSS"], self.provider.cache_rss_params)

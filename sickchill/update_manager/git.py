@@ -28,7 +28,7 @@ class GitUpdateManager(UpdateManagerBase):
         return self._newest_commit_hash
 
     def get_current_version(self):
-        return self._run_git(self._git_path, 'describe --abbrev=0 {0}'.format(self._cur_commit_hash))[0]
+        return self._run_git(self._git_path, "describe --abbrev=0 {0}".format(self._cur_commit_hash))[0]
 
     def get_newest_version(self):
         if self._newest_commit_hash:
@@ -40,14 +40,14 @@ class GitUpdateManager(UpdateManagerBase):
         return self._num_commits_behind
 
     def _find_working_git(self):
-        test_cmd = 'version'
+        test_cmd = "version"
 
         if settings.GIT_PATH:
             main_git = '"' + settings.GIT_PATH + '"'
         else:
-            main_git = 'git'
+            main_git = "git"
 
-        logger.debug("Checking if we can use git commands: " + main_git + ' ' + test_cmd)
+        logger.debug("Checking if we can use git commands: " + main_git + " " + test_cmd)
         stdout_, stderr_, exit_status = self._run_git(main_git, test_cmd)
 
         if exit_status == 0:
@@ -61,10 +61,10 @@ class GitUpdateManager(UpdateManagerBase):
         alternative_git = []
 
         # osx people who start sc from launchd have a broken path, so try a hail-mary attempt for them
-        if platform.system() == 'Darwin':
-            alternative_git.append('/usr/local/git/bin/git')
+        if platform.system() == "Darwin":
+            alternative_git.append("/usr/local/git/bin/git")
 
-        if platform.system() == 'Windows':
+        if platform.system() == "Windows":
             if main_git != main_git.lower():
                 alternative_git.append(main_git.lower())
 
@@ -72,7 +72,7 @@ class GitUpdateManager(UpdateManagerBase):
             logger.debug("Trying known alternative git locations")
 
             for cur_git in alternative_git:
-                logger.debug("Checking if we can use git commands: " + cur_git + ' ' + test_cmd)
+                logger.debug("Checking if we can use git commands: " + cur_git + " " + test_cmd)
                 stdout_, stderr_, exit_status = self._run_git(cur_git, test_cmd)
 
                 if exit_status == 0:
@@ -83,9 +83,12 @@ class GitUpdateManager(UpdateManagerBase):
 
         # Still haven't found a working git
         helpers.add_site_message(
-            _('Unable to find your git executable - Shutdown SickChill and EITHER set git_path in '
-              'your config.ini OR delete your .git folder and run from source to enable updates.'),
-            tag='unable_to_find_git')
+            _(
+                "Unable to find your git executable - Shutdown SickChill and EITHER set git_path in "
+                "your config.ini OR delete your .git folder and run from source to enable updates."
+            ),
+            tag="unable_to_find_git",
+        )
         return None
 
     @staticmethod
@@ -98,11 +101,13 @@ class GitUpdateManager(UpdateManagerBase):
             exit_status = 1
             return output, err, exit_status
 
-        cmd = git_path + ' ' + args
+        cmd = git_path + " " + args
 
         try:
             logger.debug("Executing {0} with your shell in {1}".format(cmd, settings.PROG_DIR))
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, universal_newlines=True, cwd=settings.PROG_DIR)
+            p = subprocess.Popen(
+                cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, universal_newlines=True, cwd=settings.PROG_DIR
+            )
             output, err = p.communicate()
             exit_status = p.returncode
             if output:
@@ -116,13 +121,13 @@ class GitUpdateManager(UpdateManagerBase):
             logger.debug("{} : returned successful".format(cmd))
 
         elif exit_status == 1:
-            if 'stash' in output:
+            if "stash" in output:
                 logger.warning("Please enable 'git reset' in settings or stash your changes in local files")
             elif log_errors:
                 logger.exception("{0} returned : {1}".format(cmd, output))
 
         elif log_errors:
-            if exit_status in (127, 128) or 'fatal:' in output:
+            if exit_status in (127, 128) or "fatal:" in output:
                 logger.warning("{0} returned : ({1}) {2}".format(cmd, exit_status, output or err))
             else:
                 logger.exception("{0} returned code {1}, treating as error : {2}".format(cmd, exit_status, output or err))
@@ -139,11 +144,11 @@ class GitUpdateManager(UpdateManagerBase):
         Returns: True for success or False for failure
         """
 
-        output, errors_, exit_status = self._run_git(self._git_path, 'rev-parse HEAD')
+        output, errors_, exit_status = self._run_git(self._git_path, "rev-parse HEAD")
 
         if exit_status == 0 and output:
             cur_commit_hash = output.strip()
-            if not re.match('^[a-z0-9]+$', cur_commit_hash):
+            if not re.match("^[a-z0-9]+$", cur_commit_hash):
                 logger.exception("Output doesn't look like a hash, not using it")
                 return False
             self._cur_commit_hash = settings.CUR_COMMIT_HASH = cur_commit_hash
@@ -152,9 +157,9 @@ class GitUpdateManager(UpdateManagerBase):
             return False
 
     def _find_installed_branch(self):
-        branch_info, errors_, exit_status = self._run_git(self._git_path, 'symbolic-ref -q HEAD')
+        branch_info, errors_, exit_status = self._run_git(self._git_path, "symbolic-ref -q HEAD")
         if exit_status == 0 and branch_info:
-            branch = branch_info.strip().replace('refs/heads/', '', 1)
+            branch = branch_info.strip().replace("refs/heads/", "", 1)
             if branch:
                 settings.BRANCH = branch
                 return branch
@@ -164,11 +169,11 @@ class GitUpdateManager(UpdateManagerBase):
         # stdout, stderr_, exit_status = self._run_git(self._git_path, 'branch --show-current')
         # if exit_status == 0 and not stdout:
         if helpers.is_docker() and not self.branch:
-            logger.info('We found you in a detached state that prevents updates. Fixing')
-            self._run_git(self._git_path, 'fetch origin')
-            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'checkout -f master')
+            logger.info("We found you in a detached state that prevents updates. Fixing")
+            self._run_git(self._git_path, "fetch origin")
+            stdout_, stderr_, exit_status = self._run_git(self._git_path, "checkout -f master")
             if exit_status == 0:
-                self.branch = settings.BRANCH = 'master'
+                self.branch = settings.BRANCH = "master"
 
     def _check_github_for_update(self):
         """
@@ -183,15 +188,15 @@ class GitUpdateManager(UpdateManagerBase):
         self._update_remote_origin()
 
         # get all new info from github
-        output, errors_, exit_status = self._run_git(self._git_path, 'fetch {0} --prune'.format(settings.GIT_REMOTE))
+        output, errors_, exit_status = self._run_git(self._git_path, "fetch {0} --prune".format(settings.GIT_REMOTE))
         if exit_status != 0:
             logger.warning("Unable to contact github, can't check for update")
             return
 
         # Try both formats, but continue on fail because older git versions do not have this option
-        output, stderr_, exit_status = self._run_git(self._git_path, 'branch --set-upstream-to {0}/{1}'.format(settings.GIT_REMOTE, self.branch))
+        output, stderr_, exit_status = self._run_git(self._git_path, "branch --set-upstream-to {0}/{1}".format(settings.GIT_REMOTE, self.branch))
         if exit_status != 0:
-            self._run_git(self._git_path, 'branch -u {0}/{1}'.format(settings.GIT_REMOTE, self.branch))
+            self._run_git(self._git_path, "branch -u {0}/{1}".format(settings.GIT_REMOTE, self.branch))
 
         # get latest commit_hash from remote
         output, stderr_, exit_status = self._run_git(self._git_path, 'rev-parse --verify --quiet "@{upstream}"')
@@ -199,7 +204,7 @@ class GitUpdateManager(UpdateManagerBase):
         if exit_status == 0 and output:
             cur_commit_hash = output.strip()
 
-            if not re.match(r'^[a-z0-9]+$', cur_commit_hash):
+            if not re.match(r"^[a-z0-9]+$", cur_commit_hash):
                 logger.debug("Output doesn't look like a hash, not using it")
                 return
 
@@ -221,26 +226,29 @@ class GitUpdateManager(UpdateManagerBase):
                 logger.debug("git didn't return numbers for behind and ahead, not using it")
                 return
 
-        logger.debug("cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}, num_commits_ahead = {3}".format
-                     (self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead))
+        logger.debug(
+            "cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}, num_commits_ahead = {3}".format(
+                self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead
+            )
+        )
 
     def set_newest_text(self):
         if self._num_commits_ahead:
-            newest_tag = 'local_branch_ahead'
-            newest_text = 'Local branch is ahead of {branch}. Automatic update not possible.'.format(branch=self.branch)
+            newest_tag = "local_branch_ahead"
+            newest_text = "Local branch is ahead of {branch}. Automatic update not possible.".format(branch=self.branch)
             logger.warning(newest_text)
 
         elif self._num_commits_behind > 0:
             if self._newest_commit_hash:
                 current = self._cur_commit_hash
                 newest = self._newest_commit_hash
-                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}'
+                url = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}"
             else:
-                url = f'https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/'
+                url = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/"
 
-            newest_tag = 'newer_version_available'
+            newest_tag = "newer_version_available"
             commits_behind = self._num_commits_behind
-            s = ('', 's')[commits_behind != 1]
+            s = ("", "s")[commits_behind != 1]
             update_url = self.get_update_url()
             newest_text = _(
                 'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> (you\'re {commits_behind} commit{s} behind) &mdash; <a href="{update_url}">Update Now</a>'.format(
@@ -250,7 +258,7 @@ class GitUpdateManager(UpdateManagerBase):
         else:
             return
 
-        helpers.add_site_message(newest_text, tag=newest_tag, level='success')
+        helpers.add_site_message(newest_text, tag=newest_tag, level="success")
 
     def need_update(self):
 
@@ -263,6 +271,7 @@ class GitUpdateManager(UpdateManagerBase):
             return True
         else:
             import traceback
+
             try:
                 self._check_github_for_update()
             except Exception as e:
@@ -290,9 +299,9 @@ class GitUpdateManager(UpdateManagerBase):
             self._reset()
 
         if self.branch == self._find_installed_branch():
-            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'pull -f {0} {1}'.format(settings.GIT_REMOTE, self.branch))
+            stdout_, stderr_, exit_status = self._run_git(self._git_path, "pull -f {0} {1}".format(settings.GIT_REMOTE, self.branch))
         else:
-            stdout_, stderr_, exit_status = self._run_git(self._git_path, 'checkout -f ' + self.branch)
+            stdout_, stderr_, exit_status = self._run_git(self._git_path, "checkout -f " + self.branch)
 
         if exit_status == 0:
             self._find_installed_version()
@@ -318,18 +327,18 @@ class GitUpdateManager(UpdateManagerBase):
         Calls git clean to remove all untracked files in the lib dir before restart. Returns a bool depending
         on the call's success.
         """
-        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'clean -df lib')
+        stdout_, stderr_, exit_status = self._run_git(self._git_path, "clean -df lib")
         if exit_status == 0:
             return True
 
-        self._clean_pyc('lib3')
+        self._clean_pyc("lib3")
 
     def _reset(self):
         """
         Calls git reset --hard to perform a hard reset. Returns a bool depending
         on the call's success.
         """
-        stdout_, stderr_, exit_status = self._run_git(self._git_path, 'reset --hard')
+        stdout_, stderr_, exit_status = self._run_git(self._git_path, "reset --hard")
         if exit_status == 0:
             return True
 
@@ -338,12 +347,12 @@ class GitUpdateManager(UpdateManagerBase):
         self._update_remote_origin()
         settings.BRANCH = self._find_installed_branch()
 
-        branches, stderr_, exit_status = self._run_git(self._git_path, 'ls-remote --heads {0}'.format(settings.GIT_REMOTE))
+        branches, stderr_, exit_status = self._run_git(self._git_path, "ls-remote --heads {0}".format(settings.GIT_REMOTE))
         if exit_status == 0 and branches:
             if branches:
-                return re.findall(r'refs/heads/(.*)', branches)
+                return re.findall(r"refs/heads/(.*)", branches)
         return []
 
     def _update_remote_origin(self):
         if not settings.DEVELOPER:
-            self._run_git(self._git_path, 'config remote.{0}.url {1}'.format(settings.GIT_REMOTE, settings.GIT_REMOTE_URL))
+            self._run_git(self._git_path, "config remote.{0}.url {1}".format(settings.GIT_REMOTE, settings.GIT_REMOTE_URL))

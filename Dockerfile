@@ -1,4 +1,5 @@
-FROM python:3.8-alpine
+FROM python:slim-buster
+LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
 
@@ -10,17 +11,16 @@ ENV PYTHONIOENCODING="UTF-8"
 # -v /etc/localtime:/etc/localtime:ro
 # -p 8080:8081 sickchill/sickchill
 
-RUN apk add --update --no-cache git mediainfo unrar tzdata curl ca-certificates\
- libffi libffi-dev libxml2 libxml2-dev libxslt libxslt-dev openssl openssl-dev\
- gcc musl-dev python3-dev && apk add --update --no-cache --virtual .build-deps &&\
- mkdir /app /var/run/sickchill
-
-WORKDIR /app/sickchill
 VOLUME /data /downloads /tv
+RUN mkdir /app /var/run/sickchill
+WORKDIR /app/sickchill
 COPY requirements.txt /app/sickchill
 
-RUN CRYPTOGRAPHY_DONT_BUILD_RUST=1 pip install --no-cache-dir --no-input -Ur requirements.txt &&\
- apk del .build-deps gcc libffi-dev libxml2-dev libxslt-dev openssl-dev musl-dev python3-dev
+RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
+RUN apt-get update -q && \
+ apt-get install -yq git libxml2 libxslt1.1 mediainfo unrar && \
+ pip install -U pip wheel && pip install --no-cache-dir --no-input -Ur requirements.txt && \
+ apt-get clean -yq && rm -rf /var/lib/apt/lists/*
 
 COPY . /app/sickchill
 RUN chmod -R 777 /app/sickchill

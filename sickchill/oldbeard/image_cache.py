@@ -24,13 +24,13 @@ class ImageCache(object):
         """
         Builds up the full path to the image cache directory
         """
-        return os.path.abspath(os.path.join(settings.CACHE_DIR, 'images'))
+        return os.path.abspath(os.path.join(settings.CACHE_DIR, "images"))
 
     def _thumbnails_dir(self):
         """
         Builds up the full path to the thumbnails image cache directory
         """
-        return os.path.abspath(os.path.join(self._cache_dir(), 'thumbnails'))
+        return os.path.abspath(os.path.join(self._cache_dir(), "thumbnails"))
 
     def poster_path(self, indexer_id):
         """
@@ -39,7 +39,7 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached poster file for the given Indexer ID
         """
-        poster_filename = str(indexer_id) + '.poster.jpg'
+        poster_filename = str(indexer_id) + ".poster.jpg"
         return os.path.join(self._cache_dir(), poster_filename)
 
     def banner_path(self, indexer_id):
@@ -49,7 +49,7 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached banner file for the given Indexer ID
         """
-        banner_filename = str(indexer_id) + '.banner.jpg'
+        banner_filename = str(indexer_id) + ".banner.jpg"
         return os.path.join(self._cache_dir(), banner_filename)
 
     def fanart_path(self, indexer_id):
@@ -59,7 +59,7 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached fanart file for the given Indexer ID
         """
-        fanart_filename = str(indexer_id) + '.fanart.jpg'
+        fanart_filename = str(indexer_id) + ".fanart.jpg"
         return os.path.join(self._cache_dir(), fanart_filename)
 
     def poster_thumb_path(self, indexer_id):
@@ -69,7 +69,7 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached poster thumb file for the given Indexer ID
         """
-        posterthumb_filename = str(indexer_id) + '.poster.jpg'
+        posterthumb_filename = str(indexer_id) + ".poster.jpg"
         return os.path.join(self._thumbnails_dir(), posterthumb_filename)
 
     def banner_thumb_path(self, indexer_id):
@@ -79,7 +79,7 @@ class ImageCache(object):
         :param indexer_id: ID of the show to use in the file name
         :return: a full path to the cached banner thumb file for the given Indexer ID
         """
-        bannerthumb_filename = str(indexer_id) + '.banner.jpg'
+        bannerthumb_filename = str(indexer_id) + ".banner.jpg"
         return os.path.join(self._thumbnails_dir(), bannerthumb_filename)
 
     def has_poster(self, indexer_id):
@@ -125,11 +125,11 @@ class ImageCache(object):
     def image_url(self, indexer_id, which):
         path = self.__getattribute__(which + "_path")(indexer_id)
         if os.path.isfile(path):
-            return 'cache' + path.split(settings.CACHE_DIR)[1].replace('\\', '/')
-        if which == 'fanart' and settings.SICKCHILL_BACKGROUND:
-            return 'ui/sickchill_background'
+            return "cache" + path.split(settings.CACHE_DIR)[1].replace("\\", "/")
+        if which == "fanart" and settings.SICKCHILL_BACKGROUND:
+            return "ui/sickchill_background"
 
-        return ('images/poster.png', 'images/banner.png')['banner' in which]
+        return ("images/poster.png", "images/banner.png")["banner" in which]
 
     BANNER = 1
     POSTER = 2
@@ -137,13 +137,7 @@ class ImageCache(object):
     POSTER_THUMB = 4
     FANART = 5
 
-    image_str = {
-        BANNER: 'banner',
-        BANNER_THUMB: 'banner thumbnail',
-        POSTER: 'poster',
-        POSTER_THUMB: 'poster thumbnail',
-        FANART: 'fanart'
-    }
+    image_str = {BANNER: "banner", BANNER_THUMB: "banner thumbnail", POSTER: "poster", POSTER_THUMB: "poster thumbnail", FANART: "fanart"}
 
     def which_type(self, path):
         """
@@ -187,7 +181,7 @@ class ImageCache(object):
         """
 
         if os.path.isfile(path):
-            with open(path, 'rb') as content:
+            with open(path, "rb") as content:
                 return content.read()
 
         return None
@@ -201,7 +195,7 @@ class ImageCache(object):
         if os.path.isfile(path):
             return guess_type(path)[0]
 
-        return ''
+        return ""
 
     def _cache_image_from_file(self, image_path, img_type, indexer_id):
         """
@@ -253,33 +247,33 @@ class ImageCache(object):
         if img_type == self.POSTER:
             img_url = sickchill.indexer.series_poster_url(show_obj)
             if not img_url:
-                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'poster')
+                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, "poster")
             if not img_url:
-                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'poster')
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, "poster")
             dest_path = self.poster_path(show_obj.indexerid)
         elif img_type == self.BANNER:
             img_url = sickchill.indexer.series_banner_url(show_obj)
             if not img_url:
-                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'banner')
+                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, "banner")
             dest_path = self.banner_path(show_obj.indexerid)
         elif img_type == self.POSTER_THUMB:
             img_url = sickchill.indexer.series_poster_url(show_obj, thumb=True)
             if not img_url:
-                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'poster', thumb=True)
+                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, "poster", thumb=True)
             if not img_url:
-                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'poster')
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, "poster")
             dest_path = self.poster_thumb_path(show_obj.indexerid)
         elif img_type == self.BANNER_THUMB:
             img_url = sickchill.indexer.series_banner_url(show_obj, thumb=True)
             if not img_url:
-                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'banner', thumb=True)
+                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, "banner", thumb=True)
             dest_path = self.banner_thumb_path(show_obj.indexerid)
         elif img_type == self.FANART:
             img_url = sickchill.indexer.series_fanart_url(show_obj)
             if not img_url:
-                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, 'fanart')
+                img_url = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, "fanart")
             if not img_url:
-                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, 'fanart')
+                img_url = metadata_generator._retrieve_show_image_urls_from_tmdb(show_obj, "fanart")
             dest_path = self.fanart_path(show_obj.indexerid)
         else:
             logger.exception("Invalid cache image type: " + str(img_type))
@@ -303,11 +297,13 @@ class ImageCache(object):
         logger.debug("Checking if we need any cache images for show " + str(show_obj.indexerid))
 
         # check if the images are already cached or not
-        need_images = {self.POSTER: not self.has_poster(show_obj.indexerid),
-                       self.BANNER: not self.has_banner(show_obj.indexerid),
-                       self.POSTER_THUMB: not self.has_poster_thumb(show_obj.indexerid),
-                       self.BANNER_THUMB: not self.has_banner_thumb(show_obj.indexerid),
-                       self.FANART: not self.has_fanart(show_obj.indexerid)}
+        need_images = {
+            self.POSTER: not self.has_poster(show_obj.indexerid),
+            self.BANNER: not self.has_banner(show_obj.indexerid),
+            self.POSTER_THUMB: not self.has_poster_thumb(show_obj.indexerid),
+            self.BANNER_THUMB: not self.has_banner_thumb(show_obj.indexerid),
+            self.FANART: not self.has_fanart(show_obj.indexerid),
+        }
 
         if not any(need_images.values()):
             logger.debug("No new cache images needed, not retrieving new ones")
@@ -329,12 +325,18 @@ class ImageCache(object):
                                 logger.warning("Unable to retrieve image type, not using the image from " + str(cur_filename))
                                 continue
 
-                            logger.debug("[{}] Checking if {} ({}) needs cached: {}".format(
-                                show_obj.indexerid, cur_filename, self.image_str[cur_file_type], need_images[cur_file_type]))
+                            logger.debug(
+                                "[{}] Checking if {} ({}) needs cached: {}".format(
+                                    show_obj.indexerid, cur_filename, self.image_str[cur_file_type], need_images[cur_file_type]
+                                )
+                            )
 
                             if cur_file_type in need_images and need_images[cur_file_type]:
-                                logger.debug("[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
-                                    show_obj.indexerid, self.image_str[cur_file_type]))
+                                logger.debug(
+                                    "[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
+                                        show_obj.indexerid, self.image_str[cur_file_type]
+                                    )
+                                )
                                 self._cache_image_from_file(cur_filename, cur_file_type, show_obj.indexerid)
                                 need_images[cur_file_type] = False
 

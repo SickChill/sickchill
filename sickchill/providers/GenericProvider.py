@@ -20,9 +20,9 @@ from sickchill.oldbeard.tvcache import TVCache
 
 
 class GenericProvider(object):
-    NZB = 'nzb'
-    NZBDATA = 'nzbdata'
-    TORRENT = 'torrent'
+    NZB = "nzb"
+    NZBDATA = "nzbdata"
+    TORRENT = "torrent"
 
     PROVIDER_BROKEN = 0
     PROVIDER_DAILY = 1
@@ -33,7 +33,7 @@ class GenericProvider(object):
         PROVIDER_BROKEN: _("Not working"),
         PROVIDER_DAILY: _("Daily/RSS only"),
         PROVIDER_BACKLOG: _("Backlog/Manual Search only"),
-        PROVIDER_OK: _("Daily/RSS and Backlog/Manual Searches working")
+        PROVIDER_OK: _("Daily/RSS and Backlog/Manual Searches working"),
     }
 
     def __init__(self, name):
@@ -43,17 +43,17 @@ class GenericProvider(object):
         self.bt_cache_urls = [
             # 'http://torcache.net/torrent/{torrent_hash}.torrent',
             # 'http://torrentproject.se/torrent/{torrent_hash}.torrent',
-            'http://thetorrent.org/torrent/{torrent_hash}.torrent',
+            "http://thetorrent.org/torrent/{torrent_hash}.torrent",
             # 'http://btdig.com/torrent/{torrent_hash}.torrent',
-            ('https://torrage.info/download?h={torrent_hash}', 'https://torrage.info/torrent.php?h={torrent_hash}'),
-            'https://itorrents.org/torrent/{torrent_hash}.torrent?title={torrent_name}'
+            ("https://torrage.info/download?h={torrent_hash}", "https://torrage.info/torrent.php?h={torrent_hash}"),
+            "https://itorrents.org/torrent/{torrent_hash}.torrent?title={torrent_name}",
         ]
         self.cache = TVCache(self)
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
         self.headers = dict()
-        self.proper_strings = ['PROPER|REPACK|REAL']
+        self.proper_strings = ["PROPER|REPACK|REAL"]
         self.provider_type = None
         self.public = False
         self.search_fallback = False
@@ -64,13 +64,13 @@ class GenericProvider(object):
         self.supports_backlog = True
         self.supports_movies = False
 
-        self.url = ''
+        self.url = ""
         self.urls = {}
 
         # Use and configure the attribute enable_cookies to show or hide the cookies input field per provider
         self.enable_cookies = False
-        self.cookies = ''
-        self.rss_cookies = ''
+        self.cookies = ""
+        self.rss_cookies = ""
 
         self.ability_status = self.PROVIDER_OK
 
@@ -83,44 +83,42 @@ class GenericProvider(object):
         urls, filename = self._make_url(result)
 
         for url in urls:
-            if 'NO_DOWNLOAD_NAME' in url:
+            if "NO_DOWNLOAD_NAME" in url:
                 continue
 
             if isinstance(url, tuple):
                 referer = url[1]
                 url = url[0]
             else:
-                referer = '/'.join(url.split('/')[:3]) + '/'
+                referer = "/".join(url.split("/")[:3]) + "/"
 
-            if url.startswith('http'):
-                self.headers.update({
-                    'Referer': referer
-                })
+            if url.startswith("http"):
+                self.headers.update({"Referer": referer})
 
-            logger.info('Downloading a result from {0} at {1}'.format(self.name, url))
+            logger.info("Downloading a result from {0} at {1}".format(self.name, url))
 
-            downloaded_filename = download_file(url, filename, session=self.session, headers=self.headers,
-                                                hooks={'response': self.get_url_hook}, return_filename=True)
+            downloaded_filename = download_file(
+                url, filename, session=self.session, headers=self.headers, hooks={"response": self.get_url_hook}, return_filename=True
+            )
             if downloaded_filename:
                 if self._verify_download(downloaded_filename):
-                    logger.info('Saved result to {0}'.format(downloaded_filename))
+                    logger.info("Saved result to {0}".format(downloaded_filename))
                     return True
 
-                logger.warning('Could not download {0}'.format(url))
+                logger.warning("Could not download {0}".format(url))
                 remove_file_failed(downloaded_filename)
 
         if urls:
-            logger.warning('Failed to download any results')
+            logger.warning("Failed to download any results")
 
         return False
 
     def find_propers(self, search_date=None):
         results = self.cache.list_propers(search_date)
 
-        return [Proper(x['name'], x['url'], datetime.fromtimestamp(x['time']), self.show) for x in results]
+        return [Proper(x["name"], x["url"], datetime.fromtimestamp(x["time"]), self.show) for x in results]
 
-    def find_search_results(self, show, episodes, search_mode,
-                            manual_search=False, download_current_quality=False):
+    def find_search_results(self, show, episodes, search_mode, manual_search=False, download_current_quality=False):
         self._check_auth()
         self.show = show
 
@@ -129,8 +127,7 @@ class GenericProvider(object):
         searched_scene_season = None
 
         for episode in episodes:
-            cache_result = self.cache.search_cache(episode, manual_search=manual_search,
-                                                   down_cur_quality=download_current_quality)
+            cache_result = self.cache.search_cache(episode, manual_search=manual_search, down_cur_quality=download_current_quality)
             if cache_result:
                 if episode.episode not in results:
                     results[episode.episode] = cache_result
@@ -139,15 +136,15 @@ class GenericProvider(object):
 
                 continue
 
-            if len(episodes) > 1 and search_mode == 'sponly' and searched_scene_season == episode.scene_season:
+            if len(episodes) > 1 and search_mode == "sponly" and searched_scene_season == episode.scene_season:
                 continue
 
             search_strings = []
             searched_scene_season = episode.scene_season
 
-            if len(episodes) > 1 and search_mode == 'sponly':
+            if len(episodes) > 1 and search_mode == "sponly":
                 search_strings = self.get_season_search_strings(episode)
-            elif search_mode == 'eponly':
+            elif search_mode == "eponly":
                 search_strings = self.get_episode_search_strings(episode)
 
             for search_string in search_strings:
@@ -183,7 +180,7 @@ class GenericProvider(object):
             size = self._get_size(item)
 
             try:
-                parse_result = NameParser(parse_method=('normal', 'anime')[show.is_anime]).parse(title)
+                parse_result = NameParser(parse_method=("normal", "anime")[show.is_anime]).parse(title)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.debug("{0}".format(error))
                 continue
@@ -197,35 +194,36 @@ class GenericProvider(object):
             actual_season = -1
 
             if not (show_object.air_by_date or show_object.sports):
-                if search_mode == 'sponly':
+                if search_mode == "sponly":
                     if parse_result.episode_numbers:
-                        logger.debug(
-                            'This is supposed to be a season pack search but the result {0} is not a valid season pack, skipping it'.format(title))
+                        logger.debug("This is supposed to be a season pack search but the result {0} is not a valid season pack, skipping it".format(title))
                         skip_release = True
                     elif not [ep for ep in episodes if parse_result.season_number == (ep.season, ep.scene_season)[ep.show.is_scene]]:
-                        logger.info(
-                            'This season result {0} is for a season we are not searching for, skipping it'.format(title),
-                            logger.DEBUG
-                        )
+                        logger.info("This season result {0} is for a season we are not searching for, skipping it".format(title), logger.DEBUG)
                         skip_release = True
 
                 else:
-                    if not all([
+                    if not all(
+                        [
+                            parse_result.season_number is not None,
+                            parse_result.episode_numbers,
+                            [
+                                ep
+                                for ep in episodes
+                                if (ep.season, ep.scene_season)[ep.show.is_scene] == (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene]
+                                and (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers
+                            ],
+                        ]
+                    ) and not all(
+                        [
+                            # fallback for anime on absolute numbering
+                            parse_result.is_anime,
+                            parse_result.ab_episode_numbers is not None,
+                            [ep for ep in episodes if ep.show.is_anime and ep.absolute_number in parse_result.ab_episode_numbers],
+                        ]
+                    ):
 
-                        parse_result.season_number is not None,
-                        parse_result.episode_numbers,
-                        [ep for ep in episodes if (ep.season, ep.scene_season)[ep.show.is_scene] ==
-                         (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene] and
-                         (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers]
-                    ]) and not all([
-                        # fallback for anime on absolute numbering
-                        parse_result.is_anime,
-                        parse_result.ab_episode_numbers is not None,
-                        [ep for ep in episodes if ep.show.is_anime and
-                         ep.absolute_number in parse_result.ab_episode_numbers]
-                    ]):
-
-                        logger.info('The result {0} doesn\'t seem to match an episode that we are currently trying to snatch, skipping it'.format(title))
+                        logger.info("The result {0} doesn't seem to match an episode that we are currently trying to snatch, skipping it".format(title))
                         skip_release = True
 
                 if not skip_release:
@@ -235,34 +233,31 @@ class GenericProvider(object):
                 same_day_special = False
 
                 if not parse_result.is_air_by_date:
-                    logger.debug('This is supposed to be a date search but the result {0} didn\'t parse as one, skipping it'.format(title))
+                    logger.debug("This is supposed to be a date search but the result {0} didn't parse as one, skipping it".format(title))
                     skip_release = True
                 else:
                     air_date = parse_result.air_date.toordinal()
                     db = DBConnection()
-                    sql_results = db.select(
-                        'SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?',
-                        [show_object.indexerid, air_date]
-                    )
+                    sql_results = db.select("SELECT season, episode FROM tv_episodes WHERE showid = ? AND airdate = ?", [show_object.indexerid, air_date])
 
                     if len(sql_results) == 2:
-                        if int(sql_results[0]['season']) == 0 and int(sql_results[1]['season']) != 0:
-                            actual_season = int(sql_results[1]['season'])
-                            actual_episodes = [int(sql_results[1]['episode'])]
+                        if int(sql_results[0]["season"]) == 0 and int(sql_results[1]["season"]) != 0:
+                            actual_season = int(sql_results[1]["season"])
+                            actual_episodes = [int(sql_results[1]["episode"])]
                             same_day_special = True
-                        elif int(sql_results[1]['season']) == 0 and int(sql_results[0]['season']) != 0:
-                            actual_season = int(sql_results[0]['season'])
-                            actual_episodes = [int(sql_results[0]['episode'])]
+                        elif int(sql_results[1]["season"]) == 0 and int(sql_results[0]["season"]) != 0:
+                            actual_season = int(sql_results[0]["season"])
+                            actual_episodes = [int(sql_results[0]["episode"])]
                             same_day_special = True
                     elif len(sql_results) != 1:
-                        logger.warning('Tried to look up the date for the episode {0} but the database didn\'t give proper results, skipping it'.format(title))
+                        logger.warning("Tried to look up the date for the episode {0} but the database didn't give proper results, skipping it".format(title))
                         skip_release = True
 
                     if not skip_release and not same_day_special:
-                        actual_season = int(sql_results[0]['season'])
-                        actual_episodes = [int(sql_results[0]['episode'])]
+                        actual_season = int(sql_results[0]["season"])
+                        actual_episodes = [int(sql_results[0]["episode"])]
 
-            logger.debug('Adding item from search to cache: {0}'.format(title))
+            logger.debug("Adding item from search to cache: {0}".format(title))
 
             ci = self.cache._add_cache_entry(title, url, size, seeders, leechers, parse_result=parse_result)
 
@@ -273,16 +268,15 @@ class GenericProvider(object):
                 continue
 
             for episode_number in actual_episodes:
-                if not show_object.wantEpisode(actual_season, episode_number, quality, manual_search,
-                                               download_current_quality):
+                if not show_object.wantEpisode(actual_season, episode_number, quality, manual_search, download_current_quality):
                     skip_release = True
                     break
 
             if skip_release:
-                logger.debug(_('Ignoring result ') + f'{title}.')
+                logger.debug(_("Ignoring result ") + f"{title}.")
                 continue
 
-            logger.debug(_('Found result {title} at {url}'.format(title=title, url=url)))
+            logger.debug(_("Found result {title} at {url}".format(title=title, url=url)))
 
             episode_object = []
             for current_episode in actual_episodes:
@@ -300,14 +294,13 @@ class GenericProvider(object):
 
             if len(episode_object) == 1:
                 episode_number = episode_object[0].episode
-                logger.debug('Single episode result.')
+                logger.debug("Single episode result.")
             elif len(episode_object) > 1:
                 episode_number = MULTI_EP_RESULT
-                logger.debug('Separating multi-episode result to check for later - result contains episodes: {0}'.format(
-                    parse_result.episode_numbers))
+                logger.debug("Separating multi-episode result to check for later - result contains episodes: {0}".format(parse_result.episode_numbers))
             elif len(episode_object) == 0:
                 episode_number = SEASON_RESULT
-                logger.debug('Separating full season result to check for later')
+                logger.debug("Separating full season result to check for later")
             else:
                 episode_number = None
 
@@ -320,11 +313,11 @@ class GenericProvider(object):
 
             # Access to a protected member of a client class
             cache_db = self.cache._get_db()
-            cache_db.mass_upsert('results', cl)
+            cache_db.mass_upsert("results", cl)
 
         return results
 
-    def get_id(self, suffix=''):
+    def get_id(self, suffix=""):
         return GenericProvider.make_id(self.name) + str(suffix)
 
     def get_quality(self, item, anime=False):
@@ -342,18 +335,17 @@ class GenericProvider(object):
     @staticmethod
     def get_url_hook(response, **kwargs_):
         if response:
-            logger.debug('{0} URL: {1} [Status: {2}]'.format
-                         (response.request.method, response.request.url, response.status_code))
+            logger.debug("{0} URL: {1} [Status: {2}]".format(response.request.method, response.request.url, response.status_code))
 
-            if response.request.method == 'POST':
-                logger.debug('With post data: {0}'.format(response.request.body))
+            if response.request.method == "POST":
+                logger.debug("With post data: {0}".format(response.request.body))
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
-        kwargs['hooks'] = {'response': self.get_url_hook}
+        kwargs["hooks"] = {"response": self.get_url_hook}
         return getURL(url, post_data, params, self.headers, timeout, self.session, **kwargs)
 
     def image_name(self):
-        return self.get_id() + '.png'
+        return self.get_id() + ".png"
 
     @property
     def is_active(self):
@@ -389,15 +381,15 @@ class GenericProvider(object):
     @staticmethod
     def make_id(name):
         if not name:
-            return ''
+            return ""
 
-        return re.sub(r'[^\w\d_]', '_', str(name).strip().lower())
+        return re.sub(r"[^\w\d_]", "_", str(name).strip().lower())
 
     def search_rss(self, episodes):
         return self.cache.find_needed_episodes(episodes)
 
     def seed_ratio(self):
-        return ''
+        return ""
 
     def _check_auth(self):
         return True
@@ -411,146 +403,147 @@ class GenericProvider(object):
     def _get_result(self, episodes):
         return SearchResult(episodes)
 
-    def get_episode_search_strings(self, episode, add_string=''):
+    def get_episode_search_strings(self, episode, add_string=""):
         if not episode:
             return []
 
-        search_string = {
-            'Episode': []
-        }
+        search_string = {"Episode": []}
 
         for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
-            episode_string = show_name + ' '
+            episode_string = show_name + " "
             episode_string_fallback = None
 
             if episode.show.air_by_date:
-                episode_string += str(episode.airdate).replace('-', ' ')
+                episode_string += str(episode.airdate).replace("-", " ")
             elif episode.show.sports:
-                episode_string += str(episode.airdate).replace('-', ' ')
-                episode_string += ('|', ' ')[len(self.proper_strings) > 1]
-                episode_string += episode.airdate.strftime('%b')
+                episode_string += str(episode.airdate).replace("-", " ")
+                episode_string += ("|", " ")[len(self.proper_strings) > 1]
+                episode_string += episode.airdate.strftime("%b")
             elif episode.show.anime:
-                episode_string_fallback = episode_string + '{0:02d}'.format(int(episode.scene_absolute_number))
-                episode_string += '{0:03d}'.format(int(episode.scene_absolute_number))
+                episode_string_fallback = episode_string + "{0:02d}".format(int(episode.scene_absolute_number))
+                episode_string += "{0:03d}".format(int(episode.scene_absolute_number))
             else:
                 episode_string += sickchill.oldbeard.config.naming_ep_type[2] % {
-                    'seasonnumber': episode.scene_season,
-                    'episodenumber': episode.scene_episode,
+                    "seasonnumber": episode.scene_season,
+                    "episodenumber": episode.scene_episode,
                 }
 
             if add_string:
-                episode_string += ' ' + add_string
+                episode_string += " " + add_string
                 if episode_string_fallback:
-                    episode_string_fallback += ' ' + add_string
+                    episode_string_fallback += " " + add_string
 
-            search_string['Episode'].append(episode_string.strip())
+            search_string["Episode"].append(episode_string.strip())
             if episode_string_fallback:
-                search_string['Episode'].append(episode_string_fallback.strip())
+                search_string["Episode"].append(episode_string_fallback.strip())
 
         return [search_string]
 
     def get_season_search_strings(self, episode):
-        search_string = {
-            'Season': []
-        }
+        search_string = {"Season": []}
 
         for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
-            season_string = show_name + ' '
+            season_string = show_name + " "
 
             if episode.show.air_by_date or episode.show.sports:
-                season_string += str(episode.airdate).split('-')[0]
+                season_string += str(episode.airdate).split("-")[0]
             elif episode.show.anime:
                 # use string below if you really want to search on season with number
                 # season_string += 'Season ' + '{0:d}'.format(int(episode.scene_season))
-                season_string += 'Season'  # ignore season number to get all seasons in all formats
+                season_string += "Season"  # ignore season number to get all seasons in all formats
             else:
-                season_string += 'S{0:02d}'.format(int(episode.scene_season))
+                season_string += "S{0:02d}".format(int(episode.scene_season))
 
-            search_string['Season'].append(season_string.strip())
+            search_string["Season"].append(season_string.strip())
 
         return [search_string]
 
     def _get_size(self, item):
         try:
-            return item.get('size', -1)
+            return item.get("size", -1)
         except AttributeError:
             return -1
 
     def _get_seeders_and_leechers(self, item):
         try:
-            return item.get('seeders', -1), item.get('leechers', -1)
+            return item.get("seeders", -1), item.get("leechers", -1)
         except AttributeError:
             return -1, -1
 
     def _get_storage_dir(self):
-        return ''
+        return ""
 
     def _get_title_and_url(self, item):
         if not item:
-            return '', ''
+            return "", ""
 
-        title = item.get('title', '')
-        url = item.get('link', '')
+        title = item.get("title", "")
+        url = item.get("link", "")
 
         if title:
-            title = '' + title.replace(' ', '.')
+            title = "" + title.replace(" ", ".")
         else:
-            title = ''
+            title = ""
 
         if url:
-            url = url.replace('&amp;', '&').replace('%26tr%3D', '&tr=')
+            url = url.replace("&amp;", "&").replace("%26tr%3D", "&tr=")
         else:
-            url = ''
+            url = ""
 
         return title, url
 
     @staticmethod
     def hash_from_magnet(magnet):
         try:
-            torrent_hash = re.findall(r'urn:btih:([\w]{32,40})', magnet)[0].upper()
+            torrent_hash = re.findall(r"urn:btih:([\w]{32,40})", magnet)[0].upper()
             if len(torrent_hash) == 32:
                 torrent_hash = b16encode(b32decode(torrent_hash)).upper()
             return torrent_hash
         except Exception:
-            logger.exception('Unable to extract torrent hash or name from magnet: {0}'.format(magnet))
-            return ''
+            logger.exception("Unable to extract torrent hash or name from magnet: {0}".format(magnet))
+            return ""
 
     def _make_url(self, result):
         if not result:
-            return '', ''
+            return "", ""
 
-        filename = ''
+        filename = ""
 
-        result.url = result.url.replace('http://itorrents.org', 'https://itorrents.org')
+        result.url = result.url.replace("http://itorrents.org", "https://itorrents.org")
 
         urls = [result.url]
-        if result.url.startswith('magnet'):
+        if result.url.startswith("magnet"):
             torrent_hash = self.hash_from_magnet(result.url)
             if not torrent_hash:
                 return urls, filename
 
             try:
-                torrent_name = re.findall('dn=([^&]+)', result.url)[0]
+                torrent_name = re.findall("dn=([^&]+)", result.url)[0]
             except Exception:
-                torrent_name = 'NO_DOWNLOAD_NAME'
+                torrent_name = "NO_DOWNLOAD_NAME"
 
             urls = []
             for cache_url in self.bt_cache_urls:
                 if isinstance(cache_url, tuple):
                     urls.append(
-                        (cache_url[0].format(torrent_hash=torrent_hash, torrent_name=torrent_name),
-                         cache_url[1].format(torrent_hash=torrent_hash, torrent_name=torrent_name)))
+                        (
+                            cache_url[0].format(torrent_hash=torrent_hash, torrent_name=torrent_name),
+                            cache_url[1].format(torrent_hash=torrent_hash, torrent_name=torrent_name),
+                        )
+                    )
                 else:
                     urls.append(cache_url.format(torrent_hash=torrent_hash, torrent_name=torrent_name))
 
-        if 'torrage.info/torrent.php' in result.url:
-            torrent_hash = result.url.split('=')[1]
-            urls = [(
-                'https://t.torrage.info/download?h={torrent_hash}'.format(torrent_hash=torrent_hash),
-                'https://torrage.info/torrent.php?h={torrent_hash}'.format(torrent_hash=torrent_hash)
-            )]
+        if "torrage.info/torrent.php" in result.url:
+            torrent_hash = result.url.split("=")[1]
+            urls = [
+                (
+                    "https://t.torrage.info/download?h={torrent_hash}".format(torrent_hash=torrent_hash),
+                    "https://torrage.info/torrent.php?h={torrent_hash}".format(torrent_hash=torrent_hash),
+                )
+            ]
 
-        filename = join(self._get_storage_dir(), sanitize_filename(result.name) + '.' + self.provider_type)
+        filename = join(self._get_storage_dir(), sanitize_filename(result.name) + "." + self.provider_type)
 
         return urls, filename
 
@@ -565,16 +558,16 @@ class GenericProvider(object):
 
         # This is the generic attribute used to manually add cookies for provider authentication
         if self.enable_cookies and self.cookies:
-            cookie_validator = re.compile(r'^(\w+=[\w%-]+)(;\w+=[\w%-]+)*$')
+            cookie_validator = re.compile(r"^(\w+=[\w%-]+)(;\w+=[\w%-]+)*$")
             if not cookie_validator.match(self.cookies):
-                return False, 'Cookie is not correctly formatted: {0}'.format(self.cookies)
+                return False, "Cookie is not correctly formatted: {0}".format(self.cookies)
 
             new_cookies = {}
-            for cookie in self.cookies.split(';'):
-                key, value = cookie.rsplit('=', 1)
+            for cookie in self.cookies.split(";"):
+                key, value = cookie.rsplit("=", 1)
                 new_cookies[key] = value
 
             add_dict_to_cookiejar(self.session.cookies, new_cookies)
-            return True, 'torrent cookie'
+            return True, "torrent cookie"
 
-        return False, 'No Cookies added from ui for provider: {0}'.format(self.name)
+        return False, "No Cookies added from ui for provider: {0}".format(self.name)

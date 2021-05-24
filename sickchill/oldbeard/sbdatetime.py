@@ -7,69 +7,69 @@ from sickchill import settings
 from .network_timezones import sb_timezone
 
 date_presets = (
-    '%Y-%m-%d',
-    '%a, %Y-%m-%d',
-    '%A, %Y-%m-%d',
-    '%y-%m-%d',
-    '%a, %y-%m-%d',
-    '%A, %y-%m-%d',
-    '%m/%d/%Y',
-    '%a, %m/%d/%Y',
-    '%A, %m/%d/%Y',
-    '%m/%d/%y',
-    '%a, %m/%d/%y',
-    '%A, %m/%d/%y',
-    '%m-%d-%Y',
-    '%a, %m-%d-%Y',
-    '%A, %m-%d-%Y',
-    '%m-%d-%y',
-    '%a, %m-%d-%y',
-    '%A, %m-%d-%y',
-    '%m.%d.%Y',
-    '%a, %m.%d.%Y',
-    '%A, %m.%d.%Y',
-    '%m.%d.%y',
-    '%a, %m.%d.%y',
-    '%A, %m.%d.%y',
-    '%d-%m-%Y',
-    '%a, %d-%m-%Y',
-    '%A, %d-%m-%Y',
-    '%d-%m-%y',
-    '%a, %d-%m-%y',
-    '%A, %d-%m-%y',
-    '%d/%m/%Y',
-    '%a, %d/%m/%Y',
-    '%A, %d/%m/%Y',
-    '%d/%m/%y',
-    '%a, %d/%m/%y',
-    '%A, %d/%m/%y',
-    '%d.%m.%Y',
-    '%a, %d.%m.%Y',
-    '%A, %d.%m.%Y',
-    '%d.%m.%y',
-    '%a, %d.%m.%y',
-    '%A, %d.%m.%y',
-    '%d. %b %Y',
-    '%a, %d. %b %Y',
-    '%A, %d. %b %Y',
-    '%d. %b %y',
-    '%a, %d. %b %y',
-    '%A, %d. %b %y',
-    '%d. %B %Y',
-    '%a, %d. %B %Y',
-    '%A, %d. %B %Y',
-    '%d. %B %y',
-    '%a, %d. %B %y',
-    '%A, %d. %B %y',
-    '%b %d, %Y',
-    '%a, %b %d, %Y',
-    '%A, %b %d, %Y',
-    '%B %d, %Y',
-    '%a, %B %d, %Y',
-    '%A, %B %d, %Y'
+    "%Y-%m-%d",
+    "%a, %Y-%m-%d",
+    "%A, %Y-%m-%d",
+    "%y-%m-%d",
+    "%a, %y-%m-%d",
+    "%A, %y-%m-%d",
+    "%m/%d/%Y",
+    "%a, %m/%d/%Y",
+    "%A, %m/%d/%Y",
+    "%m/%d/%y",
+    "%a, %m/%d/%y",
+    "%A, %m/%d/%y",
+    "%m-%d-%Y",
+    "%a, %m-%d-%Y",
+    "%A, %m-%d-%Y",
+    "%m-%d-%y",
+    "%a, %m-%d-%y",
+    "%A, %m-%d-%y",
+    "%m.%d.%Y",
+    "%a, %m.%d.%Y",
+    "%A, %m.%d.%Y",
+    "%m.%d.%y",
+    "%a, %m.%d.%y",
+    "%A, %m.%d.%y",
+    "%d-%m-%Y",
+    "%a, %d-%m-%Y",
+    "%A, %d-%m-%Y",
+    "%d-%m-%y",
+    "%a, %d-%m-%y",
+    "%A, %d-%m-%y",
+    "%d/%m/%Y",
+    "%a, %d/%m/%Y",
+    "%A, %d/%m/%Y",
+    "%d/%m/%y",
+    "%a, %d/%m/%y",
+    "%A, %d/%m/%y",
+    "%d.%m.%Y",
+    "%a, %d.%m.%Y",
+    "%A, %d.%m.%Y",
+    "%d.%m.%y",
+    "%a, %d.%m.%y",
+    "%A, %d.%m.%y",
+    "%d. %b %Y",
+    "%a, %d. %b %Y",
+    "%A, %d. %b %Y",
+    "%d. %b %y",
+    "%a, %d. %b %y",
+    "%A, %d. %b %y",
+    "%d. %B %Y",
+    "%a, %d. %B %Y",
+    "%A, %d. %B %Y",
+    "%d. %B %y",
+    "%a, %d. %B %y",
+    "%A, %d. %B %y",
+    "%b %d, %Y",
+    "%a, %b %d, %Y",
+    "%A, %b %d, %Y",
+    "%B %d, %Y",
+    "%a, %B %d, %Y",
+    "%A, %B %d, %Y",
 )
 
-time_presets = ('%I:%M:%S %p', '%H:%M:%S')
+time_presets = ("%I:%M:%S %p", "%H:%M:%S")
 
 
 # helper class
@@ -84,12 +84,12 @@ class static_or_instance(object):
 # subclass datetime.datetime to add function to display custom date and time formats
 class sbdatetime(datetime.datetime):
     has_locale = True
-    en_US_norm = locale.normalize('en_US.utf-8')
+    en_US_norm = locale.normalize("en_US.utf-8")
 
     @static_or_instance
     def convert_to_setting(self, dt=None):
         try:
-            if settings.TIMEZONE_DISPLAY == 'local':
+            if settings.TIMEZONE_DISPLAY == "local":
                 return dt.astimezone(sb_timezone) if self is None else self.astimezone(sb_timezone)
             else:
                 return dt if self is None else self
@@ -110,13 +110,13 @@ class sbdatetime(datetime.datetime):
         """
 
         try:
-            locale.setlocale(locale.LC_TIME, '')
+            locale.setlocale(locale.LC_TIME, "")
         except Exception:
             pass
 
         try:
             if sbdatetime.has_locale:
-                locale.setlocale(locale.LC_TIME, 'en_US')
+                locale.setlocale(locale.LC_TIME, "en_US")
         except Exception:
             try:
                 if sbdatetime.has_locale:
@@ -124,7 +124,7 @@ class sbdatetime(datetime.datetime):
             except Exception:
                 sbdatetime.has_locale = False
 
-        strt = ''
+        strt = ""
         try:
             if self is None:
                 if dt is not None:
@@ -144,7 +144,7 @@ class sbdatetime(datetime.datetime):
         finally:
             try:
                 if sbdatetime.has_locale:
-                    locale.setlocale(locale.LC_TIME, '')
+                    locale.setlocale(locale.LC_TIME, "")
             except Exception:
                 sbdatetime.has_locale = False
 
@@ -163,11 +163,11 @@ class sbdatetime(datetime.datetime):
         """
 
         try:
-            locale.setlocale(locale.LC_TIME, '')
+            locale.setlocale(locale.LC_TIME, "")
         except Exception:
             pass
 
-        strd = ''
+        strd = ""
         try:
             if self is None:
                 if dt is not None:
@@ -181,12 +181,12 @@ class sbdatetime(datetime.datetime):
                 else:
                     strd = self.strftime(settings.DATE_PRESET)
         except (ValueError, OSError):
-            strd = 'UNK'
+            strd = "UNK"
 
         finally:
 
             try:
-                locale.setlocale(locale.LC_TIME, '')
+                locale.setlocale(locale.LC_TIME, "")
             except Exception:
                 pass
 
@@ -207,11 +207,11 @@ class sbdatetime(datetime.datetime):
         """
 
         try:
-            locale.setlocale(locale.LC_TIME, '')
+            locale.setlocale(locale.LC_TIME, "")
         except Exception:
             pass
 
-        strd = ''
+        strd = ""
         try:
             if self is None:
                 if dt is not None:
@@ -221,7 +221,7 @@ class sbdatetime(datetime.datetime):
                         strd = dt.strftime(settings.DATE_PRESET)
                     try:
                         if sbdatetime.has_locale:
-                            locale.setlocale(locale.LC_TIME, 'en_US')
+                            locale.setlocale(locale.LC_TIME, "en_US")
                     except Exception:
                         try:
                             if sbdatetime.has_locale:
@@ -229,11 +229,11 @@ class sbdatetime(datetime.datetime):
                         except Exception:
                             sbdatetime.has_locale = False
                     if t_preset is not None:
-                        strd += ', ' + dt.strftime(t_preset)
+                        strd += ", " + dt.strftime(t_preset)
                     elif show_seconds:
-                        strd += ', ' + dt.strftime(settings.TIME_PRESET_W_SECONDS)
+                        strd += ", " + dt.strftime(settings.TIME_PRESET_W_SECONDS)
                     else:
-                        strd += ', ' + dt.strftime(settings.TIME_PRESET)
+                        strd += ", " + dt.strftime(settings.TIME_PRESET)
             else:
                 if d_preset is not None:
                     strd = self.strftime(d_preset)
@@ -241,7 +241,7 @@ class sbdatetime(datetime.datetime):
                     strd = self.strftime(settings.DATE_PRESET)
                 try:
                     if sbdatetime.has_locale:
-                        locale.setlocale(locale.LC_TIME, 'en_US')
+                        locale.setlocale(locale.LC_TIME, "en_US")
                 except Exception:
                     try:
                         if sbdatetime.has_locale:
@@ -249,17 +249,17 @@ class sbdatetime(datetime.datetime):
                     except Exception:
                         sbdatetime.has_locale = False
                 if t_preset is not None:
-                    strd += ', ' + self.strftime(t_preset)
+                    strd += ", " + self.strftime(t_preset)
                 elif show_seconds:
-                    strd += ', ' + self.strftime(settings.TIME_PRESET_W_SECONDS)
+                    strd += ", " + self.strftime(settings.TIME_PRESET_W_SECONDS)
                 else:
-                    strd += ', ' + self.strftime(settings.TIME_PRESET)
+                    strd += ", " + self.strftime(settings.TIME_PRESET)
         except (ValueError, OSError):
-            strd = 'UNK'
+            strd = "UNK"
         finally:
             try:
                 if sbdatetime.has_locale:
-                    locale.setlocale(locale.LC_TIME, '')
+                    locale.setlocale(locale.LC_TIME, "")
             except Exception:
                 sbdatetime.has_locale = False
 

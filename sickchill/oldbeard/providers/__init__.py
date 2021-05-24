@@ -3,20 +3,120 @@ from random import shuffle
 
 import sickchill.oldbeard.helpers
 from sickchill import settings
-from sickchill.oldbeard.providers import (abnormal, alpharatio, archetorrent, binsearch, bitcannon, bjshare, btn, cpasbien, danishbits, demonoid, elitetorrent,
-                                          eztv, filelist, gftracker, gimmepeers, hd4free, hdbits, hdspace, hdtorrents, hdtorrents_it, horriblesubs, hounddawgs,
-                                          ilcorsaronero, immortalseed, iptorrents, kat, limetorrents, magnetdl, morethantv, ncore, nebulance, newpct, norbits,
-                                          nyaa, omgwtfnzbs, pretome, rarbg, scc, scenetime, shazbat, skytorrents, speedcd, thepiratebay, tntvillage,
-                                          tokyotoshokan, torrent9, torrent_paradise, torrentbytes, torrentday, torrentleech, torrentproject, torrentz,
-                                          tvchaosuk, xthor, yggtorrent)
+from sickchill.oldbeard.providers import (
+    abnormal,
+    alpharatio,
+    archetorrent,
+    binsearch,
+    bitcannon,
+    bjshare,
+    btn,
+    cpasbien,
+    danishbits,
+    demonoid,
+    elitetorrent,
+    eztv,
+    filelist,
+    gftracker,
+    gimmepeers,
+    hd4free,
+    hdbits,
+    hdspace,
+    hdtorrents,
+    hdtorrents_it,
+    horriblesubs,
+    hounddawgs,
+    ilcorsaronero,
+    immortalseed,
+    iptorrents,
+    kat,
+    limetorrents,
+    magnetdl,
+    morethantv,
+    ncore,
+    nebulance,
+    newpct,
+    norbits,
+    nyaa,
+    omgwtfnzbs,
+    pretome,
+    rarbg,
+    scc,
+    scenetime,
+    shazbat,
+    skytorrents,
+    speedcd,
+    thepiratebay,
+    tntvillage,
+    tokyotoshokan,
+    torrent9,
+    torrent_paradise,
+    torrentbytes,
+    torrentday,
+    torrentleech,
+    torrentproject,
+    torrentz,
+    tvchaosuk,
+    xthor,
+    yggtorrent,
+)
 
 __all__ = [
-    'abnormal', 'alpharatio', 'archetorrent', 'binsearch', 'bitcannon', 'bjshare', 'btn', 'cpasbien', 'danishbits', 'demonoid',
-    'elitetorrent', 'eztv', 'filelist', 'gftracker', 'gimmepeers', 'hd4free', 'hdbits', 'hdspace', 'hdtorrents', 'hdtorrents_it',
-    'horriblesubs', 'hounddawgs', 'ilcorsaronero', 'immortalseed', 'iptorrents', 'kat', 'limetorrents', 'magnetdl', 'morethantv',
-    'ncore', 'nebulance', 'newpct', 'norbits', 'nyaa', 'omgwtfnzbs', 'pretome', 'rarbg', 'scc', 'scenetime',
-    'shazbat', 'skytorrents', 'speedcd', 'thepiratebay', 'tntvillage', 'tokyotoshokan', 'torrent9', 'torrent_paradise',
-    'torrentbytes', 'torrentday', 'torrentleech', 'torrentproject', 'torrentz', 'tvchaosuk', 'xthor', 'yggtorrent'
+    "abnormal",
+    "alpharatio",
+    "archetorrent",
+    "binsearch",
+    "bitcannon",
+    "bjshare",
+    "btn",
+    "cpasbien",
+    "danishbits",
+    "demonoid",
+    "elitetorrent",
+    "eztv",
+    "filelist",
+    "gftracker",
+    "gimmepeers",
+    "hd4free",
+    "hdbits",
+    "hdspace",
+    "hdtorrents",
+    "hdtorrents_it",
+    "horriblesubs",
+    "hounddawgs",
+    "ilcorsaronero",
+    "immortalseed",
+    "iptorrents",
+    "kat",
+    "limetorrents",
+    "magnetdl",
+    "morethantv",
+    "ncore",
+    "nebulance",
+    "newpct",
+    "norbits",
+    "nyaa",
+    "omgwtfnzbs",
+    "pretome",
+    "rarbg",
+    "scc",
+    "scenetime",
+    "shazbat",
+    "skytorrents",
+    "speedcd",
+    "thepiratebay",
+    "tntvillage",
+    "tokyotoshokan",
+    "torrent9",
+    "torrent_paradise",
+    "torrentbytes",
+    "torrentday",
+    "torrentleech",
+    "torrentproject",
+    "torrentz",
+    "tvchaosuk",
+    "xthor",
+    "yggtorrent",
 ]
 
 broken_providers = [
@@ -66,9 +166,7 @@ def getProviderModule(name):
 
 
 def getProviderClass(provider_id):
-    providerMatch = [x for x in
-                     settings.providerList + settings.newznabProviderList + settings.torrentRssProviderList if
-                     x and x.get_id() == provider_id]
+    providerMatch = [x for x in settings.providerList + settings.newznabProviderList + settings.torrentRssProviderList if x and x.get_id() == provider_id]
 
     if len(providerMatch) != 1:
         return None
@@ -91,11 +189,12 @@ def check_enabled_providers():
                     break
 
         if not (daily_enabled and backlog_enabled):
-            searches = ((_('daily searches and backlog searches'), _('daily searches'))[backlog_enabled],
-                        _('backlog searches'))[daily_enabled]
-            formatted_msg = _('No NZB/Torrent providers found or enabled for {searches}.<br/>'
-                              'Please <a href="{web_root}/config/providers/">check your settings</a>.')
-            sickchill.oldbeard.helpers.add_site_message(formatted_msg.format(searches=searches, web_root=settings.WEB_ROOT),
-                                                        tag='no_providers_enabled', level='danger')
+            searches = ((_("daily searches and backlog searches"), _("daily searches"))[backlog_enabled], _("backlog searches"))[daily_enabled]
+            formatted_msg = _(
+                "No NZB/Torrent providers found or enabled for {searches}.<br/>" 'Please <a href="{web_root}/config/providers/">check your settings</a>.'
+            )
+            sickchill.oldbeard.helpers.add_site_message(
+                formatted_msg.format(searches=searches, web_root=settings.WEB_ROOT), tag="no_providers_enabled", level="danger"
+            )
         else:
-            sickchill.oldbeard.helpers.remove_site_message(tag='no_providers_enabled')
+            sickchill.oldbeard.helpers.remove_site_message(tag="no_providers_enabled")

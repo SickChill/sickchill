@@ -7,8 +7,8 @@ from sickchill.oldbeard.clients.generic import GenericClient
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
 
-        super().__init__('put.io', host, username, password)
-        self.url = 'https://api.put.io/login'
+        super().__init__("put.io", host, username, password)
+        self.url = "https://api.put.io/login"
 
     def _get_auth(self):
         client = PutioClient(self.password)
@@ -25,7 +25,7 @@ class Client(GenericClient):
     @property
     def _parent_id(self):
         parent_id = 0
-        if self.username is not None and self.username != '':
+        if self.username is not None and self.username != "":
             for f in self.auth.File.list():
                 if f.name == self.username:
                     parent_id = f.id
@@ -39,7 +39,7 @@ class Client(GenericClient):
         return transfer.id is not None
 
     def _add_torrent_file(self, result):
-        filename = result.name + '.torrent'
+        filename = result.name + ".torrent"
         transfer = self.auth.Transfer.add_torrent(filename, self._parent_id)
 
         return transfer.id is not None

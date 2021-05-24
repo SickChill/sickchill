@@ -2,7 +2,6 @@ from . import aniDBfileInfo as fileInfo
 
 
 class TvDBMap(object):
-
     def __init__(self, filePath=None):
         self.xmlMap = fileInfo.read_tvdb_map_xml(filePath)
 

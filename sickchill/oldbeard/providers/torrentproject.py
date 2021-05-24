@@ -7,7 +7,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-
     def __init__(self):
 
         # Provider Init
@@ -21,7 +20,7 @@ class Provider(TorrentProvider):
         self.minleech = 0
 
         # URLs
-        self.url = 'https://torrentproject.to/'
+        self.url = "https://torrentproject.to/"
 
         self.custom_url = None
 
@@ -29,17 +28,12 @@ class Provider(TorrentProvider):
         # Proper Strings
 
         # Cache
-        self.cache = tvcache.TVCache(self, search_params={'RSS': ['0day']})
+        self.cache = tvcache.TVCache(self, search_params={"RSS": ["0day"]})
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
 
-        search_params = {
-            'out': 'json',
-            'filter': 2101,
-            'showmagnets': 'on',
-            'num': 50
-        }
+        search_params = {"out": "json", "filter": 2101, "showmagnets": "on", "num": 50}
 
         for mode in search_strings:  # Mode = RSS, Season, Episode
             items = []
@@ -47,10 +41,10 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
 
-                if mode != 'RSS':
+                if mode != "RSS":
                     logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
 
-                search_params['s'] = search_string
+                search_params["s"] = search_string
 
                 if self.custom_url:
                     if not validators.url(self.custom_url):
@@ -60,7 +54,7 @@ class Provider(TorrentProvider):
                 else:
                     search_url = self.url
 
-                torrents = self.get_url(search_url, params=search_params, returns='json')
+                torrents = self.get_url(search_url, params=search_params, returns="json")
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
                     logger.debug("Data returned from provider does not contain any torrents")
                     continue
@@ -73,7 +67,7 @@ class Provider(TorrentProvider):
                     seeders = try_int(torrents[i]["seeds"], 1)
                     leechers = try_int(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
-                        if mode != 'RSS':
+                        if mode != "RSS":
                             logger.debug("Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title))
                         continue
 
@@ -87,16 +81,15 @@ class Provider(TorrentProvider):
                     if not all([title, download_url]):
                         continue
 
-                    item = {'title': title, 'link': download_url, 'size': size, 'seeders': seeders, 'leechers': leechers, 'hash': t_hash}
+                    item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": t_hash}
 
-                    if mode != 'RSS':
-                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format
-                                     (title, seeders, leechers))
+                    if mode != "RSS":
+                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                     items.append(item)
 
             # For each search mode sort all the items by seeders if available
-            items.sort(key=lambda d: try_int(d.get('seeders', 0)), reverse=True)
+            items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
             results += items
 
         return results

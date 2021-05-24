@@ -25,9 +25,9 @@ $(document).ready(() => {
             url += '&profile=1';
         }
 
-        const requestTime = new Date().getTime();
+        const requestTime = new Date.now();
         $.get(url, (data, textStatus, jqXHR) => {
-            const responseTime = new Date().getTime() - requestTime;
+            const responseTime = new Date.now() - requestTime;
             const jsonp = $('#option-jsonp').is(':checked');
             const responseType = jqXHR.getResponseHeader('content-type') || '';
             const target = $(targetId);

@@ -20,11 +20,12 @@ class ComingEpisodes(object):
     Soon:     tomorrow till next week
     Later:    later than next week
     """
-    categories = ['snatched', 'missed', 'today', 'soon', 'later']
+
+    categories = ["snatched", "missed", "today", "soon", "later"]
     sorts = {
-        'date': itemgetter('snatchedsort', 'localtime', 'episode'),
-        'network': itemgetter('network', 'localtime', 'episode'),
-        'show': itemgetter('show_name', 'localtime', 'episode'),
+        "date": itemgetter("snatchedsort", "localtime", "episode"),
+        "network": itemgetter("network", "localtime", "episode"),
+        "show": itemgetter("show_name", "localtime", "episode"),
     }
 
     def __init__(self):
@@ -47,11 +48,28 @@ class ComingEpisodes(object):
         recently = (date.today() - timedelta(days=settings.COMING_EPS_MISSED_RANGE)).toordinal()
         next_week = (date.today() + timedelta(days=7)).toordinal()
 
-        db = DBConnection(row_type='dict')
-        fields_to_select = ', '.join(
-            ['airdate', 'airs', 'e.description as description', 'episode', 'imdb_id', 'e.indexer', 'indexer_id',
-             'e.location', 'name', 'network', 'paused', 'quality', 'runtime', 'season', 'show_name', 'showid',
-             'e.status as epstatus', 's.status']
+        db = DBConnection(row_type="dict")
+        fields_to_select = ", ".join(
+            [
+                "airdate",
+                "airs",
+                "e.description as description",
+                "episode",
+                "imdb_id",
+                "e.indexer",
+                "indexer_id",
+                "e.location",
+                "name",
+                "network",
+                "paused",
+                "quality",
+                "runtime",
+                "season",
+                "show_name",
+                "showid",
+                "e.status as epstatus",
+                "s.status",
+            ]
         )
 
         status_list = [WANTED, UNAIRED] + SNATCHED
@@ -61,14 +79,13 @@ class ComingEpisodes(object):
             next_air_date = show_obj.nextEpisode()
             sql_l.append(
                 [
-                    'SELECT DISTINCT {0} '.format(fields_to_select) +
-                    'FROM tv_episodes e, tv_shows s '
-                    'WHERE showid = ? '
-                    'AND airdate <= ? '
-                    'AND airdate >= ? '
-                    'AND s.indexer_id = e.showid '
-                    'AND e.status IN (' + ','.join(['?'] * len(status_list)) + ')',
-                    [show_obj.indexerid, next_air_date or today, recently] + status_list
+                    "SELECT DISTINCT {0} ".format(fields_to_select) + "FROM tv_episodes e, tv_shows s "
+                    "WHERE showid = ? "
+                    "AND airdate <= ? "
+                    "AND airdate >= ? "
+                    "AND s.indexer_id = e.showid "
+                    "AND e.status IN (" + ",".join(["?"] * len(status_list)) + ")",
+                    [show_obj.indexerid, next_air_date or today, recently] + status_list,
                 ]
             )
 
@@ -80,9 +97,8 @@ class ComingEpisodes(object):
                 results = db.select(*sql_i)
 
         for index, item in enumerate(results):
-            results[index]['localtime'] = sbdatetime.convert_to_setting(
-                parse_date_time(item['airdate'], item['airs'], item['network']))
-            results[index]['snatchedsort'] = int(not results[index]['epstatus'] in SNATCHED)
+            results[index]["localtime"] = sbdatetime.convert_to_setting(parse_date_time(item["airdate"], item["airs"], item["network"]))
+            results[index]["snatchedsort"] = int(not results[index]["epstatus"] in SNATCHED)
 
         results.sort(key=ComingEpisodes.sorts[sort])
 
@@ -92,38 +108,38 @@ class ComingEpisodes(object):
         grouped_results = ComingEpisodes._get_categories_map(categories)
 
         for result in results:
-            if result['paused'] and not paused:
+            if result["paused"] and not paused:
                 continue
 
-            result['airs'] = str(result['airs']).replace('am', ' AM').replace('pm', ' PM').replace('  ', ' ')
-            result['airdate'] = result['localtime'].toordinal()
+            result["airs"] = str(result["airs"]).replace("am", " AM").replace("pm", " PM").replace("  ", " ")
+            result["airdate"] = result["localtime"].toordinal()
 
-            if result['epstatus'] in SNATCHED:
-                if result['location']:
+            if result["epstatus"] in SNATCHED:
+                if result["location"]:
                     continue
                 else:
-                    category = 'snatched'
-            elif result['airdate'] < today:
-                category = 'missed'
-            elif result['airdate'] >= next_week:
-                category = 'later'
-            elif result['airdate'] == today:
-                category = 'today'
+                    category = "snatched"
+            elif result["airdate"] < today:
+                category = "missed"
+            elif result["airdate"] >= next_week:
+                category = "later"
+            elif result["airdate"] == today:
+                category = "today"
             else:
-                category = 'soon'
+                category = "soon"
 
             if len(categories) > 0 and category not in categories:
                 continue
 
-            if not result['network']:
-                result['network'] = ''
+            if not result["network"]:
+                result["network"] = ""
 
-            result['quality'] = get_quality_string(result['quality'])
-            result['airs'] = sbdatetime.sbftime(result['localtime'], t_preset=timeFormat).lstrip('0').replace(' 0', ' ')
-            result['weekday'] = 1 + result['localtime'].weekday()
-            result['tvdbid'] = result['indexer_id']
-            result['airdate'] = sbdatetime.sbfdate(result['localtime'], d_preset=dateFormat)
-            result['localtime'] = result['localtime'].toordinal()
+            result["quality"] = get_quality_string(result["quality"])
+            result["airs"] = sbdatetime.sbftime(result["localtime"], t_preset=timeFormat).lstrip("0").replace(" 0", " ")
+            result["weekday"] = 1 + result["localtime"].weekday()
+            result["tvdbid"] = result["indexer_id"]
+            result["airdate"] = sbdatetime.sbfdate(result["localtime"], d_preset=dateFormat)
+            result["localtime"] = result["localtime"].toordinal()
 
             grouped_results[category].append(result)
 
@@ -135,7 +151,7 @@ class ComingEpisodes(object):
             return []
 
         if not isinstance(categories, list):
-            return categories.split('|')
+            return categories.split("|")
 
         return categories
 
@@ -148,9 +164,9 @@ class ComingEpisodes(object):
 
     @staticmethod
     def _get_sort(sort):
-        sort = sort.lower() if sort else ''
+        sort = sort.lower() if sort else ""
 
         if sort not in list(ComingEpisodes.sorts):
-            return 'date'
+            return "date"
 
         return sort

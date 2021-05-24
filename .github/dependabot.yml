@@ -1,0 +1,20 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  target-branch: develop
+  ignore:
+  - dependency-name: tmdbsimple
+    versions:
+    - ">= 2.3.a, < 2.4"
+  - dependency-name: sqlalchemy
+    versions:
+    - 1.4.4
+    - 1.4.8
+    - 1.4.9
+  - dependency-name: qbittorrent-api
+    versions:
+    - 2021.4.19

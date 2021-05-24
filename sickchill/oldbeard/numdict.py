@@ -1,4 +1,4 @@
-from collections import MutableMapping
+from collections.abc import MutableMapping
 
 
 class NumDict(MutableMapping):
@@ -20,7 +20,7 @@ class NumDict(MutableMapping):
 
     def __init__(self, iterable=None, **kwargs):
         self.data = {}
-        iterable = kwargs.pop('dict', None) if iterable is None else iterable
+        iterable = kwargs.pop("dict", None) if iterable is None else iterable
         if iterable is not None:
             self.update(iterable)
         if kwargs:
@@ -80,6 +80,7 @@ class NumDict(MutableMapping):
         if self.__class__ is NumDict:
             return NumDict(self.data.copy())
         import copy
+
         data = self.data
         try:
             self.data = {}

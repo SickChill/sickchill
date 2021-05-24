@@ -17,19 +17,19 @@ class NZBProvider(GenericProvider):
 
     def _get_result(self, episodes):
         result = NZBSearchResult(episodes)
-        if self.torznab or result.url.startswith('magnet'):
+        if self.torznab or result.url.startswith("magnet"):
             result.resultType = GenericProvider.TORRENT
 
         return result
 
     def _get_size(self, item):
         try:
-            size = item.get('links')[1].get('length', -1)
+            size = item.get("links")[1].get("length", -1)
         except (AttributeError, IndexError, TypeError):
             size = -1
 
         if not size:
-            logger.debug('The size was not found in the provider response')
+            logger.debug("The size was not found in the provider response")
 
         return try_int(size, -1)
 

@@ -12,14 +12,14 @@ def getShowImage(url, imgNum=None):
 
     # if they provided a fanart number try to use it instead
     if imgNum is not None:
-        temp_url = url.split('-')[0] + "-" + str(imgNum) + ".jpg"
+        temp_url = url.split("-")[0] + "-" + str(imgNum) + ".jpg"
     else:
         temp_url = url
 
     logger.debug("Fetching image from " + temp_url)
 
     try:
-        image_data = helpers.getURL(temp_url, session=meta_session, returns='content', allow_proxy=settings.PROXY_INDEXERS)
+        image_data = helpers.getURL(temp_url, session=meta_session, returns="content", allow_proxy=settings.PROXY_INDEXERS)
     except requests.exceptions.RequestException:
         image_data = None
 

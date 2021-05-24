@@ -12,7 +12,7 @@ from .__deluge_base import DelugeBase
 
 class Client(GenericClient, DelugeBase):
     def __init__(self, host=None, username=None, password=None):
-        super().__init__('DelugeD', host, username, password)
+        super().__init__("DelugeD", host, username, password)
         self.client = None
 
     def setup(self):
@@ -22,7 +22,7 @@ class Client(GenericClient, DelugeBase):
                 self.client.host == parsed_url.hostname,
                 self.client.port == parsed_url.port,
                 self.client.username == self.username,
-                self.client.password == self.password
+                self.client.password == self.password,
             ]
         ):
             return
@@ -59,7 +59,7 @@ class Client(GenericClient, DelugeBase):
             result.content = {}
             return None
 
-        remote_torrent = self.client.core.add_torrent_file(result.name + '.torrent', b64encode(result.content).decode('ascii'), self.make_options(result))
+        remote_torrent = self.client.core.add_torrent_file(result.name + ".torrent", b64encode(result.content).decode("ascii"), self.make_options(result))
         if not remote_torrent:
             return None
 
@@ -72,38 +72,38 @@ class Client(GenericClient, DelugeBase):
         label = settings.TORRENT_LABEL.lower()
         if result.show.is_anime:
             label = settings.TORRENT_LABEL_ANIME.lower()
-        if ' ' in label:
-            logger.exception(f'{self.name}: Invalid label. Label must not contain a space')
+        if " " in label:
+            logger.exception(f"{self.name}: Invalid label. Label must not contain a space")
             return False
 
         if label:
             try:
 
-                if 'label' not in [x.decode().lower() for x in self.client.core.get_available_plugins()]:
-                    logger.debug(f'{self.name}: label plugin not detected')
+                if "label" not in [x.decode().lower() for x in self.client.core.get_available_plugins()]:
+                    logger.debug(f"{self.name}: label plugin not detected")
                     return False
 
-                self.client.core.enable_plugin('Label')
-                self.client.core.enable_plugin('label')
+                self.client.core.enable_plugin("Label")
+                self.client.core.enable_plugin("label")
 
                 labels = [x.decode() for x in self.client.label.get_labels()]
                 if label not in labels:
-                    logger.debug(f'{self.name}: {label} label does not exist in Deluge we must add it')
+                    logger.debug(f"{self.name}: {label} label does not exist in Deluge we must add it")
                     self.client.label.add(label)
-                    logger.debug(f'{self.name}: [{label}] label added to deluge')
+                    logger.debug(f"{self.name}: [{label}] label added to deluge")
 
                 self.client.label.set_torrent(result.hash, label)
             except Exception as error:
-                logger.info(f'{self.name}: Could not add label to torrent')
+                logger.info(f"{self.name}: Could not add label to torrent")
                 logger.debug(error)
                 # logger.debug(self.client.daemon.get_method_list())
                 return False
 
-        logger.debug(f'{self.name}: [{label}] label added to torrent')
+        logger.debug(f"{self.name}: [{label}] label added to torrent")
         return True
 
     def testAuthentication(self):
         if self._get_auth() and self.client.daemon.info():
-            return True, 'Success: Connected and Authenticated'
+            return True, "Success: Connected and Authenticated"
         else:
-            return False, 'Error: Unable to Authenticate!  Please check your config!'
+            return False, "Error: Unable to Authenticate!  Please check your config!"
