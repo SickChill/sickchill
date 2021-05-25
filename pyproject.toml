@@ -252,7 +252,7 @@ requests = "^2.25.1"
 IMDbPY = ">=2020.09.25"
 
 [tool.poetry.dev-dependencies]
-coveralls = "^3.0.1"
+coveralls = "^3.1.0"
 mock = "^4.0.3"
 Babel = "^2.9.0"
 wheel = "^0.36.2"
