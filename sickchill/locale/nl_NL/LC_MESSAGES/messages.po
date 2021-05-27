@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-05-27 16:34\n"
+"PO-Revision-Date: 2021-05-27 16:45\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -242,7 +242,7 @@ msgstr "Behandel als video (verwerk archieven als archief)"
 
 #: sickchill/show_updater.py:49
 msgid "No last update time from the cache, so we do a full update for all shows"
-msgstr ""
+msgstr "Geen laatste update tijd uit de cache, dus doen we een volledige update voor alle series"
 
 #: sickchill/show_updater.py:72
 msgid "Automatic update failed: {0}"
@@ -250,7 +250,7 @@ msgstr "Automatische update mislukt: {0}"
 
 #: sickchill/tv.py:487
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
-msgstr ""
+msgstr "{show_id}: Alle afleveringen van {indexer_name} worden geladen..."
 
 #: sickchill/tv.py:1768
 msgid "Deleting {show} {ep} from the DB"
@@ -274,7 +274,7 @@ msgstr "Kan GitHub niet correct instellen als gevolg van 2FA - Controleer of dit
 
 #: sickchill/helper/common.py:346
 msgid "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}"
-msgstr ""
+msgstr "Kan GitHub niet correct instellen, je wordt momenteel gehinderd door de limiet voor te veel verzoeken. Fout: {0}"
 
 #: sickchill/helper/common.py:349
 msgid "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}"
@@ -1087,7 +1087,7 @@ msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:320
 msgid "Unable to create the folder {0}, can't add the show"
-msgstr ""
+msgstr "Niet mogelijk om de map {0} aan te maken, kon de serie niet toevoegen"
 
 #: sickchill/oldbeard/show_queue.py:329
 msgid "Show in {0} has no name on {1}, probably searched with the wrong language. Delete .nfo and add manually in the correct language."
@@ -1099,7 +1099,7 @@ msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:421
 msgid "The show in {0} is already in your show list, skipping"
-msgstr ""
+msgstr "De serie in {0} staat al in uw serie lijst en wordt overgeslagen"
 
 #: sickchill/oldbeard/show_queue.py:423
 msgid "Show skipped"
@@ -1107,32 +1107,32 @@ msgstr "Show overgeslagen"
 
 #: sickchill/oldbeard/show_queue.py:684
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
-msgstr ""
+msgstr "Niet in staat om serie te verwijderen uit Trakt: {0}. Fout: {1}"
 
 #: sickchill/oldbeard/show_queue.py:710
 msgid "Some notifications could not be sent. Continuing removal of {}..."
-msgstr ""
+msgstr "Sommige meldingen konden niet worden verzonden. Doorgaan met verwijderen van {}..."
 
 #: sickchill/oldbeard/tvcache.py:235
 msgid "Added RSS item: [{}] to cache: {}"
-msgstr ""
+msgstr "RSS item toegevoegd: [{}] aan cache: {}"
 
 #: sickchill/oldbeard/clients/rtorrent.py:52
 #: sickchill/oldbeard/clients/rtorrent.py:71
 msgid "Error while sending torrent: {error}"
-msgstr ""
+msgstr "Fout bij het verzenden van torrent: {error}"
 
 #: sickchill/oldbeard/clients/rtorrent.py:79
 msgid "Success: Connected and Authenticated"
-msgstr ""
+msgstr "Succes. Verbonden en Geverifieerd"
 
 #: sickchill/oldbeard/clients/rtorrent.py:81
 msgid "Error: Unable to get {self.name} Authentication, check your config!"
-msgstr ""
+msgstr "Fout: Kan {self.name} Authenticatie niet verkrijgen, controleer uw configuratie!"
 
 #: sickchill/oldbeard/clients/rtorrent.py:83
 msgid "Error: Unable to connect to {name}: {error}"
-msgstr ""
+msgstr "Fout: Kan geen verbinding maken met {name}: {error}"
 
 #: sickchill/oldbeard/databases/main.py:25
 msgid "Checking for archived episodes not qualified"
@@ -1290,7 +1290,7 @@ msgstr "Geen NZB/Torrent providers gevonden of ingeschakeld voor {searches}.<br/
 #: sickchill/oldbeard/providers/xthor.py:43
 #: sickchill/oldbeard/providers/yggtorrent.py:102
 msgid "Search Mode: {mode}"
-msgstr ""
+msgstr "Zoekmodus: {mode}"
 
 #: sickchill/oldbeard/providers/abnormal.py:133
 #: sickchill/oldbeard/providers/archetorrent.py:151
@@ -1303,7 +1303,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/xthor.py:92
 #: sickchill/oldbeard/providers/yggtorrent.py:173
 msgid "Found result: {title} with {seeders} seeders and {leechers} leechers"
-msgstr ""
+msgstr "Resultaat gevonden: {title} met {seeders} seeders en {leechers} leechers"
 
 #: sickchill/oldbeard/providers/bjshare.py:106
 #: sickchill/oldbeard/providers/hdspace.py:84
@@ -1340,7 +1340,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/tvchaosuk.py:89
 #: sickchill/oldbeard/providers/yggtorrent.py:107
 msgid "Search String: {search_string}"
-msgstr ""
+msgstr "Zoekreeks: {search_string}"
 
 #: sickchill/oldbeard/providers/bjshare.py:121
 #: sickchill/oldbeard/providers/ilcorsaronero.py:205
@@ -1348,7 +1348,7 @@ msgstr ""
 #: sickchill/oldbeard/providers/tvchaosuk.py:94
 #: sickchill/oldbeard/providers/xthor.py:54
 msgid "No data returned from provider"
-msgstr ""
+msgstr "Geen gegevens verkregen van provider"
 
 #: sickchill/oldbeard/providers/horriblesubs.py:83
 msgid "Found result: {title}"
@@ -1382,11 +1382,11 @@ msgstr "Genegeerde resultaat "
 
 #: sickchill/providers/GenericProvider.py:285
 msgid "Found result {title} at {url}"
-msgstr ""
+msgstr "Resultaat {title} bij {url} gevonden"
 
 #: sickchill/providers/metadata/generic.py:710
 msgid "Can't load the metadata file from {0}, it doesn't exist"
-msgstr ""
+msgstr "Kan het metadata bestand van {0} niet laden, deze bestaat niet"
 
 #: sickchill/providers/metadata/generic.py:713
 msgid "Loading show info from metadata file in {0}"
