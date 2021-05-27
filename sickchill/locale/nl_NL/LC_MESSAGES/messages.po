@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-03-15 14:23\n"
+"PO-Revision-Date: 2021-05-27 16:17\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -885,7 +885,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1000
 msgid "Not enough disk space to continue processing, exiting"
-msgstr ""
+msgstr "Onvoldoende schrijfruimte om door te gaan met het proces, afsluiten"
 
 #: sickchill/oldbeard/postProcessor.py:1003
 msgid "Unable to determine needed file space as the source file is locked for access"
@@ -905,11 +905,11 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1045
 msgid "Found release name "
-msgstr ""
+msgstr "Gevonden release naam "
 
 #: sickchill/oldbeard/postProcessor.py:1049
 msgid "Using original release name "
-msgstr ""
+msgstr "Originele release naam gebruiken "
 
 #: sickchill/oldbeard/postProcessor.py:1078
 msgid "Couldn't find release in snatch history"
@@ -921,16 +921,16 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:1090
 msgid "Destination folder for this episode: "
-msgstr ""
+msgstr "Doelmap voor deze aflevering: "
 
 #: sickchill/oldbeard/postProcessor.py:1114
 msgid "File is locked for reading"
-msgstr ""
+msgstr "Bestand is vergrendeld voor lezen"
 
 #: sickchill/oldbeard/postProcessor.py:1119
 #: sickchill/oldbeard/postProcessor.py:1127
 msgid "File is locked for reading/writing"
-msgstr ""
+msgstr "Bestand is vergrendeld voor lezen/schrijven"
 
 #: sickchill/oldbeard/postProcessor.py:1134
 msgid "Unknown process method: "
