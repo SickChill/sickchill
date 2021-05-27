@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-05-27 16:45\n"
+"PO-Revision-Date: 2021-05-27 16:50\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -278,23 +278,23 @@ msgstr "Kan GitHub niet correct instellen, je wordt momenteel gehinderd door de 
 
 #: sickchill/helper/common.py:349
 msgid "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}"
-msgstr ""
+msgstr "Kan GitHub niet correct instellen, je wordt momenteel gehinderd door een beperking voor te veel aanvragen - Probeer een toegangstoken toe te voegen. Fout: {0}"
 
 #: sickchill/helper/common.py:352
 msgid "Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}"
-msgstr ""
+msgstr "Het is niet mogelijk om GitHub goed in te stellen, het lijkt niet of uw instelling/repo verkeerd is ingesteld. Fout: {0}"
 
 #: sickchill/helper/common.py:355
 msgid "Unable to setup GitHub properly, GitHub doesn't like the user-agent. Error: {0}"
-msgstr ""
+msgstr "Kan GitHub niet correct instellen, GitHub vindt de user-agent niet leuk. Fout: {0}"
 
 #: sickchill/helper/common.py:358
 msgid "Unable to setup GitHub properly, There might be an error with the library. Error: {0}"
-msgstr ""
+msgstr "Kan GitHub niet correct instellen, mogelijk is er een fout met de bibliotheek. Fout: {0}"
 
 #: sickchill/helper/common.py:361
 msgid "Unable to setup GitHub properly. GitHub will not be available. Error: {0}"
-msgstr ""
+msgstr "Kan GitHub niet correct instellen. GitHub is niet beschikbaar zijn. Fout: {0}"
 
 #: sickchill/oldbeard/common.py:51
 msgid "Started Download"
@@ -398,7 +398,7 @@ msgstr "Als dit gebeurde in cache.db, dan kun je veilig SickChill stoppen en het
 
 #: sickchill/oldbeard/db.py:85
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables}"
-msgstr ""
+msgstr "Hier zijn de argumenten die naar deze functie werden verstuurd (Dit is wat de ontwikkelaars willen weten): {local_variables}"
 
 #: sickchill/oldbeard/db.py:93
 msgid "unable to open database file"
@@ -418,7 +418,7 @@ msgstr "{filename}: {query}"
 
 #: sickchill/oldbeard/db.py:208
 msgid "{filename}: {query} with args {args}"
-msgstr ""
+msgstr "{filename}: {query} met argumenten {args}"
 
 #: sickchill/oldbeard/db.py:212
 msgid "Transaction with {count:d} of queries executed successfully"
@@ -750,11 +750,11 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:257
 msgid "Cannot change permissions of {0}"
-msgstr ""
+msgstr "Kan rechten van {0} niet wijzigen"
 
 #: sickchill/oldbeard/postProcessor.py:280
 msgid "Must provide an action for the combined file operation"
-msgstr ""
+msgstr "Er moet een actie komen voor de gecombineerde bestandsbewerking"
 
 #: sickchill/oldbeard/postProcessor.py:291
 msgid "There were no files associated with {0}, not moving anything"
@@ -818,7 +818,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:737
 msgid "Unable to create episode: "
-msgstr ""
+msgstr "Kan aflevering niet aanmaken: "
 
 #: sickchill/oldbeard/postProcessor.py:763
 msgid "The old status had a quality in it, using that: "
@@ -829,7 +829,7 @@ msgstr ""
 #: sickchill/oldbeard/notifiers/synologynotifier.py:41
 #: sickchill/oldbeard/postProcessor.py:839
 msgid "Script result: {0}"
-msgstr ""
+msgstr "Script resultaat: {0}"
 
 #: sickchill/oldbeard/postProcessor.py:872
 msgid "SC snatched this episode and it is a proper of equal or higher quality so I'm marking it as priority"
@@ -2172,19 +2172,19 @@ msgstr ""
 
 #: sickchill/views/api/authentication.py:23
 msgid "Authentication failed during api key request: {traceback}"
-msgstr ""
+msgstr "Authenticatie mislukt tijdens Api sleutel verzoek: {traceback}"
 
 #: sickchill/views/api/webapi.py:1539
 msgid "API: sb.backup backing up to {location}"
-msgstr ""
+msgstr "API: sb.backup backup naar {location}"
 
 #: sickchill/views/api/webapi.py:1542
 msgid "API: sb.backup successful!"
-msgstr ""
+msgstr "API: sb.backup succesvol!"
 
 #: sickchill/views/api/webapi.py:1545
 msgid "API: sb.backup failed!"
-msgstr ""
+msgstr "API: sb.backup mislukt!"
 
 #: sickchill/views/config/anime.py:24
 msgid "Config - Anime"
@@ -2384,11 +2384,11 @@ msgstr "Seizoen Start "
 
 #: sickchill/views/manage/add_shows.py:331
 msgid "Could not get favorite shows: {0}"
-msgstr ""
+msgstr "Kon geen favoriete series verkrijgen: {0}"
 
 #: sickchill/views/manage/add_shows.py:334
 msgid "Favorite Shows"
-msgstr ""
+msgstr "Favorietse Series"
 
 #: sickchill/views/manage/add_shows.py:359 sickchill/views/manage/add_shows.py:360
 msgid "Existing Show"
@@ -2457,11 +2457,11 @@ msgstr "Groepsgewijs Bewerken"
 
 #: sickchill/views/manage/index.py:535
 msgid "Unable to update show: {exception_format}"
-msgstr ""
+msgstr "Kan serie niet updaten: {exception_format}"
 
 #: sickchill/views/manage/index.py:543
 msgid "Unable to refresh show {show_name}: {exception_format}"
-msgstr ""
+msgstr "Kan serie {show_name} niet vernieuwen: {exception_format}"
 
 #: sickchill/views/manage/index.py:554
 msgid "Errors encountered"
@@ -2509,5 +2509,5 @@ msgstr "Zoekopdracht ondertiteling gestart"
 
 #: sickchill/views/manage/searches.py:71
 msgid "Auto Post Processor started"
-msgstr ""
+msgstr "Automatische nabewerking gestart"
 
