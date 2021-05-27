@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-05-27 16:25\n"
+"PO-Revision-Date: 2021-05-27 16:34\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -430,7 +430,7 @@ msgstr "Kan niet alles en één per keer afvangen op hetzelfde moment!"
 
 #: sickchill/oldbeard/db.py:333
 msgid "{filename}: {query} [{control}]"
-msgstr ""
+msgstr "{filename}: {query} [{control}]"
 
 #: sickchill/oldbeard/db.py:348
 msgid "Control dict to upsert cannot have values of None!"
@@ -522,15 +522,15 @@ msgstr "pyopenssl module ontbreekt, installeer a.u.b. voor https toegang"
 
 #: sickchill/oldbeard/helpers.py:767
 msgid "Error creating SSL key and certificate {error}"
-msgstr ""
+msgstr "Fout bij maken SSL-sleutel en certificaat {error}"
 
 #: sickchill/oldbeard/helpers.py:770
 msgid "Created https key: {ssl_key}"
-msgstr ""
+msgstr "Https sleutel aangemaakt: {ssl_key}"
 
 #: sickchill/oldbeard/helpers.py:771
 msgid "Created https cert: {ssl_cert}"
-msgstr ""
+msgstr "Https certificaat gemaakt: {ssl_cert}"
 
 #: sickchill/oldbeard/helpers.py:790
 msgid "Not creating backup, {0} doesn't exist"
@@ -622,7 +622,7 @@ msgstr "Zip extractie fout: {0}"
 
 #: sickchill/oldbeard/helpers.py:1213
 msgid "Using global proxy for indexers: {}"
-msgstr ""
+msgstr "Gebruik globale proxy voor indexeren: {}"
 
 #: sickchill/oldbeard/helpers.py:1230
 msgid "Using global proxy: {}"
@@ -678,11 +678,11 @@ msgstr "Een pad is vereist voor de bestemming. Controleer of de hoofdmap en seri
 
 #: sickchill/oldbeard/helpers.py:1456
 msgid "Process method is 'move' and src and destination are on the same device, skipping free space check"
-msgstr ""
+msgstr "Verwerkingsmethode is 'verplaatsen' en bron en bestemming bevinden zich op hetzelfde apparaat, ruimte controle wordt overgeslagen"
 
 #: sickchill/oldbeard/helpers.py:1462
 msgid "Unable to determine free space, so I will assume there is enough."
-msgstr ""
+msgstr "Niet in staat om vrije ruimte te bepalen, dus ik ga ervan uit dat er genoeg is."
 
 #: sickchill/oldbeard/helpers.py:1463 sickchill/oldbeard/helpers.py:1496
 msgid "Error: {error}"
@@ -698,7 +698,7 @@ msgstr "Kan geen vrije ruimte bepalen"
 
 #: sickchill/oldbeard/network_timezones.py:103
 msgid "Missing time zone for network: {orig_network}. Check valid network is set in indexer (theTVDB) before filing issue."
-msgstr ""
+msgstr "Er ontbreekt een tijdzone voor het netwerk: {orig_network}. Controleer of een geldig netwerk is ingesteld in de indexer (theTVDB) voordat er een probleem wordt ingediend."
 
 #: sickchill/oldbeard/postProcessor.py:103
 msgid "There is no existing file so there's no worries about replacing it"
@@ -722,15 +722,15 @@ msgstr "Bestand {0} bestaat niet, dus er bestaat geen bezorgdheid over het verva
 
 #: sickchill/oldbeard/postProcessor.py:208
 msgid "Found the following associated files for {0}: {1}"
-msgstr ""
+msgstr "De volgende gerelateerde bestanden gevonden voor {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:210
 msgid "Deleting non allowed associated files for {0}: {1}"
-msgstr ""
+msgstr "Verwijderen van niet-toegestane gerelateerde bestanden voor {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:214
 msgid "Allowing associated files for {0}: {1}"
-msgstr ""
+msgstr "Toegestane geassocieerde bestanden voor {0}: {1}"
 
 #: sickchill/oldbeard/postProcessor.py:216
 msgid "No associated files for {0} were found during this pass"
@@ -762,7 +762,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:325
 msgid "Unable to create subtitles folder {0}"
-msgstr ""
+msgstr "Kan map ondertiteling niet aanmaken {0}"
 
 #: sickchill/oldbeard/postProcessor.py:346
 msgid "Moving file from {0} to {1}"
@@ -1103,7 +1103,7 @@ msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:423
 msgid "Show skipped"
-msgstr ""
+msgstr "Show overgeslagen"
 
 #: sickchill/oldbeard/show_queue.py:684
 msgid "Unable to delete show from Trakt: {0}. Error: {1}"
@@ -1352,13 +1352,13 @@ msgstr ""
 
 #: sickchill/oldbeard/providers/horriblesubs.py:83
 msgid "Found result: {title}"
-msgstr ""
+msgstr "Gevonden resultaat: {title}"
 
 #: sickchill/oldbeard/providers/horriblesubs.py:182
 #: sickchill/oldbeard/providers/newpct.py:103
 #: sickchill/oldbeard/providers/omgwtfnzbs.py:90
 msgid "Found result: "
-msgstr ""
+msgstr "Gevonden resultaat: "
 
 #: sickchill/providers/GenericProvider.py:33
 msgid "Not working"
@@ -1378,7 +1378,7 @@ msgstr "Dagelijkse/RSS en Werkvoorraad/Handmatige Zoekopdrachten operationeel"
 
 #: sickchill/providers/GenericProvider.py:282
 msgid "Ignoring result "
-msgstr ""
+msgstr "Genegeerde resultaat "
 
 #: sickchill/providers/GenericProvider.py:285
 msgid "Found result {title} at {url}"
