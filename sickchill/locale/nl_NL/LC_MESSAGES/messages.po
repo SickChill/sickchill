@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
 "POT-Creation-Date: 2021-02-20 06:40-0500\n"
-"PO-Revision-Date: 2021-05-27 16:50\n"
+"PO-Revision-Date: 2021-05-27 17:05\n"
 "Last-Translator: \n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -802,7 +802,7 @@ msgstr "Kan bestand {0} niet linken aan {1}"
 
 #: sickchill/oldbeard/postProcessor.py:495
 msgid "Found result in history for {0} - Season: {1} - Quality: {2} - Version: {3}"
-msgstr ""
+msgstr "Resultaat gevonden in de geschiedenis van {0} - Seizoen: {1} - Kwaliteit: {2} - Versie: {3}"
 
 #: sickchill/oldbeard/postProcessor.py:598
 msgid "Adding the file to the anidb mylist"
@@ -814,7 +814,7 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:706
 msgid "Don't have a season number, but this show appears to only have 1 season, setting season number to 1..."
-msgstr ""
+msgstr "Heb geen seizoen nummer, maar deze serie lijkt slechts 1 seizoen te hebben, zet seizoen nummer op 1..."
 
 #: sickchill/oldbeard/postProcessor.py:737
 msgid "Unable to create episode: "
@@ -822,7 +822,7 @@ msgstr "Kan aflevering niet aanmaken: "
 
 #: sickchill/oldbeard/postProcessor.py:763
 msgid "The old status had a quality in it, using that: "
-msgstr ""
+msgstr "De oude status had een kwaliteit en gebruikmakend daarvan: "
 
 #: sickchill/oldbeard/notifiers/synoindex.py:39
 #: sickchill/oldbeard/notifiers/synoindex.py:64
@@ -837,11 +837,11 @@ msgstr ""
 
 #: sickchill/oldbeard/postProcessor.py:879
 msgid "This was manually downloaded but it appears to be better quality than what we have so I'm marking it as priority"
-msgstr ""
+msgstr "Dit is handmatig gedownload maar het lijkt een betere kwaliteit dan wat we hebben, dus ik beschouw het als prioriteit"
 
 #: sickchill/oldbeard/postProcessor.py:884
 msgid "This was manually downloaded but it appears to be a proper so I'm marking it as priority"
-msgstr ""
+msgstr "Dit is handmatig gedownload maar het lijkt een betere kwaliteit dan wat we hebben, dus ik beschouw het als prioriteit"
 
 #: sickchill/oldbeard/postProcessor.py:920
 msgid "This show isn't in your list, you need to add it to SC before post-processing an episode"
@@ -964,7 +964,7 @@ msgstr ""
 
 #: sickchill/oldbeard/processTV.py:191
 msgid "Found unwanted files: {0}"
-msgstr ""
+msgstr "Ongewenste bestanden gevonden: {0}"
 
 #: sickchill/oldbeard/processTV.py:196
 msgid "Deleted folder: {0}"
@@ -984,7 +984,7 @@ msgstr "Sommige items zijn niet verwerkt."
 
 #: sickchill/oldbeard/processTV.py:247
 msgid "The directory name indicates it failed to extract."
-msgstr ""
+msgstr "De naam van de map geeft aan dat uitpakken mislukt is."
 
 #: sickchill/oldbeard/processTV.py:250
 msgid "The directory name indicates that it was previously rejected for being undersized."
@@ -2071,11 +2071,11 @@ msgstr "Geen ondertiteling gedownload"
 
 #: sickchill/views/imageSelector.py:49
 msgid "Invalid image provider"
-msgstr ""
+msgstr "Ongeldige afbeelding aanbieder"
 
 #: sickchill/views/index.py:61
 msgid "Oops: 404 Not Found"
-msgstr ""
+msgstr "Oeps: 404 Niet Gevonden"
 
 #: sickchill/views/index.py:63
 msgid "Wrong API key used"
@@ -2144,23 +2144,23 @@ msgstr "Logboeken"
 #: sickchill/views/movies.py:22 sickchill/views/movies.py:33
 #: sickchill/views/movies.py:59 sickchill/views/movies.py:67
 msgid "Movies"
-msgstr ""
+msgstr "Films"
 
 #: sickchill/views/movies.py:22
 msgid "Movie List"
-msgstr ""
+msgstr "Film Lijst"
 
 #: sickchill/views/movies.py:33
 msgid "Movie Search"
-msgstr ""
+msgstr "Film Zoeken"
 
 #: sickchill/views/movies.py:54 sickchill/views/movies.py:64
 msgid "Movie not found"
-msgstr ""
+msgstr "Film niet gevonden"
 
 #: sickchill/views/movies.py:59 sickchill/views/movies.py:67
 msgid "Movie Remove"
-msgstr ""
+msgstr "Film Verwijderen"
 
 #: sickchill/views/news.py:22
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
@@ -2168,11 +2168,11 @@ msgstr "Nieuws kan niet worden geladen uit de repo. [Klik hier voor de news.md])
 
 #: sickchill/views/api/authentication.py:22
 msgid "Failed authentication while getting api key"
-msgstr ""
+msgstr "Verificatie mislukt bij het verkrijgen van de API key"
 
 #: sickchill/views/api/authentication.py:23
 msgid "Authentication failed during api key request: {traceback}"
-msgstr "Authenticatie mislukt tijdens Api sleutel verzoek: {traceback}"
+msgstr "Authenticatie mislukt tijdens API sleutel verzoek: {traceback}"
 
 #: sickchill/views/api/webapi.py:1539
 msgid "API: sb.backup backing up to {location}"
