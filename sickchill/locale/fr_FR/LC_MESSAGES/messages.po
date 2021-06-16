@@ -1257,7 +1257,6 @@ msgstr "Aucun fournisseur de NZB/Torrent trouvé ou activé pour les {searches}.
 #: sickchill/oldbeard/providers/elitetorrent.py:57
 #: sickchill/oldbeard/providers/eztv.py:41
 #: sickchill/oldbeard/providers/filelist.py:87
-#: sickchill/oldbeard/providers/gftracker.py:101
 #: sickchill/oldbeard/providers/gimmepeers.py:75
 #: sickchill/oldbeard/providers/hd4free.py:46
 #: sickchill/oldbeard/providers/hdspace.py:76
