@@ -33,7 +33,7 @@ from .piculet import Path, Rule, Rules
 from .utils import DOMParserBase, analyze_imdbid, build_movie
 
 
-_re_company_name = re.compile('With\s+(.+)\s+\(Sorted by.*', re.I | re.M)
+_re_company_name = re.compile(r'With\s+(.+)\s+\(Sorted by.*', re.I | re.M)
 
 
 def clean_company_title(title):

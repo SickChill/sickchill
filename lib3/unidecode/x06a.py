@@ -44,7 +44,7 @@ data = (
 'Heng ',    # 0x2a
 'Jian ',    # 0x2b
 'Cong ',    # 0x2c
-'[?] ',    # 0x2d
+None,    # 0x2d
 'Hokuso ',    # 0x2e
 'Qiang ',    # 0x2f
 'Tara ',    # 0x30
@@ -121,8 +121,8 @@ data = (
 'Dou ',    # 0x77
 'Shou ',    # 0x78
 'Lu ',    # 0x79
-'[?] ',    # 0x7a
-'[?] ',    # 0x7b
+None,    # 0x7a
+None,    # 0x7b
 'Yuan ',    # 0x7c
 'Ta ',    # 0x7d
 'Shu ',    # 0x7e
@@ -201,7 +201,7 @@ data = (
 'Po ',    # 0xc7
 'Deng ',    # 0xc8
 'Chu ',    # 0xc9
-'[?] ',    # 0xca
+None,    # 0xca
 'Mian ',    # 0xcb
 'You ',    # 0xcc
 'Zhi ',    # 0xcd
@@ -229,7 +229,7 @@ data = (
 'Lian ',    # 0xe3
 'Tamo ',    # 0xe4
 'Chu ',    # 0xe5
-'[?] ',    # 0xe6
+None,    # 0xe6
 'Zhu ',    # 0xe7
 'Lu ',    # 0xe8
 'Yan ',    # 0xe9
@@ -244,7 +244,7 @@ data = (
 'Yu ',    # 0xf2
 'Long ',    # 0xf3
 'Lai ',    # 0xf4
-'[?] ',    # 0xf5
+None,    # 0xf5
 'Xian ',    # 0xf6
 'Kwi ',    # 0xf7
 'Ju ',    # 0xf8

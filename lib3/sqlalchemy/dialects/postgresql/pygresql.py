@@ -1,5 +1,5 @@
 # postgresql/pygresql.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -16,6 +16,10 @@
     The pygresql dialect is **not tested as part of SQLAlchemy's continuous
     integration** and may have unresolved issues.  The recommended PostgreSQL
     dialect is psycopg2.
+
+.. deprecated:: 1.4 The pygresql DBAPI is deprecated and will be removed
+   in a future version. Please use one of the supported DBAPIs to
+   connect to PostgreSQL.
 
 """  # noqa
 
@@ -189,6 +193,7 @@ class _PGIdentifierPreparer(PGIdentifierPreparer):
 class PGDialect_pygresql(PGDialect):
 
     driver = "pygresql"
+    supports_statement_cache = True
 
     statement_compiler = _PGCompiler
     preparer = _PGIdentifierPreparer
@@ -196,6 +201,13 @@ class PGDialect_pygresql(PGDialect):
     @classmethod
     def dbapi(cls):
         import pgdb
+
+        util.warn_deprecated(
+            "The pygresql DBAPI is deprecated and will be removed "
+            "in a future version. Please use one of the supported DBAPIs to "
+            "connect to PostgreSQL.",
+            version="1.4",
+        )
 
         return pgdb
 

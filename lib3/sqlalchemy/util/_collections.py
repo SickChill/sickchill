@@ -1,5 +1,5 @@
 # util/_collections.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -17,113 +17,12 @@ from .compat import binary_types
 from .compat import collections_abc
 from .compat import itertools_filterfalse
 from .compat import py2k
+from .compat import py37
 from .compat import string_types
 from .compat import threading
 
 
 EMPTY_SET = frozenset()
-
-
-class AbstractKeyedTuple(tuple):
-    __slots__ = ()
-
-    def keys(self):
-        """Return a list of string key names for this :class:`.KeyedTuple`.
-
-        .. seealso::
-
-            :attr:`.KeyedTuple._fields`
-
-        """
-
-        return list(self._fields)
-
-
-class KeyedTuple(AbstractKeyedTuple):
-    """``tuple`` subclass that adds labeled names.
-
-    E.g.::
-
-        >>> k = KeyedTuple([1, 2, 3], labels=["one", "two", "three"])
-        >>> k.one
-        1
-        >>> k.two
-        2
-
-    Result rows returned by :class:`_query.Query` that contain multiple
-    ORM entities and/or column expressions make use of this
-    class to return rows.
-
-    The :class:`.KeyedTuple` exhibits similar behavior to the
-    ``collections.namedtuple()`` construct provided in the Python
-    standard library, however is architected very differently.
-    Unlike ``collections.namedtuple()``, :class:`.KeyedTuple` is
-    does not rely on creation of custom subtypes in order to represent
-    a new series of keys, instead each :class:`.KeyedTuple` instance
-    receives its list of keys in place.   The subtype approach
-    of ``collections.namedtuple()`` introduces significant complexity
-    and performance overhead, which is not necessary for the
-    :class:`_query.Query` object's use case.
-
-    .. seealso::
-
-        :ref:`ormtutorial_querying`
-
-    """
-
-    def __new__(cls, vals, labels=None):
-        t = tuple.__new__(cls, vals)
-        if labels:
-            t.__dict__.update(zip(labels, vals))
-        else:
-            labels = []
-        t.__dict__["_labels"] = labels
-        return t
-
-    @property
-    def _fields(self):
-        """Return a tuple of string key names for this :class:`.KeyedTuple`.
-
-        This method provides compatibility with ``collections.namedtuple()``.
-
-        .. seealso::
-
-            :meth:`.KeyedTuple.keys`
-
-        """
-        return tuple([l for l in self._labels if l is not None])
-
-    def __setattr__(self, key, value):
-        raise AttributeError("Can't set attribute: %s" % key)
-
-    def _asdict(self):
-        """Return the contents of this :class:`.KeyedTuple` as a dictionary.
-
-        This method provides compatibility with ``collections.namedtuple()``,
-        with the exception that the dictionary returned is **not** ordered.
-
-        """
-        return {key: self.__dict__[key] for key in self.keys()}
-
-
-class _LW(AbstractKeyedTuple):
-    __slots__ = ()
-
-    def __new__(cls, vals):
-        return tuple.__new__(cls, vals)
-
-    def __reduce__(self):
-        # for pickling, degrade down to the regular
-        # KeyedTuple, thus avoiding anonymous class pickling
-        # difficulties
-        return KeyedTuple, (list(self), self._real_fields)
-
-    def _asdict(self):
-        """Return the contents of this :class:`.KeyedTuple` as a dictionary."""
-
-        d = dict(zip(self._real_fields, self))
-        d.pop(None, None)
-        return d
 
 
 class ImmutableContainer(object):
@@ -133,36 +32,113 @@ class ImmutableContainer(object):
     __delitem__ = __setitem__ = __setattr__ = _immutable
 
 
-class immutabledict(ImmutableContainer, dict):
+def _immutabledict_py_fallback():
+    class immutabledict(ImmutableContainer, dict):
+
+        clear = (
+            pop
+        ) = popitem = setdefault = update = ImmutableContainer._immutable
+
+        def __new__(cls, *args):
+            new = dict.__new__(cls)
+            dict.__init__(new, *args)
+            return new
+
+        def __init__(self, *args):
+            pass
+
+        def __reduce__(self):
+            return _immutabledict_reconstructor, (dict(self),)
+
+        def union(self, __d=None):
+            if not __d:
+                return self
+
+            new = dict.__new__(self.__class__)
+            dict.__init__(new, self)
+            dict.update(new, __d)
+            return new
+
+        def _union_w_kw(self, __d=None, **kw):
+            # not sure if C version works correctly w/ this yet
+            if not __d and not kw:
+                return self
+
+            new = dict.__new__(self.__class__)
+            dict.__init__(new, self)
+            if __d:
+                dict.update(new, __d)
+            dict.update(new, kw)
+            return new
+
+        def merge_with(self, *dicts):
+            new = None
+            for d in dicts:
+                if d:
+                    if new is None:
+                        new = dict.__new__(self.__class__)
+                        dict.__init__(new, self)
+                    dict.update(new, d)
+            if new is None:
+                return self
+
+            return new
+
+        def __repr__(self):
+            return "immutabledict(%s)" % dict.__repr__(self)
+
+    return immutabledict
+
+
+try:
+    from sqlalchemy.cimmutabledict import immutabledict
+
+    collections_abc.Mapping.register(immutabledict)
+
+except ImportError:
+    immutabledict = _immutabledict_py_fallback()
+
+    def _immutabledict_reconstructor(*arg):
+        """do the pickle dance"""
+        return immutabledict(*arg)
+
+
+def coerce_to_immutabledict(d):
+    if not d:
+        return EMPTY_DICT
+    elif isinstance(d, immutabledict):
+        return d
+    else:
+        return immutabledict(d)
+
+
+EMPTY_DICT = immutabledict()
+
+
+class FacadeDict(ImmutableContainer, dict):
+    """A dictionary that is not publicly mutable."""
 
     clear = pop = popitem = setdefault = update = ImmutableContainer._immutable
 
     def __new__(cls, *args):
         new = dict.__new__(cls)
-        dict.__init__(new, *args)
         return new
 
-    def __init__(self, *args):
-        pass
+    def copy(self):
+        raise NotImplementedError(
+            "an immutabledict shouldn't need to be copied.  use dict(d) "
+            "if you need a mutable dictionary."
+        )
 
     def __reduce__(self):
-        return immutabledict, (dict(self),)
+        return FacadeDict, (dict(self),)
 
-    def union(self, d):
-        if not d:
-            return self
-        elif not self:
-            if isinstance(d, immutabledict):
-                return d
-            else:
-                return immutabledict(d)
-        else:
-            d2 = immutabledict(self)
-            dict.update(d2, d)
-            return d2
+    def _insert_item(self, key, value):
+        """insert an item into the dictionary directly."""
+        dict.__setitem__(self, key, value)
 
     def __repr__(self):
-        return "immutabledict(%s)" % dict.__repr__(self)
+        return "FacadeDict(%s)" % dict.__repr__(self)
 
 
 class Properties(object):
@@ -260,107 +236,133 @@ class ImmutableProperties(ImmutableContainer, Properties):
     __slots__ = ()
 
 
-class OrderedDict(dict):
-    """A dict that returns keys/values/items in the order they were added."""
+def _ordered_dictionary_sort(d, key=None):
+    """Sort an OrderedDict in-place."""
 
-    __slots__ = ("_list",)
+    items = [(k, d[k]) for k in sorted(d, key=key)]
 
-    def __reduce__(self):
-        return OrderedDict, (self.items(),)
+    d.clear()
 
-    def __init__(self, ____sequence=None, **kwargs):
-        self._list = []
-        if ____sequence is None:
-            if kwargs:
-                self.update(**kwargs)
-        else:
-            self.update(____sequence, **kwargs)
+    d.update(items)
 
-    def clear(self):
-        self._list = []
-        dict.clear(self)
 
-    def copy(self):
-        return self.__copy__()
+if py37:
+    OrderedDict = dict
+    sort_dictionary = _ordered_dictionary_sort
 
-    def __copy__(self):
-        return OrderedDict(self)
+else:
+    # prevent sort_dictionary from being used against a plain dictionary
+    # for Python < 3.7
 
-    def sort(self, *arg, **kw):
-        self._list.sort(*arg, **kw)
+    def sort_dictionary(d, key=None):
+        """Sort an OrderedDict in place."""
 
-    def update(self, ____sequence=None, **kwargs):
-        if ____sequence is not None:
-            if hasattr(____sequence, "keys"):
-                for key in ____sequence.keys():
-                    self.__setitem__(key, ____sequence[key])
+        d._ordered_dictionary_sort(key=key)
+
+    class OrderedDict(dict):
+        """Dictionary that maintains insertion order.
+
+        Superseded by Python dict as of Python 3.7
+
+        """
+
+        __slots__ = ("_list",)
+
+        def _ordered_dictionary_sort(self, key=None):
+            _ordered_dictionary_sort(self, key=key)
+
+        def __reduce__(self):
+            return OrderedDict, (self.items(),)
+
+        def __init__(self, ____sequence=None, **kwargs):
+            self._list = []
+            if ____sequence is None:
+                if kwargs:
+                    self.update(**kwargs)
             else:
-                for key, value in ____sequence:
-                    self[key] = value
-        if kwargs:
-            self.update(kwargs)
+                self.update(____sequence, **kwargs)
 
-    def setdefault(self, key, value):
-        if key not in self:
-            self.__setitem__(key, value)
-            return value
-        else:
-            return self.__getitem__(key)
+        def clear(self):
+            self._list = []
+            dict.clear(self)
 
-    def __iter__(self):
-        return iter(self._list)
+        def copy(self):
+            return self.__copy__()
 
-    def keys(self):
-        return list(self)
+        def __copy__(self):
+            return OrderedDict(self)
 
-    def values(self):
-        return [self[key] for key in self._list]
+        def update(self, ____sequence=None, **kwargs):
+            if ____sequence is not None:
+                if hasattr(____sequence, "keys"):
+                    for key in ____sequence.keys():
+                        self.__setitem__(key, ____sequence[key])
+                else:
+                    for key, value in ____sequence:
+                        self[key] = value
+            if kwargs:
+                self.update(kwargs)
 
-    def items(self):
-        return [(key, self[key]) for key in self._list]
+        def setdefault(self, key, value):
+            if key not in self:
+                self.__setitem__(key, value)
+                return value
+            else:
+                return self.__getitem__(key)
 
-    if py2k:
+        def __iter__(self):
+            return iter(self._list)
 
-        def itervalues(self):
-            return iter(self.values())
+        def keys(self):
+            return list(self)
 
-        def iterkeys(self):
-            return iter(self)
+        def values(self):
+            return [self[key] for key in self._list]
 
-        def iteritems(self):
-            return iter(self.items())
+        def items(self):
+            return [(key, self[key]) for key in self._list]
 
-    def __setitem__(self, key, obj):
-        if key not in self:
-            try:
-                self._list.append(key)
-            except AttributeError:
-                # work around Python pickle loads() with
-                # dict subclass (seems to ignore __setstate__?)
-                self._list = [key]
-        dict.__setitem__(self, key, obj)
+        if py2k:
 
-    def __delitem__(self, key):
-        dict.__delitem__(self, key)
-        self._list.remove(key)
+            def itervalues(self):
+                return iter(self.values())
 
-    def pop(self, key, *default):
-        present = key in self
-        value = dict.pop(self, key, *default)
-        if present:
+            def iterkeys(self):
+                return iter(self)
+
+            def iteritems(self):
+                return iter(self.items())
+
+        def __setitem__(self, key, obj):
+            if key not in self:
+                try:
+                    self._list.append(key)
+                except AttributeError:
+                    # work around Python pickle loads() with
+                    # dict subclass (seems to ignore __setstate__?)
+                    self._list = [key]
+            dict.__setitem__(self, key, obj)
+
+        def __delitem__(self, key):
+            dict.__delitem__(self, key)
             self._list.remove(key)
-        return value
 
-    def popitem(self):
-        item = dict.popitem(self)
-        self._list.remove(item[0])
-        return item
+        def pop(self, key, *default):
+            present = key in self
+            value = dict.pop(self, key, *default)
+            if present:
+                self._list.remove(key)
+            return value
+
+        def popitem(self):
+            item = dict.popitem(self)
+            self._list.remove(item[0])
+            return item
 
 
 class OrderedSet(set):
     def __init__(self, d=None):
         set.__init__(self)
-        self._list = []
         if d is not None:
             self._list = unique_list(d)
             set.update(self, self._list)
@@ -518,7 +520,10 @@ class IdentitySet(object):
             return True
 
     def issubset(self, iterable):
-        other = self.__class__(iterable)
+        if isinstance(iterable, self.__class__):
+            other = iterable
+        else:
+            other = self.__class__(iterable)
 
         if len(self) > len(other):
             return False
@@ -539,7 +544,10 @@ class IdentitySet(object):
         return len(self) < len(other) and self.issubset(other)
 
     def issuperset(self, iterable):
-        other = self.__class__(iterable)
+        if isinstance(iterable, self.__class__):
+            other = iterable
+        else:
+            other = self.__class__(iterable)
 
         if len(self) < len(other):
             return False
@@ -584,7 +592,10 @@ class IdentitySet(object):
     def difference(self, iterable):
         result = self.__class__()
         members = self._members
-        other = {id(obj) for obj in iterable}
+        if isinstance(iterable, self.__class__):
+            other = set(iterable._members.keys())
+        else:
+            other = {id(obj) for obj in iterable}
         result._members.update(
             ((k, v) for k, v in members.items() if k not in other)
         )
@@ -607,7 +618,10 @@ class IdentitySet(object):
     def intersection(self, iterable):
         result = self.__class__()
         members = self._members
-        other = {id(obj) for obj in iterable}
+        if isinstance(iterable, self.__class__):
+            other = set(iterable._members.keys())
+        else:
+            other = {id(obj) for obj in iterable}
         result._members.update(
             (k, v) for k, v in members.items() if k in other
         )
@@ -630,7 +644,10 @@ class IdentitySet(object):
     def symmetric_difference(self, iterable):
         result = self.__class__()
         members = self._members
-        other = {id(obj): obj for obj in iterable}
+        if isinstance(iterable, self.__class__):
+            other = iterable._members
+        else:
+            other = {id(obj): obj for obj in iterable}
         result._members.update(
             ((k, v) for k, v in members.items() if k not in other)
         )
@@ -953,35 +970,6 @@ class LRUCache(dict):
                         continue
         finally:
             self._mutex.release()
-
-
-_lw_tuples = LRUCache(100)
-
-
-def lightweight_named_tuple(name, fields):
-    hash_ = (name,) + tuple(fields)
-    tp_cls = _lw_tuples.get(hash_)
-    if tp_cls:
-        return tp_cls
-
-    tp_cls = type(
-        name,
-        (_LW,),
-        dict(
-            [
-                (field, _property_getters[idx])
-                for idx, field in enumerate(fields)
-                if field is not None
-            ]
-            + [("__slots__", ())]
-        ),
-    )
-
-    tp_cls._real_fields = fields
-    tp_cls._fields = tuple([f for f in fields if f is not None])
-
-    _lw_tuples[hash_] = tp_cls
-    return tp_cls
 
 
 class ScopedRegistry(object):

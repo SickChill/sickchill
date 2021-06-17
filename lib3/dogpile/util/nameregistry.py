@@ -1,4 +1,7 @@
 import threading
+from typing import Any
+from typing import Callable
+from typing import MutableMapping
 import weakref
 
 
@@ -38,19 +41,15 @@ class NameRegistry(object):
 
     """
 
-    _locks = weakref.WeakValueDictionary()
     _mutex = threading.RLock()
 
-    def __init__(self, creator):
-        """Create a new :class:`.NameRegistry`.
-
-
-        """
-        self._values = weakref.WeakValueDictionary()
+    def __init__(self, creator: Callable[..., Any]):
+        """Create a new :class:`.NameRegistry`."""
+        self._values: MutableMapping[str, Any] = weakref.WeakValueDictionary()
         self._mutex = threading.RLock()
         self.creator = creator
 
-    def get(self, identifier, *args, **kw):
+    def get(self, identifier: str, *args: Any, **kw: Any) -> Any:
         r"""Get and possibly create the value.
 
         :param identifier: Hash key for the value.
@@ -69,7 +68,7 @@ class NameRegistry(object):
         except KeyError:
             return self._sync_get(identifier, *args, **kw)
 
-    def _sync_get(self, identifier, *args, **kw):
+    def _sync_get(self, identifier: str, *args: Any, **kw: Any) -> Any:
         self._mutex.acquire()
         try:
             try:

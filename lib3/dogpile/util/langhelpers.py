@@ -1,6 +1,9 @@
+import abc
 import collections
 import re
 import threading
+from typing import MutableMapping
+from typing import MutableSet
 
 import stevedore
 
@@ -26,7 +29,7 @@ def coerce_string_conf(d):
     return result
 
 
-class PluginLoader(object):
+class PluginLoader:
     def __init__(self, group):
         self.group = group
         self.impls = {}  # loaded plugins
@@ -61,7 +64,7 @@ class PluginLoader(object):
         """The specified plugin could not be found."""
 
 
-class memoized_property(object):
+class memoized_property:
     """A read-only @property that is only evaluated once."""
 
     def __init__(self, fget, doc=None):
@@ -86,8 +89,23 @@ def to_list(x, default=None):
         return x
 
 
-class KeyReentrantMutex(object):
-    def __init__(self, key, mutex, keys):
+class Mutex(abc.ABC):
+    @abc.abstractmethod
+    def acquire(self, wait: bool = True) -> bool:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def release(self) -> None:
+        raise NotImplementedError()
+
+
+class KeyReentrantMutex:
+    def __init__(
+        self,
+        key: str,
+        mutex: Mutex,
+        keys: MutableMapping[int, MutableSet[str]],
+    ):
         self.key = key
         self.mutex = mutex
         self.keys = keys
@@ -97,7 +115,9 @@ class KeyReentrantMutex(object):
         # this collection holds zero or one
         # thread idents as the key; a set of
         # keynames held as the value.
-        keystore = collections.defaultdict(set)
+        keystore: MutableMapping[
+            int, MutableSet[str]
+        ] = collections.defaultdict(set)
 
         def fac(key):
             return KeyReentrantMutex(key, mutex, keystore)
@@ -105,7 +125,7 @@ class KeyReentrantMutex(object):
         return fac
 
     def acquire(self, wait=True):
-        current_thread = threading.current_thread().ident
+        current_thread = threading.get_ident()
         keys = self.keys.get(current_thread)
         if keys is not None and self.key not in keys:
             # current lockholder, new key. add it in
@@ -119,7 +139,7 @@ class KeyReentrantMutex(object):
             return False
 
     def release(self):
-        current_thread = threading.current_thread().ident
+        current_thread = threading.get_ident()
         keys = self.keys.get(current_thread)
         assert keys is not None, "this thread didn't do the acquire"
         assert self.key in keys, "No acquire held for key '%s'" % self.key
@@ -129,3 +149,10 @@ class KeyReentrantMutex(object):
             # the thread ident and unlock.
             del self.keys[current_thread]
             self.mutex.release()
+
+    def locked(self):
+        current_thread = threading.get_ident()
+        keys = self.keys.get(current_thread)
+        if keys is None:
+            return False
+        return self.key in keys

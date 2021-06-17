@@ -224,7 +224,7 @@ static int _cffi_initialize_python(void)
 
         if (f != NULL && f != Py_None) {
             PyFile_WriteString("\nFrom: " _CFFI_MODULE_NAME
-                               "\ncompiled with cffi version: 1.14.2"
+                               "\ncompiled with cffi version: 1.14.5"
                                "\n_cffi_backend module: ", f);
             modules = PyImport_GetModuleDict();
             mod = PyDict_GetItemString(modules, "_cffi_backend");
@@ -331,15 +331,20 @@ static int _cffi_carefully_make_gil(void)
     /* call Py_InitializeEx() */
     if (!Py_IsInitialized()) {
         _cffi_py_initialize();
+#if PY_VERSION_HEX < 0x03070000
         PyEval_InitThreads();
+#endif
         PyEval_SaveThread();  /* release the GIL */
         /* the returned tstate must be the one that has been stored into the
            autoTLSkey by _PyGILState_Init() called from Py_Initialize(). */
     }
     else {
+#if PY_VERSION_HEX < 0x03070000
+        /* PyEval_InitThreads() is always a no-op from CPython 3.7 */
         PyGILState_STATE state = PyGILState_Ensure();
         PyEval_InitThreads();
         PyGILState_Release(state);
+#endif
     }
 
 #ifdef WITH_THREAD

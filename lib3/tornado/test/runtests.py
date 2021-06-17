@@ -12,7 +12,7 @@ import warnings
 from tornado.httpclient import AsyncHTTPClient
 from tornado.httpserver import HTTPServer
 from tornado.netutil import Resolver
-from tornado.options import define, add_parse_callback
+from tornado.options import define, add_parse_callback, options
 
 
 TEST_MODULES = [
@@ -50,7 +50,6 @@ TEST_MODULES = [
     "tornado.test.util_test",
     "tornado.test.web_test",
     "tornado.test.websocket_test",
-    "tornado.test.windows_test",
     "tornado.test.wsgi_test",
 ]
 
@@ -63,19 +62,19 @@ def test_runner_factory(stderr):
     class TornadoTextTestRunner(unittest.TextTestRunner):
         def __init__(self, *args, **kwargs):
             kwargs["stream"] = stderr
-            super(TornadoTextTestRunner, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
         def run(self, test):
-            result = super(TornadoTextTestRunner, self).run(test)
+            result = super().run(test)
             if result.skipped:
                 skip_reasons = set(reason for (test, reason) in result.skipped)
-                self.stream.write(
+                self.stream.write(  # type: ignore
                     textwrap.fill(
                         "Some tests were skipped because: %s"
                         % ", ".join(sorted(skip_reasons))
                     )
                 )
-                self.stream.write("\n")
+                self.stream.write("\n")  # type: ignore
             return result
 
     return TornadoTextTestRunner
@@ -85,7 +84,7 @@ class LogCounter(logging.Filter):
     """Counts the number of WARNING or higher log records."""
 
     def __init__(self, *args, **kwargs):
-        super(LogCounter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.info_count = self.warning_count = self.error_count = 0
 
     def filter(self, record):
@@ -183,6 +182,11 @@ def main():
             reduce(operator.or_, (getattr(gc, v) for v in values))
         ),
     )
+    define(
+        "fail-if-logs",
+        default=True,
+        help="If true, fail the tests if any log output is produced (unless captured by ExpectLog)",
+    )
 
     def set_locale(x):
         locale.setlocale(locale.LC_ALL, x)
@@ -229,7 +233,8 @@ def main():
                 log_counter.error_count,
                 counting_stderr.byte_count,
             )
-            sys.exit(1)
+            if options.fail_if_logs:
+                sys.exit(1)
 
 
 if __name__ == "__main__":

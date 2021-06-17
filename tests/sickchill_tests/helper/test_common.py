@@ -305,7 +305,7 @@ class CommonTests(unittest.TestCase):
             b"fi\\le/na*me": "fi-le-na-me",
             b'fi:le"na<me': "filename",
             b"fi>le|na?me": "filename",
-            b" . file\u2122name. .": "filename",
+            br" . file\u2122name. .": "filename",
         }
 
         unicode_test_cases = {

@@ -35,7 +35,7 @@ data = (
 'Gang ',    # 0x21
 'Shan ',    # 0x22
 'Yi ',    # 0x23
-'[?] ',    # 0x24
+None,    # 0x24
 'Pa ',    # 0x25
 'Tai ',    # 0x26
 'Fan ',    # 0x27
@@ -62,7 +62,7 @@ data = (
 'Hong ',    # 0x3c
 'Pang ',    # 0x3d
 'Xi ',    # 0x3e
-'[?] ',    # 0x3f
+None,    # 0x3f
 'Fu ',    # 0x40
 'Zao ',    # 0x41
 'Feng ',    # 0x42
@@ -71,7 +71,7 @@ data = (
 'Yu ',    # 0x45
 'Lang ',    # 0x46
 'Ting ',    # 0x47
-'[?] ',    # 0x48
+None,    # 0x48
 'Wei ',    # 0x49
 'Bo ',    # 0x4a
 'Meng ',    # 0x4b
@@ -83,7 +83,7 @@ data = (
 'Bian ',    # 0x51
 'Mao ',    # 0x52
 'Die ',    # 0x53
-'[?] ',    # 0x54
+None,    # 0x54
 'Bang ',    # 0x55
 'Cha ',    # 0x56
 'Yi ',    # 0x57

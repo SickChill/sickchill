@@ -1,5 +1,5 @@
 # sqlalchemy/exc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -13,13 +13,14 @@ raised as a result of DBAPI exceptions are all subclasses of
 
 """
 
+from .util import _preloaded
 from .util import compat
 
 _version_token = None
 
 
-class SQLAlchemyError(Exception):
-    """Generic error class."""
+class HasDescriptionCode(object):
+    """helper which adds 'code' as an attribute and '_code_str' as a method"""
 
     code = None
 
@@ -27,7 +28,7 @@ class SQLAlchemyError(Exception):
         code = kw.pop("code", None)
         if code is not None:
             self.code = code
-        super(SQLAlchemyError, self).__init__(*arg, **kw)
+        super(HasDescriptionCode, self).__init__(*arg, **kw)
 
     def _code_str(self):
         if not self.code:
@@ -35,8 +36,16 @@ class SQLAlchemyError(Exception):
         else:
             return (
                 "(Background on this error at: "
-                "http://sqlalche.me/e/%s/%s)" % (_version_token, self.code,)
+                "http://sqlalche.me/e/%s/%s)"
+                % (
+                    _version_token,
+                    self.code,
+                )
             )
+
+
+class SQLAlchemyError(HasDescriptionCode, Exception):
+    """Generic error class."""
 
     def _message(self, as_unicode=compat.py3k):
         # rules:
@@ -56,10 +65,18 @@ class SQLAlchemyError(Exception):
         #
         if len(self.args) == 1:
             text = self.args[0]
+
             if as_unicode and isinstance(text, compat.binary_types):
-                return compat.decode_backslashreplace(text, "utf-8")
+                text = compat.decode_backslashreplace(text, "utf-8")
+            # This is for when the argument is not a string of any sort.
+            # Otherwise, converting this exception to string would fail for
+            # non-string arguments.
+            elif compat.py3k or not as_unicode:
+                text = str(text)
             else:
-                return self.args[0]
+                text = compat.text_type(text)
+
+            return text
         else:
             # this is not a normal case within SQLAlchemy but is here for
             # compatibility with Exception.args - the str() comes out as
@@ -166,10 +183,10 @@ class UnsupportedCompilationError(CompileError):
 
     code = "l7de"
 
-    def __init__(self, compiler, element_type):
+    def __init__(self, compiler, element_type, message=None):
         super(UnsupportedCompilationError, self).__init__(
-            "Compiler %r can't render element of type %s"
-            % (compiler, element_type)
+            "Compiler %r can't render element of type %s%s"
+            % (compiler, element_type, ": %s" % message if message else "")
         )
 
 
@@ -227,17 +244,67 @@ class NoInspectionAvailable(InvalidRequestError):
     no context for inspection."""
 
 
+class PendingRollbackError(InvalidRequestError):
+    """A transaction has failed and needs to be rolled back before
+    continuing.
+
+    .. versionadded:: 1.4
+
+    """
+
+
 class ResourceClosedError(InvalidRequestError):
     """An operation was requested from a connection, cursor, or other
     object that's in a closed state."""
 
 
 class NoSuchColumnError(KeyError, InvalidRequestError):
-    """A nonexistent column is requested from a ``RowProxy``."""
+    """A nonexistent column is requested from a ``Row``."""
+
+
+class NoResultFound(InvalidRequestError):
+    """A database result was required but none was found.
+
+
+    .. versionchanged:: 1.4  This exception is now part of the
+       ``sqlalchemy.exc`` module in Core, moved from the ORM.  The symbol
+       remains importable from ``sqlalchemy.orm.exc``.
+
+
+    """
+
+
+class MultipleResultsFound(InvalidRequestError):
+    """A single database result was required but more than one were found.
+
+    .. versionchanged:: 1.4  This exception is now part of the
+       ``sqlalchemy.exc`` module in Core, moved from the ORM.  The symbol
+       remains importable from ``sqlalchemy.orm.exc``.
+
+
+    """
 
 
 class NoReferenceError(InvalidRequestError):
     """Raised by ``ForeignKey`` to indicate a reference cannot be resolved."""
+
+
+class AwaitRequired(InvalidRequestError):
+    """Error raised by the async greenlet spawn if no async operation
+    was awaited when it required one.
+
+    """
+
+    code = "xd1r"
+
+
+class MissingGreenlet(InvalidRequestError):
+    r"""Error raised by the async greenlet await\_ if called while not inside
+    the greenlet spawn context.
+
+    """
+
+    code = "xd2s"
 
 
 class NoReferencedTableError(NoReferenceError):
@@ -310,10 +377,6 @@ class DontWrapMixin(object):
     """
 
 
-# Moved to orm.exc; compatibility definition installed by orm import until 0.6
-UnmappedColumnError = None
-
-
 class StatementError(SQLAlchemyError):
     """An error occurred during execution of a SQL statement.
 
@@ -372,8 +435,9 @@ class StatementError(SQLAlchemyError):
             ),
         )
 
+    @_preloaded.preload_module("sqlalchemy.sql.util")
     def _sql_message(self, as_unicode):
-        from sqlalchemy.sql import util
+        util = _preloaded.preloaded.sql_util
 
         details = [self._message(as_unicode=as_unicode)]
         if self.statement:
@@ -590,13 +654,53 @@ class NotSupportedError(DatabaseError):
 # Warnings
 
 
-class SADeprecationWarning(DeprecationWarning):
-    """Issued once per usage of a deprecated API."""
+class SADeprecationWarning(HasDescriptionCode, DeprecationWarning):
+    """Issued for usage of deprecated APIs."""
+
+    deprecated_since = None
+    "Indicates the version that started raising this deprecation warning"
+
+    def __str__(self):
+        message = super(SADeprecationWarning, self).__str__()
+        if self.code:
+            message = "%s %s" % (message, self._code_str())
+        return message
+
+
+class RemovedIn20Warning(SADeprecationWarning):
+    """Issued for usage of APIs specifically deprecated in SQLAlchemy 2.0.
+
+    .. seealso::
+
+        :ref:`error_b8d9`.
+
+        :ref:`deprecation_20_mode`
+
+    """
+
+    deprecated_since = "1.4"
+    "Indicates the version that started raising this deprecation warning"
+
+    def __str__(self):
+        return (
+            super(RemovedIn20Warning, self).__str__()
+            + " (Background on SQLAlchemy 2.0 at: http://sqlalche.me/e/b8d9)"
+        )
+
+
+class MovedIn20Warning(RemovedIn20Warning):
+    """Subtype of RemovedIn20Warning to indicate an API that moved only."""
 
 
 class SAPendingDeprecationWarning(PendingDeprecationWarning):
-    """Issued once per usage of a deprecated API."""
+    """A similar warning as :class:`_exc.SADeprecationWarning`, this warning
+    is not used in modern versions of SQLAlchemy.
+
+    """
+
+    deprecated_since = None
+    "Indicates the version that started raising this deprecation warning"
 
 
-class SAWarning(RuntimeWarning):
+class SAWarning(HasDescriptionCode, RuntimeWarning):
     """Issued at runtime."""

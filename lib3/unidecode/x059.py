@@ -16,7 +16,7 @@ data = (
 'Zuo ',    # 0x0e
 'Xia ',    # 0x0f
 'Xiong ',    # 0x10
-'[?] ',    # 0x11
+None,    # 0x11
 'Nao ',    # 0x12
 'Xia ',    # 0x13
 'Kui ',    # 0x14
@@ -76,7 +76,7 @@ data = (
 'Xie ',    # 0x4a
 'Fen ',    # 0x4b
 'Dian ',    # 0x4c
-'[?] ',    # 0x4d
+None,    # 0x4d
 'Kui ',    # 0x4e
 'Zou ',    # 0x4f
 'Huan ',    # 0x50

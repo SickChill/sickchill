@@ -1,5 +1,5 @@
 # engine/interfaces.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -147,6 +147,24 @@ class Dialect(object):
 
     _has_events = False
 
+    supports_statement_cache = True
+    """indicates if this dialect supports caching.
+
+    All dialects that are compatible with statement caching should set this
+    flag to True directly on each dialect class and subclass that supports
+    it.  SQLAlchemy tests that this flag is locally present on each dialect
+    subclass before it will use statement caching.  This is to provide
+    safety for legacy or new dialects that are not yet fully tested to be
+    compliant with SQL statement caching.
+
+    .. versionadded:: 1.4.5
+
+    .. seealso::
+
+        :ref:`engine_thirdparty_caching`
+
+    """
+
     def create_connect_args(self, url):
         """Build DB-API compatible connection arguments.
 
@@ -208,31 +226,12 @@ class Dialect(object):
         The initialize() method of the base dialect should be called via
         super().
 
+        .. note:: as of SQLAlchemy 1.4, this method is called **before**
+           any :meth:`_engine.Dialect.on_connect` hooks are called.
+
         """
 
         pass
-
-    def reflecttable(
-        self, connection, table, include_columns, exclude_columns, resolve_fks
-    ):
-        """Load table description from the database.
-
-        Given a :class:`_engine.Connection` and a
-        :class:`~sqlalchemy.schema.Table` object, reflect its columns and
-        properties from the database.
-
-        The implementation of this method is provided by
-        :meth:`.DefaultDialect.reflecttable`, which makes use of
-        :class:`_reflection.Inspector` to retrieve column information.
-
-        Dialects should **not** seek to implement this method, and should
-        instead implement individual schema inspection operations such as
-        :meth:`.Dialect.get_columns`, :meth:`.Dialect.get_pk_constraint`,
-        etc.
-
-        """
-
-        raise NotImplementedError()
 
     def get_columns(self, connection, table_name, schema=None, **kw):
         """Return information about columns in `table_name`.
@@ -241,41 +240,29 @@ class Dialect(object):
         `table_name`, and an optional string `schema`, return column
         information as a list of dictionaries with these keys:
 
-        * ``name`` -
+        name
           the column's name
 
-        * ``type`` -
+        type
           [sqlalchemy.types#TypeEngine]
 
-        * ``nullable`` -
+        nullable
           boolean
 
-        * ``default`` -
+        default
           the column's default value
 
-        * ``autoincrement`` -
+        autoincrement
           boolean
 
-        * ``sequence`` -
+        sequence
           a dictionary of the form
-          {'name' : str, 'start' :int, 'increment': int, 'minvalue': int,
-          'maxvalue': int, 'nominvalue': bool, 'nomaxvalue': bool,
-          'cycle': bool, 'cache': int, 'order': bool}
+              {'name' : str, 'start' :int, 'increment': int, 'minvalue': int,
+               'maxvalue': int, 'nominvalue': bool, 'nomaxvalue': bool,
+               'cycle': bool, 'cache': int, 'order': bool}
 
         Additional column attributes may be present.
-
         """
-
-        raise NotImplementedError()
-
-    @util.deprecated(
-        "0.8",
-        "The :meth:`.Dialect.get_primary_keys` method is deprecated and "
-        "will be removed in a future release.   Please refer to the "
-        ":meth:`.Dialect.get_pk_constraint` method. ",
-    )
-    def get_primary_keys(self, connection, table_name, schema=None, **kw):
-        """Return information about primary keys in `table_name`."""
 
         raise NotImplementedError()
 
@@ -287,10 +274,10 @@ class Dialect(object):
         `table_name`, and an optional string `schema`, return primary
         key information as a dictionary with these keys:
 
-        * ``constrained_columns`` -
+        constrained_columns
           a list of column names that make up the primary key
 
-        * ``name`` -
+        name
           optional name of the primary key constraint.
 
         """
@@ -303,19 +290,19 @@ class Dialect(object):
         `table_name`, and an optional string `schema`, return foreign
         key information as a list of dicts with these keys:
 
-        * ``name`` -
+        name
           the constraint's name
 
-        * ``constrained_columns`` -
+        constrained_columns
           a list of column names that make up the foreign key
 
-        * ``referred_schema`` -
+        referred_schema
           the name of the referred schema
 
-        * ``referred_table`` -
+        referred_table
           the name of the referred table
 
-        * ``referred_columns`` -
+        referred_columns
           a list of column names in the referred table that correspond to
           constrained_columns
         """
@@ -338,8 +325,17 @@ class Dialect(object):
     def get_view_names(self, connection, schema=None, **kw):
         """Return a list of all view names available in the database.
 
-        :param schema:
-          Optional, retrieve names from a non-default schema.
+        :param schema: schema name to query, if not the default schema.
+        """
+
+        raise NotImplementedError()
+
+    def get_sequence_names(self, connection, schema=None, **kw):
+        """Return a list of all sequence names available in the database.
+
+        :param schema: schema name to query, if not the default schema.
+
+        .. versionadded:: 1.4
         """
 
         raise NotImplementedError()
@@ -369,15 +365,14 @@ class Dialect(object):
         `table_name` and an optional string `schema`, return index
         information as a list of dictionaries with these keys:
 
-        * ``name`` -
+        name
           the index's name
 
-        * ``column_names`` -
+        column_names
           list of column names in order
 
-        * ``unique`` -
+        unique
           boolean
-
         """
 
         raise NotImplementedError()
@@ -390,13 +385,13 @@ class Dialect(object):
         Given a string `table_name` and an optional string `schema`, return
         unique constraint information as a list of dicts with these keys:
 
-        * ``name`` -
+        name
           the unique constraint's name
 
-        * ``column_names`` -
+        column_names
           list of column names in order
 
-        * ``**kw`` -
+        \**kw
           other options passed to the dialect's get_unique_constraints()
           method.
 
@@ -466,25 +461,54 @@ class Dialect(object):
         """
         raise NotImplementedError()
 
-    def has_table(self, connection, table_name, schema=None):
-        """Check the existence of a particular table in the database.
+    def has_table(self, connection, table_name, schema=None, **kw):
+        """For internal dialect use, check the existence of a particular table
+        in the database.
 
-        Given a :class:`_engine.Connection` object and a string
-        `table_name`, return True if the given table (possibly within
-        the specified `schema`) exists in the database, False
-        otherwise.
+        Given a :class:`_engine.Connection` object, a string table_name and
+        optional schema name, return True if the given table exists in the
+        database, False otherwise.
+
+        This method serves as the underlying implementation of the
+        public facing :meth:`.Inspector.has_table` method, and is also used
+        internally to implement the "checkfirst" behavior for methods like
+        :meth:`_schema.Table.create` and :meth:`_schema.MetaData.create_all`.
+
+        .. note:: This method is used internally by SQLAlchemy, and is
+           published so that third-party dialects may provide an
+           implementation. It is **not** the public API for checking for table
+           presence. Please use the :meth:`.Inspector.has_table` method.
+           Alternatively, for legacy cross-compatibility, the
+           :meth:`_engine.Engine.has_table` method may be used.
 
         """
 
         raise NotImplementedError()
 
-    def has_sequence(self, connection, sequence_name, schema=None):
+    def has_index(self, connection, table_name, index_name, schema=None):
+        """Check the existence of a particular index name in the database.
+
+        Given a :class:`_engine.Connection` object, a string
+        `table_name` and string index name, return True if an index of the
+        given name on the given table exists, false otherwise.
+
+        The :class:`.DefaultDialect` implements this in terms of the
+        :meth:`.Dialect.has_table` and :meth:`.Dialect.get_indexes` methods,
+        however dialects can implement a more performant version.
+
+
+        .. versionadded:: 1.4
+
+        """
+
+        raise NotImplementedError()
+
+    def has_sequence(self, connection, sequence_name, schema=None, **kw):
         """Check the existence of a particular sequence in the database.
 
         Given a :class:`_engine.Connection` object and a string
         `sequence_name`, return True if the given sequence exists in
         the database, False otherwise.
-
         """
 
         raise NotImplementedError()
@@ -532,7 +556,7 @@ class Dialect(object):
         :param dbapi_connection: a DBAPI connection, typically
          proxied within a :class:`.ConnectionFairy`.
 
-         """
+        """
 
         raise NotImplementedError()
 
@@ -543,7 +567,7 @@ class Dialect(object):
         :param dbapi_connection: a DBAPI connection, typically
          proxied within a :class:`.ConnectionFairy`.
 
-         """
+        """
 
         raise NotImplementedError()
 
@@ -569,6 +593,21 @@ class Dialect(object):
 
         """
 
+        raise NotImplementedError()
+
+    def do_set_input_sizes(self, cursor, list_of_tuples, context):
+        """invoke the cursor.setinputsizes() method with appropriate arguments
+
+        This hook is called if the dialect.use_inputsizes flag is set to True.
+        Parameter data is passed in a list of tuples (paramname, dbtype,
+        sqltype), where ``paramname`` is the key of the parameter in the
+        statement, ``dbtype`` is the DBAPI datatype and ``sqltype`` is the
+        SQLAlchemy type. The order of tuples is in the correct parameter order.
+
+        .. versionadded:: 1.4
+
+
+        """
         raise NotImplementedError()
 
     def create_xid(self):
@@ -673,17 +712,13 @@ class Dialect(object):
 
     def do_executemany(self, cursor, statement, parameters, context=None):
         """Provide an implementation of ``cursor.executemany(statement,
-        parameters)``.
-
-        """
+        parameters)``."""
 
         raise NotImplementedError()
 
     def do_execute(self, cursor, statement, parameters, context=None):
         """Provide an implementation of ``cursor.execute(statement,
-        parameters)``.
-
-        """
+        parameters)``."""
 
         raise NotImplementedError()
 
@@ -700,9 +735,7 @@ class Dialect(object):
 
     def is_disconnect(self, e, connection, cursor):
         """Return True if the given DB-API error indicates an invalid
-        connection.
-
-        """
+        connection"""
 
         raise NotImplementedError()
 
@@ -739,8 +772,69 @@ class Dialect(object):
 
         """
 
+    def on_connect_url(self, url):
+        """return a callable which sets up a newly created DBAPI connection.
+
+        This method is a new hook that supersedes the
+        :meth:`_engine.Dialect.on_connect` method when implemented by a
+        dialect.   When not implemented by a dialect, it invokes the
+        :meth:`_engine.Dialect.on_connect` method directly to maintain
+        compatibility with existing dialects.   There is no deprecation
+        for :meth:`_engine.Dialect.on_connect` expected.
+
+        The callable should accept a single argument "conn" which is the
+        DBAPI connection itself.  The inner callable has no
+        return value.
+
+        E.g.::
+
+            class MyDialect(default.DefaultDialect):
+                # ...
+
+                def on_connect_url(self, url):
+                    def do_on_connect(connection):
+                        connection.execute("SET SPECIAL FLAGS etc")
+
+                    return do_on_connect
+
+        This is used to set dialect-wide per-connection options such as
+        isolation modes, Unicode modes, etc.
+
+        This method differs from :meth:`_engine.Dialect.on_connect` in that
+        it is passed the :class:`_engine.URL` object that's relevant to the
+        connect args.  Normally the only way to get this is from the
+        :meth:`_engine.Dialect.on_connect` hook is to look on the
+        :class:`_engine.Engine` itself, however this URL object may have been
+        replaced by plugins.
+
+        .. note::
+
+            The default implementation of
+            :meth:`_engine.Dialect.on_connect_url` is to invoke the
+            :meth:`_engine.Dialect.on_connect` method. Therefore if a dialect
+            implements this method, the :meth:`_engine.Dialect.on_connect`
+            method **will not be called** unless the overriding dialect calls
+            it directly from here.
+
+        .. versionadded:: 1.4.3 added :meth:`_engine.Dialect.on_connect_url`
+           which normally calls into :meth:`_engine.Dialect.on_connect`.
+
+        :param url: a :class:`_engine.URL` object representing the
+         :class:`_engine.URL` that was passed to the
+         :meth:`_engine.Dialect.create_connect_args` method.
+
+        :return: a callable that accepts a single DBAPI connection as an
+         argument, or None.
+
+        .. seealso::
+
+            :meth:`_engine.Dialect.on_connect`
+
+        """
+        return self.on_connect()
+
     def on_connect(self):
-        """Return a callable which sets up a newly created DBAPI connection.
+        """return a callable which sets up a newly created DBAPI connection.
 
         The callable should accept a single argument "conn" which is the
         DBAPI connection itself.  The inner callable has no
@@ -761,16 +855,19 @@ class Dialect(object):
         isolation modes, Unicode modes, etc.
 
         The "do_on_connect" callable is invoked by using the
-        :meth:`_events.PoolEvents.first_connect` and
         :meth:`_events.PoolEvents.connect` event
-        hooks, then unwrapping the DBAPI connection and passing it into the
-        callable.  The reason it is invoked for both events is so that any
-        dialect-level initialization that occurs upon first connection, which
-        also makes use of the :meth:`_events.PoolEvents.first_connect` method,
-        will
-        proceed after this hook has been called. This currently means the
-        hook is in fact called twice for the very first  connection in which a
-        dialect creates; and once per connection afterwards.
+        hook, then unwrapping the DBAPI connection and passing it into the
+        callable.
+
+        .. versionchanged:: 1.4 the on_connect hook is no longer called twice
+           for the first connection of a dialect.  The on_connect hook is still
+           called before the :meth:`_engine.Dialect.initialize` method however.
+
+        .. versionchanged:: 1.4.3 the on_connect hook is invoked from a new
+           method on_connect_url that passes the URL that was used to create
+           the connect args.   Dialects can implement on_connect_url instead
+           of on_connect if they need the URL object that was used for the
+           connection in order to get additional context.
 
         If None is returned, no event listener is generated.
 
@@ -781,6 +878,10 @@ class Dialect(object):
 
             :meth:`.Dialect.connect` - allows the DBAPI ``connect()`` sequence
             itself to be controlled.
+
+            :meth:`.Dialect.on_connect_url` - supersedes
+            :meth:`.Dialect.on_connect` to also receive the
+            :class:`_engine.URL` object in context.
 
         """
         return None
@@ -872,6 +973,26 @@ class Dialect(object):
 
         raise NotImplementedError()
 
+    def get_default_isolation_level(self, dbapi_conn):
+        """Given a DBAPI connection, return its isolation level, or
+        a default isolation level if one cannot be retrieved.
+
+        This method may only raise NotImplementedError and
+        **must not raise any other exception**, as it is used implicitly upon
+        first connect.
+
+        The method **must return a value** for a dialect that supports
+        isolation level settings, as this level is what will be reverted
+        towards when a per-connection isolation level change is made.
+
+        The method defaults to using the :meth:`.Dialect.get_isolation_level`
+        method unless overridden by a dialect.
+
+        .. versionadded:: 1.3.22
+
+        """
+        raise NotImplementedError()
+
     @classmethod
     def get_dialect_cls(cls, url):
         """Given a URL, return the :class:`.Dialect` that will be used.
@@ -890,7 +1011,7 @@ class Dialect(object):
 
     @classmethod
     def load_provisioning(cls):
-        """Set up the provision.py module for this dialect.
+        """set up the provision.py module for this dialect.
 
         For dialects that include a provision.py module that sets up
         provisioning followers, this method should initiate that process.
@@ -942,23 +1063,62 @@ class CreateEnginePlugin(object):
     """A set of hooks intended to augment the construction of an
     :class:`_engine.Engine` object based on entrypoint names in a URL.
 
-    The purpose of :class:`.CreateEnginePlugin` is to allow third-party
+    The purpose of :class:`_engine.CreateEnginePlugin` is to allow third-party
     systems to apply engine, pool and dialect level event listeners without
     the need for the target application to be modified; instead, the plugin
     names can be added to the database URL.  Target applications for
-    :class:`.CreateEnginePlugin` include:
+    :class:`_engine.CreateEnginePlugin` include:
 
     * connection and SQL performance tools, e.g. which use events to track
       number of checkouts and/or time spent with statements
 
     * connectivity plugins such as proxies
 
+    A rudimentary :class:`_engine.CreateEnginePlugin` that attaches a logger
+    to an :class:`_engine.Engine` object might look like::
+
+
+        import logging
+
+        from sqlalchemy.engine import CreateEnginePlugin
+        from sqlalchemy import event
+
+        class LogCursorEventsPlugin(CreateEnginePlugin):
+            def __init__(self, url, kwargs):
+                # consume the parameter "log_cursor_logging_name" from the
+                # URL query
+                logging_name = url.query.get("log_cursor_logging_name", "log_cursor")
+
+                self.log = logging.getLogger(logging_name)
+
+            def update_url(self, url):
+                "update the URL to one that no longer includes our parameters"
+                return url.difference_update_query(["log_cursor_logging_name"])
+
+            def engine_created(self, engine):
+                "attach an event listener after the new Engine is constructed"
+                event.listen(engine, "before_cursor_execute", self._log_event)
+
+
+            def _log_event(
+                self,
+                conn,
+                cursor,
+                statement,
+                parameters,
+                context,
+                executemany):
+
+                self.log.info("Plugin logged cursor event: %s", statement)
+
+
+
     Plugins are registered using entry points in a similar way as that
     of dialects::
 
         entry_points={
             'sqlalchemy.plugins': [
-                'myplugin = myapp.plugins:MyPlugin'
+                'log_cursor_plugin = myapp.plugins:LogCursorEventsPlugin'
             ]
 
     A plugin that uses the above names would be invoked from a database
@@ -967,10 +1127,20 @@ class CreateEnginePlugin(object):
         from sqlalchemy import create_engine
 
         engine = create_engine(
-          "mysql+pymysql://scott:tiger@localhost/test?plugin=myplugin")
+            "mysql+pymysql://scott:tiger@localhost/test?"
+            "plugin=log_cursor_plugin&log_cursor_logging_name=mylogger"
+        )
 
-    Alternatively, the :paramref:`.create_engine.plugins" argument may be
-    passed as a list to :func:`_sa.create_engine`::
+    The ``plugin`` URL parameter supports multiple instances, so that a URL
+    may specify multiple plugins; they are loaded in the order stated
+    in the URL::
+
+        engine = create_engine(
+          "mysql+pymysql://scott:tiger@localhost/test?"
+          "plugin=plugin_one&plugin=plugin_twp&plugin=plugin_three")
+
+    The plugin names may also be passed directly to :func:`_sa.create_engine`
+    using the :paramref:`_sa.create_engine.plugins` argument::
 
         engine = create_engine(
           "mysql+pymysql://scott:tiger@localhost/test",
@@ -979,51 +1149,90 @@ class CreateEnginePlugin(object):
     .. versionadded:: 1.2.3  plugin names can also be specified
        to :func:`_sa.create_engine` as a list
 
-    The ``plugin`` argument supports multiple instances, so that a URL
-    may specify multiple plugins; they are loaded in the order stated
-    in the URL::
+    A plugin may consume plugin-specific arguments from the
+    :class:`_engine.URL` object as well as the ``kwargs`` dictionary, which is
+    the dictionary of arguments passed to the :func:`_sa.create_engine`
+    call.  "Consuming" these arguments includes that they must be removed
+    when the plugin initializes, so that the arguments are not passed along
+    to the :class:`_engine.Dialect` constructor, where they will raise an
+    :class:`_exc.ArgumentError` because they are not known by the dialect.
 
-        engine = create_engine(
-          "mysql+pymysql://scott:tiger@localhost/"
-          "test?plugin=plugin_one&plugin=plugin_twp&plugin=plugin_three")
-
-    A plugin can receive additional arguments from the URL string as
-    well as from the keyword arguments passed to :func:`_sa.create_engine`.
-    The :class:`.URL` object and the keyword dictionary are passed to the
-    constructor so that these arguments can be extracted from the url's
-    :attr:`.URL.query` collection as well as from the dictionary::
+    As of version 1.4 of SQLAlchemy, arguments should continue to be consumed
+    from the ``kwargs`` dictionary directly, by removing the values with a
+    method such as ``dict.pop``. Arguments from the :class:`_engine.URL` object
+    should be consumed by implementing the
+    :meth:`_engine.CreateEnginePlugin.update_url` method, returning a new copy
+    of the :class:`_engine.URL` with plugin-specific parameters removed::
 
         class MyPlugin(CreateEnginePlugin):
             def __init__(self, url, kwargs):
-                self.my_argument_one = url.query.pop('my_argument_one')
-                self.my_argument_two = url.query.pop('my_argument_two')
+                self.my_argument_one = url.query['my_argument_one']
+                self.my_argument_two = url.query['my_argument_two']
                 self.my_argument_three = kwargs.pop('my_argument_three', None)
 
-    Arguments like those illustrated above would be consumed from the
-    following::
+            def update_url(self, url):
+                return url.difference_update_query(
+                    ["my_argument_one", "my_argument_two"]
+                )
+
+    Arguments like those illustrated above would be consumed from a
+    :func:`_sa.create_engine` call such as::
 
         from sqlalchemy import create_engine
 
         engine = create_engine(
-          "mysql+pymysql://scott:tiger@localhost/"
-          "test?plugin=myplugin&my_argument_one=foo&my_argument_two=bar",
-          my_argument_three='bat')
+          "mysql+pymysql://scott:tiger@localhost/test?"
+          "plugin=myplugin&my_argument_one=foo&my_argument_two=bar",
+          my_argument_three='bat'
+        )
 
-    The URL and dictionary are used for subsequent setup of the engine
-    as they are, so the plugin can modify their arguments in-place.
-    Arguments that are only understood by the plugin should be popped
-    or otherwise removed so that they aren't interpreted as erroneous
-    arguments afterwards.
+    .. versionchanged:: 1.4
+
+        The :class:`_engine.URL` object is now immutable; a
+        :class:`_engine.CreateEnginePlugin` that needs to alter the
+        :class:`_engine.URL` should implement the newly added
+        :meth:`_engine.CreateEnginePlugin.update_url` method, which
+        is invoked after the plugin is constructed.
+
+        For migration, construct the plugin in the following way, checking
+        for the existence of the :meth:`_engine.CreateEnginePlugin.update_url`
+        method to detect which version is running::
+
+            class MyPlugin(CreateEnginePlugin):
+                def __init__(self, url, kwargs):
+                    if hasattr(CreateEnginePlugin, "update_url"):
+                        # detect the 1.4 API
+                        self.my_argument_one = url.query['my_argument_one']
+                        self.my_argument_two = url.query['my_argument_two']
+                    else:
+                        # detect the 1.3 and earlier API - mutate the
+                        # URL directly
+                        self.my_argument_one = url.query.pop('my_argument_one')
+                        self.my_argument_two = url.query.pop('my_argument_two')
+
+                    self.my_argument_three = kwargs.pop('my_argument_three', None)
+
+                def update_url(self, url):
+                    # this method is only called in the 1.4 version
+                    return url.difference_update_query(
+                        ["my_argument_one", "my_argument_two"]
+                    )
+
+        .. seealso::
+
+            :ref:`change_5526` - overview of the :class:`_engine.URL` change which
+            also includes notes regarding :class:`_engine.CreateEnginePlugin`.
+
 
     When the engine creation process completes and produces the
     :class:`_engine.Engine` object, it is again passed to the plugin via the
-    :meth:`.CreateEnginePlugin.engine_created` hook.  In this hook, additional
+    :meth:`_engine.CreateEnginePlugin.engine_created` hook.  In this hook, additional
     changes can be made to the engine, most typically involving setup of
     events (e.g. those defined in :ref:`core_event_toplevel`).
 
     .. versionadded:: 1.1
 
-    """
+    """  # noqa: E501
 
     def __init__(self, url, kwargs):
         """Construct a new :class:`.CreateEnginePlugin`.
@@ -1034,17 +1243,39 @@ class CreateEnginePlugin(object):
         passed to the :meth:`.CreateEnginePlugin.engine_created` method
         corresponding to this URL.
 
-        :param url: the :class:`.URL` object.  The plugin should inspect
-         what it needs here as well as remove its custom arguments from the
-         :attr:`.URL.query` collection.  The URL can be modified in-place
-         in any other way as well.
-        :param kwargs: The keyword arguments passed to :func:`.create_engine`.
-         The plugin can read and modify this dictionary in-place, to affect
-         the ultimate arguments used to create the engine.  It should
-         remove its custom arguments from the dictionary as well.
+        :param url: the :class:`_engine.URL` object.  The plugin may inspect
+         the :class:`_engine.URL` for arguments.  Arguments used by the
+         plugin should be removed, by returning an updated :class:`_engine.URL`
+         from the :meth:`_engine.CreateEnginePlugin.update_url` method.
+
+         .. versionchanged::  1.4
+
+            The :class:`_engine.URL` object is now immutable, so a
+            :class:`_engine.CreateEnginePlugin` that needs to alter the
+            :class:`_engine.URL` object should implement the
+            :meth:`_engine.CreateEnginePlugin.update_url` method.
+
+        :param kwargs: The keyword arguments passed to
+         :func:`_sa.create_engine`.
 
         """
         self.url = url
+
+    def update_url(self, url):
+        """Update the :class:`_engine.URL`.
+
+        A new :class:`_engine.URL` should be returned.   This method is
+        typically used to consume configuration arguments from the
+        :class:`_engine.URL` which must be removed, as they will not be
+        recognized by the dialect.  The
+        :meth:`_engine.URL.difference_update_query` method is available
+        to remove these arguments.   See the docstring at
+        :class:`_engine.CreateEnginePlugin` for an example.
+
+
+        .. versionadded:: 1.4
+
+        """
 
     def handle_dialect_kwargs(self, dialect_cls, dialect_args):
         """parse and modify dialect kwargs"""
@@ -1120,40 +1351,6 @@ class ExecutionContext(object):
       and updates.
     """
 
-    exception = None
-    """A DBAPI-level exception that was caught when this ExecutionContext
-    attempted to execute a statement.
-
-    This attribute is meaningful only within the
-    :meth:`_events.ConnectionEvents.dbapi_error` event.
-
-    .. versionadded:: 0.9.7
-
-    .. seealso::
-
-        :attr:`.ExecutionContext.is_disconnect`
-
-        :meth:`_events.ConnectionEvents.dbapi_error`
-
-    """
-
-    is_disconnect = None
-    """Boolean flag set to True or False when a DBAPI-level exception
-    is caught when this ExecutionContext attempted to execute a statement.
-
-    This attribute is meaningful only within the
-    :meth:`_events.ConnectionEvents.dbapi_error` event.
-
-    .. versionadded:: 0.9.7
-
-    .. seealso::
-
-        :attr:`.ExecutionContext.exception`
-
-        :meth:`_events.ConnectionEvents.dbapi_error`
-
-    """
-
     def create_cursor(self):
         """Return a new cursor generated from this ExecutionContext's
         connection.
@@ -1175,6 +1372,44 @@ class ExecutionContext(object):
 
         raise NotImplementedError()
 
+    def get_out_parameter_values(self, out_param_names):
+        """Return a sequence of OUT parameter values from a cursor.
+
+        For dialects that support OUT parameters, this method will be called
+        when there is a :class:`.SQLCompiler` object which has the
+        :attr:`.SQLCompiler.has_out_parameters` flag set.  This flag in turn
+        will be set to True if the statement itself has :class:`.BindParameter`
+        objects that have the ``.isoutparam`` flag set which are consumed by
+        the :meth:`.SQLCompiler.visit_bindparam` method.  If the dialect
+        compiler produces :class:`.BindParameter` objects with ``.isoutparam``
+        set which are not handled by :meth:`.SQLCompiler.visit_bindparam`, it
+        should set this flag explicitly.
+
+        The list of names that were rendered for each bound parameter
+        is passed to the method.  The method should then return a sequence of
+        values corresponding to the list of parameter objects. Unlike in
+        previous SQLAlchemy versions, the values can be the **raw values** from
+        the DBAPI; the execution context will apply the appropriate type
+        handler based on what's present in self.compiled.binds and update the
+        values.  The processed dictionary will then be made available via the
+        ``.out_parameters`` collection on the result object.  Note that
+        SQLAlchemy 1.4 has multiple kinds of result object as part of the 2.0
+        transition.
+
+        .. versionadded:: 1.4 - added
+           :meth:`.ExecutionContext.get_out_parameter_values`, which is invoked
+           automatically by the :class:`.DefaultExecutionContext` when there
+           are :class:`.BindParameter` objects with the ``.isoutparam`` flag
+           set.  This replaces the practice of setting out parameters within
+           the now-removed ``get_result_proxy()`` method.
+
+        .. seealso::
+
+            :meth:`.ExecutionContext.get_result_cursor_strategy`
+
+        """
+        raise NotImplementedError()
+
     def post_exec(self):
         """Called after the execution of a compiled statement.
 
@@ -1185,35 +1420,84 @@ class ExecutionContext(object):
 
         raise NotImplementedError()
 
-    def result(self):
-        """Return a result object corresponding to this ExecutionContext.
+    def get_result_cursor_strategy(self, result):
+        """Return a result cursor strategy for a given result object.
 
-        Returns a ResultProxy.
+        This method is implemented by the :class:`.DefaultDialect` and is
+        only needed by implementing dialects in the case where some special
+        steps regarding the cursor must be taken, such as manufacturing
+        fake results from some other element of the cursor, or pre-buffering
+        the cursor's results.
+
+        A simplified version of the default implementation is::
+
+            from sqlalchemy.engine.result import DefaultCursorFetchStrategy
+
+            class MyExecutionContext(DefaultExecutionContext):
+                def get_result_cursor_strategy(self, result):
+                    return DefaultCursorFetchStrategy.create(result)
+
+        Above, the :class:`.DefaultCursorFetchStrategy` will be applied
+        to the result object.   For results that are pre-buffered from a
+        cursor that might be closed, an implementation might be::
+
+
+            from sqlalchemy.engine.result import (
+                FullyBufferedCursorFetchStrategy
+            )
+
+            class MyExecutionContext(DefaultExecutionContext):
+                _pre_buffered_result = None
+
+                def pre_exec(self):
+                    if self.special_condition_prebuffer_cursor():
+                        self._pre_buffered_result = (
+                            self.cursor.description,
+                            self.cursor.fetchall()
+                        )
+
+                def get_result_cursor_strategy(self, result):
+                    if self._pre_buffered_result:
+                        description, cursor_buffer = self._pre_buffered_result
+                        return (
+                            FullyBufferedCursorFetchStrategy.
+                                create_from_buffer(
+                                    result, description, cursor_buffer
+                            )
+                        )
+                    else:
+                        return DefaultCursorFetchStrategy.create(result)
+
+        This method replaces the previous not-quite-documented
+        ``get_result_proxy()`` method.
+
+        .. versionadded:: 1.4  - result objects now interpret cursor results
+           based on a pluggable "strategy" object, which is delivered
+           by the :class:`.ExecutionContext` via the
+           :meth:`.ExecutionContext.get_result_cursor_strategy` method.
+
+        .. seealso::
+
+            :meth:`.ExecutionContext.get_out_parameter_values`
 
         """
-
         raise NotImplementedError()
 
     def handle_dbapi_exception(self, e):
         """Receive a DBAPI exception which occurred upon execute, result
-        fetch, etc.
-
-        """
+        fetch, etc."""
 
         raise NotImplementedError()
 
     def should_autocommit_text(self, statement):
         """Parse the given textual statement and return True if it refers to
-        a "committable" statement
-
-        """
+        a "committable" statement"""
 
         raise NotImplementedError()
 
     def lastrow_has_defaults(self):
         """Return True if the last INSERT or UPDATE row contained
         inlined or database-side defaults.
-
         """
 
         raise NotImplementedError()
@@ -1222,13 +1506,23 @@ class ExecutionContext(object):
         """Return the DBAPI ``cursor.rowcount`` value, or in some
         cases an interpreted value.
 
-        See :attr:`_engine.ResultProxy.rowcount` for details on this.
+        See :attr:`_engine.CursorResult.rowcount` for details on this.
 
         """
 
         raise NotImplementedError()
 
 
+@util.deprecated_20_cls(
+    ":class:`.Connectable`",
+    alternative=(
+        "The :class:`_engine.Engine` will be the only Core "
+        "object that features a .connect() method, and the "
+        ":class:`_engine.Connection` will be the only object that features "
+        "an .execute() method."
+    ),
+    constructor=None,
+)
 class Connectable(object):
     """Interface for an object which supports execution of SQL constructs.
 
@@ -1258,64 +1552,10 @@ class Connectable(object):
 
     """
 
-    @util.deprecated(
-        "1.3",
-        "The :meth:`_engine.Engine.contextual_connect` and "
-        ":meth:`_engine.Connection.contextual_connect` methods are "
-        "deprecated. This "
-        "method is an artifact of the threadlocal engine strategy which is "
-        "also to be deprecated.   For explicit connections from an "
-        ":class:`_engine.Engine`, use the :meth:`_engine.Engine.connect` "
-        "method.",
-    )
-    def contextual_connect(self, *arg, **kw):
-        """Return a :class:`_engine.Connection`
-        object which may be part of an ongoing
-        context.
-
-        Depending on context, this may be ``self`` if this object
-        is already an instance of :class:`_engine.Connection`, or a newly
-        procured :class:`_engine.Connection` if this object is an instance
-        of :class:`_engine.Engine`.
-
-        """
-
-        return self._contextual_connect(*arg, **kw)
-
-    def _contextual_connect(self):
-        raise NotImplementedError()
-
-    @util.deprecated(
-        "0.7",
-        "The :meth:`.Connectable.create` method is deprecated and will be "
-        "removed in a future release.  Please use the ``.create()`` method "
-        "on specific schema objects to emit DDL sequences, including "
-        ":meth:`_schema.Table.create`, :meth:`.Index.create`, and "
-        ":meth:`_schema.MetaData.create_all`.",
-    )
-    def create(self, entity, **kwargs):
-        """Emit CREATE statements for the given schema entity.
-        """
-
-        raise NotImplementedError()
-
-    @util.deprecated(
-        "0.7",
-        "The :meth:`.Connectable.drop` method is deprecated and will be "
-        "removed in a future release.  Please use the ``.drop()`` method "
-        "on specific schema objects to emit DDL sequences, including "
-        ":meth:`_schema.Table.drop`, :meth:`.Index.drop`, and "
-        ":meth:`_schema.MetaData.drop_all`.",
-    )
-    def drop(self, entity, **kwargs):
-        """Emit DROP statements for the given schema entity.
-        """
-
-        raise NotImplementedError()
-
     def execute(self, object_, *multiparams, **params):
-        """Executes the given construct and returns a """
-        """:class:`_engine.ResultProxy`."""
+        """Executes the given construct and returns a
+        :class:`_engine.CursorResult`.
+        """
         raise NotImplementedError()
 
     def scalar(self, object_, *multiparams, **params):
@@ -1448,6 +1688,16 @@ class ExceptionContext(object):
     assigning to this flag, a "disconnect" event which then results in
     a connection and pool invalidation can be invoked or prevented by
     changing this flag.
+
+
+    .. note:: The pool "pre_ping" handler enabled using the
+        :paramref:`_sa.create_engine.pool_pre_ping` parameter does **not**
+        consult this event before deciding if the "ping" returned false,
+        as opposed to receiving an unhandled error.   For this use case, the
+        :ref:`legacy recipe based on engine_connect() may be used
+        <pool_disconnects_pessimistic_custom>`.  A future API allow more
+        comprehensive customization of the "disconnect" detection mechanism
+        across all functions.
 
     """
 

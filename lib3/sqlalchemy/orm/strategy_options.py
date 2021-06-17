@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -14,7 +14,8 @@ from .base import _class_to_mapper
 from .base import _is_aliased_class
 from .base import _is_mapped_class
 from .base import InspectionAttr
-from .interfaces import MapperOption
+from .interfaces import LoaderOption
+from .interfaces import MapperProperty
 from .interfaces import PropComparator
 from .path_registry import _DEFAULT_TOKEN
 from .path_registry import _WILDCARD_TOKEN
@@ -24,12 +25,15 @@ from .util import _orm_full_deannotate
 from .. import exc as sa_exc
 from .. import inspect
 from .. import util
-from ..sql import expression as sql_expr
+from ..sql import and_
+from ..sql import coercions
+from ..sql import roles
+from ..sql import visitors
 from ..sql.base import _generative
 from ..sql.base import Generative
 
 
-class Load(Generative, MapperOption):
+class Load(Generative, LoaderOption):
     """Represents loader options which modify the state of a
     :class:`_query.Query` in order to affect how various mapped attributes are
     loaded.
@@ -72,8 +76,25 @@ class Load(Generative, MapperOption):
 
     """
 
+    _cache_key_traversal = [
+        ("path", visitors.ExtendedInternalTraversal.dp_has_cache_key),
+        ("strategy", visitors.ExtendedInternalTraversal.dp_plain_obj),
+        ("_of_type", visitors.ExtendedInternalTraversal.dp_multi),
+        ("_extra_criteria", visitors.InternalTraversal.dp_clauseelement_list),
+        (
+            "_context_cache_key",
+            visitors.ExtendedInternalTraversal.dp_has_cache_key_tuples,
+        ),
+        (
+            "local_opts",
+            visitors.ExtendedInternalTraversal.dp_string_multi_dict,
+        ),
+    ]
+
     def __init__(self, entity):
         insp = inspect(entity)
+        insp._post_inspect
+
         self.path = insp._path_registry
         # note that this .context is shared among all descendant
         # Load objects
@@ -88,77 +109,56 @@ class Load(Generative, MapperOption):
         load.context = {}
         load.local_opts = {}
         load._of_type = None
+        load._extra_criteria = ()
         return load
 
-    def _generate_cache_key(self, path):
-        if path.path[0].is_aliased_class:
-            return False
+    def _generate_extra_criteria(self, context):
+        """Apply the current bound parameters in a QueryContext to the
+        "extra_criteria" stored with this Load object.
 
+        Load objects are typically pulled from the cached version of
+        the statement from a QueryContext.  The statement currently being
+        executed will have new values (and keys) for bound parameters in the
+        extra criteria which need to be applied by loader strategies when
+        they handle this criteria for a result set.
+
+        """
+
+        assert (
+            self._extra_criteria
+        ), "this should only be called if _extra_criteria is present"
+
+        orig_query = context.compile_state.select_statement
+        current_query = context.query
+
+        # NOTE: while it seems like we should not do the "apply" operation
+        # here if orig_query is current_query, skipping it in the "optimized"
+        # case causes the query to be different from a cache key perspective,
+        # because we are creating a copy of the criteria which is no longer
+        # the same identity of the _extra_criteria in the loader option
+        # itself.  cache key logic produces a different key for
+        # (A, copy_of_A) vs. (A, A), because in the latter case it shortens
+        # the second part of the key to just indicate on identity.
+
+        # if orig_query is current_query:
+        # not cached yet.   just do the and_()
+        #    return and_(*self._extra_criteria)
+
+        k1 = orig_query._generate_cache_key()
+        k2 = current_query._generate_cache_key()
+
+        return k2._apply_params_to_element(k1, and_(*self._extra_criteria))
+
+    @property
+    def _context_cache_key(self):
         serialized = []
+        if self.context is None:
+            return []
         for (key, loader_path), obj in self.context.items():
             if key != "loader":
                 continue
-
-            for local_elem, obj_elem in zip(self.path.path, loader_path):
-                if local_elem is not obj_elem:
-                    break
-            else:
-                endpoint = obj._of_type or obj.path.path[-1]
-                chopped = self._chop_path(loader_path, path)
-
-                if (
-                    # means loader_path and path are unrelated,
-                    # this does not need to be part of a cache key
-                    chopped
-                    is None
-                ) or (
-                    # means no additional path with loader_path + path
-                    # and the endpoint isn't using of_type so isn't modified
-                    # into an alias or other unsafe entity
-                    not chopped
-                    and not obj._of_type
-                ):
-                    continue
-
-                serialized_path = []
-
-                for token in chopped:
-                    if isinstance(token, util.string_types):
-                        serialized_path.append(token)
-                    elif token.is_aliased_class:
-                        return False
-                    elif token.is_property:
-                        serialized_path.append(token.key)
-                    else:
-                        assert token.is_mapper
-                        serialized_path.append(token.class_)
-
-                if not serialized_path or endpoint != serialized_path[-1]:
-                    if endpoint.is_mapper:
-                        serialized_path.append(endpoint.class_)
-                    elif endpoint.is_aliased_class:
-                        return False
-
-                serialized.append(
-                    (
-                        tuple(serialized_path)
-                        + (obj.strategy or ())
-                        + (
-                            tuple(
-                                [
-                                    (key, obj.local_opts[key])
-                                    for key in sorted(obj.local_opts)
-                                ]
-                            )
-                            if obj.local_opts
-                            else ()
-                        )
-                    )
-                )
-        if not serialized:
-            return None
-        else:
-            return tuple(serialized)
+            serialized.append(loader_path + (obj,))
+        return serialized
 
     def _generate(self):
         cloned = super(Load, self)._generate()
@@ -170,25 +170,37 @@ class Load(Generative, MapperOption):
     strategy = None
     propagate_to_loaders = False
     _of_type = None
+    _extra_criteria = ()
 
-    def process_query(self, query):
-        self._process(query, True)
+    def process_compile_state(self, compile_state):
+        if not compile_state.compile_options._enable_eagerloads:
+            return
 
-    def process_query_conditionally(self, query):
-        self._process(query, False)
+        self._process(compile_state, not bool(compile_state.current_path))
 
-    def _process(self, query, raiseerr):
-        current_path = query._current_path
+    def _process(self, compile_state, raiseerr):
+        is_refresh = compile_state.compile_options._for_refresh_state
+        current_path = compile_state.current_path
         if current_path:
             for (token, start_path), loader in self.context.items():
+                if is_refresh and not loader.propagate_to_loaders:
+                    continue
                 chopped_start_path = self._chop_path(start_path, current_path)
                 if chopped_start_path is not None:
-                    query._attributes[(token, chopped_start_path)] = loader
+                    compile_state.attributes[
+                        (token, chopped_start_path)
+                    ] = loader
         else:
-            query._attributes.update(self.context)
+            compile_state.attributes.update(self.context)
 
     def _generate_path(
-        self, path, attr, for_strategy, wildcard_key, raiseerr=True
+        self,
+        path,
+        attr,
+        for_strategy,
+        wildcard_key,
+        raiseerr=True,
+        polymorphic_entity_context=None,
     ):
         existing_of_type = self._of_type
         self._of_type = None
@@ -205,6 +217,7 @@ class Load(Generative, MapperOption):
 
         if isinstance(attr, util.string_types):
             default_token = attr.endswith(_DEFAULT_TOKEN)
+            attr_str_name = attr
             if attr.endswith(_WILDCARD_TOKEN) or default_token:
                 if default_token:
                     self.propagate_to_loaders = False
@@ -226,6 +239,12 @@ class Load(Generative, MapperOption):
             else:
                 ent = path.entity
 
+            util.warn_deprecated_20(
+                "Using strings to indicate column or "
+                "relationship paths in loader options is deprecated "
+                "and will be removed in SQLAlchemy 2.0.  Please use "
+                "the class-bound attribute directly."
+            )
             try:
                 # use getattr on the class to work around
                 # synonyms, hybrids, etc.
@@ -242,81 +261,107 @@ class Load(Generative, MapperOption):
                 else:
                     return None
             else:
-                attr = found_property = attr.property
+                try:
+                    attr = found_property = attr.property
+                except AttributeError as ae:
+                    if not isinstance(attr, MapperProperty):
+                        util.raise_(
+                            sa_exc.ArgumentError(
+                                'Expected attribute "%s" on %s to be a '
+                                "mapped attribute; "
+                                "instead got %s object."
+                                % (attr_str_name, ent, type(attr))
+                            ),
+                            replace_context=ae,
+                        )
+                    else:
+                        raise
 
             path = path[attr]
-        elif _is_mapped_class(attr):
-            # TODO: this does not appear to be a valid codepath.  "attr"
-            # would never be a mapper.  This block is present in 1.2
-            # as well however does not seem to be accessed in any tests.
-            if not orm_util._entity_corresponds_to_use_path_impl(
-                attr.parent, path[-1]
-            ):
-                if raiseerr:
-                    raise sa_exc.ArgumentError(
-                        "Attribute '%s' does not "
-                        "link from element '%s'" % (attr, path.entity)
-                    )
-                else:
-                    return None
         else:
-            prop = found_property = attr.property
+            insp = inspect(attr)
 
-            if not orm_util._entity_corresponds_to_use_path_impl(
-                attr.parent, path[-1]
-            ):
-                if raiseerr:
-                    raise sa_exc.ArgumentError(
-                        'Attribute "%s" does not '
-                        'link from element "%s".%s'
-                        % (
-                            attr,
-                            path.entity,
-                            (
-                                "  Did you mean to use "
-                                "%s.of_type(%s)?"
-                                % (path[-2], attr.class_.__name__)
-                                if len(path) > 1
-                                and path.entity.is_mapper
-                                and attr.parent.is_aliased_class
-                                else ""
-                            ),
+            if insp.is_mapper or insp.is_aliased_class:
+                # TODO: this does not appear to be a valid codepath.  "attr"
+                # would never be a mapper.  This block is present in 1.2
+                # as well however does not seem to be accessed in any tests.
+                if not orm_util._entity_corresponds_to_use_path_impl(
+                    attr.parent, path[-1]
+                ):
+                    if raiseerr:
+                        raise sa_exc.ArgumentError(
+                            "Attribute '%s' does not "
+                            "link from element '%s'" % (attr, path.entity)
                         )
-                    )
-                else:
-                    return None
-
-            if getattr(attr, "_of_type", None):
-                ac = attr._of_type
-                ext_info = of_type_info = inspect(ac)
-
-                existing = path.entity_path[prop].get(
-                    self.context, "path_with_polymorphic"
-                )
-
-                if not ext_info.is_aliased_class:
-                    ac = orm_util.with_polymorphic(
-                        ext_info.mapper.base_mapper,
-                        ext_info.mapper,
-                        aliased=True,
-                        _use_mapper_path=True,
-                        _existing_alias=inspect(existing)
-                        if existing is not None
-                        else None,
-                    )
-
-                    ext_info = inspect(ac)
-
-                path.entity_path[prop].set(
-                    self.context, "path_with_polymorphic", ac
-                )
-
-                path = path[prop][ext_info]
-
-                self._of_type = of_type_info
-
-            else:
+                    else:
+                        return None
+            elif insp.is_property:
+                prop = found_property = attr
                 path = path[prop]
+            elif insp.is_attribute:
+                prop = found_property = attr.property
+
+                if not orm_util._entity_corresponds_to_use_path_impl(
+                    attr.parent, path[-1]
+                ):
+                    if raiseerr:
+                        raise sa_exc.ArgumentError(
+                            'Attribute "%s" does not '
+                            'link from element "%s".%s'
+                            % (
+                                attr,
+                                path.entity,
+                                (
+                                    "  Did you mean to use "
+                                    "%s.of_type(%s)?"
+                                    % (path[-2], attr.class_.__name__)
+                                    if len(path) > 1
+                                    and path.entity.is_mapper
+                                    and attr.parent.is_aliased_class
+                                    else ""
+                                ),
+                            )
+                        )
+                    else:
+                        return None
+
+                if attr._extra_criteria:
+                    self._extra_criteria = attr._extra_criteria
+
+                if getattr(attr, "_of_type", None):
+                    ac = attr._of_type
+                    ext_info = of_type_info = inspect(ac)
+
+                    if polymorphic_entity_context is None:
+                        polymorphic_entity_context = self.context
+
+                    existing = path.entity_path[prop].get(
+                        polymorphic_entity_context, "path_with_polymorphic"
+                    )
+
+                    if not ext_info.is_aliased_class:
+                        ac = orm_util.with_polymorphic(
+                            ext_info.mapper.base_mapper,
+                            ext_info.mapper,
+                            aliased=True,
+                            _use_mapper_path=True,
+                            _existing_alias=inspect(existing)
+                            if existing is not None
+                            else None,
+                        )
+
+                        ext_info = inspect(ac)
+
+                    path.entity_path[prop].set(
+                        polymorphic_entity_context, "path_with_polymorphic", ac
+                    )
+
+                    path = path[prop][ext_info]
+
+                    self._of_type = of_type_info
+
+                else:
+                    path = path[prop]
 
         if for_strategy is not None:
             found_property._get_strategy(for_strategy)
@@ -387,18 +432,17 @@ class Load(Generative, MapperOption):
         self, attr, strategy, propagate_to_loaders=True
     ):
         strategy = self._coerce_strat(strategy)
-
         self.propagate_to_loaders = propagate_to_loaders
         cloned = self._clone_for_bind_strategy(attr, strategy, "relationship")
         self.path = cloned.path
         self._of_type = cloned._of_type
+        self._extra_criteria = cloned._extra_criteria
         cloned.is_class_strategy = self.is_class_strategy = False
         self.propagate_to_loaders = cloned.propagate_to_loaders
 
     @_generative
     def set_column_strategy(self, attrs, strategy, opts=None, opts_only=False):
         strategy = self._coerce_strat(strategy)
-
         self.is_class_strategy = False
         for attr in attrs:
             cloned = self._clone_for_bind_strategy(
@@ -409,7 +453,6 @@ class Load(Generative, MapperOption):
     @_generative
     def set_generic_strategy(self, attrs, strategy):
         strategy = self._coerce_strat(strategy)
-
         for attr in attrs:
             cloned = self._clone_for_bind_strategy(attr, strategy, None)
             cloned.propagate_to_loaders = True
@@ -447,18 +490,19 @@ class Load(Generative, MapperOption):
 
     def _set_for_path(self, context, path, replace=True, merge_opts=False):
         if merge_opts or not replace:
-            existing = path.get(self.context, "loader")
-
+            existing = path.get(context, "loader")
             if existing:
                 if merge_opts:
                     existing.local_opts.update(self.local_opts)
+                    existing._extra_criteria += self._extra_criteria
             else:
                 path.set(context, "loader", self)
         else:
-            existing = path.get(self.context, "loader")
+            existing = path.get(context, "loader")
             path.set(context, "loader", self)
             if existing and existing.is_opts_only:
                 self.local_opts.update(existing.local_opts)
+                existing._extra_criteria += self._extra_criteria
 
     def _set_path_strategy(self):
         if not self.is_class_strategy and self.path.has_entity:
@@ -488,6 +532,10 @@ class Load(Generative, MapperOption):
 
     def __getstate__(self):
         d = self.__dict__.copy()
+
+        # can't pickle this right now; warning is raised by strategies
+        d["_extra_criteria"] = ()
+
         if d["context"] is not None:
             d["context"] = PathRegistry.serialize_context_dict(
                 d["context"], ("loader",)
@@ -546,27 +594,20 @@ class _UnboundLoad(Load):
         self.path = ()
         self._to_bind = []
         self.local_opts = {}
+        self._extra_criteria = ()
+
+    _cache_key_traversal = [
+        ("path", visitors.ExtendedInternalTraversal.dp_multi_list),
+        ("strategy", visitors.ExtendedInternalTraversal.dp_plain_obj),
+        ("_to_bind", visitors.ExtendedInternalTraversal.dp_has_cache_key_list),
+        ("_extra_criteria", visitors.InternalTraversal.dp_clauseelement_list),
+        (
+            "local_opts",
+            visitors.ExtendedInternalTraversal.dp_string_multi_dict,
+        ),
+    ]
 
     _is_chain_link = False
-
-    def _generate_cache_key(self, path):
-        serialized = ()
-        for val in self._to_bind:
-            for local_elem, val_elem in zip(self.path, val.path):
-                if local_elem is not val_elem:
-                    break
-            else:
-                opt = val._bind_loader([path.path[0]], None, None, False)
-                if opt:
-                    c_key = opt._generate_cache_key(path)
-                    if c_key is False:
-                        return False
-                    elif c_key:
-                        serialized += c_key
-        if not serialized:
-            return None
-        else:
-            return serialized
 
     def _set_path_strategy(self):
         self._to_bind.append(self)
@@ -627,10 +668,16 @@ class _UnboundLoad(Load):
         if attr:
             path = path + (attr,)
         self.path = path
+        self._extra_criteria = getattr(attr, "_extra_criteria", ())
+
         return path
 
     def __getstate__(self):
         d = self.__dict__.copy()
+
+        # can't pickle this right now; warning is raised by strategies
+        d["_extra_criteria"] = ()
+
         d["path"] = self._serialize_path(self.path, filter_aliased_class=True)
         return d
 
@@ -653,15 +700,21 @@ class _UnboundLoad(Load):
         state["path"] = tuple(ret)
         self.__dict__ = state
 
-    def _process(self, query, raiseerr):
-        dedupes = query._attributes["_unbound_load_dedupes"]
+    def _process(self, compile_state, raiseerr):
+        dedupes = compile_state.attributes["_unbound_load_dedupes"]
+        is_refresh = compile_state.compile_options._for_refresh_state
         for val in self._to_bind:
             if val not in dedupes:
                 dedupes.add(val)
+                if is_refresh and not val.propagate_to_loaders:
+                    continue
                 val._bind_loader(
-                    [ent.entity_zero for ent in query._mapper_entities],
-                    query._current_path,
-                    query._attributes,
+                    [
+                        ent.entity_zero
+                        for ent in compile_state._mapper_entities
+                    ],
+                    compile_state.current_path,
+                    compile_state.attributes,
                     raiseerr,
                 )
 
@@ -694,7 +747,6 @@ class _UnboundLoad(Load):
 
         opt = meth(opt, all_tokens[-1], **kw)
         opt._is_chain_link = False
-
         return opt
 
     def _chop_path(self, to_chop, path):
@@ -736,7 +788,11 @@ class _UnboundLoad(Load):
                     ret.append((token._parentmapper.class_, token.key, None))
                 else:
                     ret.append(
-                        (token._parentmapper.class_, token.key, token._of_type)
+                        (
+                            token._parentmapper.class_,
+                            token.key,
+                            token._of_type.entity if token._of_type else None,
+                        )
                     )
             elif isinstance(token, PropComparator):
                 ret.append((token._parentmapper.class_, token.key, None))
@@ -824,9 +880,8 @@ class _UnboundLoad(Load):
         # we just located, then go through the rest of our path
         # tokens and populate into the Load().
         loader = Load(path_element)
-        if context is not None:
-            loader.context = context
-        else:
+
+        if context is None:
             context = loader.context
 
         loader.strategy = self.strategy
@@ -843,6 +898,7 @@ class _UnboundLoad(Load):
                     self.strategy if idx == len(start_path) - 1 else None,
                     None,
                     raiseerr,
+                    polymorphic_entity_context=context,
                 ):
                     return
 
@@ -984,6 +1040,8 @@ See :func:`_orm.%(name)s` for usage examples.
             "name": self.name
         }
         fn = util.deprecated(
+            # This is used by `baked_lazyload_all` was only deprecated in
+            # version 1.2 so this must stick around until that is removed
             "0.9",
             "The :func:`.%(name)s_all` function is deprecated, and will be "
             "removed in a future release.  Please use method chaining with "
@@ -1014,40 +1072,18 @@ def contains_eager(loadopt, attr, alias=None):
     ``User`` entity, and the returned ``Order`` objects would have the
     ``Order.user`` attribute pre-populated.
 
-    When making use of aliases with :func:`.contains_eager`, the path
-    should be specified using :meth:`.PropComparator.of_type`::
+    It may also be used for customizing the entries in an eagerly loaded
+    collection; queries will normally want to use the
+    :meth:`_query.Query.populate_existing` method assuming the primary
+    collection of parent objects may already have been loaded::
 
-        user_alias = aliased(User)
-        sess.query(Order).\
-                join((user_alias, Order.user)).\
-                options(contains_eager(Order.user.of_type(user_alias)))
+        sess.query(User).\
+            join(User.addresses).\
+            filter(Address.email_address.like('%@aol.com')).\
+            options(contains_eager(User.addresses)).\
+            populate_existing()
 
-    :meth:`.PropComparator.of_type` is also used to indicate a join
-    against specific subclasses of an inherting mapper, or
-    of a :func:`.with_polymorphic` construct::
-
-        # employees of a particular subtype
-        sess.query(Company).\
-            outerjoin(Company.employees.of_type(Manager)).\
-            options(
-                contains_eager(
-                    Company.employees.of_type(Manager),
-                )
-            )
-
-        # employees of a multiple subtypes
-        wp = with_polymorphic(Employee, [Manager, Engineer])
-        sess.query(Company).\
-            outerjoin(Company.employees.of_type(wp)).\
-            options(
-                contains_eager(
-                    Company.employees.of_type(wp),
-                )
-            )
-
-    The :paramref:`.contains_eager.alias` parameter is used for a similar
-    purpose, however the :meth:`.PropComparator.of_type` approach should work
-    in all cases and is more effective and explicit.
+    See the section :ref:`contains_eager` for complete usage details.
 
     .. seealso::
 
@@ -1060,6 +1096,15 @@ def contains_eager(loadopt, attr, alias=None):
         if not isinstance(alias, str):
             info = inspect(alias)
             alias = info.selectable
+
+        else:
+            util.warn_deprecated(
+                "Passing a string name for the 'alias' argument to "
+                "'contains_eager()` is deprecated, and will not work in a "
+                "future release.  Please use a sqlalchemy.alias() or "
+                "sqlalchemy.orm.aliased() construct.",
+                version="1.4",
+            )
 
     elif getattr(attr, "_of_type", None):
         ot = inspect(attr._of_type)
@@ -1230,11 +1275,6 @@ def joinedload(*keys, **kw):
     return _UnboundLoad._from_keys(_UnboundLoad.joinedload, keys, False, kw)
 
 
-@joinedload._add_unbound_all_fn
-def joinedload_all(*keys, **kw):
-    return _UnboundLoad._from_keys(_UnboundLoad.joinedload, keys, True, kw)
-
-
 @loader_option()
 def subqueryload(loadopt, attr):
     """Indicate that the given attribute should be loaded using
@@ -1271,11 +1311,6 @@ def subqueryload(loadopt, attr):
 @subqueryload._add_unbound_fn
 def subqueryload(*keys):
     return _UnboundLoad._from_keys(_UnboundLoad.subqueryload, keys, False, {})
-
-
-@subqueryload._add_unbound_all_fn
-def subqueryload_all(*keys):
-    return _UnboundLoad._from_keys(_UnboundLoad.subqueryload, keys, True, {})
 
 
 @loader_option()
@@ -1317,11 +1352,6 @@ def selectinload(*keys):
     return _UnboundLoad._from_keys(_UnboundLoad.selectinload, keys, False, {})
 
 
-@selectinload._add_unbound_all_fn
-def selectinload_all(*keys):
-    return _UnboundLoad._from_keys(_UnboundLoad.selectinload, keys, True, {})
-
-
 @loader_option()
 def lazyload(loadopt, attr):
     """Indicate that the given attribute should be loaded using "lazy"
@@ -1345,15 +1375,13 @@ def lazyload(*keys):
     return _UnboundLoad._from_keys(_UnboundLoad.lazyload, keys, False, {})
 
 
-@lazyload._add_unbound_all_fn
-def lazyload_all(*keys):
-    return _UnboundLoad._from_keys(_UnboundLoad.lazyload, keys, True, {})
-
-
 @loader_option()
 def immediateload(loadopt, attr):
     """Indicate that the given attribute should be loaded using
     an immediate load with a per-attribute SELECT statement.
+
+    The load is achieved using the "lazyloader" strategy and does not
+    fire off any additional eager loaders.
 
     The :func:`.immediateload` option is superseded in general
     by the :func:`.selectinload` option, which performs the same task
@@ -1382,11 +1410,19 @@ def immediateload(*keys):
 def noload(loadopt, attr):
     """Indicate that the given relationship attribute should remain unloaded.
 
+    The relationship attribute will return ``None`` when accessed without
+    producing any loading effect.
+
     This function is part of the :class:`_orm.Load` interface and supports
     both method-chained and standalone operation.
 
     :func:`_orm.noload` applies to :func:`_orm.relationship` attributes; for
     column-based attributes, see :func:`_orm.defer`.
+
+    .. note:: Setting this loading strategy as the default strategy
+        for a relationship using the :paramref:`.orm.relationship.lazy`
+        parameter may cause issues with flushes, such if a delete operation
+        needs to load related objects and instead ``None`` was returned.
 
     .. seealso::
 
@@ -1404,7 +1440,7 @@ def noload(*keys):
 
 @loader_option()
 def raiseload(loadopt, attr, sql_only=False):
-    """Indicate that the given relationship attribute should disallow lazy loads.
+    """Indicate that the given attribute should raise an error if accessed.
 
     A relationship attribute configured with :func:`_orm.raiseload` will
     raise an :exc:`~sqlalchemy.exc.InvalidRequestError` upon access.   The
@@ -1414,16 +1450,20 @@ def raiseload(loadopt, attr, sql_only=False):
     to read through SQL logs to ensure lazy loads aren't occurring, this
     strategy will cause them to raise immediately.
 
-    :param sql_only: if True, raise only if the lazy load would emit SQL,
-     but not if it is only checking the identity map, or determining that
-     the related value should just be None due to missing keys.  When False,
-     the strategy will raise for all varieties of lazyload.
+    :func:`_orm.raiseload` applies to :func:`_orm.relationship`
+    attributes only.
+    In order to apply raise-on-SQL behavior to a column-based attribute,
+    use the :paramref:`.orm.defer.raiseload` parameter on the :func:`.defer`
+    loader option.
+
+    :param sql_only: if True, raise only if the lazy load would emit SQL, but
+     not if it is only checking the identity map, or determining that the
+     related value should just be None due to missing keys.  When False, the
+     strategy will raise for all varieties of relationship loading.
 
     This function is part of the :class:`_orm.Load` interface and supports
     both method-chained and standalone operation.
 
-    :func:`_orm.raiseload` applies to :func:`_orm.relationship`
-    attributes only.
 
     .. versionadded:: 1.1
 
@@ -1432,6 +1472,8 @@ def raiseload(loadopt, attr, sql_only=False):
         :ref:`loading_toplevel`
 
         :ref:`prevent_lazy_with_raiseload`
+
+        :ref:`deferred_raiseload`
 
     """
 
@@ -1488,7 +1530,7 @@ def defaultload(*keys):
 
 
 @loader_option()
-def defer(loadopt, key):
+def defer(loadopt, key, raiseload=False):
     r"""Indicate that the given column-oriented attribute should be deferred,
     e.g. not loaded until accessed.
 
@@ -1529,6 +1571,16 @@ def defer(loadopt, key):
 
     :param key: Attribute to be deferred.
 
+    :param raiseload: raise :class:`.InvalidRequestError` if the column
+     value is to be loaded from emitting SQL.   Used to prevent unwanted
+     SQL from being emitted.
+
+     .. versionadded:: 1.4
+
+     .. seealso::
+
+        :ref:`deferred_raiseload`
+
     :param \*addl_attrs: This option supports the old 0.8 style
      of specifying a path as a series of attributes, which is now superseded
      by the method-chained style.
@@ -1546,21 +1598,23 @@ def defer(loadopt, key):
         :func:`_orm.undefer`
 
     """
-    return loadopt.set_column_strategy(
-        (key,), {"deferred": True, "instrument": True}
-    )
+    strategy = {"deferred": True, "instrument": True}
+    if raiseload:
+        strategy["raiseload"] = True
+    return loadopt.set_column_strategy((key,), strategy)
 
 
 @defer._add_unbound_fn
-def defer(key, *addl_attrs):
+def defer(key, *addl_attrs, **kw):
     if addl_attrs:
         util.warn_deprecated(
             "The *addl_attrs on orm.defer is deprecated.  Please use "
             "method chaining in conjunction with defaultload() to "
-            "indicate a path."
+            "indicate a path.",
+            version="1.3",
         )
     return _UnboundLoad._from_keys(
-        _UnboundLoad.defer, (key,) + addl_attrs, False, {}
+        _UnboundLoad.defer, (key,) + addl_attrs, False, kw
     )
 
 
@@ -1619,7 +1673,8 @@ def undefer(key, *addl_attrs):
         util.warn_deprecated(
             "The *addl_attrs on orm.undefer is deprecated.  Please use "
             "method chaining in conjunction with defaultload() to "
-            "indicate a path."
+            "indicate a path.",
+            version="1.3",
         )
     return _UnboundLoad._from_keys(
         _UnboundLoad.undefer, (key,) + addl_attrs, False, {}
@@ -1688,13 +1743,21 @@ def with_expression(loadopt, key, expression):
 
     :param expr: SQL expression to be applied to the attribute.
 
+    .. note:: the target attribute is populated only if the target object
+       is **not currently loaded** in the current :class:`_orm.Session`
+       unless the :meth:`_query.Query.populate_existing` method is used.
+       Please refer to :ref:`mapper_querytime_expression` for complete
+       usage details.
+
     .. seealso::
 
         :ref:`mapper_querytime_expression`
 
     """
 
-    expression = sql_expr._labeled(_orm_full_deannotate(expression))
+    expression = coercions.expect(
+        roles.LabeledColumnExprRole, _orm_full_deannotate(expression)
+    )
 
     return loadopt.set_column_strategy(
         (key,), {"query_expression": True}, opts={"expression": expression}

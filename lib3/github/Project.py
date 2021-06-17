@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2018 bbi-yggy <yossarian@blackbirdinteractive.com>                 #
@@ -30,7 +28,7 @@ from . import Consts
 
 class Project(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Projects. The reference can be found here http://developer.github.com/v3/projects
+    This class represents Projects. The reference can be found here http://docs.github.com/en/rest/reference/projects
     """
 
     def __repr__(self):
@@ -142,7 +140,7 @@ class Project(github.GithubObject.CompletableGithubObject):
 
     def delete(self):
         """
-        :calls: `DELETE /projects/:project_id <https://developer.github.com/v3/projects/#delete-a-project>`_
+        :calls: `DELETE /projects/{project_id} <https://docs.github.com/en/rest/reference/projects#delete-a-project>`_
         :rtype: None
         """
         headers, data = self._requester.requestJsonAndCheck(
@@ -158,7 +156,7 @@ class Project(github.GithubObject.CompletableGithubObject):
         private=github.GithubObject.NotSet,
     ):
         """
-        :calls: `PATCH /projects/:project_id <https://developer.github.com/v3/projects/#update-a-project>`_
+        :calls: `PATCH /projects/{project_id} <https://docs.github.com/en/rest/reference/projects#update-a-project>`_
         :param name: string
         :param body: string
         :param state: string
@@ -167,8 +165,8 @@ class Project(github.GithubObject.CompletableGithubObject):
         :rtype: None
         """
         assert name is github.GithubObject.NotSet or isinstance(name, str), name
-        assert body is github.GithubObject.NotSet or isinstance(name, str), body
-        assert state is github.GithubObject.NotSet or isinstance(name, str), state
+        assert body is github.GithubObject.NotSet or isinstance(body, str), body
+        assert state is github.GithubObject.NotSet or isinstance(state, str), state
         assert organization_permission is github.GithubObject.NotSet or isinstance(
             organization_permission, str
         ), organization_permission
@@ -196,7 +194,7 @@ class Project(github.GithubObject.CompletableGithubObject):
 
     def get_columns(self):
         """
-        :calls: `GET /projects/:project_id/columns <https://developer.github.com/v3/projects/columns/#list-project-columns>`_
+        :calls: `GET /projects/{project_id}/columns <https://docs.github.com/en/rest/reference/projects/columns#list-project-columns>`_
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.ProjectColumn.ProjectColumn`
         """
 
@@ -210,14 +208,14 @@ class Project(github.GithubObject.CompletableGithubObject):
 
     def create_column(self, name):
         """
-        calls: `POST /projects/:project_id/columns <https://developer.github.com/v3/projects/columns/#create-a-project-column>`_
+        calls: `POST /projects/{project_id}/columns <https://docs.github.com/en/rest/reference/projects/columns#create-a-project-column>`_
         :param name: string
         """
         assert isinstance(name, str), name
         post_parameters = {"name": name}
         import_header = {"Accept": Consts.mediaTypeProjectsPreview}
         headers, data = self._requester.requestJsonAndCheck(
-            "POST", self.url + "/columns", headers=import_header, input=post_parameters
+            "POST", f"{self.url}/columns", headers=import_header, input=post_parameters
         )
         return github.ProjectColumn.ProjectColumn(
             self._requester, headers, data, completed=True

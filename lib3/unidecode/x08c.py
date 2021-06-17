@@ -109,7 +109,7 @@ data = (
 'Yu ',    # 0x6b
 'Zhu ',    # 0x6c
 'Jia ',    # 0x6d
-'[?] ',    # 0x6e
+None,    # 0x6e
 'Xi ',    # 0x6f
 'Bo ',    # 0x70
 'Wen ',    # 0x71

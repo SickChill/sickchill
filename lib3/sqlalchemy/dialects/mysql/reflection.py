@@ -1,5 +1,5 @@
 # mysql/reflection.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -7,7 +7,7 @@
 
 import re
 
-from .enumerated import _EnumeratedValues
+from .enumerated import ENUM
 from .enumerated import SET
 from .types import DATETIME
 from .types import TIME
@@ -215,8 +215,8 @@ class MySQLTableDefinitionParser(object):
         for kw in ("charset", "collate"):
             if spec.get(kw, False):
                 type_kw[kw] = spec[kw]
-        if issubclass(col_type, _EnumeratedValues):
-            type_args = _EnumeratedValues._strip_values(type_args)
+        if issubclass(col_type, (ENUM, SET)):
+            type_args = _strip_values(type_args)
 
             if issubclass(col_type, SET) and "" in type_args:
                 type_kw["retrieve_as_bitwise"] = True
@@ -381,8 +381,8 @@ class MySQLTableDefinitionParser(object):
             r"(?: +COLLATE +(?P<collate>[\w_]+))?"
             r"(?: +(?P<notnull>(?:NOT )?NULL))?"
             r"(?: +DEFAULT +(?P<default>"
-            r"(?:NULL|'(?:''|[^'])*'|[\w\(\)]+"
-            r"(?: +ON UPDATE [\w\(\)]+)?)"
+            r"(?:NULL|'(?:''|[^'])*'|[\-\w\.\(\)]+"
+            r"(?: +ON UPDATE [\-\w\.\(\)]+)?)"
             r"))?"
             r"(?: +(?:GENERATED ALWAYS)? ?AS +(?P<generated>\("
             r".*\))? ?(?P<persistence>VIRTUAL|STORED)?)?"
@@ -433,7 +433,7 @@ class MySQLTableDefinitionParser(object):
         #
         # unique constraints come back as KEYs
         kw = quotes.copy()
-        kw["on"] = "RESTRICT|CASCADE|SET NULL|NOACTION"
+        kw["on"] = "RESTRICT|CASCADE|SET NULL|NO ACTION"
         self._re_fk_constraint = _re_compile(
             r"  "
             r"CONSTRAINT +"
@@ -451,7 +451,7 @@ class MySQLTableDefinitionParser(object):
         # CONSTRAINT `CONSTRAINT_1` CHECK (`x` > 5)'
         # testing on MariaDB 10.2 shows that the CHECK constraint
         # is returned on a line by itself, so to match without worrying
-        # about parenthesis in the expresion we go to the end of the line
+        # about parenthesis in the expression we go to the end of the line
         self._re_ck_constraint = _re_compile(
             r"  "
             r"CONSTRAINT +"
@@ -545,3 +545,14 @@ def _re_compile(regex):
     """Compile a string to regex, I and UNICODE."""
 
     return re.compile(regex, re.I | re.UNICODE)
+
+
+def _strip_values(values):
+    "Strip reflected values quotes"
+    strip_values = []
+    for a in values:
+        if a[0:1] == '"' or a[0:1] == "'":
+            # strip enclosing quotes and unquote interior
+            a = a[1:-1].replace(a[0] * 2, a[0])
+        strip_values.append(a)
+    return strip_values

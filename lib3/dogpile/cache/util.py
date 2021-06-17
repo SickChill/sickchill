@@ -162,7 +162,7 @@ PluginLoader = langhelpers.PluginLoader
 to_list = langhelpers.to_list
 
 
-class repr_obj(object):
+class repr_obj:
 
     __slots__ = ("value", "max_chars")
 

@@ -1,5 +1,5 @@
 # orm/relationships.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -16,11 +16,11 @@ and `secondaryjoin` aspects of :func:`_orm.relationship`.
 from __future__ import absolute_import
 
 import collections
+import re
 import weakref
 
 from . import attributes
-from . import dependency
-from . import mapper as mapperlib
+from .base import _is_mapped_class
 from .base import state_str
 from .interfaces import MANYTOMANY
 from .interfaces import MANYTOONE
@@ -36,8 +36,10 @@ from .. import schema
 from .. import sql
 from .. import util
 from ..inspection import inspect
+from ..sql import coercions
 from ..sql import expression
 from ..sql import operators
+from ..sql import roles
 from ..sql import visitors
 from ..sql.util import _deep_deannotate
 from ..sql.util import _shallow_annotate
@@ -63,7 +65,7 @@ def remote(expr):
 
     """
     return _annotate_columns(
-        expression._clause_element_as_expr(expr), {"remote": True}
+        coercions.expect(roles.ColumnArgumentRole, expr), {"remote": True}
     )
 
 
@@ -83,12 +85,11 @@ def foreign(expr):
     """
 
     return _annotate_columns(
-        expression._clause_element_as_expr(expr), {"foreign": True}
+        coercions.expect(roles.ColumnArgumentRole, expr), {"foreign": True}
     )
 
 
 @log.class_logger
-@util.langhelpers.dependency_for("sqlalchemy.orm.properties", add_to_all=True)
 class RelationshipProperty(StrategizedProperty):
     """Describes an object property that holds a single item or list
     of items that correspond to a related database table.
@@ -102,6 +103,7 @@ class RelationshipProperty(StrategizedProperty):
     """
 
     strategy_wildcard_key = "relationship"
+    inherit_cache = True
 
     _persistence_only = dict(
         passive_deletes=False,
@@ -113,15 +115,6 @@ class RelationshipProperty(StrategizedProperty):
 
     _dependency_processor = None
 
-    @util.deprecated_params(
-        extension=(
-            "0.7",
-            ":class:`.AttributeExtension` is deprecated in favor of the "
-            ":class:`.AttributeEvents` listener interface.  The "
-            ":paramref:`_orm.relationship.extension` parameter will be "
-            "removed in a future release.",
-        )
-    )
     def __init__(
         self,
         argument,
@@ -133,9 +126,9 @@ class RelationshipProperty(StrategizedProperty):
         order_by=False,
         backref=None,
         back_populates=None,
+        overlaps=None,
         post_update=False,
         cascade=False,
-        extension=None,
         viewonly=False,
         lazy="select",
         collection_class=None,
@@ -354,21 +347,37 @@ class RelationshipProperty(StrategizedProperty):
             :paramref:`_orm.relationship.backref` - alternative form
             of backref specification.
 
+        :param overlaps:
+           A string name or comma-delimited set of names of other relationships
+           on either this mapper, a descendant mapper, or a target mapper with
+           which this relationship may write to the same foreign keys upon
+           persistence.   The only effect this has is to eliminate the
+           warning that this relationship will conflict with another upon
+           persistence.   This is used for such relationships that are truly
+           capable of conflicting with each other on write, but the application
+           will ensure that no such conflicts occur.
+
+           .. versionadded:: 1.4
+
+           .. seealso::
+
+                :ref:`error_qzyx` - usage example
+
         :param bake_queries=True:
-          Use the :class:`.BakedQuery` cache to cache the construction of SQL
-          used in lazy loads.  True by default.   Set to False if the
-          join condition of the relationship has unusual features that
-          might not respond well to statement caching.
+          Enable :ref:`lambda caching <engine_lambda_caching>` for loader
+          strategies, if applicable, which adds a performance gain to the
+          construction of SQL constructs used by loader strategies, in addition
+          to the usual SQL statement caching used throughout SQLAlchemy. This
+          parameter currently applies only to the "lazy" and "selectin" loader
+          strategies. There is generally no reason to set this parameter to
+          False.
 
-          .. versionchanged:: 1.2
-             "Baked" loading is the default implementation for the "select",
-             a.k.a. "lazy" loading strategy for relationships.
-
-          .. versionadded:: 1.0.0
-
-          .. seealso::
-
-            :ref:`baked_toplevel`
+          .. versionchanged:: 1.4  Relationship loaders no longer use the
+             previous "baked query" system of query caching.   The "lazy"
+             and "selectin" loaders make use of the "lambda cache" system
+             for the construction of SQL constructs,
+             as well as the usual SQL caching system that is throughout
+             SQLAlchemy as of the 1.4 series.
 
         :param cascade:
           A comma-separated list of cascade rules which determines how
@@ -398,6 +407,10 @@ class RelationshipProperty(StrategizedProperty):
           When set to ``False``, the attribute managed by this relationship
           will not cascade an incoming transient object into the session of a
           persistent parent, if the event is received via backref.
+
+          .. deprecated:: 1.4 The
+             :paramref:`_orm.relationship.cascade_backrefs`
+             flag will default to False in all cases in SQLAlchemy 2.0.
 
           .. seealso::
 
@@ -451,11 +464,6 @@ class RelationshipProperty(StrategizedProperty):
 
         :param doc:
           Docstring which will be applied to the resulting descriptor.
-
-        :param extension:
-          an :class:`.AttributeExtension` instance, or list of extensions,
-          which will be prepended to the list of attribute listeners for
-          the resulting descriptor placed on the class.
 
         :param foreign_keys:
 
@@ -822,8 +830,8 @@ class RelationshipProperty(StrategizedProperty):
 
         :param query_class:
           A :class:`_query.Query`
-          subclass that will be used as the base of the
-          "appender query" returned by a "dynamic" relationship, that
+          subclass that will be used internally by the
+          ``AppenderQuery`` returned by a "dynamic" relationship, that
           is, a relationship that specifies ``lazy="dynamic"`` or was
           otherwise constructed using the :func:`_orm.dynamic_loader`
           function.
@@ -916,17 +924,14 @@ class RelationshipProperty(StrategizedProperty):
           collection from resulting in persistence operations.
 
           When using the :paramref:`_orm.relationship.viewonly` flag in
-          conjunction with backrefs, the
-          :paramref:`_orm.relationship.sync_backref` should be set to False;
-          this indicates that the backref should not actually populate this
-          relationship with data when changes occur on the other side; as this
-          is a viewonly relationship, it cannot accommodate changes in state
-          correctly as these will not be persisted.
+          conjunction with backrefs, the originating relationship for a
+          particular state change will not produce state changes within the
+          viewonly relationship.   This is the behavior implied by
+          :paramref:`_orm.relationship.sync_backref` being set to False.
 
-          .. versionadded:: 1.3.17 - the
-             :paramref:`_orm.relationship.sync_backref`
-             flag set to False is required when using viewonly in conjunction
-             with backrefs. A warning is emitted when this flag is not set.
+          .. versionchanged:: 1.3.17 - the
+             :paramref:`_orm.relationship.sync_backref` flag is set to False
+                 when using viewonly in conjunction with backrefs.
 
           .. seealso::
 
@@ -941,11 +946,14 @@ class RelationshipProperty(StrategizedProperty):
           Defaults to ``None``, which indicates that an automatic value should
           be selected based on the value of the
           :paramref:`_orm.relationship.viewonly` flag.  When left at its
-          default, changes in state for writable relationships will be
-          back-populated normally.  For viewonly relationships, a warning is
-          emitted unless the flag is set to ``False``.
+          default, changes in state will be back-populated only if neither
+          sides of a relationship is viewonly.
 
           .. versionadded:: 1.3.17
+
+          .. versionchanged:: 1.4 - A relationship that specifies
+             :paramref:`_orm.relationship.viewonly` automatically implies
+             that :paramref:`_orm.relationship.sync_backref` is ``False``.
 
           .. seealso::
 
@@ -1018,7 +1026,6 @@ class RelationshipProperty(StrategizedProperty):
 
         self.omit_join = omit_join
         self.local_remote_pairs = _local_remote_pairs
-        self.extension = extension
         self.bake_queries = bake_queries
         self.load_on_pending = load_on_pending
         self.comparator_factory = (
@@ -1033,11 +1040,17 @@ class RelationshipProperty(StrategizedProperty):
         self.strategy_key = (("lazy", self.lazy),)
 
         self._reverse_property = set()
+        if overlaps:
+            self._overlaps = set(re.split(r"\s*,\s*", overlaps))
+        else:
+            self._overlaps = ()
 
         if cascade is not False:
             self.cascade = cascade
+        elif self.viewonly:
+            self.cascade = "none"
         else:
-            self._set_cascade("save-update, merge", warn=False)
+            self.cascade = "save-update, merge"
 
         self.order_by = order_by
 
@@ -1102,9 +1115,15 @@ class RelationshipProperty(StrategizedProperty):
         """
 
         _of_type = None
+        _extra_criteria = ()
 
         def __init__(
-            self, prop, parentmapper, adapt_to_entity=None, of_type=None
+            self,
+            prop,
+            parentmapper,
+            adapt_to_entity=None,
+            of_type=None,
+            extra_criteria=(),
         ):
             """Construction of :class:`.RelationshipProperty.Comparator`
             is internal to the ORM's attribute mechanics.
@@ -1115,6 +1134,7 @@ class RelationshipProperty(StrategizedProperty):
             self._adapt_to_entity = adapt_to_entity
             if of_type:
                 self._of_type = of_type
+            self._extra_criteria = extra_criteria
 
         def adapt_to_entity(self, adapt_to_entity):
             return self.__class__(
@@ -1162,9 +1182,9 @@ class RelationshipProperty(StrategizedProperty):
         def __clause_element__(self):
             adapt_from = self._source_selectable()
             if self._of_type:
-                of_type_mapper = inspect(self._of_type).mapper
+                of_type_entity = inspect(self._of_type)
             else:
-                of_type_mapper = None
+                of_type_entity = None
 
             (
                 pj,
@@ -1176,8 +1196,9 @@ class RelationshipProperty(StrategizedProperty):
             ) = self.property._create_joins(
                 source_selectable=adapt_from,
                 source_polymorphic=True,
-                of_type_mapper=of_type_mapper,
+                of_type_entity=of_type_entity,
                 alias_secondary=True,
+                extra_criteria=self._extra_criteria,
             )
             if sj is not None:
                 return pj & sj
@@ -1189,12 +1210,30 @@ class RelationshipProperty(StrategizedProperty):
 
             See :meth:`.PropComparator.of_type` for an example.
 
+
             """
             return RelationshipProperty.Comparator(
                 self.property,
                 self._parententity,
                 adapt_to_entity=self._adapt_to_entity,
                 of_type=cls,
+                extra_criteria=self._extra_criteria,
+            )
+
+        def and_(self, *other):
+            """Add AND criteria.
+
+            See :meth:`.PropComparator.and_` for an example.
+
+            .. versionadded:: 1.4
+
+            """
+            return RelationshipProperty.Comparator(
+                self.property,
+                self._parententity,
+                adapt_to_entity=self._adapt_to_entity,
+                of_type=self._of_type,
+                extra_criteria=self._extra_criteria + other,
             )
 
         def in_(self, other):
@@ -1278,7 +1317,7 @@ class RelationshipProperty(StrategizedProperty):
                     info.is_aliased_class,
                 )
                 if self.property._is_self_referential and not is_aliased_class:
-                    to_selectable = to_selectable.alias()
+                    to_selectable = to_selectable._anonymous_fromclause()
 
                 single_crit = target_mapper._single_table_criterion
                 if single_crit is not None:
@@ -1303,7 +1342,6 @@ class RelationshipProperty(StrategizedProperty):
                 secondary,
                 target_adapter,
             ) = self.property._create_joins(
-                dest_polymorphic=True,
                 dest_selectable=to_selectable,
                 source_selectable=source_selectable,
             )
@@ -1344,12 +1382,18 @@ class RelationshipProperty(StrategizedProperty):
             crit = j & sql.True_._ifnone(criterion)
 
             if secondary is not None:
-                ex = sql.exists(
-                    [1], crit, from_obj=[dest, secondary]
-                ).correlate_except(dest, secondary)
+                ex = (
+                    sql.exists(1)
+                    .where(crit)
+                    .select_from(dest, secondary)
+                    .correlate_except(dest, secondary)
+                )
             else:
-                ex = sql.exists([1], crit, from_obj=dest).correlate_except(
-                    dest
+                ex = (
+                    sql.exists(1)
+                    .where(crit)
+                    .select_from(dest)
+                    .correlate_except(dest)
                 )
             return ex
 
@@ -1385,8 +1429,8 @@ class RelationshipProperty(StrategizedProperty):
             will produce::
 
                 SELECT * FROM my_table WHERE
-                NOT EXISTS (SELECT 1 FROM related WHERE
-                related.my_id=my_table.id)
+                NOT (EXISTS (SELECT 1 FROM related WHERE
+                related.my_id=my_table.id))
 
             :meth:`~.RelationshipProperty.Comparator.any` is only
             valid for collections, i.e. a :func:`_orm.relationship`
@@ -1513,13 +1557,14 @@ class RelationshipProperty(StrategizedProperty):
             if self.property.direction == MANYTOONE:
                 state = attributes.instance_state(other)
 
-                def state_bindparam(x, state, col):
+                def state_bindparam(local_col, state, remote_col):
                     dict_ = state.dict
                     return sql.bindparam(
-                        x,
+                        local_col.key,
+                        type_=local_col.type,
                         unique=True,
                         callable_=self.property._get_attr_w_warn_on_none(
-                            self.property.mapper, state, dict_, col
+                            self.property.mapper, state, dict_, remote_col
                         ),
                     )
 
@@ -1613,8 +1658,7 @@ class RelationshipProperty(StrategizedProperty):
 
         @util.memoized_property
         def property(self):
-            if mapperlib.Mapper._new_mappers:
-                mapperlib.Mapper._configure_all()
+            self.prop.parent._check_configure()
             return self.prop
 
     def _with_parent(self, instance, alias_secondary=True, from_entity=None):
@@ -1687,9 +1731,9 @@ class RelationshipProperty(StrategizedProperty):
                 )
 
         if self.secondary is not None and alias_secondary:
-            criterion = ClauseAdapter(self.secondary.alias()).traverse(
-                criterion
-            )
+            criterion = ClauseAdapter(
+                self.secondary._anonymous_fromclause()
+            ).traverse(criterion)
 
         criterion = visitors.cloned_traverse(
             criterion, {}, {"bindparam": visit_bindparam}
@@ -1838,12 +1882,13 @@ class RelationshipProperty(StrategizedProperty):
             return
 
         if self.uselist:
-            instances = source_state.get_impl(self.key).get(
-                source_state, source_dict
-            )
-            if hasattr(instances, "_sa_adapter"):
-                # convert collections to adapters to get a true iterator
-                instances = instances._sa_adapter
+            impl = source_state.get_impl(self.key)
+            instances_iterable = impl.get_collection(source_state, source_dict)
+
+            # if this is a CollectionAttributeImpl, then empty should
+            # be False, otherwise "self.key in source_dict" should not be
+            # True
+            assert not instances_iterable.empty if impl.collection else True
 
             if load:
                 # for a full merge, pre-load the destination collection,
@@ -1854,7 +1899,7 @@ class RelationshipProperty(StrategizedProperty):
                 dest_state.get_impl(self.key).get(dest_state, dest_dict)
 
             dest_list = []
-            for current in instances:
+            for current in instances_iterable:
                 current_state = attributes.instance_state(current)
                 current_dict = attributes.instance_dict(current)
                 _recursive[(current_state, self)] = True
@@ -1980,7 +2025,10 @@ class RelationshipProperty(StrategizedProperty):
 
     @property
     def _effective_sync_backref(self):
-        return self.sync_backref is not False
+        if self.viewonly:
+            return False
+        else:
+            return self.sync_backref is not False
 
     @staticmethod
     def _check_sync_backref(rel_a, rel_b):
@@ -1989,16 +2037,22 @@ class RelationshipProperty(StrategizedProperty):
                 "Relationship %s cannot specify sync_backref=True since %s "
                 "includes viewonly=True." % (rel_b, rel_a)
             )
-        if rel_a.viewonly and rel_b.sync_backref is not False:
-            util.warn_limited(
-                "Setting backref / back_populates on relationship %s to refer "
-                "to viewonly relationship %s should include "
-                "sync_backref=False set on the %s relationship. ",
-                (rel_b, rel_a, rel_b),
-            )
+        if (
+            rel_a.viewonly
+            and not rel_b.viewonly
+            and rel_b.sync_backref is not False
+        ):
+            rel_b.sync_backref = False
 
     def _add_reverse_property(self, key):
         other = self.mapper.get_property(key, _configure_mappers=False)
+        if not isinstance(other, RelationshipProperty):
+            raise sa_exc.InvalidRequestError(
+                "back_populates on relationship '%s' refers to attribute '%s' "
+                "that is not a relationship.  The back_populates parameter "
+                "should refer to the name of a relationship on the target "
+                "class." % (self, other)
+            )
         # viewonly and sync_backref cases
         # 1. self.viewonly==True and other.sync_backref==True -> error
         # 2. self.viewonly==True and other.viewonly==False and
@@ -2032,12 +2086,19 @@ class RelationshipProperty(StrategizedProperty):
             )
 
     @util.memoized_property
-    def entity(self):  # type: () -> Union[AliasedInsp, Mapper]
+    @util.preload_module("sqlalchemy.orm.mapper")
+    def entity(self):
         """Return the target mapped entity, which is an inspect() of the
-        class or aliased class tha is referred towards.
+        class or aliased class that is referred towards.
 
         """
-        if util.callable(self.argument) and not isinstance(
+
+        mapperlib = util.preloaded.orm_mapper
+
+        if isinstance(self.argument, util.string_types):
+            argument = self._clsregistry_resolve_name(self.argument)()
+
+        elif callable(self.argument) and not isinstance(
             self.argument, (type, mapperlib.Mapper)
         ):
             argument = self.argument()
@@ -2074,6 +2135,7 @@ class RelationshipProperty(StrategizedProperty):
     def do_init(self):
         self._check_conflicts()
         self._process_dependent_arguments()
+        self._setup_registry_dependencies()
         self._setup_join_conditions()
         self._check_cascade_settings(self._cascade)
         self._post_init()
@@ -2082,6 +2144,11 @@ class RelationshipProperty(StrategizedProperty):
         super(RelationshipProperty, self).do_init()
         self._lazy_strategy = self._get_strategy((("lazy", "select"),))
 
+    def _setup_registry_dependencies(self):
+        self.parent.mapper.registry._set_depends_on(
+            self.entity.mapper.registry
+        )
+
     def _process_dependent_arguments(self):
         """Convert incoming configuration arguments to their
         proper form.
@@ -2089,6 +2156,7 @@ class RelationshipProperty(StrategizedProperty):
         Callables are resolved, ORM annotations removed.
 
         """
+
         # accept callables for other attributes which may require
         # deferred initialization.  This technique is used
         # by declarative "string configs" and some recipes.
@@ -2101,7 +2169,16 @@ class RelationshipProperty(StrategizedProperty):
             "remote_side",
         ):
             attr_value = getattr(self, attr)
-            if util.callable(attr_value):
+
+            if isinstance(attr_value, util.string_types):
+                setattr(
+                    self,
+                    attr,
+                    self._clsregistry_resolve_arg(
+                        attr_value, favor_tables=attr == "secondary"
+                    )(),
+                )
+            elif callable(attr_value) and not _is_mapped_class(attr_value):
                 setattr(self, attr, attr_value())
 
         # remove "annotations" which are present if mapped class
@@ -2113,25 +2190,42 @@ class RelationshipProperty(StrategizedProperty):
                     self,
                     attr,
                     _orm_deannotate(
-                        expression._only_column_elements(val, attr)
+                        coercions.expect(
+                            roles.ColumnArgumentRole, val, argname=attr
+                        )
                     ),
                 )
+
+        if self.secondary is not None and _is_mapped_class(self.secondary):
+            raise sa_exc.ArgumentError(
+                "secondary argument %s passed to to relationship() %s must "
+                "be a Table object or other FROM clause; can't send a mapped "
+                "class directly as rows in 'secondary' are persisted "
+                "independently of a class that is mapped "
+                "to that same table." % (self.secondary, self)
+            )
 
         # ensure expressions in self.order_by, foreign_keys,
         # remote_side are all columns, not strings.
         if self.order_by is not False and self.order_by is not None:
-            self.order_by = [
-                expression._only_column_elements(x, "order_by")
+            self.order_by = tuple(
+                coercions.expect(
+                    roles.ColumnArgumentRole, x, argname="order_by"
+                )
                 for x in util.to_list(self.order_by)
-            ]
+            )
 
         self._user_defined_foreign_keys = util.column_set(
-            expression._only_column_elements(x, "foreign_keys")
+            coercions.expect(
+                roles.ColumnArgumentRole, x, argname="foreign_keys"
+            )
             for x in util.to_column_set(self._user_defined_foreign_keys)
         )
 
         self.remote_side = util.column_set(
-            expression._only_column_elements(x, "remote_side")
+            coercions.expect(
+                roles.ColumnArgumentRole, x, argname="remote_side"
+            )
             for x in util.to_column_set(self.remote_side)
         )
 
@@ -2166,10 +2260,26 @@ class RelationshipProperty(StrategizedProperty):
         self._calculated_foreign_keys = jc.foreign_key_columns
         self.secondary_synchronize_pairs = jc.secondary_synchronize_pairs
 
+    @property
+    def _clsregistry_resolve_arg(self):
+        return self._clsregistry_resolvers[1]
+
+    @property
+    def _clsregistry_resolve_name(self):
+        return self._clsregistry_resolvers[0]
+
+    @util.memoized_property
+    @util.preload_module("sqlalchemy.orm.clsregistry")
+    def _clsregistry_resolvers(self):
+        _resolver = util.preloaded.orm_clsregistry._resolver
+
+        return _resolver(self.parent.class_, self)
+
+    @util.preload_module("sqlalchemy.orm.mapper")
     def _check_conflicts(self):
         """Test that this relationship is legal, warn about
         inheritance conflicts."""
-
+        mapperlib = util.preloaded.orm_mapper
         if self.parent.non_primary and not mapperlib.class_mapper(
             self.parent.class_, configure=False
         ).has_property(self.key):
@@ -2197,28 +2307,18 @@ class RelationshipProperty(StrategizedProperty):
     def cascade(self, cascade):
         self._set_cascade(cascade)
 
-    def _set_cascade(self, cascade, warn=True):
+    def _set_cascade(self, cascade):
         cascade = CascadeOptions(cascade)
 
-        if warn and self.viewonly:
+        if self.viewonly:
             non_viewonly = set(cascade).difference(
                 CascadeOptions._viewonly_cascades
             )
             if non_viewonly:
-                # we are warning here rather than warn deprecated as this
-                # setting actively does the wrong thing and Python shows
-                # regular warnings more aggressively than deprecation warnings
-                # by default. There's no other guard against setting active
-                # persistence cascades under viewonly=True so this will raise
-                # in 1.4.
-                util.warn(
-                    'Cascade settings "%s" should not be combined with a '
-                    "viewonly=True relationship.   This configuration will "
-                    "raise an error in version 1.4.  Note that in versions "
-                    "prior to 1.4, "
-                    "these cascade settings may still produce a mutating "
-                    "effect even though this relationship is marked as "
-                    "viewonly=True." % (", ".join(sorted(non_viewonly)))
+                raise sa_exc.ArgumentError(
+                    'Cascade settings "%s" apply to persistence operations '
+                    "and should not be combined with a viewonly=True "
+                    "relationship." % (", ".join(sorted(non_viewonly)))
                 )
 
         if "mapper" in self.__dict__:
@@ -2257,13 +2357,6 @@ class RelationshipProperty(StrategizedProperty):
                     "relatedcls": self.mapper.class_.__name__,
                 },
                 code="bbf0",
-            )
-
-        if self.direction is MANYTOONE and self.passive_deletes:
-            util.warn(
-                "On %s, 'passive_deletes' is normally configured "
-                "on one-to-many, one-to-one, many-to-many "
-                "relationships only." % self
             )
 
         if self.passive_deletes == "all" and (
@@ -2384,7 +2477,10 @@ class RelationshipProperty(StrategizedProperty):
         if self.back_populates:
             self._add_reverse_property(self.back_populates)
 
+    @util.preload_module("sqlalchemy.orm.dependency")
     def _post_init(self):
+        dependency = util.preloaded.orm_dependency
+
         if self.uselist is None:
             self.uselist = self.direction is not MANYTOONE
         if not self.viewonly:
@@ -2408,10 +2504,10 @@ class RelationshipProperty(StrategizedProperty):
         self,
         source_polymorphic=False,
         source_selectable=None,
-        dest_polymorphic=False,
         dest_selectable=None,
-        of_type_mapper=None,
+        of_type_entity=None,
         alias_secondary=False,
+        extra_criteria=(),
     ):
 
         aliased = False
@@ -2423,13 +2519,21 @@ class RelationshipProperty(StrategizedProperty):
             if source_polymorphic and self.parent.with_polymorphic:
                 source_selectable = self.parent._with_polymorphic_selectable
 
+        if of_type_entity:
+            dest_mapper = of_type_entity.mapper
+            if dest_selectable is None:
+                dest_selectable = of_type_entity.selectable
+                aliased = True
+        else:
+            dest_mapper = self.mapper
+
         if dest_selectable is None:
             dest_selectable = self.entity.selectable
-            if dest_polymorphic and self.mapper.with_polymorphic:
+            if self.mapper.with_polymorphic:
                 aliased = True
 
             if self._is_self_referential and source_selectable is None:
-                dest_selectable = dest_selectable.alias()
+                dest_selectable = dest_selectable._anonymous_fromclause()
                 aliased = True
         elif (
             dest_selectable is not self.mapper._with_polymorphic_selectable
@@ -2437,15 +2541,13 @@ class RelationshipProperty(StrategizedProperty):
         ):
             aliased = True
 
-        dest_mapper = of_type_mapper or self.mapper
-
         single_crit = dest_mapper._single_table_criterion
         aliased = aliased or (
             source_selectable is not None
             and (
                 source_selectable
                 is not self.parent._with_polymorphic_selectable
-                or source_selectable._is_from_container  # e.g an alias
+                or source_selectable._is_subquery
             )
         )
 
@@ -2456,7 +2558,11 @@ class RelationshipProperty(StrategizedProperty):
             target_adapter,
             dest_selectable,
         ) = self._join_condition.join_targets(
-            source_selectable, dest_selectable, aliased, single_crit
+            source_selectable,
+            dest_selectable,
+            aliased,
+            single_crit,
+            extra_criteria,
         )
         if source_selectable is None:
             source_selectable = self.parent.local_table
@@ -2586,11 +2692,11 @@ class JoinCondition(object):
         """
 
         self.primaryjoin = _deep_deannotate(
-            self.primaryjoin, values=("parententity",)
+            self.primaryjoin, values=("parententity", "proxy_key")
         )
         if self.secondaryjoin is not None:
             self.secondaryjoin = _deep_deannotate(
-                self.secondaryjoin, values=("parententity",)
+                self.secondaryjoin, values=("parententity", "proxy_key")
             )
 
     def _determine_joins(self):
@@ -2721,12 +2827,12 @@ class JoinCondition(object):
 
             def replace(element):
                 if "remote" in element._annotations:
-                    v = element._annotations.copy()
+                    v = dict(element._annotations)
                     del v["remote"]
                     v["local"] = True
                     return element._with_annotations(v)
                 elif "local" in element._annotations:
-                    v = element._annotations.copy()
+                    v = dict(element._annotations)
                     del v["local"]
                     v["remote"] = True
                     return element._with_annotations(v)
@@ -2945,7 +3051,9 @@ class JoinCondition(object):
         else:
 
             def repl(element):
-                if element in remote_side:
+                # use set() to avoid generating ``__eq__()`` expressions
+                # against each element
+                if element in set(remote_side):
                     return element._annotate({"remote": True})
 
             self.primaryjoin = visitors.replacement_traverse(
@@ -3304,8 +3412,6 @@ class JoinCondition(object):
             # if multiple relationships overlap foreign() directly, but
             # we're going to assume it's typically a ForeignKeyConstraint-
             # level configuration that benefits from this warning.
-            if len(to_.foreign_keys) < 2:
-                continue
 
             if to_ not in self._track_overlapping_sync_targets:
                 self._track_overlapping_sync_targets[
@@ -3317,13 +3423,18 @@ class JoinCondition(object):
 
                 for pr, fr_ in prop_to_from.items():
                     if (
-                        pr.mapper in mapperlib._mapper_registry
-                        and (
-                            self.prop._persists_for(pr.parent)
-                            or pr._persists_for(self.prop.parent)
-                        )
-                        and fr_ is not from_
+                        not pr.mapper._dispose_called
                         and pr not in self.prop._reverse_property
+                        and pr.key not in self.prop._overlaps
+                        and self.prop.key not in pr._overlaps
+                        and not self.prop.parent.is_sibling(pr.parent)
+                        and not self.prop.mapper.is_sibling(pr.mapper)
+                        and not self.prop.parent.is_sibling(pr.mapper)
+                        and not self.prop.mapper.is_sibling(pr.parent)
+                        and (
+                            self.prop.key != pr.key
+                            or not self.prop.parent.common_parent(pr.parent)
+                        )
                     ):
 
                         other_props.append((pr, fr_))
@@ -3332,19 +3443,31 @@ class JoinCondition(object):
                     util.warn(
                         "relationship '%s' will copy column %s to column %s, "
                         "which conflicts with relationship(s): %s. "
-                        "Consider applying "
-                        "viewonly=True to read-only relationships, or provide "
-                        "a primaryjoin condition marking writable columns "
-                        "with the foreign() annotation."
+                        "If this is not the intention, consider if these "
+                        "relationships should be linked with "
+                        "back_populates, or if viewonly=True should be "
+                        "applied to one or more if they are read-only. "
+                        "For the less common case that foreign key "
+                        "constraints are partially overlapping, the "
+                        "orm.foreign() "
+                        "annotation can be used to isolate the columns that "
+                        "should be written towards.   To silence this "
+                        "warning, add the parameter 'overlaps=\"%s\"' to the "
+                        "'%s' relationship."
                         % (
                             self.prop,
                             from_,
                             to_,
                             ", ".join(
-                                "'%s' (copies %s to %s)" % (pr, fr_, to_)
-                                for (pr, fr_) in other_props
+                                sorted(
+                                    "'%s' (copies %s to %s)" % (pr, fr_, to_)
+                                    for (pr, fr_) in other_props
+                                )
                             ),
-                        )
+                            ",".join(sorted(pr.key for pr, fr in other_props)),
+                            self.prop,
+                        ),
+                        code="qzyx",
                     )
                 self._track_overlapping_sync_targets[to_][self.prop] = from_
 
@@ -3383,7 +3506,12 @@ class JoinCondition(object):
         )
 
     def join_targets(
-        self, source_selectable, dest_selectable, aliased, single_crit=None
+        self,
+        source_selectable,
+        dest_selectable,
+        aliased,
+        single_crit=None,
+        extra_criteria=(),
     ):
         """Given a source and destination selectable, create a
         join between them.
@@ -3419,9 +3547,15 @@ class JoinCondition(object):
             else:
                 primaryjoin = primaryjoin & single_crit
 
+        if extra_criteria:
+            if secondaryjoin is not None:
+                secondaryjoin = secondaryjoin & sql.and_(*extra_criteria)
+            else:
+                primaryjoin = primaryjoin & sql.and_(*extra_criteria)
+
         if aliased:
             if secondary is not None:
-                secondary = secondary.alias(flat=True)
+                secondary = secondary._anonymous_fromclause(flat=True)
                 primary_aliasizer = ClauseAdapter(
                     secondary, exclude_fn=_ColInAnnotations("local")
                 )
@@ -3523,10 +3657,9 @@ class JoinCondition(object):
 
 
 class _ColInAnnotations(object):
-    """Seralizable equivalent to:
+    """Serializable object that tests for a name in c._annotations."""
 
-        lambda c: "name" in c._annotations
-    """
+    __slots__ = ("name",)
 
     def __init__(self, name):
         self.name = name

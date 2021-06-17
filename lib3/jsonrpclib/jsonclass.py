@@ -6,7 +6,7 @@ The serialization module
 :authors: Josh Marshall, Thomas Calmant
 :copyright: Copyright 2020, Thomas Calmant
 :license: Apache License 2.0
-:version: 0.4.1
+:version: 0.4.2
 
 ..
 
@@ -36,7 +36,7 @@ import jsonrpclib.utils as utils
 # ------------------------------------------------------------------------------
 
 # Module version
-__version_info__ = (0, 4, 1)
+__version_info__ = (0, 4, 2)
 __version__ = ".".join(str(x) for x in __version_info__)
 
 # Documentation strings format
@@ -45,11 +45,12 @@ __docformat__ = "restructuredtext en"
 # ------------------------------------------------------------------------------
 
 # Supported transmitted code
-SUPPORTED_TYPES = (utils.DictType,) + utils.ITERABLE_TYPES \
-    + utils.PRIMITIVE_TYPES
+SUPPORTED_TYPES = (
+    (utils.DictType,) + utils.ITERABLE_TYPES + utils.PRIMITIVE_TYPES
+)
 
 # Regex of invalid module characters
-INVALID_MODULE_CHARS = r'[^a-zA-Z0-9\_\.]'
+INVALID_MODULE_CHARS = r"[^a-zA-Z0-9\_\.]"
 
 # ------------------------------------------------------------------------------
 
@@ -58,7 +59,6 @@ class TranslationError(Exception):
     """
     Unmarshalling exception
     """
-    pass
 
 
 def _slots_finder(clazz, fields_set):
@@ -100,8 +100,13 @@ def _find_fields(obj):
     return fields
 
 
-def dump(obj, serialize_method=None, ignore_attribute=None, ignore=None,
-         config=jsonrpclib.config.DEFAULT):
+def dump(
+    obj,
+    serialize_method=None,
+    ignore_attribute=None,
+    ignore=None,
+    config=jsonrpclib.config.DEFAULT,
+):
     """
     Transforms the given object into a JSON-RPC compliant form.
     Converts beans into dictionaries with a __jsonclass__ entry.
@@ -130,8 +135,9 @@ def dump(obj, serialize_method=None, ignore_attribute=None, ignore=None,
         pass
     else:
         if serializer is not None:
-            return serializer(obj, serialize_method, ignore_attribute,
-                              ignore, config)
+            return serializer(
+                obj, serialize_method, ignore_attribute, ignore, config
+            )
 
     # Primitive
     if isinstance(obj, utils.PRIMITIVE_TYPES):
@@ -140,21 +146,24 @@ def dump(obj, serialize_method=None, ignore_attribute=None, ignore=None,
     # Iterative
     elif isinstance(obj, utils.ITERABLE_TYPES):
         # List, set or tuple
-        return [dump(item, serialize_method, ignore_attribute, ignore, config)
-                for item in obj]
+        return [
+            dump(item, serialize_method, ignore_attribute, ignore, config)
+            for item in obj
+        ]
 
     elif isinstance(obj, utils.DictType):
         # Dictionary
-        return {key: dump(value, serialize_method, ignore_attribute,
-                          ignore, config)
-                for key, value in obj.items()}
+        return {
+            key: dump(value, serialize_method, ignore_attribute, ignore, config)
+            for key, value in obj.items()
+        }
 
     # It's not a standard type, so it needs __jsonclass__
     module_name = inspect.getmodule(type(obj)).__name__
     json_class = obj.__class__.__name__
 
-    if module_name not in ('', '__main__'):
-        json_class = '{0}.{1}'.format(module_name, json_class)
+    if module_name not in ("", "__main__"):
+        json_class = "{0}.{1}".format(module_name, json_class)
 
     # Keep the class name in the returned object
     return_obj = {"__jsonclass__": [json_class]}
@@ -165,16 +174,16 @@ def dump(obj, serialize_method=None, ignore_attribute=None, ignore=None,
         # Attrs MUST be a dict.
         serialize = getattr(obj, serialize_method)
         params, attrs = serialize()
-        return_obj['__jsonclass__'].append(params)
+        return_obj["__jsonclass__"].append(params)
         return_obj.update(attrs)
     elif utils.is_enum(obj):
         # Add parameters for enumerations
-        return_obj['__jsonclass__'].append([obj.value])
+        return_obj["__jsonclass__"].append([obj.value])
     else:
         # Otherwise, try to figure it out
         # Obviously, we can't assume to know anything about the
         # parameters passed to __init__
-        return_obj['__jsonclass__'].append([])
+        return_obj["__jsonclass__"].append([])
 
         # Prepare filtering lists
         known_types = SUPPORTED_TYPES + tuple(config.serialize_handlers)
@@ -188,13 +197,21 @@ def dump(obj, serialize_method=None, ignore_attribute=None, ignore=None,
         attrs = {}
         for attr_name in fields:
             attr_value = getattr(obj, attr_name)
-            if isinstance(attr_value, known_types) and \
-                    attr_value not in ignore_list:
-                attrs[attr_name] = dump(attr_value, serialize_method,
-                                        ignore_attribute, ignore, config)
+            if (
+                isinstance(attr_value, known_types)
+                and attr_value not in ignore_list
+            ):
+                attrs[attr_name] = dump(
+                    attr_value,
+                    serialize_method,
+                    ignore_attribute,
+                    ignore,
+                    config,
+                )
         return_obj.update(attrs)
 
     return return_obj
+
 
 # ------------------------------------------------------------------------------
 
@@ -218,75 +235,88 @@ def load(obj, classes=None):
         return [load(entry) for entry in obj]
 
     # Otherwise, it's a dict type
-    elif '__jsonclass__' not in obj:
+    elif "__jsonclass__" not in obj:
         return {key: load(value) for key, value in obj.items()}
 
     # It's a dictionary, and it has a __jsonclass__
-    orig_module_name = obj['__jsonclass__'][0]
-    params = obj['__jsonclass__'][1]
+    orig_module_name = obj["__jsonclass__"][0]
+    params = obj["__jsonclass__"][1]
 
     # Validate the module name
     if not orig_module_name:
-        raise TranslationError('Module name empty.')
+        raise TranslationError("Module name empty.")
 
-    json_module_clean = re.sub(INVALID_MODULE_CHARS, '', orig_module_name)
+    json_module_clean = re.sub(INVALID_MODULE_CHARS, "", orig_module_name)
     if json_module_clean != orig_module_name:
-        raise TranslationError('Module name {0} has invalid characters.'
-                               .format(orig_module_name))
+        raise TranslationError(
+            "Module name {0} has invalid characters.".format(orig_module_name)
+        )
 
     # Load the class
-    json_module_parts = json_module_clean.split('.')
+    json_module_parts = json_module_clean.split(".")
     if classes and len(json_module_parts) == 1:
         # Local class name -- probably means it won't work
         try:
             json_class = classes[json_module_parts[0]]
         except KeyError:
-            raise TranslationError('Unknown class or module {0}.'
-                                   .format(json_module_parts[0]))
+            raise TranslationError(
+                "Unknown class or module {0}.".format(json_module_parts[0])
+            )
     else:
         # Module + class
         json_class_name = json_module_parts.pop()
-        json_module_tree = '.'.join(json_module_parts)
+        json_module_tree = ".".join(json_module_parts)
         try:
             # Use fromlist to load the module itself, not the package
-            temp_module = __import__(json_module_tree,
-                                     fromlist=[json_class_name])
+            temp_module = __import__(
+                json_module_tree, fromlist=[json_class_name]
+            )
         except ImportError:
-            raise TranslationError('Could not import {0} from module {1}.'
-                                   .format(json_class_name, json_module_tree))
+            raise TranslationError(
+                "Could not import {0} from module {1}.".format(
+                    json_class_name, json_module_tree
+                )
+            )
 
         try:
             json_class = getattr(temp_module, json_class_name)
         except AttributeError:
-            raise TranslationError("Unknown class {0}.{1}."
-                                   .format(json_module_tree, json_class_name))
+            raise TranslationError(
+                "Unknown class {0}.{1}.".format(
+                    json_module_tree, json_class_name
+                )
+            )
 
     # Create the object
     if isinstance(params, utils.ListType):
         try:
             new_obj = json_class(*params)
         except TypeError as ex:
-            raise TranslationError("Error instantiating {0}: {1}"
-                                   .format(json_class.__name__, ex))
+            raise TranslationError(
+                "Error instantiating {0}: {1}".format(json_class.__name__, ex)
+            )
     elif isinstance(params, utils.DictType):
         try:
             new_obj = json_class(**params)
         except TypeError as ex:
-            raise TranslationError("Error instantiating {0}: {1}"
-                                   .format(json_class.__name__, ex))
+            raise TranslationError(
+                "Error instantiating {0}: {1}".format(json_class.__name__, ex)
+            )
     else:
-        raise TranslationError("Constructor args must be a dict or a list, "
-                               "not {0}".format(type(params).__name__))
+        raise TranslationError(
+            "Constructor args must be a dict or a list, "
+            "not {0}".format(type(params).__name__)
+        )
 
     # Remove the class information, as it must be ignored during the
     # reconstruction of the object
-    raw_jsonclass = obj.pop('__jsonclass__')
+    raw_jsonclass = obj.pop("__jsonclass__")
 
     for key, value in obj.items():
         # Recursive loading
         setattr(new_obj, key, load(value, classes))
 
     # Restore the class information for further usage
-    obj['__jsonclass__'] = raw_jsonclass
+    obj["__jsonclass__"] = raw_jsonclass
 
     return new_obj

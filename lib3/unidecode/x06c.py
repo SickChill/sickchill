@@ -29,7 +29,7 @@ data = (
 'Fen ',    # 0x1b
 'Ri ',    # 0x1c
 'Nei ',    # 0x1d
-'[?] ',    # 0x1e
+None,    # 0x1e
 'Fu ',    # 0x1f
 'Shen ',    # 0x20
 'Dong ',    # 0x21
@@ -98,7 +98,7 @@ data = (
 'Chi ',    # 0x60
 'Wu ',    # 0x61
 'Tsuchi ',    # 0x62
-'[?] ',    # 0x63
+None,    # 0x63
 'Tang ',    # 0x64
 'Zhi ',    # 0x65
 'Chi ',    # 0x66
@@ -248,7 +248,7 @@ data = (
 'Xue ',    # 0xf6
 'Long ',    # 0xf7
 'Lu ',    # 0xf8
-'[?] ',    # 0xf9
+None,    # 0xf9
 'Bo ',    # 0xfa
 'Xie ',    # 0xfb
 'Po ',    # 0xfc

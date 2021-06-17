@@ -16,8 +16,8 @@ data = (
 'Xie ',    # 0x0e
 'Ji ',    # 0x0f
 'Wu ',    # 0x10
-'[?] ',    # 0x11
-'[?] ',    # 0x12
+None,    # 0x11
+None,    # 0x12
 'Han ',    # 0x13
 'Yan ',    # 0x14
 'Huan ',    # 0x15
@@ -56,14 +56,14 @@ data = (
 'Ran ',    # 0x36
 'Pi ',    # 0x37
 'Gu ',    # 0x38
-'[?] ',    # 0x39
+None,    # 0x39
 'Sheng ',    # 0x3a
 'Chang ',    # 0x3b
 'Shao ',    # 0x3c
-'[?] ',    # 0x3d
-'[?] ',    # 0x3e
-'[?] ',    # 0x3f
-'[?] ',    # 0x40
+None,    # 0x3d
+None,    # 0x3e
+None,    # 0x3f
+None,    # 0x40
 'Chen ',    # 0x41
 'He ',    # 0x42
 'Kui ',    # 0x43
@@ -117,8 +117,8 @@ data = (
 'Hu ',    # 0x73
 'Yun ',    # 0x74
 'Xia ',    # 0x75
-'[?] ',    # 0x76
-'[?] ',    # 0x77
+None,    # 0x76
+None,    # 0x77
 'Bian ',    # 0x78
 'Gou ',    # 0x79
 'Tui ',    # 0x7a
@@ -149,7 +149,7 @@ data = (
 'Wen ',    # 0x93
 'Rong ',    # 0x94
 'Oozutsu ',    # 0x95
-'[?] ',    # 0x96
+None,    # 0x96
 'Qiang ',    # 0x97
 'Liu ',    # 0x98
 'Xi ',    # 0x99
@@ -179,7 +179,7 @@ data = (
 'Re ',    # 0xb1
 'Jiong ',    # 0xb2
 'Man ',    # 0xb3
-'[?] ',    # 0xb4
+None,    # 0xb4
 'Shang ',    # 0xb5
 'Cuan ',    # 0xb6
 'Zeng ',    # 0xb7
@@ -220,8 +220,8 @@ data = (
 'Yi ',    # 0xda
 'Jing ',    # 0xdb
 'Men ',    # 0xdc
-'[?] ',    # 0xdd
-'[?] ',    # 0xde
+None,    # 0xdd
+None,    # 0xde
 'Ying ',    # 0xdf
 'Yu ',    # 0xe0
 'Yi ',    # 0xe1

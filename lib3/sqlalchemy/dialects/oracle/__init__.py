@@ -1,5 +1,5 @@
 # oracle/__init__.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -7,7 +7,6 @@
 
 from . import base  # noqa
 from . import cx_oracle  # noqa
-from . import zxjdbc  # noqa
 from .base import BFILE
 from .base import BINARY_DOUBLE
 from .base import BINARY_FLOAT

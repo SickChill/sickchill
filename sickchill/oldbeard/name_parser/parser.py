@@ -17,6 +17,7 @@ from sickchill.oldbeard.name_parser import regexes
 
 if TYPE_CHECKING:
     from typing import List
+
     from sickchill.tv import TVShow
 
 

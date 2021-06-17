@@ -1,15 +1,11 @@
-# -*- coding: utf-8 -*-
 """
 oauthlib.oauth2.rfc6749.grant_types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
-from __future__ import absolute_import, unicode_literals
-
 import json
 import logging
 
 from .. import errors
-from ..request_validator import RequestValidator
 from .base import GrantTypeBase
 
 log = logging.getLogger(__name__)
@@ -119,8 +115,8 @@ class ClientCredentialsGrant(GrantTypeBase):
         # Ensure client is authorized use of this grant type
         self.validate_grant_type(request)
 
-        log.debug('Authorizing access to user %r.', request.user)
         request.client_id = request.client_id or request.client.client_id
+        log.debug('Authorizing access to client %r.', request.client_id)
         self.validate_scopes(request)
 
         for validator in self.custom_validators.post_token:

@@ -15,98 +15,7 @@ from babelfish import (LANGUAGES, Language, Country, Script, language_converters
     LanguageReverseConverter, LanguageConvertError, LanguageReverseError, CountryReverseError)
 
 
-if sys.version_info[:2] <= (2, 6):
-    _MAX_LENGTH = 80
-
-    def safe_repr(obj, short=False):
-        try:
-            result = repr(obj)
-        except Exception:
-            result = object.__repr__(obj)
-        if not short or len(result) < _MAX_LENGTH:
-            return result
-        return result[:_MAX_LENGTH] + ' [truncated]...'
-
-    class _AssertRaisesContext(object):
-        """A context manager used to implement TestCase.assertRaises* methods."""
-
-        def __init__(self, expected, test_case, expected_regexp=None):
-            self.expected = expected
-            self.failureException = test_case.failureException
-            self.expected_regexp = expected_regexp
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, tb):
-            if exc_type is None:
-                try:
-                    exc_name = self.expected.__name__
-                except AttributeError:
-                    exc_name = str(self.expected)
-                raise self.failureException(
-                    "{0} not raised".format(exc_name))
-            if not issubclass(exc_type, self.expected):
-                # let unexpected exceptions pass through
-                return False
-            self.exception = exc_value  # store for later retrieval
-            if self.expected_regexp is None:
-                return True
-
-            expected_regexp = self.expected_regexp
-            if isinstance(expected_regexp, basestring):
-                expected_regexp = re.compile(expected_regexp)
-            if not expected_regexp.search(str(exc_value)):
-                raise self.failureException('"%s" does not match "%s"' %
-                         (expected_regexp.pattern, str(exc_value)))
-            return True
-
-    class _Py26FixTestCase(object):
-        def assertIsNone(self, obj, msg=None):
-            """Same as self.assertTrue(obj is None), with a nicer default message."""
-            if obj is not None:
-                standardMsg = '%s is not None' % (safe_repr(obj),)
-                self.fail(self._formatMessage(msg, standardMsg))
-
-        def assertIsNotNone(self, obj, msg=None):
-            """Included for symmetry with assertIsNone."""
-            if obj is None:
-                standardMsg = 'unexpectedly None'
-                self.fail(self._formatMessage(msg, standardMsg))
-
-        def assertIn(self, member, container, msg=None):
-            """Just like self.assertTrue(a in b), but with a nicer default message."""
-            if member not in container:
-                standardMsg = '%s not found in %s' % (safe_repr(member),
-                                                      safe_repr(container))
-                self.fail(self._formatMessage(msg, standardMsg))
-
-        def assertNotIn(self, member, container, msg=None):
-            """Just like self.assertTrue(a not in b), but with a nicer default message."""
-            if member in container:
-                standardMsg = '%s unexpectedly found in %s' % (safe_repr(member),
-                                                            safe_repr(container))
-                self.fail(self._formatMessage(msg, standardMsg))
-
-        def assertIs(self, expr1, expr2, msg=None):
-            """Just like self.assertTrue(a is b), but with a nicer default message."""
-            if expr1 is not expr2:
-                standardMsg = '%s is not %s' % (safe_repr(expr1),
-                                                 safe_repr(expr2))
-                self.fail(self._formatMessage(msg, standardMsg))
-
-        def assertIsNot(self, expr1, expr2, msg=None):
-            """Just like self.assertTrue(a is not b), but with a nicer default message."""
-            if expr1 is expr2:
-                standardMsg = 'unexpectedly identical: %s' % (safe_repr(expr1),)
-                self.fail(self._formatMessage(msg, standardMsg))
-
-else:
-    class _Py26FixTestCase(object):
-        pass
-
-
-class TestScript(TestCase, _Py26FixTestCase):
+class TestScript(TestCase):
     def test_wrong_script(self):
         self.assertRaises(ValueError, lambda: Script('Azer'))
 
@@ -123,7 +32,7 @@ class TestScript(TestCase, _Py26FixTestCase):
         self.assertEqual(pickle.loads(pickle.dumps(Script('Latn'))), Script('Latn'))
 
 
-class TestCountry(TestCase, _Py26FixTestCase):
+class TestCountry(TestCase):
     def test_wrong_country(self):
         self.assertRaises(ValueError, lambda: Country('ZZ'))
 
@@ -149,7 +58,7 @@ class TestCountry(TestCase, _Py26FixTestCase):
         self.assertEqual(len(country_converters['name'].codes), 249)
 
 
-class TestLanguage(TestCase, _Py26FixTestCase):
+class TestLanguage(TestCase):
     def test_languages(self):
         self.assertEqual(len(LANGUAGES), 7874)
 
@@ -203,8 +112,10 @@ class TestLanguage(TestCase, _Py26FixTestCase):
     def test_converter_opensubtitles(self):
         self.assertEqual(Language('fra').opensubtitles, Language('fra').alpha3b)
         self.assertEqual(Language('por', 'BR').opensubtitles, 'pob')
+        self.assertEqual(Language('zho', 'TW').opensubtitles, 'zht')
         self.assertEqual(Language.fromopensubtitles('fre'), Language('fra'))
         self.assertEqual(Language.fromopensubtitles('pob'), Language('por', 'BR'))
+        self.assertEqual(Language.fromopensubtitles('zht'), Language('zho', 'TW'))
         self.assertEqual(Language.fromopensubtitles('pb'), Language('por', 'BR'))
         # Montenegrin is not recognized as an ISO language (yet?) but for now it is
         # unofficially accepted as Serbian from Montenegro
@@ -212,7 +123,7 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertEqual(Language.fromcode('pob', 'opensubtitles'), Language('por', 'BR'))
         self.assertRaises(LanguageReverseError, lambda: Language.fromopensubtitles('zzz'))
         self.assertRaises(LanguageConvertError, lambda: Language('aaa').opensubtitles)
-        self.assertEqual(len(language_converters['opensubtitles'].codes), 606)
+        self.assertEqual(len(language_converters['opensubtitles'].codes), 608)
 
         # test with all the LANGUAGES from the opensubtitles api
         # downloaded from: http://www.opensubtitles.org/addons/export_languages.php
@@ -227,6 +138,10 @@ class TestLanguage(TestCase, _Py26FixTestCase):
             if alpha2:
                 self.assertEqual(Language.fromopensubtitles(idlang), Language.fromopensubtitles(alpha2))
         f.close()
+
+    def test_converter_opensubtitles_codes(self):
+        for code in language_converters['opensubtitles'].from_opensubtitles.keys():
+            self.assertIn(code, language_converters['opensubtitles'].codes)
 
     def test_fromietf_country_script(self):
         language = Language.fromietf('fra-FR-Latn')

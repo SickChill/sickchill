@@ -235,7 +235,7 @@ data = (
 'Ji ',    # 0xe9
 'Xu ',    # 0xea
 'Ling ',    # 0xeb
-'[?] ',    # 0xec
+None,    # 0xec
 'Xu ',    # 0xed
 'Qi ',    # 0xee
 'Fei ',    # 0xef

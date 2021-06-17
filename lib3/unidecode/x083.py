@@ -15,9 +15,9 @@ data = (
 'Ji ',    # 0x0d
 'Jing ',    # 0x0e
 'Long ',    # 0x0f
-'[?] ',    # 0x10
+None,    # 0x10
 'Niao ',    # 0x11
-'[?] ',    # 0x12
+None,    # 0x12
 'Xue ',    # 0x13
 'Ying ',    # 0x14
 'Qiong ',    # 0x15
@@ -61,7 +61,7 @@ data = (
 'Mang ',    # 0x3b
 'Tong ',    # 0x3c
 'Zhong ',    # 0x3d
-'[?] ',    # 0x3e
+None,    # 0x3e
 'Zhu ',    # 0x3f
 'Xun ',    # 0x40
 'Huan ',    # 0x41
@@ -97,7 +97,7 @@ data = (
 'Hui ',    # 0x5f
 'Qi ',    # 0x60
 'Dang ',    # 0x61
-'[?] ',    # 0x62
+None,    # 0x62
 'Rong ',    # 0x63
 'Hun ',    # 0x64
 'Ying ',    # 0x65

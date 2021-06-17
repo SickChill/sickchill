@@ -1,5 +1,5 @@
 # orm/persistence.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -23,13 +23,24 @@ from . import evaluator
 from . import exc as orm_exc
 from . import loading
 from . import sync
-from .base import _entity_descriptor
 from .base import state_str
 from .. import exc as sa_exc
+from .. import future
 from .. import sql
 from .. import util
+from ..engine import result as _result
+from ..sql import coercions
 from ..sql import expression
-from ..sql.base import _from_objects
+from ..sql import operators
+from ..sql import roles
+from ..sql import select
+from ..sql.base import _entity_namespace_key
+from ..sql.base import CompileState
+from ..sql.base import Options
+from ..sql.dml import DeleteDMLState
+from ..sql.dml import UpdateDMLState
+from ..sql.elements import BooleanClauseList
+from ..sql.selectable import LABEL_STYLE_TABLENAME_PLUS_COL
 
 
 def _bulk_insert(
@@ -41,8 +52,6 @@ def _bulk_insert(
     render_nulls,
 ):
     base_mapper = mapper.base_mapper
-
-    cached_connections = _cached_connection_dict(base_mapper)
 
     if session_transaction.session.connection_callable:
         raise NotImplementedError(
@@ -95,7 +104,6 @@ def _bulk_insert(
         _emit_insert_statements(
             base_mapper,
             None,
-            cached_connections,
             super_mapper,
             table,
             records,
@@ -116,8 +124,6 @@ def _bulk_update(
     mapper, mappings, session_transaction, isstates, update_changed_only
 ):
     base_mapper = mapper.base_mapper
-
-    cached_connections = _cached_connection_dict(base_mapper)
 
     search_keys = mapper._primary_key_propkeys
     if mapper._version_id_prop:
@@ -173,7 +179,6 @@ def _bulk_update(
         _emit_update_statements(
             base_mapper,
             None,
-            cached_connections,
             super_mapper,
             table,
             records,
@@ -200,7 +205,6 @@ def save_obj(base_mapper, states, uowtransaction, single=False):
 
     states_to_update = []
     states_to_insert = []
-    cached_connections = _cached_connection_dict(base_mapper)
 
     for (
         state,
@@ -230,7 +234,6 @@ def save_obj(base_mapper, states, uowtransaction, single=False):
         _emit_update_statements(
             base_mapper,
             uowtransaction,
-            cached_connections,
             mapper,
             table,
             update,
@@ -239,7 +242,6 @@ def save_obj(base_mapper, states, uowtransaction, single=False):
         _emit_insert_statements(
             base_mapper,
             uowtransaction,
-            cached_connections,
             mapper,
             table,
             insert,
@@ -272,7 +274,6 @@ def post_update(base_mapper, states, uowtransaction, post_update_cols):
     specifies post_update.
 
     """
-    cached_connections = _cached_connection_dict(base_mapper)
 
     states_to_update = list(
         _organize_states_for_post_update(base_mapper, states, uowtransaction)
@@ -305,7 +306,6 @@ def post_update(base_mapper, states, uowtransaction, post_update_cols):
         _emit_post_update_statements(
             base_mapper,
             uowtransaction,
-            cached_connections,
             mapper,
             table,
             update,
@@ -319,8 +319,6 @@ def delete_obj(base_mapper, states, uowtransaction):
     flush operation.
 
     """
-
-    cached_connections = _cached_connection_dict(base_mapper)
 
     states_to_delete = list(
         _organize_states_for_delete(base_mapper, states, uowtransaction)
@@ -342,7 +340,6 @@ def delete_obj(base_mapper, states, uowtransaction):
         _emit_delete_statements(
             base_mapper,
             uowtransaction,
-            cached_connections,
             mapper,
             table,
             delete,
@@ -402,24 +399,24 @@ def _organize_states_for_save(base_mapper, states, uowtransaction):
 
             if not uowtransaction.was_already_deleted(existing):
                 if not uowtransaction.is_deleted(existing):
-                    raise orm_exc.FlushError(
+                    util.warn(
                         "New instance %s with identity key %s conflicts "
                         "with persistent instance %s"
                         % (state_str(state), instance_key, state_str(existing))
                     )
+                else:
+                    base_mapper._log_debug(
+                        "detected row switch for identity %s.  "
+                        "will update %s, remove %s from "
+                        "transaction",
+                        instance_key,
+                        state_str(state),
+                        state_str(existing),
+                    )
 
-                base_mapper._log_debug(
-                    "detected row switch for identity %s.  "
-                    "will update %s, remove %s from "
-                    "transaction",
-                    instance_key,
-                    state_str(state),
-                    state_str(existing),
-                )
-
-                # remove the "delete" flag from the existing element
-                uowtransaction.remove_state_actions(existing)
-                row_switch = existing
+                    # remove the "delete" flag from the existing element
+                    uowtransaction.remove_state_actions(existing)
+                    row_switch = existing
 
         if (has_identity or row_switch) and mapper.version_id_col is not None:
             update_version_id = mapper._get_committed_state_attr_by_column(
@@ -846,7 +843,6 @@ def _collect_delete_commands(
 def _emit_update_statements(
     base_mapper,
     uowtransaction,
-    cached_connections,
     mapper,
     table,
     update,
@@ -860,16 +856,18 @@ def _emit_update_statements(
         and mapper.version_id_col in mapper._cols_by_table[table]
     )
 
+    execution_options = {"compiled_cache": base_mapper._compiled_cache}
+
     def update_stmt():
-        clause = sql.and_()
+        clauses = BooleanClauseList._construct_raw(operators.and_)
 
         for col in mapper._pks_by_table[table]:
-            clause.clauses.append(
+            clauses.clauses.append(
                 col == sql.bindparam(col._label, type_=col.type)
             )
 
         if needs_version_id:
-            clause.clauses.append(
+            clauses.clauses.append(
                 mapper.version_id_col
                 == sql.bindparam(
                     mapper.version_id_col._label,
@@ -877,7 +875,7 @@ def _emit_update_statements(
                 )
             )
 
-        stmt = table.update(clause)
+        stmt = table.update().where(clauses)
         return stmt
 
     cached_stmt = base_mapper._memo(("update", table), update_stmt)
@@ -938,7 +936,11 @@ def _emit_update_statements(
                 has_all_defaults,
                 has_all_pks,
             ) in records:
-                c = connection.execute(statement.values(value_params), params)
+                c = connection._execute_20(
+                    statement.values(value_params),
+                    params,
+                    execution_options=execution_options,
+                )
                 if bookkeeping:
                     _postfetch(
                         mapper,
@@ -950,6 +952,7 @@ def _emit_update_statements(
                         c.context.compiled_parameters[0],
                         value_params,
                         True,
+                        c.returned_defaults,
                     )
                 rows += c.rowcount
                 check_rowcount = assert_singlerow
@@ -966,8 +969,8 @@ def _emit_update_statements(
                     has_all_defaults,
                     has_all_pks,
                 ) in records:
-                    c = cached_connections[connection].execute(
-                        statement, params
+                    c = connection._execute_20(
+                        statement, params, execution_options=execution_options
                     )
 
                     # TODO: why with bookkeeping=False?
@@ -982,6 +985,7 @@ def _emit_update_statements(
                             c.context.compiled_parameters[0],
                             value_params,
                             True,
+                            c.returned_defaults,
                         )
                     rows += c.rowcount
             else:
@@ -991,8 +995,8 @@ def _emit_update_statements(
                     assert_singlerow and len(multiparams) == 1
                 )
 
-                c = cached_connections[connection].execute(
-                    statement, multiparams
+                c = connection._execute_20(
+                    statement, multiparams, execution_options=execution_options
                 )
 
                 rows += c.rowcount
@@ -1018,6 +1022,9 @@ def _emit_update_statements(
                             c.context.compiled_parameters[0],
                             value_params,
                             True,
+                            c.returned_defaults
+                            if not c.context.executemany
+                            else None,
                         )
 
         if check_rowcount:
@@ -1039,7 +1046,6 @@ def _emit_update_statements(
 def _emit_insert_statements(
     base_mapper,
     uowtransaction,
-    cached_connections,
     mapper,
     table,
     insert,
@@ -1049,6 +1055,8 @@ def _emit_insert_statements(
     by _collect_insert_commands()."""
 
     cached_stmt = base_mapper._memo(("insert", table), table.insert)
+
+    execution_options = {"compiled_cache": base_mapper._compiled_cache}
 
     for (
         (connection, pkeys, hasvalue, has_all_pks, has_all_defaults),
@@ -1076,11 +1084,17 @@ def _emit_insert_statements(
             and has_all_pks
             and not hasvalue
         ):
-
+            # the "we don't need newly generated values back" section.
+            # here we have all the PKs, all the defaults or we don't want
+            # to fetch them, or the dialect doesn't support RETURNING at all
+            # so we have to post-fetch / use lastrowid anyway.
             records = list(records)
             multiparams = [rec[2] for rec in records]
 
-            c = cached_connections[connection].execute(statement, multiparams)
+            c = connection._execute_20(
+                statement, multiparams, execution_options=execution_options
+            )
+
             if bookkeeping:
                 for (
                     (
@@ -1106,70 +1120,145 @@ def _emit_insert_statements(
                             last_inserted_params,
                             value_params,
                             False,
+                            c.returned_defaults
+                            if not c.context.executemany
+                            else None,
                         )
                     else:
                         _postfetch_bulk_save(mapper_rec, state_dict, table)
 
         else:
+            # here, we need defaults and/or pk values back.
+
+            records = list(records)
+            if (
+                not hasvalue
+                and connection.dialect.insert_executemany_returning
+                and len(records) > 1
+            ):
+                do_executemany = True
+            else:
+                do_executemany = False
+
             if not has_all_defaults and base_mapper.eager_defaults:
                 statement = statement.return_defaults()
             elif mapper.version_id_col is not None:
                 statement = statement.return_defaults(mapper.version_id_col)
+            elif do_executemany:
+                statement = statement.return_defaults(*table.primary_key)
 
-            for (
-                state,
-                state_dict,
-                params,
-                mapper_rec,
-                connection,
-                value_params,
-                has_all_pks,
-                has_all_defaults,
-            ) in records:
+            if do_executemany:
+                multiparams = [rec[2] for rec in records]
 
-                if value_params:
-                    result = connection.execute(
-                        statement.values(value_params), params
-                    )
-                else:
-                    result = cached_connections[connection].execute(
-                        statement, params
-                    )
+                c = connection._execute_20(
+                    statement, multiparams, execution_options=execution_options
+                )
 
-                primary_key = result.context.inserted_primary_key
-                if primary_key is not None:
-                    # set primary key attributes
+                if bookkeeping:
+                    for (
+                        (
+                            state,
+                            state_dict,
+                            params,
+                            mapper_rec,
+                            conn,
+                            value_params,
+                            has_all_pks,
+                            has_all_defaults,
+                        ),
+                        last_inserted_params,
+                        inserted_primary_key,
+                        returned_defaults,
+                    ) in util.zip_longest(
+                        records,
+                        c.context.compiled_parameters,
+                        c.inserted_primary_key_rows,
+                        c.returned_defaults_rows or (),
+                    ):
+                        for pk, col in zip(
+                            inserted_primary_key,
+                            mapper._pks_by_table[table],
+                        ):
+                            prop = mapper_rec._columntoproperty[col]
+                            if state_dict.get(prop.key) is None:
+                                state_dict[prop.key] = pk
+
+                        if state:
+                            _postfetch(
+                                mapper_rec,
+                                uowtransaction,
+                                table,
+                                state,
+                                state_dict,
+                                c,
+                                last_inserted_params,
+                                value_params,
+                                False,
+                                returned_defaults,
+                            )
+                        else:
+                            _postfetch_bulk_save(mapper_rec, state_dict, table)
+            else:
+                for (
+                    state,
+                    state_dict,
+                    params,
+                    mapper_rec,
+                    connection,
+                    value_params,
+                    has_all_pks,
+                    has_all_defaults,
+                ) in records:
+                    if value_params:
+                        result = connection._execute_20(
+                            statement.values(value_params),
+                            params,
+                            execution_options=execution_options,
+                        )
+                    else:
+                        result = connection._execute_20(
+                            statement,
+                            params,
+                            execution_options=execution_options,
+                        )
+
+                    primary_key = result.inserted_primary_key
                     for pk, col in zip(
                         primary_key, mapper._pks_by_table[table]
                     ):
                         prop = mapper_rec._columntoproperty[col]
-                        if pk is not None and (
+                        if (
                             col in value_params
                             or state_dict.get(prop.key) is None
                         ):
                             state_dict[prop.key] = pk
-                if bookkeeping:
-                    if state:
-                        _postfetch(
-                            mapper_rec,
-                            uowtransaction,
-                            table,
-                            state,
-                            state_dict,
-                            result,
-                            result.context.compiled_parameters[0],
-                            value_params,
-                            False,
-                        )
-                    else:
-                        _postfetch_bulk_save(mapper_rec, state_dict, table)
+                    if bookkeeping:
+                        if state:
+                            _postfetch(
+                                mapper_rec,
+                                uowtransaction,
+                                table,
+                                state,
+                                state_dict,
+                                result,
+                                result.context.compiled_parameters[0],
+                                value_params,
+                                False,
+                                result.returned_defaults
+                                if not result.context.executemany
+                                else None,
+                            )
+                        else:
+                            _postfetch_bulk_save(mapper_rec, state_dict, table)
 
 
 def _emit_post_update_statements(
-    base_mapper, uowtransaction, cached_connections, mapper, table, update
+    base_mapper, uowtransaction, mapper, table, update
 ):
     """Emit UPDATE statements corresponding to value lists collected
     by _collect_post_update_commands()."""
+
+    execution_options = {"compiled_cache": base_mapper._compiled_cache}
 
     needs_version_id = (
         mapper.version_id_col is not None
@@ -1177,15 +1266,15 @@ def _emit_post_update_statements(
     )
 
     def update_stmt():
-        clause = sql.and_()
+        clauses = BooleanClauseList._construct_raw(operators.and_)
 
         for col in mapper._pks_by_table[table]:
-            clause.clauses.append(
+            clauses.clauses.append(
                 col == sql.bindparam(col._label, type_=col.type)
             )
 
         if needs_version_id:
-            clause.clauses.append(
+            clauses.clauses.append(
                 mapper.version_id_col
                 == sql.bindparam(
                     mapper.version_id_col._label,
@@ -1193,7 +1282,7 @@ def _emit_post_update_statements(
                 )
             )
 
-        stmt = table.update(clause)
+        stmt = table.update().where(clauses)
 
         if mapper.version_id_col is not None:
             stmt = stmt.return_defaults(mapper.version_id_col)
@@ -1229,7 +1318,11 @@ def _emit_post_update_statements(
         if not allow_multirow:
             check_rowcount = assert_singlerow
             for state, state_dict, mapper_rec, connection, params in records:
-                c = cached_connections[connection].execute(statement, params)
+
+                c = connection._execute_20(
+                    statement, params, execution_options=execution_options
+                )
+
                 _postfetch_post_update(
                     mapper_rec,
                     uowtransaction,
@@ -1250,7 +1343,9 @@ def _emit_post_update_statements(
                 assert_singlerow and len(multiparams) == 1
             )
 
-            c = cached_connections[connection].execute(statement, multiparams)
+            c = connection._execute_20(
+                statement, multiparams, execution_options=execution_options
+            )
 
             rows += c.rowcount
             for state, state_dict, mapper_rec, connection, params in records:
@@ -1281,7 +1376,7 @@ def _emit_post_update_statements(
 
 
 def _emit_delete_statements(
-    base_mapper, uowtransaction, cached_connections, mapper, table, delete
+    base_mapper, uowtransaction, mapper, table, delete
 ):
     """Emit DELETE statements corresponding to value lists collected
     by _collect_delete_commands()."""
@@ -1292,28 +1387,28 @@ def _emit_delete_statements(
     )
 
     def delete_stmt():
-        clause = sql.and_()
+        clauses = BooleanClauseList._construct_raw(operators.and_)
+
         for col in mapper._pks_by_table[table]:
-            clause.clauses.append(
+            clauses.clauses.append(
                 col == sql.bindparam(col.key, type_=col.type)
             )
 
         if need_version_id:
-            clause.clauses.append(
+            clauses.clauses.append(
                 mapper.version_id_col
                 == sql.bindparam(
                     mapper.version_id_col.key, type_=mapper.version_id_col.type
                 )
             )
 
-        return table.delete(clause)
+        return table.delete().where(clauses)
 
     statement = base_mapper._memo(("delete", table), delete_stmt)
     for connection, recs in groupby(delete, lambda rec: rec[1]):  # connection
         del_objects = [params for params, connection in recs]
 
-        connection = cached_connections[connection]
-
+        execution_options = {"compiled_cache": base_mapper._compiled_cache}
         expected = len(del_objects)
         rows_matched = -1
         only_warn = False
@@ -1327,7 +1422,10 @@ def _emit_delete_statements(
                 # execute deletes individually so that versioned
                 # rows can be verified
                 for params in del_objects:
-                    c = connection.execute(statement, params)
+
+                    c = connection._execute_20(
+                        statement, params, execution_options=execution_options
+                    )
                     rows_matched += c.rowcount
             else:
                 util.warn(
@@ -1335,9 +1433,13 @@ def _emit_delete_statements(
                     "- versioning cannot be verified."
                     % connection.dialect.dialect_description
                 )
-                connection.execute(statement, del_objects)
+                connection._execute_20(
+                    statement, del_objects, execution_options=execution_options
+                )
         else:
-            c = connection.execute(statement, del_objects)
+            c = connection._execute_20(
+                statement, del_objects, execution_options=execution_options
+            )
 
             if not need_version_id:
                 only_warn = True
@@ -1420,8 +1522,12 @@ def _finalize_insert_update_commands(base_mapper, uowtransaction, states):
 
         if toload_now:
             state.key = base_mapper._identity_key_from_state(state)
+            stmt = future.select(mapper).set_label_style(
+                LABEL_STYLE_TABLENAME_PLUS_COL
+            )
             loading.load_on_ident(
-                uowtransaction.session.query(mapper),
+                uowtransaction.session,
+                stmt,
                 state.key,
                 refresh_state=state,
                 only_load_props=toload_now,
@@ -1494,6 +1600,7 @@ def _postfetch(
     params,
     value_params,
     isupdate,
+    returned_defaults,
 ):
     """Expire attributes in need of newly persisted database state,
     after an INSERT or UPDATE statement has proceeded for that
@@ -1514,9 +1621,9 @@ def _postfetch(
         load_evt_attrs = []
 
     if returning_cols:
-        row = result.context.returned_defaults
+        row = returned_defaults
         if row is not None:
-            for col in returning_cols:
+            for row_value, col in zip(row, returning_cols):
                 # pk cols returned from insert are handled
                 # distinctly, don't step on the values here
                 if col.primary_key and result.context.isinsert:
@@ -1528,7 +1635,7 @@ def _postfetch(
                 # when using declarative w/ single table inheritance
                 prop = mapper._columntoproperty.get(col)
                 if prop:
-                    dict_[prop.key] = row[col]
+                    dict_[prop.key] = row_value
                     if refresh_flush:
                         load_evt_attrs.append(prop.key)
 
@@ -1611,15 +1718,6 @@ def _connections_for_states(base_mapper, uowtransaction, states):
         yield state, state.dict, mapper, connection
 
 
-def _cached_connection_dict(base_mapper):
-    # dictionary of connection->connection_with_cache_options.
-    return util.PopulateDict(
-        lambda conn: conn.execution_options(
-            compiled_cache=base_mapper._compiled_cache
-        )
-    )
-
-
 def _sort_states(mapper, states):
     pending = set(states)
     persistent = set(s for s in pending if s.key is not None)
@@ -1643,230 +1741,305 @@ def _sort_states(mapper, states):
     )
 
 
-class BulkUD(object):
-    """Handle bulk update and deletes via a :class:`_query.Query`."""
+_EMPTY_DICT = util.immutabledict()
 
-    def __init__(self, query):
-        self.query = query.enable_eagerloads(False)
-        self.mapper = self.query._bind_mapper()
-        self._validate_query_state()
 
-    def _validate_query_state(self):
-        for attr, methname, notset, op in (
-            ("_limit", "limit()", None, operator.is_),
-            ("_offset", "offset()", None, operator.is_),
-            ("_order_by", "order_by()", False, operator.is_),
-            ("_group_by", "group_by()", False, operator.is_),
-            ("_distinct", "distinct()", False, operator.is_),
-            (
-                "_from_obj",
-                "join(), outerjoin(), select_from(), or from_self()",
-                (),
-                operator.eq,
-            ),
-        ):
-            if not op(getattr(self.query, attr), notset):
-                raise sa_exc.InvalidRequestError(
-                    "Can't call Query.update() or Query.delete() "
-                    "when %s has been called" % (methname,)
-                )
-
-    @property
-    def session(self):
-        return self.query.session
+class BulkUDCompileState(CompileState):
+    class default_update_options(Options):
+        _synchronize_session = "evaluate"
+        _autoflush = True
+        _subject_mapper = None
+        _resolved_values = _EMPTY_DICT
+        _resolved_keys_as_propnames = _EMPTY_DICT
+        _value_evaluators = _EMPTY_DICT
+        _matched_objects = None
+        _matched_rows = None
+        _refresh_identity_token = None
 
     @classmethod
-    def _factory(cls, lookup, synchronize_session, *arg):
-        try:
-            klass = lookup[synchronize_session]
-        except KeyError as err:
-            util.raise_(
-                sa_exc.ArgumentError(
+    def orm_pre_session_exec(
+        cls,
+        session,
+        statement,
+        params,
+        execution_options,
+        bind_arguments,
+        is_reentrant_invoke,
+    ):
+        if is_reentrant_invoke:
+            return statement, execution_options
+
+        (
+            update_options,
+            execution_options,
+        ) = BulkUDCompileState.default_update_options.from_execution_options(
+            "_sa_orm_update_options",
+            {"synchronize_session"},
+            execution_options,
+            statement._execution_options,
+        )
+
+        sync = update_options._synchronize_session
+        if sync is not None:
+            if sync not in ("evaluate", "fetch", False):
+                raise sa_exc.ArgumentError(
                     "Valid strategies for session synchronization "
-                    "are %s" % (", ".join(sorted(repr(x) for x in lookup)))
-                ),
-                replace_context=err,
-            )
-        else:
-            return klass(*arg)
-
-    def exec_(self):
-        self._do_before_compile()
-        self._do_pre()
-        self._do_pre_synchronize()
-        self._do_exec()
-        self._do_post_synchronize()
-        self._do_post()
-
-    def _execute_stmt(self, stmt):
-        self.result = self.query._execute_crud(stmt, self.mapper)
-        self.rowcount = self.result.rowcount
-
-    def _do_before_compile(self):
-        raise NotImplementedError()
-
-    @util.dependencies("sqlalchemy.orm.query")
-    def _do_pre(self, querylib):
-        query = self.query
-
-        self.context = querylib.QueryContext(query)
-
-        if isinstance(query._entities[0], querylib._ColumnEntity):
-            # check for special case of query(table)
-            tables = set()
-            for ent in query._entities:
-                if not isinstance(ent, querylib._ColumnEntity):
-                    tables.clear()
-                    break
-                else:
-                    tables.update(_from_objects(ent.column))
-
-            if len(tables) != 1:
-                raise sa_exc.InvalidRequestError(
-                    "This operation requires only one Table or "
-                    "entity be specified as the target."
+                    "are 'evaluate', 'fetch', False"
                 )
-            else:
-                self.primary_table = tables.pop()
 
+        bind_arguments["clause"] = statement
+        try:
+            plugin_subject = statement._propagate_attrs["plugin_subject"]
+        except KeyError:
+            assert False, "statement had 'orm' plugin but no plugin_subject"
         else:
-            self.primary_table = query._only_entity_zero(
-                "This operation requires only one Table or "
-                "entity be specified as the target."
-            ).mapper.local_table
+            bind_arguments["mapper"] = plugin_subject.mapper
 
-        session = query.session
+        update_options += {"_subject_mapper": plugin_subject.mapper}
 
-        if query._autoflush:
+        if update_options._autoflush:
             session._autoflush()
 
-    def _do_pre_synchronize(self):
-        pass
+        statement = statement._annotate(
+            {"synchronize_session": update_options._synchronize_session}
+        )
 
-    def _do_post_synchronize(self):
-        pass
+        # this stage of the execution is called before the do_orm_execute event
+        # hook.  meaning for an extension like horizontal sharding, this step
+        # happens before the extension splits out into multiple backends and
+        # runs only once.  if we do pre_sync_fetch, we execute a SELECT
+        # statement, which the horizontal sharding extension splits amongst the
+        # shards and combines the results together.
 
+        if update_options._synchronize_session == "evaluate":
+            update_options = cls._do_pre_synchronize_evaluate(
+                session,
+                statement,
+                params,
+                execution_options,
+                bind_arguments,
+                update_options,
+            )
+        elif update_options._synchronize_session == "fetch":
+            update_options = cls._do_pre_synchronize_fetch(
+                session,
+                statement,
+                params,
+                execution_options,
+                bind_arguments,
+                update_options,
+            )
 
-class BulkEvaluate(BulkUD):
-    """BulkUD which does the 'evaluate' method of session state resolution."""
+        return (
+            statement,
+            util.immutabledict(execution_options).union(
+                dict(_sa_orm_update_options=update_options)
+            ),
+        )
 
-    def _additional_evaluators(self, evaluator_compiler):
-        pass
+    @classmethod
+    def orm_setup_cursor_result(
+        cls,
+        session,
+        statement,
+        params,
+        execution_options,
+        bind_arguments,
+        result,
+    ):
 
-    def _do_pre_synchronize(self):
-        query = self.query
-        target_cls = query._mapper_zero().class_
+        # this stage of the execution is called after the
+        # do_orm_execute event hook.  meaning for an extension like
+        # horizontal sharding, this step happens *within* the horizontal
+        # sharding event handler which calls session.execute() re-entrantly
+        # and will occur for each backend individually.
+        # the sharding extension then returns its own merged result from the
+        # individual ones we return here.
+
+        update_options = execution_options["_sa_orm_update_options"]
+        if update_options._synchronize_session == "evaluate":
+            cls._do_post_synchronize_evaluate(session, result, update_options)
+        elif update_options._synchronize_session == "fetch":
+            cls._do_post_synchronize_fetch(session, result, update_options)
+
+        return result
+
+    @classmethod
+    def _adjust_for_extra_criteria(cls, global_attributes, ext_info):
+        """Apply extra criteria filtering.
+
+        For all distinct single-table-inheritance mappers represented in the
+        table being updated or deleted, produce additional WHERE criteria such
+        that only the appropriate subtypes are selected from the total results.
+
+        Additionally, add WHERE criteria originating from LoaderCriteriaOptions
+        collected from the statement.
+
+        """
+
+        return_crit = ()
+
+        adapter = ext_info._adapter if ext_info.is_aliased_class else None
+
+        if (
+            "additional_entity_criteria",
+            ext_info.mapper,
+        ) in global_attributes:
+            return_crit += tuple(
+                ae._resolve_where_criteria(ext_info)
+                for ae in global_attributes[
+                    ("additional_entity_criteria", ext_info.mapper)
+                ]
+                if ae.include_aliases or ae.entity is ext_info
+            )
+
+        if ext_info.mapper._single_table_criterion is not None:
+            return_crit += (ext_info.mapper._single_table_criterion,)
+
+        if adapter:
+            return_crit = tuple(adapter.traverse(crit) for crit in return_crit)
+
+        return return_crit
+
+    @classmethod
+    def _do_pre_synchronize_evaluate(
+        cls,
+        session,
+        statement,
+        params,
+        execution_options,
+        bind_arguments,
+        update_options,
+    ):
+        mapper = update_options._subject_mapper
+        target_cls = mapper.class_
+
+        value_evaluators = resolved_keys_as_propnames = _EMPTY_DICT
 
         try:
             evaluator_compiler = evaluator.EvaluatorCompiler(target_cls)
-            if query.whereclause is not None:
-                eval_condition = evaluator_compiler.process(query.whereclause)
+            crit = ()
+            if statement._where_criteria:
+                crit += statement._where_criteria
+
+            global_attributes = {}
+            for opt in statement._with_options:
+                if opt._is_criteria_option:
+                    opt.get_global_criteria(global_attributes)
+
+            if global_attributes:
+                crit += cls._adjust_for_extra_criteria(
+                    global_attributes, mapper
+                )
+
+            if crit:
+                eval_condition = evaluator_compiler.process(*crit)
             else:
 
                 def eval_condition(obj):
                     return True
-
-            self._additional_evaluators(evaluator_compiler)
 
         except evaluator.UnevaluatableError as err:
             util.raise_(
                 sa_exc.InvalidRequestError(
                     'Could not evaluate current criteria in Python: "%s". '
                     "Specify 'fetch' or False for the "
-                    "synchronize_session parameter." % err
+                    "synchronize_session execution option." % err
                 ),
                 from_=err,
             )
 
-        # TODO: detect when the where clause is a trivial primary key match
-        self.matched_objects = [
-            obj
-            for (
-                cls,
-                pk,
-                identity_token,
-            ), obj in query.session.identity_map.items()
-            if issubclass(cls, target_cls) and eval_condition(obj)
+        if statement.__visit_name__ == "lambda_element":
+            # ._resolved is called on every LambdaElement in order to
+            # generate the cache key, so this access does not add
+            # additional expense
+            effective_statement = statement._resolved
+        else:
+            effective_statement = statement
+
+        if effective_statement.__visit_name__ == "update":
+            resolved_values = cls._get_resolved_values(
+                mapper, effective_statement
+            )
+            value_evaluators = {}
+            resolved_keys_as_propnames = cls._resolved_keys_as_propnames(
+                mapper, resolved_values
+            )
+            for key, value in resolved_keys_as_propnames:
+                try:
+                    _evaluator = evaluator_compiler.process(
+                        coercions.expect(roles.ExpressionElementRole, value)
+                    )
+                except evaluator.UnevaluatableError:
+                    pass
+                else:
+                    value_evaluators[key] = _evaluator
+
+        # TODO: detect when the where clause is a trivial primary key match.
+        matched_objects = [
+            state.obj()
+            for state in session.identity_map.all_states()
+            if state.mapper.isa(mapper)
+            and not state.expired
+            and eval_condition(state.obj())
+            and (
+                update_options._refresh_identity_token is None
+                # TODO: coverage for the case where horizontal sharding
+                # invokes an update() or delete() given an explicit identity
+                # token up front
+                or state.identity_token
+                == update_options._refresh_identity_token
+            )
         ]
-
-
-class BulkFetch(BulkUD):
-    """BulkUD which does the 'fetch' method of session state resolution."""
-
-    def _do_pre_synchronize(self):
-        query = self.query
-        session = query.session
-        context = query._compile_context()
-        select_stmt = context.statement.with_only_columns(
-            self.primary_table.primary_key
-        )
-        self.matched_rows = session.execute(
-            select_stmt, mapper=self.mapper, params=query._params
-        ).fetchall()
-
-
-class BulkUpdate(BulkUD):
-    """BulkUD which handles UPDATEs."""
-
-    def __init__(self, query, values, update_kwargs):
-        super(BulkUpdate, self).__init__(query)
-        self.values = values
-        self.update_kwargs = update_kwargs
+        return update_options + {
+            "_matched_objects": matched_objects,
+            "_value_evaluators": value_evaluators,
+            "_resolved_keys_as_propnames": resolved_keys_as_propnames,
+        }
 
     @classmethod
-    def factory(cls, query, synchronize_session, values, update_kwargs):
-        return BulkUD._factory(
-            {
-                "evaluate": BulkUpdateEvaluate,
-                "fetch": BulkUpdateFetch,
-                False: BulkUpdate,
-            },
-            synchronize_session,
-            query,
-            values,
-            update_kwargs,
-        )
+    def _get_resolved_values(cls, mapper, statement):
+        if statement._multi_values:
+            return []
+        elif statement._ordered_values:
+            iterator = statement._ordered_values
+        elif statement._values:
+            iterator = statement._values.items()
+        else:
+            return []
 
-    def _do_before_compile(self):
-        if self.query.dispatch.before_compile_update:
-            for fn in self.query.dispatch.before_compile_update:
-                new_query = fn(self.query, self)
-                if new_query is not None:
-                    self.query = new_query
-
-    @property
-    def _resolved_values(self):
         values = []
-        for k, v in (
-            self.values.items()
-            if hasattr(self.values, "items")
-            else self.values
-        ):
-            if self.mapper:
-                if isinstance(k, util.string_types):
-                    desc = _entity_descriptor(self.mapper, k)
-                    values.extend(desc._bulk_update_tuples(v))
-                elif isinstance(k, attributes.QueryableAttribute):
-                    values.extend(k._bulk_update_tuples(v))
+        if iterator:
+            for k, v in iterator:
+                if mapper:
+                    if isinstance(k, util.string_types):
+                        desc = _entity_namespace_key(mapper, k)
+                        values.extend(desc._bulk_update_tuples(v))
+                    elif "entity_namespace" in k._annotations:
+                        k_anno = k._annotations
+                        attr = _entity_namespace_key(
+                            k_anno["entity_namespace"], k_anno["proxy_key"]
+                        )
+                        values.extend(attr._bulk_update_tuples(v))
+                    else:
+                        values.append((k, v))
                 else:
                     values.append((k, v))
-            else:
-                values.append((k, v))
         return values
 
-    @property
-    def _resolved_values_keys_as_propnames(self):
+    @classmethod
+    def _resolved_keys_as_propnames(cls, mapper, resolved_values):
         values = []
-        for k, v in self._resolved_values:
+        for k, v in resolved_values:
             if isinstance(k, attributes.QueryableAttribute):
                 values.append((k.key, v))
                 continue
             elif hasattr(k, "__clause_element__"):
                 k = k.__clause_element__()
 
-            if self.mapper and isinstance(k, expression.ColumnElement):
+            if mapper and isinstance(k, expression.ColumnElement):
                 try:
-                    attr = self.mapper._columntoproperty[k]
+                    attr = mapper._columntoproperty[k]
                 except orm_exc.UnmappedColumnError:
                     pass
                 else:
@@ -1877,153 +2050,309 @@ class BulkUpdate(BulkUD):
                 )
         return values
 
-    def _do_exec(self):
-        values = self._resolved_values
-
-        if not self.update_kwargs.get("preserve_parameter_order", False):
-            values = dict(values)
-
-        update_stmt = sql.update(
-            self.primary_table,
-            self.context.whereclause,
-            values,
-            **self.update_kwargs
-        )
-
-        self._execute_stmt(update_stmt)
-
-    def _do_post(self):
-        session = self.query.session
-        session.dispatch.after_bulk_update(self)
-
-
-class BulkDelete(BulkUD):
-    """BulkUD which handles DELETEs."""
-
-    def __init__(self, query):
-        super(BulkDelete, self).__init__(query)
-
     @classmethod
-    def factory(cls, query, synchronize_session):
-        return BulkUD._factory(
-            {
-                "evaluate": BulkDeleteEvaluate,
-                "fetch": BulkDeleteFetch,
-                False: BulkDelete,
-            },
-            synchronize_session,
-            query,
+    def _do_pre_synchronize_fetch(
+        cls,
+        session,
+        statement,
+        params,
+        execution_options,
+        bind_arguments,
+        update_options,
+    ):
+        mapper = update_options._subject_mapper
+
+        select_stmt = (
+            select(*(mapper.primary_key + (mapper.select_identity_token,)))
+            .select_from(mapper)
+            .options(*statement._with_options)
         )
+        select_stmt._where_criteria = statement._where_criteria
 
-    def _do_before_compile(self):
-        if self.query.dispatch.before_compile_delete:
-            for fn in self.query.dispatch.before_compile_delete:
-                new_query = fn(self.query, self)
-                if new_query is not None:
-                    self.query = new_query
+        def skip_for_full_returning(orm_context):
+            bind = orm_context.session.get_bind(**orm_context.bind_arguments)
+            if bind.dialect.full_returning:
+                return _result.null_result()
+            else:
+                return None
 
-    def _do_exec(self):
-        delete_stmt = sql.delete(self.primary_table, self.context.whereclause)
+        result = session.execute(
+            select_stmt,
+            params,
+            execution_options,
+            bind_arguments,
+            _add_event=skip_for_full_returning,
+        )
+        matched_rows = result.fetchall()
 
-        self._execute_stmt(delete_stmt)
+        value_evaluators = _EMPTY_DICT
 
-    def _do_post(self):
-        session = self.query.session
-        session.dispatch.after_bulk_delete(self)
+        if statement.__visit_name__ == "lambda_element":
+            # ._resolved is called on every LambdaElement in order to
+            # generate the cache key, so this access does not add
+            # additional expense
+            effective_statement = statement._resolved
+        else:
+            effective_statement = statement
 
-
-class BulkUpdateEvaluate(BulkEvaluate, BulkUpdate):
-    """BulkUD which handles UPDATEs using the "evaluate"
-    method of session resolution."""
-
-    def _additional_evaluators(self, evaluator_compiler):
-        self.value_evaluators = {}
-        values = self._resolved_values_keys_as_propnames
-        for key, value in values:
-            self.value_evaluators[key] = evaluator_compiler.process(
-                expression._literal_as_binds(value)
+        if effective_statement.__visit_name__ == "update":
+            target_cls = mapper.class_
+            evaluator_compiler = evaluator.EvaluatorCompiler(target_cls)
+            resolved_values = cls._get_resolved_values(
+                mapper, effective_statement
+            )
+            resolved_keys_as_propnames = cls._resolved_keys_as_propnames(
+                mapper, resolved_values
             )
 
-    def _do_post_synchronize(self):
-        session = self.query.session
+            resolved_keys_as_propnames = cls._resolved_keys_as_propnames(
+                mapper, resolved_values
+            )
+            value_evaluators = {}
+            for key, value in resolved_keys_as_propnames:
+                try:
+                    _evaluator = evaluator_compiler.process(
+                        coercions.expect(roles.ExpressionElementRole, value)
+                    )
+                except evaluator.UnevaluatableError:
+                    pass
+                else:
+                    value_evaluators[key] = _evaluator
+
+        else:
+            resolved_keys_as_propnames = _EMPTY_DICT
+
+        return update_options + {
+            "_value_evaluators": value_evaluators,
+            "_matched_rows": matched_rows,
+            "_resolved_keys_as_propnames": resolved_keys_as_propnames,
+        }
+
+
+@CompileState.plugin_for("orm", "update")
+class BulkORMUpdate(UpdateDMLState, BulkUDCompileState):
+    @classmethod
+    def create_for_statement(cls, statement, compiler, **kw):
+
+        self = cls.__new__(cls)
+
+        ext_info = statement.table._annotations["parententity"]
+
+        self.mapper = mapper = ext_info.mapper
+
+        self.extra_criteria_entities = {}
+
+        self._resolved_values = cls._get_resolved_values(mapper, statement)
+
+        extra_criteria_attributes = {}
+
+        for opt in statement._with_options:
+            if opt._is_criteria_option:
+                opt.get_global_criteria(extra_criteria_attributes)
+
+        if not statement._preserve_parameter_order and statement._values:
+            self._resolved_values = dict(self._resolved_values)
+
+        new_stmt = sql.Update.__new__(sql.Update)
+        new_stmt.__dict__.update(statement.__dict__)
+        new_stmt.table = mapper.local_table
+
+        # note if the statement has _multi_values, these
+        # are passed through to the new statement, which will then raise
+        # InvalidRequestError because UPDATE doesn't support multi_values
+        # right now.
+        if statement._ordered_values:
+            new_stmt._ordered_values = self._resolved_values
+        elif statement._values:
+            new_stmt._values = self._resolved_values
+
+        new_crit = cls._adjust_for_extra_criteria(
+            extra_criteria_attributes, mapper
+        )
+        if new_crit:
+            new_stmt = new_stmt.where(*new_crit)
+
+        # if we are against a lambda statement we might not be the
+        # topmost object that received per-execute annotations
+
+        if (
+            compiler._annotations.get("synchronize_session", None) == "fetch"
+            and compiler.dialect.full_returning
+        ):
+            if new_stmt._returning:
+                raise sa_exc.InvalidRequestError(
+                    "Can't use synchronize_session='fetch' "
+                    "with explicit returning()"
+                )
+            new_stmt = new_stmt.returning(*mapper.primary_key)
+
+        UpdateDMLState.__init__(self, new_stmt, compiler, **kw)
+
+        return self
+
+    @classmethod
+    def _do_post_synchronize_evaluate(cls, session, result, update_options):
+
         states = set()
-        evaluated_keys = list(self.value_evaluators.keys())
-        for obj in self.matched_objects:
+        evaluated_keys = list(update_options._value_evaluators.keys())
+        values = update_options._resolved_keys_as_propnames
+        attrib = set(k for k, v in values)
+        for obj in update_options._matched_objects:
+
             state, dict_ = (
                 attributes.instance_state(obj),
                 attributes.instance_dict(obj),
             )
 
+            # the evaluated states were gathered across all identity tokens.
+            # however the post_sync events are called per identity token,
+            # so filter.
+            if (
+                update_options._refresh_identity_token is not None
+                and state.identity_token
+                != update_options._refresh_identity_token
+            ):
+                continue
+
             # only evaluate unmodified attributes
             to_evaluate = state.unmodified.intersection(evaluated_keys)
             for key in to_evaluate:
-                dict_[key] = self.value_evaluators[key](obj)
+                if key in dict_:
+                    dict_[key] = update_options._value_evaluators[key](obj)
 
             state.manager.dispatch.refresh(state, None, to_evaluate)
 
             state._commit(dict_, list(to_evaluate))
 
-            # expire attributes with pending changes
-            # (there was no autoflush, so they are overwritten)
-            state._expire_attributes(
-                dict_, set(evaluated_keys).difference(to_evaluate)
+            to_expire = attrib.intersection(dict_).difference(to_evaluate)
+            if to_expire:
+                state._expire_attributes(dict_, to_expire)
+
+            states.add(state)
+        session._register_altered(states)
+
+    @classmethod
+    def _do_post_synchronize_fetch(cls, session, result, update_options):
+        target_mapper = update_options._subject_mapper
+
+        states = set()
+        evaluated_keys = list(update_options._value_evaluators.keys())
+
+        if result.returns_rows:
+            matched_rows = [
+                tuple(row) + (update_options._refresh_identity_token,)
+                for row in result.all()
+            ]
+        else:
+            matched_rows = update_options._matched_rows
+
+        objs = [
+            session.identity_map[identity_key]
+            for identity_key in [
+                target_mapper.identity_key_from_primary_key(
+                    list(primary_key),
+                    identity_token=identity_token,
+                )
+                for primary_key, identity_token in [
+                    (row[0:-1], row[-1]) for row in matched_rows
+                ]
+                if update_options._refresh_identity_token is None
+                or identity_token == update_options._refresh_identity_token
+            ]
+            if identity_key in session.identity_map
+        ]
+
+        values = update_options._resolved_keys_as_propnames
+        attrib = set(k for k, v in values)
+
+        for obj in objs:
+            state, dict_ = (
+                attributes.instance_state(obj),
+                attributes.instance_dict(obj),
             )
+
+            to_evaluate = state.unmodified.intersection(evaluated_keys)
+            for key in to_evaluate:
+                if key in dict_:
+                    dict_[key] = update_options._value_evaluators[key](obj)
+            state.manager.dispatch.refresh(state, None, to_evaluate)
+
+            state._commit(dict_, list(to_evaluate))
+
+            to_expire = attrib.intersection(dict_).difference(to_evaluate)
+            if to_expire:
+                state._expire_attributes(dict_, to_expire)
+
             states.add(state)
         session._register_altered(states)
 
 
-class BulkDeleteEvaluate(BulkEvaluate, BulkDelete):
-    """BulkUD which handles DELETEs using the "evaluate"
-    method of session resolution."""
+@CompileState.plugin_for("orm", "delete")
+class BulkORMDelete(DeleteDMLState, BulkUDCompileState):
+    @classmethod
+    def create_for_statement(cls, statement, compiler, **kw):
+        self = cls.__new__(cls)
 
-    def _do_post_synchronize(self):
-        self.query.session._remove_newly_deleted(
-            [attributes.instance_state(obj) for obj in self.matched_objects]
+        ext_info = statement.table._annotations["parententity"]
+        self.mapper = mapper = ext_info.mapper
+
+        self.extra_criteria_entities = {}
+
+        extra_criteria_attributes = {}
+
+        for opt in statement._with_options:
+            if opt._is_criteria_option:
+                opt.get_global_criteria(extra_criteria_attributes)
+
+        new_crit = cls._adjust_for_extra_criteria(
+            extra_criteria_attributes, mapper
         )
+        if new_crit:
+            statement = statement.where(*new_crit)
 
+        if (
+            mapper
+            and compiler._annotations.get("synchronize_session", None)
+            == "fetch"
+            and compiler.dialect.full_returning
+        ):
+            statement = statement.returning(*mapper.primary_key)
 
-class BulkUpdateFetch(BulkFetch, BulkUpdate):
-    """BulkUD which handles UPDATEs using the "fetch"
-    method of session resolution."""
+        DeleteDMLState.__init__(self, statement, compiler, **kw)
 
-    def _do_post_synchronize(self):
-        session = self.query.session
-        target_mapper = self.query._mapper_zero()
+        return self
 
-        states = set(
+    @classmethod
+    def _do_post_synchronize_evaluate(cls, session, result, update_options):
+
+        session._remove_newly_deleted(
             [
-                attributes.instance_state(session.identity_map[identity_key])
-                for identity_key in [
-                    target_mapper.identity_key_from_primary_key(
-                        list(primary_key)
-                    )
-                    for primary_key in self.matched_rows
-                ]
-                if identity_key in session.identity_map
+                attributes.instance_state(obj)
+                for obj in update_options._matched_objects
             ]
         )
 
-        values = self._resolved_values_keys_as_propnames
-        attrib = set(k for k, v in values)
-        for state in states:
-            to_expire = attrib.intersection(state.dict)
-            if to_expire:
-                session._expire_state(state, to_expire)
-        session._register_altered(states)
+    @classmethod
+    def _do_post_synchronize_fetch(cls, session, result, update_options):
+        target_mapper = update_options._subject_mapper
 
+        if result.returns_rows:
+            matched_rows = [
+                tuple(row) + (update_options._refresh_identity_token,)
+                for row in result.all()
+            ]
+        else:
+            matched_rows = update_options._matched_rows
 
-class BulkDeleteFetch(BulkFetch, BulkDelete):
-    """BulkUD which handles DELETEs using the "fetch"
-    method of session resolution."""
+        for row in matched_rows:
+            primary_key = row[0:-1]
+            identity_token = row[-1]
 
-    def _do_post_synchronize(self):
-        session = self.query.session
-        target_mapper = self.query._mapper_zero()
-        for primary_key in self.matched_rows:
             # TODO: inline this and call remove_newly_deleted
             # once
             identity_key = target_mapper.identity_key_from_primary_key(
-                list(primary_key)
+                list(primary_key),
+                identity_token=identity_token,
             )
             if identity_key in session.identity_map:
                 session._remove_newly_deleted(

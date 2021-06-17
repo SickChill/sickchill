@@ -181,7 +181,7 @@ data = (
 'Lai ',    # 0xb3
 'Qu ',    # 0xb4
 'Mian ',    # 0xb5
-'[?] ',    # 0xb6
+None,    # 0xb6
 'Feng ',    # 0xb7
 'Fu ',    # 0xb8
 'Qu ',    # 0xb9

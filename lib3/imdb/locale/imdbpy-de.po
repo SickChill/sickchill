@@ -1,0 +1,1306 @@
+# Gettext message file for imdbpy
+# Translators:
+# Martin Gri <fanderbestenband@googlemail.com>, 2017
+# Nils Welzk, 2013
+# Raphael, 2014
+# vaeng vaeng <christiaaan@gmail.com>, 2018
+msgid ""
+msgstr ""
+"Project-Id-Version: IMDbPY\n"
+"POT-Creation-Date: 2010-03-18 14:35+0000\n"
+"PO-Revision-Date: 2018-11-14 12:49+0000\n"
+"Last-Translator: vaeng vaeng <christiaaan@gmail.com>\n"
+"Language-Team: German (http://www.transifex.com/davide_alberani/imdbpy/language/de/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Domain: imdbpy\n"
+"Language: de\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Preferred-Encodings: utf-8\n"
+
+# Default: Actor
+msgid "actor"
+msgstr "Schauspieler"
+
+# Default: Actress
+msgid "actress"
+msgstr "Schauspielerin"
+
+# Default: Adaption
+msgid "adaption"
+msgstr "Anpassung"
+
+# Default: Additional information
+msgid "additional-information"
+msgstr "zusätzliche Information"
+
+# Default: Admissions
+msgid "admissions"
+msgstr "Zulassung"
+
+# Default: Agent address
+msgid "agent-address"
+msgstr "Adresse des Agenten"
+
+# Default: Airing
+msgid "airing"
+msgstr "Belüftung"
+
+# Default: Akas
+msgid "akas"
+msgstr "Pseudonüme"
+
+# Default: Akas from release info
+msgid "akas-from-release-info"
+msgstr "auch bekannt von der Veröffentlichungsinfo"
+
+# Default: All products
+msgid "all-products"
+msgstr "Alle Produkte"
+
+# Default: Alternate language version of
+msgid "alternate-language-version-of"
+msgstr "Alternative Spachversionen von"
+
+# Default: Alternate versions
+msgid "alternate-versions"
+msgstr "Alternative Version"
+
+# Default: Amazon reviews
+msgid "amazon-reviews"
+msgstr "Amazon Rezensionen"
+
+# Default: Analog left
+msgid "analog-left"
+msgstr "analog-links"
+
+# Default: Analog right
+msgid "analog-right"
+msgstr "analog-rechts"
+
+# Default: Animation department
+msgid "animation-department"
+msgstr "animations Abteilung"
+
+# Default: Archive footage
+msgid "archive-footage"
+msgstr "Archivaufnahme"
+
+# Default: Arithmetic mean
+msgid "arithmetic-mean"
+msgstr "Kalkulatorische folgen"
+
+# Default: Art department
+msgid "art-department"
+msgstr "Kunst Abteilung"
+
+# Default: Art direction
+msgid "art-direction"
+msgstr ""
+
+# Default: Art director
+msgid "art-director"
+msgstr "Art Director"
+
+# Default: Article
+msgid "article"
+msgstr "Artikel"
+
+# Default: Asin
+msgid "asin"
+msgstr ""
+
+# Default: Aspect ratio
+msgid "aspect-ratio"
+msgstr "Seitenverhältnis"
+
+# Default: Assigner
+msgid "assigner"
+msgstr "Zuweiser"
+
+# Default: Assistant director
+msgid "assistant-director"
+msgstr "Chefzuweiser"
+
+# Default: Auctions
+msgid "auctions"
+msgstr "Auktionen"
+
+# Default: Audio noise
+msgid "audio-noise"
+msgstr "Audio rauschen"
+
+# Default: Audio quality
+msgid "audio-quality"
+msgstr "Audio Qualität"
+
+# Default: Award
+msgid "award"
+msgstr "Auszeichnung"
+
+# Default: Awards
+msgid "awards"
+msgstr "Auszeichnungen"
+
+# Default: Biographical movies
+msgid "biographical-movies"
+msgstr "Filmbiographie"
+
+# Default: Biography
+msgid "biography"
+msgstr "Biographie"
+
+# Default: Biography print
+msgid "biography-print"
+msgstr "Biographiebuch"
+
+# Default: Birth date
+msgid "birth-date"
+msgstr "Geburtsdatum"
+
+# Default: Birth name
+msgid "birth-name"
+msgstr "Geburtsname"
+
+# Default: Birth notes
+msgid "birth-notes"
+msgstr "Geburtsnotizen"
+
+# Default: Body
+msgid "body"
+msgstr "Körper"
+
+# Default: Book
+msgid "book"
+msgstr "Buch"
+
+# Default: Books
+msgid "books"
+msgstr "Bücher"
+
+# Default: Bottom 100 rank
+msgid "bottom-100-rank"
+msgstr ""
+
+# Default: Budget
+msgid "budget"
+msgstr "Kosten"
+
+# Default: Business
+msgid "business"
+msgstr "Geschäft"
+
+# Default: By arrangement with
+msgid "by-arrangement-with"
+msgstr "eine Vereinbarung mit"
+
+# Default: Camera
+msgid "camera"
+msgstr "Kamera"
+
+# Default: Camera and electrical department
+msgid "camera-and-electrical-department"
+msgstr "Abteilung für Kamera und Elektronik"
+
+# Default: Canonical episode title
+msgid "canonical-episode-title"
+msgstr "Aussagekräftiger Titel der Folge"
+
+# Default: Canonical name
+msgid "canonical-name"
+msgstr "Aussagekräftiger Name"
+
+# Default: Canonical series title
+msgid "canonical-series-title"
+msgstr "Aussagekräftiger Serien Titel"
+
+# Default: Canonical title
+msgid "canonical-title"
+msgstr "Aussagekräftiger Titel"
+
+# Default: Cast
+msgid "cast"
+msgstr "Besetzung"
+
+# Default: Casting department
+msgid "casting-department"
+msgstr "Abteilung für Rollenverteilung"
+
+# Default: Casting director
+msgid "casting-director"
+msgstr "Abteilungsleiter für Rollenverteilung"
+
+# Default: Catalog number
+msgid "catalog-number"
+msgstr "Katalog Nummer"
+
+# Default: Category
+msgid "category"
+msgstr "Kategorie"
+
+# Default: Certificate
+msgid "certificate"
+msgstr "Zertifikat"
+
+# Default: Certificates
+msgid "certificates"
+msgstr "Zertifikate"
+
+# Default: Certification
+msgid "certification"
+msgstr "Bescheinigung"
+
+# Default: Channel
+msgid "channel"
+msgstr "Kanal"
+
+# Default: Character
+msgid "character"
+msgstr "Persönlichkeit"
+
+# Default: Cinematographer
+msgid "cinematographer"
+msgstr "Kameramann"
+
+# Default: Cinematographic process
+msgid "cinematographic-process"
+msgstr "Kinematograpischer Prozess"
+
+# Default: Close captions teletext ld g
+msgid "close-captions-teletext-ld-g"
+msgstr ""
+
+# Default: Color info
+msgid "color-info"
+msgstr "Farbinfo"
+
+# Default: Color information
+msgid "color-information"
+msgstr "Farbinformationen"
+
+# Default: Color rendition
+msgid "color-rendition"
+msgstr "Farbwiedergabe"
+
+# Default: Company
+msgid "company"
+msgstr "Firma"
+
+# Default: Complete cast
+msgid "complete-cast"
+msgstr ""
+
+# Default: Complete crew
+msgid "complete-crew"
+msgstr "Komplettes Team"
+
+# Default: Composer
+msgid "composer"
+msgstr "Komponist"
+
+# Default: Connections
+msgid "connections"
+msgstr "Verbindungen"
+
+# Default: Contrast
+msgid "contrast"
+msgstr "Kontrast"
+
+# Default: Copyright holder
+msgid "copyright-holder"
+msgstr "Besitzer der Kopierrechte"
+
+# Default: Costume department
+msgid "costume-department"
+msgstr "Abteilung für Kostüme"
+
+# Default: Costume designer
+msgid "costume-designer"
+msgstr "Kostümdesigner"
+
+# Default: Countries
+msgid "countries"
+msgstr "Länder"
+
+# Default: Country
+msgid "country"
+msgstr "Land"
+
+# Default: Courtesy of
+msgid "courtesy-of"
+msgstr "mit freundlicher Genehmigung von"
+
+# Default: Cover
+msgid "cover"
+msgstr "Cover"
+
+# Default: Cover url
+msgid "cover-url"
+msgstr "Cover-URL"
+
+# Default: Crazy credits
+msgid "crazy-credits"
+msgstr ""
+
+# Default: Creator
+msgid "creator"
+msgstr "Ersteller"
+
+# Default: Current role
+msgid "current-role"
+msgstr "Aktuelle Rolle"
+
+# Default: Database
+msgid "database"
+msgstr "Datenbank"
+
+# Default: Date
+msgid "date"
+msgstr "Datum"
+
+# Default: Death date
+msgid "death-date"
+msgstr "Todestag"
+
+# Default: Death notes
+msgid "death-notes"
+msgstr "Notizen zum Tod"
+
+# Default: Demographic
+msgid "demographic"
+msgstr "demographisch"
+
+# Default: Description
+msgid "description"
+msgstr "Beschreibung"
+
+# Default: Dialogue intellegibility
+msgid "dialogue-intellegibility"
+msgstr "Dialog Verständlichkeit"
+
+# Default: Digital sound
+msgid "digital-sound"
+msgstr "Digitaler Sound"
+
+# Default: Director
+msgid "director"
+msgstr "Direktor"
+
+# Default: Disc format
+msgid "disc-format"
+msgstr "Diskettenformat"
+
+# Default: Disc size
+msgid "disc-size"
+msgstr "Diskettengröße"
+
+# Default: Distributors
+msgid "distributors"
+msgstr "Händler"
+
+# Default: Dvd
+msgid "dvd"
+msgstr "DVD"
+
+# Default: Dvd features
+msgid "dvd-features"
+msgstr "dvd-features"
+
+# Default: Dvd format
+msgid "dvd-format"
+msgstr "dvd-format"
+
+# Default: Dvds
+msgid "dvds"
+msgstr "DVDs"
+
+# Default: Dynamic range
+msgid "dynamic-range"
+msgstr "dynamische Länge"
+
+# Default: Edited from
+msgid "edited-from"
+msgstr "bearbeitet von"
+
+# Default: Edited into
+msgid "edited-into"
+msgstr "Eingefügt"
+
+# Default: Editor
+msgid "editor"
+msgstr "Editor"
+
+# Default: Editorial department
+msgid "editorial-department"
+msgstr "Abteilung für Leitartikel"
+
+# Default: Episode
+msgid "episode"
+msgstr "Episode"
+
+# Default: Episode of
+msgid "episode-of"
+msgstr "Episode von"
+
+# Default: Episode title
+msgid "episode-title"
+msgstr "Episodentitel"
+
+# Default: Episodes
+msgid "episodes"
+msgstr "Episoden"
+
+# Default: Episodes rating
+msgid "episodes-rating"
+msgstr "Episoden Bewertung"
+
+# Default: Essays
+msgid "essays"
+msgstr "Sammlung"
+
+# Default: External reviews
+msgid "external-reviews"
+msgstr "Externer Bericht"
+
+# Default: Faqs
+msgid "faqs"
+msgstr "FAQs"
+
+# Default: Feature
+msgid "feature"
+msgstr "Merkmal"
+
+# Default: Featured in
+msgid "featured-in"
+msgstr ""
+
+# Default: Features
+msgid "features"
+msgstr "Merkmale"
+
+# Default: Film negative format
+msgid "film-negative-format"
+msgstr ""
+
+# Default: Filming dates
+msgid "filming-dates"
+msgstr "Drehtermine"
+
+# Default: Filmography
+msgid "filmography"
+msgstr "Filmografie"
+
+# Default: Followed by
+msgid "followed-by"
+msgstr "gefolgt von"
+
+# Default: Follows
+msgid "follows"
+msgstr "folgt"
+
+# Default: For
+msgid "for"
+msgstr "für"
+
+# Default: Frequency response
+msgid "frequency-response"
+msgstr "antwort Häufigkeit"
+
+# Default: From
+msgid "from"
+msgstr "von"
+
+# Default: Full article link
+msgid "full-article-link"
+msgstr "Link zum vollen Artikel"
+
+# Default: Full size cover url
+msgid "full-size-cover-url"
+msgstr "URL zum Cover in voller Größe"
+
+# Default: Full size headshot
+msgid "full-size-headshot"
+msgstr "Portait in voller Größe"
+
+# Default: Genres
+msgid "genres"
+msgstr "Genres"
+
+# Default: Goofs
+msgid "goofs"
+msgstr "Filmfehler"
+
+# Default: Gross
+msgid "gross"
+msgstr "Einnahmen"
+
+# Default: Group genre
+msgid "group-genre"
+msgstr "Genre Gruppe"
+
+# Default: Headshot
+msgid "headshot"
+msgstr "Portrait"
+
+# Default: Height
+msgid "height"
+msgstr "Höhe"
+
+# Default: Imdbindex
+msgid "imdbindex"
+msgstr "IMdB Index"
+
+# Default: In development
+msgid "in-development"
+msgstr "In der Entwicklung"
+
+# Default: Interview
+msgid "interview"
+msgstr "Interview"
+
+# Default: Interviews
+msgid "interviews"
+msgstr "Interviews"
+
+# Default: Introduction
+msgid "introduction"
+msgstr "Vorstellung"
+
+# Default: Item
+msgid "item"
+msgstr "Gegenstand"
+
+# Default: Keywords
+msgid "keywords"
+msgstr "Schlüsselwörter"
+
+# Default: Kind
+msgid "kind"
+msgstr "so in der Art"
+
+# Default: Label
+msgid "label"
+msgstr "Bezeichnung"
+
+# Default: Laboratory
+msgid "laboratory"
+msgstr "Labor"
+
+# Default: Language
+msgid "language"
+msgstr "Sprache"
+
+# Default: Languages
+msgid "languages"
+msgstr "Sprachen"
+
+# Default: Laserdisc
+msgid "laserdisc"
+msgstr "Laserdisc"
+
+# Default: Laserdisc title
+msgid "laserdisc-title"
+msgstr "Laserdisc Titel"
+
+# Default: Length
+msgid "length"
+msgstr "Länge"
+
+# Default: Line
+msgid "line"
+msgstr "Linie"
+
+# Default: Link
+msgid "link"
+msgstr "Link"
+
+# Default: Link text
+msgid "link-text"
+msgstr "Link Text"
+
+# Default: Literature
+msgid "literature"
+msgstr "Literatur"
+
+# Default: Locations
+msgid "locations"
+msgstr "Standorte"
+
+# Default: Long imdb canonical name
+msgid "long-imdb-canonical-name"
+msgstr "langer IMdB Aussagekräftiger Name"
+
+# Default: Long imdb canonical title
+msgid "long-imdb-canonical-title"
+msgstr "langer IMdB Aussagekräftiger Titel"
+
+# Default: Long imdb episode title
+msgid "long-imdb-episode-title"
+msgstr "langer IMdB Folgentitel"
+
+# Default: Long imdb name
+msgid "long-imdb-name"
+msgstr "langer IMdB Name"
+
+# Default: Long imdb title
+msgid "long-imdb-title"
+msgstr "langer IMdB Titel"
+
+# Default: Magazine cover photo
+msgid "magazine-cover-photo"
+msgstr "Titelseiten Foto"
+
+# Default: Make up
+msgid "make-up"
+msgstr "Makeup"
+
+# Default: Master format
+msgid "master-format"
+msgstr "Master Format"
+
+# Default: Median
+msgid "median"
+msgstr "durchschnitt"
+
+# Default: Merchandising links
+msgid "merchandising-links"
+msgstr "Link zu Fanartikeln"
+
+# Default: Mini biography
+msgid "mini-biography"
+msgstr "kleine Biographie"
+
+# Default: Misc links
+msgid "misc-links"
+msgstr "andere Links"
+
+# Default: Miscellaneous companies
+msgid "miscellaneous-companies"
+msgstr "diverse Firmen"
+
+# Default: Miscellaneous crew
+msgid "miscellaneous-crew"
+msgstr "andere Crew"
+
+# Default: Movie
+msgid "movie"
+msgstr "Film"
+
+# Default: Mpaa
+msgid "mpaa"
+msgstr "Film ID"
+
+# Default: Music department
+msgid "music-department"
+msgstr "Abteilung für Musik"
+
+# Default: Name
+msgid "name"
+msgstr "Name"
+
+# Default: News
+msgid "news"
+msgstr "Nachrichten"
+
+# Default: Newsgroup reviews
+msgid "newsgroup-reviews"
+msgstr "Newsgruppen Berichte"
+
+# Default: Nick names
+msgid "nick-names"
+msgstr "Spitznamen"
+
+# Default: Notes
+msgid "notes"
+msgstr "Anmerkungen"
+
+# Default: Novel
+msgid "novel"
+msgstr "Roman"
+
+# Default: Number
+msgid "number"
+msgstr "Zahl"
+
+# Default: Number of chapter stops
+msgid "number-of-chapter-stops"
+msgstr "Anzahl der Kapitel Stops"
+
+# Default: Number of episodes
+msgid "number-of-episodes"
+msgstr "Anzahl der Folgen"
+
+# Default: Number of seasons
+msgid "number-of-seasons"
+msgstr "Anzahl der Staffel(n)"
+
+# Default: Number of sides
+msgid "number-of-sides"
+msgstr "Anzahl der Seiten"
+
+# Default: Number of votes
+msgid "number-of-votes"
+msgstr "Anzahl der Stimmen"
+
+# Default: Official retail price
+msgid "official-retail-price"
+msgstr "Offizieller Verkaufspreis"
+
+# Default: Official sites
+msgid "official-sites"
+msgstr "Offizielle Seiten"
+
+# Default: Opening weekend
+msgid "opening-weekend"
+msgstr "Eröffnungswochenende"
+
+# Default: Original air date
+msgid "original-air-date"
+msgstr "Originales Ausstrahlungsdatum"
+
+# Default: Original music
+msgid "original-music"
+msgstr "Original Musik"
+
+# Default: Original title
+msgid "original-title"
+msgstr "Original Titel"
+
+# Default: Other literature
+msgid "other-literature"
+msgstr "andere Literatur"
+
+# Default: Other works
+msgid "other-works"
+msgstr "andere Arbeiten"
+
+# Default: Parents guide
+msgid "parents-guide"
+msgstr "Anleitung für Eltern"
+
+# Default: Performed by
+msgid "performed-by"
+msgstr "durchgeführt von"
+
+# Default: Person
+msgid "person"
+msgstr "Person"
+
+# Default: Photo sites
+msgid "photo-sites"
+msgstr "Foto Seiten"
+
+# Default: Pictorial
+msgid "pictorial"
+msgstr "illustriert"
+
+# Default: Picture format
+msgid "picture-format"
+msgstr "Foto Format"
+
+# Default: Plot
+msgid "plot"
+msgstr "Handlung"
+
+# Default: Plot outline
+msgid "plot-outline"
+msgstr "Abspann"
+
+# Default: Portrayed in
+msgid "portrayed-in"
+msgstr "Dargestellt"
+
+# Default: Pressing plant
+msgid "pressing-plant"
+msgstr "Druckwerk"
+
+# Default: Printed film format
+msgid "printed-film-format"
+msgstr "gedrucktes Film Format"
+
+# Default: Printed media reviews
+msgid "printed-media-reviews"
+msgstr "gedruckte Medien Berichte"
+
+# Default: Producer
+msgid "producer"
+msgstr "Produzent"
+
+# Default: Production companies
+msgid "production-companies"
+msgstr "Produktionsfirmen"
+
+# Default: Production country
+msgid "production-country"
+msgstr "Produktionsland"
+
+# Default: Production dates
+msgid "production-dates"
+msgstr "Produktionsdatum"
+
+# Default: Production design
+msgid "production-design"
+msgstr "Produktstionsdesign"
+
+# Default: Production designer
+msgid "production-designer"
+msgstr "Produktionsdesigner"
+
+# Default: Production manager
+msgid "production-manager"
+msgstr "Produktionsmanager"
+
+# Default: Production process protocol
+msgid "production-process-protocol"
+msgstr "Produktions Ablaufprotokoll"
+
+# Default: Quality of source
+msgid "quality-of-source"
+msgstr "Qualität der Quelle"
+
+# Default: Quality program
+msgid "quality-program"
+msgstr "Qualitätsprogramm"
+
+# Default: Quote
+msgid "quote"
+msgstr "Zitat"
+
+# Default: Quotes
+msgid "quotes"
+msgstr "Zitate"
+
+# Default: Rating
+msgid "rating"
+msgstr "Bewertung"
+
+# Default: Recommendations
+msgid "recommendations"
+msgstr "Empfehlungen"
+
+# Default: Referenced in
+msgid "referenced-in"
+msgstr "Verweis auf"
+
+# Default: References
+msgid "references"
+msgstr "Verweis"
+
+# Default: Region
+msgid "region"
+msgstr "Region"
+
+# Default: Release country
+msgid "release-country"
+msgstr "Veröffentlichungsland"
+
+# Default: Release date
+msgid "release-date"
+msgstr "Veröffentlichungsdatum"
+
+# Default: Release dates
+msgid "release-dates"
+msgstr "Veröffentlichungstermine"
+
+# Default: Remade as
+msgid "remade-as"
+msgstr "Wiederaufmachung als"
+
+# Default: Remake of
+msgid "remake-of"
+msgstr "Remake von"
+
+# Default: Rentals
+msgid "rentals"
+msgstr "Leigebühr"
+
+# Default: Result
+msgid "result"
+msgstr "Ergebnis"
+
+# Default: Review
+msgid "review"
+msgstr "Kritik"
+
+# Default: Review author
+msgid "review-author"
+msgstr "Kritik Autor"
+
+# Default: Review kind
+msgid "review-kind"
+msgstr "Kritik Art"
+
+# Default: Runtime
+msgid "runtime"
+msgstr "Laufzeit"
+
+# Default: Runtimes
+msgid "runtimes"
+msgstr "Laufzeiten"
+
+# Default: Salary history
+msgid "salary-history"
+msgstr "Gehaltsverlauf"
+
+# Default: Screenplay teleplay
+msgid "screenplay-teleplay"
+msgstr ""
+
+# Default: Season
+msgid "season"
+msgstr "Staffel"
+
+# Default: Second unit director or assistant director
+msgid "second-unit-director-or-assistant-director"
+msgstr "Stellvertretender Direktor"
+
+# Default: Self
+msgid "self"
+msgstr "selbst"
+
+# Default: Series animation department
+msgid "series-animation-department"
+msgstr "Abteilung für Serienanimation"
+
+# Default: Series art department
+msgid "series-art-department"
+msgstr ""
+
+# Default: Series assistant directors
+msgid "series-assistant-directors"
+msgstr ""
+
+# Default: Series camera department
+msgid "series-camera-department"
+msgstr ""
+
+# Default: Series casting department
+msgid "series-casting-department"
+msgstr ""
+
+# Default: Series cinematographers
+msgid "series-cinematographers"
+msgstr ""
+
+# Default: Series costume department
+msgid "series-costume-department"
+msgstr ""
+
+# Default: Series editorial department
+msgid "series-editorial-department"
+msgstr ""
+
+# Default: Series editors
+msgid "series-editors"
+msgstr ""
+
+# Default: Series make up department
+msgid "series-make-up-department"
+msgstr ""
+
+# Default: Series miscellaneous
+msgid "series-miscellaneous"
+msgstr "Verschiedene (Serie)"
+
+# Default: Series music department
+msgid "series-music-department"
+msgstr "Abteilung für Musik (Serie)"
+
+# Default: Series producers
+msgid "series-producers"
+msgstr "Serien Hersteller"
+
+# Default: Series production designers
+msgid "series-production-designers"
+msgstr "Produktionsdesign (Serie)"
+
+# Default: Series production managers
+msgid "series-production-managers"
+msgstr "Manager der Serie"
+
+# Default: Series sound department
+msgid "series-sound-department"
+msgstr "Abteilung für Sound-Serien"
+
+# Default: Series special effects department
+msgid "series-special-effects-department"
+msgstr "Abteilung für Spezialeffekte-Serien"
+
+# Default: Series stunts
+msgid "series-stunts"
+msgstr "Serien Stunts"
+
+# Default: Series title
+msgid "series-title"
+msgstr "Serien Titel"
+
+# Default: Series transportation department
+msgid "series-transportation-department"
+msgstr ""
+
+# Default: Series visual effects department
+msgid "series-visual-effects-department"
+msgstr "Abteilung für Visuelle Effekte / Serien"
+
+# Default: Series writers
+msgid "series-writers"
+msgstr "Serienschreiber"
+
+# Default: Series years
+msgid "series-years"
+msgstr "Serien Jahre"
+
+# Default: Set decoration
+msgid "set-decoration"
+msgstr "Set Dekoration"
+
+# Default: Sharpness
+msgid "sharpness"
+msgstr "Schärfe"
+
+# Default: Similar to
+msgid "similar-to"
+msgstr "vergleichbar mit"
+
+# Default: Smart canonical episode title
+msgid "smart-canonical-episode-title"
+msgstr ""
+
+# Default: Smart canonical series title
+msgid "smart-canonical-series-title"
+msgstr ""
+
+# Default: Smart canonical title
+msgid "smart-canonical-title"
+msgstr ""
+
+# Default: Smart long imdb canonical title
+msgid "smart-long-imdb-canonical-title"
+msgstr ""
+
+# Default: Sound clips
+msgid "sound-clips"
+msgstr "Sound Clips"
+
+# Default: Sound crew
+msgid "sound-crew"
+msgstr "Sound Crew"
+
+# Default: Sound encoding
+msgid "sound-encoding"
+msgstr "Klangkodierung"
+
+# Default: Sound mix
+msgid "sound-mix"
+msgstr "Sound Mix"
+
+# Default: Soundtrack
+msgid "soundtrack"
+msgstr "Soundtrack"
+
+# Default: Spaciality
+msgid "spaciality"
+msgstr "Räumlichkeit"
+
+# Default: Special effects
+msgid "special-effects"
+msgstr "Spezialeffekte"
+
+# Default: Special effects companies
+msgid "special-effects-companies"
+msgstr "Firma für Spezialeffekte"
+
+# Default: Special effects department
+msgid "special-effects-department"
+msgstr "Abteilung für Spezialeffekte"
+
+# Default: Spin off
+msgid "spin-off"
+msgstr "Nebenprodukt"
+
+# Default: Spin off from
+msgid "spin-off-from"
+msgstr "Nebenprodukt von"
+
+# Default: Spoofed in
+msgid "spoofed-in"
+msgstr "Parodiert in"
+
+# Default: Spoofs
+msgid "spoofs"
+msgstr "Parodie"
+
+# Default: Spouse
+msgid "spouse"
+msgstr "Gattin"
+
+# Default: Status of availablility
+msgid "status-of-availablility"
+msgstr "Verfügbarkeitsstatus"
+
+# Default: Studio
+msgid "studio"
+msgstr "Studio"
+
+# Default: Studios
+msgid "studios"
+msgstr "Studios"
+
+# Default: Stunt performer
+msgid "stunt-performer"
+msgstr "Stunt-Darsteller"
+
+# Default: Stunts
+msgid "stunts"
+msgstr "Stunts"
+
+# Default: Subtitles
+msgid "subtitles"
+msgstr "Untertitel"
+
+# Default: Supplement
+msgid "supplement"
+msgstr "Ergänzung"
+
+# Default: Supplements
+msgid "supplements"
+msgstr "Ergänzungen"
+
+# Default: Synopsis
+msgid "synopsis"
+msgstr "Zusammenfassung"
+
+# Default: Taglines
+msgid "taglines"
+msgstr "Slogan"
+
+# Default: Tech info
+msgid "tech-info"
+msgstr "Technische Informationen"
+
+# Default: Thanks
+msgid "thanks"
+msgstr "Danke"
+
+# Default: Time
+msgid "time"
+msgstr "Zeit"
+
+# Default: Title
+msgid "title"
+msgstr "Titel"
+
+# Default: Titles in this product
+msgid "titles-in-this-product"
+msgstr "Titel in dem Produkt"
+
+# Default: To
+msgid "to"
+msgstr "zu"
+
+# Default: Top 250 rank
+msgid "top-250-rank"
+msgstr "Top 250 platzierung"
+
+# Default: Trade mark
+msgid "trade-mark"
+msgstr "Warenzeichen"
+
+# Default: Transportation department
+msgid "transportation-department"
+msgstr "Speditionsunternehmen"
+
+# Default: Trivia
+msgid "trivia"
+msgstr "Nichtigkeiten"
+
+# Default: Tv
+msgid "tv"
+msgstr "TV"
+
+# Default: Under license from
+msgid "under-license-from"
+msgstr "lizensiert von"
+
+# Default: Unknown link
+msgid "unknown-link"
+msgstr "Unbekannter Link"
+
+# Default: Upc
+msgid "upc"
+msgstr ""
+
+# Default: Version of
+msgid "version-of"
+msgstr "Version von"
+
+# Default: Vhs
+msgid "vhs"
+msgstr "VHS"
+
+# Default: Video
+msgid "video"
+msgstr "Video"
+
+# Default: Video artifacts
+msgid "video-artifacts"
+msgstr "Video Ausschnitte"
+
+# Default: Video clips
+msgid "video-clips"
+msgstr "Video Clips"
+
+# Default: Video noise
+msgid "video-noise"
+msgstr "Video Rauschen"
+
+# Default: Video quality
+msgid "video-quality"
+msgstr "Video Qualität"
+
+# Default: Video standard
+msgid "video-standard"
+msgstr "Video Standart"
+
+# Default: Visual effects
+msgid "visual-effects"
+msgstr "Visuelle Effekte"
+
+# Default: Votes
+msgid "votes"
+msgstr "Stimmen"
+
+# Default: Votes distribution
+msgid "votes-distribution"
+msgstr "Abstimmungsverteilung"
+
+# Default: Weekend gross
+msgid "weekend-gross"
+msgstr "Einspielungen am ersten Wochenende"
+
+# Default: Where now
+msgid "where-now"
+msgstr "wo jetzt "
+
+# Default: With
+msgid "with"
+msgstr "mit"
+
+# Default: Writer
+msgid "writer"
+msgstr "Autor"
+
+# Default: Written by
+msgid "written-by"
+msgstr "Geschrieben von"
+
+# Default: Year
+msgid "year"
+msgstr "Jahr"
+
+# Default: Zshops
+msgid "zshops"
+msgstr ""

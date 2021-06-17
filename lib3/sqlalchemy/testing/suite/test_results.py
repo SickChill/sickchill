@@ -1,6 +1,5 @@
 import datetime
 
-from .. import config
 from .. import engines
 from .. import fixtures
 from ..assertions import eq_
@@ -15,6 +14,7 @@ from ... import sql
 from ... import String
 from ... import testing
 from ... import text
+from ... import util
 
 
 class RowFetchTest(fixtures.TablesTest):
@@ -51,45 +51,51 @@ class RowFetchTest(fixtures.TablesTest):
             [{"id": 1, "today": datetime.datetime(2006, 5, 12, 12, 0, 0)}],
         )
 
-    def test_via_string(self):
-        row = config.db.execute(
+    def test_via_attr(self, connection):
+        row = connection.execute(
             self.tables.plain_pk.select().order_by(self.tables.plain_pk.c.id)
         ).first()
 
-        eq_(row["id"], 1)
-        eq_(row["data"], "d1")
+        eq_(row.id, 1)
+        eq_(row.data, "d1")
 
-    def test_via_int(self):
-        row = config.db.execute(
+    def test_via_string(self, connection):
+        row = connection.execute(
+            self.tables.plain_pk.select().order_by(self.tables.plain_pk.c.id)
+        ).first()
+
+        eq_(row._mapping["id"], 1)
+        eq_(row._mapping["data"], "d1")
+
+    def test_via_int(self, connection):
+        row = connection.execute(
             self.tables.plain_pk.select().order_by(self.tables.plain_pk.c.id)
         ).first()
 
         eq_(row[0], 1)
         eq_(row[1], "d1")
 
-    def test_via_col_object(self):
-        row = config.db.execute(
+    def test_via_col_object(self, connection):
+        row = connection.execute(
             self.tables.plain_pk.select().order_by(self.tables.plain_pk.c.id)
         ).first()
 
-        eq_(row[self.tables.plain_pk.c.id], 1)
-        eq_(row[self.tables.plain_pk.c.data], "d1")
+        eq_(row._mapping[self.tables.plain_pk.c.id], 1)
+        eq_(row._mapping[self.tables.plain_pk.c.data], "d1")
 
     @requirements.duplicate_names_in_cursor_description
-    def test_row_with_dupe_names(self):
-        result = config.db.execute(
+    def test_row_with_dupe_names(self, connection):
+        result = connection.execute(
             select(
-                [
-                    self.tables.plain_pk.c.data,
-                    self.tables.plain_pk.c.data.label("data"),
-                ]
+                self.tables.plain_pk.c.data,
+                self.tables.plain_pk.c.data.label("data"),
             ).order_by(self.tables.plain_pk.c.id)
         )
         row = result.first()
         eq_(result.keys(), ["data", "data"])
         eq_(row, ("d1", "d1"))
 
-    def test_row_w_scalar_select(self):
+    def test_row_w_scalar_select(self, connection):
         """test that a scalar select as a column is returned as such
         and that type conversion works OK.
 
@@ -98,19 +104,18 @@ class RowFetchTest(fixtures.TablesTest):
 
         """
         datetable = self.tables.has_dates
-        s = select([datetable.alias("x").c.today]).as_scalar()
-        s2 = select([datetable.c.id, s.label("somelabel")])
-        row = config.db.execute(s2).first()
+        s = select(datetable.alias("x").c.today).scalar_subquery()
+        s2 = select(datetable.c.id, s.label("somelabel"))
+        row = connection.execute(s2).first()
 
-        eq_(row["somelabel"], datetime.datetime(2006, 5, 12, 12, 0, 0))
+        eq_(row.somelabel, datetime.datetime(2006, 5, 12, 12, 0, 0))
 
 
 class PercentSchemaNamesTest(fixtures.TablesTest):
     """tests using percent signs, spaces in table and column names.
 
-    This is a very fringe use case, doesn't work for MySQL
-    or PostgreSQL.  the requirement, "percent_schema_names",
-    is marked "skip" by default.
+    This didn't work for PostgreSQL / MySQL drivers for a long time
+    but is now supported.
 
     """
 
@@ -132,7 +137,7 @@ class PercentSchemaNamesTest(fixtures.TablesTest):
             sql.column("spaces % more spaces"),
         )
 
-    def test_single_roundtrip(self):
+    def test_single_roundtrip(self, connection):
         percent_table = self.tables.percent_table
         for params in [
             {"percent%": 5, "spaces % more spaces": 12},
@@ -140,15 +145,15 @@ class PercentSchemaNamesTest(fixtures.TablesTest):
             {"percent%": 9, "spaces % more spaces": 10},
             {"percent%": 11, "spaces % more spaces": 9},
         ]:
-            config.db.execute(percent_table.insert(), params)
-        self._assert_table()
+            connection.execute(percent_table.insert(), params)
+        self._assert_table(connection)
 
-    def test_executemany_roundtrip(self):
+    def test_executemany_roundtrip(self, connection):
         percent_table = self.tables.percent_table
-        config.db.execute(
+        connection.execute(
             percent_table.insert(), {"percent%": 5, "spaces % more spaces": 12}
         )
-        config.db.execute(
+        connection.execute(
             percent_table.insert(),
             [
                 {"percent%": 7, "spaces % more spaces": 11},
@@ -156,9 +161,9 @@ class PercentSchemaNamesTest(fixtures.TablesTest):
                 {"percent%": 11, "spaces % more spaces": 9},
             ],
         )
-        self._assert_table()
+        self._assert_table(connection)
 
-    def _assert_table(self):
+    def _assert_table(self, conn):
         percent_table = self.tables.percent_table
         lightweight_percent_table = self.tables.lightweight_percent_table
 
@@ -170,16 +175,14 @@ class PercentSchemaNamesTest(fixtures.TablesTest):
         ):
             eq_(
                 list(
-                    config.db.execute(
-                        table.select().order_by(table.c["percent%"])
-                    )
+                    conn.execute(table.select().order_by(table.c["percent%"]))
                 ),
                 [(5, 12), (7, 11), (9, 10), (11, 9)],
             )
 
             eq_(
                 list(
-                    config.db.execute(
+                    conn.execute(
                         table.select()
                         .where(table.c["spaces % more spaces"].in_([9, 10]))
                         .order_by(table.c["percent%"])
@@ -188,16 +191,16 @@ class PercentSchemaNamesTest(fixtures.TablesTest):
                 [(9, 10), (11, 9)],
             )
 
-            row = config.db.execute(
+            row = conn.execute(
                 table.select().order_by(table.c["percent%"])
             ).first()
-            eq_(row["percent%"], 5)
-            eq_(row["spaces % more spaces"], 12)
+            eq_(row._mapping["percent%"], 5)
+            eq_(row._mapping["spaces % more spaces"], 12)
 
-            eq_(row[table.c["percent%"]], 5)
-            eq_(row[table.c["spaces % more spaces"]], 12)
+            eq_(row._mapping[table.c["percent%"]], 5)
+            eq_(row._mapping[table.c["spaces % more spaces"]], 12)
 
-        config.db.execute(
+        conn.execute(
             percent_table.update().values(
                 {percent_table.c["spaces % more spaces"]: 15}
             )
@@ -205,7 +208,7 @@ class PercentSchemaNamesTest(fixtures.TablesTest):
 
         eq_(
             list(
-                config.db.execute(
+                conn.execute(
                     percent_table.select().order_by(
                         percent_table.c["percent%"]
                     )
@@ -224,46 +227,70 @@ class ServerSideCursorsTest(
     __backend__ = True
 
     def _is_server_side(self, cursor):
+        # TODO: this is a huge issue as it prevents these tests from being
+        # usable by third party dialects.
         if self.engine.dialect.driver == "psycopg2":
             return bool(cursor.name)
         elif self.engine.dialect.driver == "pymysql":
             sscursor = __import__("pymysql.cursors").cursors.SSCursor
             return isinstance(cursor, sscursor)
+        elif self.engine.dialect.driver == "aiomysql":
+            return cursor.server_side
         elif self.engine.dialect.driver == "mysqldb":
             sscursor = __import__("MySQLdb.cursors").cursors.SSCursor
             return isinstance(cursor, sscursor)
+        elif self.engine.dialect.driver == "mariadbconnector":
+            return not cursor.buffered
+        elif self.engine.dialect.driver in ("asyncpg", "aiosqlite"):
+            return cursor.server_side
+        elif self.engine.dialect.driver == "pg8000":
+            return getattr(cursor, "server_side", False)
         else:
             return False
 
     def _fixture(self, server_side_cursors):
-        self.engine = engines.testing_engine(
-            options={"server_side_cursors": server_side_cursors}
-        )
+        if server_side_cursors:
+            with testing.expect_deprecated(
+                "The create_engine.server_side_cursors parameter is "
+                "deprecated and will be removed in a future release.  "
+                "Please use the Connection.execution_options.stream_results "
+                "parameter."
+            ):
+                self.engine = engines.testing_engine(
+                    options={"server_side_cursors": server_side_cursors}
+                )
+        else:
+            self.engine = engines.testing_engine(
+                options={"server_side_cursors": server_side_cursors}
+            )
         return self.engine
-
-    def tearDown(self):
-        engines.testing_reaper.close_all()
-        self.engine.dispose()
 
     @testing.combinations(
         ("global_string", True, "select 1", True),
         ("global_text", True, text("select 1"), True),
-        ("global_expr", True, select([1]), True),
+        ("global_expr", True, select(1), True),
         ("global_off_explicit", False, text("select 1"), False),
         (
             "stmt_option",
             False,
-            select([1]).execution_options(stream_results=True),
+            select(1).execution_options(stream_results=True),
             True,
         ),
         (
             "stmt_option_disabled",
             True,
-            select([1]).execution_options(stream_results=False),
+            select(1).execution_options(stream_results=False),
             False,
         ),
-        ("for_update_expr", True, select([1]).with_for_update(), True),
-        ("for_update_string", True, "SELECT 1 FOR UPDATE", True),
+        ("for_update_expr", True, select(1).with_for_update(), True),
+        # TODO: need a real requirement for this, or dont use this test
+        (
+            "for_update_string",
+            True,
+            "SELECT 1 FOR UPDATE",
+            True,
+            testing.skip_if("sqlite"),
+        ),
         ("text_no_ss", False, text("select 42"), False),
         (
             "text_ss_option",
@@ -279,72 +306,121 @@ class ServerSideCursorsTest(
     ):
         engine = self._fixture(engine_ss_arg)
         with engine.begin() as conn:
-            result = conn.execute(statement)
+            if isinstance(statement, util.string_types):
+                result = conn.exec_driver_sql(statement)
+            else:
+                result = conn.execute(statement)
             eq_(self._is_server_side(result.cursor), cursor_ss_status)
             result.close()
 
     def test_conn_option(self):
         engine = self._fixture(False)
 
-        # should be enabled for this one
-        result = (
-            engine.connect()
-            .execution_options(stream_results=True)
-            .execute("select 1")
-        )
-        assert self._is_server_side(result.cursor)
+        with engine.connect() as conn:
+            # should be enabled for this one
+            result = conn.execution_options(
+                stream_results=True
+            ).exec_driver_sql("select 1")
+            assert self._is_server_side(result.cursor)
 
     def test_stmt_enabled_conn_option_disabled(self):
         engine = self._fixture(False)
 
-        s = select([1]).execution_options(stream_results=True)
+        s = select(1).execution_options(stream_results=True)
 
-        # not this one
-        result = (
-            engine.connect().execution_options(stream_results=False).execute(s)
-        )
-        assert not self._is_server_side(result.cursor)
+        with engine.connect() as conn:
+            # not this one
+            result = conn.execution_options(stream_results=False).execute(s)
+            assert not self._is_server_side(result.cursor)
 
     def test_aliases_and_ss(self):
         engine = self._fixture(False)
-        s1 = select([1]).execution_options(stream_results=True).alias()
+        s1 = (
+            select(sql.literal_column("1").label("x"))
+            .execution_options(stream_results=True)
+            .subquery()
+        )
+
+        # options don't propagate out when subquery is used as a FROM clause
         with engine.begin() as conn:
-            result = conn.execute(s1)
-            assert self._is_server_side(result.cursor)
+            result = conn.execute(s1.select())
+            assert not self._is_server_side(result.cursor)
             result.close()
 
-        # s1's options shouldn't affect s2 when s2 is used as a
-        # from_obj.
-        s2 = select([1], from_obj=s1)
+        s2 = select(1).select_from(s1)
         with engine.begin() as conn:
             result = conn.execute(s2)
             assert not self._is_server_side(result.cursor)
             result.close()
 
-    @testing.provide_metadata
-    def test_roundtrip(self):
+    def test_roundtrip_fetchall(self, metadata):
         md = self.metadata
 
-        self._fixture(True)
+        engine = self._fixture(True)
         test_table = Table(
             "test_table",
             md,
             Column("id", Integer, primary_key=True),
             Column("data", String(50)),
         )
-        test_table.create(checkfirst=True)
-        test_table.insert().execute(data="data1")
-        test_table.insert().execute(data="data2")
-        eq_(
-            test_table.select().order_by(test_table.c.id).execute().fetchall(),
-            [(1, "data1"), (2, "data2")],
+
+        with engine.begin() as connection:
+            test_table.create(connection, checkfirst=True)
+            connection.execute(test_table.insert(), dict(data="data1"))
+            connection.execute(test_table.insert(), dict(data="data2"))
+            eq_(
+                connection.execute(
+                    test_table.select().order_by(test_table.c.id)
+                ).fetchall(),
+                [(1, "data1"), (2, "data2")],
+            )
+            connection.execute(
+                test_table.update()
+                .where(test_table.c.id == 2)
+                .values(data=test_table.c.data + " updated")
+            )
+            eq_(
+                connection.execute(
+                    test_table.select().order_by(test_table.c.id)
+                ).fetchall(),
+                [(1, "data1"), (2, "data2 updated")],
+            )
+            connection.execute(test_table.delete())
+            eq_(
+                connection.scalar(
+                    select(func.count("*")).select_from(test_table)
+                ),
+                0,
+            )
+
+    def test_roundtrip_fetchmany(self, metadata):
+        md = self.metadata
+
+        engine = self._fixture(True)
+        test_table = Table(
+            "test_table",
+            md,
+            Column("id", Integer, primary_key=True),
+            Column("data", String(50)),
         )
-        test_table.update().where(test_table.c.id == 2).values(
-            data=test_table.c.data + " updated"
-        ).execute()
-        eq_(
-            test_table.select().order_by(test_table.c.id).execute().fetchall(),
-            [(1, "data1"), (2, "data2 updated")],
-        )
-        test_table.delete().execute()
-        eq_(select([func.count("*")]).select_from(test_table).scalar(), 0)
+
+        with engine.begin() as connection:
+            test_table.create(connection, checkfirst=True)
+            connection.execute(
+                test_table.insert(),
+                [dict(data="data%d" % i) for i in range(1, 20)],
+            )
+
+            result = connection.execute(
+                test_table.select().order_by(test_table.c.id)
+            )
+
+            eq_(
+                result.fetchmany(5),
+                [(i, "data%d" % i) for i in range(1, 6)],
+            )
+            eq_(
+                result.fetchmany(10),
+                [(i, "data%d" % i) for i in range(6, 16)],
+            )
+            eq_(result.fetchall(), [(i, "data%d" % i) for i in range(16, 20)])

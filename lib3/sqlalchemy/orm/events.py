@@ -1,5 +1,5 @@
 # orm/events.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -67,6 +67,14 @@ class InstrumentationEvents(event.Events):
 
         def listen(target_cls, *arg):
             listen_cls = target()
+
+            # if weakref were collected, however this is not something
+            # that normally happens.   it was occurring during test teardown
+            # between mapper/registry/instrumentation_manager, however this
+            # interaction was changed to not rely upon the event system.
+            if listen_cls is None:
+                return None
+
             if propagate and issubclass(target_cls, listen_cls):
                 return fn(target_cls, *arg)
             elif not propagate and target_cls is listen_cls:
@@ -183,8 +191,10 @@ class InstanceEvents(event.Events):
         _InstanceEventsHold.populate(class_, classmanager)
 
     @classmethod
-    @util.dependencies("sqlalchemy.orm")
-    def _accept_with(cls, orm, target):
+    @util.preload_module("sqlalchemy.orm")
+    def _accept_with(cls, target):
+        orm = util.preloaded.orm
+
         if isinstance(target, instrumentation.ClassManager):
             return target
         elif isinstance(target, mapperlib.Mapper):
@@ -540,7 +550,13 @@ class _EventsHold(event.RefCollection):
                 collection = target.all_holds[target.class_] = {}
 
             event.registry._stored_in_collection(event_key, target)
-            collection[event_key._key] = (event_key, raw, propagate, retval)
+            collection[event_key._key] = (
+                event_key,
+                raw,
+                propagate,
+                retval,
+                kw,
+            )
 
             if propagate:
                 stack = list(target.class_.__subclasses__())
@@ -567,7 +583,13 @@ class _EventsHold(event.RefCollection):
         for subclass in class_.__mro__:
             if subclass in cls.all_holds:
                 collection = cls.all_holds[subclass]
-                for event_key, raw, propagate, retval in collection.values():
+                for (
+                    event_key,
+                    raw,
+                    propagate,
+                    retval,
+                    kw,
+                ) in collection.values():
                     if propagate or subclass is class_:
                         # since we can't be sure in what order different
                         # classes in a hierarchy are triggered with
@@ -575,7 +597,7 @@ class _EventsHold(event.RefCollection):
                         # assignment, instead of using the generic propagate
                         # flag.
                         event_key.with_dispatch_target(subject).listen(
-                            raw=raw, propagate=False, retval=retval
+                            raw=raw, propagate=False, retval=retval, **kw
                         )
 
 
@@ -601,9 +623,9 @@ class MapperEvents(event.Events):
         def my_before_insert_listener(mapper, connection, target):
             # execute a stored procedure upon INSERT,
             # apply the value to the row to be inserted
-            target.calculated_value = connection.scalar(
-                                        "select my_special_function(%d)"
-                                        % target.special_number)
+            target.calculated_value = connection.execute(
+                text("select my_special_function(%d)" % target.special_number)
+            ).scalar()
 
         # associate the listener function with SomeClass,
         # to execute during the "before_insert" hook
@@ -665,8 +687,10 @@ class MapperEvents(event.Events):
         _MapperEventsHold.populate(class_, mapper)
 
     @classmethod
-    @util.dependencies("sqlalchemy.orm")
-    def _accept_with(cls, orm, target):
+    @util.preload_module("sqlalchemy.orm")
+    def _accept_with(cls, target):
+        orm = util.preloaded.orm
+
         if target is orm.mapper:
             return mapperlib.Mapper
         elif isinstance(target, type):
@@ -1359,7 +1383,8 @@ class SessionEvents(event.Events):
         elif isinstance(target, Session):
             return target
         else:
-            return None
+            # allows alternate SessionEvents-like-classes to be consulted
+            return event.Events._accept_with(target)
 
     @classmethod
     def _listen(cls, event_key, raw=False, restore_load_context=False, **kw):
@@ -1392,6 +1417,63 @@ class SessionEvents(event.Events):
                 event_key = event_key.with_wrapper(wrap)
 
         event_key.base_listen(**kw)
+
+    def do_orm_execute(self, orm_execute_state):
+        """Intercept statement executions that occur in terms of a :class:`.Session`.
+
+        This event is invoked for all top-level SQL statements invoked
+        from the :meth:`_orm.Session.execute` method.   As of SQLAlchemy 1.4,
+        all ORM queries emitted on behalf of a :class:`_orm.Session` will
+        flow through this method, so this event hook provides the single
+        point at which ORM queries of all types may be intercepted before
+        they are invoked, and additionally to replace their execution with
+        a different process.
+
+        This event is a ``do_`` event, meaning it has the capability to replace
+        the operation that the :meth:`_orm.Session.execute` method normally
+        performs.  The intended use for this includes sharding and
+        result-caching schemes which may seek to invoke the same statement
+        across  multiple database connections, returning a result that is
+        merged from each of them, or which don't invoke the statement at all,
+        instead returning data from a cache.
+
+        The hook intends to replace the use of the
+        ``Query._execute_and_instances`` method that could be subclassed prior
+        to SQLAlchemy 1.4.
+
+        :param orm_execute_state: an instance of :class:`.ORMExecuteState`
+         which contains all information about the current execution, as well
+         as helper functions used to derive other commonly required
+         information.   See that object for details.
+
+        .. seealso::
+
+            :ref:`session_execute_events` - top level documentation on how
+            to use :meth:`_orm.SessionEvents.do_orm_execute`
+
+            :class:`.ORMExecuteState` - the object passed to the
+            :meth:`_orm.SessionEvents.do_orm_execute` event which contains
+            all information about the statement to be invoked.  It also
+            provides an interface to extend the current statement, options,
+            and parameters as well as an option that allows programmatic
+            invocation of the statement at any point.
+
+            :ref:`examples_session_orm_events` - includes examples of using
+            :meth:`_orm.SessionEvents.do_orm_execute`
+
+            :ref:`examples_caching` - an example of how to integrate
+            Dogpile caching with the ORM :class:`_orm.Session` making use
+            of the :meth:`_orm.SessionEvents.do_orm_execute` event hook.
+
+            :ref:`examples_sharding` - the Horizontal Sharding example /
+            extension relies upon the
+            :meth:`_orm.SessionEvents.do_orm_execute` event hook to invoke a
+            SQL statement on multiple backends and return a merged result.
+
+
+        .. versionadded:: 1.4
+
+        """
 
     def after_transaction_create(self, session, transaction):
         """Execute when a new :class:`.SessionTransaction` is created.
@@ -1723,12 +1805,13 @@ class SessionEvents(event.Events):
         lambda update_context: (
             update_context.session,
             update_context.query,
-            update_context.context,
+            None,
             update_context.result,
         ),
     )
     def after_bulk_update(self, update_context):
-        """Execute after a bulk update operation to the session.
+        """Execute after an ORM UPDATE against a WHERE expression has been
+        invoked.
 
         This is called as a result of the :meth:`_query.Query.update` method.
 
@@ -1741,11 +1824,12 @@ class SessionEvents(event.Events):
               was called upon.
             * ``values`` The "values" dictionary that was passed to
               :meth:`_query.Query.update`.
-            * ``context`` The :class:`.QueryContext` object, corresponding
-              to the invocation of an ORM query.
-            * ``result`` the :class:`_engine.ResultProxy`
+            * ``result`` the :class:`_engine.CursorResult`
               returned as a result of the
               bulk UPDATE operation.
+
+        .. versionchanged:: 1.4 the update_context no longer has a
+           ``QueryContext`` object associated with it.
 
         .. seealso::
 
@@ -1761,12 +1845,13 @@ class SessionEvents(event.Events):
         lambda delete_context: (
             delete_context.session,
             delete_context.query,
-            delete_context.context,
+            None,
             delete_context.result,
         ),
     )
     def after_bulk_delete(self, delete_context):
-        """Execute after a bulk delete operation to the session.
+        """Execute after ORM DELETE against a WHERE expression has been
+        invoked.
 
         This is called as a result of the :meth:`_query.Query.delete` method.
 
@@ -1777,11 +1862,12 @@ class SessionEvents(event.Events):
             * ``query`` -the :class:`_query.Query`
               object that this update operation
               was called upon.
-            * ``context`` The :class:`.QueryContext` object, corresponding
-              to the invocation of an ORM query.
-            * ``result`` the :class:`_engine.ResultProxy`
+            * ``result`` the :class:`_engine.CursorResult`
               returned as a result of the
               bulk DELETE operation.
+
+        .. versionchanged:: 1.4 the update_context no longer has a
+           ``QueryContext`` object associated with it.
 
         .. seealso::
 
@@ -2209,6 +2295,36 @@ class AttributeEvents(event.Events):
 
         """
 
+    def append_wo_mutation(self, target, value, initiator):
+        """Receive a collection append event where the collection was not
+        actually mutated.
+
+        This event differs from :meth:`_orm.AttributeEvents.append` in that
+        it is fired off for de-duplicating collections such as sets and
+        dictionaries, when the object already exists in the target collection.
+        The event does not have a return value and the identity of the
+        given object cannot be changed.
+
+        The event is used for cascading objects into a :class:`_orm.Session`
+        when the collection has already been mutated via a backref event.
+
+        :param target: the object instance receiving the event.
+          If the listener is registered with ``raw=True``, this will
+          be the :class:`.InstanceState` object.
+        :param value: the value that would be appended if the object did not
+          already exist in the collection.
+        :param initiator: An instance of :class:`.attributes.Event`
+          representing the initiation of the event.  May be modified
+          from its original value by backref handlers in order to control
+          chained event propagation, as well as be inspected for information
+          about the source of the event.
+
+        :return: No return value is defined for this event.
+
+        .. versionadded:: 1.4.15
+
+        """
+
     def bulk_replace(self, target, values, initiator):
         """Receive a collection 'bulk replace' event.
 
@@ -2435,6 +2551,9 @@ class AttributeEvents(event.Events):
 
         .. seealso::
 
+            :meth:`.AttributeEvents.init_collection` - collection version
+            of this event
+
             :class:`.AttributeEvents` - background on listener options such
             as propagation to subclasses.
 
@@ -2471,14 +2590,16 @@ class AttributeEvents(event.Events):
         :param collection_adapter: the :class:`.CollectionAdapter` that will
          mediate internal access to the collection.
 
-        .. versionadded:: 1.0.0 the :meth:`.AttributeEvents.init_collection`
-           and :meth:`.AttributeEvents.dispose_collection` events supersede
-           the :class:`.orm.collection.linker` hook.
+        .. versionadded:: 1.0.0 :meth:`.AttributeEvents.init_collection`
+           and :meth:`.AttributeEvents.dispose_collection` events.
 
         .. seealso::
 
             :class:`.AttributeEvents` - background on listener options such
             as propagation to subclasses.
+
+            :meth:`.AttributeEvents.init_scalar` - "scalar" version of this
+            event.
 
         """
 
@@ -2500,8 +2621,7 @@ class AttributeEvents(event.Events):
            would be empty.
 
         .. versionadded:: 1.0.0 the :meth:`.AttributeEvents.init_collection`
-           and :meth:`.AttributeEvents.dispose_collection` events supersede
-           the :class:`.collection.linker` hook.
+           and :meth:`.AttributeEvents.dispose_collection` events.
 
         .. seealso::
 
@@ -2538,12 +2658,8 @@ class QueryEvents(event.Events):
     """Represent events within the construction of a :class:`_query.Query`
     object.
 
-    The events here are intended to be used with an as-yet-unreleased
-    inspection system for :class:`_query.Query`.   Some very basic operations
-    are possible now, however the inspection system is intended to allow
-    complex query manipulations to be automated.
-
-    .. versionadded:: 1.0.0
+    The :class:`_orm.QueryEvents` hooks are now superseded by the
+    :meth:`_orm.SessionEvents.do_orm_execute` event hook.
 
     """
 
@@ -2554,6 +2670,17 @@ class QueryEvents(event.Events):
         """Receive the :class:`_query.Query`
         object before it is composed into a
         core :class:`_expression.Select` object.
+
+        .. deprecated:: 1.4  The :meth:`_orm.QueryEvents.before_compile` event
+           is superseded by the much more capable
+           :meth:`_orm.SessionEvents.do_orm_execute` hook.   In version 1.4,
+           the :meth:`_orm.QueryEvents.before_compile` event is **no longer
+           used** for ORM-level attribute loads, such as loads of deferred
+           or expired attributes as well as relationship loaders.   See the
+           new examples in :ref:`examples_session_orm_events` which
+           illustrate new ways of intercepting and modifying ORM queries
+           for the most common purpose of adding arbitrary filter criteria.
+
 
         This event is intended to allow changes to the query given::
 
@@ -2609,6 +2736,10 @@ class QueryEvents(event.Events):
         """Allow modifications to the :class:`_query.Query` object within
         :meth:`_query.Query.update`.
 
+        .. deprecated:: 1.4  The :meth:`_orm.QueryEvents.before_compile_update`
+           event is superseded by the much more capable
+           :meth:`_orm.SessionEvents.do_orm_execute` hook.
+
         Like the :meth:`.QueryEvents.before_compile` event, if the event
         is to be used to alter the :class:`_query.Query` object, it should
         be configured with ``retval=True``, and the modified
@@ -2654,6 +2785,10 @@ class QueryEvents(event.Events):
     def before_compile_delete(self, query, delete_context):
         """Allow modifications to the :class:`_query.Query` object within
         :meth:`_query.Query.delete`.
+
+        .. deprecated:: 1.4  The :meth:`_orm.QueryEvents.before_compile_delete`
+           event is superseded by the much more capable
+           :meth:`_orm.SessionEvents.do_orm_execute` hook.
 
         Like the :meth:`.QueryEvents.before_compile` event, this event
         should be configured with ``retval=True``, and the modified

@@ -218,9 +218,9 @@ class GitLogsTest(base.BaseTestCase):
 
         with open(os.path.join(self.temp_path, "AUTHORS"), "r") as auth_fh:
             authors = auth_fh.read()
-            self.assertTrue(author_old in authors)
-            self.assertTrue(author_new in authors)
-            self.assertTrue(co_author in authors)
+            self.assertIn(author_old, authors)
+            self.assertIn(author_new, authors)
+            self.assertIn(co_author, authors)
 
 
 class _SphinxConfig(object):

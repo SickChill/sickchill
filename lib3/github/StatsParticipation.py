@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -31,7 +29,7 @@ import github.GithubObject
 
 class StatsParticipation(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents StatsParticipations. The reference can be found here http://developer.github.com/v3/repos/statistics/#get-the-weekly-commit-count-for-the-repo-owner-and-everyone-else
+    This class represents StatsParticipations. The reference can be found here http://docs.github.com/en/rest/reference/repos/statistics#get-the-weekly-commit-count-for-the-repo-owner-and-everyone-else
     """
 
     @property

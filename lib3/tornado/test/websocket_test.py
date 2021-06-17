@@ -1,6 +1,7 @@
 import asyncio
 import functools
 import traceback
+import typing
 import unittest
 
 from tornado.concurrent import Future
@@ -88,7 +89,7 @@ class HeaderHandler(TestWebSocketHandler):
             try:
                 # In a websocket context, many RequestHandler methods
                 # raise RuntimeErrors.
-                method()
+                method()  # type: ignore
                 raise Exception("did not get expected exception")
             except RuntimeError:
                 pass
@@ -108,6 +109,11 @@ class HeaderEchoHandler(TestWebSocketHandler):
 class NonWebSocketHandler(RequestHandler):
     def get(self):
         self.write("ok")
+
+
+class RedirectHandler(RequestHandler):
+    def get(self):
+        self.redirect("/echo")
 
 
 class CloseReasonHandler(TestWebSocketHandler):
@@ -132,7 +138,7 @@ class PathArgsHandler(TestWebSocketHandler):
 
 class CoroutineOnMessageHandler(TestWebSocketHandler):
     def initialize(self, **kwargs):
-        super(CoroutineOnMessageHandler, self).initialize(**kwargs)
+        super().initialize(**kwargs)
         self.sleeping = 0
 
     @gen.coroutine
@@ -152,7 +158,7 @@ class RenderMessageHandler(TestWebSocketHandler):
 
 class SubprotocolHandler(TestWebSocketHandler):
     def initialize(self, **kwargs):
-        super(SubprotocolHandler, self).initialize(**kwargs)
+        super().initialize(**kwargs)
         self.select_subprotocol_called = False
 
     def select_subprotocol(self, subprotocols):
@@ -171,7 +177,7 @@ class SubprotocolHandler(TestWebSocketHandler):
 
 class OpenCoroutineHandler(TestWebSocketHandler):
     def initialize(self, test, **kwargs):
-        super(OpenCoroutineHandler, self).initialize(**kwargs)
+        super().initialize(**kwargs)
         self.test = test
         self.open_finished = False
 
@@ -220,6 +226,7 @@ class WebSocketTest(WebSocketBaseTestCase):
             [
                 ("/echo", EchoHandler, dict(close_future=self.close_future)),
                 ("/non_ws", NonWebSocketHandler),
+                ("/redirect", RedirectHandler),
                 ("/header", HeaderHandler, dict(close_future=self.close_future)),
                 (
                     "/header_echo",
@@ -274,7 +281,7 @@ class WebSocketTest(WebSocketBaseTestCase):
         return SimpleAsyncHTTPClient()
 
     def tearDown(self):
-        super(WebSocketTest, self).tearDown()
+        super().tearDown()
         RequestHandler._template_loaders.clear()
 
     def test_http_request(self):
@@ -363,6 +370,11 @@ class WebSocketTest(WebSocketBaseTestCase):
     def test_websocket_http_success(self):
         with self.assertRaises(WebSocketError):
             yield self.ws_connect("/non_ws")
+
+    @gen_test
+    def test_websocket_http_redirect(self):
+        with self.assertRaises(HTTPError):
+            yield self.ws_connect("/redirect")
 
     @gen_test
     def test_websocket_network_fail(self):
@@ -639,8 +651,11 @@ class CompressionTestMixin(object):
     def get_client_compression_options(self):
         return None
 
+    def verify_wire_bytes(self, bytes_in: int, bytes_out: int) -> None:
+        raise NotImplementedError()
+
     @gen_test
-    def test_message_sizes(self):
+    def test_message_sizes(self: typing.Any):
         ws = yield self.ws_connect(
             "/echo", compression_options=self.get_client_compression_options()
         )
@@ -655,7 +670,7 @@ class CompressionTestMixin(object):
         self.verify_wire_bytes(ws.protocol._wire_bytes_in, ws.protocol._wire_bytes_out)
 
     @gen_test
-    def test_size_limit(self):
+    def test_size_limit(self: typing.Any):
         ws = yield self.ws_connect(
             "/limited", compression_options=self.get_client_compression_options()
         )
@@ -673,7 +688,7 @@ class CompressionTestMixin(object):
 class UncompressedTestMixin(CompressionTestMixin):
     """Specialization of CompressionTestMixin when we expect no compression."""
 
-    def verify_wire_bytes(self, bytes_in, bytes_out):
+    def verify_wire_bytes(self: typing.Any, bytes_in, bytes_out):
         # Bytes out includes the 4-byte mask key per message.
         self.assertEqual(bytes_out, 3 * (len(self.MESSAGE) + 6))
         self.assertEqual(bytes_in, 3 * (len(self.MESSAGE) + 2))
@@ -710,7 +725,10 @@ class DefaultCompressionTest(CompressionTestMixin, WebSocketBaseTestCase):
 
 class MaskFunctionMixin(object):
     # Subclasses should define self.mask(mask, data)
-    def test_mask(self):
+    def mask(self, mask: bytes, data: bytes) -> bytes:
+        raise NotImplementedError()
+
+    def test_mask(self: typing.Any):
         self.assertEqual(self.mask(b"abcd", b""), b"")
         self.assertEqual(self.mask(b"abcd", b"b"), b"\x03")
         self.assertEqual(self.mask(b"abcd", b"54321"), b"TVPVP")

@@ -33,8 +33,8 @@ class Movie(Base):
 
     language = Column(String)
 
-    result = relationship("Result", uselist=False, backref="downloaded")
-    results: list = relationship("Result", backref="movie")
+    result_pk = Column(Integer, ForeignKey("result.pk"))
+    results: list = relationship("Result", back_populates="movie")
 
     images: list = relationship("Images", backref="movie")
     indexer_data: list = relationship("IndexerData", backref="movie")
@@ -146,6 +146,7 @@ class Result(Base):
     updated = Column(DateTime, onupdate=datetime.datetime.now)
 
     movie_pk = Column(Integer, ForeignKey("movie.pk"))
+    movie = relationship("Movie", back_populates="result")
 
     session = Session()
 

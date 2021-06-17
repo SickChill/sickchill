@@ -457,6 +457,11 @@ class PageElement(object):
 
         :param tags: A list of PageElements.
         """
+        if isinstance(tags, Tag):
+            # Calling self.append() on another tag's contents will change
+            # the list we're iterating over. Make a list that won't
+            # change.
+            tags = list(tags.contents)
         for tag in tags:
             self.append(tag)
 
@@ -1990,6 +1995,14 @@ class SoupStrainer(object):
         if isinstance(markup_name, Tag):
             markup = markup_name
             markup_attrs = markup
+
+        if isinstance(self.name, str):
+            # Optimization for a very common case where the user is
+            # searching for a tag with one specific name, and we're
+            # looking at a tag with a different name.
+            if markup and not markup.prefix and self.name != markup.name:
+                 return False
+            
         call_function_with_tag_data = (
             isinstance(self.name, Callable)
             and not isinstance(markup_name, Tag))

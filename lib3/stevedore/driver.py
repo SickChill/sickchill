@@ -10,7 +10,8 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-from .exception import NoMatches, MultipleMatches
+from .exception import MultipleMatches
+from .exception import NoMatches
 from .named import NamedExtensionManager
 
 
@@ -142,7 +143,6 @@ class DriverManager(NamedExtensionManager):
 
     @property
     def driver(self):
-        """Returns the driver being used by this manager.
-        """
+        """Returns the driver being used by this manager."""
         ext = self.extensions[0]
         return ext.obj if ext.obj else ext.plugin

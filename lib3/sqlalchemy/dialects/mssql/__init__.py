@@ -1,16 +1,14 @@
 # mssql/__init__.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-from . import adodbapi  # noqa
 from . import base  # noqa
 from . import mxodbc  # noqa
 from . import pymssql  # noqa
 from . import pyodbc  # noqa
-from . import zxjdbc  # noqa
 from .base import BIGINT
 from .base import BINARY
 from .base import BIT
@@ -23,6 +21,7 @@ from .base import DECIMAL
 from .base import FLOAT
 from .base import IMAGE
 from .base import INTEGER
+from .base import JSON
 from .base import MONEY
 from .base import NCHAR
 from .base import NTEXT
@@ -49,6 +48,7 @@ base.dialect = dialect = pyodbc.dialect
 
 
 __all__ = (
+    "JSON",
     "INTEGER",
     "BIGINT",
     "SMALLINT",

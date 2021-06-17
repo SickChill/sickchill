@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 oauthlib.oauth2.rfc6749.endpoint.introspect
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7,14 +6,12 @@ An implementation of the OAuth 2.0 `Token Introspection`.
 
 .. _`Token Introspection`: https://tools.ietf.org/html/rfc7662
 """
-from __future__ import absolute_import, unicode_literals
-
 import json
 import logging
 
 from oauthlib.common import Request
 
-from ..errors import OAuth2Error, UnsupportedTokenTypeError
+from ..errors import OAuth2Error
 from .base import BaseEndpoint, catch_errors_and_unavailability
 
 log = logging.getLogger(__name__)

@@ -89,7 +89,7 @@ data = (
 'Bai ',    # 0x57
 'Yuan ',    # 0x58
 'Kuai ',    # 0x59
-'[?] ',    # 0x5a
+None,    # 0x5a
 'Qiang ',    # 0x5b
 'Wu ',    # 0x5c
 'E ',    # 0x5d
@@ -213,12 +213,12 @@ data = (
 'Xiao ',    # 0xd3
 'Bi ',    # 0xd4
 'Yue ',    # 0xd5
-'[?] ',    # 0xd6
+None,    # 0xd6
 'Hua ',    # 0xd7
 'Sasou ',    # 0xd8
 'Kuai ',    # 0xd9
 'Duo ',    # 0xda
-'[?] ',    # 0xdb
+None,    # 0xdb
 'Ji ',    # 0xdc
 'Nong ',    # 0xdd
 'Mou ',    # 0xde

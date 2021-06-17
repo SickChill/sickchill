@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2013 AKFish <akfish@gmail.com>                                     #
@@ -33,7 +31,7 @@ import github.GithubObject
 
 class NotificationSubject(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents Subjects of Notifications. The reference can be found here http://developer.github.com/v3/activity/notifications/#list-your-notifications
+    This class represents Subjects of Notifications. The reference can be found here http://docs.github.com/en/rest/reference/activity/notifications#list-your-notifications
     """
 
     def __repr__(self):

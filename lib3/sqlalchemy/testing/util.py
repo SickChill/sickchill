@@ -1,5 +1,5 @@
 # testing/util.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -9,36 +9,34 @@ import decimal
 import gc
 import random
 import sys
-import time
 import types
 
+from . import config
+from . import mock
+from .. import inspect
+from ..engine import Connection
+from ..schema import Column
+from ..schema import DropConstraint
+from ..schema import DropTable
+from ..schema import ForeignKeyConstraint
+from ..schema import MetaData
+from ..schema import Table
+from ..sql import schema
+from ..sql.sqltypes import Integer
 from ..util import decorator
 from ..util import defaultdict
+from ..util import has_refcount_gc
 from ..util import inspect_getfullargspec
-from ..util import jython
 from ..util import py2k
-from ..util import pypy
 
 
-if jython:
+if not has_refcount_gc:
 
-    def jython_gc_collect(*args):
-        """aggressive gc.collect for tests."""
-        gc.collect()
-        time.sleep(0.1)
-        gc.collect()
-        gc.collect()
-        return 0
-
-    # "lazy" gc, for VM's that don't GC on refcount == 0
-    gc_collect = lazy_gc = jython_gc_collect
-elif pypy:
-
-    def pypy_gc_collect(*args):
+    def non_refcount_gc_collect(*args):
         gc.collect()
         gc.collect()
 
-    gc_collect = lazy_gc = pypy_gc_collect
+    gc_collect = lazy_gc = non_refcount_gc_collect
 else:
     # assume CPython - straight gc.collect, lazy_gc() is a pass
     gc_collect = gc.collect
@@ -65,6 +63,21 @@ def picklers():
     for pickle_ in picklers:
         for protocol in range(-2, pickle.HIGHEST_PROTOCOL):
             yield pickle_.loads, lambda d: pickle_.dumps(d, protocol)
+
+
+if py2k:
+
+    def random_choices(population, k=1):
+        pop = list(population)
+        # lame but works :)
+        random.shuffle(pop)
+        return pop[0:k]
+
+
+else:
+
+    def random_choices(population, k=1):
+        return random.choices(population, k=k)
 
 
 def round_decimal(value, prec):
@@ -195,20 +208,46 @@ def fail(msg):
 
 @decorator
 def provide_metadata(fn, *args, **kw):
-    """Provide bound MetaData for a single test, dropping afterwards."""
+    """Provide bound MetaData for a single test, dropping afterwards.
 
-    from . import config
-    from . import engines
-    from sqlalchemy import schema
+    Legacy; use the "metadata" pytest fixture.
 
-    metadata = schema.MetaData(config.db)
+    """
+
+    from . import fixtures
+
+    metadata = schema.MetaData()
     self = args[0]
     prev_meta = getattr(self, "metadata", None)
     self.metadata = metadata
     try:
         return fn(*args, **kw)
     finally:
-        engines.drop_all_tables(metadata, config.db)
+        # close out some things that get in the way of dropping tables.
+        # when using the "metadata" fixture, there is a set ordering
+        # of things that makes sure things are cleaned up in order, however
+        # the simple "decorator" nature of this legacy function means
+        # we have to hardcode some of that cleanup ahead of time.
+
+        # close ORM sessions
+        fixtures._close_all_sessions()
+
+        # integrate with the "connection" fixture as there are many
+        # tests where it is used along with provide_metadata
+        if fixtures._connection_fixture_connection:
+            # TODO: this warning can be used to find all the places
+            # this is used with connection fixture
+            # warn("mixing legacy provide metadata with connection fixture")
+            drop_all_tables_from_metadata(
+                metadata, fixtures._connection_fixture_connection
+            )
+            # as the provide_metadata fixture is often used with "testing.db",
+            # when we do the drop we have to commit the transaction so that
+            # the DB is actually updated as the CREATE would have been
+            # committed
+            fixtures._connection_fixture_connection.get_transaction().commit()
+        else:
+            drop_all_tables_from_metadata(metadata, config.db)
         self.metadata = prev_meta
 
 
@@ -242,8 +281,6 @@ def flag_combinations(*combinations):
 
     """
 
-    from . import config
-
     keys = set()
 
     for d in combinations:
@@ -259,6 +296,23 @@ def flag_combinations(*combinations):
         ],
         id_="i" + ("a" * len(keys)),
         argnames=",".join(keys)
+    )
+
+
+def lambda_combinations(lambda_arg_sets, **kw):
+    args = inspect_getfullargspec(lambda_arg_sets)
+
+    arg_sets = lambda_arg_sets(*[mock.Mock() for arg in args[0]])
+
+    def create_fixture(pos):
+        def fixture(**kw):
+            return lambda_arg_sets(**kw)[pos]
+
+        fixture.__name__ = "fixture_%3.3d" % pos
+        return fixture
+
+    return config.combinations(
+        *[(create_fixture(i),) for i in range(len(arg_sets))], **kw
     )
 
 
@@ -282,11 +336,8 @@ def resolve_lambda(__fn, **kw):
 def metadata_fixture(ddl="function"):
     """Provide MetaData for a pytest fixture."""
 
-    from . import config
-
     def decorate(fn):
         def run_ddl(self):
-            from sqlalchemy import schema
 
             metadata = self.metadata = schema.MetaData()
             try:
@@ -308,8 +359,6 @@ def force_drop_names(*names):
     isolating for foreign key cycles
 
     """
-    from . import config
-    from sqlalchemy import inspect
 
     @decorator
     def go(fn, *args, **kw):
@@ -337,20 +386,35 @@ class adict(dict):
     get_all = __call__
 
 
+def drop_all_tables_from_metadata(metadata, engine_or_connection):
+    from . import engines
+
+    def go(connection):
+        engines.testing_reaper.prepare_for_drop_tables(connection)
+
+        if not connection.dialect.supports_alter:
+            from . import assertions
+
+            with assertions.expect_warnings(
+                "Can't sort tables", assert_=False
+            ):
+                metadata.drop_all(connection)
+        else:
+            metadata.drop_all(connection)
+
+    if not isinstance(engine_or_connection, Connection):
+        with engine_or_connection.begin() as connection:
+            go(connection)
+    else:
+        go(engine_or_connection)
+
+
 def drop_all_tables(engine, inspector, schema=None, include_names=None):
-    from sqlalchemy import (
-        Column,
-        Table,
-        Integer,
-        MetaData,
-        ForeignKeyConstraint,
-    )
-    from sqlalchemy.schema import DropTable, DropConstraint
 
     if include_names is not None:
         include_names = set(include_names)
 
-    with engine.connect() as conn:
+    with engine.begin() as conn:
         for tname, fkcs in reversed(
             inspector.get_sorted_table_and_fkc_names(schema=schema)
         ):

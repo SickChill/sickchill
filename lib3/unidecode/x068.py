@@ -5,7 +5,7 @@ data = (
 'Hoy ',    # 0x03
 'Rong ',    # 0x04
 'Zha ',    # 0x05
-'[?] ',    # 0x06
+None,    # 0x06
 'Biao ',    # 0x07
 'Zhan ',    # 0x08
 'Jie ',    # 0x09
@@ -93,7 +93,7 @@ data = (
 'Kasei ',    # 0x5b
 'Ying ',    # 0x5c
 'Masu ',    # 0x5d
-'[?] ',    # 0x5e
+None,    # 0x5e
 'Zhan ',    # 0x5f
 'Ya ',    # 0x60
 'Nao ',    # 0x61

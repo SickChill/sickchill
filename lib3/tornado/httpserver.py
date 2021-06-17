@@ -157,16 +157,16 @@ class HTTPServer(TCPServer, Configurable, httputil.HTTPServerConnectionDelegate)
         ],
         no_keep_alive: bool = False,
         xheaders: bool = False,
-        ssl_options: Union[Dict[str, Any], ssl.SSLContext] = None,
-        protocol: str = None,
+        ssl_options: Optional[Union[Dict[str, Any], ssl.SSLContext]] = None,
+        protocol: Optional[str] = None,
         decompress_request: bool = False,
-        chunk_size: int = None,
-        max_header_size: int = None,
-        idle_connection_timeout: float = None,
-        body_timeout: float = None,
-        max_body_size: int = None,
-        max_buffer_size: int = None,
-        trusted_downstream: List[str] = None,
+        chunk_size: Optional[int] = None,
+        max_header_size: Optional[int] = None,
+        idle_connection_timeout: Optional[float] = None,
+        body_timeout: Optional[float] = None,
+        max_body_size: Optional[int] = None,
+        max_buffer_size: Optional[int] = None,
+        trusted_downstream: Optional[List[str]] = None,
     ) -> None:
         # This method's signature is not extracted with autodoc
         # because we want its arguments to appear on the class
@@ -212,7 +212,7 @@ class HTTPServer(TCPServer, Configurable, httputil.HTTPServerConnectionDelegate)
 
         This method does not currently close open websocket connections.
 
-        Note that this method is a coroutine and must be caled with ``await``.
+        Note that this method is a coroutine and must be called with ``await``.
 
         """
         while self._connections:
@@ -289,7 +289,7 @@ class _HTTPRequestContext(object):
         stream: iostream.IOStream,
         address: Tuple,
         protocol: Optional[str],
-        trusted_downstream: List[str] = None,
+        trusted_downstream: Optional[List[str]] = None,
     ) -> None:
         self.address = address
         # Save the socket's address family now so we know how to
@@ -346,7 +346,7 @@ class _HTTPRequestContext(object):
         )
         if proto_header:
             # use only the last proto entry if there is more than one
-            # TODO: support trusting mutiple layers of proxied protocol
+            # TODO: support trusting multiple layers of proxied protocol
             proto_header = proto_header.split(",")[-1].strip()
         if proto_header in ("http", "https"):
             self.protocol = proto_header

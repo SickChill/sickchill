@@ -100,7 +100,7 @@ data = (
 'Chuang ',    # 0x62
 'Bi ',    # 0x63
 'Hei ',    # 0x64
-'[?] ',    # 0x65
+None,    # 0x65
 'Mi ',    # 0x66
 'Qiao ',    # 0x67
 'Chan ',    # 0x68
@@ -145,7 +145,7 @@ data = (
 'Xu ',    # 0x8f
 'Lu ',    # 0x90
 'Wu ',    # 0x91
-'[?] ',    # 0x92
+None,    # 0x92
 'Ku ',    # 0x93
 'Ying ',    # 0x94
 'Di ',    # 0x95
@@ -236,7 +236,7 @@ data = (
 'Lin ',    # 0xea
 'Liao ',    # 0xeb
 'Lu ',    # 0xec
-'[?] ',    # 0xed
+None,    # 0xed
 'Ying ',    # 0xee
 'Xian ',    # 0xef
 'Ting ',    # 0xf0

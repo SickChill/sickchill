@@ -1,5 +1,5 @@
 # postgresql/on_conflict.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -7,8 +7,12 @@
 
 from . import ext
 from ... import util
+from ...sql import coercions
+from ...sql import roles
 from ...sql import schema
+from ...sql.base import _exclusive_against
 from ...sql.base import _generative
+from ...sql.base import ColumnCollection
 from ...sql.dml import Insert as StandardInsert
 from ...sql.elements import ClauseElement
 from ...sql.expression import alias
@@ -30,6 +34,8 @@ class Insert(StandardInsert):
 
     """
 
+    stringify_dialect = "postgresql"
+
     @util.memoized_property
     def excluded(self):
         """Provide the ``excluded`` namespace for an ON CONFLICT statement
@@ -46,7 +52,16 @@ class Insert(StandardInsert):
         """
         return alias(self.table, name="excluded").columns
 
+    _on_conflict_exclusive = _exclusive_against(
+        "_post_values_clause",
+        msgs={
+            "_post_values_clause": "This Insert construct already has "
+            "an ON CONFLICT clause established"
+        },
+    )
+
     @_generative
+    @_on_conflict_exclusive
     def on_conflict_do_update(
         self,
         constraint=None,
@@ -75,12 +90,16 @@ class Insert(StandardInsert):
          conditional target index.
 
         :param set\_:
-         Required argument. A dictionary or other mapping object
-         with column names as keys and expressions or literals as values,
-         specifying the ``SET`` actions to take.
-         If the target :class:`_schema.Column` specifies a ".
-         key" attribute distinct
-         from the column name, that key should be used.
+         A dictionary or other mapping object
+         where the keys are either names of columns in the target table,
+         or :class:`_schema.Column` objects or other ORM-mapped columns
+         matching that of the target table, and expressions or literals
+         as values, specifying the ``SET`` actions to take.
+
+         .. versionadded:: 1.4 The
+            :paramref:`_postgresql.Insert.on_conflict_do_update.set_`
+            parameter supports :class:`_schema.Column` objects from the target
+            :class:`_schema.Table` as keys.
 
          .. warning:: This dictionary does **not** take into account
             Python-specified default UPDATE values or generation functions,
@@ -107,9 +126,9 @@ class Insert(StandardInsert):
         self._post_values_clause = OnConflictDoUpdate(
             constraint, index_elements, index_where, set_, where
         )
-        return self
 
     @_generative
+    @_on_conflict_exclusive
     def on_conflict_do_nothing(
         self, constraint=None, index_elements=None, index_where=None
     ):
@@ -142,7 +161,6 @@ class Insert(StandardInsert):
         self._post_values_clause = OnConflictDoNothing(
             constraint, index_elements, index_where
         )
-        return self
 
 
 insert = public_factory(
@@ -151,6 +169,8 @@ insert = public_factory(
 
 
 class OnConflictClause(ClauseElement):
+    stringify_dialect = "postgresql"
+
     def __init__(self, constraint=None, index_elements=None, index_where=None):
 
         if constraint is not None:
@@ -224,9 +244,19 @@ class OnConflictDoUpdate(OnConflictClause):
                 "but not both, must be specified unless DO NOTHING"
             )
 
-        if not isinstance(set_, dict) or not set_:
-            raise ValueError("set parameter must be a non-empty dictionary")
+        if isinstance(set_, dict):
+            if not set_:
+                raise ValueError("set parameter dictionary must not be empty")
+        elif isinstance(set_, ColumnCollection):
+            set_ = dict(set_)
+        else:
+            raise ValueError(
+                "set parameter must be a non-empty dictionary "
+                "or a ColumnCollection such as the `.c.` collection "
+                "of a Table object"
+            )
         self.update_values_to_set = [
-            (key, value) for key, value in set_.items()
+            (coercions.expect(roles.DMLColumnRole, key), value)
+            for key, value in set_.items()
         ]
         self.update_whereclause = where

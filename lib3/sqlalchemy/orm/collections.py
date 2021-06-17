@@ -1,5 +1,5 @@
 # orm/collections.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -110,8 +110,9 @@ from sqlalchemy.util.compat import inspect_getfullargspec
 from . import base
 from .. import exc as sa_exc
 from .. import util
+from ..sql import coercions
 from ..sql import expression
-
+from ..sql import roles
 
 __all__ = [
     "collection",
@@ -243,7 +244,7 @@ def column_mapped_collection(mapping_spec):
 
     """
     cols = [
-        expression._only_column_elements(q, "mapping_spec")
+        coercions.expect(roles.ColumnArgumentRole, q, argname="mapping_spec")
         for q in util.to_list(mapping_spec)
     ]
     keyfunc = _PlainColumnGetter(cols)
@@ -269,10 +270,13 @@ def attribute_mapped_collection(attr_name):
     'attr_name' attribute of entities in the collection, where ``attr_name``
     is the string name of the attribute.
 
-    The key value must be immutable for the lifetime of the object.  You
-    can not, for example, map on foreign key values if those key values will
-    change during the session, i.e. from None to a database-assigned integer
-    after a session flush.
+    .. warning:: the key value must be assigned to its final value
+       **before** it is accessed by the attribute mapped collection.
+       Additionally, changes to the key attribute are **not tracked**
+       automatically, which means the key in the dictionary is not
+       automatically synchronized with the key value on the target object
+       itself.  See the section :ref:`key_collections_mutations`
+       for an example.
 
     """
     getter = _SerializableAttrGetter(attr_name)
@@ -300,7 +304,7 @@ class collection(object):
 
     The decorators fall into two groups: annotations and interception recipes.
 
-    The annotating decorators (appender, remover, iterator, linker, converter,
+    The annotating decorators (appender, remover, iterator, converter,
     internally_instrumented) indicate the method's purpose and take no
     arguments.  They are not written with parens::
 
@@ -426,36 +430,6 @@ class collection(object):
         """
         fn._sa_instrumented = True
         return fn
-
-    @staticmethod
-    @util.deprecated(
-        "1.0",
-        "The :meth:`.collection.linker` handler is deprecated and will "
-        "be removed in a future release.  Please refer to the "
-        ":meth:`.AttributeEvents.init_collection` "
-        "and :meth:`.AttributeEvents.dispose_collection` event handlers. ",
-    )
-    def linker(fn):
-        """Tag the method as a "linked to attribute" event handler.
-
-        This optional event handler will be called when the collection class
-        is linked to or unlinked from the InstrumentedAttribute.  It is
-        invoked immediately after the '_sa_adapter' property is set on
-        the instance.  A single argument is passed: the collection adapter
-        that has been linked, or None if unlinking.
-
-
-        """
-        fn._sa_instrument_role = "linker"
-        return fn
-
-    link = linker
-    """Synonym for :meth:`.collection.linker`.
-
-    .. deprecated:: 1.0 - :meth:`.collection.link` is deprecated and will be
-       removed in a future release.
-
-    """
 
     @staticmethod
     @util.deprecated(
@@ -613,6 +587,7 @@ class CollectionAdapter(object):
         "owner_state",
         "_converter",
         "invalidated",
+        "empty",
     )
 
     def __init__(self, attr, owner_state, data):
@@ -623,6 +598,7 @@ class CollectionAdapter(object):
         data._sa_adapter = self
         self._converter = data._sa_converter
         self.invalidated = False
+        self.empty = False
 
     def _warn_invalidated(self):
         util.warn("This collection has been invalidated.")
@@ -650,12 +626,39 @@ class CollectionAdapter(object):
 
         self._data()._sa_appender(item, _sa_initiator=initiator)
 
+    def _set_empty(self, user_data):
+        assert (
+            not self.empty
+        ), "This collection adapter is already in the 'empty' state"
+        self.empty = True
+        self.owner_state._empty_collections[self._key] = user_data
+
+    def _reset_empty(self):
+        assert (
+            self.empty
+        ), "This collection adapter is not in the 'empty' state"
+        self.empty = False
+        self.owner_state.dict[
+            self._key
+        ] = self.owner_state._empty_collections.pop(self._key)
+
+    def _refuse_empty(self):
+        raise sa_exc.InvalidRequestError(
+            "This is a special 'empty' collection which cannot accommodate "
+            "internal mutation operations"
+        )
+
     def append_without_event(self, item):
         """Add or restore an entity to the collection, firing no events."""
+
+        if self.empty:
+            self._refuse_empty()
         self._data()._sa_appender(item, _sa_initiator=False)
 
     def append_multiple_without_event(self, items):
         """Add or restore an entity to the collection, firing no events."""
+        if self.empty:
+            self._refuse_empty()
         appender = self._data()._sa_appender
         for item in items:
             appender(item, _sa_initiator=False)
@@ -669,11 +672,15 @@ class CollectionAdapter(object):
 
     def remove_without_event(self, item):
         """Remove an entity from the collection, firing no events."""
+        if self.empty:
+            self._refuse_empty()
         self._data()._sa_remover(item, _sa_initiator=False)
 
     def clear_with_event(self, initiator=None):
         """Empty the collection, firing a mutation event for each entity."""
 
+        if self.empty:
+            self._refuse_empty()
         remover = self._data()._sa_remover
         for item in list(self):
             remover(item, _sa_initiator=initiator)
@@ -681,6 +688,8 @@ class CollectionAdapter(object):
     def clear_without_event(self):
         """Empty the collection, firing no events."""
 
+        if self.empty:
+            self._refuse_empty()
         remover = self._data()._sa_remover
         for item in list(self):
             remover(item, _sa_initiator=False)
@@ -699,6 +708,32 @@ class CollectionAdapter(object):
 
     __nonzero__ = __bool__
 
+    def fire_append_wo_mutation_event(self, item, initiator=None):
+        """Notify that a entity is entering the collection but is already
+        present.
+
+
+        Initiator is a token owned by the InstrumentedAttribute that
+        initiated the membership mutation, and should be left as None
+        unless you are passing along an initiator value from a chained
+        operation.
+
+        .. versionadded:: 1.4.15
+
+        """
+        if initiator is not False:
+            if self.invalidated:
+                self._warn_invalidated()
+
+            if self.empty:
+                self._reset_empty()
+
+            return self.attr.fire_append_wo_mutation_event(
+                self.owner_state, self.owner_state.dict, item, initiator
+            )
+        else:
+            return item
+
     def fire_append_event(self, item, initiator=None):
         """Notify that a entity has entered the collection.
 
@@ -711,6 +746,10 @@ class CollectionAdapter(object):
         if initiator is not False:
             if self.invalidated:
                 self._warn_invalidated()
+
+            if self.empty:
+                self._reset_empty()
+
             return self.attr.fire_append_event(
                 self.owner_state, self.owner_state.dict, item, initiator
             )
@@ -728,6 +767,10 @@ class CollectionAdapter(object):
         if initiator is not False:
             if self.invalidated:
                 self._warn_invalidated()
+
+            if self.empty:
+                self._reset_empty()
+
             self.attr.fire_remove_event(
                 self.owner_state, self.owner_state.dict, item, initiator
             )
@@ -752,6 +795,7 @@ class CollectionAdapter(object):
             "owner_cls": self.owner_state.class_,
             "data": self.data,
             "invalidated": self.invalidated,
+            "empty": self.empty,
         }
 
     def __setstate__(self, d):
@@ -762,6 +806,7 @@ class CollectionAdapter(object):
         d["data"]._sa_adapter = self
         self.invalidated = d["invalidated"]
         self.attr = getattr(d["owner_cls"], self._key).impl
+        self.empty = d.get("empty", False)
 
 
 def bulk_replace(values, existing_adapter, new_adapter, initiator=None):
@@ -890,7 +935,7 @@ def _locate_roles_and_methods(cls):
 
     for supercls in cls.__mro__:
         for name, method in vars(supercls).items():
-            if not util.callable(method):
+            if not callable(method):
                 continue
 
             # note role declarations
@@ -900,7 +945,6 @@ def _locate_roles_and_methods(cls):
                     "appender",
                     "remover",
                     "iterator",
-                    "linker",
                     "converter",
                 )
                 roles.setdefault(role, name)
@@ -1063,6 +1107,18 @@ def _instrument_membership_mutator(method, before, argument, after):
     wrapper.__name__ = method.__name__
     wrapper.__doc__ = method.__doc__
     return wrapper
+
+
+def __set_wo_mutation(collection, item, _sa_initiator=None):
+    """Run set wo mutation events.
+
+    The collection is not mutated.
+
+    """
+    if _sa_initiator is not False:
+        executor = collection._sa_adapter
+        if executor:
+            executor.fire_append_wo_mutation_event(item, _sa_initiator)
 
 
 def __set(collection, item, _sa_initiator=None):
@@ -1333,7 +1389,11 @@ def _dict_decorators():
                 self.__setitem__(key, default)
                 return default
             else:
-                return self.__getitem__(key)
+                value = self.__getitem__(key)
+                if value is default:
+                    __set_wo_mutation(self, value, None)
+
+                return value
 
         _tidy(setdefault)
         return setdefault
@@ -1345,13 +1405,19 @@ def _dict_decorators():
                     for key in list(__other):
                         if key not in self or self[key] is not __other[key]:
                             self[key] = __other[key]
+                        else:
+                            __set_wo_mutation(self, __other[key], None)
                 else:
                     for key, value in __other:
                         if key not in self or self[key] is not value:
                             self[key] = value
+                        else:
+                            __set_wo_mutation(self, value, None)
             for key in kw:
                 if key not in self or self[key] is not kw[key]:
                     self[key] = kw[key]
+                else:
+                    __set_wo_mutation(self, kw[key], None)
 
         _tidy(update)
         return update
@@ -1392,6 +1458,8 @@ def _set_decorators():
         def add(self, value, _sa_initiator=None):
             if value not in self:
                 value = __set(self, value, _sa_initiator)
+            else:
+                __set_wo_mutation(self, value, _sa_initiator)
             # testlib.pragma exempt:__hash__
             fn(self, value)
 

@@ -112,7 +112,7 @@ data = (
 'Xi ',    # 0x6e
 'Long ',    # 0x6f
 'Yun ',    # 0x70
-'[?] ',    # 0x71
+None,    # 0x71
 'Qi ',    # 0x72
 'Jian ',    # 0x73
 'Yun ',    # 0x74
@@ -211,7 +211,7 @@ data = (
 'Qiong ',    # 0xd1
 'Qie ',    # 0xd2
 'Xian ',    # 0xd3
-'[?] ',    # 0xd4
+None,    # 0xd4
 'Ou ',    # 0xd5
 'Xian ',    # 0xd6
 'Su ',    # 0xd7
@@ -241,10 +241,10 @@ data = (
 'Wei ',    # 0xef
 'Liu ',    # 0xf0
 'Hui ',    # 0xf1
-'[?] ',    # 0xf2
+None,    # 0xf2
 'Gao ',    # 0xf3
 'Yun ',    # 0xf4
-'[?] ',    # 0xf5
+None,    # 0xf5
 'Li ',    # 0xf6
 'Shu ',    # 0xf7
 'Chu ',    # 0xf8

@@ -238,6 +238,10 @@ class EvalJs(object):
         self.execute_debug(code)
         return self['PyJsEvalResult']
 
+    @property
+    def context(self):
+        return self._context
+    
     def __getattr__(self, var):
         return getattr(self._var, var)
 
@@ -268,14 +272,3 @@ class EvalJs(object):
                 else:
                     sys.stderr.write('EXCEPTION: ' + str(e) + '\n')
                 time.sleep(0.01)
-
-
-#print x
-
-if __name__ == '__main__':
-    #with open('C:\Users\Piotrek\Desktop\esprima.js', 'rb') as f:
-    #    x = f.read()
-    e = EvalJs()
-    e.execute('square(x)')
-    #e.execute(x)
-    e.console()

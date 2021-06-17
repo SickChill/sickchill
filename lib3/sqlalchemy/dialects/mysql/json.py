@@ -1,5 +1,5 @@
 # mysql/json.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -15,6 +15,14 @@ class JSON(sqltypes.JSON):
 
     MySQL supports JSON as of version 5.7.
     MariaDB supports JSON (as an alias for LONGTEXT) as of version 10.2.
+
+    :class:`_mysql.JSON` is used automatically whenever the base
+    :class:`_types.JSON` datatype is used against a MySQL or MariaDB backend.
+
+    .. seealso::
+
+        :class:`_types.JSON` - main documentation for the generic
+        cross-platform JSON datatype.
 
     The :class:`.mysql.JSON` type supports persistence of JSON values
     as well as the core index operations provided by :class:`_types.JSON`

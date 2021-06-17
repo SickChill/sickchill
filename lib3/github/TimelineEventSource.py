@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2019 Nick Campbell <nicholas.j.campbell@gmail.com>                 #
@@ -28,7 +26,7 @@ import github.Issue
 
 class TimelineEventSource(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents IssueTimelineEventSource. The reference can be found here https://developer.github.com/v3/issues/timeline/
+    This class represents IssueTimelineEventSource. The reference can be found here https://docs.github.com/en/rest/reference/issues#timeline
     """
 
     def __repr__(self):

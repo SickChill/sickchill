@@ -1,5 +1,5 @@
 # mysql/mysqlconnector.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -26,15 +26,9 @@ import re
 from .base import BIT
 from .base import MySQLCompiler
 from .base import MySQLDialect
-from .base import MySQLExecutionContext
 from .base import MySQLIdentifierPreparer
 from ... import processors
 from ... import util
-
-
-class MySQLExecutionContext_mysqlconnector(MySQLExecutionContext):
-    def get_lastrowid(self):
-        return self.cursor.lastrowid
 
 
 class MySQLCompiler_mysqlconnector(MySQLCompiler):
@@ -91,6 +85,7 @@ class _myconnpyBIT(BIT):
 
 class MySQLDialect_mysqlconnector(MySQLDialect):
     driver = "mysqlconnector"
+    supports_statement_cache = True
 
     supports_unicode_binds = True
 
@@ -100,7 +95,6 @@ class MySQLDialect_mysqlconnector(MySQLDialect):
     supports_native_decimal = True
 
     default_paramstyle = "format"
-    execution_ctx_cls = MySQLExecutionContext_mysqlconnector
     statement_compiler = MySQLCompiler_mysqlconnector
 
     preparer = MySQLIdentifierPreparer_mysqlconnector

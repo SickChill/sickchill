@@ -53,7 +53,7 @@ from tornado import gen, httputil
 from tornado.ioloop import IOLoop
 from tornado.util import Configurable
 
-from typing import Type, Any, Union, Dict, Callable, Optional, cast, Awaitable
+from typing import Type, Any, Union, Dict, Callable, Optional, cast
 
 
 class HTTPClient(object):
@@ -87,7 +87,9 @@ class HTTPClient(object):
     """
 
     def __init__(
-        self, async_client_class: Type["AsyncHTTPClient"] = None, **kwargs: Any
+        self,
+        async_client_class: "Optional[Type[AsyncHTTPClient]]" = None,
+        **kwargs: Any
     ) -> None:
         # Initialize self._closed at the beginning of the constructor
         # so that an exception raised here doesn't lead to confusing
@@ -211,7 +213,7 @@ class AsyncHTTPClient(Configurable):
             instance_cache[instance.io_loop] = instance
         return instance
 
-    def initialize(self, defaults: Dict[str, Any] = None) -> None:
+    def initialize(self, defaults: Optional[Dict[str, Any]] = None) -> None:
         self.io_loop = IOLoop.current()
         self.defaults = dict(HTTPRequest._DEFAULTS)
         if defaults is not None:
@@ -249,7 +251,7 @@ class AsyncHTTPClient(Configurable):
         request: Union[str, "HTTPRequest"],
         raise_error: bool = True,
         **kwargs: Any
-    ) -> Awaitable["HTTPResponse"]:
+    ) -> "Future[HTTPResponse]":
         """Executes a request, asynchronously returning an `HTTPResponse`.
 
         The request may be either a string URL or an `HTTPRequest` object.
@@ -357,37 +359,39 @@ class HTTPRequest(object):
         self,
         url: str,
         method: str = "GET",
-        headers: Union[Dict[str, str], httputil.HTTPHeaders] = None,
-        body: Union[bytes, str] = None,
-        auth_username: str = None,
-        auth_password: str = None,
-        auth_mode: str = None,
-        connect_timeout: float = None,
-        request_timeout: float = None,
-        if_modified_since: Union[float, datetime.datetime] = None,
-        follow_redirects: bool = None,
-        max_redirects: int = None,
-        user_agent: str = None,
-        use_gzip: bool = None,
-        network_interface: str = None,
-        streaming_callback: Callable[[bytes], None] = None,
-        header_callback: Callable[[str], None] = None,
-        prepare_curl_callback: Callable[[Any], None] = None,
-        proxy_host: str = None,
-        proxy_port: int = None,
-        proxy_username: str = None,
-        proxy_password: str = None,
-        proxy_auth_mode: str = None,
-        allow_nonstandard_methods: bool = None,
-        validate_cert: bool = None,
-        ca_certs: str = None,
-        allow_ipv6: bool = None,
-        client_key: str = None,
-        client_cert: str = None,
-        body_producer: Callable[[Callable[[bytes], None]], "Future[None]"] = None,
+        headers: Optional[Union[Dict[str, str], httputil.HTTPHeaders]] = None,
+        body: Optional[Union[bytes, str]] = None,
+        auth_username: Optional[str] = None,
+        auth_password: Optional[str] = None,
+        auth_mode: Optional[str] = None,
+        connect_timeout: Optional[float] = None,
+        request_timeout: Optional[float] = None,
+        if_modified_since: Optional[Union[float, datetime.datetime]] = None,
+        follow_redirects: Optional[bool] = None,
+        max_redirects: Optional[int] = None,
+        user_agent: Optional[str] = None,
+        use_gzip: Optional[bool] = None,
+        network_interface: Optional[str] = None,
+        streaming_callback: Optional[Callable[[bytes], None]] = None,
+        header_callback: Optional[Callable[[str], None]] = None,
+        prepare_curl_callback: Optional[Callable[[Any], None]] = None,
+        proxy_host: Optional[str] = None,
+        proxy_port: Optional[int] = None,
+        proxy_username: Optional[str] = None,
+        proxy_password: Optional[str] = None,
+        proxy_auth_mode: Optional[str] = None,
+        allow_nonstandard_methods: Optional[bool] = None,
+        validate_cert: Optional[bool] = None,
+        ca_certs: Optional[str] = None,
+        allow_ipv6: Optional[bool] = None,
+        client_key: Optional[str] = None,
+        client_cert: Optional[str] = None,
+        body_producer: Optional[
+            Callable[[Callable[[bytes], None]], "Future[None]"]
+        ] = None,
         expect_100_continue: bool = False,
-        decompress_response: bool = None,
-        ssl_options: Union[Dict[str, Any], ssl.SSLContext] = None,
+        decompress_response: Optional[bool] = None,
+        ssl_options: Optional[Union[Dict[str, Any], ssl.SSLContext]] = None,
     ) -> None:
         r"""All parameters except ``url`` are optional.
 
@@ -397,7 +401,9 @@ class HTTPRequest(object):
         :type headers: `~tornado.httputil.HTTPHeaders` or `dict`
         :arg body: HTTP request body as a string (byte or unicode; if unicode
            the utf-8 encoding will be used)
-        :arg body_producer: Callable used for lazy/asynchronous request bodies.
+        :type body: `str` or `bytes`
+        :arg collections.abc.Callable body_producer: Callable used for
+           lazy/asynchronous request bodies.
            It is called with one argument, a ``write`` function, and should
            return a `.Future`.  It should call the write function with new
            data as it becomes available.  The write function returns a
@@ -415,9 +421,9 @@ class HTTPRequest(object):
            supports "basic" and "digest"; ``simple_httpclient`` only supports
            "basic"
         :arg float connect_timeout: Timeout for initial connection in seconds,
-           default 20 seconds
+           default 20 seconds (0 means no timeout)
         :arg float request_timeout: Timeout for entire request in seconds,
-           default 20 seconds
+           default 20 seconds (0 means no timeout)
         :arg if_modified_since: Timestamp for ``If-Modified-Since`` header
         :type if_modified_since: `datetime` or `float`
         :arg bool follow_redirects: Should redirects be followed automatically
@@ -502,7 +508,7 @@ class HTTPRequest(object):
         """
         # Note that some of these attributes go through property setters
         # defined below.
-        self.headers = headers
+        self.headers = headers  # type: ignore
         if if_modified_since:
             self.headers["If-Modified-Since"] = httputil.format_timestamp(
                 if_modified_since
@@ -514,7 +520,7 @@ class HTTPRequest(object):
         self.proxy_auth_mode = proxy_auth_mode
         self.url = url
         self.method = method
-        self.body = body
+        self.body = body  # type: ignore
         self.body_producer = body_producer
         self.auth_username = auth_username
         self.auth_password = auth_password
@@ -624,14 +630,14 @@ class HTTPResponse(object):
         self,
         request: HTTPRequest,
         code: int,
-        headers: httputil.HTTPHeaders = None,
-        buffer: BytesIO = None,
-        effective_url: str = None,
-        error: BaseException = None,
-        request_time: float = None,
-        time_info: Dict[str, float] = None,
-        reason: str = None,
-        start_time: float = None,
+        headers: Optional[httputil.HTTPHeaders] = None,
+        buffer: Optional[BytesIO] = None,
+        effective_url: Optional[str] = None,
+        error: Optional[BaseException] = None,
+        request_time: Optional[float] = None,
+        time_info: Optional[Dict[str, float]] = None,
+        reason: Optional[str] = None,
+        start_time: Optional[float] = None,
     ) -> None:
         if isinstance(request, _RequestProxy):
             self.request = request.request
@@ -703,12 +709,15 @@ class HTTPClientError(Exception):
     """
 
     def __init__(
-        self, code: int, message: str = None, response: HTTPResponse = None
+        self,
+        code: int,
+        message: Optional[str] = None,
+        response: Optional[HTTPResponse] = None,
     ) -> None:
         self.code = code
         self.message = message or httputil.responses.get(code, "Unknown")
         self.response = response
-        super(HTTPClientError, self).__init__(code, message, response)
+        super().__init__(code, message, response)
 
     def __str__(self) -> str:
         return "HTTP %d: %s" % (self.code, self.message)

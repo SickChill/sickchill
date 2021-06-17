@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2015 Dan Vanderkam <danvdk@gmail.com>                              #
@@ -31,7 +29,7 @@ import github
 
 class Stargazer(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents Stargazers. The reference can be found here https://developer.github.com/v3/activity/starring/#alternative-response-with-star-creation-timestamps
+    This class represents Stargazers. The reference can be found here https://docs.github.com/en/rest/reference/activity/starring#alternative-response-with-star-creation-timestamps
     """
 
     def __repr__(self):

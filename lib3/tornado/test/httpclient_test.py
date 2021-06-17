@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 import base64
 import binascii
 from contextlib import closing
 import copy
+import gzip
 import threading
 import datetime
 from io import BytesIO
@@ -108,7 +108,7 @@ class ContentLength304Handler(RequestHandler):
         self.set_status(304)
         self.set_header("Content-Length", 42)
 
-    def _clear_headers_for_304(self):
+    def _clear_representation_headers(self):
         # Tornado strips content-length from 304 responses, but here we
         # want to simulate servers that include the headers anyway.
         pass
@@ -124,6 +124,7 @@ class AllMethodsHandler(RequestHandler):
     SUPPORTED_METHODS = RequestHandler.SUPPORTED_METHODS + ("OTHER",)  # type: ignore
 
     def method(self):
+        assert self.request.method is not None
         self.write(self.request.method)
 
     get = head = post = put = delete = options = patch = other = method  # type: ignore
@@ -135,6 +136,19 @@ class SetHeaderHandler(RequestHandler):
         # request.arguments for values to get bytes.
         for k, v in zip(self.get_arguments("k"), self.request.arguments["v"]):
             self.set_header(k, v)
+
+
+class InvalidGzipHandler(RequestHandler):
+    def get(self):
+        # set Content-Encoding manually to avoid automatic gzip encoding
+        self.set_header("Content-Type", "text/plain")
+        self.set_header("Content-Encoding", "gzip")
+        # Triggering the potential bug seems to depend on input length.
+        # This length is taken from the bad-response example reported in
+        # https://github.com/tornadoweb/tornado/pull/2875 (uncompressed).
+        body = "".join("Hello World {}\n".format(i) for i in range(9000))[:149051]
+        body = gzip.compress(body.encode(), compresslevel=6) + b"\00"
+        self.write(body)
 
 
 # These tests end up getting run redundantly: once here with the default
@@ -160,6 +174,7 @@ class HTTPClientCommonTestCase(AsyncHTTPTestCase):
                 url("/all_methods", AllMethodsHandler),
                 url("/patch", PatchHandler),
                 url("/set_header", SetHeaderHandler),
+                url("/invalid_gzip", InvalidGzipHandler),
             ],
             gzip=True,
         )
@@ -176,6 +191,7 @@ class HTTPClientCommonTestCase(AsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
         self.assertEqual(response.headers["Content-Type"], "text/plain")
         self.assertEqual(response.body, b"Hello world!")
+        assert response.request_time is not None
         self.assertEqual(int(response.request_time), 0)
 
         response = self.fetch("/hello?name=Ben")
@@ -280,7 +296,7 @@ Transfer-Encoding: chunked
         # important thing is that they don't fall back to basic auth
         # on an unknown mode.
         with ExpectLog(gen_log, "uncaught exception", required=False):
-            with self.assertRaises((ValueError, HTTPError)):
+            with self.assertRaises((ValueError, HTTPError)):  # type: ignore
                 self.fetch(
                     "/auth",
                     auth_username="Aladdin",
@@ -329,10 +345,14 @@ Transfer-Encoding: chunked
             resp = self.fetch(url, method="POST", body=b"")
             self.assertEqual(b"GET", resp.body)
 
-            # Other methods are left alone.
+            # Other methods are left alone, except for 303 redirect, depending on client
             for method in ["GET", "OPTIONS", "PUT", "DELETE"]:
                 resp = self.fetch(url, method=method, allow_nonstandard_methods=True)
-                self.assertEqual(utf8(method), resp.body)
+                if status in [301, 302]:
+                    self.assertEqual(utf8(method), resp.body)
+                else:
+                    self.assertIn(resp.body, [utf8(method), b"GET"])
+
             # HEAD is different so check it separately.
             resp = self.fetch(url, method="HEAD")
             self.assertEqual(200, resp.code)
@@ -395,6 +415,36 @@ Transfer-Encoding: chunked
         self.assertEqual(type(response.headers["Content-Type"]), str)
         self.assertEqual(type(response.code), int)
         self.assertEqual(type(response.effective_url), str)
+
+    def test_gzip(self):
+        # All the tests in this file should be using gzip, but this test
+        # ensures that it is in fact getting compressed, and also tests
+        # the httpclient's decompress=False option.
+        # Setting Accept-Encoding manually bypasses the client's
+        # decompression so we can see the raw data.
+        response = self.fetch(
+            "/chunk", decompress_response=False, headers={"Accept-Encoding": "gzip"}
+        )
+        self.assertEqual(response.headers["Content-Encoding"], "gzip")
+        self.assertNotEqual(response.body, b"asdfqwer")
+        # Our test data gets bigger when gzipped.  Oops.  :)
+        # Chunked encoding bypasses the MIN_LENGTH check.
+        self.assertEqual(len(response.body), 34)
+        f = gzip.GzipFile(mode="r", fileobj=response.buffer)
+        self.assertEqual(f.read(), b"asdfqwer")
+
+    def test_invalid_gzip(self):
+        # test if client hangs on tricky invalid gzip
+        # curl/simple httpclient have different behavior (exception, logging)
+        with ExpectLog(
+            app_log, "(Uncaught exception|Exception in callback)", required=False
+        ):
+            try:
+                response = self.fetch("/invalid_gzip")
+                self.assertEqual(response.code, 200)
+                self.assertEqual(response.body[:14], b"Hello World 0\n")
+            except HTTPError:
+                pass  # acceptable
 
     def test_header_callback(self):
         first_line = []
@@ -480,10 +530,12 @@ X-XSS-Protection: 1;
                 stream.close()
 
             netutil.add_accept_handler(sock, accept_callback)  # type: ignore
-            resp = self.fetch("http://127.0.0.1:%d/" % port)
-            resp.rethrow()
-            self.assertEqual(resp.headers["X-XSS-Protection"], "1; mode=block")
-            self.io_loop.remove_handler(sock.fileno())
+            try:
+                resp = self.fetch("http://127.0.0.1:%d/" % port)
+                resp.rethrow()
+                self.assertEqual(resp.headers["X-XSS-Protection"], "1; mode=block")
+            finally:
+                self.io_loop.remove_handler(sock.fileno())
 
     def test_304_with_content_length(self):
         # According to the spec 304 responses SHOULD NOT include
@@ -503,6 +555,8 @@ X-XSS-Protection: 1;
     def test_future_http_error(self):
         with self.assertRaises(HTTPError) as context:
             yield self.http_client.fetch(self.get_url("/notfound"))
+        assert context.exception is not None
+        assert context.exception.response is not None
         self.assertEqual(context.exception.code, 404)
         self.assertEqual(context.exception.response.code, 404)
 
@@ -533,7 +587,7 @@ X-XSS-Protection: 1;
         response = yield self.http_client.fetch(request)
         self.assertEqual(response.code, 200)
 
-        with self.assertRaises((ValueError, HTTPError)) as context:
+        with self.assertRaises((ValueError, HTTPError)) as context:  # type: ignore
             request = HTTPRequest(url, network_interface="not-interface-or-ip")
             yield self.http_client.fetch(request)
         self.assertIn("not-interface-or-ip", str(context.exception))
@@ -624,10 +678,21 @@ X-XSS-Protection: 1;
         self.assertLess(response.request_time, 1.0)
         # A very crude check to make sure that start_time is based on
         # wall time and not the monotonic clock.
+        assert response.start_time is not None
         self.assertLess(abs(response.start_time - start_time), 1.0)
 
         for k, v in response.time_info.items():
             self.assertTrue(0 <= v < 1.0, "time_info[%s] out of bounds: %s" % (k, v))
+
+    def test_zero_timeout(self):
+        response = self.fetch("/hello", connect_timeout=0)
+        self.assertEqual(response.code, 200)
+
+        response = self.fetch("/hello", request_timeout=0)
+        self.assertEqual(response.code, 200)
+
+        response = self.fetch("/hello", connect_timeout=0, request_timeout=0)
+        self.assertEqual(response.code, 200)
 
     @gen_test
     def test_error_after_cancel(self):
@@ -680,7 +745,7 @@ class RequestProxyTest(unittest.TestCase):
 class HTTPResponseTestCase(unittest.TestCase):
     def test_str(self):
         response = HTTPResponse(  # type: ignore
-            HTTPRequest("http://example.com"), 200, headers={}, buffer=BytesIO()
+            HTTPRequest("http://example.com"), 200, buffer=BytesIO()
         )
         s = str(response)
         self.assertTrue(s.startswith("HTTPResponse("))
@@ -771,6 +836,7 @@ class SyncHTTPClientSubprocessTest(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             check=True,
+            timeout=5,
         )
         if proc.stdout:
             print("STDOUT:")

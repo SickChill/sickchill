@@ -101,7 +101,7 @@ data = (
 'Xian ',    # 0x63
 'Jie ',    # 0x64
 'Zheng ',    # 0x65
-'[?] ',    # 0x66
+None,    # 0x66
 'Li ',    # 0x67
 'Huo ',    # 0x68
 'Lai ',    # 0x69
@@ -118,7 +118,7 @@ data = (
 'Luan ',    # 0x74
 'Luan ',    # 0x75
 'Bo ',    # 0x76
-'[?] ',    # 0x77
+None,    # 0x77
 'Gui ',    # 0x78
 'Po ',    # 0x79
 'Fa ',    # 0x7a

@@ -162,7 +162,7 @@ data = (
 'Cheng ',    # 0xa0
 'Ji ',    # 0xa1
 'Meng ',    # 0xa2
-'[?] ',    # 0xa3
+None,    # 0xa3
 'Run ',    # 0xa4
 'Pie ',    # 0xa5
 'Xi ',    # 0xa6

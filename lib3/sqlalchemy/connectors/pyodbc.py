@@ -1,5 +1,5 @@
 # connectors/pyodbc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -24,14 +24,19 @@ class PyODBCConnector(Connector):
     supports_native_decimal = True
     default_paramstyle = "named"
 
+    use_setinputsizes = False
+
     # for non-DSN connections, this *may* be used to
     # hold the desired driver name
     pyodbc_driver_name = None
 
-    def __init__(self, supports_unicode_binds=None, **kw):
+    def __init__(
+        self, supports_unicode_binds=None, use_setinputsizes=False, **kw
+    ):
         super(PyODBCConnector, self).__init__(**kw)
         if supports_unicode_binds is not None:
             self.supports_unicode_binds = supports_unicode_binds
+        self.use_setinputsizes = use_setinputsizes
 
     @classmethod
     def dbapi(cls):
@@ -95,9 +100,15 @@ class PyODBCConnector(Connector):
             user = keys.pop("user", None)
             if user:
                 connectors.append("UID=%s" % user)
-                connectors.append("PWD=%s" % keys.pop("password", ""))
+                pwd = keys.pop("password", "")
+                if pwd:
+                    connectors.append("PWD=%s" % pwd)
             else:
-                connectors.append("Trusted_Connection=Yes")
+                authentication = keys.pop("authentication", None)
+                if authentication:
+                    connectors.append("Authentication=%s" % authentication)
+                else:
+                    connectors.append("Trusted_Connection=Yes")
 
             # if set to 'Yes', the ODBC layer will try to automagically
             # convert textual data from your database encoding to your
@@ -119,9 +130,6 @@ class PyODBCConnector(Connector):
             ) or "Attempt to use a closed connection." in str(e)
         else:
             return False
-
-    # def initialize(self, connection):
-    #   super(PyODBCConnector, self).initialize(connection)
 
     def _dbapi_version(self):
         if not self.dbapi:
@@ -151,6 +159,25 @@ class PyODBCConnector(Connector):
                 if allow_chars:
                     version.append(n)
         return tuple(version)
+
+    def do_set_input_sizes(self, cursor, list_of_tuples, context):
+        # the rules for these types seems a little strange, as you can pass
+        # non-tuples as well as tuples, however it seems to assume "0"
+        # for the subsequent values if you don't pass a tuple which fails
+        # for types such as pyodbc.SQL_WLONGVARCHAR, which is the datatype
+        # that ticket #5649 is targeting.
+
+        # NOTE: as of #6058, this won't be called if the use_setinputsizes flag
+        # is False, or if no types were specified in list_of_tuples
+
+        cursor.setinputsizes(
+            [
+                (dbtype, None, None)
+                if not isinstance(dbtype, tuple)
+                else dbtype
+                for key, dbtype, sqltype in list_of_tuples
+            ]
+        )
 
     def set_isolation_level(self, connection, level):
         # adjust for ConnectionFairy being present

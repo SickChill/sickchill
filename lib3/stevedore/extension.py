@@ -13,8 +13,8 @@
 """ExtensionManager
 """
 
-import operator
 import logging
+import operator
 
 from . import _cache
 from .exception import NoMatches
@@ -331,8 +331,7 @@ class ExtensionManager(object):
                 LOG.exception(err)
 
     def items(self):
-        """
-        Return an iterator of tuples of the form (name, extension).
+        """Return an iterator of tuples of the form (name, extension).
 
         This is analogous to the Mapping.items() method.
         """
@@ -356,6 +355,5 @@ class ExtensionManager(object):
         return self._extensions_by_name[name]
 
     def __contains__(self, name):
-        """Return true if name is in list of enabled extensions.
-        """
+        """Return true if name is in list of enabled extensions."""
         return any(extension.name == name for extension in self.extensions)

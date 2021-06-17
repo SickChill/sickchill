@@ -99,7 +99,7 @@ data = (
 'Su ',    # 0x61
 'Ta ',    # 0x62
 'Qian ',    # 0x63
-'[?] ',    # 0x64
+None,    # 0x64
 'Yao ',    # 0x65
 'Guan ',    # 0x66
 'Zhang ',    # 0x67
@@ -155,7 +155,7 @@ data = (
 'Mang ',    # 0x99
 'Ru ',    # 0x9a
 'Qiong ',    # 0x9b
-'[?] ',    # 0x9c
+None,    # 0x9c
 'Kuang ',    # 0x9d
 'Fu ',    # 0x9e
 'Kang ',    # 0x9f

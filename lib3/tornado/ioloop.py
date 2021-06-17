@@ -101,9 +101,7 @@ class IOLoop(Configurable):
             while True:
                 try:
                     connection, address = sock.accept()
-                except socket.error as e:
-                    if e.args[0] not in (errno.EWOULDBLOCK, errno.EAGAIN):
-                        raise
+                except BlockingIOError:
                     return
                 connection.setblocking(0)
                 io_loop = tornado.ioloop.IOLoop.current()
@@ -235,13 +233,13 @@ class IOLoop(Configurable):
     def current() -> "IOLoop":
         pass
 
-    @typing.overload  # noqa: F811
+    @typing.overload
     @staticmethod
-    def current(instance: bool = True) -> Optional["IOLoop"]:
+    def current(instance: bool = True) -> Optional["IOLoop"]:  # noqa: F811
         pass
 
-    @staticmethod  # noqa: F811
-    def current(instance: bool = True) -> Optional["IOLoop"]:
+    @staticmethod
+    def current(instance: bool = True) -> Optional["IOLoop"]:  # noqa: F811
         """Returns the current thread's `IOLoop`.
 
         If an `IOLoop` is currently running or has been marked as
@@ -329,7 +327,7 @@ class IOLoop(Configurable):
 
         return AsyncIOLoop
 
-    def initialize(self, make_current: bool = None) -> None:
+    def initialize(self, make_current: Optional[bool] = None) -> None:
         if make_current is None:
             if IOLoop.current(instance=False) is None:
                 self.make_current()
@@ -457,7 +455,7 @@ class IOLoop(Configurable):
         """
         raise NotImplementedError()
 
-    def run_sync(self, func: Callable, timeout: float = None) -> Any:
+    def run_sync(self, func: Callable, timeout: Optional[float] = None) -> Any:
         """Starts the `IOLoop`, runs the given function, and stops the loop.
 
         The function must return either an awaitable object or

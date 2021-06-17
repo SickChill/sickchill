@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2019 Adam Baratz <adam.baratz@gmail.com>                           #
@@ -29,7 +27,7 @@ import github.NamedUser
 
 class TeamDiscussion(github.GithubObject.CompletableGithubObject):
     """
-    This class represents TeamDiscussions. The reference can be found here https://developer.github.com/v3/teams/discussions/
+    This class represents TeamDiscussions. The reference can be found here https://docs.github.com/en/rest/reference/teams#discussions
     """
 
     def __repr__(self):

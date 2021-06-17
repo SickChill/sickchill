@@ -1,5 +1,5 @@
 # testing/mock.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -9,10 +9,10 @@
 """
 from __future__ import absolute_import
 
-from ..util import py33
+from ..util import py3k
 
 
-if py33:
+if py3k:
     from unittest.mock import MagicMock
     from unittest.mock import Mock
     from unittest.mock import call

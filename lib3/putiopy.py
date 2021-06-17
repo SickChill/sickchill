@@ -374,14 +374,14 @@ class _File(_BaseResource):
         """List the files under directory."""
         return self.list(parent_id=self.id)
 
-    def download(self, dest='.', delete_after_download=False, chunk_size=CHUNK_SIZE):
+    def download(self, dest='.', delete_after_download=False, chunk_size=CHUNK_SIZE, save_as=''):
         if self.content_type == 'application/x-directory':
-            self._download_directory(dest, delete_after_download, chunk_size)
+            self._download_directory(dest, delete_after_download, chunk_size, save_as)
         else:
-            self._download_file(dest, delete_after_download, chunk_size)
+            self._download_file(dest, delete_after_download, chunk_size, save_as)
 
-    def _download_directory(self, dest, delete_after_download, chunk_size):
-        name = _str(self.name)
+    def _download_directory(self, dest, delete_after_download, chunk_size, save_as):
+        name = _str(save_as) or _str(self.name)
 
         dest = os.path.join(dest, name)
         if not os.path.exists(dest):
@@ -418,8 +418,8 @@ class _File(_BaseResource):
         logger.info('crc OK')
         return True
 
-    def _download_file(self, dest, delete_after_download, chunk_size):
-        name = _str(self.name)
+    def _download_file(self, dest, delete_after_download, chunk_size, save_as):
+        name = _str(save_as) or _str(self.name)
 
         filepath = os.path.join(dest, name)
         logger.info('downloading file to: %s', filepath)

@@ -1,5 +1,5 @@
 # orm/evaluator.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -9,12 +9,23 @@ import operator
 
 from .. import inspect
 from .. import util
+from ..sql import and_
 from ..sql import operators
 
 
 class UnevaluatableError(Exception):
     pass
 
+
+class _NoObject(operators.ColumnOperators):
+    def operate(self, *arg, **kw):
+        return None
+
+    def reverse_operate(self, *arg, **kw):
+        return None
+
+
+_NO_OBJECT = _NoObject()
 
 _straight_ops = set(
     getattr(operators, op)
@@ -34,17 +45,22 @@ _straight_ops = set(
     )
 )
 
+_extended_ops = {
+    operators.in_op: (lambda a, b: a in b if a is not _NO_OBJECT else None),
+    operators.not_in_op: (
+        lambda a, b: a not in b if a is not _NO_OBJECT else None
+    ),
+}
 
 _notimplemented_ops = set(
     getattr(operators, op)
     for op in (
         "like_op",
-        "notlike_op",
+        "not_like_op",
         "ilike_op",
-        "notilike_op",
+        "not_ilike_op",
+        "startswith_op",
         "between_op",
-        "in_op",
-        "notin_op",
         "endswith_op",
         "concat_op",
     )
@@ -55,7 +71,12 @@ class EvaluatorCompiler(object):
     def __init__(self, target_cls=None):
         self.target_cls = target_cls
 
-    def process(self, clause):
+    def process(self, *clauses):
+        if len(clauses) > 1:
+            clause = and_(*clauses)
+        elif clauses:
+            clause = clauses[0]
+
         meth = getattr(self, "visit_%s" % clause.__visit_name__, None)
         if not meth:
             raise UnevaluatableError(
@@ -102,7 +123,14 @@ class EvaluatorCompiler(object):
                 raise UnevaluatableError("Cannot evaluate column: %s" % clause)
 
         get_corresponding_attr = operator.attrgetter(key)
-        return lambda obj: get_corresponding_attr(obj)
+        return (
+            lambda obj: get_corresponding_attr(obj)
+            if obj is not None
+            else _NO_OBJECT
+        )
+
+    def visit_tuple(self, clause):
+        return self.visit_clauselist(clause)
 
     def visit_clauselist(self, clause):
         evaluators = list(map(self.process, clause.clauses))
@@ -125,10 +153,21 @@ class EvaluatorCompiler(object):
                 for sub_evaluate in evaluators:
                     value = sub_evaluate(obj)
                     if not value:
-                        if value is None:
+                        if value is None or value is _NO_OBJECT:
                             return None
                         return False
                 return True
+
+        elif clause.operator is operators.comma_op:
+
+            def evaluate(obj):
+                values = []
+                for sub_evaluate in evaluators:
+                    value = sub_evaluate(obj)
+                    if value is None or value is _NO_OBJECT:
+                        return None
+                    values.append(value)
+                return tuple(values)
 
         else:
             raise UnevaluatableError(
@@ -147,10 +186,20 @@ class EvaluatorCompiler(object):
             def evaluate(obj):
                 return eval_left(obj) == eval_right(obj)
 
-        elif operator is operators.isnot:
+        elif operator is operators.is_not:
 
             def evaluate(obj):
                 return eval_left(obj) != eval_right(obj)
+
+        elif operator in _extended_ops:
+
+            def evaluate(obj):
+                left_val = eval_left(obj)
+                right_val = eval_right(obj)
+                if left_val is None or right_val is None:
+                    return None
+
+                return _extended_ops[operator](left_val, right_val)
 
         elif operator in _straight_ops:
 

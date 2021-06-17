@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2020 Steve Kowalik <steven@wedontsleep.org>                        #
@@ -28,7 +26,7 @@ import github.WorkflowRun
 
 class Workflow(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Workflows. The reference can be found here https://developer.github.com/v3/actions/workflows/
+    This class represents Workflows. The reference can be found here https://docs.github.com/en/rest/reference/actions#workflows
     """
 
     def __repr__(self):
@@ -108,7 +106,7 @@ class Workflow(github.GithubObject.CompletableGithubObject):
 
     def create_dispatch(self, ref, inputs=github.GithubObject.NotSet):
         """
-        :calls: `POST /repos/:owner/:repo/actions/workflows/:workflow_id/dispatches`_
+        :calls: `POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches <https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event>`_
         :param ref: :class:`github.Branch.Branch` or :class:`github.Tag.Tag` or :class:`github.Commit.Commit` or string
         :param inputs: dict
         :rtype: bool
@@ -129,7 +127,7 @@ class Workflow(github.GithubObject.CompletableGithubObject):
         if inputs is github.GithubObject.NotSet:
             inputs = {}
         status, _, _ = self._requester.requestJson(
-            "POST", self.url + "/dispatches", input={"ref": ref, "inputs": inputs}
+            "POST", f"{self.url}/dispatches", input={"ref": ref, "inputs": inputs}
         )
         return status == 204
 
@@ -141,7 +139,7 @@ class Workflow(github.GithubObject.CompletableGithubObject):
         status=github.GithubObject.NotSet,
     ):
         """
-        :calls: `GET /repos/:owner/:repo/actions/workflows/:workflow_id/runs <https://developer.github.com/v3/actions/workflow-runs>`_
+        :calls: `GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs <https://docs.github.com/en/rest/reference/actions#workflow-runs>`_
         :param actor: :class:`github.NamedUser.NamedUser` or string
         :param branch: :class:`github.Branch.Branch` or string
         :param event: string
@@ -178,7 +176,7 @@ class Workflow(github.GithubObject.CompletableGithubObject):
         return github.PaginatedList.PaginatedList(
             github.WorkflowRun.WorkflowRun,
             self._requester,
-            self.url + "/runs",
+            f"{self.url}/runs",
             url_parameters,
             None,
             list_item="workflow_runs",

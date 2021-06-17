@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2013-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -13,7 +13,7 @@ __all__ = ("INT4RANGE", "INT8RANGE", "NUMRANGE")
 class RangeOperators(object):
     """
     This mixin provides functionality for the Range Operators
-    listed in Table 9-44 of the `postgres documentation`__ for Range
+    listed in Table 9-44 of the `PostgreSQL documentation`__ for Range
     Functions and Operators. It is used by all the range types
     provided in the ``postgres`` dialect and can likely be used for
     any range types you create yourself.
@@ -21,7 +21,7 @@ class RangeOperators(object):
     __ http://www.postgresql.org/docs/devel/static/functions-range.html
 
     No extra support is provided for the Range Functions listed in
-    Table 9-45 of the postgres documentation. For these, the normal
+    Table 9-45 of the PostgreSQL documentation. For these, the normal
     :func:`~sqlalchemy.sql.expression.func` object should be used.
 
     """
@@ -94,54 +94,42 @@ class RangeOperators(object):
         def __add__(self, other):
             """Range expression. Returns the union of the two ranges.
             Will raise an exception if the resulting range is not
-            contigous.
+            contiguous.
             """
             return self.expr.op("+")(other)
 
 
 class INT4RANGE(RangeOperators, sqltypes.TypeEngine):
-    """Represent the PostgreSQL INT4RANGE type.
-
-    """
+    """Represent the PostgreSQL INT4RANGE type."""
 
     __visit_name__ = "INT4RANGE"
 
 
 class INT8RANGE(RangeOperators, sqltypes.TypeEngine):
-    """Represent the PostgreSQL INT8RANGE type.
-
-    """
+    """Represent the PostgreSQL INT8RANGE type."""
 
     __visit_name__ = "INT8RANGE"
 
 
 class NUMRANGE(RangeOperators, sqltypes.TypeEngine):
-    """Represent the PostgreSQL NUMRANGE type.
-
-    """
+    """Represent the PostgreSQL NUMRANGE type."""
 
     __visit_name__ = "NUMRANGE"
 
 
 class DATERANGE(RangeOperators, sqltypes.TypeEngine):
-    """Represent the PostgreSQL DATERANGE type.
-
-    """
+    """Represent the PostgreSQL DATERANGE type."""
 
     __visit_name__ = "DATERANGE"
 
 
 class TSRANGE(RangeOperators, sqltypes.TypeEngine):
-    """Represent the PostgreSQL TSRANGE type.
-
-    """
+    """Represent the PostgreSQL TSRANGE type."""
 
     __visit_name__ = "TSRANGE"
 
 
 class TSTZRANGE(RangeOperators, sqltypes.TypeEngine):
-    """Represent the PostgreSQL TSTZRANGE type.
-
-    """
+    """Represent the PostgreSQL TSTZRANGE type."""
 
     __visit_name__ = "TSTZRANGE"

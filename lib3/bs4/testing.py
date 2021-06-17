@@ -86,8 +86,22 @@ class SoupTest(unittest.TestCase):
         if compare_parsed_to is None:
             compare_parsed_to = to_parse
 
+        # Verify that the documents come out the same.
         self.assertEqual(obj.decode(), self.document_for(compare_parsed_to))
 
+        # Also run some checks on the BeautifulSoup object itself:
+
+        # Verify that every tag that was opened was eventually closed.
+
+        # There are no tags in the open tag counter.
+        assert all(v==0 for v in list(obj.open_tag_counter.values()))
+
+        # The only tag in the tag stack is the one for the root
+        # document.
+        self.assertEqual(
+            [obj.ROOT_TAG_NAME], [x.name for x in obj.tagStack]
+        )
+        
     def assertConnectedness(self, element):
         """Ensure that next_element and previous_element are properly
         set for all descendants of the given element.
@@ -850,6 +864,16 @@ Hello, world!
         data.a['foo'] = 'bar'
         self.assertEqual('<a foo="bar">text</a>', data.a.decode())
 
+    def test_closing_tag_with_no_opening_tag(self):
+        # Without BeautifulSoup.open_tag_counter, the </span> tag will
+        # cause _popToTag to be called over and over again as we look
+        # for a <span> tag that wasn't there. The result is that 'text2'
+        # will show up outside the body of the document.
+        soup = self.soup("<body><div><p>text1</p></span>text2</div></body>")
+        self.assertEqual(
+            "<body><div><p>text1</p>text2</div></body>", soup.body.decode()
+        )
+        
     def test_worst_case(self):
         """Test the worst case (currently) for linking issues."""
 

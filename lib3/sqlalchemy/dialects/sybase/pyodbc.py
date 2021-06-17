@@ -1,5 +1,5 @@
 # sybase/pyodbc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -11,7 +11,6 @@
     :dbapi: pyodbc
     :connectstring: sybase+pyodbc://<username>:<password>@<dsnname>[/<database>]
     :url: http://pypi.python.org/pypi/pyodbc/
-
 
 Unicode Support
 ---------------
@@ -78,8 +77,13 @@ class SybaseExecutionContext_pyodbc(SybaseExecutionContext):
 
 class SybaseDialect_pyodbc(PyODBCConnector, SybaseDialect):
     execution_ctx_cls = SybaseExecutionContext_pyodbc
+    supports_statement_cache = True
 
     colspecs = {sqltypes.Numeric: _SybNumeric_pyodbc}
+
+    @classmethod
+    def dbapi(cls):
+        return PyODBCConnector.dbapi()
 
 
 dialect = SybaseDialect_pyodbc

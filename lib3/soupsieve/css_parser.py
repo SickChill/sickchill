@@ -5,6 +5,7 @@ from . import util
 from . import css_match as cm
 from . import css_types as ct
 from .util import SelectorSyntaxError
+import warnings
 
 UNICODE_REPLACEMENT_CHAR = 0xFFFD
 
@@ -59,6 +60,8 @@ PSEUDO_SIMPLE_NO_MATCH = {
 # Complex pseudo classes that take selector lists
 PSEUDO_COMPLEX = {
     ':contains',
+    ':-soup-contains',
+    ':-soup-contains-own',
     ':has',
     ':is',
     ':matches',
@@ -421,7 +424,12 @@ class CSSParser(object):
         SelectorPattern("pseudo_close", PAT_PSEUDO_CLOSE),
         SpecialPseudoPattern(
             (
-                ("pseudo_contains", (':contains',), PAT_PSEUDO_CONTAINS, SelectorPattern),
+                (
+                    "pseudo_contains",
+                    (':contains', ':-soup-contains', ':-soup-contains-own'),
+                    PAT_PSEUDO_CONTAINS,
+                    SelectorPattern
+                ),
                 ("pseudo_nth_child", (':nth-child', ':nth-last-child'), PAT_PSEUDO_NTH_CHILD, SelectorPattern),
                 ("pseudo_nth_type", (':nth-of-type', ':nth-last-of-type'), PAT_PSEUDO_NTH_TYPE, SelectorPattern),
                 ("pseudo_lang", (':lang',), PAT_PSEUDO_LANG, SelectorPattern),
@@ -800,7 +808,14 @@ class CSSParser(object):
     def parse_pseudo_contains(self, sel, m, has_selector):
         """Parse contains."""
 
-        values = m.group('values')
+        pseudo = util.lower(css_unescape(m.group('name')))
+        if pseudo == ":contains":
+            warnings.warn(
+                "The pseudo class ':contains' is deprecated, ':-soup-contains' should be used moving forward.",
+                FutureWarning
+            )
+        contains_own = pseudo == ":-soup-contains-own"
+        values = css_unescape(m.group('values'))
         patterns = []
         for token in RE_VALUES.finditer(values):
             if token.group('split'):
@@ -811,7 +826,7 @@ class CSSParser(object):
             else:
                 value = css_unescape(value)
             patterns.append(value)
-        sel.contains.append(ct.SelectorContains(tuple(patterns)))
+        sel.contains.append(ct.SelectorContains(tuple(patterns), contains_own))
         has_selector = True
         return has_selector
 
@@ -901,7 +916,7 @@ class CSSParser(object):
                 elif key == 'pseudo_class':
                     has_selector, is_html = self.parse_pseudo_class(sel, m, has_selector, iselector, is_html)
                 elif key == 'pseudo_element':
-                    raise NotImplementedError("Psuedo-element found at position {}".format(m.start(0)))
+                    raise NotImplementedError("Pseudo-element found at position {}".format(m.start(0)))
                 elif key == 'pseudo_contains':
                     has_selector = self.parse_pseudo_contains(sel, m, has_selector)
                 elif key in ('pseudo_nth_type', 'pseudo_nth_child'):
@@ -1048,7 +1063,7 @@ class CSSParser(object):
 
 # CSS pattern for `:link` and `:any-link`
 CSS_LINK = CSSParser(
-    'html|*:is(a, area, link)[href]'
+    'html|*:is(a, area)[href]'
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:checked`
 CSS_CHECKED = CSSParser(
@@ -1079,23 +1094,23 @@ CSS_INDETERMINATE = CSSParser(
     This pattern must be at the end.
     Special logic is applied to the last selector.
     */
-    html|input[type="radio"][name][name!='']:not([checked])
+    html|input[type="radio"][name]:not([name='']):not([checked])
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE)
 # CSS pattern for `:disabled`
 CSS_DISABLED = CSSParser(
     '''
-    html|*:is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
+    html|*:is(input:not([type=hidden]), button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
     html|optgroup[disabled] > html|option,
-    html|fieldset[disabled] > html|*:is(input[type!=hidden], button, select, textarea, fieldset),
+    html|fieldset[disabled] > html|*:is(input:not([type=hidden]), button, select, textarea, fieldset),
     html|fieldset[disabled] >
-        html|*:not(legend:nth-of-type(1)) html|*:is(input[type!=hidden], button, select, textarea, fieldset)
+        html|*:not(legend:nth-of-type(1)) html|*:is(input:not([type=hidden]), button, select, textarea, fieldset)
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:enabled`
 CSS_ENABLED = CSSParser(
     '''
-    html|*:is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
+    html|*:is(input:not([type=hidden]), button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:required`
@@ -1119,8 +1134,8 @@ CSS_PLACEHOLDER_SHOWN = CSSParser(
         [type=email],
         [type=password],
         [type=number]
-    )[placeholder][placeholder!='']:is(:not([value]), [value=""]),
-    html|textarea[placeholder][placeholder!='']
+    )[placeholder]:not([placeholder='']):is(:not([value]), [value=""]),
+    html|textarea[placeholder]:not([placeholder=''])
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_PLACEHOLDER_SHOWN)
 # CSS pattern default for `:nth-child` "of S" feature

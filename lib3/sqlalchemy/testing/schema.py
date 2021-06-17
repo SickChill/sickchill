@@ -1,14 +1,18 @@
 # testing/schema.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
+import sys
+
 from . import config
 from . import exclusions
 from .. import event
 from .. import schema
+from .. import types as sqltypes
+from ..util import OrderedDict
 
 
 __all__ = ["Table", "Column"]
@@ -33,6 +37,16 @@ def Table(*args, **kw):
                 kw["mysql_engine"] = "InnoDB"
             else:
                 kw["mysql_engine"] = "MyISAM"
+    elif exclusions.against(config._current, "mariadb"):
+        if (
+            "mariadb_engine" not in kw
+            and "mariadb_type" not in kw
+            and "autoload_with" not in kw
+        ):
+            if "test_needs_fk" in test_opts or "test_needs_acid" in test_opts:
+                kw["mariadb_engine"] = "InnoDB"
+            else:
+                kw["mariadb_engine"] = "MyISAM"
 
     # Apply some default cascading rules for self-referential foreign keys.
     # MySQL InnoDB has some issues around selecting self-refs too.
@@ -105,6 +119,56 @@ def Column(*args, **kw):
     return col
 
 
+class eq_type_affinity(object):
+    """Helper to compare types inside of datastructures based on affinity.
+
+    E.g.::
+
+        eq_(
+            inspect(connection).get_columns("foo"),
+            [
+                {
+                    "name": "id",
+                    "type": testing.eq_type_affinity(sqltypes.INTEGER),
+                    "nullable": False,
+                    "default": None,
+                    "autoincrement": False,
+                },
+                {
+                    "name": "data",
+                    "type": testing.eq_type_affinity(sqltypes.NullType),
+                    "nullable": True,
+                    "default": None,
+                    "autoincrement": False,
+                },
+            ],
+        )
+
+    """
+
+    def __init__(self, target):
+        self.target = sqltypes.to_instance(target)
+
+    def __eq__(self, other):
+        return self.target._type_affinity is other._type_affinity
+
+    def __ne__(self, other):
+        return self.target._type_affinity is not other._type_affinity
+
+
+class eq_clause_element(object):
+    """Helper to compare SQL structures based on compare()"""
+
+    def __init__(self, target):
+        self.target = target
+
+    def __eq__(self, other):
+        return self.target.compare(other)
+
+    def __ne__(self, other):
+        return not self.target.compare(other)
+
+
 def _truncate_name(dialect, name):
     if len(name) > dialect.max_identifier_length:
         return (
@@ -114,3 +178,41 @@ def _truncate_name(dialect, name):
         )
     else:
         return name
+
+
+def pep435_enum(name):
+    # Implements PEP 435 in the minimal fashion needed by SQLAlchemy
+    __members__ = OrderedDict()
+
+    def __init__(self, name, value, alias=None):
+        self.name = name
+        self.value = value
+        self.__members__[name] = self
+        value_to_member[value] = self
+        setattr(self.__class__, name, self)
+        if alias:
+            self.__members__[alias] = self
+            setattr(self.__class__, alias, self)
+
+    value_to_member = {}
+
+    @classmethod
+    def get(cls, value):
+        return value_to_member[value]
+
+    someenum = type(
+        name,
+        (object,),
+        {"__members__": __members__, "__init__": __init__, "get": get},
+    )
+
+    # getframe() trick for pickling I don't understand courtesy
+    # Python namedtuple()
+    try:
+        module = sys._getframe(1).f_globals.get("__name__", "__main__")
+    except (AttributeError, ValueError):
+        pass
+    if module is not None:
+        someenum.__module__ = module
+
+    return someenum

@@ -1,5 +1,5 @@
 # util/compat.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -14,22 +14,20 @@ import operator
 import platform
 import sys
 
-
-py36 = sys.version_info >= (3, 6)
-py33 = sys.version_info >= (3, 3)
-py35 = sys.version_info >= (3, 5)
-py32 = sys.version_info >= (3, 2)
+py310 = sys.version_info >= (3, 10)
+py38 = sys.version_info >= (3, 8)
+py37 = sys.version_info >= (3, 7)
 py3k = sys.version_info >= (3, 0)
 py2k = sys.version_info < (3, 0)
-py265 = sys.version_info >= (2, 6, 5)
-jython = sys.platform.startswith("java")
-pypy = hasattr(sys, "pypy_version_info")
+pypy = platform.python_implementation() == "PyPy"
 
+
+cpython = platform.python_implementation() == "CPython"
 win32 = sys.platform.startswith("win")
 osx = sys.platform.startswith("darwin")
-cpython = not pypy and not jython  # TODO: something better for this ?
 arm = "aarch" in platform.machine().lower()
 
+has_refcount_gc = bool(cpython)
 
 contextmanager = contextlib.contextmanager
 dottedgetter = operator.attrgetter
@@ -49,17 +47,28 @@ FullArgSpec = collections.namedtuple(
     ],
 )
 
+
+class nullcontext(object):
+    """Context manager that does no additional processing.
+
+    Vendored from Python 3.7.
+
+    """
+
+    def __init__(self, enter_result=None):
+        self.enter_result = enter_result
+
+    def __enter__(self):
+        return self.enter_result
+
+    def __exit__(self, *excinfo):
+        pass
+
+
 try:
     import threading
 except ImportError:
     import dummy_threading as threading  # noqa
-
-
-# work around http://bugs.python.org/issue2646
-if py265:
-    safe_kwarg = lambda arg: arg  # noqa
-else:
-    safe_kwarg = str
 
 
 def inspect_getfullargspec(func):
@@ -100,6 +109,20 @@ def inspect_getfullargspec(func):
     )
 
 
+if py38:
+    from importlib import metadata as importlib_metadata
+else:
+    import importlib_metadata  # noqa
+
+
+def importlib_metadata_get(group):
+    ep = importlib_metadata.entry_points()
+    if hasattr(ep, "select"):
+        return ep.select(group=group)
+    else:
+        return ep.get(group, ())
+
+
 if py3k:
     import base64
     import builtins
@@ -111,6 +134,7 @@ if py3k:
     from io import BytesIO as byte_buffer
     from io import StringIO
     from itertools import zip_longest
+    from time import perf_counter
     from urllib.parse import (
         quote_plus,
         unquote_plus,
@@ -125,6 +149,7 @@ if py3k:
     text_type = str
     int_types = (int,)
     iterbytes = iter
+    long_type = int
 
     itertools_filterfalse = itertools.filterfalse
     itertools_filter = filter
@@ -192,12 +217,15 @@ if py3k:
     def ue(s):
         return s
 
-    if py32:
-        callable = callable  # noqa
-    else:
+    from typing import TYPE_CHECKING
 
-        def callable(fn):  # noqa
-            return hasattr(fn, "__call__")
+    # Unused. Kept for backwards compatibility.
+    callable = callable  # noqa
+
+    from abc import ABC
+
+    def _qualname(fn):
+        return fn.__qualname__
 
 
 else:
@@ -208,11 +236,17 @@ else:
     from StringIO import StringIO  # noqa
     from cStringIO import StringIO as byte_buffer  # noqa
     from itertools import izip_longest as zip_longest  # noqa
+    from time import clock as perf_counter  # noqa
     from urllib import quote  # noqa
     from urllib import quote_plus  # noqa
     from urllib import unquote  # noqa
     from urllib import unquote_plus  # noqa
     from urlparse import parse_qsl  # noqa
+
+    from abc import ABCMeta
+
+    class ABC(object):
+        __metaclass__ = ABCMeta
 
     try:
         import cPickle as pickle
@@ -224,6 +258,7 @@ else:
     binary_type = str
     text_type = unicode  # noqa
     int_types = int, long  # noqa
+    long_type = long  # noqa
 
     callable = callable  # noqa
     cmp = cmp  # noqa
@@ -284,8 +319,10 @@ else:
     def safe_bytestring(text):
         # py2k only
         if not isinstance(text, string_types):
-            return unicode(text).encode("ascii", errors="backslashreplace")
-        elif isinstance(text, unicode):
+            return unicode(text).encode(  # noqa: F821
+                "ascii", errors="backslashreplace"
+            )
+        elif isinstance(text, unicode):  # noqa: F821
             return text.encode("ascii", errors="backslashreplace")
         else:
             return text
@@ -299,12 +336,24 @@ else:
         "        raise exception\n"
     )
 
+    TYPE_CHECKING = False
 
-if py35:
+    def _qualname(meth):
+        """return __qualname__ equivalent for a method on a class"""
+
+        for cls in meth.im_class.__mro__:
+            if meth.__name__ in cls.__dict__:
+                break
+        else:
+            return meth.__name__
+
+        return "%s.%s" % (cls.__name__, meth.__name__)
+
+
+if py3k:
 
     def _formatannotation(annotation, base_module=None):
-        """vendored from python 3.7
-        """
+        """vendored from python 3.7"""
 
         if getattr(annotation, "__module__", None) == "typing":
             return repr(annotation).replace("typing.", "")
@@ -337,7 +386,7 @@ if py35:
         Instead of introducing all the object-creation overhead and having
         to reinvent from scratch, just copy their compatibility routine.
 
-        Utimately we would need to rewrite our "decorator" routine completely
+        Ultimately we would need to rewrite our "decorator" routine completely
         which is not really worth it right now, until all Python 2.x support
         is dropped.
 
@@ -380,7 +429,7 @@ if py35:
         return result
 
 
-elif py2k:
+else:
     from inspect import formatargspec as _inspect_formatargspec
 
     def inspect_formatargspec(*spec, **kw):
@@ -388,51 +437,48 @@ elif py2k:
         return _inspect_formatargspec(*spec[0:4], **kw)  # noqa
 
 
-else:
-    from inspect import formatargspec as inspect_formatargspec  # noqa
-
-
 # Fix deprecation of accessing ABCs straight from collections module
 # (which will stop working in 3.8).
-if py33:
+if py3k:
     import collections.abc as collections_abc
 else:
     import collections as collections_abc  # noqa
 
 
-@contextlib.contextmanager
-def nested(*managers):
-    """Implement contextlib.nested, mostly for unit tests.
+if py37:
+    import dataclasses
 
-    As tests still need to run on py2.6 we can't use multiple-with yet.
+    def dataclass_fields(cls):
+        """Return a sequence of all dataclasses.Field objects associated
+        with a class."""
 
-    Function is removed in py3k but also emits deprecation warning in 2.7
-    so just roll it here for everyone.
+        if dataclasses.is_dataclass(cls):
+            return dataclasses.fields(cls)
+        else:
+            return []
 
-    """
+    def local_dataclass_fields(cls):
+        """Return a sequence of all dataclasses.Field objects associated with
+        a class, excluding those that originate from a superclass."""
 
-    exits = []
-    vars_ = []
-    exc = (None, None, None)
-    try:
-        for mgr in managers:
-            exit_ = mgr.__exit__
-            enter = mgr.__enter__
-            vars_.append(enter())
-            exits.append(exit_)
-        yield vars_
-    except:
-        exc = sys.exc_info()
-    finally:
-        while exits:
-            exit_ = exits.pop()  # noqa
-            try:
-                if exit_(*exc):
-                    exc = (None, None, None)
-            except:
-                exc = sys.exc_info()
-        if exc != (None, None, None):
-            reraise(exc[0], exc[1], exc[2])
+        if dataclasses.is_dataclass(cls):
+            super_fields = set()
+            for sup in cls.__bases__:
+                super_fields.update(dataclass_fields(sup))
+            return [
+                f for f in dataclasses.fields(cls) if f not in super_fields
+            ]
+        else:
+            return []
+
+
+else:
+
+    def dataclass_fields(cls):
+        return []
+
+    def local_dataclass_fields(cls):
+        return []
 
 
 def raise_from_cause(exception, exc_info=None):
@@ -451,7 +497,7 @@ def reraise(tp, value, tb=None, cause=None):
     raise_(value, with_traceback=tb, from_=cause)
 
 
-def with_metaclass(meta, *bases):
+def with_metaclass(meta, *bases, **kw):
     """Create a base class with a metaclass.
 
     Drops the middle class upon creation.
@@ -466,8 +512,15 @@ def with_metaclass(meta, *bases):
 
         def __new__(cls, name, this_bases, d):
             if this_bases is None:
-                return type.__new__(cls, name, (), d)
-            return meta(name, bases, d)
+                cls = type.__new__(cls, name, (), d)
+            else:
+                cls = meta(name, bases, d)
+
+            if hasattr(cls, "__init_subclass__") and hasattr(
+                cls.__init_subclass__, "__func__"
+            ):
+                cls.__init_subclass__.__func__(cls, **kw)
+            return cls
 
     return metaclass("temporary_class", None, {})
 

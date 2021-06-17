@@ -38,6 +38,108 @@ def config_from_ini(ini):
     return config
 
 
+class TestBasics(base.BaseTestCase):
+
+    def test_basics(self):
+        self.maxDiff = None
+        config_text = """
+            [metadata]
+            name = foo
+            version = 1.0
+            author = John Doe
+            author_email = jd@example.com
+            maintainer = Jim Burke
+            maintainer_email = jb@example.com
+            home_page = http://example.com
+            summary = A foobar project.
+            description = Hello, world. This is a long description.
+            download_url = http://opendev.org/x/pbr
+            classifier =
+                Development Status :: 5 - Production/Stable
+                Programming Language :: Python
+            platform =
+                any
+            license = Apache 2.0
+            requires_dist =
+                Sphinx
+                requests
+            setup_requires_dist =
+                docutils
+            python_requires = >=3.6
+            provides_dist =
+                bax
+            provides_extras =
+                bar
+            obsoletes_dist =
+                baz
+
+            [files]
+            packages_root = src
+            packages =
+                foo
+            package_data =
+                "" = *.txt, *.rst
+                foo = *.msg
+            namespace_packages =
+                hello
+            data_files =
+                bitmaps =
+                    bm/b1.gif
+                    bm/b2.gif
+                config =
+                    cfg/data.cfg
+            scripts =
+                scripts/hello-world.py
+            modules =
+                mod1
+            """
+        expected = {
+            'name': u'foo',
+            'version': u'1.0',
+            'author': u'John Doe',
+            'author_email': u'jd@example.com',
+            'maintainer': u'Jim Burke',
+            'maintainer_email': u'jb@example.com',
+            'url': u'http://example.com',
+            'description': u'A foobar project.',
+            'long_description': u'Hello, world. This is a long description.',
+            'download_url': u'http://opendev.org/x/pbr',
+            'classifiers': [
+                u'Development Status :: 5 - Production/Stable',
+                u'Programming Language :: Python',
+            ],
+            'platforms': [u'any'],
+            'license': u'Apache 2.0',
+            'install_requires': [
+                u'Sphinx',
+                u'requests',
+            ],
+            'setup_requires': [u'docutils'],
+            'python_requires': u'>=3.6',
+            'provides': [u'bax'],
+            'provides_extras': [u'bar'],
+            'obsoletes': [u'baz'],
+            'extras_require': {},
+
+            'package_dir': {'': u'src'},
+            'packages': [u'foo'],
+            'package_data': {
+                '': ['*.txt,', '*.rst'],
+                'foo': ['*.msg'],
+            },
+            'namespace_packages': [u'hello'],
+            'data_files': [
+                ('bitmaps', ['bm/b1.gif', 'bm/b2.gif']),
+                ('config', ['cfg/data.cfg']),
+            ],
+            'scripts': [u'scripts/hello-world.py'],
+            'py_modules': [u'mod1'],
+        }
+        config = config_from_ini(config_text)
+        actual = util.setup_cfg_to_setup_kwargs(config)
+        self.assertDictEqual(expected, actual)
+
+
 class TestExtrasRequireParsingScenarios(base.BaseTestCase):
 
     scenarios = [
@@ -197,8 +299,7 @@ class TestDataFilesParsing(base.BaseTestCase):
         config = config_from_ini(self.config_text)
         kwargs = util.setup_cfg_to_setup_kwargs(config)
 
-        self.assertEqual(self.data_files,
-                         list(kwargs['data_files']))
+        self.assertEqual(self.data_files, kwargs['data_files'])
 
 
 class TestUTF8DescriptionFile(base.BaseTestCase):

@@ -1,5 +1,5 @@
 # sqlite/pysqlite.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -65,7 +65,7 @@ Modern versions of SQLite support an alternative system of connecting using a
 that additional driver-level arguments can be passed including options such as
 "read only".   The Python sqlite3 driver supports this mode under modern Python
 3 versions.   The SQLAlchemy pysqlite driver supports this mode of use by
-specifing "uri=true" in the URL query string.  The SQLite-level "URI" is kept
+specifying "uri=true" in the URL query string.  The SQLite-level "URI" is kept
 as the "database" portion of the SQLAlchemy url (that is, following a slash)::
 
     e = create_engine("sqlite:///file:path/to/database?mode=ro&uri=true")
@@ -119,6 +119,46 @@ that creates a Python sqlite3 driver level connection directly.
 
     `Uniform Resource Identifiers <https://www.sqlite.org/uri.html>`_ - in
     the SQLite documentation
+
+.. _pysqlite_regexp:
+
+Regular Expression Support
+---------------------------
+
+.. versionadded:: 1.4
+
+Support for the :meth:`_sql.ColumnOperators.regexp_match` operator is provided
+using Python's re.search_ function.  SQLite itself does not include a working
+regular expression operator; instead, it includes a non-implemented placeholder
+operator ``REGEXP`` that calls a user-defined function that must be provided.
+
+SQLAlchemy's implementation makes use of the pysqlite create_function_ hook
+as follows::
+
+
+    def regexp(a, b):
+        return re.search(a, b) is not None
+
+    sqlite_connection.create_function(
+        "regexp", 2, regexp,
+    )
+
+There is currently no support for regular expression flags as a separate
+argument, as these are not supported by SQLite's REGEXP operator, however these
+may be included inline within the regular expression string.  See `Python regular expressions`_ for
+details.
+
+.. seealso::
+
+    `Python regular expressions`_: Documentation for Python's regular expression syntax.
+
+.. _create_function: https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.create_function
+
+.. _re.search: https://docs.python.org/3/library/re.html#re.search
+
+.. _Python regular expressions: https://docs.python.org/3/library/re.html#re.search
+
+
 
 Compatibility with sqlite3 "native" date and datetime types
 -----------------------------------------------------------
@@ -272,6 +312,7 @@ same column, use a custom type that will check each row individually::
 
     class MixedBinary(TypeDecorator):
         impl = String
+        cache_ok = True
 
         def process_result_value(self, value, dialect):
             if isinstance(value, str):
@@ -325,7 +366,7 @@ ourselves. This is achieved using two event listeners::
     @event.listens_for(engine, "begin")
     def do_begin(conn):
         # emit our own BEGIN
-        conn.execute("BEGIN")
+        conn.exec_driver_sql("BEGIN")
 
 .. warning:: When using the above recipe, it is advised to not use the
    :paramref:`.Connection.execution_options.isolation_level` setting on
@@ -345,7 +386,7 @@ by adding the desired locking mode to our ``"BEGIN"``::
 
     @event.listens_for(engine, "begin")
     def do_begin(conn):
-        conn.execute("BEGIN EXCLUSIVE")
+        conn.exec_driver_sql("BEGIN EXCLUSIVE")
 
 .. seealso::
 
@@ -362,6 +403,7 @@ by adding the desired locking mode to our ``"BEGIN"``::
 """  # noqa
 
 import os
+import re
 
 from .base import DATE
 from .base import DATETIME
@@ -402,6 +444,7 @@ class _SQLite_pysqliteDate(DATE):
 
 class SQLiteDialect_pysqlite(SQLiteDialect):
     default_paramstyle = "qmark"
+    supports_statement_cache = True
 
     colspecs = util.update_copy(
         SQLiteDialect.colspecs,
@@ -432,7 +475,9 @@ class SQLiteDialect_pysqlite(SQLiteDialect):
 
     @classmethod
     def _is_url_file_db(cls, url):
-        if url.database and url.database != ":memory:":
+        if (url.database and url.database != ":memory:") and (
+            url.query.get("mode", None) != "memory"
+        ):
             return True
         else:
             return False
@@ -460,6 +505,40 @@ class SQLiteDialect_pysqlite(SQLiteDialect):
             return super(SQLiteDialect_pysqlite, self).set_isolation_level(
                 connection, level
             )
+
+    def on_connect(self):
+        connect = super(SQLiteDialect_pysqlite, self).on_connect()
+
+        def regexp(a, b):
+            if b is None:
+                return None
+            return re.search(a, b) is not None
+
+        def set_regexp(connection):
+            if hasattr(connection, "connection"):
+                dbapi_connection = connection.connection
+            else:
+                dbapi_connection = connection
+            dbapi_connection.create_function(
+                "regexp",
+                2,
+                regexp,
+            )
+
+        fns = [set_regexp]
+
+        if self.isolation_level is not None:
+
+            def iso_level(conn):
+                self.set_isolation_level(conn, self.isolation_level)
+
+            fns.append(iso_level)
+
+        def connect(conn):
+            for fn in fns:
+                fn(conn)
+
+        return connect
 
     def create_connect_args(self, url):
         if url.username or url.password or url.host or url.port:
@@ -491,7 +570,7 @@ class SQLiteDialect_pysqlite(SQLiteDialect):
             util.coerce_kw_type(opts, key, type_, dest=pysqlite_opts)
 
         if pysqlite_opts.get("uri", False):
-            uri_opts = opts.copy()
+            uri_opts = dict(opts)
             # here, we are actually separating the parameters that go to
             # sqlite3/pysqlite vs. those that go the SQLite URI.  What if
             # two names conflict?  again, this seems to be not the case right

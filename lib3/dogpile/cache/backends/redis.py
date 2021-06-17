@@ -8,18 +8,22 @@ Provides backends for talking to `Redis <http://redis.io>`_.
 
 from __future__ import absolute_import
 
-import pickle
+import typing
 import warnings
 
-from ..api import CacheBackend
+from ..api import BytesBackend
 from ..api import NO_VALUE
 
-redis = None
+if typing.TYPE_CHECKING:
+    import redis
+else:
+    # delayed import
+    redis = None
 
 __all__ = ("RedisBackend", "RedisSentinelBackend")
 
 
-class RedisBackend(CacheBackend):
+class RedisBackend(BytesBackend):
     """A `Redis <http://redis.io/>`_ backend, using the
     `redis-py <http://pypi.python.org/pypi/redis/>`_ backend.
 
@@ -45,13 +49,9 @@ class RedisBackend(CacheBackend):
     :param url: string. If provided, will override separate host/port/db
      params.  The format is that accepted by ``StrictRedis.from_url()``.
 
-     .. versionadded:: 0.4.1
-
     :param host: string, default is ``localhost``.
 
     :param password: string, default is no password.
-
-     .. versionadded:: 0.4.1
 
     :param port: integer, default is ``6379``.
 
@@ -70,18 +70,12 @@ class RedisBackend(CacheBackend):
      Redis should expire it.  This argument is only valid when
      ``distributed_lock`` is ``True``.
 
-     .. versionadded:: 0.5.0
-
     :param socket_timeout: float, seconds for socket timeout.
      Default is None (no timeout).
-
-     .. versionadded:: 0.5.4
 
     :param lock_sleep: integer, number of seconds to sleep when failed to
      acquire a lock.  This argument is only valid when
      ``distributed_lock`` is ``True``.
-
-     .. versionadded:: 0.5.0
 
     :param connection_pool: ``redis.ConnectionPool`` object.  If provided,
      this object supersedes other connection arguments passed to the
@@ -89,14 +83,10 @@ class RedisBackend(CacheBackend):
      socket_timeout, and will be passed to ``redis.StrictRedis`` as the
      source of connectivity.
 
-     .. versionadded:: 0.5.4
-
     :param thread_local_lock: bool, whether a thread-local Redis lock object
      should be used. This is the default, but is not compatible with
      asynchronous runners, as they run in a different thread than the one
      used to create the lock.
-
-     .. versionadded:: 0.9.1
 
     """
 
@@ -169,36 +159,29 @@ class RedisBackend(CacheBackend):
         else:
             return None
 
-    def get(self, key):
+    def get_serialized(self, key):
         value = self.reader_client.get(key)
         if value is None:
             return NO_VALUE
-        return pickle.loads(value)
+        return value
 
-    def get_multi(self, keys):
+    def get_serialized_multi(self, keys):
         if not keys:
             return []
         values = self.reader_client.mget(keys)
-        return [pickle.loads(v) if v is not None else NO_VALUE for v in values]
+        return [v if v is not None else NO_VALUE for v in values]
 
-    def set(self, key, value):
+    def set_serialized(self, key, value):
         if self.redis_expiration_time:
             self.writer_client.setex(
                 key,
                 self.redis_expiration_time,
-                pickle.dumps(value, pickle.HIGHEST_PROTOCOL),
+                value,
             )
         else:
-            self.writer_client.set(
-                key, pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
-            )
+            self.writer_client.set(key, value)
 
-    def set_multi(self, mapping):
-        mapping = dict(
-            (k, pickle.dumps(v, pickle.HIGHEST_PROTOCOL))
-            for k, v in mapping.items()
-        )
-
+    def set_serialized_multi(self, mapping):
         if not self.redis_expiration_time:
             self.writer_client.mset(mapping)
         else:
@@ -289,28 +272,19 @@ class RedisSentinelBackend(RedisBackend):
 
     def __init__(self, arguments):
         arguments = arguments.copy()
-        self._imports()
-        self.password = arguments.pop("password", None)
-        self.db = arguments.pop("db", 0)
-        self.distributed_lock = arguments.get("distributed_lock", True)
-        self.socket_timeout = arguments.pop("socket_timeout", None)
+
         self.sentinels = arguments.pop("sentinels", None)
         self.service_name = arguments.pop("service_name", "mymaster")
         self.sentinel_kwargs = arguments.pop("sentinel_kwargs", {})
         self.connection_kwargs = arguments.pop("connection_kwargs", {})
 
-        self.lock_timeout = arguments.get("lock_timeout", None)
-        self.lock_sleep = arguments.get("lock_sleep", 0.1)
-        self.thread_local_lock = arguments.get("thread_local_lock", False)
-
-        if self.distributed_lock and self.thread_local_lock:
-            warnings.warn(
-                "The Redis backend thread_local_lock parameter should be "
-                "set to False when distributed_lock is True"
-            )
-
-        self.redis_expiration_time = arguments.pop("redis_expiration_time", 0)
-        self._create_client()
+        super().__init__(
+            arguments={
+                "distributed_lock": True,
+                "thread_local_lock": False,
+                **arguments,
+            },
+        )
 
     def _imports(self):
         # defer imports until backend is used
@@ -335,7 +309,7 @@ class RedisSentinelBackend(RedisBackend):
         sentinel = redis.sentinel.Sentinel(
             self.sentinels,
             sentinel_kwargs=sentinel_kwargs,
-            **connection_kwargs
+            **connection_kwargs,
         )
         self.writer_client = sentinel.master_for(self.service_name)
         self.reader_client = sentinel.slave_for(self.service_name)

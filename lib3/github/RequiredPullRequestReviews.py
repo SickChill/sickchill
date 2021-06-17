@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2018 Steve Kowalik <steven@wedontsleep.org>                        #
@@ -29,7 +27,7 @@ import github.Team
 
 class RequiredPullRequestReviews(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Required Pull Request Reviews. The reference can be found here https://developer.github.com/v3/repos/branches/#get-pull-request-review-enforcement-of-protected-branch
+    This class represents Required Pull Request Reviews. The reference can be found here https://docs.github.com/en/rest/reference/repos/branches#get-pull-request-review-enforcement-of-protected-branch
     """
 
     def __repr__(self):

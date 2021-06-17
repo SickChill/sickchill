@@ -1,5 +1,5 @@
 # databases/__init__.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -16,7 +16,7 @@ from ..dialects.oracle import base as oracle
 from ..dialects.postgresql import base as postgresql
 from ..dialects.sqlite import base as sqlite
 from ..dialects.sybase import base as sybase
-
+from ..util import warn_deprecated_20
 
 postgres = postgresql
 
@@ -29,4 +29,10 @@ __all__ = (
     "sqlite",
     "oracle",
     "sybase",
+)
+
+
+warn_deprecated_20(
+    "The `database` package is deprecated and will be removed in v2.0 "
+    "of sqlalchemy. Use the `dialects` package instead."
 )

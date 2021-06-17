@@ -46,7 +46,7 @@ class Find(TMDB):
             language: (optional) ISO 639-1 code.
             external_source: Allowed Values: imdb_id, freebase_mid,
                 freebase_id, tvdb_id, tvrage_id, facebook_id, twitter_id,
-                instagram_id 
+                instagram_id
 
         Returns:
             A dict respresentation of the JSON returned from the API.

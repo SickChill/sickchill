@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2018 bbi-yggy <yossarian@blackbirdinteractive.com>                 #
@@ -35,7 +33,7 @@ from . import Consts
 
 class ProjectCard(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Project Cards. The reference can be found here https://developer.github.com/v3/projects/cards
+    This class represents Project Cards. The reference can be found here https://docs.github.com/en/rest/reference/projects#cards
     """
 
     def __repr__(self):
@@ -116,7 +114,7 @@ class ProjectCard(github.GithubObject.CompletableGithubObject):
     # the API doesn't make it clear which you are dealing with.
     def get_content(self, content_type=github.GithubObject.NotSet):
         """
-        :calls: `GET /repos/:owner/:repo/pulls/:number <https://developer.github.com/v3/pulls/#get-a-single-pull-request>`_
+        :calls: `GET /repos/{owner}/{repo}/pulls/{number} <https://docs.github.com/en/rest/reference/pulls#get-a-single-pull-request>`_
         :param content_type: string, optional
         :rtype: :class:`github.PullRequest.PullRequest` or :class:`github.Issue.Issue`
         """
@@ -133,13 +131,13 @@ class ProjectCard(github.GithubObject.CompletableGithubObject):
             url = self.content_url
             retclass = github.Issue.Issue
         else:
-            raise ValueError("Unknown content type: %s" % content_type)
+            raise ValueError(f"Unknown content type: {content_type}")
         headers, data = self._requester.requestJsonAndCheck("GET", url)
         return retclass(self._requester, headers, data, completed=True)
 
     def move(self, position, column):
         """
-        :calls: `POST /projects/columns/cards/:card_id/moves <https://developer.github.com/v3/projects/cards>`_
+        :calls: `POST /projects/columns/cards/{card_id}/moves <https://docs.github.com/en/rest/reference/projects#cards>`_
         :param position: string
         :param column: :class:`github.ProjectColumn.ProjectColumn` or int
         :rtype: bool
@@ -156,7 +154,7 @@ class ProjectCard(github.GithubObject.CompletableGithubObject):
         }
         status, _, _ = self._requester.requestJson(
             "POST",
-            self.url + "/moves",
+            f"{self.url}/moves",
             input=post_parameters,
             headers={"Accept": Consts.mediaTypeProjectsPreview},
         )
@@ -164,11 +162,13 @@ class ProjectCard(github.GithubObject.CompletableGithubObject):
 
     def delete(self):
         """
-        :calls: `DELETE /projects/columns/cards/:card_id <https://developer.github.com/v3/projects/cards>`_
+        :calls: `DELETE /projects/columns/cards/{card_id} <https://docs.github.com/en/rest/reference/projects#cards>`_
         :rtype: bool
         """
         status, _, _ = self._requester.requestJson(
-            "DELETE", self.url, headers={"Accept": Consts.mediaTypeProjectsPreview},
+            "DELETE",
+            self.url,
+            headers={"Accept": Consts.mediaTypeProjectsPreview},
         )
         return status == 204
 
@@ -176,7 +176,7 @@ class ProjectCard(github.GithubObject.CompletableGithubObject):
         self, note=github.GithubObject.NotSet, archived=github.GithubObject.NotSet
     ):
         """
-        :calls: `PATCH /projects/columns/cards/:card_id <http://developer.github.com/v3/projects/cards>`_
+        :calls: `PATCH /projects/columns/cards/{card_id} <http://docs.github.com/en/rest/reference/projects#cards>`_
         :param note: string
         :param archived: bool
         :rtype: None

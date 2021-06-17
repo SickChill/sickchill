@@ -1,5 +1,5 @@
 # mssql/mxodbc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -11,6 +11,10 @@
     :dbapi: mxodbc
     :connectstring: mssql+mxodbc://<username>:<password>@<dsnname>
     :url: http://www.egenix.com/
+
+.. deprecated:: 1.4 The mxODBC DBAPI is deprecated and will be removed
+   in a future version. Please use one of the supported DBAPIs to
+   connect to mssql.
 
 Execution Modes
 ---------------
@@ -55,8 +59,7 @@ from ...connectors.mxodbc import MxODBCConnector
 
 
 class _MSNumeric_mxodbc(_MSNumeric_pyodbc):
-    """Include pyodbc's numeric processor.
-    """
+    """Include pyodbc's numeric processor."""
 
 
 class _MSDate_mxodbc(_MSDate):
@@ -123,6 +126,7 @@ class MSDialect_mxodbc(MxODBCConnector, MSDialect):
     # this is only needed if "native ODBC" mode is used,
     # which is now disabled by default.
     # statement_compiler = MSSQLStrictCompiler
+    supports_statement_cache = True
 
     execution_ctx_cls = MSExecutionContext_mxodbc
 

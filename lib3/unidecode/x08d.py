@@ -11,7 +11,7 @@ data = (
 'Tan ',    # 0x09
 'Zan ',    # 0x0a
 'Yan ',    # 0x0b
-'[?] ',    # 0x0c
+None,    # 0x0c
 'Shan ',    # 0x0d
 'Wan ',    # 0x0e
 'Ying ',    # 0x0f
@@ -23,7 +23,7 @@ data = (
 'Du ',    # 0x15
 'Shu ',    # 0x16
 'Yan ',    # 0x17
-'[?] ',    # 0x18
+None,    # 0x18
 'Xuan ',    # 0x19
 'Long ',    # 0x1a
 'Gan ',    # 0x1b
@@ -175,7 +175,7 @@ data = (
 'Yao ',    # 0xad
 'Zao ',    # 0xae
 'Ti ',    # 0xaf
-'[?] ',    # 0xb0
+None,    # 0xb0
 'Zan ',    # 0xb1
 'Zan ',    # 0xb2
 'Zu ',    # 0xb3

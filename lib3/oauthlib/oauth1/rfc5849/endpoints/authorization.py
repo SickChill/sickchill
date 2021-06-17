@@ -6,17 +6,12 @@ oauthlib.oauth1.rfc5849.endpoints.authorization
 This module is an implementation of various logic needed
 for signing and checking OAuth 1.0 RFC 5849 requests.
 """
-from __future__ import absolute_import, unicode_literals
+from urllib.parse import urlencode
 
-from oauthlib.common import Request, add_params_to_uri
+from oauthlib.common import add_params_to_uri
 
 from .. import errors
 from .base import BaseEndpoint
-
-try:
-    from urllib import urlencode
-except ImportError:
-    from urllib.parse import urlencode
 
 
 class AuthorizationEndpoint(BaseEndpoint):

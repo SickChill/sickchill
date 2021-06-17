@@ -254,8 +254,13 @@ class DOMHTMLMovieParser(DOMParserBase):
                            transform=analyze_og_title)
         ),
         Rule(
+            key='localized title',
+            extractor=Path('//div[@class="titlereference-header"]//span[@class="titlereference-title-year"]/preceding-sibling::text()',
+                           transform=lambda x: re_space.sub(' ', x).strip())
+        ),
+        Rule(
             key='original title',
-            extractor=Path('//div[@class="titlereference-header"]//h3[@itemprop="name"]//text()',
+            extractor=Path('//div[@class="titlereference-header"]//span[@class="titlereference-original-title-label"]/preceding-sibling::text()',
                            transform=lambda x: re_space.sub(' ', x).strip())
         ),
 
@@ -451,7 +456,7 @@ class DOMHTMLMovieParser(DOMParserBase):
         Rule(
             key='creator',
             extractor=Rules(
-                foreach='//td[starts-with(text(), "Creator")]/..//a',
+                foreach='//div[starts-with(normalize-space(text()), "Creator")]/ul/li[1]/a',
                 rules=[
                     Rule(
                         key='name',
@@ -1430,7 +1435,7 @@ class DOMHTMLRatingsParser(DOMParserBase):
         rparser = DOMHTMLRatingsParser()
         result = rparser.parse(userratings_html_string)
     """
-    re_means = re.compile('mean\s*=\s*([0-9]\.[0-9])\s*median\s*=\s*([0-9])', re.I)
+    re_means = re.compile(r'mean\s*=\s*([0-9]\.[0-9])\s*median\s*=\s*([0-9])', re.I)
 
     rules = [
         Rule(
@@ -1892,7 +1897,7 @@ class DOMHTMLTechParser(DOMParserBase):
         (re.compile('<p>(.*?)</p>', re.I), r'\1<br/>'),
         (re.compile('(</td><td valign="top">)', re.I), r'\1::'),
         (re.compile('(</tr><tr>)', re.I), r'\n\1'),
-        (re.compile('<span class="ghost">\|</span>', re.I), r':::'),
+        (re.compile(r'<span class="ghost">\|</span>', re.I), r':::'),
         (re.compile('<br/?>', re.I), r':::')
         # this is for splitting individual entries
     ]

@@ -1,5 +1,5 @@
 # orm/unitofwork.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -15,11 +15,22 @@ organizes them in order of dependency, and executes.
 
 from . import attributes
 from . import exc as orm_exc
-from . import persistence
 from . import util as orm_util
 from .. import event
 from .. import util
 from ..util import topological
+
+
+def _warn_for_cascade_backrefs(state, prop):
+    util.warn_deprecated_20(
+        '"%s" object is being merged into a Session along the backref '
+        'cascade path for relationship "%s"; in SQLAlchemy 2.0, this '
+        "reverse cascade will not take place.  Set cascade_backrefs to "
+        "False in either the relationship() or backref() function for "
+        "the 2.0 behavior; or to set globally for the whole "
+        "Session, set the future=True flag" % (state.class_.__name__, prop),
+        code="s9r1",
+    )
 
 
 def track_cascade_events(descriptor, prop):
@@ -43,11 +54,17 @@ def track_cascade_events(descriptor, prop):
 
             prop = state.manager.mapper._props[key]
             item_state = attributes.instance_state(item)
+
             if (
                 prop._cascade.save_update
-                and (prop.cascade_backrefs or key == initiator.key)
+                and (
+                    (prop.cascade_backrefs and not sess.future)
+                    or key == initiator.key
+                )
                 and not sess._contains_state(item_state)
             ):
+                if key != initiator.key:
+                    _warn_for_cascade_backrefs(item_state, prop)
                 sess._save_or_update_state(item_state)
         return item
 
@@ -102,9 +119,14 @@ def track_cascade_events(descriptor, prop):
                 newvalue_state = attributes.instance_state(newvalue)
                 if (
                     prop._cascade.save_update
-                    and (prop.cascade_backrefs or key == initiator.key)
+                    and (
+                        (prop.cascade_backrefs and not sess.future)
+                        or key == initiator.key
+                    )
                     and not sess._contains_state(newvalue_state)
                 ):
+                    if key != initiator.key:
+                        _warn_for_cascade_backrefs(newvalue_state, prop)
                     sess._save_or_update_state(newvalue_state)
 
             if (
@@ -122,6 +144,7 @@ def track_cascade_events(descriptor, prop):
                     sess.expunge(oldvalue)
         return newvalue
 
+    event.listen(descriptor, "append_wo_mutation", append, raw=True)
     event.listen(descriptor, "append", append, raw=True, retval=True)
     event.listen(descriptor, "remove", remove, raw=True, retval=True)
     event.listen(descriptor, "set", set_, raw=True, retval=True)
@@ -234,7 +257,9 @@ class UOWTransaction(object):
                 history = impl.get_history(
                     state,
                     state.dict,
-                    attributes.PASSIVE_OFF | attributes.LOAD_AGAINST_COMMITTED,
+                    attributes.PASSIVE_OFF
+                    | attributes.LOAD_AGAINST_COMMITTED
+                    | attributes.NO_RAISE,
                 )
                 if history and impl.uses_objects:
                     state_history = history.as_state()
@@ -246,7 +271,11 @@ class UOWTransaction(object):
             # TODO: store the history as (state, object) tuples
             # so we don't have to keep converting here
             history = impl.get_history(
-                state, state.dict, passive | attributes.LOAD_AGAINST_COMMITTED
+                state,
+                state.dict,
+                passive
+                | attributes.LOAD_AGAINST_COMMITTED
+                | attributes.NO_RAISE,
             )
             if history and impl.uses_objects:
                 state_history = history.as_state()
@@ -402,6 +431,10 @@ class UOWTransaction(object):
     def execute(self):
         postsort_actions = self._generate_actions()
 
+        postsort_actions = sorted(
+            postsort_actions,
+            key=lambda item: item.sort_key,
+        )
         # sort = topological.sort(self.dependencies, postsort_actions)
         # print "--------------"
         # print "\ndependencies:", self.dependencies
@@ -411,9 +444,10 @@ class UOWTransaction(object):
 
         # execute
         if self.cycles:
-            for set_ in topological.sort_as_subsets(
+            for subset in topological.sort_as_subsets(
                 self.dependencies, postsort_actions
             ):
+                set_ = set(subset)
                 while set_:
                     n = set_.pop()
                     n.execute_aggregate(self, set_)
@@ -522,10 +556,15 @@ class PostSortRec(object):
 
 
 class ProcessAll(IterateMappersMixin, PostSortRec):
-    __slots__ = "dependency_processor", "isdelete", "fromparent"
+    __slots__ = "dependency_processor", "isdelete", "fromparent", "sort_key"
 
     def __init__(self, uow, dependency_processor, isdelete, fromparent):
         self.dependency_processor = dependency_processor
+        self.sort_key = (
+            "ProcessAll",
+            self.dependency_processor.sort_key,
+            isdelete,
+        )
         self.isdelete = isdelete
         self.fromparent = fromparent
         uow.deps[dependency_processor.parent.base_mapper].add(
@@ -562,13 +601,16 @@ class ProcessAll(IterateMappersMixin, PostSortRec):
 
 
 class PostUpdateAll(PostSortRec):
-    __slots__ = "mapper", "isdelete"
+    __slots__ = "mapper", "isdelete", "sort_key"
 
     def __init__(self, uow, mapper, isdelete):
         self.mapper = mapper
         self.isdelete = isdelete
+        self.sort_key = ("PostUpdateAll", mapper._sort_key, isdelete)
 
+    @util.preload_module("sqlalchemy.orm.persistence")
     def execute(self, uow):
+        persistence = util.preloaded.orm_persistence
         states, cols = uow.post_update_states[self.mapper]
         states = [s for s in states if uow.states[s][0] == self.isdelete]
 
@@ -576,14 +618,16 @@ class PostUpdateAll(PostSortRec):
 
 
 class SaveUpdateAll(PostSortRec):
-    __slots__ = ("mapper",)
+    __slots__ = ("mapper", "sort_key")
 
     def __init__(self, uow, mapper):
         self.mapper = mapper
+        self.sort_key = ("SaveUpdateAll", mapper._sort_key)
         assert mapper is mapper.base_mapper
 
+    @util.preload_module("sqlalchemy.orm.persistence")
     def execute(self, uow):
-        persistence.save_obj(
+        util.preloaded.orm_persistence.save_obj(
             self.mapper,
             uow.states_for_mapper_hierarchy(self.mapper, False, False),
             uow,
@@ -611,14 +655,16 @@ class SaveUpdateAll(PostSortRec):
 
 
 class DeleteAll(PostSortRec):
-    __slots__ = ("mapper",)
+    __slots__ = ("mapper", "sort_key")
 
     def __init__(self, uow, mapper):
         self.mapper = mapper
+        self.sort_key = ("DeleteAll", mapper._sort_key)
         assert mapper is mapper.base_mapper
 
+    @util.preload_module("sqlalchemy.orm.persistence")
     def execute(self, uow):
-        persistence.delete_obj(
+        util.preloaded.orm_persistence.delete_obj(
             self.mapper,
             uow.states_for_mapper_hierarchy(self.mapper, True, False),
             uow,
@@ -646,10 +692,11 @@ class DeleteAll(PostSortRec):
 
 
 class ProcessState(PostSortRec):
-    __slots__ = "dependency_processor", "isdelete", "state"
+    __slots__ = "dependency_processor", "isdelete", "state", "sort_key"
 
     def __init__(self, uow, dependency_processor, isdelete, state):
         self.dependency_processor = dependency_processor
+        self.sort_key = ("ProcessState", dependency_processor.sort_key)
         self.isdelete = isdelete
         self.state = state
 
@@ -681,13 +728,16 @@ class ProcessState(PostSortRec):
 
 
 class SaveUpdateState(PostSortRec):
-    __slots__ = "state", "mapper"
+    __slots__ = "state", "mapper", "sort_key"
 
     def __init__(self, uow, state):
         self.state = state
         self.mapper = state.mapper.base_mapper
+        self.sort_key = ("ProcessState", self.mapper._sort_key)
 
+    @util.preload_module("sqlalchemy.orm.persistence")
     def execute_aggregate(self, uow, recs):
+        persistence = util.preloaded.orm_persistence
         cls_ = self.__class__
         mapper = self.mapper
         our_recs = [
@@ -706,13 +756,16 @@ class SaveUpdateState(PostSortRec):
 
 
 class DeleteState(PostSortRec):
-    __slots__ = "state", "mapper"
+    __slots__ = "state", "mapper", "sort_key"
 
     def __init__(self, uow, state):
         self.state = state
         self.mapper = state.mapper.base_mapper
+        self.sort_key = ("DeleteState", self.mapper._sort_key)
 
+    @util.preload_module("sqlalchemy.orm.persistence")
     def execute_aggregate(self, uow, recs):
+        persistence = util.preloaded.orm_persistence
         cls_ = self.__class__
         mapper = self.mapper
         our_recs = [

@@ -1,12 +1,9 @@
 # mssql/information_schema.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
-
-# TODO: should be using the sys. catalog with SQL Server, not information
-# schema
 
 from ... import cast
 from ... import Column
@@ -17,6 +14,7 @@ from ...ext.compiler import compiles
 from ...sql import expression
 from ...types import Boolean
 from ...types import Integer
+from ...types import Numeric
 from ...types import String
 from ...types import TypeDecorator
 from ...types import Unicode
@@ -27,6 +25,7 @@ ischema = MetaData()
 
 class CoerceUnicode(TypeDecorator):
     impl = Unicode
+    cache_ok = True
 
     def process_bind_param(self, value, dialect):
         if util.py2k and isinstance(value, util.binary_type):
@@ -91,6 +90,25 @@ columns = Table(
     Column("COLUMN_DEFAULT", Integer, key="column_default"),
     Column("COLLATION_NAME", String, key="collation_name"),
     schema="INFORMATION_SCHEMA",
+)
+
+mssql_temp_table_columns = Table(
+    "COLUMNS",
+    ischema,
+    Column("TABLE_SCHEMA", CoerceUnicode, key="table_schema"),
+    Column("TABLE_NAME", CoerceUnicode, key="table_name"),
+    Column("COLUMN_NAME", CoerceUnicode, key="column_name"),
+    Column("IS_NULLABLE", Integer, key="is_nullable"),
+    Column("DATA_TYPE", String, key="data_type"),
+    Column("ORDINAL_POSITION", Integer, key="ordinal_position"),
+    Column(
+        "CHARACTER_MAXIMUM_LENGTH", Integer, key="character_maximum_length"
+    ),
+    Column("NUMERIC_PRECISION", Integer, key="numeric_precision"),
+    Column("NUMERIC_SCALE", Integer, key="numeric_scale"),
+    Column("COLUMN_DEFAULT", Integer, key="column_default"),
+    Column("COLLATION_NAME", String, key="collation_name"),
+    schema="tempdb.INFORMATION_SCHEMA",
 )
 
 constraints = Table(
@@ -171,5 +189,44 @@ computed_columns = Table(
     Column("is_computed", Boolean),
     Column("is_persisted", Boolean),
     Column("definition", CoerceUnicode),
+    schema="sys",
+)
+
+sequences = Table(
+    "SEQUENCES",
+    ischema,
+    Column("SEQUENCE_CATALOG", CoerceUnicode, key="sequence_catalog"),
+    Column("SEQUENCE_SCHEMA", CoerceUnicode, key="sequence_schema"),
+    Column("SEQUENCE_NAME", CoerceUnicode, key="sequence_name"),
+    schema="INFORMATION_SCHEMA",
+)
+
+
+class IdentitySqlVariant(TypeDecorator):
+    r"""This type casts sql_variant columns in the identity_columns view
+    to numeric. This is required because:
+
+    * pyodbc does not support sql_variant
+    * pymssql under python 2 return the byte representation of the number,
+      int 1 is returned as "\x01\x00\x00\x00". On python 3 it returns the
+      correct value as string.
+    """
+    impl = Unicode
+    cache_ok = True
+
+    def column_expression(self, colexpr):
+        return cast(colexpr, Numeric)
+
+
+identity_columns = Table(
+    "identity_columns",
+    ischema,
+    Column("object_id", Integer),
+    Column("name", CoerceUnicode),
+    Column("is_identity", Boolean),
+    Column("seed_value", IdentitySqlVariant),
+    Column("increment_value", IdentitySqlVariant),
+    Column("last_value", IdentitySqlVariant),
+    Column("is_not_for_replication", Boolean),
     schema="sys",
 )
