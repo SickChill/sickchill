@@ -25,7 +25,7 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, filename: bool = True, showObj: TVShow = None, tryIndexers: bool = False, naming_pattern: bool = False, parse_method: str = None):
+    def __init__(self, filename: bool = True, showObj = None, tryIndexers: bool = False, naming_pattern: bool = False, parse_method: str = None):
 
         self.filename: bool = filename
         self.showObj: TVShow = showObj
