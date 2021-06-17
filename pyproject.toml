@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sickchill"
-version = "2021.6.16-1"
+version = "2021.6.16-3"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPLv3"
 
@@ -144,6 +144,7 @@ commands =
     /bin/rm -f {toxinidir}/tests/sickchill.db
     /bin/rm -f {toxinidir}/tests/cache.db
     /bin/rm -f {toxinidir}/tests/failed.db
+    pip install -Ur requirements.txt
     pytest
     - codecov -e GITHUB_RUN_ID GITHUB_REF
 
@@ -161,7 +162,8 @@ deps =
     codecov
 commands =
     cmd /c del /f /q {toxinidir}\\tests\\sickchill.db {toxinidir}\\tests\\cache.db {toxinidir}\\tests\\failed.db 2> nul
-    pytest tests/
+    pip install -Ur requirements.txt
+    pytest
     - codecov -e APPVEYOR_REPO_BRANCH PYTHON_ARCH
 
 [testenv:py38-flake8]
