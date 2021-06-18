@@ -119,6 +119,12 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
                 dlResult = client.sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
+                # attempt to capture in failed.db the empty torrent filename.
+                try:
+                    failed_history.logFailed(result)
+                    logger.info("sent to failed_history {}".format(result))
+                except (ValueError, AttributeError):
+                    logger.info("log failed_history {}".format(result))
                 dlResult = False
     else:
         logger.exception("Unknown result type, unable to download it ({0!r})".format(result.resultType))
