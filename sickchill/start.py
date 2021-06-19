@@ -10,8 +10,6 @@ from configobj import ConfigObj
 
 from .init_helpers import setup_lib_path
 
-setup_lib_path()
-
 import rarfile
 from tornado.locale import load_gettext_translations
 

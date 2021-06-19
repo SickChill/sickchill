@@ -305,7 +305,6 @@ class GitUpdateManager(UpdateManagerBase):
 
         if exit_status == 0:
             self._find_installed_version()
-            self._clean_libs()
 
             # Notify update successful
             notifiers.notify_git_update(settings.CUR_COMMIT_HASH or "")
@@ -321,17 +320,6 @@ class GitUpdateManager(UpdateManagerBase):
         stdout_, stderr_, exit_status = self._run_git(self._git_path, 'clean -df ""')
         if exit_status == 0:
             return True
-
-    def _clean_libs(self):
-        """
-        Calls git clean to remove all untracked files in the lib dir before restart. Returns a bool depending
-        on the call's success.
-        """
-        stdout_, stderr_, exit_status = self._run_git(self._git_path, "clean -df lib")
-        if exit_status == 0:
-            return True
-
-        self._clean_pyc("lib3")
 
     def _reset(self):
         """
