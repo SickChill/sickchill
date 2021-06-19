@@ -379,7 +379,7 @@ def patch_open(open_func, files):
 @pytest.fixture(autouse=True, scope="session")
 def cleanup_files():
     # yield
-    for file in [ "tests/sickchill.db", "tests/cache.db", "tests/failed.db"]:
+    for file in [ os.path.join("tests", "sickchill.db"), os.path.join("tests", "cache.db"), os.path.join("tests", "failed.db")]:
         if os.path.exists(file):
             print(f"Removing {file}")
             os.remove(file)

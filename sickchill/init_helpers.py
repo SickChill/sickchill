@@ -1,6 +1,6 @@
 import gettext
 import os
-import sys
+import subprocess
 
 
 def sickchill_dir():
@@ -31,3 +31,25 @@ def check_installed():
     except PackageNotFoundError:
         return False
     return True
+
+def pip_install(packages):
+    if not isinstance(packages, list):
+        packages = [packages]
+
+    args = ["pip", "install", "--no-input", "--disable-pip-version-check", "--no-color", "--no-python-version-warning", "-qqU"]
+    args.extend(packages)
+    try:
+        subprocess.check_call(args)
+    except subprocess.CalledProcessError:
+        try:
+            args.append("--user")
+            subprocess.check_call(args)
+        except subprocess.CalledProcessError:
+            return False
+    return True
+
+def poetry_install():
+    if not check_installed():
+        pip_install("poetry")
+        requirements = subprocess.getoutput(["poetry export -f requirements.txt --without-hashes"]).splitlines()
+        pip_install(requirements)
