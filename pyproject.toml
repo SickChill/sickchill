@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sickchill"
-version = "2021.6.16-3"
+version = "2021.6.19"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPLv3"
 
@@ -131,18 +131,11 @@ whitelist_externals = /bin/rm
 envdir = {toxworkdir}/tox
 passenv = CI GITHUB_* CODECOV_TOKEN DEBUG VERBOSE
 deps =
-    mock
-    pytest
-    pytest-vcr
-    pytest-cov
-    codecov
+    poetry
 commands =
-    /bin/rm -f {toxinidir}/tests/sickchill.db
-    /bin/rm -f {toxinidir}/tests/cache.db
-    /bin/rm -f {toxinidir}/tests/failed.db
-    pip install -Ur requirements.txt
-    pytest
-    - codecov -e GITHUB_RUN_ID GITHUB_REF
+    poetry install --no-root
+    poetry run pytest
+    poetry run codecov -e GITHUB_RUN_ID GITHUB_REF
 
 [testenv:py38-windows]
 platform = win
@@ -150,16 +143,11 @@ whitelist_externals = {env:SYSTEMROOT:C:\\Windows\\}\\System32\\cmd.exe
 envdir = {toxworkdir}/tox
 passenv = CI APPVEYOR APPVEYOR_* PYTHON_ARCH DEBUG VERBOSE
 deps =
-    mock
-    pytest
-    pytest-vcr
-    pytest-cov
-    codecov
+    poetry
 commands =
-    cmd /c del /f /q {toxinidir}\\tests\\sickchill.db {toxinidir}\\tests\\cache.db {toxinidir}\\tests\\failed.db 2> nul
-    pip install -Ur requirements.txt
-    pytest
-    - codecov -e APPVEYOR_REPO_BRANCH PYTHON_ARCH
+    poetry install --no-root
+    poetry run pytest
+    poetry run codecov -e APPVEYOR_REPO_BRANCH PYTHON_ARCH
 
 [testenv:py38-flake8]
 envdir = {toxworkdir}/flake8
@@ -262,3 +250,5 @@ flake8-docstrings = "^1.6.0"
 flake9 = "^3.8.3"
 codecov = "^2.1.11"
 black = "^20.8b1"
+pytest = "^6.2.4"
+isort = "^5.8.0"

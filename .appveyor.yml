@@ -61,7 +61,7 @@ install:
   - pip install -U tox
 
 test_script:
-  - tox -v --recreate -e "py37-windows"
+  - tox -v --recreate -e "py38-windows"
 
 before_test:
   - echo Starting Tests

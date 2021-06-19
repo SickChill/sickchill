@@ -2,12 +2,12 @@ import random
 from threading import Lock
 from typing import TYPE_CHECKING
 
-from .init_helpers import setup_gettext, setup_lib_path, sickchill_dir
-
 import rarfile
 
 from sickchill.oldbeard.common import SD
 from sickchill.oldbeard.numdict import NumDict
+
+from .init_helpers import setup_gettext, sickchill_dir
 
 if TYPE_CHECKING:
     from .movies import MovieList

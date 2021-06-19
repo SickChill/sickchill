@@ -1,16 +1,12 @@
 import datetime
 import os
-import platform
 import re
 import shutil
 import socket
 import sys
 
-from configobj import ConfigObj
-
-from .init_helpers import setup_lib_path
-
 import rarfile
+from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
 import sickchill
