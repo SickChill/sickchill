@@ -4,8 +4,6 @@ from typing import TYPE_CHECKING
 
 from .init_helpers import setup_gettext, setup_lib_path, sickchill_dir
 
-setup_lib_path()
-
 import rarfile
 
 from sickchill.oldbeard.common import SD

@@ -11,8 +11,6 @@ from urllib.parse import quote
 
 from sickchill.init_helpers import setup_lib_path
 
-setup_lib_path()
-
 from github import InputFileContent
 from github.GithubException import RateLimitExceededException, TwoFactorException
 

@@ -3,14 +3,6 @@ import os
 import sys
 
 
-def setup_lib_path(additional=None):
-    lib_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "lib3"))
-    if lib_path not in sys.path:
-        sys.path.insert(1, lib_path)
-    if additional and additional not in sys.path:
-        sys.path.insert(1, additional)
-
-
 def sickchill_dir():
     return os.path.abspath(os.path.dirname(__file__))
 

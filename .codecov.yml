@@ -51,7 +51,6 @@ coverage:
 
     ignore:          # files and folders that will be removed during processing
       - "tests"
-      - "lib3"
 parsers:
   gcov:
     branch_detection:

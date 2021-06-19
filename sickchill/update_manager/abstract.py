@@ -10,16 +10,6 @@ class UpdateManagerBase(ABC):
     def get_update_url():
         return f"{settings.WEB_ROOT}/home/update/?pid={settings.PID}"
 
-    @staticmethod
-    def _clean_pyc(path):
-        path_parts = [os.path.dirname(settings.PROG_DIR), path, "*.pyc"]
-        for f in glob.iglob(os.path.join(*path_parts)):
-            os.remove(f)
-
-        path_parts.insert(-1, "**")
-        for f in glob.iglob(os.path.join(*path_parts)):
-            os.remove(f)
-
     def list_remote_branches(self):
         raise NotImplementedError
 
