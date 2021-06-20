@@ -18,9 +18,11 @@ COPY pyproject.toml /app/sickchill
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -q && \
- apt-get install -yq git libxml2 libxslt1.1 mediainfo unrar && \
- pip install --no-cache-dir --no-input -U poetry && \
+ apt-get install -yqq git libxml2 libxslt1.1 mediainfo unrar curl build-essential && \
+ export PATH="/root/.local/bin:$PATH" && \
+ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --preview && \
  poetry install --no-root --no-dev && \
+ apt-get purge build-essential -yq && \
  apt-get clean -yq && rm -rf /var/lib/apt/lists/*
 
 COPY . /app/sickchill

@@ -90,6 +90,7 @@ build
 
 # virtualenv #
 venv
+.venv
 
 # diffs
 /*.diff

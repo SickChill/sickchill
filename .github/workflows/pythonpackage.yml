@@ -26,9 +26,18 @@ jobs:
   Test:
     strategy:
       matrix:
-        python-version: [3.8]
-        os: [ubuntu-latest, windows-latest]
-      fail-fast: false
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        os: [ubuntu-latest]
+        experimental: [false]
+        include:
+          - os: windows-latest
+            experimental: true
+            python-version: 3.9
+          - os: macos-latest
+            experimental: true
+            python-version: 3.9
+      fail-fast: true
+    continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     steps:
     - name: Cancel Previous Runs
@@ -44,63 +53,51 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Set up Node
-      uses: actions/setup-node@v1
-      with:
-        node-version: '14.x'
-    - name: Prepare
-      id: prepare
-      run: |
-        echo "::set-output name=npm_cache::$(npm config get cache)"
-        echo "::set-output name=yarn_cache::$(yarn cache dir)"
-        echo "::set-output name=pip_cache::$(python -m pip cache dir)"
-        echo "::set-output name=os::$(echo "print('${{ runner.os }}'.lower())" | python)"
-    - name: Restore npm cache
-      uses: actions/cache@v2
-      with:
-        path: ${{ steps.prepare.outputs.npm_cache }}
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: Restore yarn cache
-      uses: actions/cache@v2
-      with:
-        path: ${{ steps.prepare.outputs.yarn_cache }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
     - name: Restore pip cache
       uses: actions/cache@v2
       with:
-        path: ${{ steps.prepare.outputs.pip_cache }}
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+        path: $(python -m pip cache dir)
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
         restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Install dependencies
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+    - name: Install tools
       run: |
-        yarn --silent
-        pip install wheel
-        pip install --upgrade --user pip tox babel crowdin-cli-py
-    - name: Restore tox workdir
+        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --preview -f -y
+    - name: Set path (Linux/MacOS)
+      if: success() && !startsWith(runner.os, 'Windows')
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+    - name: Set path (Windows)
+      if: success() && startsWith(runner.os, 'Windows')
+      run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+    - name: Restore poetry cache
       uses: actions/cache@v2
       with:
-        path: $(tox --showconfig | grep '^toxworkdir = .*$' | tail -c+14)
-        key: ${{ runner.os }}-tox-${{ hashFiles('**/tox.ini') }}
+        path: $(poetry config cache-dir)
+        key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
         restore-keys: |
-          ${{ runner.os }}-tox-
-#    - name: Install xo
-#      run: |
-#        npm config set strict-ssl false
-#        npm config set registry "http://registry.npmjs.org/"
-#        npm install -g xo
-#    - name: Test with XO
-#      run: xo
-    - name: Test with tox
-      id: tox
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          ${{ runner.os }}-poetry-${{ matrix.python-version }}-
+    - name: Restore virtualenv
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-
+    - name: Install dependencies
       run: |
-        tox -v --recreate -e "py38-{flake8,${{ steps.prepare.outputs.os }}}"
+        poetry config virtualenvs.in-project true
+        poetry install --no-root
+    - name: Isort
+      run: |
+        poetry run isort --check-only --diff sickchill tests SickChill.py setup.py
+    - name: Flake9
+      run: |
+        poetry run flake8 --select C103 sickchill tests SickChill.py setup.py
+    - name: Pytest
+      id: pytest
+      run: |
+        poetry run pytest
+        poetry run codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
   Deploy:
     needs: [Shellcheck, Test]
     runs-on: ubuntu-latest
