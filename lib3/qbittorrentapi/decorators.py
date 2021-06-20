@@ -1,4 +1,4 @@
-import logging
+from logging import getLogger
 from functools import wraps
 from json import loads
 from pkg_resources import parse_version
@@ -6,7 +6,7 @@ from pkg_resources import parse_version
 from qbittorrentapi.exceptions import APIError
 from qbittorrentapi.exceptions import HTTP403Error
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 def _is_version_less_than(ver1, ver2, lteq=True):
@@ -76,7 +76,7 @@ def aliased(aliased_class):
     """
     original_methods = aliased_class.__dict__.copy()
     for method in original_methods.values():
-        if hasattr(method, '_aliases'):
+        if hasattr(method, "_aliases"):
             # Add the aliases for 'method', but don't override any
             # previously-defined attribute of 'aliased_class'
             # noinspection PyProtectedMember
@@ -86,20 +86,45 @@ def aliased(aliased_class):
 
 
 def login_required(f):
-    """Ensure client is logged in before calling API methods."""
+    """
+    Ensure client is logged in before calling API methods.
+    """
 
     @wraps(f)
-    def wrapper(obj, *args, **kwargs):
-        if not obj.is_logged_in:
-            logger.debug('Not logged in...attempting login')
-            obj.auth_log_in()
+    def wrapper(client, *args, **kwargs):
+        if not client.is_logged_in:
+            logger.debug("Not logged in...attempting login")
+            client.auth_log_in()
         try:
-            return f(obj, *args, **kwargs)
+            return f(client, *args, **kwargs)
         except HTTP403Error:
-            logger.debug('Login may have expired...attempting new login')
-            obj.auth_log_in()
+            logger.debug("Login may have expired...attempting new login")
+            client.auth_log_in()
 
-        return f(obj, *args, **kwargs)
+        return f(client, *args, **kwargs)
+
+    return wrapper
+
+
+def handle_hashes(f):
+    """
+    Normalize torrent hash arguments.
+
+    Initial implementations of this client used 'hash' and 'hashes'
+    as function arguments for torrent hashes. Since 'hash' collides
+    with an internal python name, all arguments were updated to
+    'torrent_hash' or 'torrent_hashes'. Since both versions of argument
+    names remain respected, this decorator normalizes torrent hash
+    arguments into either 'torrent_hash' or 'torrent_hashes'.
+    """
+
+    @wraps(f)
+    def wrapper(client, *args, **kwargs):
+        if "torrent_hash" not in kwargs and "hash" in kwargs:
+            kwargs["torrent_hash"] = kwargs.pop("hash")
+        elif "torrent_hashes" not in kwargs and "hashes" in kwargs:
+            kwargs["torrent_hashes"] = kwargs.pop("hashes")
+        return f(client, *args, **kwargs)
 
     return wrapper
 
@@ -121,8 +146,8 @@ def response_text(response_class):
             try:
                 return response_class(result.text)
             except Exception:
-                logger.debug('Exception during response parsing.', exc_info=True)
-                raise APIError('Exception during response parsing')
+                logger.debug("Exception during response parsing.", exc_info=True)
+                raise APIError("Exception during response parsing")
 
         return wrapper
 
@@ -141,7 +166,9 @@ def response_json(response_class):
     def _inner(f):
         @wraps(f)
         def wrapper(obj, *args, **kwargs):
-            simple_response = obj._SIMPLE_RESPONSES or kwargs.pop('SIMPLE_RESPONSES', kwargs.pop('SIMPLE_RESPONSE', False))
+            simple_response = obj._SIMPLE_RESPONSES or kwargs.pop(
+                "SIMPLE_RESPONSES", kwargs.pop("SIMPLE_RESPONSE", False)
+            )
             response = f(obj, *args, **kwargs)
             try:
                 if isinstance(response, response_class):
@@ -156,57 +183,97 @@ def response_json(response_class):
                         return result
                     return response_class(result, obj)
             except Exception as e:
-                logger.debug('Exception during response parsing.', exc_info=True)
-                raise APIError('Exception during response parsing. Error: %s' % repr(e))
+                logger.debug("Exception during response parsing.", exc_info=True)
+                raise APIError("Exception during response parsing. Error: %s" % repr(e))
 
         return wrapper
 
     return _inner
 
 
-def version_implemented(version_introduced, endpoint, end_point_params=None):
+def _version_too_old(client, version_to_compare):
     """
-    Prevent hitting an endpoint or sending a parameter if the host doesn't support it.
+    Return True if provided API version is older than the connected API, False otherwise
+    """
+    current_version = client.app_web_api_version()
+    if _is_version_less_than(current_version, version_to_compare, lteq=False):
+        return True
+    return False
+
+
+def _version_too_new(client, version_to_compare):
+    """
+    Return True if provided API version is newer or equal to the connected API, False otherwise
+    """
+    current_version = client.app_web_api_version()
+    if _is_version_less_than(version_to_compare, current_version, lteq=True):
+        return True
+    return False
+
+
+def _check_for_raise(client, error_message):
+    """
+    For any nonexistent endpoint, log the error and conditionally raise an exception.
+    """
+    logger.debug(error_message)
+    if client._RAISE_UNIMPLEMENTEDERROR_FOR_UNIMPLEMENTED_API_ENDPOINTS:
+        raise NotImplementedError(error_message)
+
+
+def endpoint_introduced(version_introduced, endpoint):
+    """
+    Prevent hitting an endpoint if the connected qBittorrent version doesn't support it.
 
     :param version_introduced: version endpoint was made available
     :param endpoint: API endpoint (e.g. /torrents/categories)
-    :param end_point_params: list of arguments of API call that are version specific
     """
 
     def _inner(f):
-        # noinspection PyProtectedMember
         @wraps(f)
-        def wrapper(obj, *args, **kwargs):
-            current_version = obj._app_web_api_version_from_version_checker()
-            # if the installed version of the API is less than what's required:
-            if _is_version_less_than(current_version, version_introduced, lteq=False):
-                # clear the unsupported end_point_params
-                if end_point_params:
-                    parameters_list = end_point_params
-                    if not isinstance(end_point_params, list):
-                        parameters_list = [end_point_params]
-                    # each tuple should be ('python param name', 'api param name')
-                    for parameter, api_parameter in [t for t in parameters_list if t[0] in kwargs]:
-                        if kwargs[parameter] is None:
-                            continue
-                        error_message = 'WARNING: Parameter "%s (%s)" for endpoint "%s" is Not Implemented. ' \
-                                        'Web API v%s is installed. This endpoint parameter is available starting ' \
-                                        'in Web API v%s.' \
-                                        % (api_parameter, parameter, endpoint, current_version, version_introduced)
-                        logger.debug(error_message)
-                        if obj._RAISE_UNIMPLEMENTEDERROR_FOR_UNIMPLEMENTED_API_ENDPOINTS:
-                            raise NotImplementedError(error_message)
-                        kwargs[parameter] = None
-                # or skip running unsupported API calls
-                if not end_point_params:
-                    error_message = 'ERROR: Endpoint "%s" is Not Implemented. Web API v%s is installed. This endpoint' \
-                                    ' is available starting in Web API v%s.' \
-                                    % (endpoint, current_version, version_introduced)
-                    logger.debug(error_message)
-                    if obj._RAISE_UNIMPLEMENTEDERROR_FOR_UNIMPLEMENTED_API_ENDPOINTS:
-                        raise NotImplementedError(error_message)
-                    return None
-            return f(obj, *args, **kwargs)
+        def wrapper(client, *args, **kwargs):
+
+            # if the endpoint doesn't exist, return None or log an error / raise an Exception
+            if _version_too_old(client=client, version_to_compare=version_introduced):
+                error_message = (
+                    "ERROR: Endpoint '%s' is Not Implemented in this version of qBittorrent. "
+                    "This endpoint is available starting in Web API v%s."
+                    % (endpoint, version_introduced)
+                )
+                _check_for_raise(client=client, error_message=error_message)
+                return None
+
+            # send request to endpoint
+            return f(client, *args, **kwargs)
+
+        return wrapper
+
+    return _inner
+
+
+def version_removed(version_obsoleted, endpoint):
+    """
+    Prevent hitting an endpoint that was removed in a version older than the connected qBittorrent.
+
+    :param version_obsoleted: the Web API version the endpoint was removed
+    :param endpoint: name of the removed endpoint
+    """
+
+    def _inner(f):
+        @wraps(f)
+        def wrapper(client, *args, **kwargs):
+
+            # if the endpoint doesn't exist, return None or log an error / raise an Exception
+            if _version_too_new(client=client, version_to_compare=version_obsoleted):
+                error_message = (
+                    "ERROR: Endpoint '%s' is Not Implemented. "
+                    "This endpoint was removed in Web API v%s."
+                    % (endpoint, version_obsoleted)
+                )
+                _check_for_raise(client=client, error_message=error_message)
+                return None
+
+            # send request to endpoint
+            return f(client, *args, **kwargs)
 
         return wrapper
 

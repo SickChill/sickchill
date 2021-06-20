@@ -54,12 +54,12 @@ class XEMBasicTests(conftest.SickChillTestDBCase):
     #     name = "Game.of.Thrones.S03.720p.HDTV.x264-CtrlHD"
     #     release = "Game of Thrones"
     #
-    #     # m = re.match('(?P<ep_ab_num>(?>\d{1,3})(?![ip])).+', name)
+    #     # m = re.match('(?P<ep_ab_num>(?>\d{1,4})(?![ip])).+', name)
     #
     #     escaped_name = re.sub('\\\\[\\s.-]', '\W+', re.escape(release))
     #     cur_regex = '^' + escaped_name + r'\W+(?:(?:S\d[\dE._ -])|' + \
     #         r'(?:\d\d?x)|(?:\d{4}\W\d\d\W\d\d)|(?:(?:part|pt)[\._ -]?(\d|[ivx]))|' + \
-    #         r'Season\W+\d+\W+|E\d+\W+|(?:\d{1,3}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
+    #         r'Season\W+\d+\W+|E\d+\W+|(?:\d{1,4}.+\d{1,}[a-zA-Z]{2}\W+[a-zA-Z]{3,}\W+\d{4}.+))'
     #
     #     # print("Checking if show " + name + " matches " + curRegex)
     #

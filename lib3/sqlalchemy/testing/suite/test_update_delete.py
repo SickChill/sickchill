@@ -1,4 +1,3 @@
-from .. import config
 from .. import fixtures
 from ..assertions import eq_
 from ..schema import Column
@@ -31,24 +30,28 @@ class SimpleUpdateDeleteTest(fixtures.TablesTest):
             ],
         )
 
-    def test_update(self):
+    def test_update(self, connection):
         t = self.tables.plain_pk
-        r = config.db.execute(t.update().where(t.c.id == 2), data="d2_new")
+        r = connection.execute(
+            t.update().where(t.c.id == 2), dict(data="d2_new")
+        )
         assert not r.is_insert
         assert not r.returns_rows
+        assert r.rowcount == 1
 
         eq_(
-            config.db.execute(t.select().order_by(t.c.id)).fetchall(),
+            connection.execute(t.select().order_by(t.c.id)).fetchall(),
             [(1, "d1"), (2, "d2_new"), (3, "d3")],
         )
 
-    def test_delete(self):
+    def test_delete(self, connection):
         t = self.tables.plain_pk
-        r = config.db.execute(t.delete().where(t.c.id == 2))
+        r = connection.execute(t.delete().where(t.c.id == 2))
         assert not r.is_insert
         assert not r.returns_rows
+        assert r.rowcount == 1
         eq_(
-            config.db.execute(t.select().order_by(t.c.id)).fetchall(),
+            connection.execute(t.select().order_by(t.c.id)).fetchall(),
             [(1, "d1"), (3, "d3")],
         )
 

@@ -160,7 +160,7 @@ data = (
 'Ao ',    # 0x9e
 'Xi ',    # 0x9f
 'Yin ',    # 0xa0
-'[?] ',    # 0xa1
+None,    # 0xa1
 'Rao ',    # 0xa2
 'Lin ',    # 0xa3
 'Tui ',    # 0xa4

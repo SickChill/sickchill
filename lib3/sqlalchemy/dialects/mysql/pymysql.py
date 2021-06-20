@@ -1,5 +1,5 @@
 # mysql/pymysql.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -19,6 +19,15 @@ Unicode
 Please see :ref:`mysql_unicode` for current recommendations on unicode
 handling.
 
+.. _pymysql_ssl:
+
+SSL Connections
+------------------
+
+The PyMySQL DBAPI accepts the same SSL arguments as that of MySQLdb,
+described at :ref:`mysqldb_ssl`.   See that section for examples.
+
+
 MySQL-Python Compatibility
 --------------------------
 
@@ -35,6 +44,7 @@ from ...util import py3k
 
 class MySQLDialect_pymysql(MySQLDialect_mysqldb):
     driver = "pymysql"
+    supports_statement_cache = True
 
     description_encoding = None
 
@@ -43,10 +53,6 @@ class MySQLDialect_pymysql(MySQLDialect_mysqldb):
     # to 0.4 either way.  See [ticket:3337]
     supports_unicode_statements = True
     supports_unicode_binds = True
-
-    def __init__(self, server_side_cursors=False, **kwargs):
-        super(MySQLDialect_pymysql, self).__init__(**kwargs)
-        self.server_side_cursors = server_side_cursors
 
     @langhelpers.memoized_property
     def supports_server_side_cursors(self):
@@ -60,6 +66,13 @@ class MySQLDialect_pymysql(MySQLDialect_mysqldb):
     @classmethod
     def dbapi(cls):
         return __import__("pymysql")
+
+    def create_connect_args(self, url, _translate_args=None):
+        if _translate_args is None:
+            _translate_args = dict(username="user")
+        return super(MySQLDialect_pymysql, self).create_connect_args(
+            url, _translate_args=_translate_args
+        )
 
     def is_disconnect(self, e, connection, cursor):
         if super(MySQLDialect_pymysql, self).is_disconnect(

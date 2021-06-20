@@ -9,8 +9,8 @@ Classic ``@deprecated`` decorator to deprecate old python classes, functions or 
 """
 import functools
 import inspect
-import warnings
 import platform
+import warnings
 
 import wrapt
 
@@ -226,7 +226,7 @@ def deprecated(*args, **kwargs):
            return x + y
 
     The *category* keyword argument allow you to specify the deprecation warning class of your choice.
-    By default, :exc:`DeprecationWarning` is ued but you can choose :exc:`FutureWarning`,
+    By default, :exc:`DeprecationWarning` is used but you can choose :exc:`FutureWarning`,
     :exc:`PendingDeprecationWarning` or a custom subclass.
 
     .. code-block:: python

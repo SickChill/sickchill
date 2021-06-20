@@ -72,8 +72,7 @@ def _ftobytes(f):
 
 
 def _hash_settings_for_path(path):
-    """Return a hash and the path settings that created it.
-    """
+    """Return a hash and the path settings that created it."""
     paths = []
     h = hashlib.sha256()
 
@@ -136,6 +135,14 @@ class Cache:
             cache_dir = _get_cache_dir()
         self._dir = cache_dir
         self._internal = {}
+        self._disable_caching = False
+
+        # Caching can be disabled by either placing .disable file into the
+        # target directory or when python executable is under /tmp (this is the
+        # case when executed from ansible)
+        if any([os.path.isfile(os.path.join(self._dir, '.disable')),
+                sys.executable[0:4] == '/tmp']):
+            self._disable_caching = True
 
     def _get_data_for_path(self, path):
         if path is None:
@@ -154,14 +161,15 @@ class Cache:
         except (IOError, json.JSONDecodeError):
             data = _build_cacheable_data(path)
             data['path_values'] = path_values
-            try:
-                log.debug('writing to %s', filename)
-                os.makedirs(self._dir, exist_ok=True)
-                with open(filename, 'w') as f:
-                    json.dump(data, f)
-            except (IOError, OSError):
-                # Could not create cache dir or write file.
-                pass
+            if not self._disable_caching:
+                try:
+                    log.debug('writing to %s', filename)
+                    os.makedirs(self._dir, exist_ok=True)
+                    with open(filename, 'w') as f:
+                        json.dump(data, f)
+                except (IOError, OSError):
+                    # Could not create cache dir or write file.
+                    pass
 
         self._internal[internal_key] = data
         return data

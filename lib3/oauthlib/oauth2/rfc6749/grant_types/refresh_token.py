@@ -1,15 +1,11 @@
-# -*- coding: utf-8 -*-
 """
 oauthlib.oauth2.rfc6749.grant_types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
-from __future__ import absolute_import, unicode_literals
-
 import json
 import logging
 
 from .. import errors, utils
-from ..request_validator import RequestValidator
 from .base import GrantTypeBase
 
 log = logging.getLogger(__name__)
@@ -25,7 +21,7 @@ class RefreshTokenGrant(GrantTypeBase):
     def __init__(self, request_validator=None,
                  issue_new_refresh_tokens=True,
                  **kwargs):
-        super(RefreshTokenGrant, self).__init__(
+        super().__init__(
             request_validator,
             issue_new_refresh_tokens=issue_new_refresh_tokens,
             **kwargs)
@@ -126,7 +122,7 @@ class RefreshTokenGrant(GrantTypeBase):
 
         if request.scope:
             request.scopes = utils.scope_to_list(request.scope)
-            if (not all((s in original_scopes for s in request.scopes))
+            if (not all(s in original_scopes for s in request.scopes)
                 and not self.request_validator.is_within_original_scope(
                     request.scopes, request.refresh_token, request)):
                 log.debug('Refresh token %s lack requested scopes, %r.',

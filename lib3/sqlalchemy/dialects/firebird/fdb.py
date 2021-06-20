@@ -1,5 +1,5 @@
 # firebird/fdb.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -29,7 +29,7 @@ accept every argument that Kinterbasdb does.
   the usage of "cursor.rowcount" with the
   Kinterbasdb dialect, which SQLAlchemy ordinarily calls upon automatically
   after any UPDATE or DELETE statement.   When disabled, SQLAlchemy's
-  ResultProxy will return -1 for result.rowcount.   The rationale here is
+  CursorResult will return -1 for result.rowcount.   The rationale here is
   that Kinterbasdb requires a second round trip to the database when
   .rowcount is called -  since SQLA's resultproxy automatically closes
   the cursor after a non-result-returning statement, rowcount must be
@@ -66,6 +66,8 @@ from ... import util
 
 
 class FBDialect_fdb(FBDialect_kinterbasdb):
+    supports_statement_cache = True
+
     def __init__(self, enable_rowcount=True, retaining=False, **kwargs):
         super(FBDialect_fdb, self).__init__(
             enable_rowcount=enable_rowcount, retaining=retaining, **kwargs

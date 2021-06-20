@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2017 Jannis Gebauer <ja.geb@me.com>                                #
@@ -29,7 +27,7 @@ import github.GithubObject
 
 class Invitation(github.GithubObject.CompletableGithubObject):
     """
-    This class represents repository invitations. The reference can be found here https://developer.github.com/v3/repos/invitations/
+    This class represents repository invitations. The reference can be found here https://docs.github.com/en/rest/reference/repos#invitations
     """
 
     def __repr__(self):

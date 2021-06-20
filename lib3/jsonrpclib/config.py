@@ -5,7 +5,7 @@ The configuration module.
 
 :copyright: Copyright 2020, Thomas Calmant
 :license: Apache License 2.0
-:version: 0.4.1
+:version: 0.4.2
 
 ..
 
@@ -29,7 +29,7 @@ import sys
 # ------------------------------------------------------------------------------
 
 # Module version
-__version_info__ = (0, 4, 1)
+__version_info__ = (0, 4, 2)
 __version__ = ".".join(str(x) for x in __version_info__)
 
 # Documentation strings format
@@ -42,6 +42,7 @@ class LocalClasses(dict):
     """
     Associates local classes with their names (used in the jsonclass module)
     """
+
     def add(self, cls, name=None):
         """
         Stores a local class
@@ -50,6 +51,7 @@ class LocalClasses(dict):
         :param name: Custom name used in the __jsonclass__ attribute
         """
         self[name or cls.__name__] = cls
+
 
 # ------------------------------------------------------------------------------
 
@@ -61,11 +63,17 @@ class Config(object):
     You can change serialize_method and ignore_attribute, or use
     the local_classes.add(class) to include "local" classes.
     """
-    def __init__(self, version=2.0, content_type="application/json-rpc",
-                 user_agent=None, use_jsonclass=True,
-                 serialize_method='_serialize',
-                 ignore_attribute='_ignore',
-                 serialize_handlers=None):
+
+    def __init__(
+        self,
+        version=2.0,
+        content_type="application/json-rpc",
+        user_agent=None,
+        use_jsonclass=True,
+        serialize_method="_serialize",
+        ignore_attribute="_ignore",
+        serialize_handlers=None,
+    ):
         """
         Sets up a configuration of JSONRPClib
 
@@ -97,9 +105,9 @@ class Config(object):
 
         # Default user agent
         if user_agent is None:
-            user_agent = 'jsonrpclib/{0} (Python {1})'.format(
-                __version__,
-                '.'.join(str(ver) for ver in sys.version_info[0:3]))
+            user_agent = "jsonrpclib/{0} (Python {1})".format(
+                __version__, ".".join(str(ver) for ver in sys.version_info[0:3])
+            )
         self.user_agent = user_agent
 
         # The list of classes to use for jsonclass translation.
@@ -128,12 +136,19 @@ class Config(object):
 
         :return: A shallow copy of this configuration
         """
-        new_config = Config(self.version, self.content_type, self.user_agent,
-                            self.use_jsonclass, self.serialize_method,
-                            self.ignore_attribute, None)
+        new_config = Config(
+            self.version,
+            self.content_type,
+            self.user_agent,
+            self.use_jsonclass,
+            self.serialize_method,
+            self.ignore_attribute,
+            None,
+        )
         new_config.classes = self.classes.copy()
         new_config.serialize_handlers = self.serialize_handlers.copy()
         return new_config
+
 
 # Default configuration
 DEFAULT = Config()

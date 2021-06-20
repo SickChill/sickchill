@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 oauthlib.oauth2.rfc6749
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -6,8 +5,6 @@ oauthlib.oauth2.rfc6749
 This module is an implementation of various logic needed
 for consuming and providing OAuth 2.0 RFC6749.
 """
-from __future__ import absolute_import, unicode_literals
-
 import logging
 
 from oauthlib.common import Request
@@ -39,7 +36,6 @@ class TokenEndpoint(BaseEndpoint):
         https://example.com/path?query=component             # OK
         https://example.com/path?query=component#fragment    # Not OK
 
-    Since requests to the authorization endpoint result in user
     Since requests to the token endpoint result in the transmission of
     clear-text credentials (in the HTTP request and response), the
     authorization server MUST require the use of TLS as described in

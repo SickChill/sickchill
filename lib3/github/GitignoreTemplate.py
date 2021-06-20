@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -34,7 +32,7 @@ import github.GithubObject
 
 class GitignoreTemplate(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents GitignoreTemplates. The reference can be found here https://developer.github.com/v3/gitignore/
+    This class represents GitignoreTemplates. The reference can be found here https://docs.github.com/en/rest/reference/gitignore
     """
 
     def __repr__(self):

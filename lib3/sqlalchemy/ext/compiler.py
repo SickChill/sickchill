@@ -1,5 +1,5 @@
 # ext/compiler.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -31,7 +31,7 @@ when the object is compiled to a string::
 
     from sqlalchemy import select
 
-    s = select([MyColumn('x'), MyColumn('y')])
+    s = select(MyColumn('x'), MyColumn('y'))
     print(str(s))
 
 Produces::
@@ -89,7 +89,7 @@ method which can be used for compilation of embedded attributes::
             compiler.process(element.select, **kw)
         )
 
-    insert = InsertFromSelect(t1, select([t1]).where(t1.c.x>5))
+    insert = InsertFromSelect(t1, select(t1).where(t1.c.x>5))
     print(insert)
 
 Produces::
@@ -393,14 +393,14 @@ Example usage::
     from sqlalchemy import select, union_all
 
     exp = union_all(
-        select([users.c.name, sql_false().label("enrolled")]),
-        select([customers.c.name, customers.c.enrolled])
+        select(users.c.name, sql_false().label("enrolled")),
+        select(customers.c.name, customers.c.enrolled)
     )
 
 """
 from .. import exc
 from .. import util
-from ..sql import visitors
+from ..sql import sqltypes
 
 
 def compiles(class_, *specs):
@@ -425,9 +425,11 @@ def compiles(class_, *specs):
                         return existing_dispatch(element, compiler, **kw)
                     except exc.UnsupportedCompilationError as uce:
                         util.raise_(
-                            exc.CompileError(
-                                "%s construct has no default "
-                                "compilation handler." % type(element)
+                            exc.UnsupportedCompilationError(
+                                compiler,
+                                type(element),
+                                message="%s construct has no default "
+                                "compilation handler." % type(element),
                             ),
                             from_=uce,
                         )
@@ -455,12 +457,12 @@ def compiles(class_, *specs):
 
 def deregister(class_):
     """Remove all custom compilers associated with a given
-    :class:`_expression.ClauseElement` type."""
+    :class:`_expression.ClauseElement` type.
+
+    """
 
     if hasattr(class_, "_compiler_dispatcher"):
-        # regenerate default _compiler_dispatch
-        visitors._generate_dispatch(class_)
-        # remove custom directive
+        class_._compiler_dispatch = class_._original_compiler_dispatch
         del class_._compiler_dispatcher
 
 
@@ -476,11 +478,31 @@ class _dispatcher(object):
                 fn = self.specs["default"]
             except KeyError as ke:
                 util.raise_(
-                    exc.CompileError(
-                        "%s construct has no default "
-                        "compilation handler." % type(element)
+                    exc.UnsupportedCompilationError(
+                        compiler,
+                        type(element),
+                        message="%s construct has no default "
+                        "compilation handler." % type(element),
                     ),
                     replace_context=ke,
                 )
 
-        return fn(element, compiler, **kw)
+        # if compilation includes add_to_result_map, collect add_to_result_map
+        # arguments from the user-defined callable, which are probably none
+        # because this is not public API.  if it wasn't called, then call it
+        # ourselves.
+        arm = kw.get("add_to_result_map", None)
+        if arm:
+            arm_collection = []
+            kw["add_to_result_map"] = lambda *args: arm_collection.append(args)
+
+        expr = fn(element, compiler, **kw)
+
+        if arm:
+            if not arm_collection:
+                arm_collection.append(
+                    (None, None, (element,), sqltypes.NULLTYPE)
+                )
+            for tup in arm_collection:
+                arm(*tup)
+        return expr

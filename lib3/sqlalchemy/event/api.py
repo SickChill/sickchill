@@ -1,5 +1,5 @@
 # event/api.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -60,9 +60,6 @@ def listen(target, identifier, fn, *args, **kw):
             do_config()
 
         event.listen(Mapper, "before_configure", on_config, once=True)
-
-    .. versionadded:: 0.9.4 Added ``once=True`` to :func:`.event.listen`
-       and :func:`.event.listens_for`.
 
     .. warning:: The ``once`` argument does not imply automatic de-registration
        of the listener function after it has been invoked a first time; a
@@ -128,9 +125,6 @@ def listens_for(target, identifier, *args, **kw):
             do_config()
 
 
-    .. versionadded:: 0.9.4 Added ``once=True`` to :func:`.event.listen`
-       and :func:`.event.listens_for`.
-
     .. warning:: The ``once`` argument does not imply automatic de-registration
        of the listener function after it has been invoked a first time; a
        listener entry will remain associated with the target object.
@@ -173,8 +167,6 @@ def remove(target, identifier, fn):
     propagated to subclasses of ``SomeMappedClass``; the :func:`.remove`
     function will revert all of these operations.
 
-    .. versionadded:: 0.9.0
-
     .. note::
 
         The :func:`.remove` function cannot be called at the same time
@@ -204,10 +196,6 @@ def remove(target, identifier, fn):
 
 
 def contains(target, identifier, fn):
-    """Return True if the given target/ident/fn is set up to listen.
-
-    .. versionadded:: 0.9.0
-
-    """
+    """Return True if the given target/ident/fn is set up to listen."""
 
     return _event_key(target, identifier, fn).contains()

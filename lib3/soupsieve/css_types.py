@@ -89,10 +89,10 @@ class Immutable(object):
 class ImmutableDict(Mapping):
     """Hashable, immutable dictionary."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, arg):
         """Initialize."""
 
-        arg = args[0] if args else kwargs
+        arg
         is_dict = isinstance(arg, dict)
         if (
             is_dict and not all([isinstance(v, Hashable) for v in arg.values()]) or
@@ -100,7 +100,7 @@ class ImmutableDict(Mapping):
         ):
             raise TypeError('All values must be hashable')
 
-        self._d = dict(*args, **kwargs)
+        self._d = dict(arg)
         self._hash = hash(tuple([(type(x), x, type(y), y) for x, y in sorted(self._d.items())]))
 
     def __iter__(self):
@@ -133,39 +133,37 @@ class ImmutableDict(Mapping):
 class Namespaces(ImmutableDict):
     """Namespaces."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, arg):
         """Initialize."""
 
         # If there are arguments, check the first index.
         # `super` should fail if the user gave multiple arguments,
         # so don't bother checking that.
-        arg = args[0] if args else kwargs
         is_dict = isinstance(arg, dict)
         if is_dict and not all([isinstance(k, str) and isinstance(v, str) for k, v in arg.items()]):
             raise TypeError('Namespace keys and values must be Unicode strings')
         elif not is_dict and not all([isinstance(k, str) and isinstance(v, str) for k, v in arg]):
             raise TypeError('Namespace keys and values must be Unicode strings')
 
-        super(Namespaces, self).__init__(*args, **kwargs)
+        super(Namespaces, self).__init__(arg)
 
 
 class CustomSelectors(ImmutableDict):
     """Custom selectors."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, arg):
         """Initialize."""
 
         # If there are arguments, check the first index.
         # `super` should fail if the user gave multiple arguments,
         # so don't bother checking that.
-        arg = args[0] if args else kwargs
         is_dict = isinstance(arg, dict)
         if is_dict and not all([isinstance(k, str) and isinstance(v, str) for k, v in arg.items()]):
             raise TypeError('CustomSelectors keys and values must be Unicode strings')
         elif not is_dict and not all([isinstance(k, str) and isinstance(v, str) for k, v in arg]):
             raise TypeError('CustomSelectors keys and values must be Unicode strings')
 
-        super(CustomSelectors, self).__init__(*args, **kwargs)
+        super(CustomSelectors, self).__init__(arg)
 
 
 class Selector(Immutable):
@@ -239,13 +237,14 @@ class SelectorAttribute(Immutable):
 class SelectorContains(Immutable):
     """Selector contains rule."""
 
-    __slots__ = ("text", "_hash")
+    __slots__ = ("text", "own", "_hash")
 
-    def __init__(self, text):
+    def __init__(self, text, own):
         """Initialize."""
 
         super(SelectorContains, self).__init__(
-            text=text
+            text=text,
+            own=own
         )
 
 

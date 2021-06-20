@@ -6,7 +6,7 @@ from .slugify import slugify, DEFAULT_SEPARATOR
 
 
 def parse_args(argv):
-    parser = argparse.ArgumentParser(description="Sluggify string")
+    parser = argparse.ArgumentParser(description="Slug string")
 
     input_group = parser.add_argument_group(description="Input")
     input_group.add_argument("input_string", nargs='*',

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2018 Hayden Fuss <wifu1234@gmail.com>                              #
@@ -28,7 +26,7 @@ from github import Consts
 
 class SourceImport(github.GithubObject.CompletableGithubObject):
     """
-    This class represents SourceImports. The reference can be found here https://developer.github.com/v3/migration/source_imports/
+    This class represents SourceImports. The reference can be found here https://docs.github.com/en/rest/reference/migration#source_imports
     """
 
     def __repr__(self):

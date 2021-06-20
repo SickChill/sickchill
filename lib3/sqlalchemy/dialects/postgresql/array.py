@@ -1,5 +1,5 @@
 # postgresql/array.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -9,8 +9,10 @@ import re
 
 from ... import types as sqltypes
 from ... import util
+from ...sql import coercions
 from ...sql import expression
 from ...sql import operators
+from ...sql import roles
 
 
 def Any(other, arrexpr, operator=operators.eq):
@@ -41,7 +43,7 @@ def All(other, arrexpr, operator=operators.eq):
     return arrexpr.all(other, operator)
 
 
-class array(expression.Tuple):
+class array(expression.ClauseList, expression.ColumnElement):
 
     """A PostgreSQL ARRAY literal.
 
@@ -51,9 +53,7 @@ class array(expression.Tuple):
         from sqlalchemy.dialects import postgresql
         from sqlalchemy import select, func
 
-        stmt = select([
-                        array([1,2]) + array([3,4,5])
-                    ])
+        stmt = select(array([1,2]) + array([3,4,5]))
 
         print(stmt.compile(dialect=postgresql.dialect()))
 
@@ -74,11 +74,11 @@ class array(expression.Tuple):
     recursively adding the dimensions of the inner :class:`_types.ARRAY`
     type::
 
-        stmt = select([
+        stmt = select(
             array([
                 array([1, 2]), array([3, 4]), array([column('q'), column('x')])
             ])
-        ])
+        )
         print(stmt.compile(dialect=postgresql.dialect()))
 
     Produces::
@@ -96,17 +96,34 @@ class array(expression.Tuple):
 
     __visit_name__ = "array"
 
+    stringify_dialect = "postgresql"
+
     def __init__(self, clauses, **kw):
+        clauses = [
+            coercions.expect(roles.ExpressionElementRole, c) for c in clauses
+        ]
+
         super(array, self).__init__(*clauses, **kw)
-        if isinstance(self.type, ARRAY):
+
+        self._type_tuple = [arg.type for arg in clauses]
+        main_type = kw.pop(
+            "type_",
+            self._type_tuple[0] if self._type_tuple else sqltypes.NULLTYPE,
+        )
+
+        if isinstance(main_type, ARRAY):
             self.type = ARRAY(
-                self.type.item_type,
-                dimensions=self.type.dimensions + 1
-                if self.type.dimensions is not None
+                main_type.item_type,
+                dimensions=main_type.dimensions + 1
+                if main_type.dimensions is not None
                 else 2,
             )
         else:
-            self.type = ARRAY(self.type)
+            self.type = ARRAY(main_type)
+
+    @property
+    def _select_iterable(self):
+        return (self,)
 
     def _bind_param(self, operator, obj, _assume_scalar=False, type_=None):
         if _assume_scalar or operator is operators.getitem:
@@ -314,12 +331,6 @@ class ARRAY(sqltypes.ARRAY):
             )
 
     @util.memoized_property
-    def _require_cast(self):
-        return self._against_native_enum or isinstance(
-            self.item_type, sqltypes.JSON
-        )
-
-    @util.memoized_property
     def _against_native_enum(self):
         return (
             isinstance(self.item_type, sqltypes.Enum)
@@ -327,10 +338,7 @@ class ARRAY(sqltypes.ARRAY):
         )
 
     def bind_expression(self, bindvalue):
-        if self._require_cast:
-            return expression.cast(bindvalue, self)
-        else:
-            return bindvalue
+        return bindvalue
 
     def bind_processor(self, dialect):
         item_proc = self.item_type.dialect_impl(dialect).bind_processor(

@@ -44,7 +44,7 @@ try:
 except ImportError:
     curses = None  # type: ignore
 
-from typing import Dict, Any, cast
+from typing import Dict, Any, cast, Optional
 
 # Logger objects for internal tornado use
 access_log = logging.getLogger("tornado.access")
@@ -110,6 +110,7 @@ class LogFormatter(logging.Formatter):
         logging.INFO: 2,  # Green
         logging.WARNING: 3,  # Yellow
         logging.ERROR: 1,  # Red
+        logging.CRITICAL: 5,  # Magenta
     }
 
     def __init__(
@@ -207,7 +208,9 @@ class LogFormatter(logging.Formatter):
         return formatted.replace("\n", "\n    ")
 
 
-def enable_pretty_logging(options: Any = None, logger: logging.Logger = None) -> None:
+def enable_pretty_logging(
+    options: Any = None, logger: Optional[logging.Logger] = None
+) -> None:
     """Turns on formatted logging output as configured.
 
     This is called automatically by `tornado.options.parse_command_line`

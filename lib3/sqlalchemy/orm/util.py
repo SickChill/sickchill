@@ -1,5 +1,5 @@
 # orm/util.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -23,7 +23,11 @@ from .base import object_state  # noqa
 from .base import state_attribute_str  # noqa
 from .base import state_class_str  # noqa
 from .base import state_str  # noqa
+from .interfaces import CriteriaOption
 from .interfaces import MapperProperty  # noqa
+from .interfaces import ORMColumnsClauseRole
+from .interfaces import ORMEntityColumnsClauseRole
+from .interfaces import ORMFromClauseRole
 from .interfaces import PropComparator  # noqa
 from .path_registry import PathRegistry  # noqa
 from .. import event
@@ -31,8 +35,16 @@ from .. import exc as sa_exc
 from .. import inspection
 from .. import sql
 from .. import util
+from ..engine.result import result_tuple
+from ..sql import base as sql_base
+from ..sql import coercions
 from ..sql import expression
+from ..sql import lambdas
+from ..sql import roles
 from ..sql import util as sql_util
+from ..sql import visitors
+from ..sql.annotation import SupportsCloneAnnotations
+from ..sql.base import ColumnCollection
 
 
 all_cascades = frozenset(
@@ -209,14 +221,22 @@ def polymorphic_union(
     for key in table_map:
         table = table_map[key]
 
-        # mysql doesn't like selecting from a select;
-        # make it an alias of the select
-        if isinstance(table, sql.Select):
-            table = table.alias()
-            table_map[key] = table
+        table = coercions.expect(
+            roles.StrictFromClauseRole, table, allow_select=True
+        )
+        table_map[key] = table
 
         m = {}
         for c in table.c:
+            if c.key == typecolname:
+                raise sa_exc.InvalidRequestError(
+                    "Polymorphic union can't use '%s' as the discriminator "
+                    "column due to mapped column %r; please apply the "
+                    "'typecolname' "
+                    "argument; this is available on "
+                    "ConcreteBase as '_concrete_discriminator_name'"
+                    % (typecolname, c)
+                )
             colnames.add(c.key)
             m[c.key] = c
             types[c.key] = c.type
@@ -236,20 +256,21 @@ def polymorphic_union(
         if typecolname is not None:
             result.append(
                 sql.select(
-                    [col(name, table) for name in colnames]
-                    + [
-                        sql.literal_column(
-                            sql_util._quote_ddl_expr(type_)
-                        ).label(typecolname)
-                    ],
-                    from_obj=[table],
-                )
+                    *(
+                        [col(name, table) for name in colnames]
+                        + [
+                            sql.literal_column(
+                                sql_util._quote_ddl_expr(type_)
+                            ).label(typecolname)
+                        ]
+                    )
+                ).select_from(table)
             )
         else:
             result.append(
                 sql.select(
-                    [col(name, table) for name in colnames], from_obj=[table]
-                )
+                    *[col(name, table) for name in colnames]
+                ).select_from(table)
             )
     return sql.union_all(*result).alias(aliasname)
 
@@ -300,18 +321,18 @@ def identity_key(*args, **kwargs):
     * ``identity_key(class, row=row, identity_token=token)``
 
       This form is similar to the class/tuple form, except is passed a
-      database result row as a :class:`.RowProxy` object.
+      database result row as a :class:`.Row` object.
 
       E.g.::
 
-        >>> row = engine.execute("select * from table where a=1 and b=2").\
-first()
+        >>> row = engine.execute(\
+            text("select * from table where a=1 and b=2")\
+            ).first()
         >>> identity_key(MyClass, row=row)
         (<class '__main__.MyClass'>, (1, 2), None)
 
       :param class: mapped class (must be a positional argument)
-      :param row: :class:`.RowProxy` row returned by a
-       :class:`_engine.ResultProxy`
+      :param row: :class:`.Row` row returned by a :class:`_engine.CursorResult`
        (must be given as a keyword arg)
       :param identity_token: optional identity token
 
@@ -458,7 +479,7 @@ class AliasedClass(object):
 
     def __init__(
         self,
-        cls,
+        mapped_class_or_ac,
         alias=None,
         name=None,
         flat=False,
@@ -470,15 +491,18 @@ class AliasedClass(object):
         use_mapper_path=False,
         represents_outer_join=False,
     ):
-        mapper = _class_to_mapper(cls)
+        insp = inspection.inspect(mapped_class_or_ac)
+        mapper = insp.mapper
+
         if alias is None:
-            alias = mapper._with_polymorphic_selectable.alias(
-                name=name, flat=flat
+            alias = mapper._with_polymorphic_selectable._anonymous_fromclause(
+                name=name,
+                flat=flat,
             )
 
         self._aliased_insp = AliasedInsp(
             self,
-            mapper,
+            insp,
             alias,
             name,
             with_polymorphic_mappers
@@ -494,6 +518,13 @@ class AliasedClass(object):
         )
 
         self.__name__ = "AliasedClass_%s" % mapper.class_.__name__
+
+    @classmethod
+    def _reconstitute_from_aliased_insp(cls, aliased_insp):
+        obj = cls.__new__(cls)
+        obj.__name__ = "AliasedClass_%s" % aliased_insp.mapper.class_.__name__
+        obj._aliased_insp = aliased_insp
+        return obj
 
     def __getattr__(self, key):
         try:
@@ -524,6 +555,27 @@ class AliasedClass(object):
 
         return attr
 
+    def _get_from_serialized(self, key, mapped_class, aliased_insp):
+        # this method is only used in terms of the
+        # sqlalchemy.ext.serializer extension
+        attr = getattr(mapped_class, key)
+        if hasattr(attr, "__call__") and hasattr(attr, "__self__"):
+            return types.MethodType(attr.__func__, self)
+
+        # attribute is a descriptor, that will be invoked against a
+        # "self"; so invoke the descriptor against this self
+        if hasattr(attr, "__get__"):
+            attr = attr.__get__(None, self)
+
+        # attributes within the QueryableAttribute system will want this
+        # to be invoked so the object can be adapted
+        if hasattr(attr, "adapt_to_entity"):
+            aliased_insp._weak_entity = weakref.ref(self)
+            attr = attr.adapt_to_entity(aliased_insp)
+            setattr(self, key, attr)
+
+        return attr
+
     def __repr__(self):
         return "<AliasedClass at 0x%x; %s>" % (
             id(self),
@@ -534,7 +586,12 @@ class AliasedClass(object):
         return str(self._aliased_insp)
 
 
-class AliasedInsp(InspectionAttr):
+class AliasedInsp(
+    ORMEntityColumnsClauseRole,
+    ORMFromClauseRole,
+    sql_base.MemoizedHasCacheKey,
+    InspectionAttr,
+):
     """Provide an inspection interface for an
     :class:`.AliasedClass` object.
 
@@ -576,7 +633,7 @@ class AliasedInsp(InspectionAttr):
     def __init__(
         self,
         entity,
-        mapper,
+        inspected,
         selectable,
         name,
         with_polymorphic_mappers,
@@ -586,6 +643,10 @@ class AliasedInsp(InspectionAttr):
         adapt_on_names,
         represents_outer_join,
     ):
+
+        mapped_class_or_ac = inspected.entity
+        mapper = inspected.mapper
+
         self._weak_entity = weakref.ref(entity)
         self.mapper = mapper
         self.selectable = (
@@ -623,17 +684,59 @@ class AliasedInsp(InspectionAttr):
             equivalents=mapper._equivalent_columns,
             adapt_on_names=adapt_on_names,
             anonymize_labels=True,
+            # make sure the adapter doesn't try to grab other tables that
+            # are not even the thing we are mapping, such as embedded
+            # selectables in subqueries or CTEs.  See issue #6060
+            adapt_from_selectables=[
+                m.selectable for m in self.with_polymorphic_mappers
+            ],
         )
 
+        if inspected.is_aliased_class:
+            self._adapter = inspected._adapter.wrap(self._adapter)
+
         self._adapt_on_names = adapt_on_names
-        self._target = mapper.class_
+        self._target = mapped_class_or_ac
+        # self._target = mapper.class_  # mapped_class_or_ac
 
     @property
     def entity(self):
-        return self._weak_entity()
+        # to eliminate reference cycles, the AliasedClass is held weakly.
+        # this produces some situations where the AliasedClass gets lost,
+        # particularly when one is created internally and only the AliasedInsp
+        # is passed around.
+        # to work around this case, we just generate a new one when we need
+        # it, as it is a simple class with very little initial state on it.
+        ent = self._weak_entity()
+        if ent is None:
+            ent = AliasedClass._reconstitute_from_aliased_insp(self)
+            self._weak_entity = weakref.ref(ent)
+        return ent
 
     is_aliased_class = True
     "always returns True"
+
+    @util.memoized_instancemethod
+    def __clause_element__(self):
+        return self.selectable._annotate(
+            {
+                "parentmapper": self.mapper,
+                "parententity": self,
+                "entity_namespace": self,
+            }
+        )._set_propagate_attrs(
+            {"compile_state_plugin": "orm", "plugin_subject": self}
+        )
+
+    @property
+    def entity_namespace(self):
+        return self.entity
+
+    _cache_key_traversal = [
+        ("name", visitors.ExtendedInternalTraversal.dp_string),
+        ("_adapt_on_names", visitors.ExtendedInternalTraversal.dp_boolean),
+        ("selectable", visitors.ExtendedInternalTraversal.dp_clauseelement),
+    ]
 
     @property
     def class_(self):
@@ -676,9 +779,19 @@ class AliasedInsp(InspectionAttr):
             state["represents_outer_join"],
         )
 
-    def _adapt_element(self, elem):
-        return self._adapter.traverse(elem)._annotate(
-            {"parententity": self, "parentmapper": self.mapper}
+    def _adapt_element(self, elem, key=None):
+        d = {
+            "parententity": self,
+            "parentmapper": self.mapper,
+        }
+        if key:
+            d["proxy_key"] = key
+        return (
+            self._adapter.traverse(elem)
+            ._annotate(d)
+            ._set_propagate_attrs(
+                {"compile_state_plugin": "orm", "plugin_subject": self}
+            )
         )
 
     def _entity_for_mapper(self, mapper):
@@ -709,6 +822,21 @@ class AliasedInsp(InspectionAttr):
     @util.memoized_property
     def _memoized_values(self):
         return {}
+
+    @util.memoized_property
+    def _all_column_expressions(self):
+        if self._is_with_polymorphic:
+            cols_plus_keys = self.mapper._columns_plus_keys(
+                [ent.mapper for ent in self._with_polymorphic_entities]
+            )
+        else:
+            cols_plus_keys = self.mapper._columns_plus_keys()
+
+        cols_plus_keys = [
+            (key, self._adapt_element(col)) for key, col in cols_plus_keys
+        ]
+
+        return ColumnCollection(cols_plus_keys)
 
     def _memo(self, key, callable_, *args, **kw):
         if key in self._memoized_values:
@@ -744,6 +872,256 @@ class AliasedInsp(InspectionAttr):
             return "aliased(%s)" % (self._target.__name__,)
 
 
+class _WrapUserEntity(object):
+    """A wrapper used within the loader_criteria lambda caller so that
+    we can bypass declared_attr descriptors on unmapped mixins, which
+    normally emit a warning for such use.
+
+    might also be useful for other per-lambda instrumentations should
+    the need arise.
+
+    """
+
+    def __init__(self, subject):
+        self.subject = subject
+
+    @util.preload_module("sqlalchemy.orm.decl_api")
+    def __getattribute__(self, name):
+        decl_api = util.preloaded.orm.decl_api
+
+        subject = object.__getattribute__(self, "subject")
+        if name in subject.__dict__ and isinstance(
+            subject.__dict__[name], decl_api.declared_attr
+        ):
+            return subject.__dict__[name].fget(subject)
+        else:
+            return getattr(subject, name)
+
+
+class LoaderCriteriaOption(CriteriaOption):
+    """Add additional WHERE criteria to the load for all occurrences of
+    a particular entity.
+
+    :class:`_orm.LoaderCriteriaOption` is invoked using the
+    :func:`_orm.with_loader_criteria` function; see that function for
+    details.
+
+    .. versionadded:: 1.4
+
+    """
+
+    _traverse_internals = [
+        ("root_entity", visitors.ExtendedInternalTraversal.dp_plain_obj),
+        ("entity", visitors.ExtendedInternalTraversal.dp_has_cache_key),
+        ("where_criteria", visitors.InternalTraversal.dp_clauseelement),
+        ("include_aliases", visitors.InternalTraversal.dp_boolean),
+        ("propagate_to_loaders", visitors.InternalTraversal.dp_boolean),
+    ]
+
+    def __init__(
+        self,
+        entity_or_base,
+        where_criteria,
+        loader_only=False,
+        include_aliases=False,
+        propagate_to_loaders=True,
+        track_closure_variables=True,
+    ):
+        """Add additional WHERE criteria to the load for all occurrences of
+        a particular entity.
+
+        .. versionadded:: 1.4
+
+        The :func:`_orm.with_loader_criteria` option is intended to add
+        limiting criteria to a particular kind of entity in a query,
+        **globally**, meaning it will apply to the entity as it appears
+        in the SELECT query as well as within any subqueries, join
+        conditions, and relationship loads, including both eager and lazy
+        loaders, without the need for it to be specified in any particular
+        part of the query.    The rendering logic uses the same system used by
+        single table inheritance to ensure a certain discriminator is applied
+        to a table.
+
+        E.g., using :term:`2.0-style` queries, we can limit the way the
+        ``User.addresses`` collection is loaded, regardless of the kind
+        of loading used::
+
+            from sqlalchemy.orm import with_loader_criteria
+
+            stmt = select(User).options(
+                selectinload(User.addresses),
+                with_loader_criteria(Address, Address.email_address != 'foo'))
+            )
+
+        Above, the "selectinload" for ``User.addresses`` will apply the
+        given filtering criteria to the WHERE clause.
+
+        Another example, where the filtering will be applied to the
+        ON clause of the join, in this example using :term:`1.x style`
+        queries::
+
+            q = session.query(User).outerjoin(User.addresses).options(
+                with_loader_criteria(Address, Address.email_address != 'foo'))
+            )
+
+        The primary purpose of :func:`_orm.with_loader_criteria` is to use
+        it in the :meth:`_orm.SessionEvents.do_orm_execute` event handler
+        to ensure that all occurrences of a particular entity are filtered
+        in a certain way, such as filtering for access control roles.    It
+        also can be used to apply criteria to relationship loads.  In the
+        example below, we can apply a certain set of rules to all queries
+        emitted by a particular :class:`_orm.Session`::
+
+            session = Session(bind=engine)
+
+            @event.listens_for("do_orm_execute", session)
+            def _add_filtering_criteria(execute_state):
+
+                if (
+                    execute_state.is_select
+                    and not execute_state.is_column_load
+                    and not execute_state.is_relationship_load
+                ):
+                    execute_state.statement = execute_state.statement.options(
+                        with_loader_criteria(
+                            SecurityRole,
+                            lambda cls: cls.role.in_(['some_role']),
+                            include_aliases=True
+                        )
+                    )
+
+        In the above example, the :meth:`_orm.SessionEvents.do_orm_execute`
+        event will intercept all queries emitted using the
+        :class:`_orm.Session`. For those queries which are SELECT statements
+        and are not attribute or relationship loads a custom
+        :func:`_orm.with_loader_criteria` option is added to the query.    The
+        :func:`_orm.with_loader_criteria` option will be used in the given
+        statement and will also be automatically propagated to all relationship
+        loads that descend from this query.
+
+        The criteria argument given is a ``lambda`` that accepts a ``cls``
+        argument.  The given class will expand to include all mapped subclass
+        and need not itself be a mapped class.
+
+        .. warning:: The use of a lambda inside of the call to
+          :func:`_orm.with_loader_criteria` is only invoked **once per unique
+          class**. Custom functions should not be invoked within this lambda.
+          See :ref:`engine_lambda_caching` for an overview of the "lambda SQL"
+          feature, which is for advanced use only.
+
+        :param entity_or_base: a mapped class, or a class that is a super
+         class of a particular set of mapped classes, to which the rule
+         will apply.
+
+        :param where_criteria: a Core SQL expression that applies limiting
+         criteria.   This may also be a "lambda:" or Python function that
+         accepts a target class as an argument, when the given class is
+         a base with many different mapped subclasses.
+
+        :param include_aliases: if True, apply the rule to :func:`_orm.aliased`
+         constructs as well.
+
+        :param propagate_to_loaders: defaults to True, apply to relationship
+         loaders such as lazy loaders.
+
+
+        .. seealso::
+
+            :ref:`examples_session_orm_events` - includes examples of using
+            :func:`_orm.with_loader_criteria`.
+
+            :ref:`do_orm_execute_global_criteria` - basic example on how to
+            combine :func:`_orm.with_loader_criteria` with the
+            :meth:`_orm.SessionEvents.do_orm_execute` event.
+
+        :param track_closure_variables: when False, closure variables inside
+         of a lambda expression will not be used as part of
+         any cache key.    This allows more complex expressions to be used
+         inside of a lambda expression but requires that the lambda ensures
+         it returns the identical SQL every time given a particular class.
+
+         .. versionadded:: 1.4.0b2
+
+        """
+        entity = inspection.inspect(entity_or_base, False)
+        if entity is None:
+            self.root_entity = entity_or_base
+            self.entity = None
+        else:
+            self.root_entity = None
+            self.entity = entity
+
+        if callable(where_criteria):
+            self.deferred_where_criteria = True
+            self.where_criteria = lambdas.DeferredLambdaElement(
+                where_criteria,
+                roles.WhereHavingRole,
+                lambda_args=(
+                    _WrapUserEntity(
+                        self.root_entity
+                        if self.root_entity is not None
+                        else self.entity.entity,
+                    ),
+                ),
+                opts=lambdas.LambdaOptions(
+                    track_closure_variables=track_closure_variables
+                ),
+            )
+        else:
+            self.deferred_where_criteria = False
+            self.where_criteria = coercions.expect(
+                roles.WhereHavingRole, where_criteria
+            )
+
+        self.include_aliases = include_aliases
+        self.propagate_to_loaders = propagate_to_loaders
+
+    def _all_mappers(self):
+        if self.entity:
+            for ent in self.entity.mapper.self_and_descendants:
+                yield ent
+        else:
+            stack = list(self.root_entity.__subclasses__())
+            while stack:
+                subclass = stack.pop(0)
+                ent = inspection.inspect(subclass, raiseerr=False)
+                if ent:
+                    for mp in ent.mapper.self_and_descendants:
+                        yield mp
+                else:
+                    stack.extend(subclass.__subclasses__())
+
+    def _resolve_where_criteria(self, ext_info):
+        if self.deferred_where_criteria:
+            return self.where_criteria._resolve_with_args(ext_info.entity)
+        else:
+            return self.where_criteria
+
+    def process_compile_state(self, compile_state):
+        """Apply a modification to a given :class:`.CompileState`."""
+
+        # if options to limit the criteria to immediate query only,
+        # use compile_state.attributes instead
+
+        if compile_state.compile_options._with_polymorphic_adapt_map:
+            util.warn(
+                "The with_loader_criteria() function may not work "
+                "correctly with the legacy Query.with_polymorphic() feature.  "
+                "Please migrate code to use the with_polymorphic() standalone "
+                "function before using with_loader_criteria()."
+            )
+        if not compile_state.compile_options._for_refresh_state:
+            self.get_global_criteria(compile_state.global_attributes)
+
+    def get_global_criteria(self, attributes):
+        for mp in self._all_mappers():
+            load_criteria = attributes.setdefault(
+                ("additional_entity_criteria", mp), []
+            )
+
+            load_criteria.append(self)
+
+
 inspection._inspects(AliasedClass)(lambda target: target._aliased_insp)
 inspection._inspects(AliasedInsp)(lambda target: target)
 
@@ -760,8 +1138,8 @@ def aliased(element, alias=None, name=None, flat=False, adapt_on_names=False):
 
     The :func:`.aliased` function is used to create an ad-hoc mapping of a
     mapped class to a new selectable.  By default, a selectable is generated
-    from the normally mapped selectable (typically a :class:`_schema.Table`)
-    using the
+    from the normally mapped selectable (typically a :class:`_schema.Table`
+    ) using the
     :meth:`_expression.FromClause.alias` method. However, :func:`.aliased`
     can also be
     used to link the class to a new :func:`_expression.select` statement.
@@ -788,23 +1166,22 @@ def aliased(element, alias=None, name=None, flat=False, adapt_on_names=False):
      usually used to link the object to a subquery, and should be an aliased
      select construct as one would produce from the
      :meth:`_query.Query.subquery` method or
-     the :meth:`_expression.Select.alias` methods of the
-     :func:`_expression.select` construct.
+     the :meth:`_expression.Select.subquery` or
+     :meth:`_expression.Select.alias` methods of the :func:`_expression.select`
+     construct.
 
     :param name: optional string name to use for the alias, if not specified
      by the ``alias`` parameter.  The name, among other things, forms the
      attribute name that will be accessible via tuples returned by a
-     :class:`_query.Query` object.
+     :class:`_query.Query` object.  Not supported when creating aliases
+     of :class:`_sql.Join` objects.
 
     :param flat: Boolean, will be passed through to the
      :meth:`_expression.FromClause.alias` call so that aliases of
-     :class:`_expression.Join` objects
-     don't include an enclosing SELECT.  This can lead to more efficient
-     queries in many circumstances.  A JOIN against a nested JOIN will be
-     rewritten as a JOIN against an aliased SELECT subquery on backends that
-     don't support this syntax.
-
-     .. seealso:: :meth:`_expression.Join.alias`
+     :class:`_expression.Join` objects will alias the individual tables
+     inside the join, rather than creating a subquery.  This is generally
+     supported by all modern databases with regards to right-nested joins
+     and generally produces more efficient queries.
 
     :param adapt_on_names: if True, more liberal "matching" will be used when
      mapping the mapped columns of the ORM entity to those of the
@@ -840,7 +1217,12 @@ def aliased(element, alias=None, name=None, flat=False, adapt_on_names=False):
             raise sa_exc.ArgumentError(
                 "adapt_on_names only applies to ORM elements"
             )
-        return element.alias(name, flat=flat)
+        if name:
+            return element.alias(name=name, flat=flat)
+        else:
+            return coercions.expect(
+                roles.AnonymizedFromClauseRole, element, flat=flat
+            )
     else:
         return AliasedClass(
             element,
@@ -883,33 +1265,20 @@ def with_polymorphic(
         Alternatively, it may also be the string ``'*'``, in which case
         all descending mapped classes will be added to the FROM clause.
 
-    :param aliased: when True, the selectable will be wrapped in an
-        alias, that is ``(SELECT * FROM <fromclauses>) AS anon_1``.
-        This can be important when using the with_polymorphic()
-        to create the target of a JOIN on a backend that does not
-        support parenthesized joins, such as SQLite and older
-        versions of MySQL.   However if the
-        :paramref:`.with_polymorphic.selectable` parameter is in use
-        with an existing :class:`_expression.Alias` construct,
-        then you should not
-        set this flag.
+    :param aliased: when True, the selectable will be aliased.   For a
+        JOIN, this means the JOIN will be SELECTed from inside of a subquery
+        unless the :paramref:`_orm.with_polymorphic.flat` flag is set to
+        True, which is recommended for simpler use cases.
 
     :param flat: Boolean, will be passed through to the
      :meth:`_expression.FromClause.alias` call so that aliases of
-     :class:`_expression.Join`
-     objects don't include an enclosing SELECT.  This can lead to more
-     efficient queries in many circumstances.  A JOIN against a nested JOIN
-     will be rewritten as a JOIN against an aliased SELECT subquery on
-     backends that don't support this syntax.
+     :class:`_expression.Join` objects will alias the individual tables
+     inside the join, rather than creating a subquery.  This is generally
+     supported by all modern databases with regards to right-nested joins
+     and generally produces more efficient queries.  Setting this flag is
+     recommended as long as the resulting SQL is functional.
 
-     Setting ``flat`` to ``True`` implies the ``aliased`` flag is
-     also ``True``.
-
-     .. versionadded:: 0.9.0
-
-     .. seealso:: :meth:`_expression.Join.alias`
-
-    :param selectable: a table or select() statement that will
+    :param selectable: a table or subquery that will
         be used in place of the generated FROM clause. This argument is
         required if any of the desired classes use concrete table
         inheritance, since SQLAlchemy currently cannot generate UNIONs
@@ -929,6 +1298,13 @@ def with_polymorphic(
        only be specified if querying for one specific subtype only
     """
     primary_mapper = _class_to_mapper(base)
+
+    if selectable not in (None, False) and flat:
+        raise sa_exc.ArgumentError(
+            "the 'flat' and 'selectable' arguments cannot be passed "
+            "simultaneously to with_polymorphic()"
+        )
+
     if _existing_alias:
         assert _existing_alias.mapper is primary_mapper
         classes = util.to_set(classes)
@@ -943,7 +1319,7 @@ def with_polymorphic(
         classes, selectable, innerjoin=innerjoin
     )
     if aliased or flat:
-        selectable = selectable.alias(flat=flat)
+        selectable = selectable._anonymous_fromclause(flat=flat)
     return AliasedClass(
         base,
         selectable,
@@ -952,6 +1328,173 @@ def with_polymorphic(
         use_mapper_path=_use_mapper_path,
         represents_outer_join=not innerjoin,
     )
+
+
+@inspection._self_inspects
+class Bundle(ORMColumnsClauseRole, SupportsCloneAnnotations, InspectionAttr):
+    """A grouping of SQL expressions that are returned by a :class:`.Query`
+    under one namespace.
+
+    The :class:`.Bundle` essentially allows nesting of the tuple-based
+    results returned by a column-oriented :class:`_query.Query` object.
+    It also
+    is extensible via simple subclassing, where the primary capability
+    to override is that of how the set of expressions should be returned,
+    allowing post-processing as well as custom return types, without
+    involving ORM identity-mapped classes.
+
+    .. versionadded:: 0.9.0
+
+    .. seealso::
+
+        :ref:`bundles`
+
+
+    """
+
+    single_entity = False
+    """If True, queries for a single Bundle will be returned as a single
+    entity, rather than an element within a keyed tuple."""
+
+    is_clause_element = False
+
+    is_mapper = False
+
+    is_aliased_class = False
+
+    is_bundle = True
+
+    _propagate_attrs = util.immutabledict()
+
+    def __init__(self, name, *exprs, **kw):
+        r"""Construct a new :class:`.Bundle`.
+
+        e.g.::
+
+            bn = Bundle("mybundle", MyClass.x, MyClass.y)
+
+            for row in session.query(bn).filter(
+                    bn.c.x == 5).filter(bn.c.y == 4):
+                print(row.mybundle.x, row.mybundle.y)
+
+        :param name: name of the bundle.
+        :param \*exprs: columns or SQL expressions comprising the bundle.
+        :param single_entity=False: if True, rows for this :class:`.Bundle`
+         can be returned as a "single entity" outside of any enclosing tuple
+         in the same manner as a mapped entity.
+
+        """
+        self.name = self._label = name
+        self.exprs = exprs = [
+            coercions.expect(
+                roles.ColumnsClauseRole, expr, apply_propagate_attrs=self
+            )
+            for expr in exprs
+        ]
+
+        self.c = self.columns = ColumnCollection(
+            (getattr(col, "key", col._label), col)
+            for col in [e._annotations.get("bundle", e) for e in exprs]
+        )
+        self.single_entity = kw.pop("single_entity", self.single_entity)
+
+    @property
+    def mapper(self):
+        return self.exprs[0]._annotations.get("parentmapper", None)
+
+    @property
+    def entity(self):
+        return self.exprs[0]._annotations.get("parententity", None)
+
+    @property
+    def entity_namespace(self):
+        return self.c
+
+    columns = None
+    """A namespace of SQL expressions referred to by this :class:`.Bundle`.
+
+        e.g.::
+
+            bn = Bundle("mybundle", MyClass.x, MyClass.y)
+
+            q = sess.query(bn).filter(bn.c.x == 5)
+
+        Nesting of bundles is also supported::
+
+            b1 = Bundle("b1",
+                    Bundle('b2', MyClass.a, MyClass.b),
+                    Bundle('b3', MyClass.x, MyClass.y)
+                )
+
+            q = sess.query(b1).filter(
+                b1.c.b2.c.a == 5).filter(b1.c.b3.c.y == 9)
+
+    .. seealso::
+
+        :attr:`.Bundle.c`
+
+    """
+
+    c = None
+    """An alias for :attr:`.Bundle.columns`."""
+
+    def _clone(self):
+        cloned = self.__class__.__new__(self.__class__)
+        cloned.__dict__.update(self.__dict__)
+        return cloned
+
+    def __clause_element__(self):
+        # ensure existing entity_namespace remains
+        annotations = {"bundle": self, "entity_namespace": self}
+        annotations.update(self._annotations)
+
+        plugin_subject = self.exprs[0]._propagate_attrs.get(
+            "plugin_subject", self.entity
+        )
+        return (
+            expression.ClauseList(
+                _literal_as_text_role=roles.ColumnsClauseRole,
+                group=False,
+                *[e._annotations.get("bundle", e) for e in self.exprs]
+            )
+            ._annotate(annotations)
+            ._set_propagate_attrs(
+                # the Bundle *must* use the orm plugin no matter what.  the
+                # subject can be None but it's much better if it's not.
+                {
+                    "compile_state_plugin": "orm",
+                    "plugin_subject": plugin_subject,
+                }
+            )
+        )
+
+    @property
+    def clauses(self):
+        return self.__clause_element__().clauses
+
+    def label(self, name):
+        """Provide a copy of this :class:`.Bundle` passing a new label."""
+
+        cloned = self._clone()
+        cloned.name = name
+        return cloned
+
+    def create_row_processor(self, query, procs, labels):
+        """Produce the "row processing" function for this :class:`.Bundle`.
+
+        May be overridden by subclasses.
+
+        .. seealso::
+
+            :ref:`bundles` - includes an example of subclassing.
+
+        """
+        keyed_tuple = result_tuple(labels, [() for l in labels])
+
+        def proc(row):
+            return keyed_tuple([proc(row) for proc in procs])
+
+        return proc
 
 
 def _orm_annotate(element, exclude=None):
@@ -987,6 +1530,8 @@ class _ORMJoin(expression.Join):
 
     __visit_name__ = expression.Join.__visit_name__
 
+    inherit_cache = True
+
     def __init__(
         self,
         left,
@@ -996,35 +1541,43 @@ class _ORMJoin(expression.Join):
         full=False,
         _left_memo=None,
         _right_memo=None,
+        _extra_criteria=(),
     ):
         left_info = inspection.inspect(left)
-        left_orm_info = getattr(left, "_joined_from_info", left_info)
 
         right_info = inspection.inspect(right)
         adapt_to = right_info.selectable
 
-        self._joined_from_info = right_info
-
+        # used by joined eager loader
         self._left_memo = _left_memo
         self._right_memo = _right_memo
 
+        # legacy, for string attr name ON clause.  if that's removed
+        # then the "_joined_from_info" concept can go
+        left_orm_info = getattr(left, "_joined_from_info", left_info)
+        self._joined_from_info = right_info
         if isinstance(onclause, util.string_types):
             onclause = getattr(left_orm_info.entity, onclause)
+        # ####
 
         if isinstance(onclause, attributes.QueryableAttribute):
             on_selectable = onclause.comparator._source_selectable()
             prop = onclause.property
+            _extra_criteria += onclause._extra_criteria
         elif isinstance(onclause, MapperProperty):
+            # used internally by joined eager loader...possibly not ideal
             prop = onclause
             on_selectable = prop.parent.selectable
         else:
             prop = None
 
         if prop:
-            if sql_util.clause_is_present(on_selectable, left_info.selectable):
+            left_selectable = left_info.selectable
+
+            if sql_util.clause_is_present(on_selectable, left_selectable):
                 adapt_from = on_selectable
             else:
-                adapt_from = left_info.selectable
+                adapt_from = left_selectable
 
             (
                 pj,
@@ -1037,9 +1590,9 @@ class _ORMJoin(expression.Join):
                 source_selectable=adapt_from,
                 dest_selectable=adapt_to,
                 source_polymorphic=True,
-                dest_polymorphic=True,
-                of_type_mapper=right_info.mapper,
+                of_type_entity=right_info,
                 alias_secondary=True,
+                extra_criteria=_extra_criteria,
             )
 
             if sj is not None:
@@ -1052,6 +1605,7 @@ class _ORMJoin(expression.Join):
                     onclause = sj
             else:
                 onclause = pj
+
             self._target_adapter = target_adapter
 
         expression.Join.__init__(self, left, right, onclause, isouter, full)
@@ -1175,11 +1729,35 @@ def with_parent(instance, prop, from_entity=None):
     :func:`_orm.relationship()`
     configuration.
 
+    E.g.::
+
+        stmt = select(Address).where(with_parent(some_user, Address.user))
+
+
     The SQL rendered is the same as that rendered when a lazy loader
     would fire off from the given parent on that attribute, meaning
     that the appropriate state is taken from the parent object in
     Python without the need to render joins to the parent table
     in the rendered statement.
+
+    The given property may also make use of :meth:`_orm.PropComparator.of_type`
+    to indicate the left side of the criteria::
+
+
+        a1 = aliased(Address)
+        a2 = aliased(Address)
+        stmt = select(a1, a2).where(
+            with_parent(u1, User.addresses.of_type(a2))
+        )
+
+    The above use is equivalent to using the
+    :func:`_orm.with_parent.from_entity` argument::
+
+        a1 = aliased(Address)
+        a2 = aliased(Address)
+        stmt = select(a1, a2).where(
+            with_parent(u1, User.addresses, from_entity=a2)
+        )
 
     :param instance:
       An instance which has some :func:`_orm.relationship`.
@@ -1189,6 +1767,9 @@ def with_parent(instance, prop, from_entity=None):
       what relationship from the instance should be used to reconcile the
       parent/child relationship.
 
+      .. deprecated:: 1.4 Using strings is deprecated and will be removed
+         in SQLAlchemy 2.0.  Please use the class-bound attribute directly.
+
     :param from_entity:
       Entity in which to consider as the left side.  This defaults to the
       "zero" entity of the :class:`_query.Query` itself.
@@ -1197,9 +1778,16 @@ def with_parent(instance, prop, from_entity=None):
 
     """
     if isinstance(prop, util.string_types):
+        util.warn_deprecated_20(
+            "Using strings to indicate relationship names in the ORM "
+            "with_parent() function is deprecated and will be removed "
+            "SQLAlchemy 2.0.  Please use the class-bound attribute directly."
+        )
         mapper = object_mapper(instance)
         prop = getattr(mapper.class_, prop).property
     elif isinstance(prop, attributes.QueryableAttribute):
+        if prop._of_type:
+            from_entity = prop._of_type
         prop = prop.property
 
     return prop._with_parent(instance, from_entity=from_entity)
@@ -1342,3 +1930,52 @@ def randomize_unitofwork():
     topological.set = (
         unitofwork.set
     ) = session.set = mapper.set = dependency.set = RandomSet
+
+
+def _getitem(iterable_query, item, allow_negative):
+    """calculate __getitem__ in terms of an iterable query object
+    that also has a slice() method.
+
+    """
+
+    def _no_negative_indexes():
+        if not allow_negative:
+            raise IndexError(
+                "negative indexes are not accepted by SQL "
+                "index / slice operators"
+            )
+        else:
+            util.warn_deprecated_20(
+                "Support for negative indexes for SQL index / slice operators "
+                "will be "
+                "removed in 2.0; these operators fetch the complete result "
+                "and do not work efficiently."
+            )
+
+    if isinstance(item, slice):
+        start, stop, step = util.decode_slice(item)
+
+        if (
+            isinstance(stop, int)
+            and isinstance(start, int)
+            and stop - start <= 0
+        ):
+            return []
+
+        elif (isinstance(start, int) and start < 0) or (
+            isinstance(stop, int) and stop < 0
+        ):
+            _no_negative_indexes()
+            return list(iterable_query)[item]
+
+        res = iterable_query.slice(start, stop)
+        if step is not None:
+            return list(res)[None : None : item.step]
+        else:
+            return list(res)
+    else:
+        if item == -1:
+            _no_negative_indexes()
+            return list(iterable_query)[-1]
+        else:
+            return list(iterable_query[item : item + 1])[0]

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -66,7 +64,7 @@ class _BadAttribute:
         )
 
 
-class GithubObject(object):
+class GithubObject:
     """
     Base class for all classes representing objects returned by the API.
     """
@@ -233,13 +231,10 @@ class GithubObject(object):
             for key, element in value.items()
         ):
             return _ValuedAttribute(
-                dict(
-                    (
-                        key,
-                        klass(self._requester, self._headers, element, completed=False),
-                    )
+                {
+                    key: klass(self._requester, self._headers, element, completed=False)
                     for key, element in value.items()
-                )
+                }
             )
         else:
             return _BadAttribute(value, {str: dict})
@@ -269,8 +264,8 @@ class GithubObject(object):
                 if isinstance(v, bytes):
                     v = v.decode("utf-8")
                 if isinstance(v, str):
-                    v = '"{v}"'.format(v=v)
-                yield u"{k}={v}".format(k=k, v=v)
+                    v = f'"{v}"'
+                yield f"{k}={v}"
 
         return "{class_name}({params})".format(
             class_name=self.__class__.__name__,
@@ -291,6 +286,9 @@ class CompletableGithubObject(GithubObject):
     def __eq__(self, other):
         return other.__class__ is self.__class__ and other._url.value == self._url.value
 
+    def __hash__(self):
+        return hash(self._url.value)
+
     def __ne__(self, other):
         return not self == other
 
@@ -305,7 +303,7 @@ class CompletableGithubObject(GithubObject):
     def __complete(self):
         if self._url.value is None:
             raise GithubException.IncompletableObject(
-                400, "Returned object contains no URL"
+                400, "Returned object contains no URL", None
             )
         headers, data = self._requester.requestJsonAndCheck("GET", self._url.value)
         self._storeAndUseAttributes(headers, data)

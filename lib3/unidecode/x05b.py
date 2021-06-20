@@ -102,7 +102,7 @@ data = (
 'Gu ',    # 0x64
 'Nu ',    # 0x65
 'Xue ',    # 0x66
-'[?] ',    # 0x67
+None,    # 0x67
 'Zhuan ',    # 0x68
 'Hai ',    # 0x69
 'Luan ',    # 0x6a

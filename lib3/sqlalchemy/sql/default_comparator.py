@@ -1,5 +1,5 @@
 # sql/default_comparator.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -8,32 +8,21 @@
 """Default implementation of SQL comparison operations.
 """
 
+
+from . import coercions
 from . import operators
+from . import roles
 from . import type_api
-from .elements import _clause_element_as_expr
-from .elements import _const_expr
-from .elements import _is_literal
-from .elements import _literal_as_text
 from .elements import and_
 from .elements import BinaryExpression
-from .elements import BindParameter
-from .elements import ClauseElement
 from .elements import ClauseList
 from .elements import collate
 from .elements import CollectionAggregate
-from .elements import ColumnElement
 from .elements import False_
 from .elements import Null
 from .elements import or_
-from .elements import TextClause
 from .elements import True_
-from .elements import Tuple
 from .elements import UnaryExpression
-from .elements import Visitable
-from .selectable import Alias
-from .selectable import ScalarSelect
-from .selectable import Selectable
-from .selectable import SelectBase
 from .. import exc
 from .. import util
 
@@ -62,16 +51,19 @@ def _boolean_compare(
         ):
             return BinaryExpression(
                 expr,
-                _literal_as_text(obj),
+                coercions.expect(roles.ConstExprRole, obj),
                 op,
                 type_=result_type,
                 negate=negate,
                 modifiers=kwargs,
             )
-        elif op in (operators.is_distinct_from, operators.isnot_distinct_from):
+        elif op in (
+            operators.is_distinct_from,
+            operators.is_not_distinct_from,
+        ):
             return BinaryExpression(
                 expr,
-                _literal_as_text(obj),
+                coercions.expect(roles.ConstExprRole, obj),
                 op,
                 type_=result_type,
                 negate=negate,
@@ -82,27 +74,29 @@ def _boolean_compare(
             if op in (operators.eq, operators.is_):
                 return BinaryExpression(
                     expr,
-                    _const_expr(obj),
+                    coercions.expect(roles.ConstExprRole, obj),
                     operators.is_,
-                    negate=operators.isnot,
+                    negate=operators.is_not,
                     type_=result_type,
                 )
-            elif op in (operators.ne, operators.isnot):
+            elif op in (operators.ne, operators.is_not):
                 return BinaryExpression(
                     expr,
-                    _const_expr(obj),
-                    operators.isnot,
+                    coercions.expect(roles.ConstExprRole, obj),
+                    operators.is_not,
                     negate=operators.is_,
                     type_=result_type,
                 )
             else:
                 raise exc.ArgumentError(
-                    "Only '=', '!=', 'is_()', 'isnot()', "
-                    "'is_distinct_from()', 'isnot_distinct_from()' "
+                    "Only '=', '!=', 'is_()', 'is_not()', "
+                    "'is_distinct_from()', 'is_not_distinct_from()' "
                     "operators can be used with None/True/False"
                 )
     else:
-        obj = _check_literal(expr, op, obj)
+        obj = coercions.expect(
+            roles.BinaryElementRole, element=obj, operator=op, expr=expr
+        )
 
     if reverse:
         return BinaryExpression(
@@ -127,7 +121,9 @@ def _custom_op_operate(expr, op, obj, reverse=False, result_type=None, **kw):
 
 
 def _binary_operate(expr, op, obj, reverse=False, result_type=None, **kw):
-    obj = _check_literal(expr, op, obj)
+    obj = coercions.expect(
+        roles.BinaryElementRole, obj, expr=expr, operator=op
+    )
 
     if reverse:
         left, right = obj, expr
@@ -156,82 +152,22 @@ def _scalar(expr, op, fn, **kw):
 
 
 def _in_impl(expr, op, seq_or_selectable, negate_op, **kw):
-    seq_or_selectable = _clause_element_as_expr(seq_or_selectable)
-
-    if isinstance(seq_or_selectable, ScalarSelect):
-        return _boolean_compare(expr, op, seq_or_selectable, negate=negate_op)
-    elif isinstance(seq_or_selectable, SelectBase):
-
-        # TODO: if we ever want to support (x, y, z) IN (select x,
-        # y, z from table), we would need a multi-column version of
-        # as_scalar() to produce a multi- column selectable that
-        # does not export itself as a FROM clause
-
-        return _boolean_compare(
-            expr, op, seq_or_selectable.as_scalar(), negate=negate_op, **kw
-        )
-    elif isinstance(seq_or_selectable, (Selectable, TextClause)):
-        return _boolean_compare(
-            expr, op, seq_or_selectable, negate=negate_op, **kw
-        )
-    elif isinstance(seq_or_selectable, ClauseElement):
-        if (
-            isinstance(seq_or_selectable, BindParameter)
-            and seq_or_selectable.expanding
-        ):
-
-            if isinstance(expr, Tuple):
-                seq_or_selectable = seq_or_selectable._with_expanding_in_types(
-                    [elem.type for elem in expr]
-                )
-
-            return _boolean_compare(
-                expr, op, seq_or_selectable, negate=negate_op
-            )
-        else:
-            raise exc.InvalidRequestError(
-                "in_() accepts"
-                " either a list of expressions, "
-                'a selectable, or an "expanding" bound parameter: %r'
-                % seq_or_selectable
-            )
-
-    # Handle non selectable arguments as sequences
-    args = []
-    for o in seq_or_selectable:
-        if not _is_literal(o):
-            if not isinstance(o, operators.ColumnOperators):
-                raise exc.InvalidRequestError(
-                    "in_() accepts"
-                    " either a list of expressions, "
-                    'a selectable, or an "expanding" bound parameter: %r' % o
-                )
-        elif o is None:
-            o = Null()
-        else:
-            o = expr._bind_param(op, o)
-        args.append(o)
-
-    if len(args) == 0:
-        op, negate_op = (
-            (operators.empty_in_op, operators.empty_notin_op)
-            if op is operators.in_op
-            else (operators.empty_notin_op, operators.empty_in_op)
-        )
+    seq_or_selectable = coercions.expect(
+        roles.InElementRole, seq_or_selectable, expr=expr, operator=op
+    )
+    if "in_ops" in seq_or_selectable._annotations:
+        op, negate_op = seq_or_selectable._annotations["in_ops"]
 
     return _boolean_compare(
-        expr,
-        op,
-        ClauseList(_tuple_values=isinstance(expr, Tuple), *args).self_group(
-            against=op
-        ),
-        negate=negate_op,
+        expr, op, seq_or_selectable, negate=negate_op, **kw
     )
 
 
 def _getitem_impl(expr, op, other, **kw):
     if isinstance(expr.type, type_api.INDEXABLE):
-        other = _check_literal(expr, op, other)
+        other = coercions.expect(
+            roles.BinaryElementRole, other, expr=expr, operator=op
+        )
         return _binary_operate(expr, op, other, **kw)
     else:
         _unsupported_impl(expr, op, other, **kw)
@@ -245,6 +181,9 @@ def _unsupported_impl(expr, op, *arg, **kw):
 
 def _inv_impl(expr, op, **kw):
     """See :meth:`.ColumnOperators.__inv__`."""
+
+    # undocumented element currently used by the ORM for
+    # relationship.contains()
     if hasattr(expr, "negation_clause"):
         return expr.negation_clause
     else:
@@ -262,9 +201,14 @@ def _match_impl(expr, op, other, **kw):
     return _boolean_compare(
         expr,
         operators.match_op,
-        _check_literal(expr, operators.match_op, other),
+        coercions.expect(
+            roles.BinaryElementRole,
+            other,
+            expr=expr,
+            operator=operators.match_op,
+        ),
         result_type=type_api.MATCHTYPE,
-        negate=operators.notmatch_op
+        negate=operators.not_match_op
         if op is operators.match_op
         else operators.match_op,
         **kw
@@ -283,14 +227,24 @@ def _between_impl(expr, op, cleft, cright, **kw):
     return BinaryExpression(
         expr,
         ClauseList(
-            _check_literal(expr, operators.and_, cleft),
-            _check_literal(expr, operators.and_, cright),
+            coercions.expect(
+                roles.BinaryElementRole,
+                cleft,
+                expr=expr,
+                operator=operators.and_,
+            ),
+            coercions.expect(
+                roles.BinaryElementRole,
+                cright,
+                expr=expr,
+                operator=operators.and_,
+            ),
             operator=operators.and_,
             group=False,
             group_contents=False,
         ),
         op,
-        negate=operators.notbetween_op
+        negate=operators.not_between_op
         if op is operators.between_op
         else operators.between_op,
         modifiers=kw,
@@ -299,6 +253,45 @@ def _between_impl(expr, op, cleft, cright, **kw):
 
 def _collate_impl(expr, op, other, **kw):
     return collate(expr, other)
+
+
+def _regexp_match_impl(expr, op, pattern, flags, **kw):
+    if flags is not None:
+        flags = coercions.expect(
+            roles.BinaryElementRole,
+            flags,
+            expr=expr,
+            operator=operators.regexp_replace_op,
+        )
+    return _boolean_compare(
+        expr,
+        op,
+        pattern,
+        flags=flags,
+        negate=operators.not_regexp_match_op
+        if op is operators.regexp_match_op
+        else operators.regexp_match_op,
+        **kw
+    )
+
+
+def _regexp_replace_impl(expr, op, pattern, replacement, flags, **kw):
+    replacement = coercions.expect(
+        roles.BinaryElementRole,
+        replacement,
+        expr=expr,
+        operator=operators.regexp_replace_op,
+    )
+    if flags is not None:
+        flags = coercions.expect(
+            roles.BinaryElementRole,
+            flags,
+            expr=expr,
+            operator=operators.regexp_replace_op,
+        )
+    return _binary_operate(
+        expr, op, pattern, replacement=replacement, flags=flags, **kw
+    )
 
 
 # a mapping of operators with the method they use, along with
@@ -325,51 +318,35 @@ operator_lookup = {
     "gt": (_boolean_compare, operators.le),
     "ge": (_boolean_compare, operators.lt),
     "eq": (_boolean_compare, operators.ne),
-    "is_distinct_from": (_boolean_compare, operators.isnot_distinct_from),
-    "isnot_distinct_from": (_boolean_compare, operators.is_distinct_from),
-    "like_op": (_boolean_compare, operators.notlike_op),
-    "ilike_op": (_boolean_compare, operators.notilike_op),
-    "notlike_op": (_boolean_compare, operators.like_op),
-    "notilike_op": (_boolean_compare, operators.ilike_op),
-    "contains_op": (_boolean_compare, operators.notcontains_op),
-    "startswith_op": (_boolean_compare, operators.notstartswith_op),
-    "endswith_op": (_boolean_compare, operators.notendswith_op),
+    "is_distinct_from": (_boolean_compare, operators.is_not_distinct_from),
+    "is_not_distinct_from": (_boolean_compare, operators.is_distinct_from),
+    "like_op": (_boolean_compare, operators.not_like_op),
+    "ilike_op": (_boolean_compare, operators.not_ilike_op),
+    "not_like_op": (_boolean_compare, operators.like_op),
+    "not_ilike_op": (_boolean_compare, operators.ilike_op),
+    "contains_op": (_boolean_compare, operators.not_contains_op),
+    "startswith_op": (_boolean_compare, operators.not_startswith_op),
+    "endswith_op": (_boolean_compare, operators.not_endswith_op),
     "desc_op": (_scalar, UnaryExpression._create_desc),
     "asc_op": (_scalar, UnaryExpression._create_asc),
-    "nullsfirst_op": (_scalar, UnaryExpression._create_nullsfirst),
-    "nullslast_op": (_scalar, UnaryExpression._create_nullslast),
-    "in_op": (_in_impl, operators.notin_op),
-    "notin_op": (_in_impl, operators.in_op),
+    "nulls_first_op": (_scalar, UnaryExpression._create_nulls_first),
+    "nulls_last_op": (_scalar, UnaryExpression._create_nulls_last),
+    "in_op": (_in_impl, operators.not_in_op),
+    "not_in_op": (_in_impl, operators.in_op),
     "is_": (_boolean_compare, operators.is_),
-    "isnot": (_boolean_compare, operators.isnot),
+    "is_not": (_boolean_compare, operators.is_not),
     "collate": (_collate_impl,),
     "match_op": (_match_impl,),
-    "notmatch_op": (_match_impl,),
+    "not_match_op": (_match_impl,),
     "distinct_op": (_distinct_impl,),
     "between_op": (_between_impl,),
-    "notbetween_op": (_between_impl,),
+    "not_between_op": (_between_impl,),
     "neg": (_neg_impl,),
     "getitem": (_getitem_impl,),
     "lshift": (_unsupported_impl,),
     "rshift": (_unsupported_impl,),
     "contains": (_unsupported_impl,),
+    "regexp_match_op": (_regexp_match_impl,),
+    "not_regexp_match_op": (_regexp_match_impl,),
+    "regexp_replace_op": (_regexp_replace_impl,),
 }
-
-
-def _check_literal(expr, operator, other, bindparam_type=None):
-    if isinstance(other, (ColumnElement, TextClause)):
-        if isinstance(other, BindParameter) and other.type._isnull:
-            other = other._clone()
-            other.type = expr.type
-        return other
-    elif hasattr(other, "__clause_element__"):
-        other = other.__clause_element__()
-    elif isinstance(other, type_api.TypeEngine.Comparator):
-        other = other.expr
-
-    if isinstance(other, (SelectBase, Alias)):
-        return other.as_scalar()
-    elif not isinstance(other, Visitable):
-        return expr._bind_param(operator, other, type_=bindparam_type)
-    else:
-        return other

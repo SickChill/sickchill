@@ -1,5 +1,5 @@
 # orm/state.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -29,6 +29,13 @@ from .path_registry import PathRegistry
 from .. import exc as sa_exc
 from .. import inspection
 from .. import util
+
+
+# late-populated by session.py
+_sessions = None
+
+# optionally late-provided by sqlalchemy.ext.asyncio.session
+_async_provider = None
 
 
 @inspection._self_inspects
@@ -212,7 +219,7 @@ class InstanceState(interfaces.InspectionAttrInfo):
 
             :ref:`session_object_states`
 
-            """
+        """
         return self.key is not None and self._attached and not self._deleted
 
     @property
@@ -227,11 +234,11 @@ class InstanceState(interfaces.InspectionAttrInfo):
         return self.key is not None and not self._attached
 
     @property
-    @util.dependencies("sqlalchemy.orm.session")
-    def _attached(self, sessionlib):
+    @util.preload_module("sqlalchemy.orm.session")
+    def _attached(self):
         return (
             self.session_id is not None
-            and self.session_id in sessionlib._sessions
+            and self.session_id in util.preloaded.orm_session._sessions
         )
 
     def _track_last_known_value(self, key):
@@ -247,8 +254,7 @@ class InstanceState(interfaces.InspectionAttrInfo):
             self._last_known_values[key] = NO_VALUE
 
     @property
-    @util.dependencies("sqlalchemy.orm.session")
-    def session(self, sessionlib):
+    def session(self):
         """Return the owning :class:`.Session` for this instance,
         or ``None`` if none available.
 
@@ -259,8 +265,45 @@ class InstanceState(interfaces.InspectionAttrInfo):
         Only when the transaction is completed does the object become
         fully detached under normal circumstances.
 
+        .. seealso::
+
+            :attr:`_orm.InstanceState.async_session`
+
         """
-        return sessionlib._state_session(self)
+        if self.session_id:
+            try:
+                return _sessions[self.session_id]
+            except KeyError:
+                pass
+        return None
+
+    @property
+    def async_session(self):
+        """Return the owning :class:`_asyncio.AsyncSession` for this instance,
+        or ``None`` if none available.
+
+        This attribute is only non-None when the :mod:`sqlalchemy.ext.asyncio`
+        API is in use for this ORM object. The returned
+        :class:`_asyncio.AsyncSession` object will be a proxy for the
+        :class:`_orm.Session` object that would be returned from the
+        :attr:`_orm.InstanceState.session` attribute for this
+        :class:`_orm.InstanceState`.
+
+        .. versionadded:: 1.4.18
+
+        .. seealso::
+
+            :ref:`asyncio_toplevel`
+
+        """
+        if _async_provider is None:
+            return None
+
+        sess = self.session
+        if sess is not None:
+            return _async_provider(sess)
+        else:
+            return None
 
     @property
     def object(self):
@@ -308,6 +351,10 @@ class InstanceState(interfaces.InspectionAttrInfo):
 
     @util.memoized_property
     def _pending_mutations(self):
+        return {}
+
+    @util.memoized_property
+    def _empty_collections(self):
         return {}
 
     @util.memoized_property
@@ -529,7 +576,7 @@ class InstanceState(interfaces.InspectionAttrInfo):
 
     def _reset(self, dict_, key):
         """Remove the given attribute and any
-           callables associated with it."""
+        callables associated with it."""
 
         old = dict_.pop(key, None)
         if old is not None and self.manager[key].impl.collection:
@@ -566,7 +613,6 @@ class InstanceState(interfaces.InspectionAttrInfo):
 
     def _expire(self, dict_, modified_set):
         self.expired = True
-
         if self.modified:
             modified_set.discard(self)
             self.committed_state.clear()
@@ -581,14 +627,21 @@ class InstanceState(interfaces.InspectionAttrInfo):
             del self.__dict__["parents"]
 
         self.expired_attributes.update(
-            [
-                impl.key
-                for impl in self.manager._scalar_loader_impls
-                if impl.expire_missing or impl.key in dict_
-            ]
+            [impl.key for impl in self.manager._loader_impls]
         )
 
         if self.callables:
+            # the per state loader callables we can remove here are
+            # LoadDeferredColumns, which undefers a column at the instance
+            # level that is mapped with deferred, and LoadLazyAttribute,
+            # which lazy loads a relationship at the instance level that
+            # is mapped with "noload" or perhaps "immediateload".
+            # Before 1.4, only column-based
+            # attributes could be considered to be "expired", so here they
+            # were the only ones "unexpired", which means to make them deferred
+            # again.   For the moment, as of 1.4 we also apply the same
+            # treatment relationships now, that is, an instance level lazy
+            # loader is reset in the same way as a column loader.
             for k in self.expired_attributes.intersection(self.callables):
                 del self.callables[k]
 
@@ -648,8 +701,13 @@ class InstanceState(interfaces.InspectionAttrInfo):
             return PASSIVE_NO_RESULT
 
         toload = self.expired_attributes.intersection(self.unmodified)
+        toload = toload.difference(
+            attr
+            for attr in toload
+            if not self.manager[attr].impl.load_on_unexpire
+        )
 
-        self.manager.deferred_scalar_loader(self, toload)
+        self.manager.expired_attribute_loader(self, toload, passive)
 
         # if the loader failed, or this
         # instance state didn't have an identity,
@@ -696,11 +754,7 @@ class InstanceState(interfaces.InspectionAttrInfo):
         was never populated or modified.
 
         """
-        return self.unloaded.intersection(
-            attr
-            for attr in self.manager
-            if self.manager[attr].impl.expire_missing
-        )
+        return self.unloaded
 
     @property
     def _unloaded_non_object(self):
@@ -743,7 +797,10 @@ class InstanceState(interfaces.InspectionAttrInfo):
             self.modified = True
             instance_dict = self._instance_dict()
             if instance_dict:
+                has_modified = bool(instance_dict._modified)
                 instance_dict._modified.add(self)
+            else:
+                has_modified = False
 
             # only create _strong_obj link if attached
             # to a session
@@ -751,6 +808,20 @@ class InstanceState(interfaces.InspectionAttrInfo):
             inst = self.obj()
             if self.session_id:
                 self._strong_obj = inst
+
+                # if identity map already had modified objects,
+                # assume autobegin already occurred, else check
+                # for autobegin
+                if not has_modified:
+                    # inline of autobegin, to ensure session transaction
+                    # snapshot is established
+                    try:
+                        session = _sessions[self.session_id]
+                    except KeyError:
+                        pass
+                    else:
+                        if session._transaction is None:
+                            session._autobegin()
 
             if inst is None and attr:
                 raise orm_exc.ObjectDereferencedError(

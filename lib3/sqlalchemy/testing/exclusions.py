@@ -1,5 +1,5 @@
 # testing/exclusions.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -39,6 +39,13 @@ class compound(object):
 
     def __add__(self, other):
         return self.add(other)
+
+    def as_skips(self):
+        rule = compound()
+        rule.skips.update(self.skips)
+        rule.skips.update(self.fails)
+        rule.tags.update(self.tags)
+        return rule
 
     def add(self, *others):
         copy = compound()
@@ -133,7 +140,9 @@ class compound(object):
         for fail in self.fails:
             if fail(config):
                 if util.py2k:
-                    str_ex = unicode(ex).encode("utf-8", errors="ignore")
+                    str_ex = unicode(ex).encode(  # noqa: F821
+                        "utf-8", errors="ignore"
+                    )
                 else:
                     str_ex = str(ex)
                 print(
@@ -215,7 +224,7 @@ class Predicate(object):
             )
 
             return SpecPredicate(db, op, spec, description=description)
-        elif util.callable(predicate):
+        elif callable(predicate):
             return LambdaPredicate(predicate, description)
         else:
             assert False, "unknown predicate type: %s" % predicate
@@ -270,6 +279,9 @@ class SpecPredicate(Predicate):
     }
 
     def __call__(self, config):
+        if config is None:
+            return False
+
         engine = config.db
 
         if "+" in self.db:

@@ -1,5 +1,5 @@
 # orm/dependency.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -43,6 +43,7 @@ class DependencyProcessor(object):
         else:
             self._passive_update_flag = attributes.PASSIVE_OFF
 
+        self.sort_key = "%s_%s" % (self.parent._sort_key, prop.key)
         self.key = prop.key
         if not self.prop.synchronize_pairs:
             raise sa_exc.ArgumentError(
@@ -228,6 +229,11 @@ class DependencyProcessor(object):
         if not isdelete or self.passive_deletes:
             passive = attributes.PASSIVE_NO_INITIALIZE
         elif self.direction is MANYTOONE:
+            # here, we were hoping to optimize having to fetch many-to-one
+            # for history and ignore it, if there's no further cascades
+            # to take place.  however there are too many less common conditions
+            # that still take place and tests in test_relationships /
+            # test_cascade etc. will still fail.
             passive = attributes.PASSIVE_NO_FETCH_RELATED
         else:
             passive = attributes.PASSIVE_OFF
@@ -1184,7 +1190,7 @@ class ManyToManyDP(DependencyProcessor):
 
         if secondary_delete:
             associationrow = secondary_delete[0]
-            statement = self.secondary.delete(
+            statement = self.secondary.delete().where(
                 sql.and_(
                     *[
                         c == sql.bindparam(c.key, type_=c.type)

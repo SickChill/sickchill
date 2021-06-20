@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ###########################
 #                                                                             #
 # Copyright 2019 Rigas Papathanasopoulos <rigaspapas@gmail.com>               #
@@ -31,7 +29,7 @@ from github.AccessToken import AccessToken
 class ApplicationOAuth(github.GithubObject.NonCompletableGithubObject):
     """
     This class is used for identifying and authorizing users for Github Apps.
-    https://developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/#1-users-are-redirected-to-request-their-github-identity
+    The reference can be found at https://docs.github.com/en/developers/apps/identifying-and-authorizing-users-for-github-apps
     """
 
     def __repr__(self):
@@ -75,11 +73,11 @@ class ApplicationOAuth(github.GithubObject.NonCompletableGithubObject):
         parameters = urllib.parse.urlencode(parameters)
 
         base_url = "https://github.com/login/oauth/authorize"
-        return u"{}?{}".format(base_url, parameters)
+        return f"{base_url}?{parameters}"
 
     def get_access_token(self, code, state=None):
         """
-        :calls: `POST /login/oauth/access_token <https://developer.github.com/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps/>`_
+        :calls: `POST /login/oauth/access_token <https://docs.github.com/en/developers/apps/identifying-and-authorizing-users-for-github-apps>`_
         :param code: string
         :param state: string
         """

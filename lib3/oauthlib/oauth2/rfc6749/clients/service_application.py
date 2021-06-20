@@ -6,13 +6,11 @@ oauthlib.oauth2.rfc6749
 This module is an implementation of various logic needed
 for consuming and providing OAuth 2.0 RFC6749.
 """
-from __future__ import absolute_import, unicode_literals
-
 import time
 
 from oauthlib.common import to_unicode
 
-from ..parameters import parse_token_response, prepare_token_request
+from ..parameters import prepare_token_request
 from .base import Client
 
 
@@ -57,7 +55,7 @@ class ServiceApplicationClient(Client):
                        state and token. See ``Client.__init__.__doc__`` for
                        details.
         """
-        super(ServiceApplicationClient, self).__init__(client_id, **kwargs)
+        super().__init__(client_id, **kwargs)
         self.private_key = private_key
         self.subject = subject
         self.issuer = issuer
@@ -183,6 +181,7 @@ class ServiceApplicationClient(Client):
 
         kwargs['client_id'] = self.client_id
         kwargs['include_client_id'] = include_client_id
+        scope = self.scope if scope is None else scope
         return prepare_token_request(self.grant_type,
                                      body=body,
                                      assertion=assertion,

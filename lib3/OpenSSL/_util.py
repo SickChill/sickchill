@@ -1,7 +1,7 @@
 import sys
 import warnings
 
-from six import PY2, binary_type, text_type
+from six import PY2, text_type
 
 from cryptography.hazmat.bindings.openssl.binding import Binding
 
@@ -46,10 +46,13 @@ def exception_from_error_queue(exception_type):
         error = lib.ERR_get_error()
         if error == 0:
             break
-        errors.append((
-            text(lib.ERR_lib_error_string(error)),
-            text(lib.ERR_func_error_string(error)),
-            text(lib.ERR_reason_error_string(error))))
+        errors.append(
+            (
+                text(lib.ERR_lib_error_string(error)),
+                text(lib.ERR_func_error_string(error)),
+                text(lib.ERR_reason_error_string(error)),
+            )
+        )
 
     raise exception_type(errors)
 
@@ -59,6 +62,7 @@ def make_assert(error):
     Create an assert function that uses :func:`exception_from_error_queue` to
     raise an exception wrapped by *error*.
     """
+
     def openssl_assert(ok):
         """
         If *ok* is not True, retrieve the error from OpenSSL and raise it.
@@ -79,13 +83,13 @@ def native(s):
     :raise TypeError: The input is neither :py:class:`bytes` nor
         :py:class:`unicode`.
     """
-    if not isinstance(s, (binary_type, text_type)):
+    if not isinstance(s, (bytes, text_type)):
         raise TypeError("%r is neither bytes nor unicode" % s)
     if PY2:
         if isinstance(s, text_type):
             return s.encode("utf-8")
     else:
-        if isinstance(s, binary_type):
+        if isinstance(s, bytes):
             return s.decode("utf-8")
     return s
 
@@ -99,7 +103,7 @@ def path_string(s):
 
     :return: An instance of :py:class:`bytes`.
     """
-    if isinstance(s, binary_type):
+    if isinstance(s, bytes):
         return s
     elif isinstance(s, text_type):
         return s.encode(sys.getfilesystemencoding())
@@ -108,9 +112,13 @@ def path_string(s):
 
 
 if PY2:
+
     def byte_string(s):
         return s
+
+
 else:
+
     def byte_string(s):
         return s.encode("charmap")
 
@@ -141,21 +149,10 @@ def text_to_bytes_and_warn(label, obj):
         warnings.warn(
             _TEXT_WARNING.format(label),
             category=DeprecationWarning,
-            stacklevel=3
+            stacklevel=3,
         )
-        return obj.encode('utf-8')
+        return obj.encode("utf-8")
     return obj
 
 
-try:
-    # newer versions of cffi free the buffer deterministically
-    with ffi.from_buffer(b""):
-        pass
-    from_buffer = ffi.from_buffer
-except AttributeError:
-    # cffi < 0.12 frees the buffer with refcounting gc
-    from contextlib import contextmanager
-
-    @contextmanager
-    def from_buffer(*args):
-        yield ffi.from_buffer(*args)
+from_buffer = ffi.from_buffer

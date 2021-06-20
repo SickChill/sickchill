@@ -120,7 +120,7 @@ data = (
 'Ding ',    # 0x76
 'Lang ',    # 0x77
 'Xiao ',    # 0x78
-'[?] ',    # 0x79
+None,    # 0x79
 'Tang ',    # 0x7a
 'Chi ',    # 0x7b
 'Ti ',    # 0x7c
@@ -243,7 +243,7 @@ data = (
 'Na ',    # 0xf1
 'Dia ',    # 0xf2
 'Ai ',    # 0xf3
-'[?] ',    # 0xf4
+None,    # 0xf4
 'Tong ',    # 0xf5
 'Bi ',    # 0xf6
 'Ao ',    # 0xf7

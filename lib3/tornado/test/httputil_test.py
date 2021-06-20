@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from tornado.httputil import (
     url_concat,
     parse_multipart_form_data,
@@ -388,7 +387,7 @@ Foo: even
         headers.add("Foo", "2")
         headers.add("Foo", "3")
         headers2 = HTTPHeaders.parse(str(headers))
-        self.assertEquals(headers, headers2)
+        self.assertEqual(headers, headers2)
 
 
 class FormatTimestampTest(unittest.TestCase):

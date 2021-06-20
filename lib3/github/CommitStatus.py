@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -38,7 +36,7 @@ import github.NamedUser
 
 class CommitStatus(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents CommitStatuses.The reference can be found here https://developer.github.com/v3/repos/statuses/
+    This class represents CommitStatuses.The reference can be found here https://docs.github.com/en/rest/reference/repos#statuses
     """
 
     def __repr__(self):

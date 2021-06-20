@@ -161,7 +161,7 @@ class AsyncTestCase(unittest.TestCase):
     """
 
     def __init__(self, methodName: str = "runTest") -> None:
-        super(AsyncTestCase, self).__init__(methodName)
+        super().__init__(methodName)
         self.__stopped = False
         self.__running = False
         self.__failure = None  # type: Optional[_ExcInfoTuple]
@@ -178,7 +178,7 @@ class AsyncTestCase(unittest.TestCase):
         self._test_generator = None  # type: Optional[Union[Generator, Coroutine]]
 
     def setUp(self) -> None:
-        super(AsyncTestCase, self).setUp()
+        super().setUp()
         self.io_loop = self.get_new_ioloop()
         self.io_loop.make_current()
 
@@ -222,7 +222,7 @@ class AsyncTestCase(unittest.TestCase):
             # in the same process with autoreload (because curl does not
             # set FD_CLOEXEC on its file descriptors)
             self.io_loop.close(all_fds=True)
-        super(AsyncTestCase, self).tearDown()
+        super().tearDown()
         # In case an exception escaped or the StackContext caught an exception
         # when there wasn't a wait() to re-raise it, do so here.
         # This is our last chance to raise an exception in a way that the
@@ -260,8 +260,10 @@ class AsyncTestCase(unittest.TestCase):
             self.__failure = None
             raise_exc_info(failure)
 
-    def run(self, result: unittest.TestResult = None) -> unittest.TestCase:
-        ret = super(AsyncTestCase, self).run(result)
+    def run(
+        self, result: Optional[unittest.TestResult] = None
+    ) -> Optional[unittest.TestResult]:
+        ret = super().run(result)
         # As a last resort, if an exception escaped super.run() and wasn't
         # re-raised in tearDown, raise it here.  This will cause the
         # unittest run to fail messily, but that's better than silently
@@ -288,8 +290,10 @@ class AsyncTestCase(unittest.TestCase):
         self.__stopped = True
 
     def wait(
-        self, condition: Callable[..., bool] = None, timeout: float = None
-    ) -> None:
+        self,
+        condition: Optional[Callable[..., bool]] = None,
+        timeout: Optional[float] = None,
+    ) -> Any:
         """Runs the `.IOLoop` until stop is called or timeout has passed.
 
         In the event of a timeout, an exception will be thrown. The
@@ -375,7 +379,7 @@ class AsyncHTTPTestCase(AsyncTestCase):
     """
 
     def setUp(self) -> None:
-        super(AsyncHTTPTestCase, self).setUp()
+        super().setUp()
         sock, port = bind_unused_port()
         self.__port = port
 
@@ -469,7 +473,7 @@ class AsyncHTTPTestCase(AsyncTestCase):
         self.http_client.close()
         del self.http_server
         del self._app
-        super(AsyncHTTPTestCase, self).tearDown()
+        super().tearDown()
 
 
 class AsyncHTTPSTestCase(AsyncHTTPTestCase):
@@ -508,7 +512,7 @@ class AsyncHTTPSTestCase(AsyncHTTPTestCase):
 
 @typing.overload
 def gen_test(
-    *, timeout: float = None
+    *, timeout: Optional[float] = None
 ) -> Callable[[Callable[..., Union[Generator, "Coroutine"]]], Callable[..., None]]:
     pass
 
@@ -519,7 +523,8 @@ def gen_test(func: Callable[..., Union[Generator, "Coroutine"]]) -> Callable[...
 
 
 def gen_test(  # noqa: F811
-    func: Callable[..., Union[Generator, "Coroutine"]] = None, timeout: float = None
+    func: Optional[Callable[..., Union[Generator, "Coroutine"]]] = None,
+    timeout: Optional[float] = None,
 ) -> Union[
     Callable[..., None],
     Callable[[Callable[..., Union[Generator, "Coroutine"]]], Callable[..., None]],
@@ -652,6 +657,7 @@ class ExpectLog(logging.Filter):
         logger: Union[logging.Logger, basestring_type],
         regex: str,
         required: bool = True,
+        level: Optional[int] = None,
     ) -> None:
         """Constructs an ExpectLog context manager.
 
@@ -661,6 +667,15 @@ class ExpectLog(logging.Filter):
             the specified logger that match this regex will be suppressed.
         :param required: If true, an exception will be raised if the end of
             the ``with`` statement is reached without matching any log entries.
+        :param level: A constant from the ``logging`` module indicating the
+            expected log level. If this parameter is provided, only log messages
+            at this level will be considered to match. Additionally, the
+            supplied ``logger`` will have its level adjusted if necessary
+            (for the duration of the ``ExpectLog`` to enable the expected
+            message.
+
+        .. versionchanged:: 6.1
+           Added the ``level`` parameter.
         """
         if isinstance(logger, basestring_type):
             logger = logging.getLogger(logger)
@@ -669,17 +684,28 @@ class ExpectLog(logging.Filter):
         self.required = required
         self.matched = False
         self.logged_stack = False
+        self.level = level
+        self.orig_level = None  # type: Optional[int]
 
     def filter(self, record: logging.LogRecord) -> bool:
         if record.exc_info:
             self.logged_stack = True
         message = record.getMessage()
         if self.regex.match(message):
+            if self.level is not None and record.levelno != self.level:
+                app_log.warning(
+                    "Got expected log message %r at unexpected level (%s vs %s)"
+                    % (message, logging.getLevelName(self.level), record.levelname)
+                )
+                return True
             self.matched = True
             return False
         return True
 
     def __enter__(self) -> "ExpectLog":
+        if self.level is not None and self.level < self.logger.getEffectiveLevel():
+            self.orig_level = self.logger.level
+            self.logger.setLevel(self.level)
         self.logger.addFilter(self)
         return self
 
@@ -689,6 +715,8 @@ class ExpectLog(logging.Filter):
         value: Optional[BaseException],
         tb: Optional[TracebackType],
     ) -> None:
+        if self.orig_level is not None:
+            self.logger.setLevel(self.orig_level)
         self.logger.removeFilter(self)
         if not typ and self.required and not self.matched:
             raise Exception("did not get expected log message")

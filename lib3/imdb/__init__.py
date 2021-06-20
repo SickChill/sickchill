@@ -179,7 +179,7 @@ def IMDb(accessSystem=None, *arguments, **keywords):
             # the 'http' accessSystem.
             accessSystem = 'http'
     if 'loggingLevel' in keywords:
-        imdb._logging.setLevel(keywords['loggingLevel'])
+        _imdb_logger.setLevel(keywords['loggingLevel'])
         del keywords['loggingLevel']
     if 'loggingConfig' in keywords:
         logCfg = keywords['loggingConfig']

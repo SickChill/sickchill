@@ -1,5 +1,5 @@
 # testing/assertsql.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -13,7 +13,7 @@ from .. import event
 from .. import util
 from ..engine import url
 from ..engine.default import DefaultDialect
-from ..engine.util import _distill_params
+from ..engine.util import _distill_cursor_params
 from ..schema import _DDLCompiles
 
 
@@ -38,11 +38,10 @@ class SQLMatchRule(AssertRule):
 
 
 class CursorSQL(SQLMatchRule):
-    consume_statement = False
-
-    def __init__(self, statement, params=None):
+    def __init__(self, statement, params=None, consume_statement=True):
         self.statement = statement
         self.params = params
+        self.consume_statement = consume_statement
 
     def process_statement(self, execute_observed):
         stmt = execute_observed.statements[0]
@@ -77,14 +76,18 @@ class CompiledSQL(SQLMatchRule):
 
     def _compile_dialect(self, execute_observed):
         if self.dialect == "default":
-            return DefaultDialect()
+            dialect = DefaultDialect()
+            # this is currently what tests are expecting
+            # dialect.supports_default_values = True
+            dialect.supports_default_metavalue = True
+            return dialect
         else:
             # ugh
             if self.dialect == "postgresql":
                 params = {"implicit_returning": True}
             else:
                 params = {}
-            return url.URL(self.dialect).get_dialect()(**params)
+            return url.URL.create(self.dialect).get_dialect()(**params)
 
     def _received_statement(self, execute_observed):
         """reconstruct the statement and params in terms
@@ -92,21 +95,23 @@ class CompiledSQL(SQLMatchRule):
 
         context = execute_observed.context
         compare_dialect = self._compile_dialect(execute_observed)
-        if isinstance(context.compiled.statement, _DDLCompiles):
-            compiled = context.compiled.statement.compile(
-                dialect=compare_dialect,
-                schema_translate_map=context.execution_options.get(
-                    "schema_translate_map"
-                ),
+
+        if "schema_translate_map" in context.execution_options:
+            map_ = context.execution_options["schema_translate_map"]
+        else:
+            map_ = None
+
+        if isinstance(execute_observed.clauseelement, _DDLCompiles):
+
+            compiled = execute_observed.clauseelement.compile(
+                dialect=compare_dialect, schema_translate_map=map_
             )
         else:
-            compiled = context.compiled.statement.compile(
+            compiled = execute_observed.clauseelement.compile(
                 dialect=compare_dialect,
                 column_keys=context.compiled.column_keys,
-                inline=context.compiled.inline,
-                schema_translate_map=context.execution_options.get(
-                    "schema_translate_map"
-                ),
+                for_executemany=context.compiled.for_executemany,
+                schema_translate_map=map_,
             )
         _received_statement = re.sub(r"[\n\t]", "", util.text_type(compiled))
         parameters = execute_observed.parameters
@@ -171,7 +176,7 @@ class CompiledSQL(SQLMatchRule):
 
     def _all_params(self, context):
         if self.params:
-            if util.callable(self.params):
+            if callable(self.params):
                 params = self.params(context)
             else:
                 params = self.params
@@ -183,8 +188,8 @@ class CompiledSQL(SQLMatchRule):
 
     def _failure_message(self, expected_params):
         return (
-            "Testing for compiled statement %r partial params %s, "
-            "received %%(received_statement)r with params "
+            "Testing for compiled statement\n%r partial params %s, "
+            "received\n%%(received_statement)r with params "
             "%%(received_parameters)r"
             % (
                 self.statement.replace("%", "%%"),
@@ -194,12 +199,12 @@ class CompiledSQL(SQLMatchRule):
 
 
 class RegexSQL(CompiledSQL):
-    def __init__(self, regex, params=None):
+    def __init__(self, regex, params=None, dialect="default"):
         SQLMatchRule.__init__(self)
         self.regex = re.compile(regex)
         self.orig_regex = regex
         self.params = params
-        self.dialect = "default"
+        self.dialect = dialect
 
     def _failure_message(self, expected_params):
         return (
@@ -324,6 +329,14 @@ class EachOf(AssertRule):
             super(EachOf, self).no_more_statements()
 
 
+class Conditional(EachOf):
+    def __init__(self, condition, rules, else_rules):
+        if condition:
+            super(Conditional, self).__init__(*rules)
+        else:
+            super(Conditional, self).__init__(*else_rules)
+
+
 class Or(AllOf):
     def process_statement(self, execute_observed):
         for rule in self.rules:
@@ -339,8 +352,13 @@ class SQLExecuteObserved(object):
     def __init__(self, context, clauseelement, multiparams, params):
         self.context = context
         self.clauseelement = clauseelement
-        self.parameters = _distill_params(multiparams, params)
+        self.parameters = _distill_cursor_params(
+            context.connection, tuple(multiparams), params
+        )
         self.statements = []
+
+    def __repr__(self):
+        return str(self.statements)
 
 
 class SQLCursorExecuteObserved(
@@ -372,7 +390,7 @@ class SQLAsserter(object):
             elif rule.errormessage:
                 assert False, rule.errormessage
         if observed:
-            assert False, "Additional SQL statements remain"
+            assert False, "Additional SQL statements remain:\n%s" % observed
         elif not rule.is_consumed:
             rule.no_more_statements()
 
@@ -384,7 +402,9 @@ def assert_engine(engine):
     orig = []
 
     @event.listens_for(engine, "before_execute")
-    def connection_execute(conn, clauseelement, multiparams, params):
+    def connection_execute(
+        conn, clauseelement, multiparams, params, execution_options
+    ):
         # grab the original statement + params before any cursor
         # execution
         orig[:] = clauseelement, multiparams, params

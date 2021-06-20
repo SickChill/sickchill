@@ -1,5 +1,5 @@
 # sql/types_api.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -12,11 +12,11 @@
 
 from . import operators
 from .base import SchemaEventTarget
-from .visitors import Visitable
-from .visitors import VisitableType
+from .traversals import NO_CACHE
+from .visitors import Traversible
+from .visitors import TraversibleType
 from .. import exc
 from .. import util
-
 
 # these are back-assigned by sqltypes.
 BOOLEANTYPE = None
@@ -25,10 +25,11 @@ NULLTYPE = None
 STRINGTYPE = None
 MATCHTYPE = None
 INDEXABLE = None
+TABLEVALUE = None
 _resolve_value_to_type = None
 
 
-class TypeEngine(Visitable):
+class TypeEngine(Traversible):
     """The ultimate base class for all SQL datatypes.
 
     Common subclasses of :class:`.TypeEngine` include
@@ -45,6 +46,10 @@ class TypeEngine(Visitable):
 
     _sqla_type = True
     _isnull = False
+    _is_tuple_type = False
+    _is_table_value = False
+    _is_array = False
+    _is_type_decorator = False
 
     class Comparator(operators.ColumnOperators):
         """Base class for custom comparison operations defined at the
@@ -57,17 +62,22 @@ class TypeEngine(Visitable):
 
         default_comparator = None
 
+        def __clause_element__(self):
+            return self.expr
+
         def __init__(self, expr):
             self.expr = expr
             self.type = expr.type
 
-        @util.dependencies("sqlalchemy.sql.default_comparator")
-        def operate(self, default_comparator, op, *other, **kwargs):
+        @util.preload_module("sqlalchemy.sql.default_comparator")
+        def operate(self, op, *other, **kwargs):
+            default_comparator = util.preloaded.sql_default_comparator
             o = default_comparator.operator_lookup[op.__name__]
             return o[0](self.expr, op, *(other + o[1:]), **kwargs)
 
-        @util.dependencies("sqlalchemy.sql.default_comparator")
-        def reverse_operate(self, default_comparator, op, other, **kwargs):
+        @util.preload_module("sqlalchemy.sql.default_comparator")
+        def reverse_operate(self, op, other, **kwargs):
+            default_comparator = util.preloaded.sql_default_comparator
             o = default_comparator.operator_lookup[op.__name__]
             return o[0](self.expr, op, other, reverse=True, *o[1:], **kwargs)
 
@@ -366,10 +376,7 @@ class TypeEngine(Visitable):
 
         """
 
-        return (
-            self.__class__.bind_expression.__code__
-            is not TypeEngine.bind_expression.__code__
-        )
+        return util.method_is_overridden(self, TypeEngine.bind_expression)
 
     @staticmethod
     def _to_instance(cls_or_self):
@@ -449,6 +456,72 @@ class TypeEngine(Visitable):
                 typ = t
         else:
             return self.__class__
+
+    @util.memoized_property
+    def _generic_type_affinity(self):
+        best_camelcase = None
+        best_uppercase = None
+
+        if not isinstance(self, (TypeEngine, UserDefinedType)):
+            return self.__class__
+
+        for t in self.__class__.__mro__:
+            if (
+                t.__module__
+                in (
+                    "sqlalchemy.sql.sqltypes",
+                    "sqlalchemy.sql.type_api",
+                )
+                and issubclass(t, TypeEngine)
+                and t is not TypeEngine
+                and t.__name__[0] != "_"
+            ):
+                if t.__name__.isupper() and not best_uppercase:
+                    best_uppercase = t
+                elif not t.__name__.isupper() and not best_camelcase:
+                    best_camelcase = t
+
+        return best_camelcase or best_uppercase or NULLTYPE.__class__
+
+    def as_generic(self, allow_nulltype=False):
+        """
+        Return an instance of the generic type corresponding to this type
+        using heuristic rule. The method may be overridden if this
+        heuristic rule is not sufficient.
+
+        >>> from sqlalchemy.dialects.mysql import INTEGER
+        >>> INTEGER(display_width=4).as_generic()
+        Integer()
+
+        >>> from sqlalchemy.dialects.mysql import NVARCHAR
+        >>> NVARCHAR(length=100).as_generic()
+        Unicode(length=100)
+
+        .. versionadded:: 1.4.0b2
+
+
+        .. seealso::
+
+            :ref:`metadata_reflection_dbagnostic_types` - describes the
+            use of :meth:`_types.TypeEngine.as_generic` in conjunction with
+            the :meth:`_sql.DDLEvents.column_reflect` event, which is its
+            intended use.
+
+        """
+        if (
+            not allow_nulltype
+            and self._generic_type_affinity == NULLTYPE.__class__
+        ):
+            raise NotImplementedError(
+                "Default TypeEngine.as_generic() "
+                "heuristic method was unsuccessful for {}. A custom "
+                "as_generic() method must be implemented for this "
+                "type class.".format(
+                    self.__class__.__module__ + "." + self.__class__.__name__
+                )
+            )
+
+        return util.constructor_copy(self, self._generic_type_affinity)
 
     def dialect_impl(self, dialect):
         """Return a dialect-specific implementation for this
@@ -546,6 +619,20 @@ class TypeEngine(Visitable):
     def _gen_dialect_impl(self, dialect):
         return dialect.type_descriptor(self)
 
+    @util.memoized_property
+    def _static_cache_key(self):
+        names = util.get_cls_kwargs(self.__class__)
+        return (self.__class__,) + tuple(
+            (
+                k,
+                self.__dict__[k]._static_cache_key
+                if isinstance(self.__dict__[k], TypeEngine)
+                else self.__dict__[k],
+            )
+            for k in names
+            if k in self.__dict__ and not k.startswith("_")
+        )
+
     def adapt(self, cls, **kw):
         """Produce an "adapted" form of this type, given an "impl" class
         to work with.
@@ -604,14 +691,10 @@ class TypeEngine(Visitable):
 
         return dialect.type_compiler.process(self)
 
-    @util.dependencies("sqlalchemy.engine.default")
-    def _default_dialect(self, default):
-        if self.__class__.__module__.startswith("sqlalchemy.dialects"):
-            tokens = self.__class__.__module__.split(".")[0:3]
-            mod = ".".join(tokens)
-            return getattr(__import__(mod).dialects, tokens[-1]).dialect()
-        else:
-            return default.DefaultDialect()
+    @util.preload_module("sqlalchemy.engine.default")
+    def _default_dialect(self):
+        default = util.preloaded.engine_default
+        return default.StrCompileDialect()
 
     def __str__(self):
         if util.py2k:
@@ -625,7 +708,7 @@ class TypeEngine(Visitable):
         return util.generic_repr(self)
 
 
-class VisitableCheckKWArg(util.EnsureKWArgType, VisitableType):
+class VisitableCheckKWArg(util.EnsureKWArgType, TraversibleType):
     pass
 
 
@@ -680,25 +763,6 @@ class UserDefinedType(util.with_metaclass(VisitableCheckKWArg, TypeEngine)):
 
     ensure_kwarg = "get_col_spec"
 
-    class Comparator(TypeEngine.Comparator):
-        __slots__ = ()
-
-        def _adapt_expression(self, op, other_comparator):
-            if hasattr(self.type, "adapt_operator"):
-                util.warn_deprecated(
-                    "UserDefinedType.adapt_operator is deprecated.  Create "
-                    "a UserDefinedType.Comparator subclass instead which "
-                    "generates the desired expression constructs, given a "
-                    "particular operator."
-                )
-                return self.type.adapt_operator(op), self.type
-            else:
-                return super(
-                    UserDefinedType.Comparator, self
-                )._adapt_expression(op, other_comparator)
-
-    comparator_factory = Comparator
-
     def coerce_compared_value(self, op, value):
         """Suggest a type for a 'coerced' Python value in an expression.
 
@@ -744,20 +808,20 @@ class Emulated(object):
 
     def adapt(self, impltype, **kw):
         if hasattr(impltype, "adapt_emulated_to_native"):
-
             if self.native:
                 # native support requested, dialect gave us a native
                 # implementor, pass control over to it
                 return impltype.adapt_emulated_to_native(self, **kw)
             else:
-                # impltype adapts to native, and we are not native,
-                # so reject the impltype in favor of "us"
-                impltype = self.__class__
-
-        if issubclass(impltype, self.__class__):
-            return self.adapt_to_emulated(impltype, **kw)
+                # non-native support, let the native implementor
+                # decide also, at the moment this is just to help debugging
+                # as only the default logic is implemented.
+                return impltype.adapt_native_to_emulated(self, **kw)
         else:
-            return super(Emulated, self).adapt(impltype, **kw)
+            if issubclass(impltype, self.__class__):
+                return self.adapt_to_emulated(impltype, **kw)
+            else:
+                return super(Emulated, self).adapt(impltype, **kw)
 
 
 class NativeForEmulated(object):
@@ -766,6 +830,16 @@ class NativeForEmulated(object):
     .. versionadded:: 1.2.0b3
 
     """
+
+    @classmethod
+    def adapt_native_to_emulated(cls, impl, **kw):
+        """Given an impl, adapt this type's class to the impl assuming
+        "emulated".
+
+
+        """
+        impltype = impl.__class__
+        return impl.adapt(impltype, **kw)
 
     @classmethod
     def adapt_emulated_to_native(cls, impl, **kw):
@@ -799,6 +873,8 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
 
           impl = types.Unicode
 
+          cache_ok = True
+
           def process_bind_param(self, value, dialect):
               return "PREFIX:" + value
 
@@ -813,6 +889,16 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
     method can be used to provide different type classes based on the dialect
     given; in this case, the ``impl`` variable can reference
     ``TypeEngine`` as a placeholder.
+
+    The :attr:`.TypeDecorator.cache_ok` class-level flag indicates if this
+    custom :class:`.TypeDecorator` is safe to be used as part of a cache key.
+    This flag defaults to ``None`` which will initially generate a warning
+    when the SQL compiler attempts to generate a cache key for a statement
+    that uses this type.  If the :class:`.TypeDecorator` is not guaranteed
+    to produce the same bind/result behavior and SQL generation
+    every time, this flag should be set to ``False``; otherwise if the
+    class produces the same behavior each time, it may be set to ``True``.
+    See :attr:`.TypeDecorator.cache_ok` for further notes on how this works.
 
     Types that receive a Python type that isn't similar to the ultimate type
     used may want to define the :meth:`TypeDecorator.coerce_compared_value`
@@ -873,6 +959,8 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
             class MyJsonType(TypeDecorator):
                 impl = postgresql.JSON
 
+                cache_ok = True
+
                 def coerce_compared_value(self, op, value):
                     return self.impl.coerce_compared_value(op, value)
 
@@ -882,6 +970,8 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
     """
 
     __visit_name__ = "type_decorator"
+
+    _is_type_decorator = True
 
     def __init__(self, *args, **kwargs):
         """Construct a :class:`.TypeDecorator`.
@@ -927,6 +1017,47 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
 
     """
 
+    cache_ok = None
+    """Indicate if statements using this :class:`.TypeDecorator` are "safe to
+    cache".
+
+    The default value ``None`` will emit a warning and then not allow caching
+    of a statement which includes this type.   Set to ``False`` to disable
+    statements using this type from being cached at all without a warning.
+    When set to ``True``, the object's class and selected elements from its
+    state will be used as part of the cache key, e.g.::
+
+        class MyType(TypeDecorator):
+            impl = String
+
+            cache_ok = True
+
+            def __init__(self, choices):
+                self.choices = tuple(choices)
+                self.internal_only = True
+
+    The cache key for the above type would be equivalent to::
+
+        (<class '__main__.MyType'>, ('choices', ('a', 'b', 'c')))
+
+    The caching scheme will extract attributes from the type that correspond
+    to the names of parameters in the ``__init__()`` method.  Above, the
+    "choices" attribute becomes part of the cache key but "internal_only"
+    does not, because there is no parameter named "internal_only".
+
+    The requirements for cacheable elements is that they are hashable
+    and also that they indicate the same SQL rendered for expressions using
+    this type every time for a given cache value.
+
+    .. versionadded:: 1.4.14 - added the ``cache_ok`` flag to allow
+       some configurability of caching for :class:`.TypeDecorator` classes.
+
+    .. seealso::
+
+        :ref:`sql_caching`
+
+    """
+
     class Comparator(TypeEngine.Comparator):
         """A :class:`.TypeEngine.Comparator` that is specific to
         :class:`.TypeDecorator`.
@@ -962,6 +1093,21 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
                 {},
             )
 
+    @property
+    def _static_cache_key(self):
+        if self.cache_ok is None:
+            util.warn(
+                "TypeDecorator %r will not produce a cache key because "
+                "the ``cache_ok`` flag is not set to True.  "
+                "Set this flag to True if this type object's "
+                "state is safe to use in a cache key, or False to "
+                "disable this warning." % self
+            )
+        elif self.cache_ok is True:
+            return super(TypeDecorator, self)._static_cache_key
+
+        return NO_CACHE
+
     def _gen_dialect_impl(self, dialect):
         """
         #todo
@@ -973,7 +1119,7 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
         # otherwise adapt the impl type, link
         # to a copy of this TypeDecorator and return
         # that.
-        typedesc = self._unwrapped_dialect_impl(dialect)
+        typedesc = self.load_dialect_impl(dialect).dialect_impl(dialect)
         tt = self.copy()
         if not isinstance(tt, self.__class__):
             raise AssertionError(
@@ -991,18 +1137,20 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
         """
         return self.impl._type_affinity
 
-    def _set_parent(self, column):
+    def _set_parent(self, column, outer=False, **kw):
         """Support SchemaEventTarget"""
 
         super(TypeDecorator, self)._set_parent(column)
 
-        if isinstance(self.impl, SchemaEventTarget):
-            self.impl._set_parent(column)
+        if not outer and isinstance(self.impl, SchemaEventTarget):
+            self.impl._set_parent(column, outer=False, **kw)
 
     def _set_parent_with_dispatch(self, parent):
         """Support SchemaEventTarget"""
 
-        super(TypeDecorator, self)._set_parent_with_dispatch(parent)
+        super(TypeDecorator, self)._set_parent_with_dispatch(
+            parent, outer=True
+        )
 
         if isinstance(self.impl, SchemaEventTarget):
             self.impl._set_parent_with_dispatch(parent)
@@ -1013,8 +1161,7 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
 
         In most cases this returns a dialect-adapted form of
         the :class:`.TypeEngine` type represented by ``self.impl``.
-        Makes usage of :meth:`dialect_impl` but also traverses
-        into wrapped :class:`.TypeDecorator` instances.
+        Makes usage of :meth:`dialect_impl`.
         Behavior can be customized here by overriding
         :meth:`load_dialect_impl`.
 
@@ -1022,8 +1169,6 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
         adapted = dialect.type_descriptor(self)
         if not isinstance(adapted, type(self)):
             return adapted
-        elif isinstance(self.impl, TypeDecorator):
-            return self.impl.type_engine(dialect)
         else:
             return self.load_dialect_impl(dialect)
 
@@ -1044,16 +1189,20 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
     def _unwrapped_dialect_impl(self, dialect):
         """Return the 'unwrapped' dialect impl for this type.
 
-        For a type that applies wrapping logic (e.g. TypeDecorator), give
-        us the real, actual dialect-level type that is used.
-
-        This is used by TypeDecorator itself as well at least one case where
-        dialects need to check that a particular specific dialect-level
-        type is in use, within the :meth:`.DefaultDialect.set_input_sizes`
+        This is used by the :meth:`.DefaultDialect.set_input_sizes`
         method.
 
         """
-        return self.load_dialect_impl(dialect).dialect_impl(dialect)
+        # some dialects have a lookup for a TypeDecorator subclass directly.
+        # postgresql.INTERVAL being the main example
+        typ = self.dialect_impl(dialect)
+
+        # if we are still a type decorator, load the per-dialect switch
+        # (such as what Variant uses), then get the dialect impl for that.
+        if isinstance(typ, self.__class__):
+            return typ.load_dialect_impl(dialect).dialect_impl(dialect)
+        else:
+            return typ
 
     def __getattr__(self, key):
         """Proxy all other undefined accessors to the underlying
@@ -1137,21 +1286,16 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
 
         """
 
-        return (
-            self.__class__.process_bind_param.__code__
-            is not TypeDecorator.process_bind_param.__code__
+        return util.method_is_overridden(
+            self, TypeDecorator.process_bind_param
         )
 
     @util.memoized_property
     def _has_literal_processor(self):
-        """memoized boolean, check if process_literal_param is implemented.
+        """memoized boolean, check if process_literal_param is implemented."""
 
-
-        """
-
-        return (
-            self.__class__.process_literal_param.__code__
-            is not TypeDecorator.process_literal_param.__code__
+        return util.method_is_overridden(
+            self, TypeDecorator.process_literal_param
         )
 
     def literal_processor(self, dialect):
@@ -1247,9 +1391,9 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
         exception throw.
 
         """
-        return (
-            self.__class__.process_result_value.__code__
-            is not TypeDecorator.process_result_value.__code__
+
+        return util.method_is_overridden(
+            self, TypeDecorator.process_result_value
         )
 
     def result_processor(self, dialect, coltype):
@@ -1291,10 +1435,11 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
 
     @util.memoized_property
     def _has_bind_expression(self):
+
         return (
-            self.__class__.bind_expression.__code__
-            is not TypeDecorator.bind_expression.__code__
-        ) or self.impl._has_bind_expression
+            util.method_is_overridden(self, TypeDecorator.bind_expression)
+            or self.impl._has_bind_expression
+        )
 
     def bind_expression(self, bindparam):
         return self.impl.bind_expression(bindparam)
@@ -1309,9 +1454,9 @@ class TypeDecorator(SchemaEventTarget, TypeEngine):
         """
 
         return (
-            self.__class__.column_expression.__code__
-            is not TypeDecorator.column_expression.__code__
-        ) or self.impl._has_column_expression
+            util.method_is_overridden(self, TypeDecorator.column_expression)
+            or self.impl._has_column_expression
+        )
 
     def column_expression(self, column):
         return self.impl.column_expression(column)
@@ -1391,6 +1536,8 @@ class Variant(TypeDecorator):
 
     """
 
+    cache_ok = True
+
     def __init__(self, base, mapping):
         """Construct a new :class:`.Variant`.
 
@@ -1401,6 +1548,17 @@ class Variant(TypeDecorator):
         """
         self.impl = base
         self.mapping = mapping
+
+    @util.memoized_property
+    def _static_cache_key(self):
+        # TODO: needs tests in test/sql/test_compare.py
+        return (self.__class__,) + (
+            self.impl._static_cache_key,
+            tuple(
+                (key, self.mapping[key]._static_cache_key)
+                for key in sorted(self.mapping)
+            ),
+        )
 
     def coerce_compared_value(self, operator, value):
         result = self.impl.coerce_compared_value(operator, value)
@@ -1415,14 +1573,14 @@ class Variant(TypeDecorator):
         else:
             return self.impl
 
-    def _set_parent(self, column):
+    def _set_parent(self, column, outer=False, **kw):
         """Support SchemaEventTarget"""
 
         if isinstance(self.impl, SchemaEventTarget):
-            self.impl._set_parent(column)
+            self.impl._set_parent(column, **kw)
         for impl in self.mapping.values():
             if isinstance(impl, SchemaEventTarget):
-                impl._set_parent(column)
+                impl._set_parent(column, **kw)
 
     def _set_parent_with_dispatch(self, parent):
         """Support SchemaEventTarget"""
@@ -1469,7 +1627,7 @@ def to_instance(typeobj, *arg, **kw):
     if typeobj is None:
         return NULLTYPE
 
-    if util.callable(typeobj):
+    if callable(typeobj):
         return typeobj(*arg, **kw)
     else:
         return typeobj

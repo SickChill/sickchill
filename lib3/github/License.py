@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
@@ -27,7 +25,7 @@ import github.GithubObject
 
 class License(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Licenses. The reference can be found here https://developer.github.com/v3/licenses/
+    This class represents Licenses. The reference can be found here https://docs.github.com/en/rest/reference/licenses
     """
 
     def __repr__(self):

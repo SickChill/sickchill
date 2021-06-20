@@ -3,8 +3,14 @@ import logging
 
 from . import config
 from . import engines
+from . import util
+from .. import exc
+from .. import inspect
 from ..engine import url as sa_url
+from ..sql import ddl
+from ..sql import schema
 from ..util import compat
+
 
 log = logging.getLogger(__name__)
 
@@ -19,9 +25,10 @@ class register(object):
     def init(cls, fn):
         return register().for_db("*")(fn)
 
-    def for_db(self, dbname):
+    def for_db(self, *dbnames):
         def decorate(fn):
-            self.fns[dbname] = fn
+            for dbname in dbnames:
+                self.fns[dbname] = fn
             return self
 
         return decorate
@@ -57,11 +64,18 @@ def setup_config(db_url, options, file_config, follower_ident):
         db_url = follower_url_from_main(db_url, follower_ident)
     db_opts = {}
     update_db_opts(db_url, db_opts)
+    db_opts["scope"] = "global"
     eng = engines.testing_engine(db_url, db_opts)
     post_configure_engine(db_url, eng, follower_ident)
     eng.connect().close()
 
     cfg = config.Config.register(eng, db_opts, options, file_config)
+
+    # a symbolic name that tests can use if they need to disambiguate
+    # names across databases
+    if follower_ident:
+        config.ident = follower_ident
+
     if follower_ident:
         configure_follower(cfg, follower_ident)
     return cfg
@@ -71,6 +85,113 @@ def drop_follower_db(follower_ident):
     for cfg in _configs_for_db_operation():
         log.info("DROP database %s, URI %r", follower_ident, cfg.db.url)
         drop_db(cfg, cfg.db, follower_ident)
+
+
+def generate_db_urls(db_urls, extra_drivers):
+    """Generate a set of URLs to test given configured URLs plus additional
+    driver names.
+
+    Given::
+
+        --dburi postgresql://db1  \
+        --dburi postgresql://db2  \
+        --dburi postgresql://db2  \
+        --dbdriver=psycopg2 --dbdriver=asyncpg?async_fallback=true
+
+    Noting that the default postgresql driver is psycopg2,  the output
+    would be::
+
+        postgresql+psycopg2://db1
+        postgresql+asyncpg://db1
+        postgresql+psycopg2://db2
+        postgresql+psycopg2://db3
+
+    That is, for the driver in a --dburi, we want to keep that and use that
+    driver for each URL it's part of .   For a driver that is only
+    in --dbdrivers, we want to use it just once for one of the URLs.
+    for a driver that is both coming from --dburi as well as --dbdrivers,
+    we want to keep it in that dburi.
+
+    Driver specific query options can be specified by added them to the
+    driver name. For example, to enable the async fallback option for
+    asyncpg::
+
+        --dburi postgresql://db1  \
+        --dbdriver=asyncpg?async_fallback=true
+
+    """
+    urls = set()
+
+    backend_to_driver_we_already_have = collections.defaultdict(set)
+
+    urls_plus_dialects = [
+        (url_obj, url_obj.get_dialect())
+        for url_obj in [sa_url.make_url(db_url) for db_url in db_urls]
+    ]
+
+    for url_obj, dialect in urls_plus_dialects:
+        backend_to_driver_we_already_have[dialect.name].add(dialect.driver)
+
+    backend_to_driver_we_need = {}
+
+    for url_obj, dialect in urls_plus_dialects:
+        backend = dialect.name
+        dialect.load_provisioning()
+
+        if backend not in backend_to_driver_we_need:
+            backend_to_driver_we_need[backend] = extra_per_backend = set(
+                extra_drivers
+            ).difference(backend_to_driver_we_already_have[backend])
+        else:
+            extra_per_backend = backend_to_driver_we_need[backend]
+
+        for driver_url in _generate_driver_urls(url_obj, extra_per_backend):
+            if driver_url in urls:
+                continue
+            urls.add(driver_url)
+            yield driver_url
+
+
+def _generate_driver_urls(url, extra_drivers):
+    main_driver = url.get_driver_name()
+    extra_drivers.discard(main_driver)
+
+    url = generate_driver_url(url, main_driver, "")
+    yield str(url)
+
+    for drv in list(extra_drivers):
+
+        if "?" in drv:
+
+            driver_only, query_str = drv.split("?", 1)
+
+        else:
+            driver_only = drv
+            query_str = None
+
+        new_url = generate_driver_url(url, driver_only, query_str)
+        if new_url:
+            extra_drivers.remove(drv)
+
+            yield str(new_url)
+
+
+@register.init
+def generate_driver_url(url, driver, query_str):
+    backend = url.get_backend_name()
+
+    new_url = url.set(
+        drivername="%s+%s" % (backend, driver),
+    )
+    if query_str:
+        new_url = new_url.update_query_string(query_str)
+
+    try:
+        new_url.get_dialect()
+    except exc.NoSuchModuleError:
+        return None
+    else:
+        return new_url
 
 
 def _configs_for_db_operation():
@@ -93,6 +214,73 @@ def _configs_for_db_operation():
 
 
 @register.init
+def drop_all_schema_objects_pre_tables(cfg, eng):
+    pass
+
+
+@register.init
+def drop_all_schema_objects_post_tables(cfg, eng):
+    pass
+
+
+def drop_all_schema_objects(cfg, eng):
+
+    drop_all_schema_objects_pre_tables(cfg, eng)
+
+    inspector = inspect(eng)
+    try:
+        view_names = inspector.get_view_names()
+    except NotImplementedError:
+        pass
+    else:
+        with eng.begin() as conn:
+            for vname in view_names:
+                conn.execute(
+                    ddl._DropView(schema.Table(vname, schema.MetaData()))
+                )
+
+    if config.requirements.schemas.enabled_for_config(cfg):
+        try:
+            view_names = inspector.get_view_names(schema="test_schema")
+        except NotImplementedError:
+            pass
+        else:
+            with eng.begin() as conn:
+                for vname in view_names:
+                    conn.execute(
+                        ddl._DropView(
+                            schema.Table(
+                                vname,
+                                schema.MetaData(),
+                                schema="test_schema",
+                            )
+                        )
+                    )
+
+    util.drop_all_tables(eng, inspector)
+    if config.requirements.schemas.enabled_for_config(cfg):
+        util.drop_all_tables(eng, inspector, schema=cfg.test_schema)
+        util.drop_all_tables(eng, inspector, schema=cfg.test_schema_2)
+
+    drop_all_schema_objects_post_tables(cfg, eng)
+
+    if config.requirements.sequences.enabled_for_config(cfg):
+        with eng.begin() as conn:
+            for seq in inspector.get_sequence_names():
+                conn.execute(ddl.DropSequence(schema.Sequence(seq)))
+            if config.requirements.schemas.enabled_for_config(cfg):
+                for schema_name in [cfg.test_schema, cfg.test_schema_2]:
+                    for seq in inspector.get_sequence_names(
+                        schema=schema_name
+                    ):
+                        conn.execute(
+                            ddl.DropSequence(
+                                schema.Sequence(seq, schema=schema_name)
+                            )
+                        )
+
+
+@register.init
 def create_db(cfg, eng, ident):
     """Dynamically create a database for testing.
 
@@ -110,8 +298,7 @@ def drop_db(cfg, eng, ident):
 
 @register.init
 def update_db_opts(db_url, db_opts):
-    """Set database options (db_opts) for a test database that we created.
-    """
+    """Set database options (db_opts) for a test database that we created."""
     pass
 
 
@@ -119,7 +306,7 @@ def update_db_opts(db_url, db_opts):
 def post_configure_engine(url, engine, follower_ident):
     """Perform extra steps after configuring an engine for testing.
 
-    (For the internal dialects, currently only used by sqlite.)
+    (For the internal dialects, currently only used by sqlite, oracle)
     """
     pass
 
@@ -133,8 +320,7 @@ def follower_url_from_main(url, ident):
                   database name
     """
     url = sa_url.make_url(url)
-    url.database = ident
-    return url
+    return url.set(database=ident)
 
 
 @register.init
@@ -192,4 +378,37 @@ def temp_table_keyword_args(cfg, eng):
     """
     raise NotImplementedError(
         "no temp table keyword args routine for cfg: %s" % eng.url
+    )
+
+
+@register.init
+def prepare_for_drop_tables(config, connection):
+    pass
+
+
+@register.init
+def stop_test_class_outside_fixtures(config, db, testcls):
+    pass
+
+
+@register.init
+def get_temp_table_name(cfg, eng, base_name):
+    """Specify table name for creating a temporary Table.
+
+    Dialect-specific implementations of this method will return the
+    name to use when creating a temporary table for testing,
+    e.g., in the define_temp_tables method of the
+    ComponentReflectionTest class in suite/test_reflection.py
+
+    Default to just the base name since that's what most dialects will
+    use. The mssql dialect's implementation will need a "#" prepended.
+    """
+    return base_name
+
+
+@register.init
+def set_default_schema_on_connection(cfg, dbapi_connection, schema_name):
+    raise NotImplementedError(
+        "backend does not implement a schema name set function: %s"
+        % (cfg.db.url,)
     )

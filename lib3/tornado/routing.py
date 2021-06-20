@@ -142,7 +142,7 @@ Of course a nested `RuleRouter` or a `~.web.Application` is allowed:
 
     router = RuleRouter([
         Rule(HostMatches("example.com"), RuleRouter([
-            Rule(PathMatches("/app1/.*"), Application([(r"/app1/handler", Handler)]))),
+            Rule(PathMatches("/app1/.*"), Application([(r"/app1/handler", Handler)])),
         ]))
     ])
 
@@ -300,7 +300,7 @@ _RuleList = List[
 class RuleRouter(Router):
     """Rule-based router implementation."""
 
-    def __init__(self, rules: _RuleList = None) -> None:
+    def __init__(self, rules: Optional[_RuleList] = None) -> None:
         """Constructs a router from an ordered list of rules::
 
             RuleRouter([
@@ -409,12 +409,12 @@ class ReversibleRuleRouter(ReversibleRouter, RuleRouter):
     in a rule's matcher (see `Matcher.reverse`).
     """
 
-    def __init__(self, rules: _RuleList = None) -> None:
+    def __init__(self, rules: Optional[_RuleList] = None) -> None:
         self.named_rules = {}  # type: Dict[str, Any]
-        super(ReversibleRuleRouter, self).__init__(rules)
+        super().__init__(rules)
 
     def process_rule(self, rule: "Rule") -> "Rule":
-        rule = super(ReversibleRuleRouter, self).process_rule(rule)
+        rule = super().process_rule(rule)
 
         if rule.name:
             if rule.name in self.named_rules:
@@ -445,8 +445,8 @@ class Rule(object):
         self,
         matcher: "Matcher",
         target: Any,
-        target_kwargs: Dict[str, Any] = None,
-        name: str = None,
+        target_kwargs: Optional[Dict[str, Any]] = None,
+        name: Optional[str] = None,
     ) -> None:
         """Constructs a Rule instance.
 
@@ -627,7 +627,13 @@ class PathMatches(Matcher):
             if ")" in fragment:
                 paren_loc = fragment.index(")")
                 if paren_loc >= 0:
-                    pieces.append("%s" + fragment[paren_loc + 1 :])
+                    try:
+                        unescaped_fragment = re_unescape(fragment[paren_loc + 1 :])
+                    except ValueError:
+                        # If we can't unescape part of it, we can't
+                        # reverse this url.
+                        return (None, None)
+                    pieces.append("%s" + unescaped_fragment)
             else:
                 try:
                     unescaped_fragment = re_unescape(fragment)
@@ -652,8 +658,8 @@ class URLSpec(Rule):
         self,
         pattern: Union[str, Pattern],
         handler: Any,
-        kwargs: Dict[str, Any] = None,
-        name: str = None,
+        kwargs: Optional[Dict[str, Any]] = None,
+        name: Optional[str] = None,
     ) -> None:
         """Parameters:
 
@@ -673,7 +679,7 @@ class URLSpec(Rule):
 
         """
         matcher = PathMatches(pattern)
-        super(URLSpec, self).__init__(matcher, handler, kwargs, name)
+        super().__init__(matcher, handler, kwargs, name)
 
         self.regex = matcher.regex
         self.handler_class = self.target

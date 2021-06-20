@@ -60,7 +60,7 @@ data = (
 'Koraeru ',    # 0x3a
 'Zong ',    # 0x3b
 'Dui ',    # 0x3c
-'[?] ',    # 0x3d
+None,    # 0x3d
 'Ki ',    # 0x3e
 'Yi ',    # 0x3f
 'Chi ',    # 0x40

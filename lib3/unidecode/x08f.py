@@ -169,7 +169,7 @@ data = (
 'Bian ',    # 0xa7
 'Bian ',    # 0xa8
 'Bian ',    # 0xa9
-'[?] ',    # 0xaa
+None,    # 0xaa
 'Bian ',    # 0xab
 'Ban ',    # 0xac
 'Ci ',    # 0xad

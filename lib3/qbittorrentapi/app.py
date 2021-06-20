@@ -1,26 +1,26 @@
-import logging
+from logging import getLogger
 from json import dumps
 
 from qbittorrentapi.decorators import Alias
 from qbittorrentapi.decorators import aliased
+from qbittorrentapi.decorators import endpoint_introduced
 from qbittorrentapi.decorators import login_required
 from qbittorrentapi.decorators import response_json
 from qbittorrentapi.decorators import response_text
-from qbittorrentapi.decorators import version_implemented
 from qbittorrentapi.definitions import APINames
 from qbittorrentapi.definitions import ClientCache
 from qbittorrentapi.definitions import Dictionary
 from qbittorrentapi.request import Request
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class ApplicationPreferencesDictionary(Dictionary):
-    pass
+    """Response for :meth:`~AppAPIMixIn.app_preferences`"""
 
 
 class BuildInfoDictionary(Dictionary):
-    pass
+    """Response for :meth:`~AppAPIMixIn.app_build_info`"""
 
 
 @aliased
@@ -49,42 +49,61 @@ class Application(ClientCache):
 
     @property
     def version(self):
+        """Implements :meth:`~AppAPIMixIn.app_version`"""
         return self._client.app_version()
 
     @property
     def web_api_version(self):
+        """Implements :meth:`~AppAPIMixIn.app_web_api_version`"""
         return self._client.app_web_api_version()
+
     webapiVersion = web_api_version
 
     @property
     def build_info(self):
+        """Implements :meth:`~AppAPIMixIn.app_build_info`"""
         return self._client.app_build_info()
+
     buildInfo = build_info
 
     def shutdown(self):
+        """Implements :meth:`~AppAPIMixIn.app_shutdown`"""
         return self._client.app_shutdown()
 
     @property
     def preferences(self):
+        """Implements :meth:`~AppAPIMixIn.app_preferences` and :meth:`~AppAPIMixIn.app_set_preferences`"""
         return self._client.app_preferences()
 
     @preferences.setter
     def preferences(self, v):
+        """Implements :meth:`~AppAPIMixIn.app_set_preferences`"""
         self.set_preferences(prefs=v)
 
-    @Alias('setPreferences')
+    @Alias("setPreferences")
     def set_preferences(self, prefs=None, **kwargs):
+        """Implements :meth:`~AppAPIMixIn.app_set_preferences`"""
         return self._client.app_set_preferences(prefs=prefs, **kwargs)
 
     @property
     def default_save_path(self, **kwargs):
+        """Implements :meth:`~AppAPIMixIn.app_default_save_path`"""
         return self._client.app_default_save_path(**kwargs)
+
     defaultSavePath = default_save_path
 
 
 @aliased
 class AppAPIMixIn(Request):
-    """Implementation of all Application API methods"""
+    """
+    Implementation of all Application API methods
+
+    :Usage:
+        >>> from qbittorrentapi import Client
+        >>> client = Client(host='localhost:8080', username='admin', password='adminadmin')
+        >>> client.app_version()
+        >>> client.app_preferences()
+    """
 
     @property
     def app(self):
@@ -97,6 +116,7 @@ class AppAPIMixIn(Request):
         if self._application is None:
             self._application = Application(client=self)
         return self._application
+
     application = app
 
     @response_text(str)
@@ -107,17 +127,9 @@ class AppAPIMixIn(Request):
 
         :return: string
         """
-        return self._get(_name=APINames.Application, _method='version', **kwargs)
+        return self._get(_name=APINames.Application, _method="version", **kwargs)
 
-    @login_required
-    def _app_web_api_version_from_version_checker(self):
-        if self._cached_web_api_version:
-            return self._cached_web_api_version
-        logger.debug('Retrieving API version for version_implemented verifier')
-        self._cached_web_api_version = self.app_web_api_version()
-        return self._cached_web_api_version
-
-    @Alias('app_webapiVersion')
+    @Alias("app_webapiVersion")
     @response_text(str)
     @login_required
     def app_web_api_version(self, **kwargs):
@@ -128,25 +140,26 @@ class AppAPIMixIn(Request):
         """
         if self._MOCK_WEB_API_VERSION:
             return self._MOCK_WEB_API_VERSION
-        return self._get(_name=APINames.Application, _method='webapiVersion', **kwargs)
+        return self._get(_name=APINames.Application, _method="webapiVersion", **kwargs)
 
-    @version_implemented('2.3', 'app/buildInfo')
+    @endpoint_introduced("2.3", "app/buildInfo")
     @response_json(BuildInfoDictionary)
-    @Alias('app_buildInfo')
+    @Alias("app_buildInfo")
     @login_required
     def app_build_info(self, **kwargs):
         """
         Retrieve build info. (alias: app_buildInfo)
 
-        :return: Dictionary of build info. Each piece of info is an attribute.
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-build-info
+        :return: :class:`BuildInfoDictionary` - https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-build-info
         """
-        return self._get(_name=APINames.Application, _method='buildInfo', **kwargs)
+        return self._get(_name=APINames.Application, _method="buildInfo", **kwargs)
 
     @login_required
     def app_shutdown(self, **kwargs):
-        """Shutdown qBittorrent."""
-        self._post(_name=APINames.Application, _method='shutdown', **kwargs)
+        """
+        Shutdown qBittorrent.
+        """
+        self._post(_name=APINames.Application, _method="shutdown", **kwargs)
 
     @response_json(ApplicationPreferencesDictionary)
     @login_required
@@ -154,12 +167,11 @@ class AppAPIMixIn(Request):
         """
         Retrieve qBittorrent application preferences.
 
-        :return: Dictionary of preferences. Each preference is an attribute.
-            Properties: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-application-preferences
+        :return: :class:`ApplicationPreferencesDictionary` - https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-application-preferences
         """
-        return self._get(_name=APINames.Application, _method='preferences', **kwargs)
+        return self._get(_name=APINames.Application, _method="preferences", **kwargs)
 
-    @Alias('app_setPreferences')
+    @Alias("app_setPreferences")
     @login_required
     def app_set_preferences(self, prefs=None, **kwargs):
         """
@@ -168,10 +180,12 @@ class AppAPIMixIn(Request):
         :param prefs: dictionary of preferences to set
         :return: None
         """
-        data = {'json': dumps(prefs, separators=(',', ':'))}
-        self._post(_name=APINames.Application, _method='setPreferences', data=data, **kwargs)
+        data = {"json": dumps(prefs, separators=(",", ":"))}
+        self._post(
+            _name=APINames.Application, _method="setPreferences", data=data, **kwargs
+        )
 
-    @Alias('app_defaultSavePath')
+    @Alias("app_defaultSavePath")
     @response_text(str)
     @login_required
     def app_default_save_path(self, **kwargs):
@@ -180,4 +194,6 @@ class AppAPIMixIn(Request):
 
         :return: string
         """
-        return self._get(_name=APINames.Application, _method='defaultSavePath', **kwargs)
+        return self._get(
+            _name=APINames.Application, _method="defaultSavePath", **kwargs
+        )

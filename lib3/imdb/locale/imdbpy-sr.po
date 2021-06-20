@@ -1,0 +1,1300 @@
+# Gettext message file for imdbpy
+msgid ""
+msgstr ""
+"Project-Id-Version: imdbpy\n"
+"POT-Creation-Date: 2010-03-18 14:35+0000\n"
+"PO-Revision-Date: YYYY-MM-DD HH:MM+0000\n"
+"Last-Translator: YOUR NAME <YOUR@EMAIL>\n"
+"Language-Team: TEAM NAME <TEAM@EMAIL>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Domain: imdbpy\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8\n"
+
+# Default: Actor
+msgid "actor"
+msgstr "глумац"
+
+# Default: Actress
+msgid "actress"
+msgstr "глумица"
+
+# Default: Adaption
+msgid "adaption"
+msgstr "адаптација"
+
+# Default: Additional information
+msgid "additional-information"
+msgstr "Додатне Информације"
+
+# Default: Admissions
+msgid "admissions"
+msgstr "пријеми"
+
+# Default: Agent address
+msgid "agent-address"
+msgstr "адреса агента"
+
+# Default: Airing
+msgid "airing"
+msgstr "емитовање"
+
+# Default: Akas
+msgid "akas"
+msgstr "псеудоним"
+
+# Default: Akas from release info
+msgid "akas-from-release-info"
+msgstr "такође познато из информација о издању"
+
+# Default: All products
+msgid "all-products"
+msgstr "сви производи"
+
+# Default: Alternate language version of
+msgid "alternate-language-version-of"
+msgstr "верзија на алтернативном језику"
+
+# Default: Alternate versions
+msgid "alternate-versions"
+msgstr "алтернативне верзије"
+
+# Default: Amazon reviews
+msgid "amazon-reviews"
+msgstr "Амазонове критике"
+
+# Default: Analog left
+msgid "analog-left"
+msgstr "аналогно лево"
+
+# Default: Analog right
+msgid "analog-right"
+msgstr "аналогно десно"
+
+# Default: Animation department
+msgid "animation-department"
+msgstr "одељење за анимацију"
+
+# Default: Archive footage
+msgid "archive-footage"
+msgstr "архивски снимци"
+
+# Default: Arithmetic mean
+msgid "arithmetic-mean"
+msgstr "аритметичка средина"
+
+# Default: Art department
+msgid "art-department"
+msgstr "уметничко одељење"
+
+# Default: Art direction
+msgid "art-direction"
+msgstr "уметничко усмерење"
+
+# Default: Art director
+msgid "art-director"
+msgstr "уметнички директор"
+
+# Default: Article
+msgid "article"
+msgstr "чланак"
+
+# Default: Asin
+msgid "asin"
+msgstr ""
+
+# Default: Aspect ratio
+msgid "aspect-ratio"
+msgstr "однос ширине и висине"
+
+# Default: Assigner
+msgid "assigner"
+msgstr ""
+
+# Default: Assistant director
+msgid "assistant-director"
+msgstr "асистент директора"
+
+# Default: Auctions
+msgid "auctions"
+msgstr "аукције"
+
+# Default: Audio noise
+msgid "audio-noise"
+msgstr "аудио шум"
+
+# Default: Audio quality
+msgid "audio-quality"
+msgstr "квалитет звука"
+
+# Default: Award
+msgid "award"
+msgstr "награда"
+
+# Default: Awards
+msgid "awards"
+msgstr "награде"
+
+# Default: Biographical movies
+msgid "biographical-movies"
+msgstr "биографски филмови"
+
+# Default: Biography
+msgid "biography"
+msgstr "биографија"
+
+# Default: Biography print
+msgid "biography-print"
+msgstr ""
+
+# Default: Birth date
+msgid "birth-date"
+msgstr "Датум рођења"
+
+# Default: Birth name
+msgid "birth-name"
+msgstr "рођено име"
+
+# Default: Birth notes
+msgid "birth-notes"
+msgstr "белешке о рођењу"
+
+# Default: Body
+msgid "body"
+msgstr "тело"
+
+# Default: Book
+msgid "book"
+msgstr "књига"
+
+# Default: Books
+msgid "books"
+msgstr "књиге"
+
+# Default: Bottom 100 rank
+msgid "bottom-100-rank"
+msgstr ""
+
+# Default: Budget
+msgid "budget"
+msgstr "буџет"
+
+# Default: Business
+msgid "business"
+msgstr "бизнис"
+
+# Default: By arrangement with
+msgid "by-arrangement-with"
+msgstr "по договору са"
+
+# Default: Camera
+msgid "camera"
+msgstr "камера"
+
+# Default: Camera and electrical department
+msgid "camera-and-electrical-department"
+msgstr "одељење за камере и електронику"
+
+# Default: Canonical episode title
+msgid "canonical-episode-title"
+msgstr ""
+
+# Default: Canonical name
+msgid "canonical-name"
+msgstr ""
+
+# Default: Canonical series title
+msgid "canonical-series-title"
+msgstr ""
+
+# Default: Canonical title
+msgid "canonical-title"
+msgstr ""
+
+# Default: Cast
+msgid "cast"
+msgstr "глумци"
+
+# Default: Casting department
+msgid "casting-department"
+msgstr "подела улога"
+
+# Default: Casting director
+msgid "casting-director"
+msgstr "шеф одељења за расподелу улога"
+
+# Default: Catalog number
+msgid "catalog-number"
+msgstr "каталошки број"
+
+# Default: Category
+msgid "category"
+msgstr "категорија"
+
+# Default: Certificate
+msgid "certificate"
+msgstr "потврда"
+
+# Default: Certificates
+msgid "certificates"
+msgstr "потврде"
+
+# Default: Certification
+msgid "certification"
+msgstr "сертификација"
+
+# Default: Channel
+msgid "channel"
+msgstr "канал"
+
+# Default: Character
+msgid "character"
+msgstr "карактер"
+
+# Default: Cinematographer
+msgid "cinematographer"
+msgstr "кинематограф"
+
+# Default: Cinematographic process
+msgid "cinematographic-process"
+msgstr "кинематографски процес"
+
+# Default: Close captions teletext ld g
+msgid "close-captions-teletext-ld-g"
+msgstr ""
+
+# Default: Color info
+msgid "color-info"
+msgstr "информације о боји"
+
+# Default: Color information
+msgid "color-information"
+msgstr "информације о боји"
+
+# Default: Color rendition
+msgid "color-rendition"
+msgstr "преношење боја"
+
+# Default: Company
+msgid "company"
+msgstr "компанија"
+
+# Default: Complete cast
+msgid "complete-cast"
+msgstr "комплетна глумачка екипа"
+
+# Default: Complete crew
+msgid "complete-crew"
+msgstr "комплетна посада"
+
+# Default: Composer
+msgid "composer"
+msgstr "композитор"
+
+# Default: Connections
+msgid "connections"
+msgstr "везе"
+
+# Default: Contrast
+msgid "contrast"
+msgstr "контраст"
+
+# Default: Copyright holder
+msgid "copyright-holder"
+msgstr "носилац ауторских права"
+
+# Default: Costume department
+msgid "costume-department"
+msgstr "одељење за костиме"
+
+# Default: Costume designer
+msgid "costume-designer"
+msgstr "костимограф"
+
+# Default: Countries
+msgid "countries"
+msgstr "земље"
+
+# Default: Country
+msgid "country"
+msgstr "земља"
+
+# Default: Courtesy of
+msgid "courtesy-of"
+msgstr "љубазношћу"
+
+# Default: Cover
+msgid "cover"
+msgstr "насловница"
+
+# Default: Cover url
+msgid "cover-url"
+msgstr "адреса насловнице"
+
+# Default: Crazy credits
+msgid "crazy-credits"
+msgstr ""
+
+# Default: Creator
+msgid "creator"
+msgstr "стваралац"
+
+# Default: Current role
+msgid "current-role"
+msgstr "тренутна улога"
+
+# Default: Database
+msgid "database"
+msgstr "база података"
+
+# Default: Date
+msgid "date"
+msgstr "датум"
+
+# Default: Death date
+msgid "death-date"
+msgstr "датум смрти"
+
+# Default: Death notes
+msgid "death-notes"
+msgstr "смртне белешке"
+
+# Default: Demographic
+msgid "demographic"
+msgstr "демографски"
+
+# Default: Description
+msgid "description"
+msgstr "опис"
+
+# Default: Dialogue intellegibility
+msgid "dialogue-intellegibility"
+msgstr "разумљивост дијалога"
+
+# Default: Digital sound
+msgid "digital-sound"
+msgstr "дигитални звук"
+
+# Default: Director
+msgid "director"
+msgstr "директор"
+
+# Default: Disc format
+msgid "disc-format"
+msgstr "формат диска"
+
+# Default: Disc size
+msgid "disc-size"
+msgstr "величина диска"
+
+# Default: Distributors
+msgid "distributors"
+msgstr "дистрибутери"
+
+# Default: Dvd
+msgid "dvd"
+msgstr "ДВД"
+
+# Default: Dvd features
+msgid "dvd-features"
+msgstr "ДВД карактеристике"
+
+# Default: Dvd format
+msgid "dvd-format"
+msgstr "ДВД формат"
+
+# Default: Dvds
+msgid "dvds"
+msgstr "ДВД-ови"
+
+# Default: Dynamic range
+msgid "dynamic-range"
+msgstr "динамички опсег"
+
+# Default: Edited from
+msgid "edited-from"
+msgstr "уређено од"
+
+# Default: Edited into
+msgid "edited-into"
+msgstr "уређивао у"
+
+# Default: Editor
+msgid "editor"
+msgstr "уредник"
+
+# Default: Editorial department
+msgid "editorial-department"
+msgstr "редакција"
+
+# Default: Episode
+msgid "episode"
+msgstr "епизода"
+
+# Default: Episode of
+msgid "episode-of"
+msgstr "епизода"
+
+# Default: Episode title
+msgid "episode-title"
+msgstr "наслов епизоде"
+
+# Default: Episodes
+msgid "episodes"
+msgstr "епизоде"
+
+# Default: Episodes rating
+msgid "episodes-rating"
+msgstr "рејтинг епизода"
+
+# Default: Essays
+msgid "essays"
+msgstr "есеји"
+
+# Default: External reviews
+msgid "external-reviews"
+msgstr "екстерне критике"
+
+# Default: Faqs
+msgid "faqs"
+msgstr "честа питања и одговори"
+
+# Default: Feature
+msgid "feature"
+msgstr "одлика"
+
+# Default: Featured in
+msgid "featured-in"
+msgstr "представљена у"
+
+# Default: Features
+msgid "features"
+msgstr "карактеристике"
+
+# Default: Film negative format
+msgid "film-negative-format"
+msgstr "филм негативног формата"
+
+# Default: Filming dates
+msgid "filming-dates"
+msgstr "датуми снимања"
+
+# Default: Filmography
+msgid "filmography"
+msgstr "филмографија"
+
+# Default: Followed by
+msgid "followed-by"
+msgstr "затим"
+
+# Default: Follows
+msgid "follows"
+msgstr "у наставку"
+
+# Default: For
+msgid "for"
+msgstr "за"
+
+# Default: Frequency response
+msgid "frequency-response"
+msgstr ""
+
+# Default: From
+msgid "from"
+msgstr "од"
+
+# Default: Full article link
+msgid "full-article-link"
+msgstr "цео линк до чланка"
+
+# Default: Full size cover url
+msgid "full-size-cover-url"
+msgstr "адреса насловнице у пуној величини"
+
+# Default: Full size headshot
+msgid "full-size-headshot"
+msgstr "портрет у пуној величини"
+
+# Default: Genres
+msgid "genres"
+msgstr "жанрови"
+
+# Default: Goofs
+msgid "goofs"
+msgstr "глупане"
+
+# Default: Gross
+msgid "gross"
+msgstr ""
+
+# Default: Group genre
+msgid "group-genre"
+msgstr "групни жанр"
+
+# Default: Headshot
+msgid "headshot"
+msgstr "портрет"
+
+# Default: Height
+msgid "height"
+msgstr "висина"
+
+# Default: Imdbindex
+msgid "imdbindex"
+msgstr "ИМдБ индекс"
+
+# Default: In development
+msgid "in-development"
+msgstr "у развоју"
+
+# Default: Interview
+msgid "interview"
+msgstr "интервју"
+
+# Default: Interviews
+msgid "interviews"
+msgstr "интервјуи"
+
+# Default: Introduction
+msgid "introduction"
+msgstr "увод"
+
+# Default: Item
+msgid "item"
+msgstr "ставка"
+
+# Default: Keywords
+msgid "keywords"
+msgstr "кључне речи"
+
+# Default: Kind
+msgid "kind"
+msgstr "врста"
+
+# Default: Label
+msgid "label"
+msgstr "етикета"
+
+# Default: Laboratory
+msgid "laboratory"
+msgstr "лабораторија"
+
+# Default: Language
+msgid "language"
+msgstr "Језик"
+
+# Default: Languages
+msgid "languages"
+msgstr "језици"
+
+# Default: Laserdisc
+msgid "laserdisc"
+msgstr "ласерски диск"
+
+# Default: Laserdisc title
+msgid "laserdisc-title"
+msgstr "наслов ласерског диска"
+
+# Default: Length
+msgid "length"
+msgstr "дужина"
+
+# Default: Line
+msgid "line"
+msgstr "линија"
+
+# Default: Link
+msgid "link"
+msgstr "веза"
+
+# Default: Link text
+msgid "link-text"
+msgstr "текст везе"
+
+# Default: Literature
+msgid "literature"
+msgstr "књижевност"
+
+# Default: Locations
+msgid "locations"
+msgstr "локације"
+
+# Default: Long imdb canonical name
+msgid "long-imdb-canonical-name"
+msgstr ""
+
+# Default: Long imdb canonical title
+msgid "long-imdb-canonical-title"
+msgstr ""
+
+# Default: Long imdb episode title
+msgid "long-imdb-episode-title"
+msgstr "дуг ИМдБ наслов епизоде"
+
+# Default: Long imdb name
+msgid "long-imdb-name"
+msgstr "дуго ИМдБ име"
+
+# Default: Long imdb title
+msgid "long-imdb-title"
+msgstr "дуг ИМдБ наслов"
+
+# Default: Magazine cover photo
+msgid "magazine-cover-photo"
+msgstr "насловна фотографија часописа"
+
+# Default: Make up
+msgid "make-up"
+msgstr "надокнадити"
+
+# Default: Master format
+msgid "master-format"
+msgstr "главни формат"
+
+# Default: Median
+msgid "median"
+msgstr "медијана"
+
+# Default: Merchandising links
+msgid "merchandising-links"
+msgstr "трговачке везе"
+
+# Default: Mini biography
+msgid "mini-biography"
+msgstr "мини биографија"
+
+# Default: Misc links
+msgid "misc-links"
+msgstr "разне везе"
+
+# Default: Miscellaneous companies
+msgid "miscellaneous-companies"
+msgstr "разне компаније"
+
+# Default: Miscellaneous crew
+msgid "miscellaneous-crew"
+msgstr "разна екипe"
+
+# Default: Movie
+msgid "movie"
+msgstr "филм"
+
+# Default: Mpaa
+msgid "mpaa"
+msgstr ""
+
+# Default: Music department
+msgid "music-department"
+msgstr "музичко одељење"
+
+# Default: Name
+msgid "name"
+msgstr "име"
+
+# Default: News
+msgid "news"
+msgstr "вести"
+
+# Default: Newsgroup reviews
+msgid "newsgroup-reviews"
+msgstr ""
+
+# Default: Nick names
+msgid "nick-names"
+msgstr "надимци"
+
+# Default: Notes
+msgid "notes"
+msgstr "белешке"
+
+# Default: Novel
+msgid "novel"
+msgstr "роман"
+
+# Default: Number
+msgid "number"
+msgstr "број"
+
+# Default: Number of chapter stops
+msgid "number-of-chapter-stops"
+msgstr "број заустављања поглавља"
+
+# Default: Number of episodes
+msgid "number-of-episodes"
+msgstr "број епизода"
+
+# Default: Number of seasons
+msgid "number-of-seasons"
+msgstr "број сезона"
+
+# Default: Number of sides
+msgid "number-of-sides"
+msgstr "број страница"
+
+# Default: Number of votes
+msgid "number-of-votes"
+msgstr "број гласова"
+
+# Default: Official retail price
+msgid "official-retail-price"
+msgstr "званична малопродајна цена"
+
+# Default: Official sites
+msgid "official-sites"
+msgstr "званичне странице"
+
+# Default: Opening weekend
+msgid "opening-weekend"
+msgstr "отварање викенда"
+
+# Default: Original air date
+msgid "original-air-date"
+msgstr "оригинални датум емитовања"
+
+# Default: Original music
+msgid "original-music"
+msgstr "оригинална музика"
+
+# Default: Original title
+msgid "original-title"
+msgstr "оригинални наслов"
+
+# Default: Other literature
+msgid "other-literature"
+msgstr "друга литература"
+
+# Default: Other works
+msgid "other-works"
+msgstr "друга дела"
+
+# Default: Parents guide
+msgid "parents-guide"
+msgstr "инструкције за родитеље"
+
+# Default: Performed by
+msgid "performed-by"
+msgstr "извођено од"
+
+# Default: Person
+msgid "person"
+msgstr "особа"
+
+# Default: Photo sites
+msgid "photo-sites"
+msgstr "фото сајтови"
+
+# Default: Pictorial
+msgid "pictorial"
+msgstr "сликовито"
+
+# Default: Picture format
+msgid "picture-format"
+msgstr "формат слике"
+
+# Default: Plot
+msgid "plot"
+msgstr "заплет"
+
+# Default: Plot outline
+msgid "plot-outline"
+msgstr "обрис заплета"
+
+# Default: Portrayed in
+msgid "portrayed-in"
+msgstr "приказан у"
+
+# Default: Pressing plant
+msgid "pressing-plant"
+msgstr "постројење за пресовање"
+
+# Default: Printed film format
+msgid "printed-film-format"
+msgstr "формат штампаног филма"
+
+# Default: Printed media reviews
+msgid "printed-media-reviews"
+msgstr "критике штампаних медија"
+
+# Default: Producer
+msgid "producer"
+msgstr "произвођач"
+
+# Default: Production companies
+msgid "production-companies"
+msgstr "производне компаније"
+
+# Default: Production country
+msgid "production-country"
+msgstr "земља производње"
+
+# Default: Production dates
+msgid "production-dates"
+msgstr "датуми производње"
+
+# Default: Production design
+msgid "production-design"
+msgstr "дизајн производње"
+
+# Default: Production designer
+msgid "production-designer"
+msgstr "сценограф"
+
+# Default: Production manager
+msgid "production-manager"
+msgstr "руководилац производње"
+
+# Default: Production process protocol
+msgid "production-process-protocol"
+msgstr "протокол производног процеса"
+
+# Default: Quality of source
+msgid "quality-of-source"
+msgstr "квалитет извора"
+
+# Default: Quality program
+msgid "quality-program"
+msgstr "квалитетни програм"
+
+# Default: Quote
+msgid "quote"
+msgstr "цитат"
+
+# Default: Quotes
+msgid "quotes"
+msgstr "цитати"
+
+# Default: Rating
+msgid "rating"
+msgstr "рејтинг"
+
+# Default: Recommendations
+msgid "recommendations"
+msgstr "препоруке"
+
+# Default: Referenced in
+msgid "referenced-in"
+msgstr "упућено у"
+
+# Default: References
+msgid "references"
+msgstr "референце"
+
+# Default: Region
+msgid "region"
+msgstr "регион"
+
+# Default: Release country
+msgid "release-country"
+msgstr "држава издања"
+
+# Default: Release date
+msgid "release-date"
+msgstr "Датум издања"
+
+# Default: Release dates
+msgid "release-dates"
+msgstr "датуми издања"
+
+# Default: Remade as
+msgid "remade-as"
+msgstr "преправљен као"
+
+# Default: Remake of
+msgid "remake-of"
+msgstr "преправка од"
+
+# Default: Rentals
+msgid "rentals"
+msgstr "изнајмљивање"
+
+# Default: Result
+msgid "result"
+msgstr "резултат"
+
+# Default: Review
+msgid "review"
+msgstr "преглед"
+
+# Default: Review author
+msgid "review-author"
+msgstr "рецензије аутора"
+
+# Default: Review kind
+msgid "review-kind"
+msgstr "врста рецензија"
+
+# Default: Runtime
+msgid "runtime"
+msgstr "време приказвања"
+
+# Default: Runtimes
+msgid "runtimes"
+msgstr "времена приказивања"
+
+# Default: Salary history
+msgid "salary-history"
+msgstr "историја плата"
+
+# Default: Screenplay teleplay
+msgid "screenplay-teleplay"
+msgstr ""
+
+# Default: Season
+msgid "season"
+msgstr "сезона"
+
+# Default: Second unit director or assistant director
+msgid "second-unit-director-or-assistant-director"
+msgstr "заменик директора"
+
+# Default: Self
+msgid "self"
+msgstr "себе"
+
+# Default: Series animation department
+msgid "series-animation-department"
+msgstr "одсек за анимацију серије"
+
+# Default: Series art department
+msgid "series-art-department"
+msgstr ""
+
+# Default: Series assistant directors
+msgid "series-assistant-directors"
+msgstr ""
+
+# Default: Series camera department
+msgid "series-camera-department"
+msgstr ""
+
+# Default: Series casting department
+msgid "series-casting-department"
+msgstr ""
+
+# Default: Series cinematographers
+msgid "series-cinematographers"
+msgstr ""
+
+# Default: Series costume department
+msgid "series-costume-department"
+msgstr ""
+
+# Default: Series editorial department
+msgid "series-editorial-department"
+msgstr "уредништво серије"
+
+# Default: Series editors
+msgid "series-editors"
+msgstr "уредници серија"
+
+# Default: Series make up department
+msgid "series-make-up-department"
+msgstr ""
+
+# Default: Series miscellaneous
+msgid "series-miscellaneous"
+msgstr ""
+
+# Default: Series music department
+msgid "series-music-department"
+msgstr "музичко одељење серије"
+
+# Default: Series producers
+msgid "series-producers"
+msgstr "продуценти серија"
+
+# Default: Series production designers
+msgid "series-production-designers"
+msgstr "дизајнери серијске производње"
+
+# Default: Series production managers
+msgid "series-production-managers"
+msgstr "руководиоци серијске производње"
+
+# Default: Series sound department
+msgid "series-sound-department"
+msgstr "серија звучни одсек"
+
+# Default: Series special effects department
+msgid "series-special-effects-department"
+msgstr "серија одељење за специјалне ефекте"
+
+# Default: Series stunts
+msgid "series-stunts"
+msgstr "серијске вратоломије"
+
+# Default: Series title
+msgid "series-title"
+msgstr "наслов серије"
+
+# Default: Series transportation department
+msgid "series-transportation-department"
+msgstr "серијско одељење за транспорт"
+
+# Default: Series visual effects department
+msgid "series-visual-effects-department"
+msgstr "серијско одељење за визуелне ефекте"
+
+# Default: Series writers
+msgid "series-writers"
+msgstr "писци серија"
+
+# Default: Series years
+msgid "series-years"
+msgstr "серије година"
+
+# Default: Set decoration
+msgid "set-decoration"
+msgstr "декорација"
+
+# Default: Sharpness
+msgid "sharpness"
+msgstr "оштрина"
+
+# Default: Similar to
+msgid "similar-to"
+msgstr "слично"
+
+# Default: Smart canonical episode title
+msgid "smart-canonical-episode-title"
+msgstr ""
+
+# Default: Smart canonical series title
+msgid "smart-canonical-series-title"
+msgstr ""
+
+# Default: Smart canonical title
+msgid "smart-canonical-title"
+msgstr ""
+
+# Default: Smart long imdb canonical title
+msgid "smart-long-imdb-canonical-title"
+msgstr ""
+
+# Default: Sound clips
+msgid "sound-clips"
+msgstr "звучни клипови"
+
+# Default: Sound crew
+msgid "sound-crew"
+msgstr "звучна екипа"
+
+# Default: Sound encoding
+msgid "sound-encoding"
+msgstr "кодирање звука"
+
+# Default: Sound mix
+msgid "sound-mix"
+msgstr "звучни микс"
+
+# Default: Soundtrack
+msgid "soundtrack"
+msgstr "звучна трака"
+
+# Default: Spaciality
+msgid "spaciality"
+msgstr "просторност"
+
+# Default: Special effects
+msgid "special-effects"
+msgstr "специјални ефекти"
+
+# Default: Special effects companies
+msgid "special-effects-companies"
+msgstr "компаније за специјалне ефекте"
+
+# Default: Special effects department
+msgid "special-effects-department"
+msgstr "одељење за специјалне ефекте"
+
+# Default: Spin off
+msgid "spin-off"
+msgstr ""
+
+# Default: Spin off from
+msgid "spin-off-from"
+msgstr ""
+
+# Default: Spoofed in
+msgid "spoofed-in"
+msgstr "подваљен"
+
+# Default: Spoofs
+msgid "spoofs"
+msgstr "подвале"
+
+# Default: Spouse
+msgid "spouse"
+msgstr "супруга"
+
+# Default: Status of availablility
+msgid "status-of-availablility"
+msgstr "доступност"
+
+# Default: Studio
+msgid "studio"
+msgstr "студио"
+
+# Default: Studios
+msgid "studios"
+msgstr "студија"
+
+# Default: Stunt performer
+msgid "stunt-performer"
+msgstr "каскадер"
+
+# Default: Stunts
+msgid "stunts"
+msgstr "вратоломије"
+
+# Default: Subtitles
+msgid "subtitles"
+msgstr "титлови"
+
+# Default: Supplement
+msgid "supplement"
+msgstr "додатак"
+
+# Default: Supplements
+msgid "supplements"
+msgstr "суплементи"
+
+# Default: Synopsis
+msgid "synopsis"
+msgstr "резиме"
+
+# Default: Taglines
+msgid "taglines"
+msgstr "слогани"
+
+# Default: Tech info
+msgid "tech-info"
+msgstr "техничке информације"
+
+# Default: Thanks
+msgid "thanks"
+msgstr "хвала"
+
+# Default: Time
+msgid "time"
+msgstr "време"
+
+# Default: Title
+msgid "title"
+msgstr "наслов"
+
+# Default: Titles in this product
+msgid "titles-in-this-product"
+msgstr "наслови у овом производу"
+
+# Default: To
+msgid "to"
+msgstr "до"
+
+# Default: Top 250 rank
+msgid "top-250-rank"
+msgstr ""
+
+# Default: Trade mark
+msgid "trade-mark"
+msgstr "заштитни знак"
+
+# Default: Transportation department
+msgid "transportation-department"
+msgstr "транспортно одељење"
+
+# Default: Trivia
+msgid "trivia"
+msgstr "тривијалности"
+
+# Default: Tv
+msgid "tv"
+msgstr "ТВ"
+
+# Default: Under license from
+msgid "under-license-from"
+msgstr "по лиценци од"
+
+# Default: Unknown link
+msgid "unknown-link"
+msgstr "непозната веза"
+
+# Default: Upc
+msgid "upc"
+msgstr ""
+
+# Default: Version of
+msgid "version-of"
+msgstr "верзија од"
+
+# Default: Vhs
+msgid "vhs"
+msgstr ""
+
+# Default: Video
+msgid "video"
+msgstr "видео"
+
+# Default: Video artifacts
+msgid "video-artifacts"
+msgstr "видео артефакти"
+
+# Default: Video clips
+msgid "video-clips"
+msgstr "видео исечци"
+
+# Default: Video noise
+msgid "video-noise"
+msgstr "видео шум"
+
+# Default: Video quality
+msgid "video-quality"
+msgstr "Видео квалитет"
+
+# Default: Video standard
+msgid "video-standard"
+msgstr "видео стандард"
+
+# Default: Visual effects
+msgid "visual-effects"
+msgstr "визуелни ефекти"
+
+# Default: Votes
+msgid "votes"
+msgstr "гласови"
+
+# Default: Votes distribution
+msgid "votes-distribution"
+msgstr "расподела гласова"
+
+# Default: Weekend gross
+msgid "weekend-gross"
+msgstr ""
+
+# Default: Where now
+msgid "where-now"
+msgstr "где сада"
+
+# Default: With
+msgid "with"
+msgstr "са"
+
+# Default: Writer
+msgid "writer"
+msgstr "писац"
+
+# Default: Written by
+msgid "written-by"
+msgstr "написао"
+
+# Default: Year
+msgid "year"
+msgstr "година"
+
+# Default: Zshops
+msgid "zshops"
+msgstr ""

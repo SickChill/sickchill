@@ -1,4 +1,5 @@
 from qbittorrentapi.app import AppAPIMixIn
+from qbittorrentapi.auth import AuthAPIMixIn
 from qbittorrentapi.log import LogAPIMixIn
 from qbittorrentapi.sync import SyncAPIMixIn
 from qbittorrentapi.transfer import TransferAPIMixIn
@@ -10,7 +11,7 @@ from qbittorrentapi.search import SearchAPIMixIn
 # Implementation
 #     Required API parameters
 #         - To avoid runtime errors, required API parameters are not explicitly
-#           enforced in the code. Instead, I found if qBittorent returns HTTP400
+#           enforced in the code. Instead, I found if qBittorrent returns HTTP400
 #           without am error message, at least one required parameter is missing.
 #           This raises a MissingRequiredParameters400 error.
 #         - Alternatively, if a parameter is malformatted, HTTP400 is returned
@@ -23,7 +24,8 @@ from qbittorrentapi.search import SearchAPIMixIn
 # API Peculiarities
 #     app/setPreferences
 #         - This was endlessly frustrating since it requires data in the
-#           form of {'json': dumps({'dht': True})}...
+#           form of {'json': dumps({'dht': True})}...this way, Requests sends the
+#           JSON dump as a key/value pair for "json" via x-www-form-urlencoded.
 #         - Sending an empty string for 'banned_ips' drops the useless message
 #           below in to the log file (same for WebUI):
 #             ' is not a valid IP address and was rejected while applying the list of banned addresses.'
@@ -40,20 +42,28 @@ from qbittorrentapi.search import SearchAPIMixIn
 #         - [Resolved] https://github.com/qbittorrent/qBittorrent/issues/10606
 
 
-class Client(AppAPIMixIn,
-             LogAPIMixIn,
-             SyncAPIMixIn,
-             TransferAPIMixIn,
-             TorrentsAPIMixIn,
-             RSSAPIMixIn,
-             SearchAPIMixIn):
+class Client(
+    AppAPIMixIn,
+    AuthAPIMixIn,
+    LogAPIMixIn,
+    SyncAPIMixIn,
+    TransferAPIMixIn,
+    TorrentsAPIMixIn,
+    RSSAPIMixIn,
+    SearchAPIMixIn,
+):
 
     """
     Initialize API for qBittorrent client.
 
     Host must be specified. Username and password can be specified at login.
-    A call to auth_log_in is not explicitly required if username and password are
-    provided during Client construction.
+    A call to :meth:`~qbittorrentapi.auth.AuthAPIMixIn.auth_log_in` is not explicitly
+    required if username and password are provided during Client construction.
+
+    :Usage:
+        >>> from qbittorrentapi import Client
+        >>> client = Client(host='localhost:8080', username='admin', password='adminadmin')
+        >>> torrents = client.torrents_info()
 
     :param host: hostname for qBittorrent Web API (e.g. [http[s]://]localhost[:8080])
     :param port: port number for qBittorrent Web API (note: only used if host does not contain a port)
@@ -70,10 +80,16 @@ class Client(AppAPIMixIn,
     :param VERIFY_WEBUI_CERTIFICATE: Set to False to skip verify certificate for HTTPS connections;
         for instance, if the connection is using a self-signed certificate. Not setting this to False for self-signed
         certs will cause a APIConnectionError exception to be raised.
-    :param RAISE_UNIMPLEMENTEDERROR_FOR_UNIMPLEMENTED_API_ENDPOINTS: Some Endpoints may not be implemented in older
-        versions of qBittorrent. Setting this to True will raise a UnimplementedError instead of just returning None.
+    :param EXTRA_HEADERS: Dictionary of HTTP Headers to include in all requests made to qBittorrent.
+    :param FORCE_SCHEME_FROM_HOST: If a scheme (i.e. http or https) is specifed in host, it will be used regardless of
+        whether qBittorrent is configured for HTTP or HTTPS communication. Normally, this client will attempt to
+        determine which scheme qBittorrent is actually listening on...but this can cause problems in rare cases.
+    :param RAISE_NOTIMPLEMENTEDERROR_FOR_UNIMPLEMENTED_API_ENDPOINTS: Some Endpoints may not be implemented in older
+        versions of qBittorrent. Setting this to True will raise a NotImplementedError instead of just returning None.
     :param DISABLE_LOGGING_DEBUG_OUTPUT: Turn off debug output from logging for this package as well as Requests & urllib3.
     """
 
-    def __init__(self, host='', port=None, username=None, password=None, **kwargs):
-        super(Client, self).__init__(host=host, port=port, username=username, password=password, **kwargs)
+    def __init__(self, host="", port=None, username=None, password=None, **kwargs):
+        super(Client, self).__init__(
+            host=host, port=port, username=username, password=password, **kwargs
+        )

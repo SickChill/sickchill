@@ -63,7 +63,6 @@ providers = RegistrableExtensionManager(
         "iptorrents = oldbeard.providers.iptorrents:IPTorrentsProvider",
         "torrent9 = oldbeard.providers.torrent9:Torrent9Provider",
         "newpct = oldbeard.providers.newpct:newpctProvider",
-        "gftracker = oldbeard.providers.gftracker:GFTrackerProvider",
         "filelist = oldbeard.providers.filelist:FileListProvider",
         "abnormal = oldbeard.providers.abnormal:ABNormalProvider",
         "torrentproject = oldbeard.providers.torrentproject:TorrentProjectProvider",

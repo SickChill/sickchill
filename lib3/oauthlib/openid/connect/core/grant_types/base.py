@@ -1,17 +1,18 @@
-from .exceptions import OIDCNoPrompt
-
 import base64
 import hashlib
 import logging
 import time
 from json import loads
 
-from oauthlib.oauth2.rfc6749.errors import ConsentRequired, InvalidRequestError, LoginRequired
+from oauthlib.oauth2.rfc6749.errors import (
+    ConsentRequired, InvalidRequestError, LoginRequired,
+)
+
 
 log = logging.getLogger(__name__)
 
 
-class GrantTypeBase(object):
+class GrantTypeBase:
 
     # Just proxy the majority of method calls through to the
     # proxy_target grant type handler, which will usually be either
@@ -20,7 +21,7 @@ class GrantTypeBase(object):
         return getattr(self.proxy_target, attr)
 
     def __setattr__(self, attr, value):
-        proxied_attrs = set(('refresh_token', 'response_types'))
+        proxied_attrs = {'refresh_token', 'response_types'}
         if attr in proxied_attrs:
             setattr(self.proxy_target, attr, value)
         else:
@@ -31,13 +32,7 @@ class GrantTypeBase(object):
 
         :returns: (list of scopes, dict of request info)
         """
-        # If request.prompt is 'none' then no login/authorization form should
-        # be presented to the user. Instead, a silent login/authorization
-        # should be performed.
-        if request.prompt == 'none':
-            raise OIDCNoPrompt()
-        else:
-            return self.proxy_target.validate_authorization_request(request)
+        return self.proxy_target.validate_authorization_request(request)
 
     def _inflate_claims(self, request):
         # this may be called multiple times in a single request so make sure we only de-serialize the claims once

@@ -50,7 +50,7 @@ data = (
 'Si ',    # 0x30
 'Yu ',    # 0x31
 'Wa ',    # 0x32
-'[?] ',    # 0x33
+None,    # 0x33
 'Xian ',    # 0x34
 'Ju ',    # 0x35
 'Qu ',    # 0x36
@@ -170,7 +170,7 @@ data = (
 'Jiu ',    # 0xa8
 'Hu ',    # 0xa9
 'Ao ',    # 0xaa
-'[?] ',    # 0xab
+None,    # 0xab
 'Bou ',    # 0xac
 'Xu ',    # 0xad
 'Tou ',    # 0xae

@@ -6,7 +6,7 @@ Created on 2016-5-26
 '''
 
 LOCALE = [
-    ["gerade eben", "in einer Weile"],
+    ["gerade eben", "gleich"],
     ["vor %s Sekunden", "in %s Sekunden"],
     ["vor 1 Minute", "in 1 Minute"],
     ["vor %s Minuten", "in %s Minuten"],

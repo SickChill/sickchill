@@ -181,7 +181,7 @@ class BeautifulSoupHTMLParser(HTMLParser):
             # This is a redundant end tag for an empty-element tag.
             # We've already called handle_endtag() for it, so just
             # check it off the list.
-            # print("ALREADY CLOSED", name)
+            #print("ALREADY CLOSED", name)
             self.already_closed_empty_element.remove(name)
         else:
             self.soup.handle_endtag(name)

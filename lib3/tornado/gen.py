@@ -90,8 +90,13 @@ from tornado.ioloop import IOLoop
 from tornado.log import app_log
 from tornado.util import TimeoutError
 
+try:
+    import contextvars
+except ImportError:
+    contextvars = None  # type: ignore
+
 import typing
-from typing import Union, Any, Callable, List, Type, Tuple, Awaitable, Dict
+from typing import Union, Any, Callable, List, Type, Tuple, Awaitable, Dict, overload
 
 if typing.TYPE_CHECKING:
     from typing import Sequence, Deque, Optional, Set, Iterable  # noqa: F401
@@ -153,8 +158,24 @@ def _create_future() -> Future:
     return future
 
 
+def _fake_ctx_run(f: Callable[..., _T], *args: Any, **kw: Any) -> _T:
+    return f(*args, **kw)
+
+
+@overload
 def coroutine(
     func: Callable[..., "Generator[Any, Any, _T]"]
+) -> Callable[..., "Future[_T]"]:
+    ...
+
+
+@overload
+def coroutine(func: Callable[..., _T]) -> Callable[..., "Future[_T]"]:
+    ...
+
+
+def coroutine(
+    func: Union[Callable[..., "Generator[Any, Any, _T]"], Callable[..., _T]]
 ) -> Callable[..., "Future[_T]"]:
     """Decorator for asynchronous generators.
 
@@ -187,8 +208,12 @@ def coroutine(
         # This function is type-annotated with a comment to work around
         # https://bitbucket.org/pypy/pypy/issues/2868/segfault-with-args-type-annotation-in
         future = _create_future()
+        if contextvars is not None:
+            ctx_run = contextvars.copy_context().run  # type: Callable
+        else:
+            ctx_run = _fake_ctx_run
         try:
-            result = func(*args, **kwargs)
+            result = ctx_run(func, *args, **kwargs)
         except (Return, StopIteration) as e:
             result = _value_from_stopiteration(e)
         except Exception:
@@ -206,7 +231,7 @@ def coroutine(
                 # use "optional" coroutines in critical path code without
                 # performance penalty for the synchronous case.
                 try:
-                    yielded = next(result)
+                    yielded = ctx_run(next, result)
                 except (StopIteration, Return) as e:
                     future_set_result_unless_cancelled(
                         future, _value_from_stopiteration(e)
@@ -221,8 +246,8 @@ def coroutine(
                     # We do this by exploiting the public API
                     # add_done_callback() instead of putting a private
                     # attribute on the Future.
-                    # (Github issues #1769, #2229).
-                    runner = Runner(result, future, yielded)
+                    # (GitHub issues #1769, #2229).
+                    runner = Runner(ctx_run, result, future, yielded)
                     future.add_done_callback(lambda _: runner)
                 yielded = None
                 try:
@@ -276,7 +301,7 @@ class Return(Exception):
     """
 
     def __init__(self, value: Any = None) -> None:
-        super(Return, self).__init__()
+        super().__init__()
         self.value = value
         # Cython recognizes subclasses of StopIteration with a .args tuple.
         self.args = (value,)
@@ -699,10 +724,12 @@ class Runner(object):
 
     def __init__(
         self,
+        ctx_run: Callable,
         gen: "Generator[_Yieldable, Any, _T]",
         result_future: "Future[_T]",
         first_yielded: _Yieldable,
     ) -> None:
+        self.ctx_run = ctx_run
         self.gen = gen
         self.result_future = result_future
         self.future = _null_future  # type: Union[None, Future]
@@ -711,7 +738,7 @@ class Runner(object):
         self.io_loop = IOLoop.current()
         if self.handle_yield(first_yielded):
             gen = result_future = first_yielded = None  # type: ignore
-            self.run()
+            self.ctx_run(self.run)
 
     def run(self) -> None:
         """Starts or resumes the generator, running until it reaches a
@@ -775,7 +802,7 @@ class Runner(object):
             future_set_exc_info(self.future, sys.exc_info())
 
         if self.future is moment:
-            self.io_loop.add_callback(self.run)
+            self.io_loop.add_callback(self.ctx_run, self.run)
             return False
         elif self.future is None:
             raise Exception("no pending future")
@@ -784,7 +811,7 @@ class Runner(object):
             def inner(f: Any) -> None:
                 # Break a reference cycle to speed GC.
                 f = None  # noqa: F841
-                self.run()
+                self.ctx_run(self.run)
 
             self.io_loop.add_future(self.future, inner)
             return False
@@ -796,7 +823,7 @@ class Runner(object):
         if not self.running and not self.finished:
             self.future = Future()
             future_set_exc_info(self.future, (typ, value, tb))
-            self.run()
+            self.ctx_run(self.run)
             return True
         else:
             return False

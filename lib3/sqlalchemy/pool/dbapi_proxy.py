@@ -1,5 +1,5 @@
 # sqlalchemy/pool/dbapi_proxy.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -104,8 +104,7 @@ class _DBProxy(object):
         try:
             return self.pools[key]
         except KeyError:
-            self._create_pool_mutex.acquire()
-            try:
+            with self._create_pool_mutex:
                 if key not in self.pools:
                     kw.pop("sa_pool_key", None)
                     pool = self.poolclass(
@@ -115,8 +114,6 @@ class _DBProxy(object):
                     return pool
                 else:
                     return self.pools[key]
-            finally:
-                self._create_pool_mutex.release()
 
     def connect(self, *args, **kw):
         """Activate a connection to the database.

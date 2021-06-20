@@ -1,5 +1,5 @@
 # sqlite/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -8,6 +8,9 @@
 r"""
 .. dialect:: sqlite
     :name: SQLite
+    :full_support: 3.21, 3.28+
+    :normal_support: 3.12+
+    :best_effort: 3.7.16+
 
 .. _sqlite_datetime:
 
@@ -301,7 +304,11 @@ new connections through the usage of events::
 ON CONFLICT support for constraints
 -----------------------------------
 
-SQLite supports a non-standard clause known as ON CONFLICT which can be applied
+.. seealso:: This section describes the :term:`DDL` version of "ON CONFLICT" for
+   SQLite, which occurs within a CREATE TABLE statement.  For "ON CONFLICT" as
+   applied to an INSERT statement, see :ref:`sqlite_on_conflict_insert`.
+
+SQLite supports a non-standard DDL clause known as ON CONFLICT which can be applied
 to primary key, unique, check, and not null constraints.   In DDL, it is
 rendered either within the "CONSTRAINT" clause or within the column definition
 itself depending on the location of the target constraint.    To render this
@@ -401,6 +408,208 @@ resolution algorithm is applied to the constraint itself::
         id INTEGER NOT NULL,
         PRIMARY KEY (id) ON CONFLICT FAIL
     )
+
+.. _sqlite_on_conflict_insert:
+
+INSERT...ON CONFLICT (Upsert)
+-----------------------------------
+
+.. seealso:: This section describes the :term:`DML` version of "ON CONFLICT" for
+   SQLite, which occurs within an INSERT statement.  For "ON CONFLICT" as
+   applied to a CREATE TABLE statement, see :ref:`sqlite_on_conflict_ddl`.
+
+From version 3.24.0 onwards, SQLite supports "upserts" (update or insert)
+of rows into a table via the ``ON CONFLICT`` clause of the ``INSERT``
+statement. A candidate row will only be inserted if that row does not violate
+any unique or primary key constraints. In the case of a unique constraint violation, a
+secondary action can occur which can be either "DO UPDATE", indicating that
+the data in the target row should be updated, or "DO NOTHING", which indicates
+to silently skip this row.
+
+Conflicts are determined using columns that are part of existing unique
+constraints and indexes.  These constraints are identified by stating the
+columns and conditions that comprise the indexes.
+
+SQLAlchemy provides ``ON CONFLICT`` support via the SQLite-specific
+:func:`_sqlite.insert()` function, which provides
+the generative methods :meth:`_sqlite.Insert.on_conflict_do_update`
+and :meth:`_sqlite.Insert.on_conflict_do_nothing`:
+
+.. sourcecode:: pycon+sql
+
+    >>> from sqlalchemy.dialects.sqlite import insert
+
+    >>> insert_stmt = insert(my_table).values(
+    ...     id='some_existing_id',
+    ...     data='inserted value')
+
+    >>> do_update_stmt = insert_stmt.on_conflict_do_update(
+    ...     index_elements=['id'],
+    ...     set_=dict(data='updated value')
+    ... )
+
+    >>> print(do_update_stmt)
+    {opensql}INSERT INTO my_table (id, data) VALUES (?, ?)
+    ON CONFLICT (id) DO UPDATE SET data = ?{stop}
+
+    >>> do_nothing_stmt = insert_stmt.on_conflict_do_nothing(
+    ...     index_elements=['id']
+    ... )
+
+    >>> print(do_nothing_stmt)
+    {opensql}INSERT INTO my_table (id, data) VALUES (?, ?)
+    ON CONFLICT (id) DO NOTHING
+
+.. versionadded:: 1.4
+
+.. seealso::
+
+    `Upsert
+    <https://sqlite.org/lang_UPSERT.html>`_
+    - in the SQLite documentation.
+
+
+Specifying the Target
+^^^^^^^^^^^^^^^^^^^^^
+
+Both methods supply the "target" of the conflict using column inference:
+
+* The :paramref:`_sqlite.Insert.on_conflict_do_update.index_elements` argument
+  specifies a sequence containing string column names, :class:`_schema.Column`
+  objects, and/or SQL expression elements, which would identify a unique index
+  or unique constraint.
+
+* When using :paramref:`_sqlite.Insert.on_conflict_do_update.index_elements`
+  to infer an index, a partial index can be inferred by also specifying the
+  :paramref:`_sqlite.Insert.on_conflict_do_update.index_where` parameter:
+
+  .. sourcecode:: pycon+sql
+
+        >>> stmt = insert(my_table).values(user_email='a@b.com', data='inserted data')
+
+        >>> do_update_stmt = stmt.on_conflict_do_update(
+        ...     index_elements=[my_table.c.user_email],
+        ...     index_where=my_table.c.user_email.like('%@gmail.com'),
+        ...     set_=dict(data=stmt.excluded.data)
+        ...     )
+
+        >>> print(do_update_stmt)
+        {opensql}INSERT INTO my_table (data, user_email) VALUES (?, ?)
+        ON CONFLICT (user_email)
+        WHERE user_email LIKE '%@gmail.com'
+        DO UPDATE SET data = excluded.data
+        >>>
+
+The SET Clause
+^^^^^^^^^^^^^^^
+
+``ON CONFLICT...DO UPDATE`` is used to perform an update of the already
+existing row, using any combination of new values as well as values
+from the proposed insertion. These values are specified using the
+:paramref:`_sqlite.Insert.on_conflict_do_update.set_` parameter.  This
+parameter accepts a dictionary which consists of direct values
+for UPDATE:
+
+.. sourcecode:: pycon+sql
+
+    >>> stmt = insert(my_table).values(id='some_id', data='inserted value')
+
+    >>> do_update_stmt = stmt.on_conflict_do_update(
+    ...     index_elements=['id'],
+    ...     set_=dict(data='updated value')
+    ... )
+
+    >>> print(do_update_stmt)
+
+    {opensql}INSERT INTO my_table (id, data) VALUES (?, ?)
+    ON CONFLICT (id) DO UPDATE SET data = ?
+
+.. warning::
+
+    The :meth:`_sqlite.Insert.on_conflict_do_update` method does **not** take
+    into account Python-side default UPDATE values or generation functions,
+    e.g. those specified using :paramref:`_schema.Column.onupdate`. These
+    values will not be exercised for an ON CONFLICT style of UPDATE, unless
+    they are manually specified in the
+    :paramref:`_sqlite.Insert.on_conflict_do_update.set_` dictionary.
+
+Updating using the Excluded INSERT Values
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In order to refer to the proposed insertion row, the special alias
+:attr:`~.sqlite.Insert.excluded` is available as an attribute on
+the :class:`_sqlite.Insert` object; this object creates an "excluded." prefix
+on a column, that informs the DO UPDATE to update the row with the value that
+would have been inserted had the constraint not failed:
+
+.. sourcecode:: pycon+sql
+
+    >>> stmt = insert(my_table).values(
+    ...     id='some_id',
+    ...     data='inserted value',
+    ...     author='jlh'
+    ... )
+
+    >>> do_update_stmt = stmt.on_conflict_do_update(
+    ...     index_elements=['id'],
+    ...     set_=dict(data='updated value', author=stmt.excluded.author)
+    ... )
+
+    >>> print(do_update_stmt)
+    {opensql}INSERT INTO my_table (id, data, author) VALUES (?, ?, ?)
+    ON CONFLICT (id) DO UPDATE SET data = ?, author = excluded.author
+
+Additional WHERE Criteria
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The :meth:`_sqlite.Insert.on_conflict_do_update` method also accepts
+a WHERE clause using the :paramref:`_sqlite.Insert.on_conflict_do_update.where`
+parameter, which will limit those rows which receive an UPDATE:
+
+.. sourcecode:: pycon+sql
+
+    >>> stmt = insert(my_table).values(
+    ...     id='some_id',
+    ...     data='inserted value',
+    ...     author='jlh'
+    ... )
+
+    >>> on_update_stmt = stmt.on_conflict_do_update(
+    ...     index_elements=['id'],
+    ...     set_=dict(data='updated value', author=stmt.excluded.author),
+    ...     where=(my_table.c.status == 2)
+    ... )
+    >>> print(on_update_stmt)
+    {opensql}INSERT INTO my_table (id, data, author) VALUES (?, ?, ?)
+    ON CONFLICT (id) DO UPDATE SET data = ?, author = excluded.author
+    WHERE my_table.status = ?
+
+
+Skipping Rows with DO NOTHING
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``ON CONFLICT`` may be used to skip inserting a row entirely
+if any conflict with a unique constraint occurs; below this is illustrated
+using the :meth:`_sqlite.Insert.on_conflict_do_nothing` method:
+
+.. sourcecode:: pycon+sql
+
+    >>> stmt = insert(my_table).values(id='some_id', data='inserted value')
+    >>> stmt = stmt.on_conflict_do_nothing(index_elements=['id'])
+    >>> print(stmt)
+    {opensql}INSERT INTO my_table (id, data) VALUES (?, ?) ON CONFLICT (id) DO NOTHING
+
+
+If ``DO NOTHING`` is used without specifying any columns or constraint,
+it has the effect of skipping the INSERT for any unique violation which
+occurs:
+
+.. sourcecode:: pycon+sql
+
+    >>> stmt = insert(my_table).values(id='some_id', data='inserted value')
+    >>> stmt = stmt.on_conflict_do_nothing()
+    >>> print(stmt)
+    {opensql}INSERT INTO my_table (id, data) VALUES (?, ?) ON CONFLICT DO NOTHING
 
 .. _sqlite_type_reflection:
 
@@ -534,14 +743,14 @@ to filter these out::
     eng = create_engine("sqlite://")
     conn = eng.connect()
 
-    conn.execute("create table x (a integer, b integer)")
-    conn.execute("insert into x (a, b) values (1, 1)")
-    conn.execute("insert into x (a, b) values (2, 2)")
+    conn.exec_driver_sql("create table x (a integer, b integer)")
+    conn.exec_driver_sql("insert into x (a, b) values (1, 1)")
+    conn.exec_driver_sql("insert into x (a, b) values (2, 2)")
 
-    result = conn.execute("select x.a, x.b from x")
+    result = conn.exec_driver_sql("select x.a, x.b from x")
     assert result.keys() == ["a", "b"]
 
-    result = conn.execute('''
+    result = conn.exec_driver_sql('''
         select x.a, x.b from x where a=1
         union
         select x.a, x.b from x where a=2
@@ -562,15 +771,14 @@ names are still addressable*::
     1
 
 Therefore, the workaround applied by SQLAlchemy only impacts
-:meth:`_engine.ResultProxy.keys` and :meth:`.RowProxy.keys()`
-in the public API. In
+:meth:`_engine.CursorResult.keys` and :meth:`.Row.keys()` in the public API. In
 the very specific case where an application is forced to use column names that
-contain dots, and the functionality of :meth:`_engine.ResultProxy.keys` and
-:meth:`.RowProxy.keys()` is required to return these dotted names unmodified,
+contain dots, and the functionality of :meth:`_engine.CursorResult.keys` and
+:meth:`.Row.keys()` is required to return these dotted names unmodified,
 the ``sqlite_raw_colnames`` execution option may be provided, either on a
 per-:class:`_engine.Connection` basis::
 
-    result = conn.execution_options(sqlite_raw_colnames=True).execute('''
+    result = conn.execution_options(sqlite_raw_colnames=True).exec_driver_sql('''
         select x.a, x.b from x where a=1
         union
         select x.a, x.b from x where a=2
@@ -583,6 +791,21 @@ or on a per-:class:`_engine.Engine` basis::
 
 When using the per-:class:`_engine.Engine` execution option, note that
 **Core and ORM queries that use UNION may not function properly**.
+
+SQLite-specific table options
+-----------------------------
+
+One option for CREATE TABLE is supported directly by the SQLite
+dialect in conjunction with the :class:`_schema.Table` construct:
+
+* ``WITHOUT ROWID``::
+
+    Table("some_table", metadata, ..., sqlite_with_rowid=False)
+
+.. seealso::
+
+    `SQLite CREATE TABLE options
+    <https://www.sqlite.org/lang_createtable.html>`_
 
 """  # noqa
 
@@ -601,8 +824,12 @@ from ... import types as sqltypes
 from ... import util
 from ...engine import default
 from ...engine import reflection
+from ...sql import coercions
 from ...sql import ColumnElement
 from ...sql import compiler
+from ...sql import elements
+from ...sql import roles
+from ...sql import schema
 from ...types import BLOB  # noqa
 from ...types import BOOLEAN  # noqa
 from ...types import CHAR  # noqa
@@ -696,7 +923,7 @@ class DATETIME(_DateTimeMixin, sqltypes.DateTime):
 
     e.g.::
 
-        2011-03-15 12:05:57.10558
+        2021-03-15 12:05:57.105542
 
     The storage format can be customized to some degree using the
     ``storage_format`` and ``regexp`` parameters, such as::
@@ -1044,7 +1271,7 @@ class SQLiteCompiler(compiler.SQLCompiler):
             self.process(binary.right),
         )
 
-    def visit_isnot_distinct_from_binary(self, binary, operator, **kw):
+    def visit_is_not_distinct_from_binary(self, binary, operator, **kw):
         return "%s IS %s" % (
             self.process(binary.left),
             self.process(binary.right),
@@ -1072,11 +1299,123 @@ class SQLiteCompiler(compiler.SQLCompiler):
             self.process(binary.right, **kw),
         )
 
+    def visit_empty_set_op_expr(self, type_, expand_op):
+        # slightly old SQLite versions don't seem to be able to handle
+        # the empty set impl
+        return self.visit_empty_set_expr(type_)
+
     def visit_empty_set_expr(self, element_types):
         return "SELECT %s FROM (SELECT %s) WHERE 1!=1" % (
             ", ".join("1" for type_ in element_types or [INTEGER()]),
             ", ".join("1" for type_ in element_types or [INTEGER()]),
         )
+
+    def visit_regexp_match_op_binary(self, binary, operator, **kw):
+        return self._generate_generic_binary(binary, " REGEXP ", **kw)
+
+    def visit_not_regexp_match_op_binary(self, binary, operator, **kw):
+        return self._generate_generic_binary(binary, " NOT REGEXP ", **kw)
+
+    def _on_conflict_target(self, clause, **kw):
+        if clause.constraint_target is not None:
+            target_text = "(%s)" % clause.constraint_target
+        elif clause.inferred_target_elements is not None:
+            target_text = "(%s)" % ", ".join(
+                (
+                    self.preparer.quote(c)
+                    if isinstance(c, util.string_types)
+                    else self.process(c, include_table=False, use_schema=False)
+                )
+                for c in clause.inferred_target_elements
+            )
+            if clause.inferred_target_whereclause is not None:
+                target_text += " WHERE %s" % self.process(
+                    clause.inferred_target_whereclause,
+                    include_table=False,
+                    use_schema=False,
+                    literal_binds=True,
+                )
+
+        else:
+            target_text = ""
+
+        return target_text
+
+    def visit_on_conflict_do_nothing(self, on_conflict, **kw):
+
+        target_text = self._on_conflict_target(on_conflict, **kw)
+
+        if target_text:
+            return "ON CONFLICT %s DO NOTHING" % target_text
+        else:
+            return "ON CONFLICT DO NOTHING"
+
+    def visit_on_conflict_do_update(self, on_conflict, **kw):
+        clause = on_conflict
+
+        target_text = self._on_conflict_target(on_conflict, **kw)
+
+        action_set_ops = []
+
+        set_parameters = dict(clause.update_values_to_set)
+        # create a list of column assignment clauses as tuples
+
+        insert_statement = self.stack[-1]["selectable"]
+        cols = insert_statement.table.c
+        for c in cols:
+            col_key = c.key
+
+            if col_key in set_parameters:
+                value = set_parameters.pop(col_key)
+            elif c in set_parameters:
+                value = set_parameters.pop(c)
+            else:
+                continue
+
+            if coercions._is_literal(value):
+                value = elements.BindParameter(None, value, type_=c.type)
+
+            else:
+                if (
+                    isinstance(value, elements.BindParameter)
+                    and value.type._isnull
+                ):
+                    value = value._clone()
+                    value.type = c.type
+            value_text = self.process(value.self_group(), use_schema=False)
+
+            key_text = self.preparer.quote(col_key)
+            action_set_ops.append("%s = %s" % (key_text, value_text))
+
+        # check for names that don't match columns
+        if set_parameters:
+            util.warn(
+                "Additional column names not matching "
+                "any column keys in table '%s': %s"
+                % (
+                    self.current_executable.table.name,
+                    (", ".join("'%s'" % c for c in set_parameters)),
+                )
+            )
+            for k, v in set_parameters.items():
+                key_text = (
+                    self.preparer.quote(k)
+                    if isinstance(k, util.string_types)
+                    else self.process(k, use_schema=False)
+                )
+                value_text = self.process(
+                    coercions.expect(roles.ExpressionElementRole, v),
+                    use_schema=False,
+                )
+                action_set_ops.append("%s = %s" % (key_text, value_text))
+
+        action_text = ", ".join(action_set_ops)
+        if clause.update_whereclause is not None:
+            action_text += " WHERE %s" % self.process(
+                clause.update_whereclause, include_table=True, use_schema=False
+            )
+
+        return "ON CONFLICT %s DO UPDATE SET %s" % (target_text, action_text)
 
 
 class SQLiteDDLCompiler(compiler.DDLCompiler):
@@ -1172,9 +1511,11 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
             "on_conflict"
         ]
         if on_conflict_clause is None and len(constraint.columns) == 1:
-            on_conflict_clause = list(constraint)[0].dialect_options["sqlite"][
-                "on_conflict_unique"
-            ]
+            col1 = list(constraint)[0]
+            if isinstance(col1, schema.SchemaItem):
+                on_conflict_clause = list(constraint)[0].dialect_options[
+                    "sqlite"
+                ]["on_conflict_unique"]
 
         if on_conflict_clause is not None:
             text += " ON CONFLICT " + on_conflict_clause
@@ -1234,7 +1575,13 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
         text = "CREATE "
         if index.unique:
             text += "UNIQUE "
-        text += "INDEX %s ON %s (%s)" % (
+
+        text += "INDEX "
+
+        if create.if_not_exists:
+            text += "IF NOT EXISTS "
+
+        text += "%s ON %s (%s)" % (
             self._prepared_index_name(index, include_schema=True),
             preparer.format_table(index.table, use_schema=False),
             ", ".join(
@@ -1253,6 +1600,11 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
             text += " WHERE " + where_compiled
 
         return text
+
+    def post_create_table(self, table):
+        if table.dialect_options["sqlite"]["with_rowid"] is False:
+            return "\n WITHOUT ROWID"
+        return ""
 
 
 class SQLiteTypeCompiler(compiler.GenericTypeCompiler):
@@ -1444,11 +1796,17 @@ class SQLiteDialect(default.DefaultDialect):
     supports_alter = False
     supports_unicode_statements = True
     supports_unicode_binds = True
+
+    # SQlite supports "DEFAULT VALUES" but *does not* support
+    # "VALUES (DEFAULT)"
     supports_default_values = True
+    supports_default_metavalue = False
+
     supports_empty_insert = False
     supports_cast = True
     supports_multivalues_insert = True
     tuple_in_values = True
+    supports_statement_cache = True
 
     default_paramstyle = "qmark"
     execution_ctx_cls = SQLiteExecutionContext
@@ -1461,7 +1819,13 @@ class SQLiteDialect(default.DefaultDialect):
     isolation_level = None
 
     construct_arguments = [
-        (sa_schema.Table, {"autoincrement": False}),
+        (
+            sa_schema.Table,
+            {
+                "autoincrement": False,
+                "with_rowid": True,
+            },
+        ),
         (sa_schema.Index, {"where": None}),
         (
             sa_schema.Column,
@@ -1518,9 +1882,15 @@ class SQLiteDialect(default.DefaultDialect):
         self.native_datetime = native_datetime
 
         if self.dbapi is not None:
-            self.supports_right_nested_joins = (
-                self.dbapi.sqlite_version_info >= (3, 7, 16)
-            )
+            if self.dbapi.sqlite_version_info < (3, 7, 16):
+                util.warn(
+                    "SQLite version %s is older than 3.7.16, and will not "
+                    "support right nested joins, as are sometimes used in "
+                    "more complex ORM scenarios.  SQLAlchemy 1.4 and above "
+                    "no longer tries to rewrite these joins."
+                    % (self.dbapi.sqlite_version_info,)
+                )
+
             self._broken_dotted_colnames = self.dbapi.sqlite_version_info < (
                 3,
                 10,
@@ -1598,7 +1968,7 @@ class SQLiteDialect(default.DefaultDialect):
     @reflection.cache
     def get_schema_names(self, connection, **kw):
         s = "PRAGMA database_list"
-        dl = connection.execute(s)
+        dl = connection.exec_driver_sql(s)
 
         return [db[1] for db in dl if db[1] != "temp"]
 
@@ -1612,7 +1982,7 @@ class SQLiteDialect(default.DefaultDialect):
         s = ("SELECT name FROM %s " "WHERE type='table' ORDER BY name") % (
             master,
         )
-        rs = connection.execute(s)
+        rs = connection.exec_driver_sql(s)
         return [row[0] for row in rs]
 
     @reflection.cache
@@ -1621,7 +1991,7 @@ class SQLiteDialect(default.DefaultDialect):
             "SELECT name FROM sqlite_temp_master "
             "WHERE type='table' ORDER BY name "
         )
-        rs = connection.execute(s)
+        rs = connection.exec_driver_sql(s)
 
         return [row[0] for row in rs]
 
@@ -1631,15 +2001,20 @@ class SQLiteDialect(default.DefaultDialect):
             "SELECT name FROM sqlite_temp_master "
             "WHERE type='view' ORDER BY name "
         )
-        rs = connection.execute(s)
+        rs = connection.exec_driver_sql(s)
 
         return [row[0] for row in rs]
 
     def has_table(self, connection, table_name, schema=None):
+        self._ensure_has_table_connection(connection)
+
         info = self._get_table_pragma(
             connection, "table_info", table_name, schema=schema
         )
         return bool(info)
+
+    def _get_default_schema_name(self, connection):
+        return "main"
 
     @reflection.cache
     def get_view_names(self, connection, schema=None, **kw):
@@ -1651,7 +2026,7 @@ class SQLiteDialect(default.DefaultDialect):
         s = ("SELECT name FROM %s " "WHERE type='view' ORDER BY name") % (
             master,
         )
-        rs = connection.execute(s)
+        rs = connection.exec_driver_sql(s)
 
         return [row[0] for row in rs]
 
@@ -1663,7 +2038,7 @@ class SQLiteDialect(default.DefaultDialect):
             s = ("SELECT sql FROM %s WHERE name = ? AND type='view'") % (
                 master,
             )
-            rs = connection.execute(s, (view_name,))
+            rs = connection.exec_driver_sql(s, (view_name,))
         else:
             try:
                 s = (
@@ -1673,13 +2048,13 @@ class SQLiteDialect(default.DefaultDialect):
                     "WHERE name = ? "
                     "AND type='view'"
                 )
-                rs = connection.execute(s, (view_name,))
+                rs = connection.exec_driver_sql(s, (view_name,))
             except exc.DBAPIError:
                 s = (
                     "SELECT sql FROM sqlite_master WHERE name = ? "
                     "AND type='view'"
                 )
-                rs = connection.execute(s, (view_name,))
+                rs = connection.exec_driver_sql(s, (view_name,))
 
         result = rs.fetchall()
         if result:
@@ -1776,7 +2151,7 @@ class SQLiteDialect(default.DefaultDialect):
         return colspec
 
     def _resolve_type_affinity(self, type_):
-        """Return a data type from a reflected column, using affinity tules.
+        """Return a data type from a reflected column, using affinity rules.
 
         SQLite's goal for universal compatibility introduces some complexity
         during reflection, as a column's defined type might not actually be a
@@ -1787,7 +2162,7 @@ class SQLiteDialect(default.DefaultDialect):
         listed in http://www.sqlite.org/datatype3.html section 2.1.
 
         This method allows SQLAlchemy to support that algorithm, while still
-        providing access to smarter reflection utilities by regcognizing
+        providing access to smarter reflection utilities by recognizing
         column definitions that SQLite only supports through affinity (like
         DATE and DOUBLE).
 
@@ -1839,6 +2214,7 @@ class SQLiteDialect(default.DefaultDialect):
             constraint_name = result.group(1) if result else None
 
         cols = self.get_columns(connection, table_name, schema, **kw)
+        cols.sort(key=lambda col: col.get("primary_key"))
         pkeys = []
         for col in cols:
             if col["primary_key"]:
@@ -1867,7 +2243,7 @@ class SQLiteDialect(default.DefaultDialect):
                 referred_pk = self.get_pk_constraint(
                     connection, rtbl, schema=schema, **kw
                 )
-                # note that if table doesnt exist, we still get back a record,
+                # note that if table doesn't exist, we still get back a record,
                 # just it has no columns in it
                 referred_columns = referred_pk["constrained_columns"]
             else:
@@ -1956,9 +2332,13 @@ class SQLiteDialect(default.DefaultDialect):
 
                 for token in re.split(r" *\bON\b *", onupdatedelete.upper()):
                     if token.startswith("DELETE"):
-                        options["ondelete"] = token[6:].strip()
+                        ondelete = token[6:].strip()
+                        if ondelete and ondelete != "NO ACTION":
+                            options["ondelete"] = ondelete
                     elif token.startswith("UPDATE"):
-                        options["onupdate"] = token[6:].strip()
+                        onupdate = token[6:].strip()
+                        if onupdate and onupdate != "NO ACTION":
+                            options["onupdate"] = onupdate
                 yield (
                     constraint_name,
                     constrained_columns,
@@ -2126,14 +2506,14 @@ class SQLiteDialect(default.DefaultDialect):
                 "WHERE name = ? "
                 "AND type = 'table'" % {"schema": schema_expr}
             )
-            rs = connection.execute(s, (table_name,))
+            rs = connection.exec_driver_sql(s, (table_name,))
         except exc.DBAPIError:
             s = (
                 "SELECT sql FROM %(schema)ssqlite_master "
                 "WHERE name = ? "
                 "AND type = 'table'" % {"schema": schema_expr}
             )
-            rs = connection.execute(s, (table_name,))
+            rs = connection.exec_driver_sql(s, (table_name,))
         return rs.scalar()
 
     def _get_table_pragma(self, connection, pragma, table_name, schema=None):
@@ -2150,7 +2530,7 @@ class SQLiteDialect(default.DefaultDialect):
         qtable = quote(table_name)
         for statement in statements:
             statement = "%s%s(%s)" % (statement, pragma, qtable)
-            cursor = connection.execute(statement)
+            cursor = connection.exec_driver_sql(statement)
             if not cursor._soft_closed:
                 # work around SQLite issue whereby cursor.description
                 # is blank when PRAGMA returns no rows:

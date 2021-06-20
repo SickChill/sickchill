@@ -1,5 +1,5 @@
 # util/langhelpers.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -9,6 +9,8 @@
 modules, classes, hierarchies, attributes, functions, and methods.
 
 """
+
+import collections
 from functools import update_wrapper
 import hashlib
 import inspect
@@ -66,7 +68,8 @@ class safe_reraise(object):
             self._exc_info = None  # remove potential circular references
             if not self.warn_only:
                 compat.raise_(
-                    exc_value, with_traceback=exc_tb,
+                    exc_value,
+                    with_traceback=exc_tb,
                 )
         else:
             if not compat.py3k and self._exc_info and self._exc_info[1]:
@@ -81,10 +84,49 @@ class safe_reraise(object):
             compat.raise_(value, with_traceback=traceback)
 
 
+def walk_subclasses(cls):
+    seen = set()
+
+    stack = [cls]
+    while stack:
+        cls = stack.pop()
+        if cls in seen:
+            continue
+        else:
+            seen.add(cls)
+        stack.extend(cls.__subclasses__())
+        yield cls
+
+
+def string_or_unprintable(element):
+    if isinstance(element, compat.string_types):
+        return element
+    else:
+        try:
+            return str(element)
+        except Exception:
+            return "unprintable element %r" % element
+
+
 def clsname_as_plain_name(cls):
     return " ".join(
         n.lower() for n in re.findall(r"([A-Z][a-z]+)", cls.__name__)
     )
+
+
+def method_is_overridden(instance_or_cls, against_method):
+    """Return True if the two class methods don't match."""
+
+    if not isinstance(instance_or_cls, type):
+        current_cls = instance_or_cls.__class__
+    else:
+        current_cls = instance_or_cls
+
+    method_name = against_method.__name__
+
+    current_method = getattr(current_cls, method_name)
+
+    return current_method != against_method
 
 
 def decode_slice(slc):
@@ -134,6 +176,10 @@ def decorator(target):
             raise Exception("not a decoratable function")
 
         spec = compat.inspect_getfullargspec(fn)
+        env = {}
+
+        spec = _update_argspec_defaults_into_env(spec, env)
+
         names = tuple(spec[0]) + spec[1:3] + (fn.__name__,)
         targ_name, fn_name = _unique_symbols(names, "target", "fn")
 
@@ -147,14 +193,35 @@ def %(name)s(%(args)s):
 """
             % metadata
         )
-        decorated = _exec_code_in_env(
-            code, {targ_name: target, fn_name: fn}, fn.__name__
-        )
-        decorated.__defaults__ = getattr(fn, "im_func", fn).__defaults__
+        env.update({targ_name: target, fn_name: fn, "__name__": fn.__module__})
+
+        decorated = _exec_code_in_env(code, env, fn.__name__)
+        decorated.__defaults__ = getattr(fn, "__func__", fn).__defaults__
         decorated.__wrapped__ = fn
         return update_wrapper(decorated, fn)
 
     return update_wrapper(decorate, target)
+
+
+def _update_argspec_defaults_into_env(spec, env):
+    """given a FullArgSpec, convert defaults to be symbol names in an env."""
+
+    if spec.defaults:
+        new_defaults = []
+        i = 0
+        for arg in spec.defaults:
+            if type(arg).__module__ not in ("builtins", "__builtin__"):
+                name = "x%d" % i
+                env[name] = arg
+                new_defaults.append(name)
+                i += 1
+            else:
+                new_defaults.append(arg)
+        elem = list(spec)
+        elem[3] = tuple(new_defaults)
+        return compat.FullArgSpec(*elem)
+    else:
+        return spec
 
 
 def _exec_code_in_env(code, env, fn_name):
@@ -169,15 +236,19 @@ def public_factory(target, location, class_location=None):
     class can serve as documentation for the function.
 
     """
+
     if isinstance(target, type):
         fn = target.__init__
         callable_ = target
         doc = (
-            "Construct a new :class:`.%s` object. \n\n"
+            "Construct a new :class:`%s` object. \n\n"
             "This constructor is mirrored as a public API function; "
             "see :func:`sqlalchemy%s` "
             "for a full usage and argument description."
-            % (target.__name__, location)
+            % (
+                class_location if class_location else ".%s" % target.__name__,
+                location,
+            )
         )
     else:
         fn = callable_ = target
@@ -198,9 +269,14 @@ def %(name)s(%(args)s):
 """
         % metadata
     )
-    env = {"cls": callable_, "symbol": symbol}
+    env = {
+        "cls": callable_,
+        "symbol": symbol,
+        "__name__": callable_.__module__,
+    }
     exec(code, env)
     decorated = env[location_name]
+
     if hasattr(fn, "_linked_to"):
         linked_to, linked_to_location = fn._linked_to
         linked_to_doc = linked_to.__doc__
@@ -210,9 +286,11 @@ def %(name)s(%(args)s):
         linked_to_doc = inject_docstring_text(
             linked_to_doc,
             ".. container:: inherited_member\n\n    "
-            "Inherited from :func:`sqlalchemy%s`; this constructor "
-            "creates a :class:`%s` object"
-            % (linked_to_location, class_location),
+            "This documentation is inherited from :func:`sqlalchemy%s`; "
+            "this constructor, :func:`sqlalchemy%s`,   "
+            "creates a :class:`sqlalchemy%s` object.  See that class for "
+            "additional details describing this subclass."
+            % (linked_to_location, location, class_location),
             1,
         )
         decorated.__doc__ = linked_to_doc
@@ -225,6 +303,7 @@ def %(name)s(%(args)s):
             "public_factory location %s is not in sys.modules"
             % (decorated.__module__,)
         )
+
     if compat.py2k or hasattr(fn, "__func__"):
         fn.__func__.__doc__ = doc
         if not hasattr(fn.__func__, "_linked_to"):
@@ -233,6 +312,7 @@ def %(name)s(%(args)s):
         fn.__doc__ = doc
         if not hasattr(fn, "_linked_to"):
             fn._linked_to = (decorated, location)
+
     return decorated
 
 
@@ -255,12 +335,8 @@ class PluginLoader(object):
                 self.impls[name] = loader
                 return loader()
 
-        try:
-            import pkg_resources
-        except ImportError:
-            pass
-        else:
-            for impl in pkg_resources.iter_entry_points(self.group, name):
+        for impl in compat.importlib_metadata_get(self.group):
+            if impl.name == name:
                 self.impls[name] = impl.load
                 return impl.load()
 
@@ -428,6 +504,8 @@ def format_argspec_plus(fn, grouped=True):
       passed positionally.
     apply_kw
       Like apply_pos, except keyword-ish args are passed as keywords.
+    apply_pos_proxied
+      Like apply_pos but omits the self/cls argument
 
     Example::
 
@@ -444,16 +522,27 @@ def format_argspec_plus(fn, grouped=True):
         spec = fn
 
     args = compat.inspect_formatargspec(*spec)
-    if spec[0]:
-        self_arg = spec[0][0]
-    elif spec[1]:
-        self_arg = "%s[0]" % spec[1]
-    else:
-        self_arg = None
 
     apply_pos = compat.inspect_formatargspec(
         spec[0], spec[1], spec[2], None, spec[4]
     )
+
+    if spec[0]:
+        self_arg = spec[0][0]
+
+        apply_pos_proxied = compat.inspect_formatargspec(
+            spec[0][1:], spec[1], spec[2], None, spec[4]
+        )
+
+    elif spec[1]:
+        # I'm not sure what this is
+        self_arg = "%s[0]" % spec[1]
+
+        apply_pos_proxied = apply_pos
+    else:
+        self_arg = None
+        apply_pos_proxied = apply_pos
+
     num_defaults = 0
     if spec[3]:
         num_defaults += len(spec[3])
@@ -473,12 +562,26 @@ def format_argspec_plus(fn, grouped=True):
         defaulted_vals,
         formatvalue=lambda x: "=" + x,
     )
+
+    if spec[0]:
+        apply_kw_proxied = compat.inspect_formatargspec(
+            name_args[1:],
+            spec[1],
+            spec[2],
+            defaulted_vals,
+            formatvalue=lambda x: "=" + x,
+        )
+    else:
+        apply_kw_proxied = apply_kw
+
     if grouped:
         return dict(
             args=args,
             self_arg=self_arg,
             apply_pos=apply_pos,
             apply_kw=apply_kw,
+            apply_pos_proxied=apply_pos_proxied,
+            apply_kw_proxied=apply_kw_proxied,
         )
     else:
         return dict(
@@ -486,6 +589,8 @@ def format_argspec_plus(fn, grouped=True):
             self_arg=self_arg,
             apply_pos=apply_pos[1:-1],
             apply_kw=apply_kw[1:-1],
+            apply_pos_proxied=apply_pos_proxied[1:-1],
+            apply_kw_proxied=apply_kw_proxied[1:-1],
         )
 
 
@@ -500,17 +605,142 @@ def format_argspec_init(method, grouped=True):
 
     """
     if method is object.__init__:
-        args = grouped and "(self)" or "self"
+        args = "(self)" if grouped else "self"
+        proxied = "()" if grouped else ""
     else:
         try:
             return format_argspec_plus(method, grouped=grouped)
         except TypeError:
             args = (
-                grouped
-                and "(self, *args, **kwargs)"
-                or "self, *args, **kwargs"
+                "(self, *args, **kwargs)"
+                if grouped
+                else "self, *args, **kwargs"
             )
-    return dict(self_arg="self", args=args, apply_pos=args, apply_kw=args)
+            proxied = "(*args, **kwargs)" if grouped else "*args, **kwargs"
+    return dict(
+        self_arg="self",
+        args=args,
+        apply_pos=args,
+        apply_kw=args,
+        apply_pos_proxied=proxied,
+        apply_kw_proxied=proxied,
+    )
+
+
+def create_proxy_methods(
+    target_cls,
+    target_cls_sphinx_name,
+    proxy_cls_sphinx_name,
+    classmethods=(),
+    methods=(),
+    attributes=(),
+):
+    """A class decorator that will copy attributes to a proxy class.
+
+    The class to be instrumented must define a single accessor "_proxied".
+
+    """
+
+    def decorate(cls):
+        def instrument(name, clslevel=False):
+            fn = getattr(target_cls, name)
+            spec = compat.inspect_getfullargspec(fn)
+            env = {"__name__": fn.__module__}
+
+            spec = _update_argspec_defaults_into_env(spec, env)
+            caller_argspec = format_argspec_plus(spec, grouped=False)
+
+            metadata = {
+                "name": fn.__name__,
+                "apply_pos_proxied": caller_argspec["apply_pos_proxied"],
+                "apply_kw_proxied": caller_argspec["apply_kw_proxied"],
+                "args": caller_argspec["args"],
+                "self_arg": caller_argspec["self_arg"],
+            }
+
+            if clslevel:
+                code = (
+                    "def %(name)s(%(args)s):\n"
+                    "    return target_cls.%(name)s(%(apply_kw_proxied)s)"
+                    % metadata
+                )
+                env["target_cls"] = target_cls
+            else:
+                code = (
+                    "def %(name)s(%(args)s):\n"
+                    "    return %(self_arg)s._proxied.%(name)s(%(apply_kw_proxied)s)"  # noqa E501
+                    % metadata
+                )
+
+            proxy_fn = _exec_code_in_env(code, env, fn.__name__)
+            proxy_fn.__defaults__ = getattr(fn, "__func__", fn).__defaults__
+            proxy_fn.__doc__ = inject_docstring_text(
+                fn.__doc__,
+                ".. container:: class_bases\n\n    "
+                "Proxied for the %s class on behalf of the %s class."
+                % (target_cls_sphinx_name, proxy_cls_sphinx_name),
+                1,
+            )
+
+            if clslevel:
+                proxy_fn = classmethod(proxy_fn)
+
+            return proxy_fn
+
+        def makeprop(name):
+            attr = target_cls.__dict__.get(name, None)
+
+            if attr is not None:
+                doc = inject_docstring_text(
+                    attr.__doc__,
+                    ".. container:: class_bases\n\n    "
+                    "Proxied for the %s class on behalf of the %s class."
+                    % (
+                        target_cls_sphinx_name,
+                        proxy_cls_sphinx_name,
+                    ),
+                    1,
+                )
+            else:
+                doc = None
+
+            code = (
+                "def set_(self, attr):\n"
+                "    self._proxied.%(name)s = attr\n"
+                "def get(self):\n"
+                "    return self._proxied.%(name)s\n"
+                "get.__doc__ = doc\n"
+                "getset = property(get, set_)"
+            ) % {"name": name}
+
+            getset = _exec_code_in_env(code, {"doc": doc}, "getset")
+
+            return getset
+
+        for meth in methods:
+            if hasattr(cls, meth):
+                raise TypeError(
+                    "class %s already has a method %s" % (cls, meth)
+                )
+            setattr(cls, meth, instrument(meth))
+
+        for prop in attributes:
+            if hasattr(cls, prop):
+                raise TypeError(
+                    "class %s already has a method %s" % (cls, prop)
+                )
+            setattr(cls, prop, makeprop(prop))
+
+        for prop in classmethods:
+            if hasattr(cls, prop):
+                raise TypeError(
+                    "class %s already has a method %s" % (cls, prop)
+                )
+            setattr(cls, prop, instrument(prop, clslevel=True))
+
+        return cls
+
+    return decorate
 
 
 def getargspec_init(method):
@@ -698,10 +928,10 @@ def class_hierarchy(cls):
 
 def iterate_attributes(cls):
     """iterate all the keys and attributes associated
-       with a class, without using getattr().
+    with a class, without using getattr().
 
-       Does not use getattr() so that class-sensitive
-       descriptors (i.e. property.__get__()) are not called.
+    Does not use getattr() so that class-sensitive
+    descriptors (i.e. property.__get__()) are not called.
 
     """
     keys = dir(cls)
@@ -750,7 +980,7 @@ def monkeypatch_proxied_specials(
             fn = getattr(from_cls, method)
             if not hasattr(fn, "__call__"):
                 continue
-            fn = getattr(fn, "im_func", fn)
+            fn = getattr(fn, "__func__", fn)
         except AttributeError:
             continue
         try:
@@ -914,27 +1144,60 @@ def memoized_instancemethod(fn):
     return update_wrapper(oneshot, fn)
 
 
-class group_expirable_memoized_property(object):
-    """A family of @memoized_properties that can be expired in tandem."""
+class HasMemoized(object):
+    """A class that maintains the names of memoized elements in a
+    collection for easy cache clearing, generative, etc.
 
-    def __init__(self, attributes=()):
-        self.attributes = []
-        if attributes:
-            self.attributes.extend(attributes)
+    """
 
-    def expire_instance(self, instance):
-        """Expire all memoized properties for *instance*."""
-        stash = instance.__dict__
-        for attribute in self.attributes:
-            stash.pop(attribute, None)
+    __slots__ = ()
 
-    def __call__(self, fn):
-        self.attributes.append(fn.__name__)
-        return memoized_property(fn)
+    _memoized_keys = frozenset()
 
-    def method(self, fn):
-        self.attributes.append(fn.__name__)
-        return memoized_instancemethod(fn)
+    def _reset_memoizations(self):
+        for elem in self._memoized_keys:
+            self.__dict__.pop(elem, None)
+
+    def _assert_no_memoizations(self):
+        for elem in self._memoized_keys:
+            assert elem not in self.__dict__
+
+    def _set_memoized_attribute(self, key, value):
+        self.__dict__[key] = value
+        self._memoized_keys |= {key}
+
+    class memoized_attribute(object):
+        """A read-only @property that is only evaluated once."""
+
+        def __init__(self, fget, doc=None):
+            self.fget = fget
+            self.__doc__ = doc or fget.__doc__
+            self.__name__ = fget.__name__
+
+        def __get__(self, obj, cls):
+            if obj is None:
+                return self
+            obj.__dict__[self.__name__] = result = self.fget(obj)
+            obj._memoized_keys |= {self.__name__}
+            return result
+
+    @classmethod
+    def memoized_instancemethod(cls, fn):
+        """Decorate a method memoize its return value."""
+
+        def oneshot(self, *args, **kw):
+            result = fn(self, *args, **kw)
+
+            def memo(*a, **kw):
+                return result
+
+            memo.__name__ = fn.__name__
+            memo.__doc__ = fn.__doc__
+            self.__dict__[fn.__name__] = memo
+            self._memoized_keys |= {fn.__name__}
+            return result
+
+        return update_wrapper(oneshot, fn)
 
 
 class MemoizedSlots(object):
@@ -975,137 +1238,6 @@ class MemoizedSlots(object):
             return oneshot
         else:
             return self._fallback_getattr(key)
-
-
-def dependency_for(modulename, add_to_all=False):
-    def decorate(obj):
-        tokens = modulename.split(".")
-        mod = compat.import_(
-            ".".join(tokens[0:-1]), globals(), locals(), [tokens[-1]]
-        )
-        mod = getattr(mod, tokens[-1])
-        setattr(mod, obj.__name__, obj)
-        if add_to_all and hasattr(mod, "__all__"):
-            mod.__all__.append(obj.__name__)
-        return obj
-
-    return decorate
-
-
-class dependencies(object):
-    """Apply imported dependencies as arguments to a function.
-
-    E.g.::
-
-        @util.dependencies(
-            "sqlalchemy.sql.widget",
-            "sqlalchemy.engine.default"
-        );
-        def some_func(self, widget, default, arg1, arg2, **kw):
-            # ...
-
-    Rationale is so that the impact of a dependency cycle can be
-    associated directly with the few functions that cause the cycle,
-    and not pollute the module-level namespace.
-
-    """
-
-    def __init__(self, *deps):
-        self.import_deps = []
-        for dep in deps:
-            tokens = dep.split(".")
-            self.import_deps.append(
-                dependencies._importlater(".".join(tokens[0:-1]), tokens[-1])
-            )
-
-    def __call__(self, fn):
-        import_deps = self.import_deps
-        spec = compat.inspect_getfullargspec(fn)
-
-        spec_zero = list(spec[0])
-        hasself = spec_zero[0] in ("self", "cls")
-
-        for i in range(len(import_deps)):
-            spec[0][i + (1 if hasself else 0)] = "import_deps[%r]" % i
-
-        inner_spec = format_argspec_plus(spec, grouped=False)
-
-        for impname in import_deps:
-            del spec_zero[1 if hasself else 0]
-        spec[0][:] = spec_zero
-
-        outer_spec = format_argspec_plus(spec, grouped=False)
-
-        code = "lambda %(args)s: fn(%(apply_kw)s)" % {
-            "args": outer_spec["args"],
-            "apply_kw": inner_spec["apply_kw"],
-        }
-
-        decorated = eval(code, locals())
-        decorated.__defaults__ = getattr(fn, "im_func", fn).__defaults__
-        return update_wrapper(decorated, fn)
-
-    @classmethod
-    def resolve_all(cls, path):
-        for m in list(dependencies._unresolved):
-            if m._full_path.startswith(path):
-                m._resolve()
-
-    _unresolved = set()
-    _by_key = {}
-
-    class _importlater(object):
-        _unresolved = set()
-
-        _by_key = {}
-
-        def __new__(cls, path, addtl):
-            key = path + "." + addtl
-            if key in dependencies._by_key:
-                return dependencies._by_key[key]
-            else:
-                dependencies._by_key[key] = imp = object.__new__(cls)
-                return imp
-
-        def __init__(self, path, addtl):
-            self._il_path = path
-            self._il_addtl = addtl
-            dependencies._unresolved.add(self)
-
-        @property
-        def _full_path(self):
-            return self._il_path + "." + self._il_addtl
-
-        @memoized_property
-        def module(self):
-            if self in dependencies._unresolved:
-                raise ImportError(
-                    "importlater.resolve_all() hasn't "
-                    "been called (this is %s %s)"
-                    % (self._il_path, self._il_addtl)
-                )
-
-            return getattr(self._initial_import, self._il_addtl)
-
-        def _resolve(self):
-            dependencies._unresolved.discard(self)
-            self._initial_import = compat.import_(
-                self._il_path, globals(), locals(), [self._il_addtl]
-            )
-
-        def __getattr__(self, key):
-            if key == "module":
-                raise ImportError(
-                    "Could not resolve module %s" % self._full_path
-                )
-            try:
-                attr = getattr(self.module, key)
-            except AttributeError:
-                raise AttributeError(
-                    "Module %s has no attribute '%s'" % (self._full_path, key)
-                )
-            self.__dict__[key] = attr
-            return attr
 
 
 # from paste.deploy.converters
@@ -1164,6 +1296,17 @@ def coerce_kw_type(kw, key, type_, flexi_bool=True, dest=None):
             dest[key] = type_(kw[key])
 
 
+def constructor_key(obj, cls):
+    """Produce a tuple structure that is cacheable using the __dict__ of
+    obj to retrieve values
+
+    """
+    names = get_cls_kwargs(cls)
+    return (cls,) + tuple(
+        (k, obj.__dict__[k]) for k in names if k in obj.__dict__
+    )
+
+
 def constructor_copy(obj, cls, *args, **kw):
     """Instantiate cls using the __dict__ of obj as constructor arguments.
 
@@ -1186,11 +1329,8 @@ def counter():
 
     # avoid the 2to3 "next" transformation...
     def _next():
-        lock.acquire()
-        try:
+        with lock:
             return next(counter)
-        finally:
-            lock.release()
 
     return _next
 
@@ -1295,14 +1435,18 @@ class classproperty(property):
 class hybridproperty(object):
     def __init__(self, func):
         self.func = func
+        self.clslevel = func
 
     def __get__(self, instance, owner):
         if instance is None:
-            clsval = self.func(owner)
-            clsval.__doc__ = self.func.__doc__
+            clsval = self.clslevel(owner)
             return clsval
         else:
             return self.func(instance)
+
+    def classlevel(self, func):
+        self.clslevel = func
+        return self
 
 
 class hybridmethod(object):
@@ -1310,12 +1454,17 @@ class hybridmethod(object):
 
     def __init__(self, func):
         self.func = func
+        self.clslevel = func
 
     def __get__(self, instance, owner):
         if instance is None:
-            return self.func.__get__(owner, owner.__class__)
+            return self.clslevel.__get__(owner, owner.__class__)
         else:
             return self.func.__get__(instance, owner)
+
+    def classlevel(self, func):
+        self.clslevel = func
+        return self
 
 
 class _symbol(int):
@@ -1369,14 +1518,11 @@ class symbol(object):
     _lock = compat.threading.Lock()
 
     def __new__(cls, name, doc=None, canonical=None):
-        cls._lock.acquire()
-        try:
+        with cls._lock:
             sym = cls.symbols.get(name)
             if sym is None:
                 cls.symbols[name] = sym = _symbol(name, doc, canonical)
             return sym
-        finally:
-            symbol._lock.release()
 
     @classmethod
     def parse_user_argument(
@@ -1477,14 +1623,17 @@ class _hash_limit_string(compat.text_type):
         return hash(self) == hash(other)
 
 
-def warn(msg):
+def warn(msg, code=None):
     """Issue a warning.
 
     If msg is a string, :class:`.exc.SAWarning` is used as
     the category.
 
     """
-    warnings.warn(msg, exc.SAWarning, stacklevel=2)
+    if code:
+        _warnings_warn(exc.SAWarning(msg, code=code))
+    else:
+        _warnings_warn(msg, exc.SAWarning)
 
 
 def warn_limited(msg, args):
@@ -1494,7 +1643,36 @@ def warn_limited(msg, args):
     """
     if args:
         msg = _hash_limit_string(msg, 10, args)
-    warnings.warn(msg, exc.SAWarning, stacklevel=2)
+    _warnings_warn(msg, exc.SAWarning)
+
+
+def _warnings_warn(message, category=None, stacklevel=2):
+
+    # adjust the given stacklevel to be outside of SQLAlchemy
+    try:
+        frame = sys._getframe(stacklevel)
+    except ValueError:
+        # being called from less than 3 (or given) stacklevels, weird,
+        # but don't crash
+        stacklevel = 0
+    except:
+        # _getframe() doesn't work, weird interpreter issue, weird,
+        # ok, but don't crash
+        stacklevel = 0
+    else:
+        # using __name__ here requires that we have __name__ in the
+        # __globals__ of the decorated string functions we make also.
+        # we generate this using {"__name__": fn.__module__}
+        while frame is not None and re.match(
+            r"^(?:sqlalchemy\.|alembic\.)", frame.f_globals.get("__name__", "")
+        ):
+            frame = frame.f_back
+            stacklevel += 1
+
+    if category is not None:
+        warnings.warn(message, category, stacklevel=stacklevel + 1)
+    else:
+        warnings.warn(message, stacklevel=stacklevel + 1)
 
 
 def only_once(fn, retry_on_exception):
@@ -1692,46 +1870,46 @@ def inject_docstring_text(doctext, injecttext, pos):
     return "\n".join(lines)
 
 
+_param_reg = re.compile(r"(\s+):param (.+?):")
+
+
 def inject_param_text(doctext, inject_params):
-    doclines = doctext.splitlines()
+    doclines = collections.deque(doctext.splitlines())
     lines = []
+
+    # TODO: this is not working for params like ":param case_sensitive=True:"
 
     to_inject = None
     while doclines:
-        line = doclines.pop(0)
+        line = doclines.popleft()
+
+        m = _param_reg.match(line)
+
         if to_inject is None:
-            m = re.match(r"(\s+):param (?:\\\*\*?)?(.+?):", line)
             if m:
-                param = m.group(2)
+                param = m.group(2).lstrip("*")
                 if param in inject_params:
                     # default indent to that of :param: plus one
                     indent = " " * len(m.group(1)) + " "
 
                     # but if the next line has text, use that line's
-                    # indentntation
+                    # indentation
                     if doclines:
                         m2 = re.match(r"(\s+)\S", doclines[0])
                         if m2:
                             indent = " " * len(m2.group(1))
 
                     to_inject = indent + inject_params[param]
-        elif line.lstrip().startswith(":param "):
-            lines.append("\n")
-            lines.append(to_inject)
-            lines.append("\n")
+        elif m:
+            lines.extend(["\n", to_inject, "\n"])
             to_inject = None
         elif not line.rstrip():
-            lines.append(line)
-            lines.append(to_inject)
-            lines.append("\n")
+            lines.extend([line, to_inject, "\n"])
             to_inject = None
         elif line.endswith("::"):
             # TODO: this still wont cover if the code example itself has blank
             # lines in it, need to detect those via indentation.
-            lines.append(line)
-            lines.append(
-                doclines.pop(0)
-            )  # the blank line following a code example
+            lines.extend([line, doclines.popleft()])
             continue
         lines.append(line)
 
@@ -1739,8 +1917,8 @@ def inject_param_text(doctext, inject_params):
 
 
 def repr_tuple_names(names):
-    """ Trims a list of strings from the middle and return a string of up to
-        four elements. Strings greater than 11 characters will be truncated"""
+    """Trims a list of strings from the middle and return a string of up to
+    four elements. Strings greater than 11 characters will be truncated"""
     if len(names) == 0:
         return None
     flag = len(names) <= 4
@@ -1750,3 +1928,14 @@ def repr_tuple_names(names):
         return ", ".join(res)
     else:
         return "%s, ..., %s" % (", ".join(res[0:3]), res[-1])
+
+
+def has_compiled_ext():
+    try:
+        from sqlalchemy import cimmutabledict  # noqa F401
+        from sqlalchemy import cprocessors  # noqa F401
+        from sqlalchemy import cresultproxy  # noqa F401
+
+        return True
+    except ImportError:
+        return False

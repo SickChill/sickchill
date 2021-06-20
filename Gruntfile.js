@@ -320,7 +320,7 @@ module.exports = function(grunt) {
                 }
             },
             'git_get_last_tag': {
-                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:short)" refs/tags/v20[0-9][0-9]*',
+                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:lstrip=2)" refs/tags/v20[0-9][0-9]*',
                 stdout: false,
                 callback: function(err, stdout) {
                     stdout = stdout.trim();

@@ -1,5 +1,5 @@
 # sqlalchemy/pool/__init__.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -17,10 +17,10 @@ regular DB-API connect() methods to be transparently managed by a
 SQLAlchemy connection pool.
 """
 
-from .base import _ConnectionFairy  # noqa
-from .base import _ConnectionRecord  # noqa
-from .base import _finalize_fairy  # noqa
-from .base import _refs  # noqa
+from . import events
+from .base import _ConnectionFairy
+from .base import _ConnectionRecord
+from .base import _finalize_fairy
 from .base import Pool
 from .base import reset_commit
 from .base import reset_none
@@ -28,6 +28,8 @@ from .base import reset_rollback
 from .dbapi_proxy import clear_managers
 from .dbapi_proxy import manage
 from .impl import AssertionPool
+from .impl import AsyncAdaptedQueuePool
+from .impl import FallbackAsyncAdaptedQueuePool
 from .impl import NullPool
 from .impl import QueuePool
 from .impl import SingletonThreadPool
@@ -44,6 +46,8 @@ __all__ = [
     "AssertionPool",
     "NullPool",
     "QueuePool",
+    "AsyncAdaptedQueuePool",
+    "FallbackAsyncAdaptedQueuePool",
     "SingletonThreadPool",
     "StaticPool",
 ]

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -32,6 +30,8 @@
 #                                                                              #
 ################################################################################
 
+import github.CheckRun
+import github.CheckSuite
 import github.CommitCombinedStatus
 import github.CommitComment
 import github.CommitStats
@@ -45,7 +45,7 @@ import github.PaginatedList
 
 class Commit(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Commits. The reference can be found here http://developer.github.com/v3/git/commits/
+    This class represents Commits. The reference can be found here http://docs.github.com/en/rest/reference/git#commits
     """
 
     def __repr__(self):
@@ -139,7 +139,7 @@ class Commit(github.GithubObject.CompletableGithubObject):
         position=github.GithubObject.NotSet,
     ):
         """
-        :calls: `POST /repos/:owner/:repo/commits/:sha/comments <http://developer.github.com/v3/repos/comments>`_
+        :calls: `POST /repos/{owner}/{repo}/commits/{sha}/comments <http://docs.github.com/en/rest/reference/repos#comments>`_
         :param body: string
         :param line: integer
         :param path: string
@@ -162,7 +162,7 @@ class Commit(github.GithubObject.CompletableGithubObject):
         if position is not github.GithubObject.NotSet:
             post_parameters["position"] = position
         headers, data = self._requester.requestJsonAndCheck(
-            "POST", self.url + "/comments", input=post_parameters
+            "POST", f"{self.url}/comments", input=post_parameters
         )
         return github.CommitComment.CommitComment(
             self._requester, headers, data, completed=True
@@ -176,7 +176,7 @@ class Commit(github.GithubObject.CompletableGithubObject):
         context=github.GithubObject.NotSet,
     ):
         """
-        :calls: `POST /repos/:owner/:repo/statuses/:sha <http://developer.github.com/v3/repos/statuses>`_
+        :calls: `POST /repos/{owner}/{repo}/statuses/{sha} <http://docs.github.com/en/rest/reference/repos#statuses>`_
         :param state: string
         :param target_url: string
         :param description: string
@@ -204,7 +204,7 @@ class Commit(github.GithubObject.CompletableGithubObject):
             post_parameters["context"] = context
         headers, data = self._requester.requestJsonAndCheck(
             "POST",
-            self._parentUrl(self._parentUrl(self.url)) + "/statuses/" + self.sha,
+            f"{self._parentUrl(self._parentUrl(self.url))}/statuses/{self.sha}",
             input=post_parameters,
         )
         return github.CommitStatus.CommitStatus(
@@ -213,49 +213,111 @@ class Commit(github.GithubObject.CompletableGithubObject):
 
     def get_comments(self):
         """
-        :calls: `GET /repos/:owner/:repo/commits/:sha/comments <http://developer.github.com/v3/repos/comments>`_
+        :calls: `GET /repos/{owner}/{repo}/commits/{sha}/comments <http://docs.github.com/en/rest/reference/repos#comments>`_
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.CommitComment.CommitComment`
         """
         return github.PaginatedList.PaginatedList(
             github.CommitComment.CommitComment,
             self._requester,
-            self.url + "/comments",
+            f"{self.url}/comments",
             None,
         )
 
     def get_statuses(self):
         """
-        :calls: `GET /repos/:owner/:repo/statuses/:ref <http://developer.github.com/v3/repos/statuses>`_
+        :calls: `GET /repos/{owner}/{repo}/statuses/{ref} <http://docs.github.com/en/rest/reference/repos#statuses>`_
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.CommitStatus.CommitStatus`
         """
         return github.PaginatedList.PaginatedList(
             github.CommitStatus.CommitStatus,
             self._requester,
-            self._parentUrl(self._parentUrl(self.url)) + "/statuses/" + self.sha,
+            f"{self._parentUrl(self._parentUrl(self.url))}/statuses/{self.sha}",
             None,
         )
 
     def get_combined_status(self):
         """
-        :calls: `GET /repos/:owner/:repo/commits/:ref/status/ <http://developer.github.com/v3/repos/statuses>`_
+        :calls: `GET /repos/{owner}/{repo}/commits/{ref}/status/ <http://docs.github.com/en/rest/reference/repos#statuses>`_
         :rtype: :class:`github.CommitCombinedStatus.CommitCombinedStatus`
         """
-        headers, data = self._requester.requestJsonAndCheck("GET", self.url + "/status")
+        headers, data = self._requester.requestJsonAndCheck("GET", f"{self.url}/status")
         return github.CommitCombinedStatus.CommitCombinedStatus(
             self._requester, headers, data, completed=True
         )
 
     def get_pulls(self):
         """
-        :calls: `GET /repos/:owner/:repo/commits/:sha/pulls <https://developer.github.com/v3/repos/commits/#list-pull-requests-associated-with-commit>`_
+        :calls: `GET /repos/{owner}/{repo}/commits/{sha}/pulls <https://docs.github.com/en/rest/reference/repos#list-pull-requests-associated-with-a-commit>`_
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.PullRequest.PullRequest`
         """
         return github.PaginatedList.PaginatedList(
             github.PullRequest.PullRequest,
             self._requester,
-            self.url + "/pulls",
+            f"{self.url}/pulls",
             None,
             headers={"Accept": "application/vnd.github.groot-preview+json"},
+        )
+
+    def get_check_runs(
+        self,
+        check_name=github.GithubObject.NotSet,
+        status=github.GithubObject.NotSet,
+        filter=github.GithubObject.NotSet,
+    ):
+        """
+        :calls: `GET /repos/{owner}/{repo}/commits/{sha}/check-runs <https://docs.github.com/en/rest/reference/checks#list-check-runs-for-a-git-reference>`_
+        :param check_name: string
+        :param status: string
+        :param filter: string
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.CheckRun.CheckRun`
+        """
+        assert check_name is github.GithubObject.NotSet or isinstance(
+            check_name, str
+        ), check_name
+        assert status is github.GithubObject.NotSet or isinstance(status, str), status
+        assert filter is github.GithubObject.NotSet or isinstance(filter, str), filter
+        url_parameters = dict()
+        if check_name is not github.GithubObject.NotSet:
+            url_parameters["check_name"] = check_name
+        if status is not github.GithubObject.NotSet:
+            url_parameters["status"] = status
+        if filter is not github.GithubObject.NotSet:
+            url_parameters["filter"] = filter
+        return github.PaginatedList.PaginatedList(
+            github.CheckRun.CheckRun,
+            self._requester,
+            f"{self.url}/check-runs",
+            url_parameters,
+            headers={"Accept": "application/vnd.github.v3+json"},
+            list_item="check_runs",
+        )
+
+    def get_check_suites(
+        self, app_id=github.GithubObject.NotSet, check_name=github.GithubObject.NotSet
+    ):
+        """
+        :class: `GET /repos/{owner}/{repo}/commits/{ref}/check-suites <https://docs.github.com/en/rest/reference/checks#list-check-suites-for-a-git-reference>`_
+        :param app_id: int
+        :param check_name: string
+        :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.CheckSuite.CheckSuite`
+        """
+        assert app_id is github.GithubObject.NotSet or isinstance(app_id, int), app_id
+        assert check_name is github.GithubObject.NotSet or isinstance(
+            check_name, str
+        ), check_name
+        parameters = dict()
+        if app_id is not github.GithubObject.NotSet:
+            parameters["app_id"] = app_id
+        if check_name is not github.GithubObject.NotSet:
+            parameters["check_name"] = check_name
+        request_headers = {"Accept": "application/vnd.github.v3+json"}
+        return github.PaginatedList.PaginatedList(
+            github.CheckSuite.CheckSuite,
+            self._requester,
+            f"{self.url}/check-suites",
+            parameters,
+            headers=request_headers,
+            list_item="check_suites",
         )
 
     @property

@@ -13,7 +13,7 @@ data = (
 'Xun ',    # 0x0b
 'Kuang ',    # 0x0c
 'Shuo ',    # 0x0d
-'[?] ',    # 0x0e
+None,    # 0x0e
 'Li ',    # 0x0f
 'Lu ',    # 0x10
 'Jue ',    # 0x11
@@ -23,7 +23,7 @@ data = (
 'Xie ',    # 0x15
 'Long ',    # 0x16
 'Ye ',    # 0x17
-'[?] ',    # 0x18
+None,    # 0x18
 'Rang ',    # 0x19
 'Yue ',    # 0x1a
 'Lan ',    # 0x1b
@@ -31,13 +31,13 @@ data = (
 'Jue ',    # 0x1d
 'Tong ',    # 0x1e
 'Guan ',    # 0x1f
-'[?] ',    # 0x20
+None,    # 0x20
 'Che ',    # 0x21
 'Mi ',    # 0x22
 'Tang ',    # 0x23
 'Lan ',    # 0x24
 'Zhu ',    # 0x25
-'[?] ',    # 0x26
+None,    # 0x26
 'Ling ',    # 0x27
 'Cuan ',    # 0x28
 'Yu ',    # 0x29
@@ -50,7 +50,7 @@ data = (
 'Yuan ',    # 0x30
 'Ai ',    # 0x31
 'Wei ',    # 0x32
-'[?] ',    # 0x33
+None,    # 0x33
 'Jue ',    # 0x34
 'Jue ',    # 0x35
 'Fu ',    # 0x36
@@ -86,7 +86,7 @@ data = (
 'Bo ',    # 0x54
 'Chuang ',    # 0x55
 'You ',    # 0x56
-'[?] ',    # 0x57
+None,    # 0x57
 'Du ',    # 0x58
 'Ya ',    # 0x59
 'Cheng ',    # 0x5a
@@ -157,7 +157,7 @@ data = (
 'Li ',    # 0x9b
 'Dun ',    # 0x9c
 'Tong ',    # 0x9d
-'[?] ',    # 0x9e
+None,    # 0x9e
 'Jiang ',    # 0x9f
 'Ikenie ',    # 0xa0
 'Li ',    # 0xa1

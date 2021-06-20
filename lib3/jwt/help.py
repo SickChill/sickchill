@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import json
 import platform
 import sys
@@ -8,13 +6,8 @@ from . import __version__ as pyjwt_version
 
 try:
     import cryptography
-except ImportError:
-    cryptography = None
-
-try:
-    import ecdsa
-except ImportError:
-    ecdsa = None
+except ModuleNotFoundError:
+    cryptography = None  # type: ignore
 
 
 def info():
@@ -23,8 +16,11 @@ def info():
     Based on the requests package help utility module.
     """
     try:
-        platform_info = {"system": platform.system(), "release": platform.release()}
-    except IOError:
+        platform_info = {
+            "system": platform.system(),
+            "release": platform.release(),
+        }
+    except OSError:
         platform_info = {"system": "Unknown", "release": "Unknown"}
 
     implementation = platform.python_implementation()
@@ -32,7 +28,7 @@ def info():
     if implementation == "CPython":
         implementation_version = platform.python_version()
     elif implementation == "PyPy":
-        implementation_version = "%s.%s.%s" % (
+        implementation_version = "{}.{}.{}".format(
             sys.pypy_version_info.major,
             sys.pypy_version_info.minor,
             sys.pypy_version_info.micro,
@@ -46,7 +42,10 @@ def info():
 
     return {
         "platform": platform_info,
-        "implementation": {"name": implementation, "version": implementation_version},
+        "implementation": {
+            "name": implementation,
+            "version": implementation_version,
+        },
         "cryptography": {"version": getattr(cryptography, "__version__", "")},
         "pyjwt": {"version": pyjwt_version},
     }

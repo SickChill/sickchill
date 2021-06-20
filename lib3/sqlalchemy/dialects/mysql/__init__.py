@@ -1,5 +1,5 @@
 # mysql/__init__.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -7,13 +7,12 @@
 
 from . import base  # noqa
 from . import cymysql  # noqa
-from . import gaerdbms  # noqa
+from . import mariadbconnector  # noqa
 from . import mysqlconnector  # noqa
 from . import mysqldb  # noqa
 from . import oursql  # noqa
 from . import pymysql  # noqa
 from . import pyodbc  # noqa
-from . import zxjdbc  # noqa
 from .base import BIGINT
 from .base import BINARY
 from .base import BIT
@@ -50,6 +49,10 @@ from .base import VARCHAR
 from .base import YEAR
 from .dml import Insert
 from .dml import insert
+from ...util import compat
+
+if compat.py3k:
+    from . import aiomysql  # noqa
 
 
 # default dialect

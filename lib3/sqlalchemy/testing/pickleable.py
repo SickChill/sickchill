@@ -1,5 +1,5 @@
 # testing/pickleable.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -52,9 +52,9 @@ class Screen(object):
 
 
 class Foo(object):
-    def __init__(self, moredata):
+    def __init__(self, moredata, stuff="im stuff"):
         self.data = "im data"
-        self.stuff = "im stuff"
+        self.stuff = stuff
         self.moredata = moredata
 
     __hash__ = object.__hash__

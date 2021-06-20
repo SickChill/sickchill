@@ -6,18 +6,18 @@ oauthlib.oauth2.rfc6749
 This module is an implementation of various logic needed
 for consuming OAuth 2.0 RFC6749.
 """
-from __future__ import absolute_import, unicode_literals
-
 import time
 import warnings
 
 from oauthlib.common import generate_token
 from oauthlib.oauth2.rfc6749 import tokens
-from oauthlib.oauth2.rfc6749.errors import (InsecureTransportError,
-                                            TokenExpiredError)
-from oauthlib.oauth2.rfc6749.parameters import (parse_token_response,
-                                                prepare_token_request,
-                                                prepare_token_revocation_request)
+from oauthlib.oauth2.rfc6749.errors import (
+    InsecureTransportError, TokenExpiredError,
+)
+from oauthlib.oauth2.rfc6749.parameters import (
+    parse_token_response, prepare_token_request,
+    prepare_token_revocation_request,
+)
 from oauthlib.oauth2.rfc6749.utils import is_secure_transport
 
 AUTH_HEADER = 'auth_header'
@@ -29,7 +29,7 @@ FORM_ENC_HEADERS = {
 }
 
 
-class Client(object):
+class Client:
     """Base OAuth2 client responsible for access token management.
 
     This class also acts as a generic interface providing methods common to all
@@ -186,8 +186,8 @@ class Client(object):
 
         token_placement = token_placement or self.default_token_placement
 
-        case_insensitive_token_types = dict(
-            (k.lower(), v) for k, v in self.token_types.items())
+        case_insensitive_token_types = {
+            k.lower(): v for k, v in self.token_types.items()}
         if not self.token_type.lower() in case_insensitive_token_types:
             raise ValueError("Unsupported token type: %s" % self.token_type)
 
@@ -222,7 +222,10 @@ class Client(object):
         the provider. If provided then it must also be provided in the
         token request.
 
-        :param scope:
+        :param scope: List of scopes to request. Must be equal to
+        or a subset of the scopes granted when obtaining the refresh
+        token. If none is provided, the ones provided in the constructor are
+        used.
 
         :param kwargs: Additional parameters to included in the request.
 
@@ -233,10 +236,11 @@ class Client(object):
 
         self.state = state or self.state_generator()
         self.redirect_url = redirect_url or self.redirect_url
-        self.scope = scope or self.scope
+        # do not assign scope to self automatically anymore
+        scope = self.scope if scope is None else scope
         auth_url = self.prepare_request_uri(
             authorization_url, redirect_uri=self.redirect_url,
-            scope=self.scope, state=self.state, **kwargs)
+            scope=scope, state=self.state, **kwargs)
         return auth_url, FORM_ENC_HEADERS, ''
 
     def prepare_token_request(self, token_url, authorization_response=None,
@@ -297,7 +301,8 @@ class Client(object):
 
         :param scope: List of scopes to request. Must be equal to
         or a subset of the scopes granted when obtaining the refresh
-        token.
+        token. If none is provided, the ones provided in the constructor are
+        used.
 
         :param kwargs: Additional parameters to included in the request.
 
@@ -306,9 +311,10 @@ class Client(object):
         if not is_secure_transport(token_url):
             raise InsecureTransportError()
 
-        self.scope = scope or self.scope
+        # do not assign scope to self automatically anymore
+        scope = self.scope if scope is None else scope
         body = self.prepare_refresh_body(body=body,
-                                         refresh_token=refresh_token, scope=self.scope, **kwargs)
+                                         refresh_token=refresh_token, scope=scope, **kwargs)
         return token_url, FORM_ENC_HEADERS, body
 
     def prepare_token_revocation_request(self, revocation_url, token,
@@ -382,7 +388,8 @@ class Client(object):
         returns an error response as described in `Section 5.2`_.
 
         :param body: The response body from the token request.
-        :param scope: Scopes originally requested.
+        :param scope: Scopes originally requested. If none is provided, the ones
+        provided in the constructor are used.
         :return: Dictionary of token parameters.
         :raises: Warning if scope has changed. OAuth2Error if response is invalid.
 
@@ -418,6 +425,7 @@ class Client(object):
         .. _`Section 5.2`: https://tools.ietf.org/html/rfc6749#section-5.2
         .. _`Section 7.1`: https://tools.ietf.org/html/rfc6749#section-7.1
         """
+        scope = self.scope if scope is None else scope
         self.token = parse_token_response(body, scope=scope)
         self.populate_token_attributes(self.token)
         return self.token
@@ -439,9 +447,11 @@ class Client(object):
                 Section 3.3.  The requested scope MUST NOT include any scope
                 not originally granted by the resource owner, and if omitted is
                 treated as equal to the scope originally granted by the
-                resource owner.
+                resource owner. Note that if none is provided, the ones provided
+                in the constructor are used if any.
         """
         refresh_token = refresh_token or self.refresh_token
+        scope = self.scope if scope is None else scope
         return prepare_token_request(self.refresh_token_key, body=body, scope=scope,
                                      refresh_token=refresh_token, **kwargs)
 

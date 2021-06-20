@@ -13,7 +13,6 @@
 # under the License.
 
 import collections
-from concurrent.futures import CancelledError
 import datetime
 import types
 
@@ -112,7 +111,7 @@ class Condition(_TimeoutGarbageCollector):
     """
 
     def __init__(self) -> None:
-        super(Condition, self).__init__()
+        super().__init__()
         self.io_loop = ioloop.IOLoop.current()
 
     def __repr__(self) -> str:
@@ -121,7 +120,9 @@ class Condition(_TimeoutGarbageCollector):
             result += " waiters[%s]" % len(self._waiters)
         return result + ">"
 
-    def wait(self, timeout: Union[float, datetime.timedelta] = None) -> Awaitable[bool]:
+    def wait(
+        self, timeout: Optional[Union[float, datetime.timedelta]] = None
+    ) -> Awaitable[bool]:
         """Wait for `.notify`.
 
         Returns a `.Future` that resolves ``True`` if the condition is notified,
@@ -231,7 +232,9 @@ class Event(object):
         """
         self._value = False
 
-    def wait(self, timeout: Union[float, datetime.timedelta] = None) -> Awaitable[None]:
+    def wait(
+        self, timeout: Optional[Union[float, datetime.timedelta]] = None
+    ) -> Awaitable[None]:
         """Block until the internal flag is true.
 
         Returns an awaitable, which raises `tornado.util.TimeoutError` after a
@@ -246,9 +249,7 @@ class Event(object):
         if timeout is None:
             return fut
         else:
-            timeout_fut = gen.with_timeout(
-                timeout, fut, quiet_exceptions=(CancelledError,)
-            )
+            timeout_fut = gen.with_timeout(timeout, fut)
             # This is a slightly clumsy workaround for the fact that
             # gen.with_timeout doesn't cancel its futures. Cancelling
             # fut will remove it from the waiters list.
@@ -379,14 +380,14 @@ class Semaphore(_TimeoutGarbageCollector):
     """
 
     def __init__(self, value: int = 1) -> None:
-        super(Semaphore, self).__init__()
+        super().__init__()
         if value < 0:
             raise ValueError("semaphore initial value must be >= 0")
 
         self._value = value
 
     def __repr__(self) -> str:
-        res = super(Semaphore, self).__repr__()
+        res = super().__repr__()
         extra = (
             "locked" if self._value == 0 else "unlocked,value:{0}".format(self._value)
         )
@@ -412,7 +413,7 @@ class Semaphore(_TimeoutGarbageCollector):
                 break
 
     def acquire(
-        self, timeout: Union[float, datetime.timedelta] = None
+        self, timeout: Optional[Union[float, datetime.timedelta]] = None
     ) -> Awaitable[_ReleasingContextManager]:
         """Decrement the counter. Returns an awaitable.
 
@@ -472,14 +473,14 @@ class BoundedSemaphore(Semaphore):
     """
 
     def __init__(self, value: int = 1) -> None:
-        super(BoundedSemaphore, self).__init__(value=value)
+        super().__init__(value=value)
         self._initial_value = value
 
     def release(self) -> None:
         """Increment the counter and wake one waiter."""
         if self._value >= self._initial_value:
             raise ValueError("Semaphore released too many times")
-        super(BoundedSemaphore, self).release()
+        super().release()
 
 
 class Lock(object):
@@ -526,7 +527,7 @@ class Lock(object):
         return "<%s _block=%s>" % (self.__class__.__name__, self._block)
 
     def acquire(
-        self, timeout: Union[float, datetime.timedelta] = None
+        self, timeout: Optional[Union[float, datetime.timedelta]] = None
     ) -> Awaitable[_ReleasingContextManager]:
         """Attempt to lock. Returns an awaitable.
 

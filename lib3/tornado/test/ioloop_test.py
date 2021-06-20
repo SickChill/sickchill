@@ -38,9 +38,9 @@ class TestIOLoop(AsyncTestCase):
             test.calls += 1
             old_add_callback(callback, *args, **kwargs)
 
-        loop.add_callback = types.MethodType(add_callback, loop)
-        loop.add_callback(lambda: {})
-        loop.add_callback(lambda: [])
+        loop.add_callback = types.MethodType(add_callback, loop)  # type: ignore
+        loop.add_callback(lambda: {})  # type: ignore
+        loop.add_callback(lambda: [])  # type: ignore
         loop.add_timeout(datetime.timedelta(milliseconds=50), loop.stop)
         loop.start()
         self.assertLess(self.calls, 10)
@@ -161,7 +161,7 @@ class TestIOLoop(AsyncTestCase):
 
             self.io_loop.add_handler(client.fileno(), handler, IOLoop.READ)
             self.io_loop.add_timeout(
-                self.io_loop.time() + 0.01, functools.partial(server.send, b"asdf")
+                self.io_loop.time() + 0.01, functools.partial(server.send, b"asdf")  # type: ignore
             )
             self.wait()
             self.io_loop.remove_handler(client.fileno())
@@ -400,9 +400,14 @@ class TestIOLoop(AsyncTestCase):
             client.close()
             server.close()
 
+    @skipIfNonUnix
     @gen_test
     def test_init_close_race(self):
         # Regression test for #2367
+        #
+        # Skipped on windows because of what looks like a bug in the
+        # proactor event loop when started and stopped on non-main
+        # threads.
         def f():
             for i in range(10):
                 loop = IOLoop()
@@ -415,7 +420,7 @@ class TestIOLoop(AsyncTestCase):
 # automatically set as current.
 class TestIOLoopCurrent(unittest.TestCase):
     def setUp(self):
-        self.io_loop = None
+        self.io_loop = None  # type: typing.Optional[IOLoop]
         IOLoop.clear_current()
 
     def tearDown(self):
@@ -441,6 +446,7 @@ class TestIOLoopCurrent(unittest.TestCase):
 
             def f():
                 self.current_io_loop = IOLoop.current()
+                assert self.io_loop is not None
                 self.io_loop.stop()
 
             self.io_loop.add_callback(f)
@@ -517,7 +523,7 @@ class TestIOLoopFutures(AsyncTestCase):
 
         # Go through an async wrapper to ensure that the result of
         # run_in_executor works with await and not just gen.coroutine
-        # (simply passing the underlying concurrrent future would do that).
+        # (simply passing the underlying concurrent future would do that).
         async def async_wrapper(self_event, other_event):
             return await IOLoop.current().run_in_executor(
                 None, sync_func, self_event, other_event
@@ -534,7 +540,7 @@ class TestIOLoopFutures(AsyncTestCase):
         class MyExecutor(futures.ThreadPoolExecutor):
             def submit(self, func, *args):
                 count[0] += 1
-                return super(MyExecutor, self).submit(func, *args)
+                return super().submit(func, *args)
 
         event = threading.Event()
 

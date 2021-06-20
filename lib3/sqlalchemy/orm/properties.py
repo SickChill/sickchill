@@ -1,5 +1,5 @@
 # orm/properties.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -14,15 +14,26 @@ mapped attributes.
 from __future__ import absolute_import
 
 from . import attributes
+from .descriptor_props import CompositeProperty
+from .descriptor_props import ConcreteInheritedProperty
+from .descriptor_props import SynonymProperty
 from .interfaces import PropComparator
 from .interfaces import StrategizedProperty
+from .relationships import RelationshipProperty
 from .util import _orm_full_deannotate
 from .. import log
 from .. import util
-from ..sql import expression
+from ..sql import coercions
+from ..sql import roles
 
 
-__all__ = ["ColumnProperty"]
+__all__ = [
+    "ColumnProperty",
+    "CompositeProperty",
+    "ConcreteInheritedProperty",
+    "RelationshipProperty",
+    "SynonymProperty",
+]
 
 
 @log.class_logger
@@ -34,6 +45,7 @@ class ColumnProperty(StrategizedProperty):
     """
 
     strategy_wildcard_key = "column"
+    inherit_cache = True
 
     __slots__ = (
         "_orig_columns",
@@ -43,7 +55,6 @@ class ColumnProperty(StrategizedProperty):
         "instrument",
         "comparator_factory",
         "descriptor",
-        "extension",
         "active_history",
         "expire_on_flush",
         "info",
@@ -53,17 +64,10 @@ class ColumnProperty(StrategizedProperty):
         "_is_polymorphic_discriminator",
         "_mapped_by_synonym",
         "_deferred_column_loader",
+        "_raise_column_loader",
+        "raiseload",
     )
 
-    @util.deprecated_params(
-        extension=(
-            "0.7",
-            ":class:`.AttributeExtension` is deprecated in favor of the "
-            ":class:`.AttributeEvents` listener interface.  The "
-            ":paramref:`.column_property.extension` parameter will be "
-            "removed in a future release.",
-        )
-    )
     def __init__(self, *columns, **kwargs):
         r"""Provide a column-level property for use with a mapping.
 
@@ -128,10 +132,16 @@ class ColumnProperty(StrategizedProperty):
         :param info: Optional data dictionary which will be populated into the
             :attr:`.MapperProperty.info` attribute of this object.
 
-        :param extension:
-            an :class:`.AttributeExtension` instance, or list of extensions,
-            which will be prepended to the list of attribute listeners for the
-            resulting descriptor placed on the class.
+        :param raiseload: if True, indicates the column should raise an error
+            when undeferred, rather than loading the value.  This can be
+            altered at query time by using the :func:`.deferred` option with
+            raiseload=False.
+
+            .. versionadded:: 1.4
+
+            .. seealso::
+
+                :ref:`deferred_raiseload`
 
         .. seealso::
 
@@ -143,18 +153,23 @@ class ColumnProperty(StrategizedProperty):
 
         """
         super(ColumnProperty, self).__init__()
-        self._orig_columns = [expression._labeled(c) for c in columns]
+        self._orig_columns = [
+            coercions.expect(roles.LabeledColumnExprRole, c) for c in columns
+        ]
         self.columns = [
-            expression._labeled(_orm_full_deannotate(c)) for c in columns
+            coercions.expect(
+                roles.LabeledColumnExprRole, _orm_full_deannotate(c)
+            )
+            for c in columns
         ]
         self.group = kwargs.pop("group", None)
         self.deferred = kwargs.pop("deferred", False)
+        self.raiseload = kwargs.pop("raiseload", False)
         self.instrument = kwargs.pop("_instrument", True)
         self.comparator_factory = kwargs.pop(
             "comparator_factory", self.__class__.Comparator
         )
         self.descriptor = kwargs.pop("descriptor", None)
-        self.extension = kwargs.pop("extension", None)
         self.active_history = kwargs.pop("active_history", False)
         self.expire_on_flush = kwargs.pop("expire_on_flush", True)
 
@@ -184,12 +199,26 @@ class ColumnProperty(StrategizedProperty):
             ("deferred", self.deferred),
             ("instrument", self.instrument),
         )
+        if self.raiseload:
+            self.strategy_key += (("raiseload", True),)
 
-    @util.dependencies("sqlalchemy.orm.state", "sqlalchemy.orm.strategies")
-    def _memoized_attr__deferred_column_loader(self, state, strategies):
+    @util.preload_module("sqlalchemy.orm.state", "sqlalchemy.orm.strategies")
+    def _memoized_attr__deferred_column_loader(self):
+        state = util.preloaded.orm_state
+        strategies = util.preloaded.orm_strategies
         return state.InstanceState._instance_level_callable_processor(
             self.parent.class_manager,
             strategies.LoadDeferredColumns(self.key),
+            self.key,
+        )
+
+    @util.preload_module("sqlalchemy.orm.state", "sqlalchemy.orm.strategies")
+    def _memoized_attr__raise_column_loader(self):
+        state = util.preloaded.orm_state
+        strategies = util.preloaded.orm_strategies
+        return state.InstanceState._instance_level_callable_processor(
+            self.parent.class_manager,
+            strategies.LoadDeferredColumns(self.key, True),
             self.key,
         )
 
@@ -236,6 +265,7 @@ class ColumnProperty(StrategizedProperty):
 
     def do_init(self):
         super(ColumnProperty, self).do_init()
+
         if len(self.columns) > 1 and set(self.parent.primary_key).issuperset(
             self.columns
         ):
@@ -311,18 +341,51 @@ class ColumnProperty(StrategizedProperty):
 
         __slots__ = "__clause_element__", "info", "expressions"
 
+        def _orm_annotate_column(self, column):
+            """annotate and possibly adapt a column to be returned
+            as the mapped-attribute exposed version of the column.
+
+            The column in this context needs to act as much like the
+            column in an ORM mapped context as possible, so includes
+            annotations to give hints to various ORM functions as to
+            the source entity of this column.   It also adapts it
+            to the mapper's with_polymorphic selectable if one is
+            present.
+
+            """
+
+            pe = self._parententity
+            annotations = {
+                "entity_namespace": pe,
+                "parententity": pe,
+                "parentmapper": pe,
+                "proxy_key": self.prop.key,
+            }
+
+            col = column
+
+            # for a mapper with polymorphic_on and an adapter, return
+            # the column against the polymorphic selectable.
+            # see also orm.util._orm_downgrade_polymorphic_columns
+            # for the reverse operation.
+            if self._parentmapper._polymorphic_adapter:
+                mapper_local_col = col
+                col = self._parentmapper._polymorphic_adapter.traverse(col)
+
+                # this is a clue to the ORM Query etc. that this column
+                # was adapted to the mapper's polymorphic_adapter.  the
+                # ORM uses this hint to know which column its adapting.
+                annotations["adapt_column"] = mapper_local_col
+
+            return col._annotate(annotations)._set_propagate_attrs(
+                {"compile_state_plugin": "orm", "plugin_subject": pe}
+            )
+
         def _memoized_method___clause_element__(self):
             if self.adapter:
-                return self.adapter(self.prop.columns[0])
+                return self.adapter(self.prop.columns[0], self.prop.key)
             else:
-                # no adapter, so we aren't aliased
-                # assert self._parententity is self._parentmapper
-                return self.prop.columns[0]._annotate(
-                    {
-                        "parententity": self._parententity,
-                        "parentmapper": self._parententity,
-                    }
-                )
+                return self._orm_annotate_column(self.prop.columns[0])
 
         def _memoized_attr_info(self):
             """The .info dictionary for this attribute."""
@@ -341,19 +404,13 @@ class ColumnProperty(StrategizedProperty):
 
             """
             if self.adapter:
-                return [self.adapter(col) for col in self.prop.columns]
-            else:
-                # no adapter, so we aren't aliased
-                # assert self._parententity is self._parentmapper
                 return [
-                    col._annotate(
-                        {
-                            "parententity": self._parententity,
-                            "parentmapper": self._parententity,
-                            "orm_key": self.prop.key,
-                        }
-                    )
+                    self.adapter(col, self.prop.key)
                     for col in self.prop.columns
+                ]
+            else:
+                return [
+                    self._orm_annotate_column(col) for col in self.prop.columns
                 ]
 
         def _fallback_getattr(self, key):

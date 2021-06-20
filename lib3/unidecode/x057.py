@@ -137,7 +137,7 @@ data = (
 'Ao ',    # 0x87
 'Tay ',    # 0x88
 'Pao ',    # 0x89
-'[?] ',    # 0x8a
+None,    # 0x8a
 'Xing ',    # 0x8b
 'Dong ',    # 0x8c
 'Ji ',    # 0x8d
@@ -174,7 +174,7 @@ data = (
 'Hong ',    # 0xac
 'Wu ',    # 0xad
 'Kua ',    # 0xae
-'[?] ',    # 0xaf
+None,    # 0xaf
 'Tao ',    # 0xb0
 'Dang ',    # 0xb1
 'Kai ',    # 0xb2

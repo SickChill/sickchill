@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2018 Steve Kowalik <steven@wedontsleep.org>                        #
@@ -31,7 +29,7 @@ import github.Team
 
 class BranchProtection(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Branch Protection. The reference can be found here https://developer.github.com/v3/repos/branches/#get-branch-protection
+    This class represents Branch Protection. The reference can be found here https://docs.github.com/en/rest/reference/repos#get-branch-protection
     """
 
     def __repr__(self):

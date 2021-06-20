@@ -1,5 +1,5 @@
 # connectors/mxodbc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -17,6 +17,10 @@ possible for this to be used on other database platforms.
 
 For more info on mxODBC, see http://www.egenix.com/
 
+.. deprecated:: 1.4 The mxODBC DBAPI is deprecated and will be removed
+   in a future version. Please use one of the supported DBAPIs to
+   connect to mssql.
+
 """
 
 import re
@@ -24,6 +28,7 @@ import sys
 import warnings
 
 from . import Connector
+from ..util import warn_deprecated
 
 
 class MxODBCConnector(Connector):
@@ -50,11 +55,18 @@ class MxODBCConnector(Connector):
             from mx.ODBC import iODBC as Module
         else:
             raise ImportError("Unrecognized platform for mxODBC import")
+
+        warn_deprecated(
+            "The mxODBC DBAPI is deprecated and will be removed"
+            "in a future version. Please use one of the supported DBAPIs to"
+            "connect to mssql.",
+            version="1.4",
+        )
         return Module
 
     @classmethod
     def _load_mx_exceptions(cls):
-        """ Import mxODBC exception classes into the module namespace,
+        """Import mxODBC exception classes into the module namespace,
         as if they had been imported normally. This is done here
         to avoid requiring all SQLAlchemy users to install mxODBC.
         """
@@ -72,7 +84,7 @@ class MxODBCConnector(Connector):
         return connect
 
     def _error_handler(self):
-        """ Return a handler that adjusts mxODBC's raised Warnings to
+        """Return a handler that adjusts mxODBC's raised Warnings to
         emit Python standard warnings.
         """
         from mx.ODBC.Error import Warning as MxOdbcWarning
@@ -96,7 +108,7 @@ class MxODBCConnector(Connector):
             connect(dsn, user='', password='',
                     clear_auto_commit=1, errorhandler=None)
 
-        This method translates the values in the provided uri
+        This method translates the values in the provided URI
         into args and kwargs needed to instantiate an mxODBC Connection.
 
         The arg 'errorhandler' is not used by SQLAlchemy and will

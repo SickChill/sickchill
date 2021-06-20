@@ -1,5 +1,5 @@
 # sql/operators.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -169,9 +169,6 @@ class Operators(object):
           :class:`.Boolean`, and those that do not will be of the same
           type as the left-hand operand.
 
-          .. versionadded:: 1.2.0b3 - added the
-             :paramref:`.Operators.op.return_type` argument.
-
         .. seealso::
 
             :ref:`types_operators`
@@ -193,8 +190,6 @@ class Operators(object):
         :meth:`.Operators.op` and passing the
         :paramref:`.Operators.op.is_comparison`
         flag with True.
-
-        .. versionadded:: 1.2.0b3
 
         .. seealso::
 
@@ -384,16 +379,23 @@ class ColumnOperators(Operators):
         """
         return self.operate(is_distinct_from, other)
 
-    def isnot_distinct_from(self, other):
+    def is_not_distinct_from(self, other):
         """Implement the ``IS NOT DISTINCT FROM`` operator.
 
         Renders "a IS NOT DISTINCT FROM b" on most platforms;
         on some such as SQLite may render "a IS b".
 
+        .. versionchanged:: 1.4 The ``is_not_distinct_from()`` operator is
+           renamed from ``isnot_distinct_from()`` in previous releases.
+           The previous name remains available for backwards compatibility.
+
         .. versionadded:: 1.1
 
         """
-        return self.operate(isnot_distinct_from, other)
+        return self.operate(is_not_distinct_from, other)
+
+    # deprecated 1.4; see #5435
+    isnot_distinct_from = is_not_distinct_from
 
     def __gt__(self, other):
         """Implement the ``>`` operator.
@@ -467,7 +469,7 @@ class ColumnOperators(Operators):
 
         E.g.::
 
-            stmt = select([sometable]).\
+            stmt = select(sometable).\
                 where(sometable.c.column.like("%foobar%"))
 
         :param other: expression to be compared
@@ -496,7 +498,7 @@ class ColumnOperators(Operators):
 
         E.g.::
 
-            stmt = select([sometable]).\
+            stmt = select(sometable).\
                 where(sometable.c.column.ilike("%foobar%"))
 
         :param other: expression to be compared
@@ -538,18 +540,15 @@ class ColumnOperators(Operators):
 
             stmt.where(column.in_([]))
 
-          In this calling form, the expression renders a "false" expression,
-          e.g.::
+          In this calling form, the expression renders an "empty set"
+          expression.  These expressions are tailored to individual backends
+          and are generally trying to get an empty SELECT statement as a
+          subquery.  Such as on SQLite, the expression is::
 
-            WHERE 1 != 1
+            WHERE col IN (SELECT 1 FROM (SELECT 1) WHERE 1!=1)
 
-          This "false" expression has historically had different behaviors
-          in older SQLAlchemy versions, see
-          :paramref:`_sa.create_engine.empty_in_strategy`
-          for behavioral options.
-
-          .. versionchanged:: 1.2 simplified the behavior of "empty in"
-             expressions
+          .. versionchanged:: 1.4  empty IN expressions now use an
+             execution-time generated SELECT subquery in all cases.
 
         * A bound parameter, e.g. :func:`.bindparam`, may be used if it
           includes the :paramref:`.bindparam.expanding` flag::
@@ -582,13 +581,12 @@ class ColumnOperators(Operators):
           .. versionadded:: 1.3 "expanding" bound parameters now support
              empty lists
 
-        * a :func:`_expression.select` construct,
-          which is usually a correlated
-          scalar select::
+        * a :func:`_expression.select` construct, which is usually a
+          correlated scalar select::
 
             stmt.where(
                 column.in_(
-                    select([othertable.c.y]).
+                    select(othertable.c.y).
                     where(table.c.x == othertable.c.x)
                 )
             )
@@ -599,14 +597,13 @@ class ColumnOperators(Operators):
             FROM othertable WHERE othertable.x = table.x)
 
         :param other: a list of literals, a :func:`_expression.select`
-         construct,
-         or a :func:`.bindparam` construct that includes the
+         construct, or a :func:`.bindparam` construct that includes the
          :paramref:`.bindparam.expanding` flag set to True.
 
         """
         return self.operate(in_op, other)
 
-    def notin_(self, other):
+    def not_in(self, other):
         """implement the ``NOT IN`` operator.
 
         This is equivalent to using negation with
@@ -618,8 +615,12 @@ class ColumnOperators(Operators):
         :paramref:`_sa.create_engine.empty_in_strategy` may be used to
         alter this behavior.
 
+        .. versionchanged:: 1.4 The ``not_in()`` operator is renamed from
+           ``notin_()`` in previous releases.  The previous name remains
+           available for backwards compatibility.
+
         .. versionchanged:: 1.2  The :meth:`.ColumnOperators.in_` and
-           :meth:`.ColumnOperators.notin_` operators
+           :meth:`.ColumnOperators.not_in` operators
            now produce a "static" expression for an empty IN sequence
            by default.
 
@@ -628,13 +629,20 @@ class ColumnOperators(Operators):
             :meth:`.ColumnOperators.in_`
 
         """
-        return self.operate(notin_op, other)
+        return self.operate(not_in_op, other)
 
-    def notlike(self, other, escape=None):
+    # deprecated 1.4; see #5429
+    notin_ = not_in
+
+    def not_like(self, other, escape=None):
         """implement the ``NOT LIKE`` operator.
 
         This is equivalent to using negation with
         :meth:`.ColumnOperators.like`, i.e. ``~x.like(y)``.
+
+        .. versionchanged:: 1.4 The ``not_like()`` operator is renamed from
+           ``notlike()`` in previous releases.  The previous name remains
+           available for backwards compatibility.
 
         .. seealso::
 
@@ -643,11 +651,18 @@ class ColumnOperators(Operators):
         """
         return self.operate(notlike_op, other, escape=escape)
 
-    def notilike(self, other, escape=None):
+    # deprecated 1.4; see #5435
+    notlike = not_like
+
+    def not_ilike(self, other, escape=None):
         """implement the ``NOT ILIKE`` operator.
 
         This is equivalent to using negation with
         :meth:`.ColumnOperators.ilike`, i.e. ``~x.ilike(y)``.
+
+        .. versionchanged:: 1.4 The ``not_ilike()`` operator is renamed from
+           ``notilike()`` in previous releases.  The previous name remains
+           available for backwards compatibility.
 
         .. seealso::
 
@@ -655,6 +670,9 @@ class ColumnOperators(Operators):
 
         """
         return self.operate(notilike_op, other, escape=escape)
+
+    # deprecated 1.4; see #5435
+    notilike = not_ilike
 
     def is_(self, other):
         """Implement the ``IS`` operator.
@@ -664,12 +682,12 @@ class ColumnOperators(Operators):
         usage of ``IS`` may be desirable if comparing to boolean values
         on certain platforms.
 
-        .. seealso:: :meth:`.ColumnOperators.isnot`
+        .. seealso:: :meth:`.ColumnOperators.is_not`
 
         """
         return self.operate(is_, other)
 
-    def isnot(self, other):
+    def is_not(self, other):
         """Implement the ``IS NOT`` operator.
 
         Normally, ``IS NOT`` is generated automatically when comparing to a
@@ -677,10 +695,17 @@ class ColumnOperators(Operators):
         usage of ``IS NOT`` may be desirable if comparing to boolean values
         on certain platforms.
 
+        .. versionchanged:: 1.4 The ``is_not()`` operator is renamed from
+           ``isnot()`` in previous releases.  The previous name remains
+           available for backwards compatibility.
+
         .. seealso:: :meth:`.ColumnOperators.is_`
 
         """
-        return self.operate(isnot, other)
+        return self.operate(is_not, other)
+
+    # deprecated 1.4; see #5429
+    isnot = is_not
 
     def startswith(self, other, **kwargs):
         r"""Implement the ``startswith`` operator.
@@ -692,7 +717,7 @@ class ColumnOperators(Operators):
 
         E.g.::
 
-            stmt = select([sometable]).\
+            stmt = select(sometable).\
                 where(sometable.c.column.startswith("foobar"))
 
         Since the operator uses ``LIKE``, wildcard characters
@@ -727,15 +752,6 @@ class ColumnOperators(Operators):
             somecolumn LIKE :param || '%' ESCAPE '/'
 
           With the value of ``:param`` as ``"foo/%bar"``.
-
-          .. versionadded:: 1.2
-
-          .. versionchanged:: 1.2.0 The
-            :paramref:`.ColumnOperators.startswith.autoescape` parameter is
-             now a simple boolean rather than a character; the escape
-             character itself is also escaped, and defaults to a forwards
-             slash, which itself can be customized using the
-             :paramref:`.ColumnOperators.startswith.escape` parameter.
 
         :param escape: a character which when given will render with the
           ``ESCAPE`` keyword to establish that character as the escape
@@ -780,7 +796,7 @@ class ColumnOperators(Operators):
 
         E.g.::
 
-            stmt = select([sometable]).\
+            stmt = select(sometable).\
                 where(sometable.c.column.endswith("foobar"))
 
         Since the operator uses ``LIKE``, wildcard characters
@@ -815,15 +831,6 @@ class ColumnOperators(Operators):
             somecolumn LIKE '%' || :param ESCAPE '/'
 
           With the value of ``:param`` as ``"foo/%bar"``.
-
-          .. versionadded:: 1.2
-
-          .. versionchanged:: 1.2.0 The
-            :paramref:`.ColumnOperators.endswith.autoescape` parameter is
-             now a simple boolean rather than a character; the escape
-             character itself is also escaped, and defaults to a forwards
-             slash, which itself can be customized using the
-             :paramref:`.ColumnOperators.endswith.escape` parameter.
 
         :param escape: a character which when given will render with the
           ``ESCAPE`` keyword to establish that character as the escape
@@ -868,7 +875,7 @@ class ColumnOperators(Operators):
 
         E.g.::
 
-            stmt = select([sometable]).\
+            stmt = select(sometable).\
                 where(sometable.c.column.contains("foobar"))
 
         Since the operator uses ``LIKE``, wildcard characters
@@ -903,15 +910,6 @@ class ColumnOperators(Operators):
             somecolumn LIKE '%' || :param || '%' ESCAPE '/'
 
           With the value of ``:param`` as ``"foo/%bar"``.
-
-          .. versionadded:: 1.2
-
-          .. versionchanged:: 1.2.0 The
-            :paramref:`.ColumnOperators.contains.autoescape` parameter is
-             now a simple boolean rather than a character; the escape
-             character itself is also escaped, and defaults to a forwards
-             slash, which itself can be customized using the
-             :paramref:`.ColumnOperators.contains.escape` parameter.
 
         :param escape: a character which when given will render with the
           ``ESCAPE`` keyword to establish that character as the escape
@@ -950,7 +948,7 @@ class ColumnOperators(Operators):
     def match(self, other, **kwargs):
         """Implements a database-specific 'match' operator.
 
-        :meth:`~.ColumnOperators.match` attempts to resolve to
+        :meth:`_sql.ColumnOperators.match` attempts to resolve to
         a MATCH-like function or operator provided by the backend.
         Examples include:
 
@@ -965,6 +963,96 @@ class ColumnOperators(Operators):
         """
         return self.operate(match_op, other, **kwargs)
 
+    def regexp_match(self, pattern, flags=None):
+        """Implements a database-specific 'regexp match' operator.
+
+        E.g.::
+
+            stmt = select(table.c.some_column).where(
+                table.c.some_column.regexp_match('^(b|c)')
+            )
+
+        :meth:`_sql.ColumnOperators.regexp_match` attempts to resolve to
+        a REGEXP-like function or operator provided by the backend, however
+        the specific regular expression syntax and flags available are
+        **not backend agnostic**.
+
+        Examples include:
+
+        * PostgreSQL - renders ``x ~ y`` or ``x !~ y`` when negated.
+        * Oracle - renders ``REGEXP_LIKE(x, y)``
+        * SQLite - uses SQLite's ``REGEXP`` placeholder operator and calls into
+          the Python ``re.match()`` builtin.
+        * other backends may provide special implementations.
+        * Backends without any special implementation will emit
+          the operator as "REGEXP" or "NOT REGEXP".  This is compatible with
+          SQLite and MySQL, for example.
+
+        Regular expression support is currently implemented for Oracle,
+        PostgreSQL, MySQL and MariaDB.  Partial support is available for
+        SQLite.  Support among third-party dialects may vary.
+
+        :param pattern: The regular expression pattern string or column
+          clause.
+        :param flags: Any regular expression string flags to apply. Flags
+          tend to be backend specific. It can be a string or a column clause.
+          Some backends, like PostgreSQL and MariaDB, may alternatively
+          specify the flags as part of the pattern.
+          When using the ignore case flag 'i' in PostgreSQL, the ignore case
+          regexp match operator ``~*`` or ``!~*`` will be used.
+
+        .. versionadded:: 1.4
+
+        .. seealso::
+
+            :meth:`_sql.ColumnOperators.regexp_replace`
+
+
+        """
+        return self.operate(regexp_match_op, pattern, flags=flags)
+
+    def regexp_replace(self, pattern, replacement, flags=None):
+        """Implements a database-specific 'regexp replace' operator.
+
+        E.g.::
+
+            stmt = select(
+                table.c.some_column.regexp_replace(
+                    'b(..)',
+                    'X\1Y',
+                    flags='g'
+                )
+            )
+
+        :meth:`_sql.ColumnOperators.regexp_replace` attempts to resolve to
+        a REGEXP_REPLACE-like function provided by the backend, that
+        usually emit the function ``REGEXP_REPLACE()``.  However,
+        the specific regular expression syntax and flags available are
+        **not backend agnostic**.
+
+        Regular expression replacement support is currently implemented for
+        Oracle, PostgreSQL, MySQL 8 or greater and MariaDB.  Support among
+        third-party dialects may vary.
+
+        :param pattern: The regular expression pattern string or column
+          clause.
+        :param pattern: The replacement string or column clause.
+        :param flags: Any regular expression string flags to apply. Flags
+          tend to be backend specific. It can be a string or a column clause.
+          Some backends, like PostgreSQL and MariaDB, may alternatively
+          specify the flags as part of the pattern.
+
+        .. versionadded:: 1.4
+
+        .. seealso::
+
+            :meth:`_sql.ColumnOperators.regexp_match`
+
+        """
+        return self.operate(
+            regexp_replace_op, pattern, replacement=replacement, flags=flags
+        )
+
     def desc(self):
         """Produce a :func:`_expression.desc` clause against the
         parent object."""
@@ -975,15 +1063,31 @@ class ColumnOperators(Operators):
         parent object."""
         return self.operate(asc_op)
 
-    def nullsfirst(self):
-        """Produce a :func:`_expression.nullsfirst` clause against the
-        parent object."""
-        return self.operate(nullsfirst_op)
+    def nulls_first(self):
+        """Produce a :func:`_expression.nulls_first` clause against the
+        parent object.
 
-    def nullslast(self):
-        """Produce a :func:`_expression.nullslast` clause against the
-        parent object."""
-        return self.operate(nullslast_op)
+        .. versionchanged:: 1.4 The ``nulls_first()`` operator is
+           renamed from ``nullsfirst()`` in previous releases.
+           The previous name remains available for backwards compatibility.
+        """
+        return self.operate(nulls_first_op)
+
+    # deprecated 1.4; see #5435
+    nullsfirst = nulls_first
+
+    def nulls_last(self):
+        """Produce a :func:`_expression.nulls_last` clause against the
+        parent object.
+
+        .. versionchanged:: 1.4 The ``nulls_last()`` operator is
+           renamed from ``nullslast()`` in previous releases.
+           The previous name remains available for backwards compatibility.
+        """
+        return self.operate(nulls_last_op)
+
+    # deprecated 1.4; see #5429
+    nullslast = nulls_last
 
     def collate(self, collation):
         """Produce a :func:`_expression.collate` clause against
@@ -1062,7 +1166,7 @@ class ColumnOperators(Operators):
             expr = 5 == mytable.c.somearray.any_()
 
             # mysql '5 = ANY (SELECT value FROM table)'
-            expr = 5 == select([table.c.value]).as_scalar().any_()
+            expr = 5 == select(table.c.value).scalar_subquery().any_()
 
         .. seealso::
 
@@ -1087,7 +1191,7 @@ class ColumnOperators(Operators):
             expr = 5 == mytable.c.somearray.all_()
 
             # mysql '5 = ALL (SELECT value FROM table)'
-            expr = 5 == select([table.c.value]).as_scalar().all_()
+            expr = 5 == select(table.c.value).scalar_subquery().all_()
 
         .. seealso::
 
@@ -1192,12 +1296,20 @@ def exists():
     raise NotImplementedError()
 
 
-def istrue(a):
+def is_true(a):
     raise NotImplementedError()
 
 
-def isfalse(a):
+# 1.4 deprecated; see #5435
+istrue = is_true
+
+
+def is_false(a):
     raise NotImplementedError()
+
+
+# 1.4 deprecated; see #5435
+isfalse = is_false
 
 
 @comparison_op
@@ -1206,8 +1318,12 @@ def is_distinct_from(a, b):
 
 
 @comparison_op
-def isnot_distinct_from(a, b):
-    return a.isnot_distinct_from(b)
+def is_not_distinct_from(a, b):
+    return a.is_not_distinct_from(b)
+
+
+# deprecated 1.4; see #5435
+isnot_distinct_from = is_not_distinct_from
 
 
 @comparison_op
@@ -1216,8 +1332,12 @@ def is_(a, b):
 
 
 @comparison_op
-def isnot(a, b):
-    return a.isnot(b)
+def is_not(a, b):
+    return a.is_not(b)
+
+
+# 1.4 deprecated; see #5429
+isnot = is_not
 
 
 def collate(a, b):
@@ -1234,8 +1354,12 @@ def like_op(a, b, escape=None):
 
 
 @comparison_op
-def notlike_op(a, b, escape=None):
+def not_like_op(a, b, escape=None):
     return a.notlike(b, escape=escape)
+
+
+# 1.4 deprecated; see #5435
+notlike_op = not_like_op
 
 
 @comparison_op
@@ -1244,8 +1368,12 @@ def ilike_op(a, b, escape=None):
 
 
 @comparison_op
-def notilike_op(a, b, escape=None):
-    return a.notilike(b, escape=escape)
+def not_ilike_op(a, b, escape=None):
+    return a.not_ilike(b, escape=escape)
+
+
+# 1.4 deprecated; see #5435
+notilike_op = not_ilike_op
 
 
 @comparison_op
@@ -1254,8 +1382,12 @@ def between_op(a, b, c, symmetric=False):
 
 
 @comparison_op
-def notbetween_op(a, b, c, symmetric=False):
-    return a.notbetween(b, c, symmetric=symmetric)
+def not_between_op(a, b, c, symmetric=False):
+    return ~a.between(b, c, symmetric=symmetric)
+
+
+# 1.4 deprecated; see #5435
+notbetween_op = not_between_op
 
 
 @comparison_op
@@ -1264,8 +1396,12 @@ def in_op(a, b):
 
 
 @comparison_op
-def notin_op(a, b):
-    return a.notin_(b)
+def not_in_op(a, b):
+    return a.not_in(b)
+
+
+# 1.4 deprecated; see #5429
+notin_op = not_in_op
 
 
 def distinct_op(a):
@@ -1306,8 +1442,12 @@ def startswith_op(a, b, escape=None, autoescape=False):
 
 
 @comparison_op
-def notstartswith_op(a, b, escape=None, autoescape=False):
+def not_startswith_op(a, b, escape=None, autoescape=False):
     return ~_escaped_like_impl(a.startswith, b, escape, autoescape)
+
+
+# 1.4 deprecated; see #5435
+notstartswith_op = not_startswith_op
 
 
 @comparison_op
@@ -1316,8 +1456,12 @@ def endswith_op(a, b, escape=None, autoescape=False):
 
 
 @comparison_op
-def notendswith_op(a, b, escape=None, autoescape=False):
+def not_endswith_op(a, b, escape=None, autoescape=False):
     return ~_escaped_like_impl(a.endswith, b, escape, autoescape)
+
+
+# 1.4 deprecated; see #5435
+notendswith_op = not_endswith_op
 
 
 @comparison_op
@@ -1326,8 +1470,12 @@ def contains_op(a, b, escape=None, autoescape=False):
 
 
 @comparison_op
-def notcontains_op(a, b, escape=None, autoescape=False):
+def not_contains_op(a, b, escape=None, autoescape=False):
     return ~_escaped_like_impl(a.contains, b, escape, autoescape)
+
+
+# 1.4 deprecated; see #5435
+notcontains_op = not_contains_op
 
 
 @comparison_op
@@ -1336,21 +1484,29 @@ def match_op(a, b, **kw):
 
 
 @comparison_op
-def notmatch_op(a, b, **kw):
-    return a.notmatch(b, **kw)
+def regexp_match_op(a, b, flags=None):
+    return a.regexp_match(b, flags=flags)
+
+
+@comparison_op
+def not_regexp_match_op(a, b, flags=None):
+    return ~a.regexp_match(b, flags=flags)
+
+
+def regexp_replace_op(a, b, replacement, flags=None):
+    return a.regexp_replace(b, replacement=replacement, flags=flags)
+
+
+@comparison_op
+def not_match_op(a, b, **kw):
+    return ~a.match(b, **kw)
+
+
+# 1.4 deprecated; see #5429
+notmatch_op = not_match_op
 
 
 def comma_op(a, b):
-    raise NotImplementedError()
-
-
-@comparison_op
-def empty_in_op(a, b):
-    raise NotImplementedError()
-
-
-@comparison_op
-def empty_notin_op(a, b):
     raise NotImplementedError()
 
 
@@ -1370,12 +1526,20 @@ def asc_op(a):
     return a.asc()
 
 
-def nullsfirst_op(a):
-    return a.nullsfirst()
+def nulls_first_op(a):
+    return a.nulls_first()
 
 
-def nullslast_op(a):
-    return a.nullslast()
+# 1.4 deprecated; see #5435
+nullsfirst_op = nulls_first_op
+
+
+def nulls_last_op(a):
+    return a.nulls_last()
+
+
+# 1.4 deprecated; see #5435
+nullslast_op = nulls_last_op
 
 
 def json_getitem_op(a, b):
@@ -1395,7 +1559,7 @@ def is_commutative(op):
 
 
 def is_ordering_modifier(op):
-    return op in (asc_op, desc_op, nullsfirst_op, nullslast_op)
+    return op in (asc_op, desc_op, nulls_first_op, nulls_last_op)
 
 
 def is_natural_self_precedent(op):
@@ -1406,7 +1570,7 @@ def is_natural_self_precedent(op):
     )
 
 
-_booleans = (inv, istrue, isfalse, and_, or_)
+_booleans = (inv, is_true, is_false, and_, or_)
 
 
 def is_boolean(op):
@@ -1426,6 +1590,11 @@ def mirror(op):
 
 
 _associative = _commutative.union([concat_op, and_, or_]).difference([eq, ne])
+
+
+def is_associative(op):
+    return op in _associative
+
 
 _natural_self_precedent = _associative.union(
     [getitem, json_getitem_op, json_path_getitem_op]
@@ -1458,31 +1627,32 @@ _PRECEDENCE = {
     concat_op: 6,
     filter_op: 6,
     match_op: 5,
-    notmatch_op: 5,
+    not_match_op: 5,
+    regexp_match_op: 5,
+    not_regexp_match_op: 5,
+    regexp_replace_op: 5,
     ilike_op: 5,
-    notilike_op: 5,
+    not_ilike_op: 5,
     like_op: 5,
-    notlike_op: 5,
+    not_like_op: 5,
     in_op: 5,
-    notin_op: 5,
+    not_in_op: 5,
     is_: 5,
-    isnot: 5,
+    is_not: 5,
     eq: 5,
     ne: 5,
     is_distinct_from: 5,
-    isnot_distinct_from: 5,
-    empty_in_op: 5,
-    empty_notin_op: 5,
+    is_not_distinct_from: 5,
     gt: 5,
     lt: 5,
     ge: 5,
     le: 5,
     between_op: 5,
-    notbetween_op: 5,
+    not_between_op: 5,
     distinct_op: 5,
     inv: 5,
-    istrue: 5,
-    isfalse: 5,
+    is_true: 5,
+    is_false: 5,
     and_: 3,
     or_: 2,
     comma_op: -1,

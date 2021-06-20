@@ -1,5 +1,5 @@
 # testing/assertions.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -14,17 +14,18 @@ import warnings
 
 from . import assertsql
 from . import config
+from . import engines
 from . import mock
-from . import util as testutil
 from .exclusions import db_spec
 from .util import fail
 from .. import exc as sa_exc
-from .. import pool
 from .. import schema
+from .. import sql
 from .. import types as sqltypes
 from .. import util
 from ..engine import default
 from ..engine import url
+from ..sql.selectable import LABEL_STYLE_TABLENAME_PLUS_COL
 from ..util import compat
 from ..util import decorator
 
@@ -32,7 +33,7 @@ from ..util import decorator
 def expect_warnings(*messages, **kw):
     """Context manager which expects one or more warnings.
 
-    With no arguments, squelches all SAWarnings emitted via
+    With no arguments, squelches all SAWarning and RemovedIn20Warning emitted via
     sqlalchemy.util.warn and sqlalchemy.util.warn_limited.   Otherwise
     pass string expressions that will match selected warnings via regex;
     all non-matching warnings are sent through.
@@ -41,8 +42,10 @@ def expect_warnings(*messages, **kw):
 
     Note that the test suite sets SAWarning warnings to raise exceptions.
 
-    """
-    return _expect_warnings(sa_exc.SAWarning, messages, **kw)
+    """  # noqa
+    return _expect_warnings(
+        (sa_exc.RemovedIn20Warning, sa_exc.SAWarning), messages, **kw
+    )
 
 
 @contextlib.contextmanager
@@ -80,6 +83,10 @@ def emits_warning(*messages):
 
 def expect_deprecated(*messages, **kw):
     return _expect_warnings(sa_exc.SADeprecationWarning, messages, **kw)
+
+
+def expect_deprecated_20(*messages, **kw):
+    return _expect_warnings(sa_exc.RemovedIn20Warning, messages, **kw)
 
 
 def emits_warning_on(db, *messages):
@@ -128,7 +135,12 @@ def uses_deprecated(*messages):
 
 @contextlib.contextmanager
 def _expect_warnings(
-    exc_cls, messages, regex=True, assert_=True, py2konly=False
+    exc_cls,
+    messages,
+    regex=True,
+    assert_=True,
+    py2konly=False,
+    raise_on_any_unexpected=False,
 ):
 
     if regex:
@@ -138,20 +150,27 @@ def _expect_warnings(
 
     seen = set(filters)
 
-    real_warn = warnings.warn
+    if raise_on_any_unexpected:
+
+        def real_warn(msg, *arg, **kw):
+            raise AssertionError("Got unexpected warning: %r" % msg)
+
+    else:
+        real_warn = warnings.warn
 
     def our_warn(msg, *arg, **kw):
         if isinstance(msg, exc_cls):
-            exception = msg
-            msg = str(exception)
+            exception = type(msg)
+            msg = str(msg)
         elif arg:
             exception = arg[0]
         else:
             exception = None
+
         if not exception or not issubclass(exception, exc_cls):
             return real_warn(msg, *arg, **kw)
 
-        if not filters:
+        if not filters and not raise_on_any_unexpected:
             return
 
         for filter_ in filters:
@@ -163,7 +182,13 @@ def _expect_warnings(
         else:
             real_warn(msg, *arg, **kw)
 
-    with mock.patch("warnings.warn", our_warn):
+    with mock.patch("warnings.warn", our_warn), mock.patch(
+        "sqlalchemy.util.SQLALCHEMY_WARN_20", True
+    ), mock.patch(
+        "sqlalchemy.util.deprecations.SQLALCHEMY_WARN_20", True
+    ), mock.patch(
+        "sqlalchemy.engine.row.LegacyRow._default_key_style", 2
+    ):
         yield
 
     if assert_ and (not py2konly or not compat.py3k):
@@ -183,49 +208,8 @@ def global_cleanup_assertions():
     _assert_no_stray_pool_connections()
 
 
-_STRAY_CONNECTION_FAILURES = 0
-
-
 def _assert_no_stray_pool_connections():
-    global _STRAY_CONNECTION_FAILURES
-
-    # lazy gc on cPython means "do nothing."  pool connections
-    # shouldn't be in cycles, should go away.
-    testutil.lazy_gc()
-
-    # however, once in awhile, on an EC2 machine usually,
-    # there's a ref in there.  usually just one.
-    if pool._refs:
-
-        # OK, let's be somewhat forgiving.
-        _STRAY_CONNECTION_FAILURES += 1
-
-        print(
-            "Encountered a stray connection in test cleanup: %s"
-            % str(pool._refs)
-        )
-        # then do a real GC sweep.   We shouldn't even be here
-        # so a single sweep should really be doing it, otherwise
-        # there's probably a real unreachable cycle somewhere.
-        testutil.gc_collect()
-
-    # if we've already had two of these occurrences, or
-    # after a hard gc sweep we still have pool._refs?!
-    # now we have to raise.
-    if pool._refs:
-        err = str(pool._refs)
-
-        # but clean out the pool refs collection directly,
-        # reset the counter,
-        # so the error doesn't at least keep happening.
-        pool._refs.clear()
-        _STRAY_CONNECTION_FAILURES = 0
-        warnings.warn(
-            "Stray connection refused to leave " "after gc.collect(): %s" % err
-        )
-    elif _STRAY_CONNECTION_FAILURES > 10:
-        assert False, "Encountered more than 10 stray connections"
-        _STRAY_CONNECTION_FAILURES = 0
+    engines.testing_reaper.assert_all_closed()
 
 
 def eq_regex(a, b, msg=None):
@@ -251,12 +235,20 @@ def is_instance_of(a, b, msg=None):
     assert isinstance(a, b), msg or "%r is not an instance of %r" % (a, b)
 
 
+def is_none(a, msg=None):
+    is_(a, None, msg=msg)
+
+
+def is_not_none(a, msg=None):
+    is_not(a, None, msg=msg)
+
+
 def is_true(a, msg=None):
-    is_(a, True, msg=msg)
+    is_(bool(a), True, msg=msg)
 
 
 def is_false(a, msg=None):
-    is_(a, False, msg=msg)
+    is_(bool(a), False, msg=msg)
 
 
 def is_(a, b, msg=None):
@@ -264,9 +256,13 @@ def is_(a, b, msg=None):
     assert a is b, msg or "%r is not %r" % (a, b)
 
 
-def is_not_(a, b, msg=None):
+def is_not(a, b, msg=None):
     """Assert a is not b, with repr messaging on failure."""
     assert a is not b, msg or "%r is %r" % (a, b)
+
+
+# deprecated.  See #5429
+is_not_ = is_not
 
 
 def in_(a, b, msg=None):
@@ -274,9 +270,13 @@ def in_(a, b, msg=None):
     assert a in b, msg or "%r not in %r" % (a, b)
 
 
-def not_in_(a, b, msg=None):
+def not_in(a, b, msg=None):
     """Assert a in not b, with repr messaging on failure."""
     assert a not in b, msg or "%r is in %r" % (a, b)
+
+
+# deprecated.  See #5429
+not_in_ = not_in
 
 
 def startswith_(a, fragment, msg=None):
@@ -321,21 +321,15 @@ def _assert_proper_exception_context(exception):
 
 
 def assert_raises(except_cls, callable_, *args, **kw):
-    _assert_raises(except_cls, callable_, args, kw, check_context=True)
-
-
-def assert_raises_context_ok(except_cls, callable_, *args, **kw):
-    _assert_raises(
-        except_cls, callable_, args, kw,
-    )
-
-
-def assert_raises_return(except_cls, callable_, *args, **kw):
     return _assert_raises(except_cls, callable_, args, kw, check_context=True)
 
 
+def assert_raises_context_ok(except_cls, callable_, *args, **kw):
+    return _assert_raises(except_cls, callable_, args, kw)
+
+
 def assert_raises_message(except_cls, msg, callable_, *args, **kwargs):
-    _assert_raises(
+    return _assert_raises(
         except_cls, callable_, args, kwargs, msg=msg, check_context=True
     )
 
@@ -343,33 +337,58 @@ def assert_raises_message(except_cls, msg, callable_, *args, **kwargs):
 def assert_raises_message_context_ok(
     except_cls, msg, callable_, *args, **kwargs
 ):
-    _assert_raises(except_cls, callable_, args, kwargs, msg=msg)
+    return _assert_raises(except_cls, callable_, args, kwargs, msg=msg)
 
 
 def _assert_raises(
     except_cls, callable_, args, kwargs, msg=None, check_context=False
 ):
-    ret_err = None
+
+    with _expect_raises(except_cls, msg, check_context) as ec:
+        callable_(*args, **kwargs)
+    return ec.error
+
+
+class _ErrorContainer(object):
+    error = None
+
+
+@contextlib.contextmanager
+def _expect_raises(except_cls, msg=None, check_context=False):
+    ec = _ErrorContainer()
     if check_context:
         are_we_already_in_a_traceback = sys.exc_info()[0]
     try:
-        callable_(*args, **kwargs)
+        yield ec
         success = False
     except except_cls as err:
-        ret_err = err
+        ec.error = err
         success = True
         if msg is not None:
             assert re.search(
                 msg, util.text_type(err), re.UNICODE
-            ), "%r !~ %s" % (msg, err,)
+            ), "%r !~ %s" % (msg, err)
         if check_context and not are_we_already_in_a_traceback:
             _assert_proper_exception_context(err)
         print(util.text_type(err).encode("utf-8"))
 
+    # it's generally a good idea to not carry traceback objects outside
+    # of the except: block, but in this case especially we seem to have
+    # hit some bug in either python 3.10.0b2 or greenlet or both which
+    # this seems to fix:
+    # https://github.com/python-greenlet/greenlet/issues/242
+    del ec
+
     # assert outside the block so it works for AssertionError too !
     assert success, "Callable did not raise an exception"
 
-    return ret_err
+
+def expect_raises(except_cls, check_context=True):
+    return _expect_raises(except_cls, check_context=check_context)
+
+
+def expect_raises_message(except_cls, msg, check_context=True):
+    return _expect_raises(except_cls, msg=msg, check_context=check_context)
 
 
 class AssertsCompiledSQL(object):
@@ -379,16 +398,27 @@ class AssertsCompiledSQL(object):
         result,
         params=None,
         checkparams=None,
+        for_executemany=False,
+        check_literal_execute=None,
+        check_post_param=None,
         dialect=None,
         checkpositional=None,
         check_prefetch=None,
         use_default_dialect=False,
         allow_dialect_select=False,
+        supports_default_values=True,
+        supports_default_metavalue=True,
         literal_binds=False,
+        render_postcompile=False,
         schema_translate_map=None,
+        render_schema_translate=False,
+        default_schema_name=None,
+        from_linting=False,
     ):
         if use_default_dialect:
             dialect = default.DefaultDialect()
+            dialect.supports_default_values = supports_default_values
+            dialect.supports_default_metavalue = supports_default_metavalue
         elif allow_dialect_select:
             dialect = None
         else:
@@ -399,10 +429,15 @@ class AssertsCompiledSQL(object):
                 dialect = config.db.dialect
             elif dialect == "default":
                 dialect = default.DefaultDialect()
+                dialect.supports_default_values = supports_default_values
+                dialect.supports_default_metavalue = supports_default_metavalue
             elif dialect == "default_enhanced":
                 dialect = default.StrCompileDialect()
             elif isinstance(dialect, util.string_types):
-                dialect = url.URL(dialect).get_dialect()()
+                dialect = url.URL.create(dialect).get_dialect()()
+
+        if default_schema_name:
+            dialect.default_schema_name = default_schema_name
 
         kw = {}
         compile_kwargs = {}
@@ -416,24 +451,85 @@ class AssertsCompiledSQL(object):
         if literal_binds:
             compile_kwargs["literal_binds"] = True
 
+        if render_postcompile:
+            compile_kwargs["render_postcompile"] = True
+
+        if for_executemany:
+            kw["for_executemany"] = True
+
+        if render_schema_translate:
+            kw["render_schema_translate"] = True
+
+        if from_linting or getattr(self, "assert_from_linting", False):
+            kw["linting"] = sql.FROM_LINTING
+
         from sqlalchemy import orm
 
         if isinstance(clause, orm.Query):
-            context = clause._compile_context()
-            context.statement.use_labels = True
-            clause = context.statement
-        elif isinstance(clause, orm.persistence.BulkUD):
-            with mock.patch.object(clause, "_execute_stmt") as stmt_mock:
-                clause.exec_()
-                clause = stmt_mock.mock_calls[0][1][0]
+            stmt = clause._statement_20()
+            stmt._label_style = LABEL_STYLE_TABLENAME_PLUS_COL
+            clause = stmt
 
         if compile_kwargs:
             kw["compile_kwargs"] = compile_kwargs
 
-        c = clause.compile(dialect=dialect, **kw)
+        class DontAccess(object):
+            def __getattribute__(self, key):
+                raise NotImplementedError(
+                    "compiler accessed .statement; use "
+                    "compiler.current_executable"
+                )
+
+        class CheckCompilerAccess(object):
+            def __init__(self, test_statement):
+                self.test_statement = test_statement
+                self._annotations = {}
+                self.supports_execution = getattr(
+                    test_statement, "supports_execution", False
+                )
+
+                if self.supports_execution:
+                    self._execution_options = test_statement._execution_options
+
+                    if hasattr(test_statement, "_returning"):
+                        self._returning = test_statement._returning
+                    if hasattr(test_statement, "_inline"):
+                        self._inline = test_statement._inline
+                    if hasattr(test_statement, "_return_defaults"):
+                        self._return_defaults = test_statement._return_defaults
+
+            def _default_dialect(self):
+                return self.test_statement._default_dialect()
+
+            def compile(self, dialect, **kw):
+                return self.test_statement.compile.__func__(
+                    self, dialect=dialect, **kw
+                )
+
+            def _compiler(self, dialect, **kw):
+                return self.test_statement._compiler.__func__(
+                    self, dialect, **kw
+                )
+
+            def _compiler_dispatch(self, compiler, **kwargs):
+                if hasattr(compiler, "statement"):
+                    with mock.patch.object(
+                        compiler, "statement", DontAccess()
+                    ):
+                        return self.test_statement._compiler_dispatch(
+                            compiler, **kwargs
+                        )
+                else:
+                    return self.test_statement._compiler_dispatch(
+                        compiler, **kwargs
+                    )
+
+        # no construct can assume it's the "top level" construct in all cases
+        # as anything can be nested.  ensure constructs don't assume they
+        # are the "self.statement" element
+        c = CheckCompilerAccess(clause).compile(dialect=dialect, **kw)
 
         param_str = repr(getattr(c, "params", {}))
-
         if util.py3k:
             param_str = param_str.encode("utf-8").decode("ascii", "ignore")
             print(
@@ -459,6 +555,22 @@ class AssertsCompiledSQL(object):
             eq_(tuple([p[x] for x in c.positiontup]), checkpositional)
         if check_prefetch is not None:
             eq_(c.prefetch, check_prefetch)
+        if check_literal_execute is not None:
+            eq_(
+                {
+                    c.bind_names[b]: b.effective_value
+                    for b in c.literal_execute_params
+                },
+                check_literal_execute,
+            )
+        if check_post_param is not None:
+            eq_(
+                {
+                    c.bind_names[b]: b.effective_value
+                    for b in c.post_compile_params
+                },
+                check_post_param,
+            )
 
 
 class ComparesTables(object):
@@ -496,9 +608,12 @@ class ComparesTables(object):
             assert reflected_table.primary_key.columns[c.name] is not None
 
     def assert_types_base(self, c1, c2):
-        assert c1.type._compare_type_affinity(c2.type), (
-            "On column %r, type '%s' doesn't correspond to type '%s'"
-            % (c1.name, c1.type, c2.type)
+        assert c1.type._compare_type_affinity(
+            c2.type
+        ), "On column %r, type '%s' doesn't correspond to type '%s'" % (
+            c1.name,
+            c1.type,
+            c2.type,
         )
 
 

@@ -16,6 +16,8 @@ from sickchill.oldbeard import common, db, helpers, scene_exceptions, scene_numb
 from sickchill.oldbeard.name_parser import regexes
 
 if TYPE_CHECKING:
+    from typing import List
+
     from sickchill.tv import TVShow
 
 
@@ -24,11 +26,12 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, filename=True, showObj=None, tryIndexers=False, naming_pattern=False, parse_method=None):
+    def __init__(self, filename: bool = True, showObj = None, tryIndexers: bool = False, naming_pattern: bool = False, parse_method: str = None):
 
-        self.filename = filename
-        self.showObj = showObj
-        self.tryIndexers = tryIndexers
+        self.filename: bool = filename
+        self.showObj: TVShow = showObj
+        self.tryIndexers: bool = tryIndexers
+        self.compiled_regexes: List = []
 
         self.naming_pattern = naming_pattern
 
@@ -69,7 +72,6 @@ class NameParser(object):
             dbg_str = "ALL"
             uncompiled_regex = [regexes.normal_regexes, regexes.anime_regexes]
 
-        self.compiled_regexes = []
         for regexItem in uncompiled_regex:
             for cur_pattern_num, (cur_pattern_name, cur_pattern) in enumerate(regexItem):
                 try:

@@ -87,13 +87,21 @@ def generate():
                          7*4,               # start of key index
                          7*4+len(keys)*8,   # start of value index
                          0, 0)              # size and offset of hash table
-    output += array.array("i", offsets).tostring()
+    if sys.version_info < (3, 2):
+        output += array.array("i", offsets).tostring()
+    else:
+        output += array.array("i", offsets).tobytes()
     output += ids
     output += strs
     return output
 
 
 def make(filename, outfile):
+    # Clear "MESSAGES" to prevent translations to be mixed up
+    # when calling this function on multiple ".po" files.
+    global MESSAGES
+    MESSAGES = {}
+
     ID = 1
     STR = 2
 
@@ -175,7 +183,7 @@ def make(filename, outfile):
         l = l.strip()
         if not l:
             continue
-        #l = ast.literal_eval(l)
+        l = ast.literal_eval(l)
         if section == ID:
             msgid += l.encode(encoding)
         elif section == STR:

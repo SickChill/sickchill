@@ -75,11 +75,11 @@ class HTTP1ConnectionParameters(object):
     def __init__(
         self,
         no_keep_alive: bool = False,
-        chunk_size: int = None,
-        max_header_size: int = None,
-        header_timeout: float = None,
-        max_body_size: int = None,
-        body_timeout: float = None,
+        chunk_size: Optional[int] = None,
+        max_header_size: Optional[int] = None,
+        header_timeout: Optional[float] = None,
+        max_body_size: Optional[int] = None,
+        body_timeout: Optional[float] = None,
         decompress: bool = False,
     ) -> None:
         """
@@ -113,8 +113,8 @@ class HTTP1Connection(httputil.HTTPConnection):
         self,
         stream: iostream.IOStream,
         is_client: bool,
-        params: HTTP1ConnectionParameters = None,
-        context: object = None,
+        params: Optional[HTTP1ConnectionParameters] = None,
+        context: Optional[object] = None,
     ) -> None:
         """
         :arg stream: an `.IOStream`
@@ -235,7 +235,7 @@ class HTTP1Connection(httputil.HTTPConnection):
                     # but do not actually have a body.
                     # http://tools.ietf.org/html/rfc7230#section-3.3
                     skip_body = True
-                if code >= 100 and code < 200:
+                if 100 <= code < 200:
                     # 1xx responses should never indicate the presence of
                     # a body.
                     if "Content-Length" in headers or "Transfer-Encoding" in headers:
@@ -317,7 +317,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         Note that this callback is slightly different from
         `.HTTPMessageDelegate.on_connection_close`: The
         `.HTTPMessageDelegate` method is called when the connection is
-        closed while recieving a message. This callback is used when
+        closed while receiving a message. This callback is used when
         there is not an active delegate (for example, on the server
         side this callback is used if the client closes the connection
         after sending its request but before receiving all the
@@ -377,7 +377,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         self,
         start_line: Union[httputil.RequestStartLine, httputil.ResponseStartLine],
         headers: httputil.HTTPHeaders,
-        chunk: bytes = None,
+        chunk: Optional[bytes] = None,
     ) -> "Future[None]":
         """Implements `.HTTPConnection.write_headers`."""
         lines = []
@@ -406,6 +406,8 @@ class HTTP1Connection(httputil.HTTPConnection):
                 # self._request_start_line.version or
                 # start_line.version?
                 self._request_start_line.version == "HTTP/1.1"
+                # Omit payload header field for HEAD request.
+                and self._request_start_line.method != "HEAD"
                 # 1xx, 204 and 304 responses have no body (not even a zero-length
                 # body), and so should not have either Content-Length or
                 # Transfer-Encoding headers.
@@ -446,7 +448,7 @@ class HTTP1Connection(httputil.HTTPConnection):
         header_lines = (
             native_str(n) + ": " + native_str(v) for n, v in headers.get_all()
         )
-        lines.extend(l.encode("latin1") for l in header_lines)
+        lines.extend(line.encode("latin1") for line in header_lines)
         for line in lines:
             if b"\n" in line:
                 raise ValueError("Newline in header: " + repr(line))
@@ -735,6 +737,10 @@ class _GzipMessageDelegate(httputil.HTTPMessageDelegate):
                     if ret is not None:
                         await ret
                 compressed_data = self._decompressor.unconsumed_tail
+                if compressed_data and not decompressed:
+                    raise httputil.HTTPInputError(
+                        "encountered unconsumed gzip data without making progress"
+                    )
         else:
             ret = self._delegate.data_received(chunk)
             if ret is not None:
@@ -751,7 +757,7 @@ class _GzipMessageDelegate(httputil.HTTPMessageDelegate):
                 # chunk at this point we'd need to change the
                 # interface to make finish() a coroutine.
                 raise ValueError(
-                    "decompressor.flush returned data; possile truncated input"
+                    "decompressor.flush returned data; possible truncated input"
                 )
         return self._delegate.finish()
 
@@ -765,8 +771,8 @@ class HTTP1ServerConnection(object):
     def __init__(
         self,
         stream: iostream.IOStream,
-        params: HTTP1ConnectionParameters = None,
-        context: object = None,
+        params: Optional[HTTP1ConnectionParameters] = None,
+        context: Optional[object] = None,
     ) -> None:
         """
         :arg stream: an `.IOStream`

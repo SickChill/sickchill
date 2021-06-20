@@ -1,5 +1,5 @@
 # orm/descriptor_props.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -12,8 +12,7 @@ as actively in the load/persist ORM loop.
 """
 
 from . import attributes
-from . import properties
-from . import query
+from . import util as orm_util
 from .interfaces import MapperProperty
 from .interfaces import PropComparator
 from .util import _none_set
@@ -23,11 +22,12 @@ from .. import schema
 from .. import sql
 from .. import util
 from ..sql import expression
+from ..sql import operators
 
 
 class DescriptorProperty(MapperProperty):
     """:class:`.MapperProperty` which proxies access to a
-        user-defined descriptor."""
+    user-defined descriptor."""
 
     doc = None
 
@@ -38,7 +38,7 @@ class DescriptorProperty(MapperProperty):
 
         class _ProxyImpl(object):
             accepts_scalar_loader = False
-            expire_missing = True
+            load_on_unexpire = True
             collection = False
 
             @property
@@ -57,7 +57,7 @@ class DescriptorProperty(MapperProperty):
 
         if self.descriptor is None:
             desc = getattr(mapper.class_, self.key, None)
-            if mapper._is_userland_descriptor(desc):
+            if mapper._is_userland_descriptor(self.key, desc):
                 self.descriptor = desc
 
         if self.descriptor is None:
@@ -85,7 +85,6 @@ class DescriptorProperty(MapperProperty):
         mapper.class_manager.instrument_attribute(self.key, proxy_attr)
 
 
-@util.langhelpers.dependency_for("sqlalchemy.orm.properties", add_to_all=True)
 class CompositeProperty(DescriptorProperty):
     """Defines a "composite" mapped attribute, representing a collection
     of columns as one attribute.
@@ -99,15 +98,6 @@ class CompositeProperty(DescriptorProperty):
 
     """
 
-    @util.deprecated_params(
-        extension=(
-            "0.7",
-            ":class:`.AttributeExtension` is deprecated in favor of the "
-            ":class:`.AttributeEvents` listener interface.  The "
-            ":paramref:`.composite.extension` parameter will be "
-            "removed in a future release.",
-        )
-    )
     def __init__(self, class_, *attrs, **kwargs):
         r"""Return a composite column-based property for use with a Mapper.
 
@@ -150,12 +140,6 @@ class CompositeProperty(DescriptorProperty):
         :param info: Optional data dictionary which will be populated into the
             :attr:`.MapperProperty.info` attribute of this object.
 
-        :param extension:
-          an :class:`.AttributeExtension` instance,
-          or list of extensions, which will be prepended to the list of
-          attribute listeners for the resulting descriptor placed on the
-          class.
-
         """
         super(CompositeProperty, self).__init__()
 
@@ -184,6 +168,8 @@ class CompositeProperty(DescriptorProperty):
         """
         self._setup_arguments_on_columns()
 
+    _COMPOSITE_FGET = object()
+
     def _create_descriptor(self):
         """Create the Python descriptor that will serve as
         the access point on instances of the mapped class.
@@ -211,7 +197,9 @@ class CompositeProperty(DescriptorProperty):
                     state.key is not None or not _none_set.issuperset(values)
                 ):
                     dict_[self.key] = self.composite_class(*values)
-                    state.manager.dispatch.refresh(state, None, [self.key])
+                    state.manager.dispatch.refresh(
+                        state, self._COMPOSITE_FGET, [self.key]
+                    )
 
             return dict_.get(self.key, None)
 
@@ -285,16 +273,32 @@ class CompositeProperty(DescriptorProperty):
     def _setup_event_handlers(self):
         """Establish events that populate/expire the composite attribute."""
 
-        def load_handler(state, *args):
-            _load_refresh_handler(state, args, is_refresh=False)
+        def load_handler(state, context):
+            _load_refresh_handler(state, context, None, is_refresh=False)
 
-        def refresh_handler(state, *args):
-            _load_refresh_handler(state, args, is_refresh=True)
+        def refresh_handler(state, context, to_load):
+            # note this corresponds to sqlalchemy.ext.mutable load_attrs()
 
-        def _load_refresh_handler(state, args, is_refresh):
+            if not to_load or (
+                {self.key}.union(self._attribute_keys)
+            ).intersection(to_load):
+                _load_refresh_handler(state, context, to_load, is_refresh=True)
+
+        def _load_refresh_handler(state, context, to_load, is_refresh):
             dict_ = state.dict
 
-            if not is_refresh and self.key in dict_:
+            # if context indicates we are coming from the
+            # fget() handler, this already set the value; skip the
+            # handler here. (other handlers like mutablecomposite will still
+            # want to catch it)
+            # there's an insufficiency here in that the fget() handler
+            # really should not be using the refresh event and there should
+            # be some other event that mutablecomposite can subscribe
+            # towards for this.
+
+            if (
+                not is_refresh or context is self._COMPOSITE_FGET
+            ) and self.key in dict_:
                 return
 
             # if column elements aren't loaded, skip.
@@ -379,7 +383,7 @@ class CompositeProperty(DescriptorProperty):
     def _comparator_factory(self, mapper):
         return self.comparator_factory(self, mapper)
 
-    class CompositeBundle(query.Bundle):
+    class CompositeBundle(orm_util.Bundle):
         def __init__(self, property_, expr):
             self.property = property_
             super(CompositeProperty.CompositeBundle, self).__init__(
@@ -415,21 +419,30 @@ class CompositeProperty(DescriptorProperty):
 
         __hash__ = None
 
-        @property
+        @util.memoized_property
         def clauses(self):
-            return self.__clause_element__()
-
-        def __clause_element__(self):
             return expression.ClauseList(
                 group=False, *self._comparable_elements
             )
 
-        def _query_clause_element(self):
-            return CompositeProperty.CompositeBundle(
-                self.prop, self.__clause_element__()
+        def __clause_element__(self):
+            return self.expression
+
+        @util.memoized_property
+        def expression(self):
+            clauses = self.clauses._annotate(
+                {
+                    "parententity": self._parententity,
+                    "parentmapper": self._parententity,
+                    "proxy_key": self.prop.key,
+                }
             )
+            return CompositeProperty.CompositeBundle(self.prop, clauses)
 
         def _bulk_update_tuples(self, value):
+            if isinstance(value, sql.elements.BindParameter):
+                value = value.value
+
             if value is None:
                 values = [None for key in self.prop._attribute_keys]
             elif isinstance(value, self.prop.composite_class):
@@ -471,7 +484,6 @@ class CompositeProperty(DescriptorProperty):
         return str(self.parent.class_.__name__) + "." + self.key
 
 
-@util.langhelpers.dependency_for("sqlalchemy.orm.properties", add_to_all=True)
 class ConcreteInheritedProperty(DescriptorProperty):
     """A 'do nothing' :class:`.MapperProperty` that disables
     an attribute on a concrete subclass that is only present
@@ -525,7 +537,6 @@ class ConcreteInheritedProperty(DescriptorProperty):
         self.descriptor = NoninheritedConcreteProp()
 
 
-@util.langhelpers.dependency_for("sqlalchemy.orm.properties", add_to_all=True)
 class SynonymProperty(DescriptorProperty):
     def __init__(
         self,
@@ -655,15 +666,22 @@ class SynonymProperty(DescriptorProperty):
     def uses_objects(self):
         return getattr(self.parent.class_, self.name).impl.uses_objects
 
-    # TODO: when initialized, check _proxied_property,
+    # TODO: when initialized, check _proxied_object,
     # emit a warning if its not a column-based property
 
     @util.memoized_property
-    def _proxied_property(self):
+    def _proxied_object(self):
         attr = getattr(self.parent.class_, self.name)
         if not hasattr(attr, "property") or not isinstance(
             attr.property, MapperProperty
         ):
+            # attribute is a non-MapperProprerty proxy such as
+            # hybrid or association proxy
+            if isinstance(attr, attributes.QueryableAttribute):
+                return attr.comparator
+            elif isinstance(attr, operators.ColumnOperators):
+                return attr
+
             raise sa_exc.InvalidRequestError(
                 """synonym() attribute "%s.%s" only supports """
                 """ORM mapped attributes, got %r"""
@@ -672,19 +690,25 @@ class SynonymProperty(DescriptorProperty):
         return attr.property
 
     def _comparator_factory(self, mapper):
-        prop = self._proxied_property
+        prop = self._proxied_object
 
-        if self.comparator_factory:
-            comp = self.comparator_factory(prop, mapper)
+        if isinstance(prop, MapperProperty):
+            if self.comparator_factory:
+                comp = self.comparator_factory(prop, mapper)
+            else:
+                comp = prop.comparator_factory(prop, mapper)
+            return comp
         else:
-            comp = prop.comparator_factory(prop, mapper)
-        return comp
+            return prop
 
     def get_history(self, *arg, **kw):
         attr = getattr(self.parent.class_, self.name)
         return attr.impl.get_history(*arg, **kw)
 
+    @util.preload_module("sqlalchemy.orm.properties")
     def set_parent(self, parent, init):
+        properties = util.preloaded.orm_properties
+
         if self.map_column:
             # implement the 'map_column' option.
             if self.key not in parent.persist_selectable.c:
@@ -718,91 +742,3 @@ class SynonymProperty(DescriptorProperty):
             p._mapped_by_synonym = self.key
 
         self.parent = parent
-
-
-@util.langhelpers.dependency_for("sqlalchemy.orm.properties", add_to_all=True)
-@util.deprecated_cls(
-    "0.7",
-    ":func:`.comparable_property` is deprecated and will be removed in a "
-    "future release.  Please refer to the :mod:`~sqlalchemy.ext.hybrid` "
-    "extension.",
-)
-class ComparableProperty(DescriptorProperty):
-    """Instruments a Python property for use in query expressions."""
-
-    def __init__(
-        self, comparator_factory, descriptor=None, doc=None, info=None
-    ):
-        """Provides a method of applying a :class:`.PropComparator`
-        to any Python descriptor attribute.
-
-
-        Allows any Python descriptor to behave like a SQL-enabled
-        attribute when used at the class level in queries, allowing
-        redefinition of expression operator behavior.
-
-        In the example below we redefine :meth:`.PropComparator.operate`
-        to wrap both sides of an expression in ``func.lower()`` to produce
-        case-insensitive comparison::
-
-            from sqlalchemy.orm import comparable_property
-            from sqlalchemy.orm.interfaces import PropComparator
-            from sqlalchemy.sql import func
-            from sqlalchemy import Integer, String, Column
-            from sqlalchemy.ext.declarative import declarative_base
-
-            class CaseInsensitiveComparator(PropComparator):
-                def __clause_element__(self):
-                    return self.prop
-
-                def operate(self, op, other):
-                    return op(
-                        func.lower(self.__clause_element__()),
-                        func.lower(other)
-                    )
-
-            Base = declarative_base()
-
-            class SearchWord(Base):
-                __tablename__ = 'search_word'
-                id = Column(Integer, primary_key=True)
-                word = Column(String)
-                word_insensitive = comparable_property(lambda prop, mapper:
-                                CaseInsensitiveComparator(
-                                    mapper.c.word, mapper)
-                            )
-
-
-        A mapping like the above allows the ``word_insensitive`` attribute
-        to render an expression like::
-
-            >>> print(SearchWord.word_insensitive == "Trucks")
-            lower(search_word.word) = lower(:lower_1)
-
-        :param comparator_factory:
-          A PropComparator subclass or factory that defines operator behavior
-          for this property.
-
-        :param descriptor:
-          Optional when used in a ``properties={}`` declaration.  The Python
-          descriptor or property to layer comparison behavior on top of.
-
-          The like-named descriptor will be automatically retrieved from the
-          mapped class if left blank in a ``properties`` declaration.
-
-        :param info: Optional data dictionary which will be populated into the
-            :attr:`.InspectionAttr.info` attribute of this object.
-
-            .. versionadded:: 1.0.0
-
-        """
-        super(ComparableProperty, self).__init__()
-        self.descriptor = descriptor
-        self.comparator_factory = comparator_factory
-        self.doc = doc or (descriptor and descriptor.__doc__) or None
-        if info:
-            self.info = info
-        util.set_creation_order(self)
-
-    def _comparator_factory(self, mapper):
-        return self.comparator_factory(self, mapper)

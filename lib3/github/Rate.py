@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2013 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -32,7 +30,7 @@ import github.GithubObject
 
 class Rate(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents Rates. The reference can be found here http://developer.github.com/v3/rate_limit
+    This class represents Rates. The reference can be found here http://docs.github.com/en/rest/reference/rate_limit
     """
 
     def __repr__(self):

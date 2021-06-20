@@ -1,5 +1,5 @@
 # sql/expression.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -16,8 +16,10 @@ class.
 
 __all__ = [
     "Alias",
+    "AliasedReturnsRows",
     "any_",
     "all_",
+    "CacheKey",
     "ClauseElement",
     "ColumnCollection",
     "ColumnElement",
@@ -27,10 +29,14 @@ __all__ = [
     "Insert",
     "Join",
     "Lateral",
+    "LambdaElement",
+    "StatementLambdaElement",
     "Select",
     "Selectable",
     "TableClause",
+    "TableValuedAlias",
     "Update",
+    "Values",
     "alias",
     "and_",
     "asc",
@@ -39,6 +45,7 @@ __all__ = [
     "case",
     "cast",
     "column",
+    "custom_op",
     "cte",
     "delete",
     "desc",
@@ -56,18 +63,18 @@ __all__ = [
     "join",
     "label",
     "lateral",
+    "lambda_stmt",
     "literal",
     "literal_column",
     "not_",
     "null",
-    "nullsfirst",
-    "nullslast",
+    "nulls_first",
+    "nulls_last",
     "or_",
     "outparam",
     "outerjoin",
     "over",
     "select",
-    "subquery",
     "table",
     "text",
     "tuple_",
@@ -76,101 +83,103 @@ __all__ = [
     "union",
     "union_all",
     "update",
+    "quoted_name",
     "within_group",
+    "Subquery",
     "TableSample",
     "tablesample",
+    "values",
 ]
 
 
-from .base import _from_objects  # noqa
-from .base import ColumnCollection  # noqa
-from .base import Executable  # noqa
-from .base import Generative  # noqa
-from .base import PARSE_AUTOCOMMIT  # noqa
-from .dml import Delete  # noqa
-from .dml import Insert  # noqa
-from .dml import Update  # noqa
-from .dml import UpdateBase  # noqa
-from .dml import ValuesBase  # noqa
-from .elements import _clause_element_as_expr  # noqa
-from .elements import _clone  # noqa
-from .elements import _cloned_difference  # noqa
-from .elements import _cloned_intersection  # noqa
-from .elements import _column_as_key  # noqa
-from .elements import _corresponding_column_or_error  # noqa
-from .elements import _expression_literal_as_text  # noqa
-from .elements import _is_column  # noqa
-from .elements import _labeled  # noqa
-from .elements import _literal_as_binds  # noqa
-from .elements import _literal_as_column  # noqa
-from .elements import _literal_as_label_reference  # noqa
-from .elements import _literal_as_text  # noqa
-from .elements import _only_column_elements  # noqa
-from .elements import _select_iterables  # noqa
-from .elements import _string_or_unprintable  # noqa
-from .elements import _truncated_label  # noqa
-from .elements import between  # noqa
-from .elements import BinaryExpression  # noqa
-from .elements import BindParameter  # noqa
-from .elements import BooleanClauseList  # noqa
-from .elements import Case  # noqa
-from .elements import Cast  # noqa
-from .elements import ClauseElement  # noqa
-from .elements import ClauseList  # noqa
-from .elements import collate  # noqa
-from .elements import CollectionAggregate  # noqa
-from .elements import ColumnClause  # noqa
-from .elements import ColumnElement  # noqa
-from .elements import Extract  # noqa
-from .elements import False_  # noqa
-from .elements import FunctionFilter  # noqa
-from .elements import Grouping  # noqa
-from .elements import Label  # noqa
-from .elements import literal  # noqa
-from .elements import literal_column  # noqa
-from .elements import not_  # noqa
-from .elements import Null  # noqa
-from .elements import outparam  # noqa
-from .elements import Over  # noqa
-from .elements import quoted_name  # noqa
-from .elements import ReleaseSavepointClause  # noqa
-from .elements import RollbackToSavepointClause  # noqa
-from .elements import SavepointClause  # noqa
-from .elements import TextClause  # noqa
-from .elements import True_  # noqa
-from .elements import Tuple  # noqa
-from .elements import TypeClause  # noqa
-from .elements import TypeCoerce  # noqa
-from .elements import UnaryExpression  # noqa
-from .elements import WithinGroup  # noqa
-from .functions import func  # noqa
-from .functions import Function  # noqa
-from .functions import FunctionElement  # noqa
-from .functions import modifier  # noqa
-from .selectable import _interpret_as_from  # noqa
-from .selectable import Alias  # noqa
-from .selectable import CompoundSelect  # noqa
-from .selectable import CTE  # noqa
-from .selectable import Exists  # noqa
-from .selectable import FromClause  # noqa
-from .selectable import FromGrouping  # noqa
-from .selectable import GenerativeSelect  # noqa
-from .selectable import HasCTE  # noqa
-from .selectable import HasPrefixes  # noqa
-from .selectable import HasSuffixes  # noqa
-from .selectable import Join  # noqa
-from .selectable import Lateral  # noqa
-from .selectable import ScalarSelect  # noqa
-from .selectable import Select  # noqa
-from .selectable import Selectable  # noqa
-from .selectable import SelectBase  # noqa
-from .selectable import subquery  # noqa
-from .selectable import TableClause  # noqa
-from .selectable import TableSample  # noqa
-from .selectable import TextAsFrom  # noqa
-from .visitors import Visitable  # noqa
-from ..util.langhelpers import public_factory  # noqa
-
+from .base import _from_objects
+from .base import _select_iterables
+from .base import ColumnCollection
+from .base import Executable
+from .base import PARSE_AUTOCOMMIT
+from .dml import Delete
+from .dml import Insert
+from .dml import Update
+from .dml import UpdateBase
+from .dml import ValuesBase
+from .elements import _truncated_label
+from .elements import between
+from .elements import BinaryExpression
+from .elements import BindParameter
+from .elements import BooleanClauseList
+from .elements import Case
+from .elements import Cast
+from .elements import ClauseElement
+from .elements import ClauseList
+from .elements import collate
+from .elements import CollectionAggregate
+from .elements import ColumnClause
+from .elements import ColumnElement
+from .elements import Extract
+from .elements import False_
+from .elements import FunctionFilter
+from .elements import Grouping
+from .elements import Label
+from .elements import literal
+from .elements import literal_column
+from .elements import not_
+from .elements import Null
+from .elements import outparam
+from .elements import Over
+from .elements import quoted_name
+from .elements import ReleaseSavepointClause
+from .elements import RollbackToSavepointClause
+from .elements import SavepointClause
+from .elements import TextClause
+from .elements import True_
+from .elements import Tuple
+from .elements import TypeClause
+from .elements import TypeCoerce
+from .elements import UnaryExpression
+from .elements import WithinGroup
+from .functions import func
+from .functions import Function
+from .functions import FunctionElement
+from .functions import modifier
+from .lambdas import lambda_stmt
+from .lambdas import LambdaElement
+from .lambdas import StatementLambdaElement
+from .operators import ColumnOperators
+from .operators import custom_op
+from .operators import Operators
+from .selectable import Alias
+from .selectable import AliasedReturnsRows
+from .selectable import CompoundSelect
+from .selectable import CTE
+from .selectable import Exists
+from .selectable import FromClause
+from .selectable import FromGrouping
+from .selectable import GenerativeSelect
+from .selectable import HasCTE
+from .selectable import HasPrefixes
+from .selectable import HasSuffixes
+from .selectable import Join
+from .selectable import LABEL_STYLE_DEFAULT
+from .selectable import LABEL_STYLE_DISAMBIGUATE_ONLY
+from .selectable import LABEL_STYLE_NONE
+from .selectable import LABEL_STYLE_TABLENAME_PLUS_COL
+from .selectable import Lateral
+from .selectable import ReturnsRows
+from .selectable import ScalarSelect
+from .selectable import Select
+from .selectable import Selectable
+from .selectable import SelectBase
+from .selectable import Subquery
+from .selectable import subquery
+from .selectable import TableClause
+from .selectable import TableSample
+from .selectable import TableValuedAlias
+from .selectable import TextAsFrom
+from .selectable import TextualSelect
+from .selectable import Values
+from .traversals import CacheKey
+from .visitors import Visitable
+from ..util.langhelpers import public_factory
 
 # factory functions - these pull class-bound constructors and classmethods
 # from SQL elements and selectables into public functions.  This allows
@@ -187,7 +196,7 @@ tablesample = public_factory(
 lateral = public_factory(Lateral._factory, ".sql.expression.lateral")
 or_ = public_factory(BooleanClauseList.or_, ".sql.expression.or_")
 bindparam = public_factory(BindParameter, ".sql.expression.bindparam")
-select = public_factory(Select, ".sql.expression.select")
+select = public_factory(Select._create, ".sql.expression.select")
 text = public_factory(TextClause._create_text, ".sql.expression.text")
 table = public_factory(TableClause, ".sql.expression.table")
 column = public_factory(ColumnClause, ".sql.expression.column")
@@ -197,6 +206,7 @@ label = public_factory(Label, ".sql.expression.label")
 case = public_factory(Case, ".sql.expression.case")
 cast = public_factory(Cast, ".sql.expression.cast")
 cte = public_factory(CTE._factory, ".sql.expression.cte")
+values = public_factory(Values, ".sql.expression.values")
 extract = public_factory(Extract, ".sql.expression.extract")
 tuple_ = public_factory(Tuple, ".sql.expression.tuple_")
 except_ = public_factory(
@@ -216,12 +226,14 @@ union_all = public_factory(
     CompoundSelect._create_union_all, ".sql.expression.union_all"
 )
 exists = public_factory(Exists, ".sql.expression.exists")
-nullsfirst = public_factory(
-    UnaryExpression._create_nullsfirst, ".sql.expression.nullsfirst"
+nulls_first = public_factory(
+    UnaryExpression._create_nulls_first, ".sql.expression.nulls_first"
 )
-nullslast = public_factory(
-    UnaryExpression._create_nullslast, ".sql.expression.nullslast"
+nullsfirst = nulls_first  # deprecated 1.4; see #5435
+nulls_last = public_factory(
+    UnaryExpression._create_nulls_last, ".sql.expression.nulls_last"
 )
+nullslast = nulls_last  # deprecated 1.4; see #5435
 asc = public_factory(UnaryExpression._create_asc, ".sql.expression.asc")
 desc = public_factory(UnaryExpression._create_desc, ".sql.expression.desc")
 distinct = public_factory(
@@ -258,7 +270,6 @@ _UnaryExpression = UnaryExpression
 _Case = Case
 _Tuple = Tuple
 _Over = Over
-_Generative = Generative
 _TypeClause = TypeClause
 _Extract = Extract
 _Exists = Exists

@@ -1,11 +1,13 @@
 # testing/config.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 import collections
+
+from .. import util
 
 requirements = None
 db = None
@@ -14,7 +16,9 @@ db_opts = None
 file_config = None
 test_schema = None
 test_schema_2 = None
+any_async = False
 _current = None
+ident = "main"
 
 _fixture_functions = None  # installed by plugin_base
 
@@ -85,12 +89,21 @@ def combinations(*comb, **kw):
     return _fixture_functions.combinations(*comb, **kw)
 
 
+def combinations_list(arg_iterable, **kw):
+    "As combination, but takes a single iterable"
+    return combinations(*arg_iterable, **kw)
+
+
 def fixture(*arg, **kw):
     return _fixture_functions.fixture(*arg, **kw)
 
 
 def get_current_test_name():
     return _fixture_functions.get_current_test_name()
+
+
+def mark_base_test_class():
+    return _fixture_functions.mark_base_test_class()
 
 
 class Config(object):
@@ -102,6 +115,10 @@ class Config(object):
         self.file_config = file_config
         self.test_schema = "test_schema"
         self.test_schema_2 = "test_schema_2"
+
+        self.is_async = db.dialect.is_async and not util.asbool(
+            db.url.query.get("async_fallback", False)
+        )
 
     _stack = collections.deque()
     _configs = set()
@@ -120,7 +137,15 @@ class Config(object):
         If there are no configs set up yet, this config also
         gets set as the "_current".
         """
+        global any_async
+
         cfg = Config(db, db_opts, options, file_config)
+
+        # if any backends include an async driver, then ensure
+        # all setup/teardown and tests are wrapped in the maybe_async()
+        # decorator that will set up a greenlet context for async drivers.
+        any_async = any_async or cfg.is_async
+
         cls._configs.add(cfg)
         return cfg
 
@@ -150,6 +175,14 @@ class Config(object):
         cls.set_as_current(config, namespace)
 
     @classmethod
+    def pop(cls, namespace):
+        if cls._stack:
+            # a failed test w/ -x option can call reset() ahead of time
+            _current = cls._stack[-1]
+            del cls._stack[-1]
+            cls.set_as_current(_current, namespace)
+
+    @classmethod
     def reset(cls, namespace):
         if cls._stack:
             cls.set_as_current(cls._stack[0], namespace)
@@ -170,3 +203,7 @@ class Config(object):
 
 def skip_test(msg):
     raise _fixture_functions.skip_test_exception(msg)
+
+
+def async_test(fn):
+    return _fixture_functions.async_test(fn)

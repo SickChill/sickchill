@@ -1,5 +1,5 @@
 # mysql/pyodbc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -14,11 +14,16 @@ r"""
     :connectstring: mysql+pyodbc://<username>:<password>@<dsnname>
     :url: http://pypi.python.org/pypi/pyodbc/
 
-    .. note:: The PyODBC for MySQL dialect is not well supported, and
-       is subject to unresolved character encoding issues
-       which exist within the current ODBC drivers available.
-       (see http://code.google.com/p/pyodbc/issues/detail?id=25).
-       Other dialects for MySQL are recommended.
+.. note::
+
+    The PyODBC for MySQL dialect is **not tested as part of
+    SQLAlchemy's continuous integration**.
+    The recommended MySQL dialects are mysqlclient and PyMySQL.
+    However, if you want to use the mysql+pyodbc dialect and require
+    full support for ``utf8mb4`` characters (including supplementary
+    characters like emoji) be sure to use a current release of
+    MySQL Connector/ODBC and specify the "ANSI" (**not** "Unicode")
+    version of the driver in your DSN or connection string.
 
 Pass through exact pyodbc connection string::
 
@@ -38,6 +43,7 @@ Pass through exact pyodbc connection string::
 """  # noqa
 
 import re
+import sys
 
 from .base import MySQLDialect
 from .base import MySQLExecutionContext
@@ -66,16 +72,12 @@ class MySQLExecutionContext_pyodbc(MySQLExecutionContext):
 
 
 class MySQLDialect_pyodbc(PyODBCConnector, MySQLDialect):
+    supports_statement_cache = True
     colspecs = util.update_copy(MySQLDialect.colspecs, {Time: _pyodbcTIME})
-    supports_unicode_statements = False
+    supports_unicode_statements = True
     execution_ctx_cls = MySQLExecutionContext_pyodbc
 
     pyodbc_driver_name = "MySQL"
-
-    def __init__(self, **kw):
-        # deal with http://code.google.com/p/pyodbc/issues/detail?id=25
-        kw.setdefault("convert_unicode", True)
-        super(MySQLDialect_pyodbc, self).__init__(**kw)
 
     def _detect_charset(self, connection):
         """Sniff out the character set in use for connection results."""
@@ -86,7 +88,9 @@ class MySQLDialect_pyodbc(PyODBCConnector, MySQLDialect):
         #
         # If it's decided that issuing that sort of SQL leaves you SOL, then
         # this can prefer the driver value.
-        rs = connection.execute("SHOW VARIABLES LIKE 'character_set%%'")
+        rs = connection.exec_driver_sql(
+            "SHOW VARIABLES LIKE 'character_set%%'"
+        )
         opts = {row[0]: row[1] for row in self._compat_fetchall(rs)}
         for key in ("character_set_connection", "character_set"):
             if opts.get(key, None):
@@ -105,6 +109,29 @@ class MySQLDialect_pyodbc(PyODBCConnector, MySQLDialect):
             return int(c)
         else:
             return None
+
+    def on_connect(self):
+        super_ = super(MySQLDialect_pyodbc, self).on_connect()
+
+        def on_connect(conn):
+            if super_ is not None:
+                super_(conn)
+
+            # declare Unicode encoding for pyodbc as per
+            #   https://github.com/mkleehammer/pyodbc/wiki/Unicode
+            pyodbc_SQL_CHAR = 1  # pyodbc.SQL_CHAR
+            pyodbc_SQL_WCHAR = -8  # pyodbc.SQL_WCHAR
+            if sys.version_info.major > 2:
+                conn.setdecoding(pyodbc_SQL_CHAR, encoding="utf-8")
+                conn.setdecoding(pyodbc_SQL_WCHAR, encoding="utf-8")
+                conn.setencoding(encoding="utf-8")
+            else:
+                conn.setdecoding(pyodbc_SQL_CHAR, encoding="utf-8")
+                conn.setdecoding(pyodbc_SQL_WCHAR, encoding="utf-8")
+                conn.setencoding(str, encoding="utf-8")
+                conn.setencoding(unicode, encoding="utf-8")  # noqa: F821
+
+        return on_connect
 
 
 dialect = MySQLDialect_pyodbc

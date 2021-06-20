@@ -6,13 +6,12 @@ oauthlib.oauth2.rfc6749
 This module is an implementation of various logic needed
 for consuming and providing OAuth 2.0 RFC6749.
 """
-from __future__ import absolute_import, unicode_literals
-
 import warnings
 
-from ..parameters import (parse_authorization_code_response,
-                          parse_token_response, prepare_grant_uri,
-                          prepare_token_request)
+from ..parameters import (
+    parse_authorization_code_response, prepare_grant_uri,
+    prepare_token_request,
+)
 from .base import Client
 
 
@@ -38,7 +37,7 @@ class WebApplicationClient(Client):
     grant_type = 'authorization_code'
 
     def __init__(self, client_id, code=None, **kwargs):
-        super(WebApplicationClient, self).__init__(client_id, **kwargs)
+        super().__init__(client_id, **kwargs)
         self.code = code
 
     def prepare_request_uri(self, uri, redirect_uri=None, scope=None,
@@ -86,6 +85,7 @@ class WebApplicationClient(Client):
         .. _`Section 3.3`: https://tools.ietf.org/html/rfc6749#section-3.3
         .. _`Section 10.12`: https://tools.ietf.org/html/rfc6749#section-10.12
         """
+        scope = self.scope if scope is None else scope
         return prepare_grant_uri(uri, self.client_id, 'code',
                                  redirect_uri=redirect_uri, scope=scope, state=state, **kwargs)
 
