@@ -127,7 +127,6 @@ def change_unrar_tool(unrar_tool, unar_tool, bsdtar_tool):
 
     if platform.system() == "Windows":
         # Look for WinRAR installations
-        found = False
         winrar_path = "WinRAR\\UnRAR.exe"
         # Make a set of unique paths to check from existing environment variables
         check_locations = {

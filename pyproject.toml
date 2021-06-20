@@ -81,7 +81,6 @@ ignore = [
 
 max_line_length = 160
 show_source = "True"
-no-accept-encodings = "True"
 builtins = ["_"]
 #select = 'C103'
 
@@ -117,67 +116,6 @@ exclude = '''
   )/
 )
 '''
-
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-skipsdist = true
-envlist = py38-{flake8,linux,windows}
-passenv = DEBUG VERBOSE
-
-[testenv:py38-linux]
-platform = linux
-whitelist_externals = /bin/rm
-envdir = {toxworkdir}/tox
-passenv = CI GITHUB_* CODECOV_TOKEN DEBUG VERBOSE
-deps =
-    poetry
-commands =
-    poetry install --no-root
-    poetry run pytest
-    poetry run codecov -e GITHUB_RUN_ID GITHUB_REF
-
-[testenv:py38-windows]
-platform = win
-whitelist_externals = {env:SYSTEMROOT:C:\\Windows\\}\\System32\\cmd.exe
-envdir = {toxworkdir}/tox
-passenv = CI APPVEYOR APPVEYOR_* PYTHON_ARCH DEBUG VERBOSE
-deps =
-    poetry
-commands =
-    poetry install --no-root
-    poetry run pytest
-    poetry run codecov -e APPVEYOR_REPO_BRANCH PYTHON_ARCH
-
-[testenv:py38-flake8]
-envdir = {toxworkdir}/flake8
-deps =
-    flake9
-    isort
-commands =
-    flake8 --select C103 sickchill tests SickChill.py setup.py
-    isort --check-only --diff sickchill tests SickChill.py setup.py
-
-[testenv:py38-isort]
-envdir = {toxworkdir}/flake8
-deps =
-    flake9
-    isort
-commands =
-    flake8 --select C103 sickchill tests SickChill.py setup.py
-    isort sickchill SickChill.py tests setup.py
-
-[testenv:py38-providers]
-platform = linux
-whitelist_externals = /bin/rm
-envdir = {toxworkdir}/tox
-passenv = CI DEBUG VERBOSE
-commands =
-    /bin/rm -f {toxinidir}/tests/sickchill.db
-    /bin/rm -f {toxinidir}/tests/cache.db
-    /bin/rm -f {toxinidir}/tests/failed.db
-    pytest tests/sickchill_tests/providers/torrent/test_parsing.py
-"""
 
 [tool.poetry.dependencies]
 python = ">=3.6,<4"

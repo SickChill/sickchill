@@ -1,5 +1,3 @@
-import glob
-import os
 from abc import ABC
 
 from sickchill import settings
