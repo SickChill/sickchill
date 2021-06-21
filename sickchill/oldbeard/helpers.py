@@ -708,6 +708,7 @@ def sanitizeSceneName(name, anime=False):
     name = name.replace("&", "and")
     name = re.sub(r"[- /]+", ".", name)
     name = re.sub(r"[.]+", ".", name)
+    name = re.sub(r" ", ".", name)
 
     if name.endswith("."):
         name = name[:-1]
