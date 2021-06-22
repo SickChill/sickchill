@@ -339,7 +339,7 @@ python-versions = "*"
 
 [[package]]
 name = "feedparser"
-version = "6.0.6"
+version = "6.0.7"
 description = "Universal feed parser, handles RSS 0.9x, RSS 1.0, RSS 2.0, CDF, Atom 0.3, and Atom 1.0 feeds"
 category = "main"
 optional = false
@@ -1774,8 +1774,8 @@ enzyme = [
     {file = "enzyme-0.4.1.tar.gz", hash = "sha256:f2167fa97c24d1103a94d4bf4eb20f00ca76c38a37499821049253b2059c62bb"},
 ]
 feedparser = [
-    {file = "feedparser-6.0.6-py3-none-any.whl", hash = "sha256:1c35e9ef43d8f95959cf8cfa337b68a2cb0888cab7cd982868d23850bb1e08ae"},
-    {file = "feedparser-6.0.6.tar.gz", hash = "sha256:78f62a5b872fdef451502bb96e64a8fd4180535eb749954f1ad528604809cdeb"},
+    {file = "feedparser-6.0.7-py3-none-any.whl", hash = "sha256:ac129cef1e7cd511bc269af029acbc4124dd7c7eb9a43a145de8df16ed5341ea"},
+    {file = "feedparser-6.0.7.tar.gz", hash = "sha256:e280e589396c0b4e502db0b0a363dbc4c6a2cade8fee4109f1a05a255c680cbc"},
 ]
 flake8 = [
     {file = "flake8-3.8.4-py2.py3-none-any.whl", hash = "sha256:749dbbd6bfd0cf1318af27bf97a14e28e5ff548ef8e5b1566ccfb25a11e7c839"},
