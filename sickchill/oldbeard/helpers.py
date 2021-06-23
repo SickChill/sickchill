@@ -706,9 +706,8 @@ def sanitizeSceneName(name, anime=False):
 
     # tidy up stuff that doesn't belong in scene names
     name = name.replace("&", "and")
-    name = re.sub(r"[- /]+", ".", name)
+    name = re.sub(r"[- /\s]+", ".", name)
     name = re.sub(r"[.]+", ".", name)
-    name = re.sub(r"[\s]+", ".", name)
 
     if name.endswith("."):
         name = name[:-1]
