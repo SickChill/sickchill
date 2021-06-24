@@ -5,6 +5,7 @@ import re
 import validators
 
 from sickchill import logger, settings
+from sickchill.oldbeard import helpers
 
 from . import common
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
@@ -107,7 +108,10 @@ def allPossibleShowNames(show, season=-1):
         showNames = get_scene_exceptions(show.indexerid, season=season)
 
     showNames.append(show.name)
-
+    if show.name.lower().strip() != helpers.full_sanitizeSceneName(show.name):
+        showNames.append(helpers.full_sanitizeSceneName(show.name))
+        logger.debug("append full sanitized show name to list: show_name_helpers")
+    
     if not show.is_anime:
         newShowNames = []
         country_list = common.countryList
