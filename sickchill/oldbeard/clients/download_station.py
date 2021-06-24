@@ -127,7 +127,7 @@ class Client(GenericClient):
         elif result.resultType == GenericProvider.TORRENT:
             destination = settings.TORRENT_PATH.strip()
         else:
-            raise AttributeError('Invalid result passed to client when getting destination: resultType {}'.format(result.resultType))
+            raise AttributeError("Invalid result passed to client when getting destination: resultType {}".format(result.resultType))
 
         return re.sub(r"^/volume\d/", "", destination).lstrip("/")
 
@@ -142,7 +142,7 @@ class Client(GenericClient):
         elif result.resultType == GenericProvider.TORRENT:
             settings.TORRENT_PATH = destination
         else:
-            raise AttributeError('Invalid result passed to client when setting destination')
+            raise AttributeError("Invalid result passed to client when setting destination")
 
     def _check_destination(self, result):
         """
@@ -159,7 +159,7 @@ class Client(GenericClient):
             try:
                 response = self.session.get(self.urls["info"], params=params, verify=False)
                 response_json = response.json()
-                self._set_destination(result, response_json['data']['default_destination'])
+                self._set_destination(result, response_json["data"]["default_destination"])
                 logger.info("Destination set to %s", self._get_destination(result))
             except (ValueError, KeyError, JSONDecodeError) as error:
                 logger.debug("Get DownloadStation default destination error: {0}".format(error))
@@ -181,10 +181,10 @@ class Client(GenericClient):
             data["url"] = result.url
 
         data["type"] = "url"
-        data['create_list'] = "false"
+        data["create_list"] = "false"
         data["destination"] = self._get_destination(result)
 
-        logger.info("Posted as url with {} destination \"{}\"".format(data['api'], data['destination']))
+        logger.info('Posted as url with {} destination "{}"'.format(data["api"], data["destination"]))
         self._request(method="post", data=data)
         return self._check_response(data)
 
@@ -198,14 +198,14 @@ class Client(GenericClient):
         data = self._task_post_data
 
         result_type = result.resultType.replace("data", "")
-        files = {result_type: ('.'.join([result.name, result_type]), result.content)}
+        files = {result_type: (".".join([result.name, result_type]), result.content)}
 
         data["type"] = '"file"'
         data["file"] = f'["{result_type}"]'
-        data['create_list'] = "false"
+        data["create_list"] = "false"
         data["destination"] = f'"{self._get_destination(result)}"'
 
-        logger.info("Posted as file with {} destination {}".format(data['api'], data['destination']))
+        logger.info("Posted as file with {} destination {}".format(data["api"], data["destination"]))
         self._request(method="post", data=data, files=files)
         return self._check_response(data)
 

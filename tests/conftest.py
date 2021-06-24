@@ -364,22 +364,18 @@ def vcr_cassette_name(request):
 
 
 def patch_open(open_func, files):
-    def open_patched(path, mode='r', buffering=-1, encoding=None,
-                     errors=None, newline=None, closefd=True,
-                     opener=None):
-        if 'w' in mode and not os.path.isfile(path):
+    def open_patched(path, mode="r", buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
+        if "w" in mode and not os.path.isfile(path):
             files.append(path)
-        return open_func(path, mode=mode, buffering=buffering,
-                         encoding=encoding, errors=errors,
-                         newline=newline, closefd=closefd,
-                         opener=opener)
+        return open_func(path, mode=mode, buffering=buffering, encoding=encoding, errors=errors, newline=newline, closefd=closefd, opener=opener)
+
     return open_patched
 
 
 @pytest.fixture(autouse=True, scope="session")
 def cleanup_files():
     # yield
-    for file in [ os.path.join("tests", "sickchill.db"), os.path.join("tests", "cache.db"), os.path.join("tests", "failed.db")]:
+    for file in [os.path.join("tests", "sickchill.db"), os.path.join("tests", "cache.db"), os.path.join("tests", "failed.db")]:
         if os.path.exists(file):
             print(f"Removing {file}")
             os.remove(file)

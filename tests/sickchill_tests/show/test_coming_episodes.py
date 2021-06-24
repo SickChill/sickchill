@@ -29,7 +29,8 @@ class ComingEpisodesTests(unittest.TestCase):
         results_list = [[], [], ["A", "B"], ["A", "B"], [], ["A", "B"], ["A", "B"]]
 
         assert len(categories_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(categories_list), len(results_list))
+            len(categories_list), len(results_list)
+        )
 
         for (index, categories) in enumerate(categories_list):
             assert ComingEpisodes._get_categories(categories) == results_list[index]
@@ -42,7 +43,8 @@ class ComingEpisodesTests(unittest.TestCase):
         results_list = [{}, {}, {"A": [], "B": []}, {"A": [], "B": []}]
 
         assert len(categories_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(categories_list), len(results_list))
+            len(categories_list), len(results_list)
+        )
 
         for (index, categories) in enumerate(categories_list):
             assert ComingEpisodes._get_categories_map(categories) == results_list[index]

@@ -288,10 +288,12 @@ class GenericProviderTests(unittest.TestCase):
         unicode_results_list = [("", ""), ("Some.Title", "http://www.google.com/&foo=bar&tr=test")]
 
         assert len(items_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(items_list), len(results_list))
+            len(items_list), len(results_list)
+        )
 
         assert len(unicode_items_list) == len(unicode_results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(unicode_items_list), len(unicode_results_list))
+            len(unicode_items_list), len(unicode_results_list)
+        )
 
         for (index, item) in enumerate(items_list):
             assert GenericProvider("Test Provider")._get_title_and_url(item) == results_list[index]

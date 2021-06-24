@@ -167,7 +167,8 @@ class TorrentProviderTests(GenericProviderTests):
         ]
 
         assert len(items_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(items_list), len(results_list))
+            len(items_list), len(results_list)
+        )
 
         for (index, item) in enumerate(items_list):
             assert TorrentProvider("Test Provider")._get_size(item) == results_list[index]

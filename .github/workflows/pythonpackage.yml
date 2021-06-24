@@ -5,24 +5,14 @@ name: Python Packaging
 
 on:
   push:
-    branches-ignore:
-      - 'l10n_*'
+    branches:
+      - master
+      - develop
   pull_request:
-    branches-ignore:
-      - 'l10n_*'
+    branches:
+      - develop
 
 jobs:
-  Shellcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-          persist-credentials: false
-      - name: Shellcheck
-        uses: ludeeus/action-shellcheck@master
-#        with:
-#          additional_files: 'init.*'
   Test:
     strategy:
       matrix:
@@ -41,28 +31,50 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.8.0
+      if: success() && !env.ACT
+      uses: styfle/cancel-workflow-action@0.9.0
       with:
         access_token: ${{ github.token }}
     - name: Checkout
+      if: success() && !env.ACT
       uses: actions/checkout@v2
       with:
         fetch-depth: 1
         persist-credentials: false
+    - name: Lint shell scripts
+      if: success() && startsWith(runner.os, 'Linux') && !env.ACT
+      uses: ludeeus/action-shellcheck@master
+      with:
+        format: diff
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Set up Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
     - name: Restore pip cache
+      if: success() && !env.ACT
       uses: actions/cache@v2
       with:
         path: $(python -m pip cache dir)
         key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.python-version }}-
+    - name: Restore npm cache
+      uses: actions/cache@v2
+      with:
+        path: $(npm config get cache)
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
     - name: Install tools
       run: |
         curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --preview -f -y
+        pip install -U pip
+        pip install -U poethepoet
+        npm install -g yarn
     - name: Set path (Linux/MacOS)
       if: success() && !startsWith(runner.os, 'Windows')
       run: echo "$HOME/.local/bin" >> $GITHUB_PATH
@@ -70,6 +82,7 @@ jobs:
       if: success() && startsWith(runner.os, 'Windows')
       run: echo "C:\Users\runneradmin\AppData\Roaming\Python\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     - name: Restore poetry cache
+      if: success() && !env.ACT
       uses: actions/cache@v2
       with:
         path: $(poetry config cache-dir)
@@ -77,6 +90,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-poetry-${{ matrix.python-version }}-
     - name: Restore virtualenv
+      if: success() && !env.ACT
       uses: actions/cache@v2
       with:
         path: .venv
@@ -87,19 +101,16 @@ jobs:
       run: |
         poetry config virtualenvs.in-project true
         poetry install --no-root
-    - name: Isort
+    - name: Lint Python and Javascript
+      run: poe format
+    - name: Test Javascript
+      run: poe yarn test
+    - name: Test Python
       run: |
-        poetry run isort --check-only --diff sickchill tests SickChill.py setup.py
-    - name: Flake9
-      run: |
-        poetry run flake8 --select C103 sickchill tests SickChill.py setup.py
-    - name: Pytest
-      id: pytest
-      run: |
-        poetry run pytest
-        poetry run codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+        poe pytest
+        poe codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
   Deploy:
-    needs: [Shellcheck, Test]
+    needs: [Test]
     runs-on: ubuntu-latest
     steps:
     - name: Cancel Previous Runs
@@ -107,6 +118,7 @@ jobs:
       with:
         access_token: ${{ github.token }}
     - name: Checkout
+      if: success() && !env.ACT
       uses: actions/checkout@v2
       with:
         fetch-depth: 1
@@ -114,7 +126,6 @@ jobs:
     # https://github.com/docker/setup-qemu-action
     - name: Set up QEMU
       if: success()
-      id: qemu
       uses: docker/setup-qemu-action@v1
       with:
         image: tonistiigi/binfmt:latest
@@ -149,17 +160,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
     - name: Docker Log out fix
+      if: success() && !env.ACT
       run: |
         docker logout
         docker logout ghcr.io
     - name: Login to DockerHub
-      if: success() && github.actor == 'miigotu'
+      if: success() && github.actor == 'miigotu' && !env.ACT
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Login to GitHub Container Registry
-      if: success() && github.actor == 'miigotu'
+      if: success() && github.actor == 'miigotu' && !env.ACT
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
@@ -171,7 +183,7 @@ jobs:
       with:
         context: .
         platforms: ${{ steps.prepare.outputs.docker_platforms }}
-        push: true
+        push: ${{ !env.ACT }}
         tags: |
           ghcr.io/sickchill/sickchill:master
           ghcr.io/ps3dev/ps3dev:latest
@@ -185,7 +197,7 @@ jobs:
       with:
         context: .
         platforms: ${{ steps.prepare.outputs.docker_platforms }}
-        push: true
+        push: ${{ !env.ACT }}
         tags: |
           ghcr.io/sickchill/sickchill:${{ steps.prepare.outputs.version }}
           sickchill/sickchill:${{ steps.prepare.outputs.version }}

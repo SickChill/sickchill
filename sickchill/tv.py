@@ -1471,7 +1471,7 @@ class TVEpisode(object):
                 )
             )
 
-            notifiers.notify_subtitle_download(self.pretty_name(), subtitle_list)
+            notifiers.notify_subtitle_download(self.pretty_name, subtitle_list)
         else:
             logger.debug(
                 "{id}: No subtitles downloaded for {show} {ep}".format(id=self.show.indexerid, show=self.show.name, ep=episode_num(self.season, self.episode))
@@ -2054,6 +2054,7 @@ class TVEpisode(object):
             return strings
         return self._format_pattern(pattern)
 
+    @property
     def pretty_name(self):
         """
         Returns the name of this episode in a "pretty" human-readable format. Used for logging

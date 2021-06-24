@@ -173,7 +173,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
             logger.debug("Air date incorrect in parsed episode, pattern isn't valid")
             return False
     elif anime_type != 3:
-        if len(result.ab_episode_numbers) and result.ab_episode_numbers != [x.absolute_number for x in [ep] + ep.relatedEps]:
+        if result.ab_episode_numbers and result.ab_episode_numbers != [x.absolute_number for x in [ep] + ep.relatedEps]:
             logger.debug("Absolute numbering incorrect in parsed episode, pattern isn't valid")
             return False
     else:

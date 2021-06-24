@@ -637,7 +637,7 @@ class Home(WebRoot):
         else:
             backend_dirs = []
 
-        if len(backend_dirs):
+        if backend_dirs:
             for subject in backend_dirs:
                 rootDir[subject] = helpers.disk_usage_hr(subject)
 
@@ -1107,7 +1107,7 @@ class Home(WebRoot):
             bestQualities = [bestQualities]
 
         if isinstance(exceptions_list, list):
-            if len(exceptions_list) > 0:
+            if exceptions_list:
                 exceptions_list = exceptions_list[0]
             else:
                 exceptions_list = None
