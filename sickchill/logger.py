@@ -471,7 +471,7 @@ debug = Wrapper.instance.logger.debug
 info = Wrapper.instance.logger.info
 warning = Wrapper.instance.logger.warning
 error = Wrapper.instance.logger.error
-exception = logging.exception
+exception = error
 critical = Wrapper.instance.logger.critical
 
 
