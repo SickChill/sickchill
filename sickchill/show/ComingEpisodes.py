@@ -128,7 +128,7 @@ class ComingEpisodes(object):
             else:
                 category = "soon"
 
-            if len(categories) > 0 and category not in categories:
+            if categories and category not in categories:
                 continue
 
             if not result["network"]:

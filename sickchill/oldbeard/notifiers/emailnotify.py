@@ -332,7 +332,7 @@ class Notifier(object):
         # Grab the global recipients
         if settings.EMAIL_LIST:
             for addr in settings.EMAIL_LIST.split(","):
-                if len(addr.strip()) > 0:
+                if addr.strip():
                     addrs.append(addr)
 
         # Grab the per-show-notification recipients
@@ -343,11 +343,11 @@ class Notifier(object):
                         if subs["notify_list"][0] == "{":
                             entries = dict(ast.literal_eval(subs["notify_list"]))
                             for addr in entries["emails"].split(","):
-                                if len(addr.strip()) > 0:
+                                if addr.strip():
                                     addrs.append(addr)
                         else:  # Legacy
                             for addr in subs["notify_list"].split(","):
-                                if len(addr.strip()) > 0:
+                                if addr.strip():
                                     addrs.append(addr)
 
         addrs = set(addrs)

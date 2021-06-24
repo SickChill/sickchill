@@ -1,6 +1,7 @@
 tests
 .github
 /build/
-/sickchill.egg-info/
+sickchill.egg-info
+.pytest_cache
 /.eggs/
 /dist/

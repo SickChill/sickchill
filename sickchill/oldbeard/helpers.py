@@ -670,8 +670,8 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
     episodes = []
     season = None
 
-    if len(absolute_numbers):
-        if not show and indexer_id:
+    if absolute_numbers:
+        if indexer_id and not show:
             show = Show.find(settings.showList, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:

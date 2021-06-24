@@ -1605,7 +1605,7 @@ class CMDSickChillDeleteRootDir(ApiCall):
                 break
 
         root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs_new]
-        if len(root_dirs_new) > 0:
+        if root_dirs_new:
             root_dirs_new.insert(0, new_index)
         # noinspection PyCompatibility
         root_dirs_new = "|".join(str(x) for x in root_dirs_new)

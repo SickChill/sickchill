@@ -32,6 +32,7 @@ def check_installed():
         return False
     return True
 
+
 def pip_install(packages):
     if not isinstance(packages, list):
         packages = [packages]
@@ -47,6 +48,7 @@ def pip_install(packages):
         except subprocess.CalledProcessError:
             return False
     return True
+
 
 def poetry_install():
     if not check_installed():

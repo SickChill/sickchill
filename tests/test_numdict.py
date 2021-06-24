@@ -390,7 +390,7 @@ class NumDictTest(unittest.TestCase):
         assert val in test
 
         assert test.setdefault(val, 23) == 42
-        assert test.setdefault(val, "23") ==  42
+        assert test.setdefault(val, "23") == 42
         assert test.setdefault(val, 23) != "42"
         assert test.setdefault(val, "23") != "42"
         assert val in test

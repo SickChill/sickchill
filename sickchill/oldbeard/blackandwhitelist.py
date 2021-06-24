@@ -103,6 +103,7 @@ class BlackAndWhiteList(object):
                 white_result = True
             else:
                 white_result = False
+
             if result.release_group.lower() in [x.lower() for x in self.blacklist]:
                 black_result = False
             else:

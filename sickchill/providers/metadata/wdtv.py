@@ -180,7 +180,7 @@ class WDTVMetadata(generic.GenericMetadata):
                 episodeID.text = str(myEp["id"])
 
             title = ElementTree.SubElement(episode, "title")
-            title.text = ep_obj.pretty_name()
+            title.text = ep_obj.pretty_name
 
             if getattr(myShow, "seriesName", None):
                 seriesName = ElementTree.SubElement(episode, "series_name")
