@@ -691,14 +691,12 @@ def sanitizeSceneName(name, anime=False):
     :return: A string containing the scene version of the show name given.
     """
 
-    # assert isinstance(name, unicode), name + ' is not unicode'
-
     if not name:
         return ""
 
     bad_chars = ",:()!?\u2019"
     if not anime:
-        bad_chars += "'’"
+        bad_chars += "'’`"
 
     # strip out any bad chars
     for x in bad_chars:
