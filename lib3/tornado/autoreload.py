@@ -158,8 +158,7 @@ def add_reload_hook(fn: Callable[[], None]) -> None:
 
     Note that for open file and socket handles it is generally
     preferable to set the ``FD_CLOEXEC`` flag (using `fcntl` or
-    ``tornado.platform.auto.set_close_exec``) instead
-    of using a reload hook to close them.
+    `os.set_inheritable`) instead of using a reload hook to close them.
     """
     _reload_hooks.append(fn)
 
@@ -253,8 +252,8 @@ def _reload() -> None:
             # Unfortunately the errno returned in this case does not
             # appear to be consistent, so we can't easily check for
             # this error specifically.
-            os.spawnv(  # type: ignore
-                os.P_NOWAIT, sys.executable, [sys.executable] + argv
+            os.spawnv(
+                os.P_NOWAIT, sys.executable, [sys.executable] + argv  # type: ignore
             )
             # At this point the IOLoop has been closed and finally
             # blocks will experience errors if we allow the stack to

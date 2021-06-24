@@ -1,5 +1,5 @@
 # event/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -29,7 +29,13 @@ _registrars = util.defaultdict(list)
 
 
 def _is_event_name(name):
-    return not name.startswith("_") and name != "dispatch"
+    # _sa_event prefix is special to support internal-only event names.
+    # most event names are just plain method names that aren't
+    # underscored.
+
+    return (
+        not name.startswith("_") and name != "dispatch"
+    ) or name.startswith("_sa_event")
 
 
 class _UnpickleDispatch(object):
@@ -142,7 +148,7 @@ class _Dispatch(object):
 
     def _update(self, other, only_propagate=True):
         """Populate from the listeners in another :class:`_Dispatch`
-            object."""
+        object."""
         for ls in other._event_descriptors:
             if isinstance(ls, _EmptyListener):
                 continue
@@ -195,7 +201,14 @@ def _create_dispatcher_class(cls, classname, bases, dict_):
                 dispatch_cls._event_names.append(ls.name)
 
     if getattr(cls, "_dispatch_target", None):
-        cls._dispatch_target.dispatch = dispatcher(cls)
+        the_cls = cls._dispatch_target
+        if (
+            hasattr(the_cls, "__slots__")
+            and "_slots_dispatch" in the_cls.__slots__
+        ):
+            cls._dispatch_target.dispatch = slots_dispatcher(cls)
+        else:
+            cls._dispatch_target.dispatch = dispatcher(cls)
 
 
 def _remove_dispatcher(cls):
@@ -241,8 +254,17 @@ class Events(util.with_metaclass(_EventMeta, object)):
                 return target
 
     @classmethod
-    def _listen(cls, event_key, propagate=False, insert=False, named=False):
-        event_key.base_listen(propagate=propagate, insert=insert, named=named)
+    def _listen(
+        cls,
+        event_key,
+        propagate=False,
+        insert=False,
+        named=False,
+        asyncio=False,
+    ):
+        event_key.base_listen(
+            propagate=propagate, insert=insert, named=named, asyncio=asyncio
+        )
 
     @classmethod
     def _remove(cls, event_key):
@@ -295,5 +317,29 @@ class dispatcher(object):
     def __get__(self, obj, cls):
         if obj is None:
             return self.dispatch
-        obj.__dict__["dispatch"] = disp = self.dispatch._for_instance(obj)
+
+        disp = self.dispatch._for_instance(obj)
+        try:
+            obj.__dict__["dispatch"] = disp
+        except AttributeError as ae:
+            util.raise_(
+                TypeError(
+                    "target %r doesn't have __dict__, should it be "
+                    "defining _slots_dispatch?" % (obj,)
+                ),
+                replace_context=ae,
+            )
+        return disp
+
+
+class slots_dispatcher(dispatcher):
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self.dispatch
+
+        if hasattr(obj, "_slots_dispatch"):
+            return obj._slots_dispatch
+
+        disp = self.dispatch._for_instance(obj)
+        obj._slots_dispatch = disp
         return disp

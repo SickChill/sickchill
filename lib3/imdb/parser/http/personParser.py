@@ -437,9 +437,9 @@ class DOMHTMLBioParser(DOMParserBase):
     preprocessors = [
         (re.compile('(<h5>)', re.I), r'</div><div class="_imdbpy">\1'),
         (re.compile('(<h4)', re.I), r'</div><div class="_imdbpyh4">\1'),
-        (re.compile('(</table>\n</div>\s+)</div>', re.I + re.DOTALL), r'\1'),
+        (re.compile('(</table>\n</div>\\s+)</div>', re.I + re.DOTALL), r'\1'),
         (re.compile('(<div id="tn15bot">)'), r'</div>\1'),
-        (re.compile('\.<br><br>([^\s])', re.I), r'. \1')
+        (re.compile(r'\.<br><br>([^\s])', re.I), r'. \1')
     ]
 
     def postprocess_data(self, data):

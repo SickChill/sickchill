@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Steve English <steve.english@navetas.com>                     #
@@ -45,7 +43,7 @@ import github.GithubObject
 
 class Membership(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Membership of an organization. The reference can be found here http://developer.github.com/v3/orgs/
+    This class represents Membership of an organization. The reference can be found here http://docs.github.com/en/rest/reference/orgs
     """
 
     def __repr__(self):

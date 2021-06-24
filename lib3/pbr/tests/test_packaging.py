@@ -135,7 +135,6 @@ class GPGKeyFixture(fixtures.Fixture):
             Name-Comment: N/A
             Name-Email: example@example.com
             Expire-Date: 2d
-            Preferences: (setpref)
             %commit
             """)
 

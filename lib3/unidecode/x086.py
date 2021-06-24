@@ -20,7 +20,7 @@ data = (
 'Hagi ',    # 0x12
 'Su ',    # 0x13
 'Jiong ',    # 0x14
-'[?] ',    # 0x15
+None,    # 0x15
 'Nie ',    # 0x16
 'Bo ',    # 0x17
 'Rang ',    # 0x18
@@ -68,7 +68,7 @@ data = (
 'Lu ',    # 0x42
 'Jian ',    # 0x43
 'San ',    # 0x44
-'[?] ',    # 0x45
+None,    # 0x45
 'Lei ',    # 0x46
 'Quan ',    # 0x47
 'Xiao ',    # 0x48
@@ -113,7 +113,7 @@ data = (
 'Qiu ',    # 0x6f
 'Cheng ',    # 0x70
 'Shi ',    # 0x71
-'[?] ',    # 0x72
+None,    # 0x72
 'Di ',    # 0x73
 'Zhe ',    # 0x74
 'She ',    # 0x75

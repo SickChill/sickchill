@@ -1,5 +1,5 @@
 # sybase/base.py
-# Copyright (C) 2010-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2010-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 # get_select_precolumns(), limit_clause() implementation
 # copyright (C) 2007 Fisch Asset Management
@@ -21,6 +21,9 @@
     many issues and caveats not currently handled. Consider using the
     `external dialect <https://github.com/gordthompson/sqlalchemy-sybase>`_
     instead.
+
+.. deprecated:: 1.4 The internal Sybase dialect is deprecated and will be
+   removed in a future version. Use the external dialect.
 
 """
 
@@ -561,8 +564,9 @@ class SybaseSQLCompiler(compiler.SQLCompiler):
         self, delete_stmt, from_table, extra_froms, from_hints, **kw
     ):
         """Render the DELETE .. FROM clause specific to Sybase."""
+        kw["asfrom"] = True
         return "FROM " + ", ".join(
-            t._compiler_dispatch(self, asfrom=True, fromhints=from_hints, **kw)
+            t._compiler_dispatch(self, fromhints=from_hints, **kw)
             for t in [from_table] + extra_froms
         )
 
@@ -629,6 +633,7 @@ class SybaseDialect(default.DefaultDialect):
     supports_unicode_statements = False
     supports_sane_rowcount = False
     supports_sane_multi_rowcount = False
+    supports_statement_cache = True
 
     supports_native_boolean = False
     supports_unicode_binds = False
@@ -644,6 +649,15 @@ class SybaseDialect(default.DefaultDialect):
     inspector = SybaseInspector
 
     construct_arguments = []
+
+    def __init__(self, *args, **kwargs):
+        util.warn_deprecated(
+            "The Sybase dialect is deprecated and will be removed "
+            "in a future version. This dialect is superseded by the external "
+            "dialect https://github.com/gordthompson/sqlalchemy-sybase.",
+            version="1.4",
+        )
+        super(SybaseDialect, self).__init__(*args, **kwargs)
 
     def _get_default_schema_name(self, connection):
         return connection.scalar(
@@ -1076,6 +1090,8 @@ class SybaseDialect(default.DefaultDialect):
         return [v["name"] for v in views]
 
     def has_table(self, connection, table_name, schema=None):
+        self._ensure_has_table_connection(connection)
+
         try:
             self.get_table_id(connection, table_name, schema)
         except exc.NoSuchTableError:

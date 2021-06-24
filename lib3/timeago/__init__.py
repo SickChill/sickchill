@@ -12,7 +12,7 @@ from timeago.excepts import ParameterUnvalid
 from timeago import parser
 from timeago.setting import DEFAULT_LOCALE
 
-__version__ = '1.0.7'
+__version__ = '1.0.14'
 __license__ = 'MIT'
 __ALL__ = ['format']
 
@@ -45,10 +45,10 @@ def format(date, now=None, locale='en'):
 
         if date is None:
             raise ParameterUnvalid('the parameter `date` should be datetime '
-                                   '/ timedelta, or datetime formated string.')
+                                   '/ timedelta, or datetime formatted string.')
         if now is None:
             raise ParameterUnvalid('the parameter `now` should be datetime, '
-                                   'or datetime formated string.')
+                                   'or datetime formatted string.')
         date = now - date
     # the gap sec
     diff_seconds = int(total_seconds(date))
@@ -57,7 +57,7 @@ def format(date, now=None, locale='en'):
     ago_in = 0
     if diff_seconds < 0:
         ago_in = 1  # date is later then now, is the time in future
-        diff_seconds *= -1  # chango to positive
+        diff_seconds *= -1  # change to positive
 
     tmp = 0
     i = 0

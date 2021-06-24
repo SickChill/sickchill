@@ -1,5 +1,5 @@
 # firebird/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -17,6 +17,9 @@ r"""
     many issues and caveats not currently handled. Consider using the
     `external dialect <https://github.com/pauldex/sqlalchemy-firebird>`_
     instead.
+
+.. deprecated:: 1.4 The internal Firebird dialect is deprecated and will be
+   removed in a future version. Use the external dialect.
 
 Firebird Dialects
 -----------------
@@ -43,16 +46,16 @@ hang until other transactions are released.  SQLAlchemy does its best
 to release transactions as quickly as possible.  The most common cause
 of hanging transactions is a non-fully consumed result set, i.e.::
 
-    result = engine.execute("select * from table")
+    result = engine.execute(text("select * from table"))
     row = result.fetchone()
     return
 
-Where above, the ``ResultProxy`` has not been fully consumed.  The
+Where above, the ``CursorResult`` has not been fully consumed.  The
 connection will be returned to the pool and the transactional state
 rolled back once the Python garbage collector reclaims the objects
 which hold onto the connection, which often occurs asynchronously.
 The above use case can be alleviated by calling ``first()`` on the
-``ResultProxy`` which will fetch the first row and immediately close
+``CursorResult`` which will fetch the first row and immediately close
 all remaining cursor/connection resources.
 
 RETURNING support
@@ -436,7 +439,7 @@ class FBCompiler(sql.compiler.SQLCompiler):
     # def visit_contains_op_binary(self, binary, operator, **kw):
     # cant use CONTAINING b.c. it's case insensitive.
 
-    # def visit_notcontains_op_binary(self, binary, operator, **kw):
+    # def visit_not_contains_op_binary(self, binary, operator, **kw):
     # cant use NOT CONTAINING b.c. it's case insensitive.
 
     def visit_now_func(self, fn, **kw):
@@ -448,7 +451,7 @@ class FBCompiler(sql.compiler.SQLCompiler):
             binary.right._compiler_dispatch(self, **kw),
         )
 
-    def visit_notstartswith_op_binary(self, binary, operator, **kw):
+    def visit_not_startswith_op_binary(self, binary, operator, **kw):
         return "%s NOT STARTING WITH %s" % (
             binary.left._compiler_dispatch(self, **kw),
             binary.right._compiler_dispatch(self, **kw),
@@ -475,12 +478,12 @@ class FBCompiler(sql.compiler.SQLCompiler):
                 )
 
                 return (
-                    self.process(alias.original, asfrom=asfrom, **kwargs)
+                    self.process(alias.element, asfrom=asfrom, **kwargs)
                     + " "
                     + self.preparer.format_alias(alias, alias_name)
                 )
             else:
-                return self.process(alias.original, **kwargs)
+                return self.process(alias.element, **kwargs)
 
     def visit_substring_func(self, func, **kw):
         s = self.process(func.clauses.clauses[0])
@@ -526,8 +529,7 @@ class FBCompiler(sql.compiler.SQLCompiler):
             result += "FIRST %s " % self.process(select._limit_clause, **kw)
         if select._offset_clause is not None:
             result += "SKIP %s " % self.process(select._offset_clause, **kw)
-        if select._distinct:
-            result += "DISTINCT "
+        result += super(FBCompiler, self).get_select_precolumns(select, **kw)
         return result
 
     def limit_clause(self, select, **kw):
@@ -612,7 +614,7 @@ class FBExecutionContext(default.DefaultExecutionContext):
 
         return self._execute_scalar(
             "SELECT gen_id(%s, 1) FROM rdb$database"
-            % self.dialect.identifier_preparer.format_sequence(seq),
+            % self.identifier_preparer.format_sequence(seq),
             type_,
         )
 
@@ -621,6 +623,7 @@ class FBDialect(default.DefaultDialect):
     """Firebird dialect"""
 
     name = "firebird"
+    supports_statement_cache = True
 
     max_identifier_length = 31
 
@@ -650,6 +653,15 @@ class FBDialect(default.DefaultDialect):
     # first connect
     _version_two = True
 
+    def __init__(self, *args, **kwargs):
+        util.warn_deprecated(
+            "The firebird dialect is deprecated and will be removed "
+            "in a future version. This dialect is superseded by the external "
+            "dialect https://github.com/pauldex/sqlalchemy-firebird.",
+            version="1.4",
+        )
+        super(FBDialect, self).__init__(*args, **kwargs)
+
     def initialize(self, connection):
         super(FBDialect, self).initialize(connection)
         self._version_two = (
@@ -673,6 +685,7 @@ class FBDialect(default.DefaultDialect):
     def has_table(self, connection, table_name, schema=None):
         """Return ``True`` if the given table exists, ignoring
         the `schema`."""
+        self._ensure_has_table_connection(connection)
 
         tblqry = """
         SELECT 1 AS has_table FROM rdb$database
@@ -680,7 +693,9 @@ class FBDialect(default.DefaultDialect):
                       FROM rdb$relations
                       WHERE rdb$relation_name=?)
         """
-        c = connection.execute(tblqry, [self.denormalize_name(table_name)])
+        c = connection.exec_driver_sql(
+            tblqry, [self.denormalize_name(table_name)]
+        )
         return c.first() is not None
 
     def has_sequence(self, connection, sequence_name, schema=None):
@@ -692,7 +707,9 @@ class FBDialect(default.DefaultDialect):
                       FROM rdb$generators
                       WHERE rdb$generator_name=?)
         """
-        c = connection.execute(genqry, [self.denormalize_name(sequence_name)])
+        c = connection.exec_driver_sql(
+            genqry, [self.denormalize_name(sequence_name)]
+        )
         return c.first() is not None
 
     @reflection.cache
@@ -715,7 +732,10 @@ class FBDialect(default.DefaultDialect):
         # FROM rdb$relation_fields
         # WHERE rdb$system_flag=0 AND rdb$view_context IS NULL
 
-        return [self.normalize_name(row[0]) for row in connection.execute(s)]
+        return [
+            self.normalize_name(row[0])
+            for row in connection.exec_driver_sql(s)
+        ]
 
     @reflection.cache
     def get_view_names(self, connection, schema=None, **kw):
@@ -726,7 +746,10 @@ class FBDialect(default.DefaultDialect):
         where rdb$view_blr is not null
         and (rdb$system_flag is null or rdb$system_flag = 0);
         """
-        return [self.normalize_name(row[0]) for row in connection.execute(s)]
+        return [
+            self.normalize_name(row[0])
+            for row in connection.exec_driver_sql(s)
+        ]
 
     @reflection.cache
     def get_view_definition(self, connection, view_name, schema=None, **kw):
@@ -735,7 +758,9 @@ class FBDialect(default.DefaultDialect):
         FROM rdb$relations
         WHERE rdb$relation_name=?
         """
-        rp = connection.execute(qry, [self.denormalize_name(view_name)])
+        rp = connection.exec_driver_sql(
+            qry, [self.denormalize_name(view_name)]
+        )
         row = rp.first()
         if row:
             return row["view_source"]
@@ -753,7 +778,7 @@ class FBDialect(default.DefaultDialect):
         """
         tablename = self.denormalize_name(table_name)
         # get primary key fields
-        c = connection.execute(keyqry, ["PRIMARY KEY", tablename])
+        c = connection.exec_driver_sql(keyqry, ["PRIMARY KEY", tablename])
         pkfields = [self.normalize_name(r["fname"]) for r in c.fetchall()]
         return {"constrained_columns": pkfields, "name": None}
 
@@ -781,7 +806,7 @@ class FBDialect(default.DefaultDialect):
            FROM rdb$dependencies trigdep2
            WHERE trigdep2.rdb$dependent_name = trigdep.rdb$dependent_name) = 2
         """
-        genr = connection.execute(genqry, [tablename, colname]).first()
+        genr = connection.exec_driver_sql(genqry, [tablename, colname]).first()
         if genr is not None:
             return dict(name=self.normalize_name(genr["fgenerator"]))
 
@@ -815,7 +840,7 @@ class FBDialect(default.DefaultDialect):
 
         tablename = self.denormalize_name(table_name)
         # get all of the fields for this table
-        c = connection.execute(tblqry, [tablename])
+        c = connection.exec_driver_sql(tblqry, [tablename])
         cols = []
         while True:
             row = c.fetchone()
@@ -906,7 +931,7 @@ class FBDialect(default.DefaultDialect):
         """
         tablename = self.denormalize_name(table_name)
 
-        c = connection.execute(fkqry, ["FOREIGN KEY", tablename])
+        c = connection.exec_driver_sql(fkqry, ["FOREIGN KEY", tablename])
         fks = util.defaultdict(
             lambda: {
                 "name": None,
@@ -945,7 +970,9 @@ class FBDialect(default.DefaultDialect):
           AND rdb$relation_constraints.rdb$constraint_type IS NULL
         ORDER BY index_name, ic.rdb$field_position
         """
-        c = connection.execute(qry, [self.denormalize_name(table_name)])
+        c = connection.exec_driver_sql(
+            qry, [self.denormalize_name(table_name)]
+        )
 
         indexes = util.defaultdict(dict)
         for row in c:

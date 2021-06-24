@@ -1,5 +1,5 @@
 # ext/__init__.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -8,4 +8,4 @@
 from .. import util as _sa_util
 
 
-_sa_util.dependencies.resolve_all("sqlalchemy.ext")
+_sa_util.preloaded.import_prefix("sqlalchemy.ext")

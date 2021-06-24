@@ -1,5 +1,5 @@
 # engine/reflection.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -25,7 +25,11 @@ methods such as get_table_names, get_columns, etc.
    'name' attribute..
 """
 
+import contextlib
+
 from .base import Connectable
+from .base import Connection
+from .base import Engine
 from .. import exc
 from .. import inspection
 from .. import sql
@@ -33,7 +37,6 @@ from .. import util
 from ..sql import operators
 from ..sql import schema as sa_schema
 from ..sql.type_api import TypeEngine
-from ..util import deprecated
 from ..util import topological
 
 
@@ -54,6 +57,7 @@ def cache(fn, self, con, *args, **kw):
     return ret
 
 
+@inspection._self_inspects
 class Inspector(object):
     """Performs database schema inspection.
 
@@ -63,25 +67,32 @@ class Inspector(object):
     fetched metadata.
 
     A :class:`_reflection.Inspector` object is usually created via the
-    :func:`_sa.inspect` function::
+    :func:`_sa.inspect` function, which may be passed an
+    :class:`_engine.Engine`
+    or a :class:`_engine.Connection`::
 
         from sqlalchemy import inspect, create_engine
         engine = create_engine('...')
         insp = inspect(engine)
 
-    The inspection method above is equivalent to using the
-    :meth:`_reflection.Inspector.from_engine` method, i.e.::
-
-        engine = create_engine('...')
-        insp = Inspector.from_engine(engine)
-
-    Where above, the :class:`~sqlalchemy.engine.interfaces.Dialect` may opt
-    to return an :class:`_reflection.Inspector`
-    subclass that provides additional
-    methods specific to the dialect's target database.
+    Where above, the :class:`~sqlalchemy.engine.interfaces.Dialect` associated
+    with the engine may opt to return an :class:`_reflection.Inspector`
+    subclass that
+    provides additional methods specific to the dialect's target database.
 
     """
 
+    @util.deprecated(
+        "1.4",
+        "The __init__() method on :class:`_reflection.Inspector` "
+        "is deprecated and "
+        "will be removed in a future release.  Please use the "
+        ":func:`.sqlalchemy.inspect` "
+        "function on an :class:`_engine.Engine` or "
+        ":class:`_engine.Connection` "
+        "in order to "
+        "acquire an :class:`_reflection.Inspector`.",
+    )
     def __init__(self, bind):
         """Initialize a new :class:`_reflection.Inspector`.
 
@@ -94,23 +105,50 @@ class Inspector(object):
         :meth:`_reflection.Inspector.from_engine`
 
         """
-        # this might not be a connection, it could be an engine.
-        self.bind = bind
+        return self._init_legacy(bind)
 
-        # set the engine
-        if hasattr(bind, "engine"):
-            self.engine = bind.engine
+    @classmethod
+    def _construct(cls, init, bind):
+
+        if hasattr(bind.dialect, "inspector"):
+            cls = bind.dialect.inspector
+
+        self = cls.__new__(cls)
+        init(self, bind)
+        return self
+
+    def _init_legacy(self, bind):
+        if hasattr(bind, "exec_driver_sql"):
+            self._init_connection(bind)
         else:
-            self.engine = bind
+            self._init_engine(bind)
 
-        if self.engine is bind:
-            # if engine, ensure initialized
-            bind.connect().close()
+    def _init_engine(self, engine):
+        self.bind = self.engine = engine
+        engine.connect().close()
+        self._op_context_requires_connect = True
+        self.dialect = self.engine.dialect
+        self.info_cache = {}
 
+    def _init_connection(self, connection):
+        self.bind = connection
+        self.engine = connection.engine
+        self._op_context_requires_connect = False
         self.dialect = self.engine.dialect
         self.info_cache = {}
 
     @classmethod
+    @util.deprecated(
+        "1.4",
+        "The from_engine() method on :class:`_reflection.Inspector` "
+        "is deprecated and "
+        "will be removed in a future release.  Please use the "
+        ":func:`.sqlalchemy.inspect` "
+        "function on an :class:`_engine.Engine` or "
+        ":class:`_engine.Connection` "
+        "in order to "
+        "acquire an :class:`_reflection.Inspector`.",
+    )
     def from_engine(cls, bind):
         """Construct a new dialect-specific Inspector object from the given
         engine or connection.
@@ -130,13 +168,55 @@ class Inspector(object):
         See the example at :class:`_reflection.Inspector`.
 
         """
-        if hasattr(bind.dialect, "inspector"):
-            return bind.dialect.inspector(bind)
-        return Inspector(bind)
+        return cls._construct(cls._init_legacy, bind)
 
     @inspection._inspects(Connectable)
-    def _insp(bind):
-        return Inspector.from_engine(bind)
+    def _connectable_insp(bind):
+        # this method should not be used unless some unusual case
+        # has subclassed "Connectable"
+
+        return Inspector._construct(Inspector._init_legacy, bind)
+
+    @inspection._inspects(Engine)
+    def _engine_insp(bind):
+        return Inspector._construct(Inspector._init_engine, bind)
+
+    @inspection._inspects(Connection)
+    def _connection_insp(bind):
+        return Inspector._construct(Inspector._init_connection, bind)
+
+    @contextlib.contextmanager
+    def _operation_context(self):
+        """Return a context that optimizes for multiple operations on a single
+        transaction.
+
+        This essentially allows connect()/close() to be called if we detected
+        that we're against an :class:`_engine.Engine` and not a
+        :class:`_engine.Connection`.
+
+        """
+        if self._op_context_requires_connect:
+            conn = self.bind.connect()
+        else:
+            conn = self.bind
+        try:
+            yield conn
+        finally:
+            if self._op_context_requires_connect:
+                conn.close()
+
+    @contextlib.contextmanager
+    def _inspection_context(self):
+        """Return an :class:`_reflection.Inspector`
+        from this one that will run all
+        operations on a single connection.
+
+        """
+
+        with self._operation_context() as conn:
+            sub_insp = self._construct(self.__class__._init_connection, conn)
+            sub_insp.info_cache = self.info_cache
+            yield sub_insp
 
     @property
     def default_schema_name(self):
@@ -150,27 +230,16 @@ class Inspector(object):
         return self.dialect.default_schema_name
 
     def get_schema_names(self):
-        """Return all schema names.
-        """
+        """Return all schema names."""
 
         if hasattr(self.dialect, "get_schema_names"):
-            return self.dialect.get_schema_names(
-                self.bind, info_cache=self.info_cache
-            )
+            with self._operation_context() as conn:
+                return self.dialect.get_schema_names(
+                    conn, info_cache=self.info_cache
+                )
         return []
 
-    @util.deprecated_params(
-        order_by=(
-            "1.0",
-            "The :paramref:`get_table_names.order_by` parameter is deprecated "
-            "and will be removed in a future release.  Please refer to "
-            ":meth:`_reflection.Inspector.get_sorted_table_and_fkc_names` "
-            "for a "
-            "more comprehensive solution to resolving foreign key cycles "
-            "between tables.",
-        )
-    )
-    def get_table_names(self, schema=None, order_by=None):
+    def get_table_names(self, schema=None):
         """Return all table names in referred to within a particular schema.
 
         The names are expected to be real tables only, not views.
@@ -185,11 +254,6 @@ class Inspector(object):
          support named schemas, behavior is undefined if ``schema`` is not
          passed as ``None``.  For special quoting, use :class:`.quoted_name`.
 
-        :param order_by: Optional, may be the string "foreign_key" to sort
-         the result on foreign key dependencies.  Does not automatically
-         resolve cycles, and will raise :class:`.CircularDependencyError`
-         if cycles exist.
-
         .. seealso::
 
             :meth:`_reflection.Inspector.get_sorted_table_and_fkc_names`
@@ -198,20 +262,38 @@ class Inspector(object):
 
         """
 
-        if hasattr(self.dialect, "get_table_names"):
-            tnames = self.dialect.get_table_names(
-                self.bind, schema, info_cache=self.info_cache
+        with self._operation_context() as conn:
+            return self.dialect.get_table_names(
+                conn, schema, info_cache=self.info_cache
             )
-        else:
-            tnames = self.engine.table_names(schema)
-        if order_by == "foreign_key":
-            tuples = []
-            for tname in tnames:
-                for fkey in self.get_foreign_keys(tname, schema):
-                    if tname != fkey["referred_table"]:
-                        tuples.append((fkey["referred_table"], tname))
-            tnames = list(topological.sort(tuples, tnames))
-        return tnames
+
+    def has_table(self, table_name, schema=None):
+        """Return True if the backend has a table of the given name.
+
+
+        :param table_name: name of the table to check
+        :param schema: schema name to query, if not the default schema.
+
+        .. versionadded:: 1.4 - the :meth:`.Inspector.has_table` method
+           replaces the :meth:`_engine.Engine.has_table` method.
+
+        """
+        # TODO: info_cache?
+        with self._operation_context() as conn:
+            return self.dialect.has_table(conn, table_name, schema)
+
+    def has_sequence(self, sequence_name, schema=None):
+        """Return True if the backend has a table of the given name.
+
+        :param sequence_name: name of the table to check
+        :param schema: schema name to query, if not the default schema.
+
+        .. versionadded:: 1.4
+
+        """
+        # TODO: info_cache?
+        with self._operation_context() as conn:
+            return self.dialect.has_sequence(conn, sequence_name, schema)
 
     def get_sorted_table_and_fkc_names(self, schema=None):
         """Return dependency-sorted table and foreign key constraint names in
@@ -237,12 +319,11 @@ class Inspector(object):
             with an already-given :class:`_schema.MetaData`.
 
         """
-        if hasattr(self.dialect, "get_table_names"):
+
+        with self._operation_context() as conn:
             tnames = self.dialect.get_table_names(
-                self.bind, schema, info_cache=self.info_cache
+                conn, schema, info_cache=self.info_cache
             )
-        else:
-            tnames = self.engine.table_names(schema)
 
         tuples = set()
         remaining_fkcs = set()
@@ -278,9 +359,11 @@ class Inspector(object):
         .. versionadded:: 1.0.0
 
         """
-        return self.dialect.get_temp_table_names(
-            self.bind, info_cache=self.info_cache
-        )
+
+        with self._operation_context() as conn:
+            return self.dialect.get_temp_table_names(
+                conn, info_cache=self.info_cache
+            )
 
     def get_temp_view_names(self):
         """Return a list of temporary view names for the current bind.
@@ -291,9 +374,10 @@ class Inspector(object):
         .. versionadded:: 1.0.0
 
         """
-        return self.dialect.get_temp_view_names(
-            self.bind, info_cache=self.info_cache
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_temp_view_names(
+                conn, info_cache=self.info_cache
+            )
 
     def get_table_options(self, table_name, schema=None, **kw):
         """Return a dictionary of options specified when the table of the
@@ -310,9 +394,10 @@ class Inspector(object):
 
         """
         if hasattr(self.dialect, "get_table_options"):
-            return self.dialect.get_table_options(
-                self.bind, table_name, schema, info_cache=self.info_cache, **kw
-            )
+            with self._operation_context() as conn:
+                return self.dialect.get_table_options(
+                    conn, table_name, schema, info_cache=self.info_cache, **kw
+                )
         return {}
 
     def get_view_names(self, schema=None):
@@ -323,9 +408,23 @@ class Inspector(object):
 
         """
 
-        return self.dialect.get_view_names(
-            self.bind, schema, info_cache=self.info_cache
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_view_names(
+                conn, schema, info_cache=self.info_cache
+            )
+
+    def get_sequence_names(self, schema=None):
+        """Return all sequence names in `schema`.
+
+        :param schema: Optional, retrieve names from a non-default schema.
+         For special quoting, use :class:`.quoted_name`.
+
+        """
+
+        with self._operation_context() as conn:
+            return self.dialect.get_sequence_names(
+                conn, schema, info_cache=self.info_cache
+            )
 
     def get_view_definition(self, view_name, schema=None):
         """Return definition for `view_name`.
@@ -335,9 +434,10 @@ class Inspector(object):
 
         """
 
-        return self.dialect.get_view_definition(
-            self.bind, view_name, schema, info_cache=self.info_cache
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_view_definition(
+                conn, view_name, schema, info_cache=self.info_cache
+            )
 
     def get_columns(self, table_name, schema=None, **kw):
         """Return information about columns in `table_name`.
@@ -373,8 +473,13 @@ class Inspector(object):
 
           .. versionadded:: 1.3.16 - added support for computed reflection.
 
-        * ``dialect_options`` - (optional) a dict with dialect specific options
+        * ``identity`` - (optional) when present it indicates that this column
+          is a generated always column. Only some dialects return this key.
+          For a list of keywords on this dict see :class:`_schema.Identity`.
 
+          .. versionadded:: 1.4 - added support for identity column reflection.
+
+        * ``dialect_options`` - (optional) a dict with dialect specific options
 
         :param table_name: string name of the table.  For special quoting,
          use :class:`.quoted_name`.
@@ -388,33 +493,16 @@ class Inspector(object):
 
         """
 
-        col_defs = self.dialect.get_columns(
-            self.bind, table_name, schema, info_cache=self.info_cache, **kw
-        )
+        with self._operation_context() as conn:
+            col_defs = self.dialect.get_columns(
+                conn, table_name, schema, info_cache=self.info_cache, **kw
+            )
         for col_def in col_defs:
             # make this easy and only return instances for coltype
             coltype = col_def["type"]
             if not isinstance(coltype, TypeEngine):
                 col_def["type"] = coltype()
         return col_defs
-
-    @deprecated(
-        "0.7",
-        "The :meth:`_reflection.Inspector.get_primary_keys` "
-        "method is deprecated and "
-        "will be removed in a future release.  Please refer to the "
-        ":meth:`_reflection.Inspector.get_pk_constraint` method.",
-    )
-    def get_primary_keys(self, table_name, schema=None, **kw):
-        """Return information about primary keys in `table_name`.
-
-        Given a string `table_name`, and an optional string `schema`, return
-        primary key information as a list of column names.
-        """
-
-        return self.dialect.get_pk_constraint(
-            self.bind, table_name, schema, info_cache=self.info_cache, **kw
-        )["constrained_columns"]
 
     def get_pk_constraint(self, table_name, schema=None, **kw):
         """Return information about primary key constraint on `table_name`.
@@ -436,9 +524,10 @@ class Inspector(object):
          use :class:`.quoted_name`.
 
         """
-        return self.dialect.get_pk_constraint(
-            self.bind, table_name, schema, info_cache=self.info_cache, **kw
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_pk_constraint(
+                conn, table_name, schema, info_cache=self.info_cache, **kw
+            )
 
     def get_foreign_keys(self, table_name, schema=None, **kw):
         """Return information about foreign_keys in `table_name`.
@@ -471,9 +560,10 @@ class Inspector(object):
 
         """
 
-        return self.dialect.get_foreign_keys(
-            self.bind, table_name, schema, info_cache=self.info_cache, **kw
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_foreign_keys(
+                conn, table_name, schema, info_cache=self.info_cache, **kw
+            )
 
     def get_indexes(self, table_name, schema=None, **kw):
         """Return information about indexes in `table_name`.
@@ -492,7 +582,7 @@ class Inspector(object):
 
         * ``column_sorting`` -
           optional dict mapping column names to tuple of sort keywords,
-          which may include ``asc``, ``desc``, ``nullsfirst``, ``nullslast``.
+          which may include ``asc``, ``desc``, ``nulls_first``, ``nulls_last``.
 
           .. versionadded:: 1.3.5
 
@@ -511,9 +601,10 @@ class Inspector(object):
 
         """
 
-        return self.dialect.get_indexes(
-            self.bind, table_name, schema, info_cache=self.info_cache, **kw
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_indexes(
+                conn, table_name, schema, info_cache=self.info_cache, **kw
+            )
 
     def get_unique_constraints(self, table_name, schema=None, **kw):
         """Return information about unique constraints in `table_name`.
@@ -536,9 +627,10 @@ class Inspector(object):
 
         """
 
-        return self.dialect.get_unique_constraints(
-            self.bind, table_name, schema, info_cache=self.info_cache, **kw
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_unique_constraints(
+                conn, table_name, schema, info_cache=self.info_cache, **kw
+            )
 
     def get_table_comment(self, table_name, schema=None, **kw):
         """Return information about the table comment for ``table_name``.
@@ -556,9 +648,10 @@ class Inspector(object):
 
         """
 
-        return self.dialect.get_table_comment(
-            self.bind, table_name, schema, info_cache=self.info_cache, **kw
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_table_comment(
+                conn, table_name, schema, info_cache=self.info_cache, **kw
+            )
 
     def get_check_constraints(self, table_name, schema=None, **kw):
         """Return information about check constraints in `table_name`.
@@ -589,11 +682,23 @@ class Inspector(object):
 
         """
 
-        return self.dialect.get_check_constraints(
-            self.bind, table_name, schema, info_cache=self.info_cache, **kw
-        )
+        with self._operation_context() as conn:
+            return self.dialect.get_check_constraints(
+                conn, table_name, schema, info_cache=self.info_cache, **kw
+            )
 
-    def reflecttable(
+    @util.deprecated_20(
+        ":meth:`_reflection.Inspector.reflecttable`",
+        "The :meth:`_reflection.Inspector.reflecttable` "
+        "method was renamed to "
+        ":meth:`_reflection.Inspector.reflect_table`. This deprecated alias "
+        "will be removed in a future release.",
+    )
+    def reflecttable(self, *args, **kwargs):
+        "See reflect_table. This method name is deprecated"
+        return self.reflect_table(*args, **kwargs)
+
+    def reflect_table(
         self,
         table,
         include_columns,
@@ -608,13 +713,16 @@ class Inspector(object):
         table reflection.  Direct usage is like::
 
             from sqlalchemy import create_engine, MetaData, Table
-            from sqlalchemy.engine.reflection import Inspector
+            from sqlalchemy import inspect
 
             engine = create_engine('...')
             meta = MetaData()
             user_table = Table('user', meta)
-            insp = Inspector.from_engine(engine)
-            insp.reflecttable(user_table, None)
+            insp = inspect(engine)
+            insp.reflect_table(user_table, None)
+
+        .. versionchanged:: 1.4 Renamed from ``reflecttable`` to
+           ``reflect_table``
 
         :param table: a :class:`~sqlalchemy.schema.Table` instance.
         :param include_columns: a list of string column names to include
@@ -630,7 +738,8 @@ class Inspector(object):
 
         dialect = self.bind.dialect
 
-        schema = self.bind.schema_for_object(table)
+        with self._operation_context() as conn:
+            schema = conn.schema_for_object(table)
 
         table_name = table.name
 
@@ -733,6 +842,7 @@ class Inspector(object):
 
         orig_name = col_d["name"]
 
+        table.metadata.dispatch.column_reflect(self, table, col_d)
         table.dispatch.column_reflect(self, table, col_d)
 
         # fetch name again as column_reflect is allowed to
@@ -777,6 +887,10 @@ class Inspector(object):
             computed = sa_schema.Computed(**col_d["computed"])
             colargs.append(computed)
 
+        if "identity" in col_d:
+            computed = sa_schema.Identity(**col_d["identity"])
+            colargs.append(computed)
+
         if "sequence" in col_d:
             self._reflect_col_sequence(col_d, colargs)
 
@@ -786,7 +900,7 @@ class Inspector(object):
 
         if col.key in table.primary_key:
             col.primary_key = True
-        table.append_column(col)
+        table.append_column(col, replace_existing=True)
 
     def _reflect_col_sequence(self, col_d, colargs):
         if "sequence" in col_d:
@@ -854,7 +968,6 @@ class Inspector(object):
                     sa_schema.Table(
                         referred_table,
                         table.metadata,
-                        autoload=True,
                         schema=referred_schema,
                         autoload_with=self.bind,
                         _extend_on=_extend_on,
@@ -869,7 +982,6 @@ class Inspector(object):
                     sa_schema.Table(
                         referred_table,
                         table.metadata,
-                        autoload=True,
                         autoload_with=self.bind,
                         schema=sa_schema.BLANK_SCHEMA,
                         _extend_on=_extend_on,
@@ -894,8 +1006,8 @@ class Inspector(object):
     _index_sort_exprs = [
         ("asc", operators.asc_op),
         ("desc", operators.desc_op),
-        ("nullsfirst", operators.nullsfirst_op),
-        ("nullslast", operators.nullslast_op),
+        ("nulls_first", operators.nulls_first_op),
+        ("nulls_last", operators.nulls_last_op),
     ]
 
     def _reflect_indexes(

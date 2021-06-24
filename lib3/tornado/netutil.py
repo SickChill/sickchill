@@ -25,14 +25,9 @@ import stat
 
 from tornado.concurrent import dummy_executor, run_on_executor
 from tornado.ioloop import IOLoop
-from tornado.platform.auto import set_close_exec
 from tornado.util import Configurable, errno_from_exception
 
-import typing
-from typing import List, Callable, Any, Type, Dict, Union, Tuple, Awaitable
-
-if typing.TYPE_CHECKING:
-    from asyncio import Future  # noqa: F401
+from typing import List, Callable, Any, Type, Dict, Union, Tuple, Awaitable, Optional
 
 # Note that the naming of ssl.Purpose is confusing; the purpose
 # of a context is to authentiate the opposite side of the connection.
@@ -53,24 +48,16 @@ u"foo".encode("idna")
 # For undiagnosed reasons, 'latin1' codec may also need to be preloaded.
 u"foo".encode("latin1")
 
-# These errnos indicate that a non-blocking operation must be retried
-# at a later time.  On most platforms they're the same value, but on
-# some they differ.
-_ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
-
-if hasattr(errno, "WSAEWOULDBLOCK"):
-    _ERRNO_WOULDBLOCK += (errno.WSAEWOULDBLOCK,)  # type: ignore
-
 # Default backlog used when calling sock.listen()
 _DEFAULT_BACKLOG = 128
 
 
 def bind_sockets(
     port: int,
-    address: str = None,
+    address: Optional[str] = None,
     family: socket.AddressFamily = socket.AF_UNSPEC,
     backlog: int = _DEFAULT_BACKLOG,
-    flags: int = None,
+    flags: Optional[int] = None,
     reuse_port: bool = False,
 ) -> List[socket.socket]:
     """Creates listening sockets bound to the given port and address.
@@ -142,7 +129,6 @@ def bind_sockets(
             if errno_from_exception(e) == errno.EAFNOSUPPORT:
                 continue
             raise
-        set_close_exec(sock.fileno())
         if os.name != "nt":
             try:
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -171,7 +157,29 @@ def bind_sockets(
             sockaddr = tuple([host, bound_port] + list(sockaddr[2:]))
 
         sock.setblocking(False)
-        sock.bind(sockaddr)
+        try:
+            sock.bind(sockaddr)
+        except OSError as e:
+            if (
+                errno_from_exception(e) == errno.EADDRNOTAVAIL
+                and address == "localhost"
+                and sockaddr[0] == "::1"
+            ):
+                # On some systems (most notably docker with default
+                # configurations), ipv6 is partially disabled:
+                # socket.has_ipv6 is true, we can create AF_INET6
+                # sockets, and getaddrinfo("localhost", ...,
+                # AF_PASSIVE) resolves to ::1, but we get an error
+                # when binding.
+                #
+                # Swallow the error, but only for this specific case.
+                # If EADDRNOTAVAIL occurs in other situations, it
+                # might be a real problem like a typo in a
+                # configuration.
+                sock.close()
+                continue
+            else:
+                raise
         bound_port = sock.getsockname()[1]
         sock.listen(backlog)
         sockets.append(sock)
@@ -193,7 +201,6 @@ if hasattr(socket, "AF_UNIX"):
         `bind_sockets`)
         """
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        set_close_exec(sock.fileno())
         try:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         except socket.error as e:
@@ -203,9 +210,8 @@ if hasattr(socket, "AF_UNIX"):
         sock.setblocking(False)
         try:
             st = os.stat(file)
-        except OSError as err:
-            if errno_from_exception(err) != errno.ENOENT:
-                raise
+        except FileNotFoundError:
+            pass
         else:
             if stat.S_ISSOCK(st.st_mode):
                 os.remove(file)
@@ -258,18 +264,15 @@ def add_accept_handler(
                 return
             try:
                 connection, address = sock.accept()
-            except socket.error as e:
-                # _ERRNO_WOULDBLOCK indicate we have accepted every
+            except BlockingIOError:
+                # EWOULDBLOCK indicates we have accepted every
                 # connection that is available.
-                if errno_from_exception(e) in _ERRNO_WOULDBLOCK:
-                    return
+                return
+            except ConnectionAbortedError:
                 # ECONNABORTED indicates that there was a connection
                 # but it was closed while still in the accept queue.
                 # (observed on FreeBSD).
-                if errno_from_exception(e) == errno.ECONNABORTED:
-                    continue
-                raise
-            set_close_exec(connection.fileno())
+                continue
             callback(connection, address)
 
     def remove_handler() -> None:
@@ -380,7 +383,7 @@ def _resolve_addr(
     results = []
     for fam, socktype, proto, canonname, address in addrinfo:
         results.append((fam, address))
-    return results
+    return results  # type: ignore
 
 
 class DefaultExecutorResolver(Resolver):
@@ -417,7 +420,9 @@ class ExecutorResolver(Resolver):
     """
 
     def initialize(
-        self, executor: concurrent.futures.Executor = None, close_executor: bool = True
+        self,
+        executor: Optional[concurrent.futures.Executor] = None,
+        close_executor: bool = True,
     ) -> None:
         self.io_loop = IOLoop.current()
         if executor is not None:
@@ -451,7 +456,7 @@ class BlockingResolver(ExecutorResolver):
     """
 
     def initialize(self) -> None:  # type: ignore
-        super(BlockingResolver, self).initialize()
+        super().initialize()
 
 
 class ThreadedResolver(ExecutorResolver):
@@ -480,9 +485,7 @@ class ThreadedResolver(ExecutorResolver):
 
     def initialize(self, num_threads: int = 10) -> None:  # type: ignore
         threadpool = ThreadedResolver._create_threadpool(num_threads)
-        super(ThreadedResolver, self).initialize(
-            executor=threadpool, close_executor=False
-        )
+        super().initialize(executor=threadpool, close_executor=False)
 
     @classmethod
     def _create_threadpool(
@@ -591,7 +594,7 @@ def ssl_options_to_context(
 def ssl_wrap_socket(
     socket: socket.socket,
     ssl_options: Union[Dict[str, Any], ssl.SSLContext],
-    server_hostname: str = None,
+    server_hostname: Optional[str] = None,
     **kwargs: Any
 ) -> ssl.SSLSocket:
     """Returns an ``ssl.SSLSocket`` wrapping the given socket.

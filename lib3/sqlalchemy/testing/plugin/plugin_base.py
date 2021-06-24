@@ -1,5 +1,5 @@
 # plugin/plugin_base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -17,8 +17,15 @@ is pytest.
 from __future__ import absolute_import
 
 import abc
+import logging
 import re
 import sys
+
+# flag which indicates we are in the SQLAlchemy testing suite,
+# and not that of Alembic or a third party dialect.
+bootstrapped_as_sqlalchemy = False
+
+log = logging.getLogger("sqlalchemy.testing.plugin_base")
 
 
 py3k = sys.version_info >= (3, 0)
@@ -41,13 +48,13 @@ engines = None
 exclusions = None
 warnings = None
 profiling = None
+provision = None
 assertions = None
 requirements = None
 config = None
 testing = None
 util = None
 file_config = None
-
 
 logging = None
 include_tags = set()
@@ -59,21 +66,21 @@ def setup_options(make_option):
     make_option(
         "--log-info",
         action="callback",
-        type="string",
+        type=str,
         callback=_log,
         help="turn on info logging for <LOG> (multiple OK)",
     )
     make_option(
         "--log-debug",
         action="callback",
-        type="string",
+        type=str,
         callback=_log,
         help="turn on debug logging for <LOG> (multiple OK)",
     )
     make_option(
         "--db",
         action="append",
-        type="string",
+        type=str,
         dest="db",
         help="Use prefab database uri. Multiple OK, "
         "first one is run by default.",
@@ -87,15 +94,29 @@ def setup_options(make_option):
     make_option(
         "--dburi",
         action="append",
-        type="string",
+        type=str,
         dest="dburi",
         help="Database uri.  Multiple OK, " "first one is run by default.",
+    )
+    make_option(
+        "--dbdriver",
+        action="append",
+        type="string",
+        dest="dbdriver",
+        help="Additional database drivers to include in tests.  "
+        "These are linked to the existing database URLs by the "
+        "provisioning system.",
     )
     make_option(
         "--dropfirst",
         action="store_true",
         dest="dropfirst",
         help="Drop all tables in the target database first",
+    )
+    make_option(
+        "--disable-asyncio",
+        action="store_true",
+        help="disable test / fixtures / provisoning running in asyncio",
     )
     make_option(
         "--backend-only",
@@ -110,8 +131,27 @@ def setup_options(make_option):
         help="Don't run memory profiling tests",
     )
     make_option(
+        "--notimingintensive",
+        action="store_true",
+        dest="notimingintensive",
+        help="Don't run timing intensive tests",
+    )
+    make_option(
+        "--profile-sort",
+        type=str,
+        default="cumulative",
+        dest="profilesort",
+        help="Type of sort for profiling standard output",
+    )
+    make_option(
+        "--profile-dump",
+        type=str,
+        dest="profiledump",
+        help="Filename where a single profile run will be dumped",
+    )
+    make_option(
         "--postgresql-templatedb",
-        type="string",
+        type=str,
         help="name of template database to use for PostgreSQL "
         "CREATE DATABASE (defaults to current database)",
     )
@@ -124,7 +164,7 @@ def setup_options(make_option):
     )
     make_option(
         "--write-idents",
-        type="string",
+        type=str,
         dest="write_idents",
         help="write out generated follower idents to <file>, "
         "when -n<num> is used",
@@ -140,7 +180,7 @@ def setup_options(make_option):
     make_option(
         "--requirements",
         action="callback",
-        type="string",
+        type=str,
         callback=_requirements_opt,
         help="requirements class for testing, overrides setup.cfg",
     )
@@ -156,14 +196,14 @@ def setup_options(make_option):
         "--include-tag",
         action="callback",
         callback=_include_tag,
-        type="string",
+        type=str,
         help="Include tests with tag <tag>",
     )
     make_option(
         "--exclude-tag",
         action="callback",
         callback=_exclude_tag,
-        type="string",
+        type=str,
         help="Exclude tests with tag <tag>",
     )
     make_option(
@@ -179,6 +219,21 @@ def setup_options(make_option):
         dest="force_write_profiles",
         default=False,
         help="Unconditionally write/update profiling data.",
+    )
+    make_option(
+        "--dump-pyannotate",
+        type=str,
+        dest="dump_pyannotate",
+        help="Run pyannotate and dump json info to given file",
+    )
+    make_option(
+        "--mypy-extra-test-path",
+        type=str,
+        action="append",
+        default=[],
+        dest="mypy_extra_test_paths",
+        help="Additional test directories to add to the mypy tests. "
+        "This is used only when running mypy tests. Multiple OK",
     )
 
 
@@ -246,12 +301,12 @@ def post_begin():
         fn(options, file_config)
 
     # late imports, has to happen after config.
-    global util, fixtures, engines, exclusions, assertions
+    global util, fixtures, engines, exclusions, assertions, provision
     global warnings, profiling, config, testing
     from sqlalchemy import testing  # noqa
     from sqlalchemy.testing import fixtures, engines, exclusions  # noqa
     from sqlalchemy.testing import assertions, warnings, profiling  # noqa
-    from sqlalchemy.testing import config  # noqa
+    from sqlalchemy.testing import config, provision  # noqa
     from sqlalchemy import util  # noqa
 
     warnings.setup_filters()
@@ -316,6 +371,12 @@ def _set_nomemory(opt, file_config):
 
 
 @pre
+def _set_notimingintensive(opt, file_config):
+    if opt.notimingintensive:
+        exclude_tags.add("timing_intensive")
+
+
+@pre
 def _monkeypatch_cdecimal(options, file_config):
     if options.cdecimal:
         import cdecimal
@@ -331,15 +392,26 @@ def _init_symbols(options, file_config):
 
 
 @post
+def _set_disable_asyncio(opt, file_config):
+    if opt.disable_asyncio or not py3k:
+        from sqlalchemy.testing import asyncio
+
+        asyncio.ENABLE_ASYNCIO = False
+
+
+@post
 def _engine_uri(options, file_config):
-    from sqlalchemy.testing import config
+
     from sqlalchemy import testing
+    from sqlalchemy.testing import config
     from sqlalchemy.testing import provision
 
     if options.dburi:
         db_urls = list(options.dburi)
     else:
         db_urls = []
+
+    extra_drivers = options.dbdriver or []
 
     if options.db:
         for db_token in options.db:
@@ -356,7 +428,11 @@ def _engine_uri(options, file_config):
         db_urls.append(file_config.get("db", "default"))
 
     config._current = None
-    for db_url in db_urls:
+
+    expanded_urls = list(provision.generate_db_urls(db_urls, extra_drivers))
+
+    for db_url in expanded_urls:
+        log.info("Adding database URL: %s", db_url)
 
         if options.write_idents and provision.FOLLOWER_IDENT:  # != 'master':
             with open(options.write_idents, "a") as file_:
@@ -365,7 +441,6 @@ def _engine_uri(options, file_config):
         cfg = provision.setup_config(
             db_url, options, file_config, provision.FOLLOWER_IDENT
         )
-
         if not config._current:
             cfg.set_as_current(cfg, testing)
 
@@ -395,62 +470,18 @@ def _setup_requirements(argument):
 
     config.requirements = testing.requires = req_cls()
 
+    config.bootstrapped_as_sqlalchemy = bootstrapped_as_sqlalchemy
+
 
 @post
 def _prep_testing_database(options, file_config):
-    from sqlalchemy.testing import config, util
-    from sqlalchemy.testing.exclusions import against
-    from sqlalchemy import schema, inspect
+    from sqlalchemy.testing import config
 
     if options.dropfirst:
+        from sqlalchemy.testing import provision
+
         for cfg in config.Config.all_configs():
-            e = cfg.db
-            inspector = inspect(e)
-            try:
-                view_names = inspector.get_view_names()
-            except NotImplementedError:
-                pass
-            else:
-                for vname in view_names:
-                    e.execute(
-                        schema._DropView(
-                            schema.Table(vname, schema.MetaData())
-                        )
-                    )
-
-            if config.requirements.schemas.enabled_for_config(cfg):
-                try:
-                    view_names = inspector.get_view_names(schema="test_schema")
-                except NotImplementedError:
-                    pass
-                else:
-                    for vname in view_names:
-                        e.execute(
-                            schema._DropView(
-                                schema.Table(
-                                    vname,
-                                    schema.MetaData(),
-                                    schema="test_schema",
-                                )
-                            )
-                        )
-
-            util.drop_all_tables(e, inspector)
-
-            if config.requirements.schemas.enabled_for_config(cfg):
-                util.drop_all_tables(e, inspector, schema=cfg.test_schema)
-
-            if against(cfg, "postgresql"):
-                from sqlalchemy.dialects import postgresql
-
-                for enum in inspector.get_enums("*"):
-                    e.execute(
-                        postgresql.DropEnumType(
-                            postgresql.ENUM(
-                                name=enum["name"], schema=enum["schema"]
-                            )
-                        )
-                    )
+            provision.drop_all_schema_objects(cfg, cfg.db)
 
 
 @post
@@ -474,7 +505,9 @@ def _setup_profiling(options, file_config):
     from sqlalchemy.testing import profiling
 
     profiling._profile_stats = profiling.ProfileStatsFile(
-        file_config.get("sqla_testing", "profile_file")
+        file_config.get("sqla_testing", "profile_file"),
+        sort=options.profilesort,
+        dump=options.profiledump,
     )
 
 
@@ -487,6 +520,7 @@ def want_class(name, cls):
         config.options.backend_only
         and not getattr(cls, "__backend__", False)
         and not getattr(cls, "__sparse_backend__", False)
+        and not getattr(cls, "__only_on__", False)
     ):
         return False
     else:
@@ -546,15 +580,23 @@ def generate_sub_tests(cls, module):
         yield cls
 
 
-def start_test_class(cls):
+def start_test_class_outside_fixtures(cls):
     _do_skips(cls)
     _setup_engine(cls)
 
 
 def stop_test_class(cls):
-    # from sqlalchemy import inspect
-    # assert not inspect(testing.db).get_table_names()
-    engines.testing_reaper._stop_test_ctx()
+    # close sessions, immediate connections, etc.
+    fixtures.stop_test_class_inside_fixtures(cls)
+
+    # close outstanding connection pool connections, dispose of
+    # additional engines
+    engines.testing_reaper.stop_test_class_inside_fixtures()
+
+
+def stop_test_class_outside_fixtures(cls):
+    engines.testing_reaper.stop_test_class_outside_fixtures()
+    provision.stop_test_class_outside_fixtures(config, config.db, cls)
     try:
         if not options.low_connections:
             assertions.global_cleanup_assertions()
@@ -563,18 +605,21 @@ def stop_test_class(cls):
 
 
 def _restore_engine():
-    config._current.reset(testing)
+    if config._current:
+        config._current.reset(testing)
 
 
 def final_process_cleanup():
-    engines.testing_reaper._stop_test_ctx_aggressive()
+    engines.testing_reaper.final_cleanup()
     assertions.global_cleanup_assertions()
     _restore_engine()
 
 
 def _setup_engine(cls):
     if getattr(cls, "__engine_options__", None):
-        eng = engines.testing_engine(options=cls.__engine_options__)
+        opts = dict(cls.__engine_options__)
+        opts["scope"] = "class"
+        eng = engines.testing_engine(options=opts)
         config._current.push_engine(eng, testing)
 
 
@@ -587,11 +632,16 @@ def before_test(test, test_module_name, test_class, test_name):
 
     id_ = "%s.%s.%s" % (test_module_name, name, test_name)
 
-    profiling._current_test = id_
+    profiling._start_current_test(id_)
 
 
 def after_test(test):
-    engines.testing_reaper._after_test_ctx()
+    fixtures.after_test()
+    engines.testing_reaper.after_test()
+
+
+def after_test_fixtures(test):
+    engines.testing_reaper.after_test_outside_fixtures(test)
 
 
 def _possible_configs_for_cls(cls, reasons=None, sparse=False):
@@ -647,6 +697,7 @@ def _possible_configs_for_cls(cls, reasons=None, sparse=False):
                 all_configs,
                 key=lambda cfg: (
                     cfg.db.name,
+                    cfg.db.driver,
                     cfg.db.dialect.server_version_info,
                 ),
             )
@@ -723,6 +774,10 @@ class FixtureFunctions(ABC):
         raise NotImplementedError()
 
     def get_current_test_name(self):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def mark_base_test_class(self):
         raise NotImplementedError()
 
 

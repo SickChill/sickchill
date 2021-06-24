@@ -1,4 +1,3 @@
-# coding: utf-8
 from hashlib import md5
 import unittest
 
@@ -9,9 +8,9 @@ from tornado.web import Application, RequestHandler
 
 
 try:
-    import pycurl  # type: ignore
+    import pycurl
 except ImportError:
-    pycurl = None
+    pycurl = None  # type: ignore
 
 if pycurl is not None:
     from tornado.curl_httpclient import CurlAsyncHTTPClient
@@ -84,7 +83,7 @@ class CustomFailReasonHandler(RequestHandler):
 @unittest.skipIf(pycurl is None, "pycurl module not present")
 class CurlHTTPClientTestCase(AsyncHTTPTestCase):
     def setUp(self):
-        super(CurlHTTPClientTestCase, self).setUp()
+        super().setUp()
         self.http_client = self.create_client()
 
     def get_app(self):

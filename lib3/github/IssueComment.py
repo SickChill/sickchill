@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -10,10 +8,11 @@
 # Copyright 2014 Vincent Jacques <vincent@vincent-jacques.net>                 #
 # Copyright 2016 Jannis Gebauer <ja.geb@me.com>                                #
 # Copyright 2016 Peter Buckley <dx-pbuckley@users.noreply.github.com>          #
-# Copyright 2017 Nicolas Agustín Torres <nicolastrres@gmail.com>              #
+# Copyright 2017 Nicolas Agustín Torres <nicolastrres@gmail.com>               #
 # Copyright 2018 Wan Liuyang <tsfdye@gmail.com>                                #
 # Copyright 2018 per1234 <accounts@perglass.com>                               #
 # Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
+# Copyright 2020 Huan-Cheng Chang <changhc84@gmail.com>                        #
 #                                                                              #
 # This file is part of PyGithub.                                               #
 # http://pygithub.readthedocs.io/                                              #
@@ -41,7 +40,7 @@ from . import Consts
 
 class IssueComment(github.GithubObject.CompletableGithubObject):
     """
-    This class represents IssueComments. The reference can be found here https://developer.github.com/v3/issues/comments/
+    This class represents IssueComments. The reference can be found here https://docs.github.com/en/rest/reference/issues#comments
     """
 
     def __repr__(self):
@@ -113,14 +112,14 @@ class IssueComment(github.GithubObject.CompletableGithubObject):
 
     def delete(self):
         """
-        :calls: `DELETE /repos/:owner/:repo/issues/comments/:id <http://developer.github.com/v3/issues/comments>`_
+        :calls: `DELETE /repos/{owner}/{repo}/issues/comments/{id} <http://docs.github.com/en/rest/reference/issues#comments>`_
         :rtype: None
         """
         headers, data = self._requester.requestJsonAndCheck("DELETE", self.url)
 
     def edit(self, body):
         """
-        :calls: `PATCH /repos/:owner/:repo/issues/comments/:id <http://developer.github.com/v3/issues/comments>`_
+        :calls: `PATCH /repos/{owner}/{repo}/issues/comments/{id} <http://docs.github.com/en/rest/reference/issues#comments>`_
         :param body: string
         :rtype: None
         """
@@ -135,22 +134,22 @@ class IssueComment(github.GithubObject.CompletableGithubObject):
 
     def get_reactions(self):
         """
-        :calls: `GET /repos/:owner/:repo/issues/comments/:id/reactions
-                <https://developer.github.com/v3/reactions/#list-reactions-for-an-issue-comment>`_
+        :calls: `GET /repos/{owner}/{repo}/issues/comments/{id}/reactions
+                <https://docs.github.com/en/rest/reference/reactions#list-reactions-for-an-issue-comment>`_
         :return: :class: :class:`github.PaginatedList.PaginatedList` of :class:`github.Reaction.Reaction`
         """
         return github.PaginatedList.PaginatedList(
             github.Reaction.Reaction,
             self._requester,
-            self.url + "/reactions",
+            f"{self.url}/reactions",
             None,
             headers={"Accept": Consts.mediaTypeReactionsPreview},
         )
 
     def create_reaction(self, reaction_type):
         """
-        :calls: `POST /repos/:owner/:repo/issues/comments/:id/reactions
-                <https://developer.github.com/v3/reactions/#create-reaction-for-an-issue-comment>`_
+        :calls: `POST /repos/{owner}/{repo}/issues/comments/{id}/reactions
+                <https://docs.github.com/en/rest/reference/reactions#create-reaction-for-an-issue-comment>`_
         :param reaction_type: string
         :rtype: :class:`github.Reaction.Reaction`
         """
@@ -160,11 +159,26 @@ class IssueComment(github.GithubObject.CompletableGithubObject):
         }
         headers, data = self._requester.requestJsonAndCheck(
             "POST",
-            self.url + "/reactions",
+            f"{self.url}/reactions",
             input=post_parameters,
             headers={"Accept": Consts.mediaTypeReactionsPreview},
         )
         return github.Reaction.Reaction(self._requester, headers, data, completed=True)
+
+    def delete_reaction(self, reaction_id):
+        """
+        :calls: `DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}
+                <https://docs.github.com/en/rest/reference/reactions#delete-an-issue-comment-reaction>`_
+        :param reaction_id: integer
+        :rtype: bool
+        """
+        assert isinstance(reaction_id, int), reaction_id
+        status, _, _ = self._requester.requestJson(
+            "DELETE",
+            f"{self.url}/reactions/{reaction_id}",
+            headers={"Accept": Consts.mediaTypeReactionsPreview},
+        )
+        return status == 204
 
     def _initAttributes(self):
         self._body = github.GithubObject.NotSet

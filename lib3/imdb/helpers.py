@@ -528,7 +528,7 @@ def parseXML(xml):
 
 
 _re_akas_lang = re.compile('(?:[(])([a-zA-Z]+?)(?: title[)])')
-_re_akas_country = re.compile('\(.*?\)')
+_re_akas_country = re.compile(r'\(.*?\)')
 
 
 # akasLanguages, sortAKAsBySimilarity and getAKAsInLanguage code

@@ -28,6 +28,11 @@ def inspect_getfullargspec(func):
 
     """
 
+    # if a Signature is already present, as is the case with newer
+    # "decorator" package, defer back to built in
+    if hasattr(func, "__signature__"):
+        return inspect.getfullargspec(func)
+
     if inspect.ismethod(func):
         func = func.__func__
     if not inspect.isfunction(func):

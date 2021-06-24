@@ -19,6 +19,7 @@ to the docstring of your function and classes.
 Of course, the ``@deprecated`` decorator will emit a deprecation warning
 when the function/method is called or the class is constructed.
 """
+import re
 import textwrap
 
 import wrapt
@@ -40,7 +41,15 @@ class SphinxAdapter(ClassicAdapter):
     - The reason message is obviously added in the directive block if not empty.
     """
 
-    def __init__(self, directive, reason="", version="", action=None, category=DeprecationWarning):
+    def __init__(
+        self,
+        directive,
+        reason="",
+        version="",
+        action=None,
+        category=DeprecationWarning,
+        line_length=70,
+    ):
         """
         Construct a wrapper adapter.
 
@@ -70,8 +79,16 @@ class SphinxAdapter(ClassicAdapter):
             The warning category to use for the deprecation warning.
             By default, the category class is :class:`~DeprecationWarning`,
             you can inherit this class to define your own deprecation warning category.
+
+        :type  line_length: int
+        :param line_length:
+            Max line length of the directive text. If non nul, a long text is wrapped in several lines.
         """
+        if not version:
+            # https://github.com/tantale/deprecated/issues/40
+            raise ValueError("'version' argument is required in Sphinx directives")
         self.directive = directive
+        self.line_length = line_length
         super(SphinxAdapter, self).__init__(reason=reason, version=version, action=action, category=category)
 
     def __call__(self, wrapped):
@@ -82,24 +99,64 @@ class SphinxAdapter(ClassicAdapter):
 
         :return: the decorated class or function.
         """
+        # -- build the directive division
+        fmt = ".. {directive}:: {version}" if self.version else ".. {directive}::"
+        div_lines = [fmt.format(directive=self.directive, version=self.version)]
+        width = self.line_length - 3 if self.line_length > 3 else 2 ** 16
         reason = textwrap.dedent(self.reason).strip()
-        reason = '\n'.join(
-            textwrap.fill(line, width=70, initial_indent='   ', subsequent_indent='   ') for line in reason.splitlines()
-        ).strip()
+        for paragraph in reason.splitlines():
+            if paragraph:
+                div_lines.extend(
+                    textwrap.fill(
+                        paragraph,
+                        width=width,
+                        initial_indent="   ",
+                        subsequent_indent="   ",
+                    ).splitlines()
+                )
+            else:
+                div_lines.append("")
+
+        # -- get the docstring, normalize the trailing newlines
         docstring = textwrap.dedent(wrapped.__doc__ or "")
         if docstring:
-            docstring += "\n\n"
-        if self.version:
-            docstring += ".. {directive}:: {version}\n".format(directive=self.directive, version=self.version)
+            # An empty line must separate the original docstring and the directive.
+            docstring = re.sub(r"\n+$", "", docstring, flags=re.DOTALL) + "\n\n"
         else:
-            docstring += ".. {directive}::\n".format(directive=self.directive)
-        if reason:
-            docstring += "   {reason}\n".format(reason=reason)
+            # Avoid "Explicit markup ends without a blank line" when the decorated function has no docstring
+            docstring = "\n"
+
+        # -- append the directive division to the docstring
+        docstring += "".join("{}\n".format(line) for line in div_lines)
+
         wrapped.__doc__ = docstring
+        if self.directive in {"versionadded", "versionchanged"}:
+            return wrapped
         return super(SphinxAdapter, self).__call__(wrapped)
 
+    def get_deprecated_msg(self, wrapped, instance):
+        """
+        Get the deprecation warning message (without Sphinx cross-referencing syntax) for the user.
 
-def versionadded(reason="", version=""):
+        :param wrapped: Wrapped class or function.
+
+        :param instance: The object to which the wrapped function was bound when it was called.
+
+        :return: The warning message.
+
+        .. versionadded:: 1.2.12
+           Strip Sphinx cross-referencing syntax from warning message.
+
+        """
+        msg = super(SphinxAdapter, self).get_deprecated_msg(wrapped, instance)
+        # Strip Sphinx cross reference syntax (like ":function:", ":py:func:" and ":py:meth:")
+        # Possible values are ":role:`foo`", ":domain:role:`foo`"
+        # where ``role`` and ``domain`` should match "[a-zA-Z]+"
+        msg = re.sub(r"(?: : [a-zA-Z]+ )? : [a-zA-Z]+ : (`[^`]*`)", r"\1", msg, flags=re.X)
+        return msg
+
+
+def versionadded(reason="", version="", line_length=70):
     """
     This decorator can be used to insert a "versionadded" directive
     in your function/class docstring in order to documents the
@@ -114,9 +171,18 @@ def versionadded(reason="", version=""):
         the version number has the format "MAJOR.MINOR.PATCH", and,
         in the case of a new functionality, the "PATCH" component should be "0".
 
+    :type  line_length: int
+    :param line_length:
+        Max line length of the directive text. If non nul, a long text is wrapped in several lines.
+
     :return: the decorated function.
     """
-    adapter = SphinxAdapter('versionadded', reason=reason, version=version)
+    adapter = SphinxAdapter(
+        'versionadded',
+        reason=reason,
+        version=version,
+        line_length=line_length,
+    )
 
     # noinspection PyUnusedLocal
     @wrapt.decorator(adapter=adapter)
@@ -126,7 +192,7 @@ def versionadded(reason="", version=""):
     return wrapper
 
 
-def versionchanged(reason="", version=""):
+def versionchanged(reason="", version="", line_length=70):
     """
     This decorator can be used to insert a "versionchanged" directive
     in your function/class docstring in order to documents the
@@ -140,9 +206,18 @@ def versionchanged(reason="", version=""):
         If you follow the `Semantic Versioning <https://semver.org/>`_,
         the version number has the format "MAJOR.MINOR.PATCH".
 
+    :type  line_length: int
+    :param line_length:
+        Max line length of the directive text. If non nul, a long text is wrapped in several lines.
+
     :return: the decorated function.
     """
-    adapter = SphinxAdapter('versionchanged', reason=reason, version=version)
+    adapter = SphinxAdapter(
+        'versionchanged',
+        reason=reason,
+        version=version,
+        line_length=line_length,
+    )
 
     # noinspection PyUnusedLocal
     @wrapt.decorator(adapter=adapter)
@@ -177,6 +252,9 @@ def deprecated(*args, **kwargs):
         The warning category to use for the deprecation warning.
         By default, the category class is :class:`~DeprecationWarning`,
         you can inherit this class to define your own deprecation warning category.
+
+    -   "line_length":
+        Max line length of the directive text. If non nul, a long text is wrapped in several lines.
 
     :return: the decorated function.
     """

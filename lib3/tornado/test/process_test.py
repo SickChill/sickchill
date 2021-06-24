@@ -4,6 +4,7 @@ import os
 import signal
 import subprocess
 import sys
+import time
 import unittest
 
 from tornado.httpclient import HTTPClient, HTTPError
@@ -46,7 +47,7 @@ class ProcessTest(unittest.TestCase):
             os._exit(1)
         # In the surviving process, clear the alarm we set earlier
         signal.alarm(0)
-        super(ProcessTest, self).tearDown()
+        super().tearDown()
 
     def test_multi_process(self):
         # This test doesn't work on twisted because we use the global
@@ -224,9 +225,17 @@ class SubprocessTest(AsyncTestCase):
         )
         self.addCleanup(subproc.stdout.close)
         subproc.set_exit_callback(self.stop)
+
+        # For unclear reasons, killing a process too soon after
+        # creating it can result in an exit status corresponding to
+        # SIGKILL instead of the actual signal involved. This has been
+        # observed on macOS 10.15 with Python 3.8 installed via brew,
+        # but not with the system-installed Python 3.7.
+        time.sleep(0.1)
+
         os.kill(subproc.pid, signal.SIGTERM)
         try:
-            ret = self.wait(timeout=1.0)
+            ret = self.wait()
         except AssertionError:
             # We failed to get the termination signal. This test is
             # occasionally flaky on pypy, so try to get a little more
@@ -237,7 +246,7 @@ class SubprocessTest(AsyncTestCase):
             fut = subproc.stdout.read_until_close()
             fut.add_done_callback(lambda f: self.stop())  # type: ignore
             try:
-                self.wait(timeout=1.0)
+                self.wait()
             except AssertionError:
                 raise AssertionError("subprocess failed to terminate")
             else:

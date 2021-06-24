@@ -1,5 +1,5 @@
 # sqlalchemy/naming.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -12,8 +12,8 @@
 
 import re
 
-from .elements import _defer_name
-from .elements import _defer_none_name
+from . import events  # noqa
+from .elements import _NONE_NAME
 from .elements import conv
 from .schema import CheckConstraint
 from .schema import Column
@@ -24,7 +24,6 @@ from .schema import PrimaryKeyConstraint
 from .schema import Table
 from .schema import UniqueConstraint
 from .. import event
-from .. import events  # noqa
 from .. import exc
 
 
@@ -39,15 +38,25 @@ class ConventionDict(object):
     def _key_table_name(self):
         return self.table.name
 
-    def _column_X(self, idx):
+    def _column_X(self, idx, attrname):
         if self._is_fk:
-            fk = self.const.elements[idx]
-            return fk.parent
+            try:
+                fk = self.const.elements[idx]
+            except IndexError:
+                return ""
+            else:
+                return getattr(fk.parent, attrname)
         else:
-            return list(self.const.columns)[idx]
+            cols = list(self.const.columns)
+            try:
+                col = cols[idx]
+            except IndexError:
+                return ""
+            else:
+                return getattr(col, attrname)
 
     def _key_constraint_name(self):
-        if isinstance(self._const_name, (type(None), _defer_none_name)):
+        if self._const_name in (None, _NONE_NAME):
             raise exc.InvalidRequestError(
                 "Naming convention including "
                 "%(constraint_name)s token requires that "
@@ -61,13 +70,13 @@ class ConventionDict(object):
         # note this method was missing before
         # [ticket:3989], meaning tokens like ``%(column_0_key)s`` weren't
         # working even though documented.
-        return self._column_X(idx).key
+        return self._column_X(idx, "key")
 
     def _key_column_X_name(self, idx):
-        return self._column_X(idx).name
+        return self._column_X(idx, "name")
 
     def _key_column_X_label(self, idx):
-        return self._column_X(idx)._ddl_label
+        return self._column_X(idx, "_ddl_label")
 
     def _key_referred_table_name(self):
         fk = self.const.elements[0]
@@ -150,21 +159,39 @@ def _constraint_name_for_table(const, table):
         and (
             const.name is None
             or "constraint_name" in convention
-            or isinstance(const.name, _defer_name)
+            or const.name is _NONE_NAME
         )
     ):
         return conv(
             convention
             % ConventionDict(const, table, metadata.naming_convention)
         )
-    elif isinstance(convention, _defer_none_name):
+    elif convention is _NONE_NAME:
         return None
+
+
+@event.listens_for(
+    PrimaryKeyConstraint, "_sa_event_column_added_to_pk_constraint"
+)
+def _column_added_to_pk_constraint(pk_constraint, col):
+    if pk_constraint._implicit_generated:
+        # only operate upon the "implicit" pk constraint for now,
+        # as we have to force the name to None to reset it.  the
+        # "implicit" constraint will only have a naming convention name
+        # if at all.
+        table = pk_constraint.table
+        pk_constraint.name = None
+        newname = _constraint_name_for_table(pk_constraint, table)
+        if newname:
+            pk_constraint.name = newname
 
 
 @event.listens_for(Constraint, "after_parent_attach")
 @event.listens_for(Index, "after_parent_attach")
 def _constraint_name(const, table):
     if isinstance(table, Column):
+        # this path occurs for a CheckConstraint linked to a Column
+
         # for column-attached constraint, set another event
         # to link the column attached to the table as this constraint
         # associated with the table.
@@ -173,10 +200,11 @@ def _constraint_name(const, table):
             "after_parent_attach",
             lambda col, table: _constraint_name(const, table),
         )
+
     elif isinstance(table, Table):
-        if isinstance(const.name, (conv, _defer_name)):
+        if isinstance(const.name, conv) or const.name is _NONE_NAME:
             return
 
         newname = _constraint_name_for_table(const, table)
-        if newname is not None:
+        if newname:
             const.name = newname

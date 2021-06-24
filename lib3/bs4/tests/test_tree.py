@@ -1009,6 +1009,15 @@ class TestTreeModification(SoupTest):
         soup.a.extend(l)
         self.assertEqual("<a><g></g><f></f><e></e><d></d><c></c><b></b></a>", soup.decode())
 
+    def test_extend_with_another_tags_contents(self):
+        data = '<body><div id="d1"><a>1</a><a>2</a><a>3</a><a>4</a></div><div id="d2"></div></body>'
+        soup = self.soup(data)
+        d1 = soup.find('div', id='d1')
+        d2 = soup.find('div', id='d2')
+        d2.extend(d1)
+        self.assertEqual('<div id="d1"></div>', d1.decode())
+        self.assertEqual('<div id="d2"><a>1</a><a>2</a><a>3</a><a>4</a></div>', d2.decode())
+        
     def test_move_tag_to_beginning_of_parent(self):
         data = "<a><b></b><c></c><d></d></a>"
         soup = self.soup(data)

@@ -1,5 +1,5 @@
 # sqlalchemy/inspect.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -20,7 +20,7 @@ cases it will return the object itself.
 The rationale for :func:`_sa.inspect` is twofold.  One is that
 it replaces the need to be aware of a large variety of "information
 getting" functions in SQLAlchemy, such as
-:meth:`_reflection.Inspector.from_engine`,
+:meth:`_reflection.Inspector.from_engine` (deprecated in 1.4),
 :func:`.orm.attributes.instance_state`, :func:`_orm.class_mapper`,
 and others.    The other is that the return value of :func:`_sa.inspect`
 is guaranteed to obey a documented API, thus allowing third party
@@ -54,7 +54,7 @@ def inspect(subject, raiseerr=True):
      :class:`sqlalchemy.exc.NoInspectionAvailable`
      is raised.  If ``False``, ``None`` is returned.
 
-     """
+    """
     type_ = type(subject)
     for cls in type_.__mro__:
         if cls in _registrars:

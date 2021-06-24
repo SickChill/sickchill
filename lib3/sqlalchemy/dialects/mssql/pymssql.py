@@ -1,5 +1,5 @@
 # mssql/pymssql.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -65,6 +65,7 @@ class MSIdentifierPreparer_pymssql(MSIdentifierPreparer):
 
 
 class MSDialect_pymssql(MSDialect):
+    supports_statement_cache = True
     supports_native_decimal = True
     driver = "pymssql"
 
@@ -92,7 +93,7 @@ class MSDialect_pymssql(MSDialect):
         return module
 
     def _get_server_version_info(self, connection):
-        vers = connection.scalar("select @@version")
+        vers = connection.exec_driver_sql("select @@version").scalar()
         m = re.match(r"Microsoft .*? - (\d+).(\d+).(\d+).(\d+)", vers)
         if m:
             return tuple(int(x) for x in m.group(1, 2, 3, 4))

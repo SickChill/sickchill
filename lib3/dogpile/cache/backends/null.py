@@ -24,6 +24,9 @@ class NullLock(object):
     def release(self):
         pass
 
+    def locked(self):
+        return False
+
 
 class NullBackend(CacheBackend):
     """A "null" backend that effectively disables all cache operations.

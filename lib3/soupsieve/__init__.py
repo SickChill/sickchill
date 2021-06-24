@@ -44,11 +44,11 @@ def compile(pattern, namespaces=None, flags=0, **kwargs):  # noqa: A001
     """Compile CSS pattern."""
 
     if namespaces is not None:
-        namespaces = ct.Namespaces(**namespaces)
+        namespaces = ct.Namespaces(namespaces)
 
     custom = kwargs.get('custom')
     if custom is not None:
-        custom = ct.CustomSelectors(**custom)
+        custom = ct.CustomSelectors(custom)
 
     if isinstance(pattern, SoupSieve):
         if flags:

@@ -1,5 +1,5 @@
 # postgresql/json.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -97,12 +97,18 @@ class JSONPathType(sqltypes.JSON.JSONPathType):
 class JSON(sqltypes.JSON):
     """Represent the PostgreSQL JSON type.
 
-    This type is a specialization of the Core-level :class:`_types.JSON`
-    type.   Be sure to read the documentation for :class:`_types.JSON` for
-    important tips regarding treatment of NULL values and ORM use.
+    :class:`_postgresql.JSON` is used automatically whenever the base
+    :class:`_types.JSON` datatype is used against a PostgreSQL backend,
+    however base :class:`_types.JSON` datatype does not provide Python
+    accessors for PostgreSQL-specific comparison methods such as
+    :meth:`_postgresql.JSON.Comparator.astext`; additionally, to use
+    PostgreSQL ``JSONB``, the :class:`_postgresql.JSONB` datatype should
+    be used explicitly.
 
-    .. versionchanged:: 1.1 :class:`_postgresql.JSON` is now a PostgreSQL-
-       specific specialization of the new :class:`_types.JSON` type.
+    .. seealso::
+
+        :class:`_types.JSON` - main documentation for the generic
+        cross-platform JSON datatype.
 
     The operators provided by the PostgreSQL version of :class:`_types.JSON`
     include:
@@ -167,6 +173,9 @@ class JSON(sqltypes.JSON):
 
         :class:`_postgresql.JSONB`
 
+    .. versionchanged:: 1.1 :class:`_postgresql.JSON` is now a PostgreSQL-
+       specific specialization of the new :class:`_types.JSON` type.
+
     """  # noqa
 
     astext_type = sqltypes.Text()
@@ -195,7 +204,7 @@ class JSON(sqltypes.JSON):
 
          .. versionadded:: 1.1
 
-         """
+        """
         super(JSON, self).__init__(none_as_null=none_as_null)
         if astext_type is not None:
             self.astext_type = astext_type
@@ -210,7 +219,7 @@ class JSON(sqltypes.JSON):
 
             E.g.::
 
-                select([data_table.c.data['some key'].astext])
+                select(data_table.c.data['some key'].astext)
 
             .. seealso::
 
@@ -291,13 +300,11 @@ class JSONB(JSON):
             return self.operate(HAS_KEY, other, result_type=sqltypes.Boolean)
 
         def has_all(self, other):
-            """Boolean expression.  Test for presence of all keys in jsonb
-            """
+            """Boolean expression.  Test for presence of all keys in jsonb"""
             return self.operate(HAS_ALL, other, result_type=sqltypes.Boolean)
 
         def has_any(self, other):
-            """Boolean expression.  Test for presence of any key in jsonb
-            """
+            """Boolean expression.  Test for presence of any key in jsonb"""
             return self.operate(HAS_ANY, other, result_type=sqltypes.Boolean)
 
         def contains(self, other, **kwargs):

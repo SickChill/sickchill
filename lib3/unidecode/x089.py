@@ -103,7 +103,7 @@ data = (
 'Pu ',    # 0x65
 'Ru ',    # 0x66
 'Zhi ',    # 0x67
-'[?] ',    # 0x68
+None,    # 0x68
 'Shu ',    # 0x69
 'Wa ',    # 0x6a
 'Shi ',    # 0x6b
@@ -131,7 +131,7 @@ data = (
 'Yao ',    # 0x81
 'Feng ',    # 0x82
 'Tan ',    # 0x83
-'[?] ',    # 0x84
+None,    # 0x84
 'Biao ',    # 0x85
 'Fu ',    # 0x86
 'Ba ',    # 0x87

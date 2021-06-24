@@ -407,18 +407,27 @@ class IMDbHTTPAccessSystem(IMDbBase):
         cont = self._get_search_content('tt', title, results)
         return self.smProxy.search_movie_parser.parse(cont, results=results)['data']
 
-    def _get_list_content(self, list_):
+    def _get_list_content(self, list_, page):
         """Retrieve a list by it's id"""
         if list_.startswith('ls'):
-            imdbUrl = self.urls['movie_list'] + list_
+            imdbUrl = self.urls['movie_list'] + list_ + '?page=' + str(page)
         else:
             warnings.warn("list type not recognized make sure it starts with 'ls'")
             return
         return self._retrieve(url=imdbUrl)
 
     def _get_movie_list(self, list_, results):
-        cont = self._get_list_content(list_)
-        return self.listProxy.list_parser.parse(cont, results=results)['data']
+        page = 1
+        result_list = []
+        while True:
+            cont = self._get_list_content(list_, page=page)
+            result_part = self.listProxy.list_parser.parse(cont, results=results)['data']
+            if result_part:
+                page += 1
+                result_list.extend(result_part)
+            else:
+                break
+        return result_list
 
     def _get_search_movie_advanced_content(self, title=None, adult=None, results=None,
                                            sort=None, sort_dir=None):
@@ -602,9 +611,11 @@ class IMDbHTTPAccessSystem(IMDbBase):
     def get_movie_episodes(self, movieID, season_nums='all'):
         cont = self._retrieve(self.urls['movie_main'] % movieID + 'episodes')
         temp_d = self.mProxy.season_episodes_parser.parse(cont)
-        if not isinstance(season_nums, list):
-            if season_nums != 'all':
-                season_nums = [season_nums]
+        if isinstance(season_nums, int):
+            season_nums = {season_nums}
+        elif (isinstance(season_nums, (list, tuple)) or 
+              not hasattr(season_nums, '__contains__')):
+            season_nums = set(season_nums)
         if not temp_d and 'data' in temp_d:
             return {}
 

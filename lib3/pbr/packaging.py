@@ -433,7 +433,11 @@ def generate_script(group, entry_point, header, template):
 def override_get_script_args(
         dist, executable=os.path.normpath(sys.executable)):
     """Override entrypoints console_script."""
-    header = easy_install.get_script_header("", executable)
+    # get_script_header() is deprecated since Setuptools 12.0
+    try:
+        header = easy_install.ScriptWriter.get_header("", executable)
+    except AttributeError:
+        header = easy_install.get_script_header("", executable)
     for group, template in ENTRY_POINTS_MAP.items():
         for name, ep in dist.get_entry_map(group).items():
             yield (name, generate_script(group, ep, header, template))

@@ -19,7 +19,7 @@ class ConfigTestBasic(unittest.TestCase):
         """
         Test check_section
         """
-        CFG = ConfigObj("config.ini", encoding="UTF-8", indent_type="  ")
+        CFG = ConfigObj("test_config.ini", encoding="UTF-8", indent_type="  ")
         assert not config.check_section(CFG, "General")
         assert config.check_section(CFG, "General")
 
@@ -100,7 +100,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_int
         """
         # setup
-        CFG = ConfigObj("config.ini", encoding="UTF-8", indent_type="  ")
+        CFG = ConfigObj("test_config.ini", encoding="UTF-8", indent_type="  ")
         config.check_section(CFG, "General")
         CFG["General"]["indexer_timeout"] = 60
         CFG["General"]["use_icacls"] = "True"
@@ -138,7 +138,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_float
         """
         # setup
-        CFG = ConfigObj("config.ini", encoding="UTF-8", indent_type="  ")
+        CFG = ConfigObj("test_config.ini", encoding="UTF-8", indent_type="  ")
         config.check_section(CFG, "General")
         CFG["General"]["fanart_background_opacity"] = 0.5
         CFG["General"]["log_size"] = None
@@ -169,7 +169,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_str
         """
         # setup
-        CFG = ConfigObj("config.ini", encoding="UTF-8", indent_type="  ")
+        CFG = ConfigObj("test_config.ini", encoding="UTF-8", indent_type="  ")
         config.check_section(CFG, "General")
         CFG["General"]["process_method"] = "copy"
         CFG["General"]["git_password"] = "SFa342FHb_"  # noqa: S105
@@ -189,7 +189,7 @@ class ConfigTestBasic(unittest.TestCase):
         Test check_setting_bool
         """
         # setup
-        CFG = ConfigObj("config.ini", encoding="UTF-8", indent_type="  ")
+        CFG = ConfigObj("test_config.ini", encoding="UTF-8", indent_type="  ")
         config.check_section(CFG, "General")
         CFG["General"]["debug"] = True
         CFG["General"]["season_folders_default"] = False
@@ -471,7 +471,7 @@ class ConfigTestMigrator(unittest.TestCase):
         """
         # TODO: Assert the 'too-advanced-config-version' error
 
-        CFG = ConfigObj("config.ini", encoding="UTF-8", indent_type="  ")
+        CFG = ConfigObj("test_config.ini", encoding="UTF-8", indent_type="  ")
         config.check_section(CFG, "General")
         CFG["General"]["config_version"] = 0
         settings.CONFIG_VERSION = 13

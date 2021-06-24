@@ -1,5 +1,5 @@
 # orm/exc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -8,6 +8,8 @@
 """SQLAlchemy ORM exceptions."""
 from .. import exc as sa_exc
 from .. import util
+from ..exc import MultipleResultsFound  # noqa
+from ..exc import NoResultFound  # noqa
 
 
 NO_STATE = (AttributeError, KeyError)
@@ -67,8 +69,10 @@ class DetachedInstanceError(sa_exc.SQLAlchemyError):
 class UnmappedInstanceError(UnmappedError):
     """An mapping operation was requested for an unknown instance."""
 
-    @util.dependencies("sqlalchemy.orm.base")
-    def __init__(self, base, obj, msg=None):
+    @util.preload_module("sqlalchemy.orm.base")
+    def __init__(self, obj, msg=None):
+        base = util.preloaded.orm_base
+
         if not msg:
             try:
                 base.class_mapper(type(obj))
@@ -124,8 +128,10 @@ class ObjectDeletedError(sa_exc.InvalidRequestError):
 
     """
 
-    @util.dependencies("sqlalchemy.orm.base")
-    def __init__(self, base, state, msg=None):
+    @util.preload_module("sqlalchemy.orm.base")
+    def __init__(self, state, msg=None):
+        base = util.preloaded.orm_base
+
         if not msg:
             msg = (
                 "Instance '%s' has been deleted, or its "
@@ -140,14 +146,6 @@ class ObjectDeletedError(sa_exc.InvalidRequestError):
 
 class UnmappedColumnError(sa_exc.InvalidRequestError):
     """Mapping operation was requested on an unknown column."""
-
-
-class NoResultFound(sa_exc.InvalidRequestError):
-    """A database result was required but none was found."""
-
-
-class MultipleResultsFound(sa_exc.InvalidRequestError):
-    """A single database result was required but more than one were found."""
 
 
 class LoaderStrategyException(sa_exc.InvalidRequestError):
@@ -192,13 +190,13 @@ def _safe_cls_name(cls):
     return cls_name
 
 
-@util.dependencies("sqlalchemy.orm.base")
-def _default_unmapped(base, cls):
+@util.preload_module("sqlalchemy.orm.base")
+def _default_unmapped(cls):
+    base = util.preloaded.orm_base
+
     try:
         mappers = base.manager_of_class(cls).mappers
-    except NO_STATE:
-        mappers = {}
-    except TypeError:
+    except (TypeError,) + NO_STATE:
         mappers = {}
     name = _safe_cls_name(cls)
 

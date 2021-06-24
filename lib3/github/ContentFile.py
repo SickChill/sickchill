@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -39,7 +37,7 @@ import github.Repository
 
 class ContentFile(github.GithubObject.CompletableGithubObject):
     """
-    This class represents ContentFiles. The reference can be found here https://developer.github.com/v3/repos/contents/#get-contents
+    This class represents ContentFiles. The reference can be found here https://docs.github.com/en/rest/reference/repos#contents
     """
 
     def __repr__(self):
@@ -58,7 +56,7 @@ class ContentFile(github.GithubObject.CompletableGithubObject):
         """
         :type: bytes
         """
-        assert self.encoding == "base64", "unsupported encoding: %s" % self.encoding
+        assert self.encoding == "base64", f"unsupported encoding: {self.encoding}"
         return base64.b64decode(bytearray(self.content, "utf-8"))
 
     @property

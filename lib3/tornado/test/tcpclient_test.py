@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 from contextlib import closing
+import getpass
 import os
 import socket
 import unittest
@@ -39,7 +40,7 @@ AF1, AF2 = 1, 2
 
 class TestTCPServer(TCPServer):
     def __init__(self, family):
-        super(TestTCPServer, self).__init__()
+        super().__init__()
         self.streams = []  # type: List[IOStream]
         self.queue = Queue()  # type: Queue[IOStream]
         sockets = bind_sockets(0, "localhost", family)
@@ -51,14 +52,14 @@ class TestTCPServer(TCPServer):
         self.queue.put(stream)
 
     def stop(self):
-        super(TestTCPServer, self).stop()
+        super().stop()
         for stream in self.streams:
             stream.close()
 
 
 class TCPClientTest(AsyncTestCase):
     def setUp(self):
-        super(TCPClientTest, self).setUp()
+        super().setUp()
         self.server = None
         self.client = TCPClient()
 
@@ -76,7 +77,7 @@ class TCPClientTest(AsyncTestCase):
     def tearDown(self):
         self.client.close()
         self.stop_server()
-        super(TCPClientTest, self).tearDown()
+        super().tearDown()
 
     def skipIfLocalhostV4(self):
         # The port used here doesn't matter, but some systems require it
@@ -92,6 +93,7 @@ class TCPClientTest(AsyncTestCase):
         stream = yield self.client.connect(
             host, port, source_ip=source_ip, source_port=source_port
         )
+        assert self.server is not None
         server_stream = yield self.server.queue.get()
         with closing(stream):
             stream.write(b"hello")
@@ -135,8 +137,7 @@ class TCPClientTest(AsyncTestCase):
             yield self.client.connect("127.0.0.1", port)
 
     def test_source_ip_fail(self):
-        """
-        Fail when trying to use the source IP Address '8.8.8.8'.
+        """Fail when trying to use the source IP Address '8.8.8.8'.
         """
         self.assertRaises(
             socket.error,
@@ -147,16 +148,18 @@ class TCPClientTest(AsyncTestCase):
         )
 
     def test_source_ip_success(self):
-        """
-        Success when trying to use the source IP Address '127.0.0.1'
+        """Success when trying to use the source IP Address '127.0.0.1'.
         """
         self.do_test_connect(socket.AF_INET, "127.0.0.1", source_ip="127.0.0.1")
 
     @skipIfNonUnix
     def test_source_port_fail(self):
+        """Fail when trying to use source port 1.
         """
-        Fail when trying to use source port 1.
-        """
+        if getpass.getuser() == "root":
+            # Root can use any port so we can't easily force this to fail.
+            # This is mainly relevant for docker.
+            self.skipTest("running as root")
         self.assertRaises(
             socket.error,
             self.do_test_connect,
@@ -203,11 +206,11 @@ class ConnectorTest(AsyncTestCase):
             self.closed = True
 
     def setUp(self):
-        super(ConnectorTest, self).setUp()
+        super().setUp()
         self.connect_futures = (
             {}
-        )  # type: Dict[Tuple[int, Tuple], Future[ConnectorTest.FakeStream]]
-        self.streams = {}  # type: Dict[Tuple, ConnectorTest.FakeStream]
+        )  # type: Dict[Tuple[int, typing.Any], Future[ConnectorTest.FakeStream]]
+        self.streams = {}  # type: Dict[typing.Any, ConnectorTest.FakeStream]
         self.addrinfo = [(AF1, "a"), (AF1, "b"), (AF2, "c"), (AF2, "d")]
 
     def tearDown(self):
@@ -215,7 +218,7 @@ class ConnectorTest(AsyncTestCase):
         # be closing any streams
         for stream in self.streams.values():
             self.assertFalse(stream.closed)
-        super(ConnectorTest, self).tearDown()
+        super().tearDown()
 
     def create_stream(self, af, addr):
         stream = ConnectorTest.FakeStream()

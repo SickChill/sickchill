@@ -34,6 +34,7 @@ from tornado.web import Application, RequestHandler, stream_request_body
 from contextlib import closing
 import datetime
 import gzip
+import logging
 import os
 import shutil
 import socket
@@ -41,6 +42,7 @@ import ssl
 import sys
 import tempfile
 import unittest
+import urllib.parse
 from io import BytesIO
 
 import typing
@@ -72,6 +74,8 @@ async def read_stream_body(stream):
 
 
 class HandlerBaseTestCase(AsyncHTTPTestCase):
+    Handler = None
+
     def get_app(self):
         return Application([("/", self.__class__.Handler)])
 
@@ -120,21 +124,21 @@ class SSLTestMixin(object):
     def get_ssl_version(self):
         raise NotImplementedError()
 
-    def test_ssl(self):
+    def test_ssl(self: typing.Any):
         response = self.fetch("/")
         self.assertEqual(response.body, b"Hello world")
 
-    def test_large_post(self):
+    def test_large_post(self: typing.Any):
         response = self.fetch("/", method="POST", body="A" * 5000)
         self.assertEqual(response.body, b"Got 5000 bytes in POST")
 
-    def test_non_ssl_request(self):
+    def test_non_ssl_request(self: typing.Any):
         # Make sure the server closes the connection when it gets a non-ssl
         # connection, rather than waiting for a timeout or otherwise
         # misbehaving.
         with ExpectLog(gen_log, "(SSL Error|uncaught exception)"):
             with ExpectLog(gen_log, "Uncaught exception", required=False):
-                with self.assertRaises((IOError, HTTPError)):
+                with self.assertRaises((IOError, HTTPError)):  # type: ignore
                     self.fetch(
                         self.get_url("/").replace("https:", "http:"),
                         request_timeout=3600,
@@ -142,10 +146,10 @@ class SSLTestMixin(object):
                         raise_error=True,
                     )
 
-    def test_error_logging(self):
+    def test_error_logging(self: typing.Any):
         # No stack traces are logged for SSL errors.
         with ExpectLog(gen_log, "SSL Error") as expect_log:
-            with self.assertRaises((IOError, HTTPError)):
+            with self.assertRaises((IOError, HTTPError)):  # type: ignore
                 self.fetch(
                     self.get_url("/").replace("https:", "http:"), raise_error=True
                 )
@@ -378,6 +382,19 @@ class TypeCheckHandler(RequestHandler):
             self.errors[name] = "expected %s, got %s" % (expected_type, actual_type)
 
 
+class PostEchoHandler(RequestHandler):
+    def post(self, *path_args):
+        self.write(dict(echo=self.get_argument("data")))
+
+
+class PostEchoGBKHandler(PostEchoHandler):
+    def decode_argument(self, value, name=None):
+        try:
+            return value.decode("gbk")
+        except Exception:
+            raise HTTPError(400, "invalid gbk bytes: %r" % value)
+
+
 class HTTPServerTest(AsyncHTTPTestCase):
     def get_app(self):
         return Application(
@@ -385,6 +402,8 @@ class HTTPServerTest(AsyncHTTPTestCase):
                 ("/echo", EchoHandler),
                 ("/typecheck", TypeCheckHandler),
                 ("//doubleslash", EchoHandler),
+                ("/post_utf8", PostEchoHandler),
+                ("/post_gbk", PostEchoGBKHandler),
             ]
         )
 
@@ -423,18 +442,22 @@ class HTTPServerTest(AsyncHTTPTestCase):
         self.assertEqual(200, response.code)
         self.assertEqual(json_decode(response.body), {})
 
-    def test_malformed_body(self):
-        # parse_qs is pretty forgiving, but it will fail on python 3
-        # if the data is not utf8.
-        with ExpectLog(gen_log, "Invalid x-www-form-urlencoded body"):
-            response = self.fetch(
-                "/echo",
-                method="POST",
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
-                body=b"\xe9",
-            )
-        self.assertEqual(200, response.code)
-        self.assertEqual(b"{}", response.body)
+    def test_post_encodings(self):
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        uni_text = "chinese: \u5f20\u4e09"
+        for enc in ("utf8", "gbk"):
+            for quote in (True, False):
+                with self.subTest(enc=enc, quote=quote):
+                    bin_text = uni_text.encode(enc)
+                    if quote:
+                        bin_text = urllib.parse.quote(bin_text).encode("ascii")
+                    response = self.fetch(
+                        "/post_" + enc,
+                        method="POST",
+                        headers=headers,
+                        body=(b"data=" + bin_text),
+                    )
+                    self.assertEqual(json_decode(response.body), {"echo": uni_text})
 
 
 class HTTPServerRawTest(AsyncHTTPTestCase):
@@ -442,7 +465,7 @@ class HTTPServerRawTest(AsyncHTTPTestCase):
         return Application([("/echo", EchoHandler)])
 
     def setUp(self):
-        super(HTTPServerRawTest, self).setUp()
+        super().setUp()
         self.stream = IOStream(socket.socket())
         self.io_loop.run_sync(
             lambda: self.stream.connect(("127.0.0.1", self.get_http_port()))
@@ -450,7 +473,7 @@ class HTTPServerRawTest(AsyncHTTPTestCase):
 
     def tearDown(self):
         self.stream.close()
-        super(HTTPServerRawTest, self).tearDown()
+        super().tearDown()
 
     def test_empty_request(self):
         self.stream.close()
@@ -458,7 +481,7 @@ class HTTPServerRawTest(AsyncHTTPTestCase):
         self.wait()
 
     def test_malformed_first_line_response(self):
-        with ExpectLog(gen_log, ".*Malformed HTTP request line"):
+        with ExpectLog(gen_log, ".*Malformed HTTP request line", level=logging.INFO):
             self.stream.write(b"asdf\r\n\r\n")
             start_line, headers, response = self.io_loop.run_sync(
                 lambda: read_stream_body(self.stream)
@@ -468,7 +491,7 @@ class HTTPServerRawTest(AsyncHTTPTestCase):
             self.assertEqual("Bad Request", start_line.reason)
 
     def test_malformed_first_line_log(self):
-        with ExpectLog(gen_log, ".*Malformed HTTP request line"):
+        with ExpectLog(gen_log, ".*Malformed HTTP request line", level=logging.INFO):
             self.stream.write(b"asdf\r\n\r\n")
             # TODO: need an async version of ExpectLog so we don't need
             # hard-coded timeouts here.
@@ -476,7 +499,11 @@ class HTTPServerRawTest(AsyncHTTPTestCase):
             self.wait()
 
     def test_malformed_headers(self):
-        with ExpectLog(gen_log, ".*Malformed HTTP message.*no colon in header line"):
+        with ExpectLog(
+            gen_log,
+            ".*Malformed HTTP message.*no colon in header line",
+            level=logging.INFO,
+        ):
             self.stream.write(b"GET / HTTP/1.0\r\nasdf\r\n\r\n")
             self.io_loop.add_timeout(datetime.timedelta(seconds=0.05), self.stop)
             self.wait()
@@ -531,7 +558,9 @@ bar
 
     @gen_test
     def test_invalid_content_length(self):
-        with ExpectLog(gen_log, ".*Only integer Content-Length is allowed"):
+        with ExpectLog(
+            gen_log, ".*Only integer Content-Length is allowed", level=logging.INFO
+        ):
             self.stream.write(
                 b"""\
 POST /echo HTTP/1.1
@@ -646,7 +675,7 @@ class SSLXHeaderTest(AsyncHTTPSTestCase, HandlerBaseTestCase):
         return Application([("/", XHeaderTest.Handler)])
 
     def get_httpserver_options(self):
-        output = super(SSLXHeaderTest, self).get_httpserver_options()
+        output = super().get_httpserver_options()
         output["xheaders"] = True
         return output
 
@@ -692,7 +721,7 @@ class UnixSocketTest(AsyncTestCase):
     """
 
     def setUp(self):
-        super(UnixSocketTest, self).setUp()
+        super().setUp()
         self.tmpdir = tempfile.mkdtemp()
         self.sockfile = os.path.join(self.tmpdir, "test.sock")
         sock = netutil.bind_unix_socket(self.sockfile)
@@ -707,7 +736,7 @@ class UnixSocketTest(AsyncTestCase):
         self.io_loop.run_sync(self.server.close_all_connections)
         self.server.stop()
         shutil.rmtree(self.tmpdir)
-        super(UnixSocketTest, self).tearDown()
+        super().tearDown()
 
     @gen_test
     def test_unix_socket(self):
@@ -750,6 +779,12 @@ class KeepAliveTest(AsyncHTTPTestCase):
                 # be written out in chunks.
                 self.write("".join(chr(i % 256) * 1024 for i in range(512)))
 
+        class TransferEncodingChunkedHandler(RequestHandler):
+            @gen.coroutine
+            def head(self):
+                self.write("Hello world")
+                yield self.flush()
+
         class FinishOnCloseHandler(RequestHandler):
             def initialize(self, cleanup_event):
                 self.cleanup_event = cleanup_event
@@ -770,6 +805,7 @@ class KeepAliveTest(AsyncHTTPTestCase):
             [
                 ("/", HelloHandler),
                 ("/large", LargeHandler),
+                ("/chunked", TransferEncodingChunkedHandler),
                 (
                     "/finish_on_close",
                     FinishOnCloseHandler,
@@ -779,7 +815,7 @@ class KeepAliveTest(AsyncHTTPTestCase):
         )
 
     def setUp(self):
-        super(KeepAliveTest, self).setUp()
+        super().setUp()
         self.http_version = b"HTTP/1.1"
 
     def tearDown(self):
@@ -790,7 +826,7 @@ class KeepAliveTest(AsyncHTTPTestCase):
 
         if hasattr(self, "stream"):
             self.stream.close()
-        super(KeepAliveTest, self).tearDown()
+        super().tearDown()
 
     # The next few methods are a crude manual http client
     @gen.coroutine
@@ -923,8 +959,18 @@ class KeepAliveTest(AsyncHTTPTestCase):
         self.assertEqual(self.headers["Connection"], "Keep-Alive")
         self.close()
 
+    @gen_test
+    def test_keepalive_chunked_head_no_body(self):
+        yield self.connect()
+        self.stream.write(b"HEAD /chunked HTTP/1.1\r\n\r\n")
+        yield self.read_headers()
 
-class GzipBaseTest(object):
+        self.stream.write(b"HEAD /chunked HTTP/1.1\r\n\r\n")
+        yield self.read_headers()
+        self.close()
+
+
+class GzipBaseTest(AsyncHTTPTestCase):
     def get_app(self):
         return Application([("/", EchoHandler)])
 
@@ -943,7 +989,7 @@ class GzipBaseTest(object):
 
     def test_uncompressed(self):
         response = self.fetch("/", method="POST", body="foo=bar")
-        self.assertEquals(json_decode(response.body), {u"foo": [u"bar"]})
+        self.assertEqual(json_decode(response.body), {u"foo": [u"bar"]})
 
 
 class GzipTest(GzipBaseTest, AsyncHTTPTestCase):
@@ -952,7 +998,7 @@ class GzipTest(GzipBaseTest, AsyncHTTPTestCase):
 
     def test_gzip(self):
         response = self.post_gzip("foo=bar")
-        self.assertEquals(json_decode(response.body), {u"foo": [u"bar"]})
+        self.assertEqual(json_decode(response.body), {u"foo": [u"bar"]})
 
 
 class GzipUnsupportedTest(GzipBaseTest, AsyncHTTPTestCase):
@@ -962,7 +1008,7 @@ class GzipUnsupportedTest(GzipBaseTest, AsyncHTTPTestCase):
         # not a fatal error).
         with ExpectLog(gen_log, "Unsupported Content-Encoding"):
             response = self.post_gzip("foo=bar")
-        self.assertEquals(json_decode(response.body), {})
+        self.assertEqual(json_decode(response.body), {})
 
 
 class StreamingChunkSizeTest(AsyncHTTPTestCase):
@@ -1094,11 +1140,11 @@ class IdleTimeoutTest(AsyncHTTPTestCase):
         return dict(idle_connection_timeout=0.1)
 
     def setUp(self):
-        super(IdleTimeoutTest, self).setUp()
+        super().setUp()
         self.streams = []  # type: List[IOStream]
 
     def tearDown(self):
-        super(IdleTimeoutTest, self).tearDown()
+        super().tearDown()
         for stream in self.streams:
             stream.close()
 
@@ -1145,14 +1191,11 @@ class BodyLimitsTest(AsyncHTTPTestCase):
                 self.bytes_read = 0
 
             def prepare(self):
+                conn = typing.cast(HTTP1Connection, self.request.connection)
                 if "expected_size" in self.request.arguments:
-                    self.request.connection.set_max_body_size(
-                        int(self.get_argument("expected_size"))
-                    )
+                    conn.set_max_body_size(int(self.get_argument("expected_size")))
                 if "body_timeout" in self.request.arguments:
-                    self.request.connection.set_body_timeout(
-                        float(self.get_argument("body_timeout"))
-                    )
+                    conn.set_body_timeout(float(self.get_argument("body_timeout")))
 
             def data_received(self, data):
                 self.bytes_read += len(data)
@@ -1179,14 +1222,14 @@ class BodyLimitsTest(AsyncHTTPTestCase):
         self.assertEqual(response.body, b"4096")
 
     def test_large_body_buffered(self):
-        with ExpectLog(gen_log, ".*Content-Length too long"):
+        with ExpectLog(gen_log, ".*Content-Length too long", level=logging.INFO):
             response = self.fetch("/buffered", method="PUT", body=b"a" * 10240)
         self.assertEqual(response.code, 400)
 
     @unittest.skipIf(os.name == "nt", "flaky on windows")
     def test_large_body_buffered_chunked(self):
         # This test is flaky on windows for unknown reasons.
-        with ExpectLog(gen_log, ".*chunked body too large"):
+        with ExpectLog(gen_log, ".*chunked body too large", level=logging.INFO):
             response = self.fetch(
                 "/buffered",
                 method="PUT",
@@ -1195,13 +1238,13 @@ class BodyLimitsTest(AsyncHTTPTestCase):
         self.assertEqual(response.code, 400)
 
     def test_large_body_streaming(self):
-        with ExpectLog(gen_log, ".*Content-Length too long"):
+        with ExpectLog(gen_log, ".*Content-Length too long", level=logging.INFO):
             response = self.fetch("/streaming", method="PUT", body=b"a" * 10240)
         self.assertEqual(response.code, 400)
 
     @unittest.skipIf(os.name == "nt", "flaky on windows")
     def test_large_body_streaming_chunked(self):
-        with ExpectLog(gen_log, ".*chunked body too large"):
+        with ExpectLog(gen_log, ".*chunked body too large", level=logging.INFO):
             response = self.fetch(
                 "/streaming",
                 method="PUT",
@@ -1234,7 +1277,7 @@ class BodyLimitsTest(AsyncHTTPTestCase):
                 b"PUT /streaming?body_timeout=0.1 HTTP/1.0\r\n"
                 b"Content-Length: 42\r\n\r\n"
             )
-            with ExpectLog(gen_log, "Timeout reading body"):
+            with ExpectLog(gen_log, "Timeout reading body", level=logging.INFO):
                 response = yield stream.read_until_close()
             self.assertEqual(response, b"")
         finally:
@@ -1258,7 +1301,7 @@ class BodyLimitsTest(AsyncHTTPTestCase):
             stream.write(
                 b"PUT /streaming HTTP/1.1\r\n" b"Content-Length: 10240\r\n\r\n"
             )
-            with ExpectLog(gen_log, ".*Content-Length too long"):
+            with ExpectLog(gen_log, ".*Content-Length too long", level=logging.INFO):
                 data = yield stream.read_until_close()
             self.assertEqual(data, b"HTTP/1.1 400 Bad Request\r\n\r\n")
         finally:

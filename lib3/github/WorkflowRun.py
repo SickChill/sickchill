@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2020 Steve Kowalik <steven@wedontsleep.org>                        #
@@ -30,7 +28,7 @@ import github.PullRequest
 
 class WorkflowRun(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Workflow Runs. The reference can be found here https://developer.github.com/v3/actions/workflow-runs/
+    This class represents Workflow Runs. The reference can be found here https://docs.github.com/en/rest/reference/actions#workflow-runs
     """
 
     def __repr__(self):
@@ -91,6 +89,14 @@ class WorkflowRun(github.GithubObject.CompletableGithubObject):
         """
         self._completeIfNotSet(self._conclusion)
         return self._conclusion.value
+
+    @property
+    def workflow_id(self):
+        """
+        :type: int
+        """
+        self._completeIfNotSet(self._workflow_id)
+        return self._workflow_id.value
 
     @property
     def url(self):
@@ -214,7 +220,7 @@ class WorkflowRun(github.GithubObject.CompletableGithubObject):
 
     def cancel(self):
         """
-        :calls: `POST /repos/:owner/:repo/actions/runs/:run_id/cancel <https://developer.github.com/v3/actions/workflow-runs/>`_
+        :calls: `POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel <https://docs.github.com/en/rest/reference/actions#workflow-runs>`_
         :rtype: bool
         """
         status, _, _ = self._requester.requestJson("POST", self.cancel_url)
@@ -222,7 +228,7 @@ class WorkflowRun(github.GithubObject.CompletableGithubObject):
 
     def rerun(self):
         """
-        :calls: `POST /repos/:owner/:repo/actions/runs/:run_id/rerun <https://developer.github.com/v3/actions/workflow-runs/>`_
+        :calls: `POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun <https://docs.github.com/en/rest/reference/actions#workflow-runs>`_
         :rtype: bool
         """
         status, _, _ = self._requester.requestJson("POST", self.rerun_url)
@@ -230,10 +236,10 @@ class WorkflowRun(github.GithubObject.CompletableGithubObject):
 
     def timing(self):
         """
-        :calls: `GET /repos/:owner/:repo/actions/runs/:run_id/timing <https://developer.github.com/v3/actions/workflow-runs/>`_
+        :calls: `GET /repos/{owner}/{repo}/actions/runs/{run_id}/timing <https://docs.github.com/en/rest/reference/actions#workflow-runs>`_
         :rtype: namedtuple with billable and run_duration_ms members
         """
-        headers, data = self._requester.requestJsonAndCheck("GET", self.url + "/timing")
+        headers, data = self._requester.requestJsonAndCheck("GET", f"{self.url}/timing")
         timingdata = namedtuple("TimingData", data.keys())
         return timingdata._make(data.values())
 
@@ -245,6 +251,7 @@ class WorkflowRun(github.GithubObject.CompletableGithubObject):
         self._event = github.GithubObject.NotSet
         self._status = github.GithubObject.NotSet
         self._conclusion = github.GithubObject.NotSet
+        self._workflow_id = github.GithubObject.NotSet
         self._url = github.GithubObject.NotSet
         self._html_url = github.GithubObject.NotSet
         self._pull_requests = github.GithubObject.NotSet
@@ -276,6 +283,8 @@ class WorkflowRun(github.GithubObject.CompletableGithubObject):
             self._status = self._makeStringAttribute(attributes["status"])
         if "conclusion" in attributes:  # pragma no branch
             self._conclusion = self._makeStringAttribute(attributes["conclusion"])
+        if "workflow_id" in attributes:  # pragma no branch
+            self._workflow_id = self._makeIntAttribute(attributes["workflow_id"])
         if "url" in attributes:  # pragma no branch
             self._url = self._makeStringAttribute(attributes["url"])
         if "html_url" in attributes:  # pragma no branch

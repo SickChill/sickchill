@@ -33,8 +33,8 @@ data = (
 'Ti ',    # 0x1f
 'Pu ',    # 0x20
 'Tie ',    # 0x21
-'[?] ',    # 0x22
-'[?] ',    # 0x23
+None,    # 0x22
+None,    # 0x23
 'Ding ',    # 0x24
 'Shan ',    # 0x25
 'Kai ',    # 0x26
@@ -101,8 +101,8 @@ data = (
 'Biao ',    # 0x63
 'Bao ',    # 0x64
 'Lu ',    # 0x65
-'[?] ',    # 0x66
-'[?] ',    # 0x67
+None,    # 0x66
+None,    # 0x67
 'Long ',    # 0x68
 'E ',    # 0x69
 'Lu ',    # 0x6a

@@ -1,5 +1,5 @@
 # postgresql/pypostgresql.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -17,6 +17,13 @@
     integration** and may have unresolved issues.  The recommended PostgreSQL
     driver is psycopg2.
 
+.. deprecated:: 1.4 The py-postgresql DBAPI is deprecated and will be removed
+   in a future version. This DBAPI is superseded by the external
+    version available at external-dialect_. Please use the external version or
+    one of the supported DBAPIs to connect to PostgreSQL.
+
+.. TODO update link
+.. _external-dialect: https://github.com/PyGreSQL
 
 """  # noqa
 
@@ -45,6 +52,7 @@ class PGExecutionContext_pypostgresql(PGExecutionContext):
 class PGDialect_pypostgresql(PGDialect):
     driver = "pypostgresql"
 
+    supports_statement_cache = True
     supports_unicode_statements = True
     supports_unicode_binds = True
     description_encoding = None
@@ -68,6 +76,15 @@ class PGDialect_pypostgresql(PGDialect):
     @classmethod
     def dbapi(cls):
         from postgresql.driver import dbapi20
+
+        # TODO update link
+        util.warn_deprecated(
+            "The py-postgresql DBAPI is deprecated and will be removed "
+            "in a future version. This DBAPI is superseded by the external"
+            "version available at https://github.com/PyGreSQL. Please "
+            "use one of the supported DBAPIs to connect to PostgreSQL.",
+            version="1.4",
+        )
 
         return dbapi20
 

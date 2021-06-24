@@ -1,5 +1,5 @@
 # sybase/mxodbc.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -16,7 +16,6 @@
 
     This dialect is a stub only and is likely non functional at this time.
 
-
 """
 from sqlalchemy.connectors.mxodbc import MxODBCConnector
 from sqlalchemy.dialects.sybase.base import SybaseDialect
@@ -29,6 +28,7 @@ class SybaseExecutionContext_mxodbc(SybaseExecutionContext):
 
 class SybaseDialect_mxodbc(MxODBCConnector, SybaseDialect):
     execution_ctx_cls = SybaseExecutionContext_mxodbc
+    supports_statement_cache = True
 
 
 dialect = SybaseDialect_mxodbc

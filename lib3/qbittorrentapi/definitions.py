@@ -5,24 +5,25 @@ try:
 except ImportError:
     from UserList import UserList
 
-from attrdict import AttrDict
+from qbittorrentapi._attrdict import AttrDict
 
 
 class APINames(Enum):
     """
-    API names for API endpoints
+    API namespaces for API endpoints
 
     e.g 'torrents' in http://localhost:8080/api/v2/torrents/addTrackers
     """
-    Authorization = 'auth'
-    Application = 'app'
-    Log = 'log'
-    Sync = 'sync'
-    Transfer = 'transfer'
-    Torrents = 'torrents'
-    RSS = 'rss'
-    Search = 'search'
-    EMPTY = ''
+
+    Authorization = "auth"
+    Application = "app"
+    Log = "log"
+    Sync = "sync"
+    Transfer = "transfer"
+    Torrents = "torrents"
+    RSS = "rss"
+    Search = "search"
+    EMPTY = ""
 
 
 class TorrentStates(Enum):
@@ -46,49 +47,71 @@ class TorrentStates(Enum):
         >>>     state_enum = TorrentStates(torrent.state)
         >>>     print(f'{torrent.hash}: {state_enum.value}')
     """
-    ERROR = 'error'
-    MISSING_FILES = 'missingFiles'
-    UPLOADING = 'uploading'
-    PAUSED_UPLOAD = 'pausedUP'
-    QUEUED_UPLOAD = 'queuedUP'
-    STALLED_UPLOAD = 'stalledUP'
-    CHECKING_UPLOAD = 'checkingUP'
-    FORCED_UPLOAD = 'forcedUP'
-    ALLOCATING = 'allocating'
-    DOWNLOADING = 'downloading'
-    METADATA_DOWNLOAD = 'metaDL'
-    PAUSED_DOWNLOAD = 'pausedDL'
-    QUEUED_DOWNLOAD = 'queuedDL'
-    FORCE_DOWNLOAD = 'forceDL'
-    STALLED_DOWNLOAD = 'stalledDL'
-    CHECKING_DOWNLOAD = 'checkingDL'
-    CHECKING_RESUME_DATA = 'checkingResumeData'
-    MOVING = 'moving'
-    UNKNOWN = 'unknown'
+
+    ERROR = "error"
+    MISSING_FILES = "missingFiles"
+    UPLOADING = "uploading"
+    PAUSED_UPLOAD = "pausedUP"
+    QUEUED_UPLOAD = "queuedUP"
+    STALLED_UPLOAD = "stalledUP"
+    CHECKING_UPLOAD = "checkingUP"
+    FORCED_UPLOAD = "forcedUP"
+    ALLOCATING = "allocating"
+    DOWNLOADING = "downloading"
+    METADATA_DOWNLOAD = "metaDL"
+    PAUSED_DOWNLOAD = "pausedDL"
+    QUEUED_DOWNLOAD = "queuedDL"
+    FORCED_DOWNLOAD = "forcedDL"
+    STALLED_DOWNLOAD = "stalledDL"
+    CHECKING_DOWNLOAD = "checkingDL"
+    CHECKING_RESUME_DATA = "checkingResumeData"
+    MOVING = "moving"
+    UNKNOWN = "unknown"
 
     @property
     def is_downloading(self):
         """Returns True if the State is categorized as Downloading."""
-        return self in (TorrentStates.DOWNLOADING, TorrentStates.METADATA_DOWNLOAD, TorrentStates.STALLED_DOWNLOAD,
-                        TorrentStates.CHECKING_DOWNLOAD, TorrentStates.PAUSED_DOWNLOAD, TorrentStates.QUEUED_DOWNLOAD,
-                        TorrentStates.FORCE_DOWNLOAD)
+        return self in (
+            TorrentStates.DOWNLOADING,
+            TorrentStates.METADATA_DOWNLOAD,
+            TorrentStates.STALLED_DOWNLOAD,
+            TorrentStates.CHECKING_DOWNLOAD,
+            TorrentStates.PAUSED_DOWNLOAD,
+            TorrentStates.QUEUED_DOWNLOAD,
+            TorrentStates.FORCED_DOWNLOAD,
+        )
 
     @property
     def is_uploading(self):
         """Returns True if the State is categorized as Uploading."""
-        return self in (TorrentStates.UPLOADING, TorrentStates.STALLED_UPLOAD, TorrentStates.CHECKING_UPLOAD,
-                        TorrentStates.QUEUED_UPLOAD, TorrentStates.FORCED_UPLOAD)
+        return self in (
+            TorrentStates.UPLOADING,
+            TorrentStates.STALLED_UPLOAD,
+            TorrentStates.CHECKING_UPLOAD,
+            TorrentStates.QUEUED_UPLOAD,
+            TorrentStates.FORCED_UPLOAD,
+        )
 
     @property
     def is_complete(self):
         """Returns True if the State is categorized as Complete."""
-        return self in (TorrentStates.UPLOADING, TorrentStates.STALLED_UPLOAD, TorrentStates.CHECKING_UPLOAD,
-                        TorrentStates.PAUSED_UPLOAD, TorrentStates.QUEUED_UPLOAD, TorrentStates.FORCED_UPLOAD)
+        return self in (
+            TorrentStates.UPLOADING,
+            TorrentStates.STALLED_UPLOAD,
+            TorrentStates.CHECKING_UPLOAD,
+            TorrentStates.PAUSED_UPLOAD,
+            TorrentStates.QUEUED_UPLOAD,
+            TorrentStates.FORCED_UPLOAD,
+        )
 
     @property
     def is_checking(self):
         """Returns True if the State is categorized as Checking."""
-        return self in (TorrentStates.CHECKING_UPLOAD, TorrentStates.CHECKING_DOWNLOAD, TorrentStates.CHECKING_RESUME_DATA)
+        return self in (
+            TorrentStates.CHECKING_UPLOAD,
+            TorrentStates.CHECKING_DOWNLOAD,
+            TorrentStates.CHECKING_RESUME_DATA,
+        )
 
     @property
     def is_errored(self):
@@ -105,7 +128,7 @@ class ClientCache(object):
     """Caches the client. Subclass this for any object that needs access to the Client."""
 
     def __init__(self, *args, **kwargs):
-        self._client = kwargs.pop('client')
+        self._client = kwargs.pop("client")
         super(ClientCache, self).__init__(*args, **kwargs)
 
 
@@ -122,7 +145,9 @@ class Dictionary(ClientCache, AttrDict):
                     # if the value is a dictionary, convert it to a AttrDict
                     if isinstance(value, dict):
                         # recursively send each value to convert its dictionary children
-                        converted_dict[key] = convert_dict_values_to_attrdicts(AttrDict(value))
+                        converted_dict[key] = convert_dict_values_to_attrdicts(
+                            AttrDict(value)
+                        )
                     else:
                         converted_dict[key] = value
                 return converted_dict
@@ -130,7 +155,7 @@ class Dictionary(ClientCache, AttrDict):
         data = convert_dict_values_to_attrdicts(data)
         super(Dictionary, self).__init__(data or dict(), client=client)
         # allows updating properties that aren't necessarily a part of the AttrDict
-        self._setattr('_allow_invalid_attributes', True)
+        self._setattr("_allow_invalid_attributes", True)
 
 
 class List(ClientCache, UserList):

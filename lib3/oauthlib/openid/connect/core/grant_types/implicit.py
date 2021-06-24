@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
 """
 oauthlib.openid.connect.core.grant_types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
-from __future__ import absolute_import, unicode_literals
-
 import logging
 
-from .base import GrantTypeBase
-
-from oauthlib.oauth2.rfc6749.grant_types.implicit import ImplicitGrant as OAuth2ImplicitGrant
 from oauthlib.oauth2.rfc6749.errors import InvalidRequestError
+from oauthlib.oauth2.rfc6749.grant_types.implicit import (
+    ImplicitGrant as OAuth2ImplicitGrant,
+)
+
+from .base import GrantTypeBase
 
 log = logging.getLogger(__name__)
 
@@ -29,12 +28,12 @@ class ImplicitGrant(GrantTypeBase):
     def add_id_token(self, token, token_handler, request):
         if 'state' not in token and request.state:
             token['state'] = request.state
-        return super(ImplicitGrant, self).add_id_token(token, token_handler, request, nonce=request.nonce)
+        return super().add_id_token(token, token_handler, request, nonce=request.nonce)
 
     def openid_authorization_validator(self, request):
         """Additional validation when following the implicit flow.
         """
-        request_info = super(ImplicitGrant, self).openid_authorization_validator(request)
+        request_info = super().openid_authorization_validator(request)
         if not request_info:  # returns immediately if OAuth2.0
             return request_info
 

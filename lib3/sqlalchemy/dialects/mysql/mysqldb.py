@@ -1,5 +1,5 @@
 # mysql/mysqldb.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -30,6 +30,55 @@ Unicode
 
 Please see :ref:`mysql_unicode` for current recommendations on unicode
 handling.
+
+.. _mysqldb_ssl:
+
+SSL Connections
+----------------
+
+The mysqlclient and PyMySQL DBAPIs accept an additional dictionary under the
+key "ssl", which may be specified using the
+:paramref:`_sa.create_engine.connect_args` dictionary::
+
+    engine = create_engine(
+        "mysql+mysqldb://scott:tiger@192.168.0.134/test",
+        connect_args={
+            "ssl": {
+                "ssl_ca": "/home/gord/client-ssl/ca.pem",
+                "ssl_cert": "/home/gord/client-ssl/client-cert.pem",
+                "ssl_key": "/home/gord/client-ssl/client-key.pem"
+            }
+        }
+    )
+
+For convenience, the following keys may also be specified inline within the URL
+where they will be interpreted into the "ssl" dictionary automatically:
+"ssl_ca", "ssl_cert", "ssl_key", "ssl_capath", "ssl_cipher",
+"ssl_check_hostname". An example is as follows::
+
+    connection_uri = (
+        "mysql+mysqldb://scott:tiger@192.168.0.134/test"
+        "?ssl_ca=/home/gord/client-ssl/ca.pem"
+        "&ssl_cert=/home/gord/client-ssl/client-cert.pem"
+        "&ssl_key=/home/gord/client-ssl/client-key.pem"
+    )
+
+If the server uses an automatically-generated certificate that is self-signed
+or does not match the host name (as seen from the client), it may also be
+necessary to indicate ``ssl_check_hostname=false``::
+
+    connection_uri = (
+        "mysql+pymysql://scott:tiger@192.168.0.134/test"
+        "?ssl_ca=/home/gord/client-ssl/ca.pem"
+        "&ssl_cert=/home/gord/client-ssl/client-cert.pem"
+        "&ssl_key=/home/gord/client-ssl/client-key.pem"
+        "&ssl_check_hostname=false"
+    )
+
+
+.. seealso::
+
+    :ref:`pymysql_ssl` in the PyMySQL dialect
 
 
 Using MySQLdb with Google Cloud SQL
@@ -77,6 +126,7 @@ class MySQLIdentifierPreparer_mysqldb(MySQLIdentifierPreparer):
 
 class MySQLDialect_mysqldb(MySQLDialect):
     driver = "mysqldb"
+    supports_statement_cache = True
     supports_unicode_statements = True
     supports_sane_rowcount = True
     supports_sane_multi_rowcount = True
@@ -88,9 +138,8 @@ class MySQLDialect_mysqldb(MySQLDialect):
     statement_compiler = MySQLCompiler_mysqldb
     preparer = MySQLIdentifierPreparer_mysqldb
 
-    def __init__(self, server_side_cursors=False, **kwargs):
+    def __init__(self, **kwargs):
         super(MySQLDialect_mysqldb, self).__init__(**kwargs)
-        self.server_side_cursors = server_side_cursors
         self._mysql_dbapi_version = (
             self._parse_dbapi_version(self.dbapi.__version__)
             if self.dbapi is not None and hasattr(self.dbapi, "__version__")
@@ -154,15 +203,14 @@ class MySQLDialect_mysqldb(MySQLDialect):
         # https://github.com/farcepest/MySQLdb1/commit/cd44524fef63bd3fcb71947392326e9742d520e8
         # specific issue w/ the utf8mb4_bin collation and unicode returns
 
-        has_utf8mb4_bin = self.server_version_info > (
-            5,
-        ) and connection.scalar(
+        collation = connection.exec_driver_sql(
             "show collation where %s = 'utf8mb4' and %s = 'utf8mb4_bin'"
             % (
                 self.identifier_preparer.quote("Charset"),
                 self.identifier_preparer.quote("Collation"),
             )
-        )
+        ).scalar()
+        has_utf8mb4_bin = self.server_version_info > (5,) and collation
         if has_utf8mb4_bin:
             additional_tests = [
                 sql.collate(
@@ -179,10 +227,13 @@ class MySQLDialect_mysqldb(MySQLDialect):
             connection, additional_tests
         )
 
-    def create_connect_args(self, url):
-        opts = url.translate_connect_args(
-            database="db", username="user", password="passwd"
-        )
+    def create_connect_args(self, url, _translate_args=None):
+        if _translate_args is None:
+            _translate_args = dict(
+                database="db", username="user", password="passwd"
+            )
+
+        opts = url.translate_connect_args(**_translate_args)
         opts.update(url.query)
 
         util.coerce_kw_type(opts, "compress", bool)
@@ -201,11 +252,18 @@ class MySQLDialect_mysqldb(MySQLDialect):
         # query string.
 
         ssl = {}
-        keys = ["ssl_ca", "ssl_key", "ssl_cert", "ssl_capath", "ssl_cipher"]
-        for key in keys:
+        keys = [
+            ("ssl_ca", str),
+            ("ssl_key", str),
+            ("ssl_cert", str),
+            ("ssl_capath", str),
+            ("ssl_cipher", str),
+            ("ssl_check_hostname", bool),
+        ]
+        for key, kw_type in keys:
             if key in opts:
                 ssl[key[4:]] = opts[key]
-                util.coerce_kw_type(ssl, key[4:], str)
+                util.coerce_kw_type(ssl, key[4:], kw_type)
                 del opts[key]
         if ssl:
             opts["ssl"] = ssl
@@ -213,16 +271,25 @@ class MySQLDialect_mysqldb(MySQLDialect):
         # FOUND_ROWS must be set in CLIENT_FLAGS to enable
         # supports_sane_rowcount.
         client_flag = opts.get("client_flag", 0)
+
+        client_flag_found_rows = self._found_rows_client_flag()
+        if client_flag_found_rows is not None:
+            client_flag |= client_flag_found_rows
+            opts["client_flag"] = client_flag
+        return [[], opts]
+
+    def _found_rows_client_flag(self):
         if self.dbapi is not None:
             try:
                 CLIENT_FLAGS = __import__(
                     self.dbapi.__name__ + ".constants.CLIENT"
                 ).constants.CLIENT
-                client_flag |= CLIENT_FLAGS.FOUND_ROWS
             except (AttributeError, ImportError):
-                self.supports_sane_rowcount = False
-            opts["client_flag"] = client_flag
-        return [[], opts]
+                return None
+            else:
+                return CLIENT_FLAGS.FOUND_ROWS
+        else:
+            return None
 
     def _extract_error_code(self, exception):
         return exception.args[0]

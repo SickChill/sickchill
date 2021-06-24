@@ -1,5 +1,5 @@
 # sql/util.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -12,15 +12,17 @@
 from collections import deque
 from itertools import chain
 
+from . import coercions
 from . import operators
+from . import roles
 from . import visitors
 from .annotation import _deep_annotate  # noqa
 from .annotation import _deep_deannotate  # noqa
 from .annotation import _shallow_annotate  # noqa
+from .base import _expand_cloned
 from .base import _from_objects
 from .base import ColumnSet
 from .ddl import sort_tables  # noqa
-from .elements import _expand_cloned
 from .elements import _find_columns  # noqa
 from .elements import _label_reference
 from .elements import _textual_label_reference
@@ -39,6 +41,7 @@ from .selectable import Join
 from .selectable import ScalarSelect
 from .selectable import SelectBase
 from .selectable import TableClause
+from .traversals import HasCacheKey  # noqa
 from .. import exc
 from .. import util
 
@@ -251,7 +254,9 @@ def find_tables(
         _visitors["join"] = tables.append
 
     if include_aliases:
-        _visitors["alias"] = tables.append
+        _visitors["alias"] = _visitors["subquery"] = _visitors[
+            "tablesample"
+        ] = _visitors["lateral"] = tables.append
 
     if include_crud:
         _visitors["insert"] = _visitors["update"] = _visitors[
@@ -267,7 +272,7 @@ def find_tables(
 
     _visitors["table"] = tables.append
 
-    visitors.traverse(clause, {"column_collections": False}, _visitors)
+    visitors.traverse(clause, {}, _visitors)
     return tables
 
 
@@ -278,6 +283,13 @@ def unwrap_order_by(clause):
     cols = util.column_set()
     result = []
     stack = deque([clause])
+
+    # examples
+    # column -> ASC/DESC == column
+    # column -> ASC/DESC -> label == column
+    # column -> label -> ASC/DESC -> label == column
+    # scalar_select -> label -> ASC/DESC == scalar_select -> label
+
     while stack:
         t = stack.popleft()
         if isinstance(t, ColumnElement) and (
@@ -294,14 +306,17 @@ def unwrap_order_by(clause):
 
                 stack.append(t)
                 continue
-
-            if isinstance(t, _label_reference):
+            elif isinstance(t, _label_reference):
                 t = t.element
+
+                stack.append(t)
+                continue
             if isinstance(t, (_textual_label_reference)):
                 continue
             if t not in cols:
                 cols.add(t)
                 result.append(t)
+
         else:
             for c in t.get_children():
                 stack.append(c)
@@ -351,6 +366,19 @@ def clause_is_present(clause, search):
         return False
 
 
+def tables_from_leftmost(clause):
+    if isinstance(clause, Join):
+        for t in tables_from_leftmost(clause.left):
+            yield t
+        for t in tables_from_leftmost(clause.right):
+            yield t
+    elif isinstance(clause, FromGrouping):
+        for t in tables_from_leftmost(clause.element):
+            yield t
+    else:
+        yield clause
+
+
 def surface_selectables(clause):
     stack = [clause]
     while stack:
@@ -373,26 +401,27 @@ def surface_selectables_only(clause):
         elif isinstance(elem, FromGrouping):
             stack.append(elem.element)
         elif isinstance(elem, ColumnClause):
-            stack.append(elem.table)
+            if elem.table is not None:
+                stack.append(elem.table)
+            else:
+                yield elem
+        elif elem is not None:
+            yield elem
 
 
-def surface_column_elements(clause, include_scalar_selects=True):
-    """traverse and yield only outer-exposed column elements, such as would
-    be addressable in the WHERE clause of a SELECT if this element were
-    in the columns clause."""
+def extract_first_column_annotation(column, annotation_name):
+    filter_ = (FromGrouping, SelectBase)
 
-    filter_ = (FromGrouping,)
-    if not include_scalar_selects:
-        filter_ += (SelectBase,)
-
-    stack = deque([clause])
+    stack = deque([column])
     while stack:
         elem = stack.popleft()
-        yield elem
+        if annotation_name in elem._annotations:
+            return elem._annotations[annotation_name]
         for sub in elem.get_children():
             if isinstance(sub, filter_):
                 continue
             stack.append(sub)
+    return None
 
 
 def selectables_overlap(left, right):
@@ -475,7 +504,7 @@ class _repr_row(_repr_base):
 class _repr_params(_repr_base):
     """Provide a string view of bound parameters.
 
-    Truncates display to a given numnber of 'multi' parameter sets,
+    Truncates display to a given number of 'multi' parameter sets,
     as well as long values to a given number of characters.
 
     """
@@ -575,14 +604,14 @@ def adapt_criterion_to_null(crit, nulls):
             binary.left = binary.right
             binary.right = Null()
             binary.operator = operators.is_
-            binary.negate = operators.isnot
+            binary.negate = operators.is_not
         elif (
             isinstance(binary.right, BindParameter)
             and binary.right._identifying_key in nulls
         ):
             binary.right = Null()
             binary.operator = operators.is_
-            binary.negate = operators.isnot
+            binary.negate = operators.is_not
 
     return visitors.cloned_traverse(crit, {}, {"binary": visit_binary})
 
@@ -599,7 +628,6 @@ def splice_joins(left, right, stop_on=None):
         (right, prevright) = stack.pop()
         if isinstance(right, Join) and right is not stop_on:
             right = right._clone()
-            right._reset_exported()
             right.onclause = adapter.traverse(right.onclause)
             stack.append((right.left, right))
         else:
@@ -750,7 +778,7 @@ def criterion_as_pairs(
     return pairs
 
 
-class ClauseAdapter(visitors.ReplacingCloningVisitor):
+class ClauseAdapter(visitors.ReplacingExternalTraversal):
     """Clones and modifies clauses based on column correspondence.
 
     E.g.::
@@ -785,6 +813,7 @@ class ClauseAdapter(visitors.ReplacingCloningVisitor):
         exclude_fn=None,
         adapt_on_names=False,
         anonymize_labels=False,
+        adapt_from_selectables=None,
     ):
         self.__traverse_options__ = {
             "stop_on": [selectable],
@@ -795,10 +824,12 @@ class ClauseAdapter(visitors.ReplacingCloningVisitor):
         self.exclude_fn = exclude_fn
         self.equivalents = util.column_dict(equivalents or {})
         self.adapt_on_names = adapt_on_names
+        self.adapt_from_selectables = adapt_from_selectables
 
     def _corresponding_column(
         self, col, require_embedded, _seen=util.EMPTY_SET
     ):
+
         newcol = self.selectable.corresponding_column(
             col, require_embedded=require_embedded
         )
@@ -812,17 +843,56 @@ class ClauseAdapter(visitors.ReplacingCloningVisitor):
                 if newcol is not None:
                     return newcol
         if self.adapt_on_names and newcol is None:
-            newcol = self.selectable.c.get(col.name)
+            newcol = self.selectable.exported_columns.get(col.name)
         return newcol
 
+    @util.preload_module("sqlalchemy.sql.functions")
     def replace(self, col):
-        if isinstance(col, FromClause) and self.selectable.is_derived_from(
-            col
+        functions = util.preloaded.sql_functions
+
+        if isinstance(col, FromClause) and not isinstance(
+            col, functions.FunctionElement
         ):
-            return self.selectable
+            if self.adapt_from_selectables:
+                for adp in self.adapt_from_selectables:
+                    if adp.is_derived_from(col):
+                        break
+                else:
+                    return None
+
+            if self.selectable.is_derived_from(col):
+                return self.selectable
+            elif isinstance(col, Alias) and isinstance(
+                col.element, TableClause
+            ):
+                # we are a SELECT statement and not derived from an alias of a
+                # table (which nonetheless may be a table our SELECT derives
+                # from), so return the alias to prevent further traversal
+                # or
+                # we are an alias of a table and we are not derived from an
+                # alias of a table (which nonetheless may be the same table
+                # as ours) so, same thing
+                return col
+            else:
+                # other cases where we are a selectable and the element
+                # is another join or selectable that contains a table which our
+                # selectable derives from, that we want to process
+                return None
+
         elif not isinstance(col, ColumnElement):
             return None
-        elif self.include_fn and not self.include_fn(col):
+
+        if "adapt_column" in col._annotations:
+            col = col._annotations["adapt_column"]
+
+        if self.adapt_from_selectables and col not in self.equivalents:
+            for adp in self.adapt_from_selectables:
+                if adp.c.corresponding_column(col, False) is not None:
+                    break
+            else:
+                return None
+
+        if self.include_fn and not self.include_fn(col):
             return None
         elif self.exclude_fn and self.exclude_fn(col):
             return None
@@ -871,6 +941,7 @@ class ColumnAdapter(ClauseAdapter):
         adapt_on_names=False,
         allow_label_resolve=True,
         anonymize_labels=False,
+        adapt_from_selectables=None,
     ):
         ClauseAdapter.__init__(
             self,
@@ -880,6 +951,7 @@ class ColumnAdapter(ClauseAdapter):
             exclude_fn=exclude_fn,
             adapt_on_names=adapt_on_names,
             anonymize_labels=anonymize_labels,
+            adapt_from_selectables=adapt_from_selectables,
         )
 
         self.columns = util.WeakPopulateDict(self._locate_col)
@@ -920,6 +992,14 @@ class ColumnAdapter(ClauseAdapter):
     adapt_clause = traverse
     adapt_list = ClauseAdapter.copy_and_process
 
+    def adapt_check_present(self, col):
+        newcol = self.columns[col]
+
+        if newcol is col and self._corresponding_column(col, True) is None:
+            return None
+
+        return newcol
+
     def _locate_col(self, col):
 
         c = ClauseAdapter.traverse(self, col)
@@ -944,3 +1024,72 @@ class ColumnAdapter(ClauseAdapter):
     def __setstate__(self, state):
         self.__dict__.update(state)
         self.columns = util.WeakPopulateDict(self._locate_col)
+
+
+def _offset_or_limit_clause(element, name=None, type_=None):
+    """Convert the given value to an "offset or limit" clause.
+
+    This handles incoming integers and converts to an expression; if
+    an expression is already given, it is passed through.
+
+    """
+    return coercions.expect(
+        roles.LimitOffsetRole, element, name=name, type_=type_
+    )
+
+
+def _offset_or_limit_clause_asint_if_possible(clause):
+    """Return the offset or limit clause as a simple integer if possible,
+    else return the clause.
+
+    """
+    if clause is None:
+        return None
+    if hasattr(clause, "_limit_offset_value"):
+        value = clause._limit_offset_value
+        return util.asint(value)
+    else:
+        return clause
+
+
+def _make_slice(limit_clause, offset_clause, start, stop):
+    """Compute LIMIT/OFFSET in terms of slice start/end"""
+
+    # for calculated limit/offset, try to do the addition of
+    # values to offset in Python, however if a SQL clause is present
+    # then the addition has to be on the SQL side.
+    if start is not None and stop is not None:
+        offset_clause = _offset_or_limit_clause_asint_if_possible(
+            offset_clause
+        )
+        if offset_clause is None:
+            offset_clause = 0
+
+        if start != 0:
+            offset_clause = offset_clause + start
+
+        if offset_clause == 0:
+            offset_clause = None
+        else:
+            offset_clause = _offset_or_limit_clause(offset_clause)
+
+        limit_clause = _offset_or_limit_clause(stop - start)
+
+    elif start is None and stop is not None:
+        limit_clause = _offset_or_limit_clause(stop)
+    elif start is not None and stop is None:
+        offset_clause = _offset_or_limit_clause_asint_if_possible(
+            offset_clause
+        )
+        if offset_clause is None:
+            offset_clause = 0
+
+        if start != 0:
+            offset_clause = offset_clause + start
+
+        if offset_clause == 0:
+            offset_clause = None
+        else:
+            offset_clause = _offset_or_limit_clause(offset_clause)
+
+    return limit_clause, offset_clause

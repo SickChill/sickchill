@@ -1,5 +1,5 @@
 # mysql/oursql.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -18,6 +18,10 @@
     The OurSQL MySQL dialect is legacy and is no longer supported upstream,
     and is **not tested as part of SQLAlchemy's continuous integration**.
     The recommended MySQL dialects are mysqlclient and PyMySQL.
+
+.. deprecated:: 1.4 The OurSQL DBAPI is deprecated and will be removed
+   in a future version. Please use one of the supported DBAPIs to
+   connect to mysql.
 
 Unicode
 -------
@@ -51,6 +55,7 @@ class MySQLExecutionContext_oursql(MySQLExecutionContext):
 
 class MySQLDialect_oursql(MySQLDialect):
     driver = "oursql"
+    supports_statement_cache = True
 
     if util.py2k:
         supports_unicode_binds = True
@@ -68,6 +73,12 @@ class MySQLDialect_oursql(MySQLDialect):
 
     @classmethod
     def dbapi(cls):
+        util.warn_deprecated(
+            "The OurSQL DBAPI is deprecated and will be removed "
+            "in a future version. Please use one of the supported DBAPIs to "
+            "connect to mysql.",
+            version="1.4",
+        )
         return __import__("oursql")
 
     def do_execute(self, cursor, statement, parameters, context=None):
@@ -91,7 +102,7 @@ class MySQLDialect_oursql(MySQLDialect):
                 xid.encode(charset)
             ).decode(charset)
         arg = "'%s'" % arg
-        connection.execution_options(_oursql_plain_query=True).execute(
+        connection.execution_options(_oursql_plain_query=True).exec_driver_sql(
             query % arg
         )
 
@@ -181,9 +192,9 @@ class MySQLDialect_oursql(MySQLDialect):
     ):
         return MySQLDialect._show_create_table(
             self,
-            connection._contextual_connect(
-                close_with_result=True
-            ).execution_options(_oursql_plain_query=True),
+            connection.connect(close_with_result=True).execution_options(
+                _oursql_plain_query=True
+            ),
             table,
             charset,
             full_name,

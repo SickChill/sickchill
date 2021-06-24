@@ -1,5 +1,5 @@
 # ext/associationproxy.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -421,6 +421,12 @@ class AssociationProxyInstance(object):
     def _comparator(self):
         return self._get_property().comparator
 
+    def __clause_element__(self):
+        raise NotImplementedError(
+            "The association proxy can't be used as a plain column "
+            "expression; it only works inside of a comparison expression"
+        )
+
     @classmethod
     def _cls_unwrap_target_assoc_proxy(cls, target_class, value_attr):
         attr = getattr(target_class, value_attr)
@@ -834,8 +840,7 @@ class AmbiguousAssociationProxyInstance(AssociationProxyInstance):
 
 
 class ObjectAssociationProxyInstance(AssociationProxyInstance):
-    """an :class:`.AssociationProxyInstance` that has an object as a target.
-    """
+    """an :class:`.AssociationProxyInstance` that has an object as a target."""
 
     _target_is_object = True
     _is_canonical = True
@@ -1187,7 +1192,7 @@ class _AssociationList(_AssociationCollection):
 
     for func_name, func in list(locals().items()):
         if (
-            util.callable(func)
+            callable(func)
             and func.__name__ == func_name
             and not func.__doc__
             and hasattr(list, func_name)
@@ -1365,7 +1370,7 @@ class _AssociationDict(_AssociationCollection):
 
     for func_name, func in list(locals().items()):
         if (
-            util.callable(func)
+            callable(func)
             and func.__name__ == func_name
             and not func.__doc__
             and hasattr(dict, func_name)
@@ -1584,7 +1589,7 @@ class _AssociationSet(_AssociationCollection):
 
     for func_name, func in list(locals().items()):
         if (
-            util.callable(func)
+            callable(func)
             and func.__name__ == func_name
             and not func.__doc__
             and hasattr(set, func_name)

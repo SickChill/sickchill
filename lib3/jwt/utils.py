@@ -1,97 +1,84 @@
 import base64
 import binascii
-import struct
-
-from .compat import binary_type, bytes_from_int, text_type
+from typing import Any, Union
 
 try:
+    from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurve
     from cryptography.hazmat.primitives.asymmetric.utils import (
-        decode_dss_signature, encode_dss_signature
+        decode_dss_signature,
+        encode_dss_signature,
     )
-except ImportError:
-    pass
+except ModuleNotFoundError:
+    EllipticCurve = Any  # type: ignore
 
 
-def force_unicode(value):
-    if isinstance(value, binary_type):
-        return value.decode('utf-8')
-    elif isinstance(value, text_type):
+def force_bytes(value: Union[str, bytes]) -> bytes:
+    if isinstance(value, str):
+        return value.encode("utf-8")
+    elif isinstance(value, bytes):
         return value
     else:
-        raise TypeError('Expected a string value')
+        raise TypeError("Expected a string value")
 
 
-def force_bytes(value):
-    if isinstance(value, text_type):
-        return value.encode('utf-8')
-    elif isinstance(value, binary_type):
-        return value
-    else:
-        raise TypeError('Expected a string value')
-
-
-def base64url_decode(input):
-    if isinstance(input, text_type):
-        input = input.encode('ascii')
+def base64url_decode(input: Union[str, bytes]) -> bytes:
+    if isinstance(input, str):
+        input = input.encode("ascii")
 
     rem = len(input) % 4
 
     if rem > 0:
-        input += b'=' * (4 - rem)
+        input += b"=" * (4 - rem)
 
     return base64.urlsafe_b64decode(input)
 
 
-def base64url_encode(input):
-    return base64.urlsafe_b64encode(input).replace(b'=', b'')
+def base64url_encode(input: bytes) -> bytes:
+    return base64.urlsafe_b64encode(input).replace(b"=", b"")
 
 
-def to_base64url_uint(val):
+def to_base64url_uint(val: int) -> bytes:
     if val < 0:
-        raise ValueError('Must be a positive integer')
+        raise ValueError("Must be a positive integer")
 
     int_bytes = bytes_from_int(val)
 
     if len(int_bytes) == 0:
-        int_bytes = b'\x00'
+        int_bytes = b"\x00"
 
     return base64url_encode(int_bytes)
 
 
-def from_base64url_uint(val):
-    if isinstance(val, text_type):
-        val = val.encode('ascii')
+def from_base64url_uint(val: Union[str, bytes]) -> int:
+    if isinstance(val, str):
+        val = val.encode("ascii")
 
     data = base64url_decode(val)
-
-    buf = struct.unpack('%sB' % len(data), data)
-    return int(''.join(["%02x" % byte for byte in buf]), 16)
+    return int.from_bytes(data, byteorder="big")
 
 
-def merge_dict(original, updates):
-    if not updates:
-        return original
-
-    try:
-        merged_options = original.copy()
-        merged_options.update(updates)
-    except (AttributeError, ValueError) as e:
-        raise TypeError('original and updates must be a dictionary: %s' % e)
-
-    return merged_options
-
-
-def number_to_bytes(num, num_bytes):
-    padded_hex = '%0*x' % (2 * num_bytes, num)
-    big_endian = binascii.a2b_hex(padded_hex.encode('ascii'))
+def number_to_bytes(num: int, num_bytes: int) -> bytes:
+    padded_hex = "%0*x" % (2 * num_bytes, num)
+    big_endian = binascii.a2b_hex(padded_hex.encode("ascii"))
     return big_endian
 
 
-def bytes_to_number(string):
+def bytes_to_number(string: bytes) -> int:
     return int(binascii.b2a_hex(string), 16)
 
 
-def der_to_raw_signature(der_sig, curve):
+def bytes_from_int(val: int) -> bytes:
+    remaining = val
+    byte_length = 0
+
+    while remaining != 0:
+        remaining = remaining >> 8
+        byte_length += 1
+
+    return val.to_bytes(byte_length, "big", signed=False)
+
+
+def der_to_raw_signature(der_sig: bytes, curve: EllipticCurve) -> bytes:
     num_bits = curve.key_size
     num_bytes = (num_bits + 7) // 8
 
@@ -100,12 +87,12 @@ def der_to_raw_signature(der_sig, curve):
     return number_to_bytes(r, num_bytes) + number_to_bytes(s, num_bytes)
 
 
-def raw_to_der_signature(raw_sig, curve):
+def raw_to_der_signature(raw_sig: bytes, curve: EllipticCurve) -> bytes:
     num_bits = curve.key_size
     num_bytes = (num_bits + 7) // 8
 
     if len(raw_sig) != 2 * num_bytes:
-        raise ValueError('Invalid signature')
+        raise ValueError("Invalid signature")
 
     r = bytes_to_number(raw_sig[:num_bytes])
     s = bytes_to_number(raw_sig[num_bytes:])

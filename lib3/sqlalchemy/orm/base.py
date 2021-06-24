@@ -1,5 +1,5 @@
 # orm/base.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -15,7 +15,6 @@ from . import exc
 from .. import exc as sa_exc
 from .. import inspection
 from .. import util
-from ..sql import expression
 
 
 PASSIVE_NO_RESULT = util.symbol(
@@ -53,13 +52,12 @@ NO_VALUE = util.symbol(
     and flags indicated we were not to load it.
     """,
 )
+NEVER_SET = NO_VALUE
+"""
+Synonymous with NO_VALUE
 
-NEVER_SET = util.symbol(
-    "NEVER_SET",
-    """Symbol which may be placed as the 'previous' value of an attribute
-    indicating that the attribute had not been assigned to previously.
-    """,
-)
+.. versionchanged:: 1.4   NEVER_SET was merged with NO_VALUE
+"""
 
 NO_CHANGE = util.symbol(
     "NO_CHANGE",
@@ -134,15 +132,15 @@ PASSIVE_OFF = util.symbol(
         RELATED_OBJECT_OK | NON_PERSISTENT_OK | INIT_OK | CALLABLES_OK | SQL_OK
     ),
 )
-PASSIVE_RETURN_NEVER_SET = util.symbol(
-    "PASSIVE_RETURN_NEVER_SET",
+PASSIVE_RETURN_NO_VALUE = util.symbol(
+    "PASSIVE_RETURN_NO_VALUE",
     """PASSIVE_OFF ^ INIT_OK""",
     canonical=PASSIVE_OFF ^ INIT_OK,
 )
 PASSIVE_NO_INITIALIZE = util.symbol(
     "PASSIVE_NO_INITIALIZE",
-    "PASSIVE_RETURN_NEVER_SET ^ CALLABLES_OK",
-    canonical=PASSIVE_RETURN_NEVER_SET ^ CALLABLES_OK,
+    "PASSIVE_RETURN_NO_VALUE ^ CALLABLES_OK",
+    canonical=PASSIVE_RETURN_NO_VALUE ^ CALLABLES_OK,
 )
 PASSIVE_NO_FETCH = util.symbol(
     "PASSIVE_NO_FETCH", "PASSIVE_OFF ^ SQL_OK", canonical=PASSIVE_OFF ^ SQL_OK
@@ -160,7 +158,6 @@ PASSIVE_ONLY_PERSISTENT = util.symbol(
 
 DEFAULT_MANAGER_ATTR = "_sa_class_manager"
 DEFAULT_STATE_ATTR = "_sa_instance_state"
-_INSTRUMENTOR = ("mapper", "instrumentor")
 
 EXT_CONTINUE = util.symbol("EXT_CONTINUE")
 EXT_STOP = util.symbol("EXT_STOP")
@@ -215,17 +212,16 @@ _SET_DEFERRED_EXPIRED = util.symbol("SET_DEFERRED_EXPIRED")
 
 _DEFER_FOR_STATE = util.symbol("DEFER_FOR_STATE")
 
+_RAISE_FOR_STATE = util.symbol("RAISE_FOR_STATE")
 
-def _generative(*assertions):
-    """Mark a method as generative, e.g. method-chained."""
 
+def _assertions(*assertions):
     @util.decorator
     def generate(fn, *args, **kw):
-        self = args[0]._clone()
+        self = args[0]
         for assertion in assertions:
             assertion(self, fn.__name__)
         fn(self, *args[1:], **kw)
-        return self
 
     return generate
 
@@ -322,11 +318,7 @@ def object_state(instance):
 def _inspect_mapped_object(instance):
     try:
         return instance_state(instance)
-        # TODO: whats the py-2/3 syntax to catch two
-        # different kinds of exceptions at once ?
-    except exc.UnmappedClassError:
-        return None
-    except exc.NO_STATE:
+    except (exc.UnmappedClassError,) + exc.NO_STATE:
         return None
 
 
@@ -361,13 +353,6 @@ def _is_mapped_class(entity):
         and not insp.is_clause_element
         and (insp.is_mapper or insp.is_aliased_class)
     )
-
-
-def _attr_as_key(attr):
-    if hasattr(attr, "key"):
-        return attr.key
-    else:
-        return expression._column_as_key(attr)
 
 
 def _orm_columns(entity):
@@ -426,8 +411,8 @@ def _inspect_mapped_class(class_, configure=False):
     except exc.NO_STATE:
         return None
     else:
-        if configure and mapper._new_mappers:
-            mapper._configure_all()
+        if configure:
+            mapper._check_configure()
         return mapper
 
 
@@ -488,6 +473,9 @@ class InspectionAttr(object):
 
     is_mapper = False
     """True if this object is an instance of :class:`_orm.Mapper`."""
+
+    is_bundle = False
+    """True if this object is an instance of :class:`.Bundle`."""
 
     is_property = False
     """True if this object is an instance of :class:`.MapperProperty`."""

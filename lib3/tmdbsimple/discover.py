@@ -112,7 +112,7 @@ class Discover(TMDB):
                 have a rating that is less than or equal to the specified value.
                 Minimum 0.
             with_cast: (optional) A comma separated list of person ID's. Only
-                include movies that have one of the ID's added as an actor. 
+                include movies that have one of the ID's added as an actor.
             with_crew: (optional) A comma separated list of person ID's. Only
                 include movies that have one of the ID's added as a crew member.
             with_people: (optional) A comma separated list of person ID's. Only
@@ -221,20 +221,20 @@ class Discover(TMDB):
                 an episode runtime that is less than or equal to a value.
             include_null_first_air_dates: (optional) Use this filter to include
                 TV shows that don't have an air date while using any of the
-                "first_air_date" filters. 
+                "first_air_date" filters.
             with_original_language: (optional) Specify an ISO 639-1 string to
-                filter results by their original language value. 
+                filter results by their original language value.
             without_keywords: (optional) Exclude items with certain keywords.
                 You can comma and pipe seperate these values to create an 'AND'
-                or 'OR' logic. 
+                or 'OR' logic.
             screened_theatrically: (optional) Filter results to include items
-                that have been screened theatrically. 
+                that have been screened theatrically.
             with_companies: (optional) A comma separated list of production
                 company ID's. Only include movies that have one of the ID's
-                added as a production company. 
+                added as a production company.
             with_keywords: (optional) A comma separated list of keyword ID's.
                 Only includes TV shows that have one of the ID's added as a
-                keyword. 
+                keyword.
 
         Returns:
             A dict respresentation of the JSON returned from the API.

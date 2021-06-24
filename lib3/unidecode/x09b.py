@@ -151,7 +151,7 @@ data = (
 'Gu ',    # 0x95
 'Kajika ',    # 0x96
 'Tong ',    # 0x97
-'[?] ',    # 0x98
+None,    # 0x98
 'Ta ',    # 0x99
 'Jie ',    # 0x9a
 'Shu ',    # 0x9b

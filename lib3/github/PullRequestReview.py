@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2017 Aaron Levine <allevin@sandia.gov>                             #
@@ -32,7 +30,7 @@ import github.NamedUser
 
 class PullRequestReview(github.GithubObject.NonCompletableGithubObject):
     """
-    This class represents PullRequestReviews. The reference can be found here https://developer.github.com/v3/pulls/reviews/
+    This class represents PullRequestReviews. The reference can be found here https://docs.github.com/en/rest/reference/pulls#reviews
     """
 
     def __repr__(self):
@@ -96,14 +94,14 @@ class PullRequestReview(github.GithubObject.NonCompletableGithubObject):
 
     def dismiss(self, message):
         """
-        :calls: `PUT /repos/:owner/:repo/pulls/:number/reviews/:review_id/dismissals <https://developer.github.com/v3/pulls/reviews/>`_
+        :calls: `PUT /repos/{owner}/{repo}/pulls/{number}/reviews/{review_id}/dismissals <https://docs.github.com/en/rest/reference/pulls#reviews>`_
         :rtype: None
         """
         assert isinstance(message, str), message
         post_parameters = {"message": message}
         headers, data = self._requester.requestJsonAndCheck(
             "PUT",
-            self.pull_request_url + "/reviews/%s/dismissals" % self.id,
+            f"{self.pull_request_url}/reviews/{self.id}/dismissals",
             input=post_parameters,
         )
 

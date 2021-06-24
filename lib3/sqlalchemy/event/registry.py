@@ -1,5 +1,5 @@
 # event/registry.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -139,8 +139,7 @@ def _clear(owner, elements):
 
 
 class _EventKey(object):
-    """Represent :func:`.listen` arguments.
-    """
+    """Represent :func:`.listen` arguments."""
 
     __slots__ = (
         "target",
@@ -230,6 +229,7 @@ class _EventKey(object):
                 "No listeners found for event %s / %r / %s "
                 % (self.target, self.identifier, self.fn)
             )
+
         dispatch_reg = _key_to_collection.pop(key)
 
         for collection_ref, listener_ref in dispatch_reg.items():
@@ -239,26 +239,30 @@ class _EventKey(object):
                 collection.remove(self.with_wrapper(listener_fn))
 
     def contains(self):
-        """Return True if this event key is registered to listen.
-        """
+        """Return True if this event key is registered to listen."""
         return self._key in _key_to_collection
 
     def base_listen(
-        self, propagate=False, insert=False, named=False, retval=None
+        self,
+        propagate=False,
+        insert=False,
+        named=False,
+        retval=None,
+        asyncio=False,
     ):
 
         target, identifier = self.dispatch_target, self.identifier
 
         dispatch_collection = getattr(target.dispatch, identifier)
 
+        for_modify = dispatch_collection.for_modify(target.dispatch)
+        if asyncio:
+            for_modify._set_asyncio()
+
         if insert:
-            dispatch_collection.for_modify(target.dispatch).insert(
-                self, propagate
-            )
+            for_modify.insert(self, propagate)
         else:
-            dispatch_collection.for_modify(target.dispatch).append(
-                self, propagate
-            )
+            for_modify.append(self, propagate)
 
     @property
     def _listen_fn(self):

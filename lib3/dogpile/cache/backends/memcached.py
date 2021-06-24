@@ -9,27 +9,38 @@ Provides backends for talking to `memcached <http://memcached.org>`_.
 import random
 import threading
 import time
+import typing
+from typing import Any
+from typing import Mapping
 
 from ..api import CacheBackend
 from ..api import NO_VALUE
 from ... import util
 
+if typing.TYPE_CHECKING:
+    import memcache
+    import pylibmc
+    import bmemcached
+    import pymemcache
+else:
+    # delayed import
+    memcache = None
+    pylibmc = None
+    bmemcached = None
+    pymemcache = None
+
 __all__ = (
     "GenericMemcachedBackend",
     "MemcachedBackend",
     "PylibmcBackend",
+    "PyMemcacheBackend",
     "BMemcachedBackend",
     "MemcachedLock",
 )
 
 
 class MemcachedLock(object):
-    """Simple distributed lock using memcached.
-
-    This is an adaptation of the lock featured at
-    http://amix.dk/blog/post/19386
-
-    """
+    """Simple distributed lock using memcached."""
 
     def __init__(self, client_fn, key, timeout=0):
         self.client_fn = client_fn
@@ -49,6 +60,10 @@ class MemcachedLock(object):
                 time.sleep(sleep_time)
             if i < 15:
                 i += 1
+
+    def locked(self):
+        client = self.client_fn()
+        return client.get(self.key) is not None
 
     def release(self):
         client = self.client_fn()
@@ -107,9 +122,16 @@ class GenericMemcachedBackend(CacheBackend):
 
     """
 
-    set_arguments = {}
+    set_arguments: Mapping[str, Any] = {}
     """Additional arguments which will be passed
     to the :meth:`set` method."""
+
+    # No need to override serializer, as all the memcached libraries
+    # handles that themselves. Still, we support customizing the
+    # serializer/deserializer to use better default pickle protocol
+    # or completely different serialization mechanism
+    serializer = None
+    deserializer = None
 
     def __init__(self, arguments):
         self._imports()
@@ -173,12 +195,17 @@ class GenericMemcachedBackend(CacheBackend):
 
     def get_multi(self, keys):
         values = self.client.get_multi(keys)
-        return [NO_VALUE if key not in values else values[key] for key in keys]
+
+        return [
+            NO_VALUE if val is None else val
+            for val in [values.get(key, NO_VALUE) for key in keys]
+        ]
 
     def set(self, key, value):
         self.client.set(key, value, **self.set_arguments)
 
     def set_multi(self, mapping):
+        mapping = {key: value for key, value in mapping.items()}
         self.client.set_multi(mapping, **self.set_arguments)
 
     def delete(self, key):
@@ -188,7 +215,7 @@ class GenericMemcachedBackend(CacheBackend):
         self.client.delete_multi(keys)
 
 
-class MemcacheArgs(object):
+class MemcacheArgs(GenericMemcachedBackend):
     """Mixin which provides support for the 'time' argument to set(),
     'min_compress_len' to other methods.
 
@@ -299,9 +326,21 @@ class BMemcachedBackend(GenericMemcachedBackend):
     python-binary-memcached>`_
     memcached client.
 
-    This is a pure Python memcached client which
-    includes the ability to authenticate with a memcached
-    server using SASL.
+    This is a pure Python memcached client which includes
+    security features like SASL and SSL/TLS.
+
+    SASL is a standard for adding authentication mechanisms
+    to protocols in a way that is protocol independent.
+
+    SSL/TLS is a security layer on end-to-end communication.
+    It provides following benefits:
+
+    * Encryption: Data is encrypted on the wire between
+      Memcached client and server.
+    * Authentication: Optionally, both server and client
+      authenticate each other.
+    * Integrity: Data is not tampered or altered when
+      transmitted between client and server
 
     A typical configuration using username/password::
 
@@ -316,6 +355,25 @@ class BMemcachedBackend(GenericMemcachedBackend):
                 'password':'tiger'
             }
         )
+
+    A typical configuration using tls_context::
+
+        import ssl
+        from dogpile.cache import make_region
+
+        ctx = ssl.create_default_context(cafile="/path/to/my-ca.pem")
+
+        region = make_region().configure(
+            'dogpile.cache.bmemcached',
+            expiration_time = 3600,
+            arguments = {
+                'url':["127.0.0.1"],
+                'tls_context':ctx,
+            }
+        )
+
+    For advanced ways to configure TLS creating a more complex
+    tls_context visit https://docs.python.org/3/library/ssl.html
 
     Arguments which can be passed to the ``arguments``
     dictionary include:
@@ -370,3 +428,96 @@ class BMemcachedBackend(GenericMemcachedBackend):
         """python-binary-memcached api does not implements delete_multi"""
         for key in keys:
             self.delete(key)
+
+
+pymemcache = None
+
+
+class PyMemcacheBackend(GenericMemcachedBackend):
+    """A backend for the
+    `pymemcache <https://github.com/pinterest/pymemcache>`_
+    memcached client.
+
+    A comprehensive, fast, pure Python memcached client
+
+    .. versionadded:: 1.1.2
+
+    pymemcache supports the following features:
+
+    * Complete implementation of the memcached text protocol.
+    * Configurable timeouts for socket connect and send/recv calls.
+    * Access to the "noreply" flag, which can significantly increase
+      the speed of writes.
+    * Flexible, simple approach to serialization and deserialization.
+    * The (optional) ability to treat network and memcached errors as
+      cache misses.
+
+    dogpile.cache uses the ``HashClient`` from pymemcache in order to reduce
+    API differences when compared to other memcached client drivers. In short,
+    this allows the user to provide a single server or a list of memcached
+    servers.
+
+    The ``serde`` param defaults to ``pymemcache.serde.pickle_serde`` as the
+    legacy ``serde`` would always convert the stored data to binary.
+
+    The ``default_noreply`` param defaults to False, otherwise the add command
+    would always return True causing the mutex not to work.
+
+    SSL/TLS is a security layer on end-to-end communication.
+    It provides following benefits:
+
+    * Encryption: Data is encrypted on the wire between
+      Memcached client and server.
+    * Authentication: Optionally, both server and client
+      authenticate each other.
+    * Integrity: Data is not tampered or altered when
+      transmitted between client and server
+
+    A typical configuration using tls_context::
+
+        import ssl
+        from dogpile.cache import make_region
+
+        ctx = ssl.create_default_context(cafile="/path/to/my-ca.pem")
+
+        region = make_region().configure(
+            'dogpile.cache.pymemcache',
+            expiration_time = 3600,
+            arguments = {
+                'url':["127.0.0.1"],
+                'tls_context':ctx,
+            }
+        )
+
+    For advanced ways to configure TLS creating a more complex
+    tls_context visit https://docs.python.org/3/library/ssl.html
+
+    Arguments which can be passed to the ``arguments``
+    dictionary include:
+
+    :param tls_context: optional TLS context, will be used for
+     TLS connections.
+    :param serde: optional "serde". Defaults to
+     ``pymemcache.serde.pickle_serde``
+    :param default_noreply: Defaults to False
+
+    """
+
+    def __init__(self, arguments):
+        super().__init__(arguments)
+
+        self.serde = arguments.get("serde", pymemcache.serde.pickle_serde)
+        self.default_noreply = arguments.get("default_noreply", False)
+        self.tls_context = arguments.get("tls_context", None)
+
+    def _imports(self):
+        global pymemcache
+        import pymemcache
+
+    def _create_client(self):
+        return pymemcache.client.hash.HashClient(
+            self.url,
+            serde=self.serde,
+            default_noreply=self.default_noreply,
+            tls_context=self.tls_context,
+        )

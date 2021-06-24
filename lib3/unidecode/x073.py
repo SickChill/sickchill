@@ -70,7 +70,7 @@ data = (
 'Yu ',    # 0x44
 'Shi ',    # 0x45
 'Hao ',    # 0x46
-'[?] ',    # 0x47
+None,    # 0x47
 'Yi ',    # 0x48
 'Zhen ',    # 0x49
 'Chuang ',    # 0x4a
@@ -238,7 +238,7 @@ data = (
 'Xu ',    # 0xec
 'Ban ',    # 0xed
 'Pei ',    # 0xee
-'[?] ',    # 0xef
+None,    # 0xef
 'Dang ',    # 0xf0
 'Ei ',    # 0xf1
 'Hun ',    # 0xf2

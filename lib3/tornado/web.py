@@ -206,7 +206,7 @@ class RequestHandler(object):
         request: httputil.HTTPServerRequest,
         **kwargs: Any
     ) -> None:
-        super(RequestHandler, self).__init__()
+        super().__init__()
 
         self.application = application
         self.request = request
@@ -340,7 +340,7 @@ class RequestHandler(object):
         """
         pass
 
-    def set_status(self, status_code: int, reason: str = None) -> None:
+    def set_status(self, status_code: int, reason: Optional[str] = None) -> None:
         """Sets the status code for our response.
 
         :arg int status_code: Response status code.
@@ -424,14 +424,14 @@ class RequestHandler(object):
     def get_argument(self, name: str, default: str, strip: bool = True) -> str:
         pass
 
-    @overload  # noqa: F811
-    def get_argument(
+    @overload
+    def get_argument(  # noqa: F811
         self, name: str, default: _ArgDefaultMarker = _ARG_DEFAULT, strip: bool = True
     ) -> str:
         pass
 
-    @overload  # noqa: F811
-    def get_argument(
+    @overload
+    def get_argument(  # noqa: F811
         self, name: str, default: None, strip: bool = True
     ) -> Optional[str]:
         pass
@@ -554,7 +554,7 @@ class RequestHandler(object):
             values.append(s)
         return values
 
-    def decode_argument(self, value: bytes, name: str = None) -> str:
+    def decode_argument(self, value: bytes, name: Optional[str] = None) -> str:
         """Decodes an argument from the request.
 
         The argument has been percent-decoded and is now a byte string.
@@ -580,7 +580,7 @@ class RequestHandler(object):
         `self.request.cookies <.httputil.HTTPServerRequest.cookies>`."""
         return self.request.cookies
 
-    def get_cookie(self, name: str, default: str = None) -> Optional[str]:
+    def get_cookie(self, name: str, default: Optional[str] = None) -> Optional[str]:
         """Returns the value of the request cookie with the given name.
 
         If the named cookie is not present, returns ``default``.
@@ -597,10 +597,10 @@ class RequestHandler(object):
         self,
         name: str,
         value: Union[str, bytes],
-        domain: str = None,
-        expires: Union[float, Tuple, datetime.datetime] = None,
+        domain: Optional[str] = None,
+        expires: Optional[Union[float, Tuple, datetime.datetime]] = None,
         path: str = "/",
-        expires_days: int = None,
+        expires_days: Optional[float] = None,
         **kwargs: Any
     ) -> None:
         """Sets an outgoing cookie name/value with the given options.
@@ -624,7 +624,9 @@ class RequestHandler(object):
             # Don't let us accidentally inject bad stuff
             raise ValueError("Invalid cookie %r: %r" % (name, value))
         if not hasattr(self, "_new_cookie"):
-            self._new_cookie = http.cookies.SimpleCookie()
+            self._new_cookie = (
+                http.cookies.SimpleCookie()
+            )  # type: http.cookies.SimpleCookie
         if name in self._new_cookie:
             del self._new_cookie[name]
         self._new_cookie[name] = value
@@ -648,7 +650,9 @@ class RequestHandler(object):
 
             morsel[k] = v
 
-    def clear_cookie(self, name: str, path: str = "/", domain: str = None) -> None:
+    def clear_cookie(
+        self, name: str, path: str = "/", domain: Optional[str] = None
+    ) -> None:
         """Deletes the cookie with the given name.
 
         Due to limitations of the cookie protocol, you must pass the same
@@ -662,7 +666,7 @@ class RequestHandler(object):
         expires = datetime.datetime.utcnow() - datetime.timedelta(days=365)
         self.set_cookie(name, value="", path=path, expires=expires, domain=domain)
 
-    def clear_all_cookies(self, path: str = "/", domain: str = None) -> None:
+    def clear_all_cookies(self, path: str = "/", domain: Optional[str] = None) -> None:
         """Deletes all the cookies the user sent with this request.
 
         See `clear_cookie` for more information on the path and domain
@@ -682,8 +686,8 @@ class RequestHandler(object):
         self,
         name: str,
         value: Union[str, bytes],
-        expires_days: int = 30,
-        version: int = None,
+        expires_days: Optional[float] = 30,
+        version: Optional[int] = None,
         **kwargs: Any
     ) -> None:
         """Signs and timestamps a cookie so it cannot be forged.
@@ -697,6 +701,7 @@ class RequestHandler(object):
         Note that the ``expires_days`` parameter sets the lifetime of the
         cookie in the browser, but is independent of the ``max_age_days``
         parameter to `get_secure_cookie`.
+        A value of None limits the lifetime to the current browser session.
 
         Secure cookies may contain arbitrary byte values, not just unicode
         strings (unlike regular cookies)
@@ -717,7 +722,7 @@ class RequestHandler(object):
         )
 
     def create_signed_value(
-        self, name: str, value: Union[str, bytes], version: int = None
+        self, name: str, value: Union[str, bytes], version: Optional[int] = None
     ) -> bytes:
         """Signs and timestamps a string so it cannot be forged.
 
@@ -745,9 +750,9 @@ class RequestHandler(object):
     def get_secure_cookie(
         self,
         name: str,
-        value: str = None,
-        max_age_days: int = 31,
-        min_version: int = None,
+        value: Optional[str] = None,
+        max_age_days: float = 31,
+        min_version: Optional[int] = None,
     ) -> Optional[bytes]:
         """Returns the given signed cookie if it validates, or None.
 
@@ -775,7 +780,7 @@ class RequestHandler(object):
         )
 
     def get_secure_cookie_key_version(
-        self, name: str, value: str = None
+        self, name: str, value: Optional[str] = None
     ) -> Optional[int]:
         """Returns the signing key version of the secure cookie.
 
@@ -788,7 +793,9 @@ class RequestHandler(object):
             return None
         return get_signature_key_version(value)
 
-    def redirect(self, url: str, permanent: bool = False, status: int = None) -> None:
+    def redirect(
+        self, url: str, permanent: bool = False, status: Optional[int] = None
+    ) -> None:
         """Sends a redirect to the given (optionally relative) URL.
 
         If the ``status`` argument is specified, that value is used as the
@@ -1051,12 +1058,6 @@ class RequestHandler(object):
     def flush(self, include_footers: bool = False) -> "Future[None]":
         """Flushes the current output buffer to the network.
 
-        The ``callback`` argument, if given, can be used for flow control:
-        it will be run when all flushed data has been written to the socket.
-        Note that only one flush callback can be outstanding at a time;
-        if another flush occurs before the previous flush's callback
-        has been run, the previous callback will be discarded.
-
         .. versionchanged:: 4.0
            Now returns a `.Future` if no callback is given.
 
@@ -1104,7 +1105,7 @@ class RequestHandler(object):
                 future.set_result(None)
                 return future
 
-    def finish(self, chunk: Union[str, bytes, dict] = None) -> "Future[None]":
+    def finish(self, chunk: Optional[Union[str, bytes, dict]] = None) -> "Future[None]":
         """Finishes this response, ending the HTTP request.
 
         Passing a ``chunk`` to ``finish()`` is equivalent to passing that
@@ -1137,13 +1138,11 @@ class RequestHandler(object):
                 if self.check_etag_header():
                     self._write_buffer = []
                     self.set_status(304)
-            if self._status_code in (204, 304) or (
-                self._status_code >= 100 and self._status_code < 200
-            ):
+            if self._status_code in (204, 304) or (100 <= self._status_code < 200):
                 assert not self._write_buffer, (
                     "Cannot send body with %s" % self._status_code
                 )
-                self._clear_headers_for_304()
+                self._clear_representation_headers()
             elif "Content-Length" not in self._headers:
                 content_length = sum(len(part) for part in self._write_buffer)
                 self.set_header("Content-Length", content_length)
@@ -1301,7 +1300,7 @@ class RequestHandler(object):
                 locales.append((parts[0], score))
             if locales:
                 locales.sort(key=lambda pair: pair[1], reverse=True)
-                codes = [l[0] for l in locales]
+                codes = [loc[0] for loc in locales]
                 return locale.get(*codes)
         return locale.get(default)
 
@@ -1544,7 +1543,9 @@ class RequestHandler(object):
             + '"/>'
         )
 
-    def static_url(self, path: str, include_host: bool = None, **kwargs: Any) -> str:
+    def static_url(
+        self, path: str, include_host: Optional[bool] = None, **kwargs: Any
+    ) -> str:
         """Returns a static URL for the given relative static file path.
 
         This method requires you set the ``static_path`` setting in your
@@ -1785,11 +1786,11 @@ class RequestHandler(object):
                 args = [value.status_code, self._request_summary()] + list(value.args)
                 gen_log.warning(format, *args)
         else:
-            app_log.error(  # type: ignore
+            app_log.error(
                 "Uncaught exception %s\n%r",
                 self._request_summary(),
                 self.request,
-                exc_info=(typ, value, tb),
+                exc_info=(typ, value, tb),  # type: ignore
             )
 
     def _ui_module(self, name: str, module: Type["UIModule"]) -> Callable[..., str]:
@@ -1806,21 +1807,13 @@ class RequestHandler(object):
     def _ui_method(self, method: Callable[..., str]) -> Callable[..., str]:
         return lambda *args, **kwargs: method(self, *args, **kwargs)
 
-    def _clear_headers_for_304(self) -> None:
-        # 304 responses should not contain entity headers (defined in
-        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7.1)
+    def _clear_representation_headers(self) -> None:
+        # 304 responses should not contain representation metadata
+        # headers (defined in
+        # https://tools.ietf.org/html/rfc7231#section-3.1)
         # not explicitly allowed by
-        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.5
-        headers = [
-            "Allow",
-            "Content-Encoding",
-            "Content-Language",
-            "Content-Length",
-            "Content-MD5",
-            "Content-Range",
-            "Content-Type",
-            "Last-Modified",
-        ]
+        # https://tools.ietf.org/html/rfc7232#section-4.1
+        headers = ["Content-Encoding", "Content-Language", "Content-Type"]
         for h in headers:
             self.clear_header(h)
 
@@ -1925,17 +1918,19 @@ class _ApplicationRouter(ReversibleRuleRouter):
         `_ApplicationRouter` instance.
     """
 
-    def __init__(self, application: "Application", rules: _RuleList = None) -> None:
+    def __init__(
+        self, application: "Application", rules: Optional[_RuleList] = None
+    ) -> None:
         assert isinstance(application, Application)
         self.application = application
-        super(_ApplicationRouter, self).__init__(rules)
+        super().__init__(rules)
 
     def process_rule(self, rule: Rule) -> Rule:
-        rule = super(_ApplicationRouter, self).process_rule(rule)
+        rule = super().process_rule(rule)
 
         if isinstance(rule.target, (list, tuple)):
-            rule.target = _ApplicationRouter(  # type: ignore
-                self.application, rule.target
+            rule.target = _ApplicationRouter(
+                self.application, rule.target  # type: ignore
             )
 
         return rule
@@ -1948,9 +1943,7 @@ class _ApplicationRouter(ReversibleRuleRouter):
                 request, target, **target_params
             )
 
-        return super(_ApplicationRouter, self).get_target_delegate(
-            target, request, **target_params
-        )
+        return super().get_target_delegate(target, request, **target_params)
 
 
 class Application(ReversibleRouter):
@@ -2039,9 +2032,9 @@ class Application(ReversibleRouter):
 
     def __init__(
         self,
-        handlers: _RuleList = None,
-        default_host: str = None,
-        transforms: List[Type["OutputTransform"]] = None,
+        handlers: Optional[_RuleList] = None,
+        default_host: Optional[str] = None,
+        transforms: Optional[List[Type["OutputTransform"]]] = None,
         **settings: Any
     ) -> None:
         if transforms is None:
@@ -2192,9 +2185,9 @@ class Application(ReversibleRouter):
         self,
         request: httputil.HTTPServerRequest,
         target_class: Type[RequestHandler],
-        target_kwargs: Dict[str, Any] = None,
-        path_args: List[bytes] = None,
-        path_kwargs: Dict[str, bytes] = None,
+        target_kwargs: Optional[Dict[str, Any]] = None,
+        path_args: Optional[List[bytes]] = None,
+        path_kwargs: Optional[Dict[str, bytes]] = None,
     ) -> "_HandlerDelegate":
         """Returns `~.httputil.HTTPMessageDelegate` that can serve a request
         for application and `RequestHandler` subclass.
@@ -2361,7 +2354,11 @@ class HTTPError(Exception):
     """
 
     def __init__(
-        self, status_code: int = 500, log_message: str = None, *args: Any, **kwargs: Any
+        self,
+        status_code: int = 500,
+        log_message: Optional[str] = None,
+        *args: Any,
+        **kwargs: Any
     ) -> None:
         self.status_code = status_code
         self.log_message = log_message
@@ -2419,9 +2416,7 @@ class MissingArgumentError(HTTPError):
     """
 
     def __init__(self, arg_name: str) -> None:
-        super(MissingArgumentError, self).__init__(
-            400, "Missing argument %s" % arg_name
-        )
+        super().__init__(400, "Missing argument %s" % arg_name)
         self.arg_name = arg_name
 
 
@@ -2478,8 +2473,8 @@ class RedirectHandler(RequestHandler):
         self._url = url
         self._permanent = permanent
 
-    def get(self, *args: Any) -> None:
-        to_url = self._url.format(*args)
+    def get(self, *args: Any, **kwargs: Any) -> None:
+        to_url = self._url.format(*args, **kwargs)
         if self.request.query_arguments:
             # TODO: figure out typing for the next line.
             to_url = httputil.url_concat(
@@ -2561,7 +2556,7 @@ class StaticFileHandler(RequestHandler):
     _static_hashes = {}  # type: Dict[str, Optional[str]]
     _lock = threading.Lock()  # protects _static_hashes
 
-    def initialize(self, path: str, default_filename: str = None) -> None:
+    def initialize(self, path: str, default_filename: Optional[str] = None) -> None:
         self.root = path
         self.default_filename = default_filename
 
@@ -2787,7 +2782,7 @@ class StaticFileHandler(RequestHandler):
 
     @classmethod
     def get_content(
-        cls, abspath: str, start: int = None, end: int = None
+        cls, abspath: str, start: Optional[int] = None, end: Optional[int] = None
     ) -> Generator[bytes, None, None]:
         """Retrieve the content of the requested resource which is located
         at the given absolute path.
@@ -2829,12 +2824,12 @@ class StaticFileHandler(RequestHandler):
         """Returns a version string for the resource at the given path.
 
         This class method may be overridden by subclasses.  The
-        default implementation is a hash of the file's contents.
+        default implementation is a SHA-512 hash of the file's contents.
 
         .. versionadded:: 3.1
         """
         data = cls.get_content(abspath)
-        hasher = hashlib.md5()
+        hasher = hashlib.sha512()
         if isinstance(data, bytes):
             hasher.update(data)
         else:
@@ -3265,7 +3260,7 @@ class TemplateModule(UIModule):
     Template()) instead of inheriting the outer template's namespace.
 
     Templates rendered through this module also get access to UIModule's
-    automatic javascript/css features.  Simply call set_resources
+    automatic JavaScript/CSS features.  Simply call set_resources
     inside the template and give it keyword arguments corresponding to
     the methods on UIModule: {{ set_resources(js_files=static_url("my.js")) }}
     Note that these resources are output once per template file, not once
@@ -3274,7 +3269,7 @@ class TemplateModule(UIModule):
     """
 
     def __init__(self, handler: RequestHandler) -> None:
-        super(TemplateModule, self).__init__(handler)
+        super().__init__(handler)
         # keep resources in both a list and a dict to preserve order
         self._resource_list = []  # type: List[Dict[str, Any]]
         self._resource_dict = {}  # type: Dict[str, Dict[str, Any]]
@@ -3351,9 +3346,9 @@ def create_signed_value(
     secret: _CookieSecretTypes,
     name: str,
     value: Union[str, bytes],
-    version: int = None,
-    clock: Callable[[], float] = None,
-    key_version: int = None,
+    version: Optional[int] = None,
+    clock: Optional[Callable[[], float]] = None,
+    key_version: Optional[int] = None,
 ) -> bytes:
     if version is None:
         version = DEFAULT_SIGNED_VALUE_VERSION
@@ -3441,9 +3436,9 @@ def decode_signed_value(
     secret: _CookieSecretTypes,
     name: str,
     value: Union[None, str, bytes],
-    max_age_days: int = 31,
-    clock: Callable[[], float] = None,
-    min_version: int = None,
+    max_age_days: float = 31,
+    clock: Optional[Callable[[], float]] = None,
+    min_version: Optional[int] = None,
 ) -> Optional[bytes]:
     if clock is None:
         clock = time.time
@@ -3472,7 +3467,7 @@ def _decode_signed_value_v1(
     secret: Union[str, bytes],
     name: str,
     value: bytes,
-    max_age_days: int,
+    max_age_days: float,
     clock: Callable[[], float],
 ) -> Optional[bytes]:
     parts = utf8(value).split(b"|")
@@ -3527,7 +3522,7 @@ def _decode_signed_value_v2(
     secret: _CookieSecretTypes,
     name: str,
     value: bytes,
-    max_age_days: int,
+    max_age_days: float,
     clock: Callable[[], float],
 ) -> Optional[bytes]:
     try:

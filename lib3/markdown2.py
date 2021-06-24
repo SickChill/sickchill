@@ -40,6 +40,7 @@ text-to-HTML conversion tool for web writers.
 Supported extra syntax options (see -x|--extras option below and
 see <https://github.com/trentm/python-markdown2/wiki/Extras> for details):
 
+* break-on-newline: Replace single new line characters with <br> when True
 * code-friendly: Disable _ and __ for em and strong.
 * cuddled-lists: Allow lists to be cuddled to the preceding paragraph.
 * fenced-code-blocks: Allows a code block to not have to be indented
@@ -96,7 +97,7 @@ see <https://github.com/trentm/python-markdown2/wiki/Extras> for details):
 #   not yet sure if there implications with this. Compare 'pydoc sre'
 #   and 'perldoc perlre'.
 
-__version_info__ = (2, 3, 9)
+__version_info__ = (2, 4, 0)
 __version__ = '.'.join(map(str, __version_info__))
 __author__ = "Trent Mick"
 
@@ -108,10 +109,6 @@ import optparse
 from random import random, randint
 import codecs
 from collections import defaultdict
-try:
-    from urllib import quote_plus
-except ImportError:
-    from urllib.parse import quote_plus
 
 
 # ---- Python version compat
@@ -281,7 +278,11 @@ class Markdown(object):
 
     # Per <https://developer.mozilla.org/en-US/docs/HTML/Element/a> "rel"
     # should only be used in <a> tags with an "href" attribute.
-    _a_nofollow = re.compile(r"""
+
+    # Opens the linked document in a new window or tab
+    # should only used in <a> tags with an "href" attribute.
+    # same with _a_nofollow
+    _a_nofollow_or_blank_links = re.compile(r"""
         <(a)
         (
             [^>]*
@@ -292,11 +293,6 @@ class Markdown(object):
         """,
         re.IGNORECASE | re.VERBOSE
     )
-
-    # Opens the linked document in a new window or tab
-    # should only used in <a> tags with an "href" attribute.
-    # same with _a_nofollow
-    _a_blank = _a_nofollow
 
     def convert(self, text):
         """Convert the given text."""
@@ -392,11 +388,15 @@ class Markdown(object):
             # return the removed text warning to its markdown.py compatible form
             text = text.replace(self.html_removed_text, self.html_removed_text_compat)
 
-        if "nofollow" in self.extras:
-            text = self._a_nofollow.sub(r'<\1 rel="nofollow"\2', text)
+        do_target_blank_links = "target-blank-links" in self.extras
+        do_nofollow_links = "nofollow" in self.extras
 
-        if "target-blank-links" in self.extras:
-            text = self._a_blank.sub(r'<\1 target="_blank"\2', text)
+        if do_target_blank_links and do_nofollow_links:
+            text = self._a_nofollow_or_blank_links.sub(r'<\1 rel="nofollow noopener" target="_blank"\2', text)
+        elif do_target_blank_links:
+            text = self._a_nofollow_or_blank_links.sub(r'<\1 rel="noopener" target="_blank"\2', text)
+        elif do_nofollow_links:
+            text = self._a_nofollow_or_blank_links.sub(r'<\1 rel="nofollow"\2', text)
 
         if "toc" in self.extras and self._toc:
             self._toc_html = calculate_toc_html(self._toc)
@@ -443,13 +443,21 @@ class Markdown(object):
     #   another-var: blah blah
     #
     #   # header
-    _meta_data_pattern = re.compile(r'^(?:---[\ \t]*\n)?(.*:\s+>\n\s+[\S\s]+?)(?=\n\w+\s*:\s*\w+\n|\Z)|([\S\w]+\s*:(?! >)[ \t]*.*\n?)(?:---[\ \t]*\n)?', re.MULTILINE)
+    _meta_data_pattern = re.compile(r'^(?:---[\ \t]*\n)?((?:[\S\w]+\s*:(?:\n+[ \t]+.*)+)|(?:.*:\s+>\n\s+[\S\s]+?)(?=\n\w+\s*:\s*\w+\n|\Z)|(?:\s*[\S\w]+\s*:(?! >)[ \t]*.*\n?))(?:---[\ \t]*\n)?', re.MULTILINE)
     _key_val_pat = re.compile(r"[\S\w]+\s*:(?! >)[ \t]*.*\n?", re.MULTILINE)
     # this allows key: >
     #                   value
     #                   conutiues over multiple lines
     _key_val_block_pat = re.compile(
-        "(.*:\s+>\n\s+[\S\s]+?)(?=\n\w+\s*:\s*\w+\n|\Z)", re.MULTILINE)
+        r"(.*:\s+>\n\s+[\S\s]+?)(?=\n\w+\s*:\s*\w+\n|\Z)", re.MULTILINE
+    )
+    _key_val_list_pat = re.compile(
+        r"^-(?:[ \t]*([^\n]*)(?:[ \t]*[:-][ \t]*(\S+))?)(?:\n((?:[ \t]+[^\n]+\n?)+))?",
+        re.MULTILINE,
+    )
+    _key_val_dict_pat = re.compile(
+        r"^([^:\n]+)[ \t]*:[ \t]*([^\n]*)(?:((?:\n[ \t]+[^\n]+)+))?", re.MULTILINE
+    )  # grp0: key, grp1: value, grp2: multiline value
     _meta_data_fence_pattern = re.compile(r'^---[\ \t]*\n', re.MULTILINE)
     _meta_data_newline = re.compile("^\n", re.MULTILINE)
 
@@ -469,17 +477,62 @@ class Markdown(object):
                 return text
             tail = metadata_split[1]
 
-        kv = re.findall(self._key_val_pat, metadata_content)
-        kvm = re.findall(self._key_val_block_pat, metadata_content)
-        kvm = [item.replace(": >\n", ":", 1) for item in kvm]
+        def parse_structured_value(value):
+            vs = value.lstrip()
+            vs = value.replace(v[: len(value) - len(vs)], "\n")[1:]
 
-        for item in kv + kvm:
+            # List
+            if vs.startswith("-"):
+                r = []
+                for match in re.findall(self._key_val_list_pat, vs):
+                    if match[0] and not match[1] and not match[2]:
+                        r.append(match[0].strip())
+                    elif match[0] == ">" and not match[1] and match[2]:
+                        r.append(match[2].strip())
+                    elif match[0] and match[1]:
+                        r.append({match[0].strip(): match[1].strip()})
+                    elif not match[0] and not match[1] and match[2]:
+                        r.append(parse_structured_value(match[2]))
+                    else:
+                        # Broken case
+                        pass
+
+                return r
+
+            # Dict
+            else:
+                return {
+                    match[0].strip(): (
+                        match[1].strip()
+                        if match[1]
+                        else parse_structured_value(match[2])
+                    )
+                    for match in re.findall(self._key_val_dict_pat, vs)
+                }
+
+        for item in match:
+
             k, v = item.split(":", 1)
-            self.metadata[k.strip()] = v.strip()
+
+            # Multiline value
+            if v[:3] == " >\n":
+                self.metadata[k.strip()] = v[3:].strip()
+
+            # Empty value
+            elif v == "\n":
+                self.metadata[k.strip()] = ""
+
+            # Structured value
+            elif v[0] == "\n":
+                self.metadata[k.strip()] = parse_structured_value(v)
+
+            # Simple value
+            else:
+                self.metadata[k.strip()] = v.strip()
 
         return tail
 
-    _emacs_oneliner_vars_pat = re.compile(r"-\*-\s*([^\r\n]*?)\s*-\*-", re.UNICODE)
+    _emacs_oneliner_vars_pat = re.compile(r"-\*-\s*(?:(\S[^\r\n]*?)([\r\n]\s*)?)?-\*-", re.UNICODE)
     # This regular expression is intended to match blocks like this:
     #    PREFIX Local Variables: SUFFIX
     #    PREFIX mode: Tcl SUFFIX
@@ -839,8 +892,8 @@ class Markdown(object):
         '''
         # First pass to define all the references
         self.regex_defns = re.compile(r'''
-            \[\#(\w+)\s* # the counter.  Open square plus hash plus a word \1
-            ([^@]*)\s*   # Some optional characters, that aren't an @. \2
+            \[\#(\w+) # the counter.  Open square plus hash plus a word \1
+            ([^@]*)   # Some optional characters, that aren't an @. \2
             @(\w+)       # the id.  Should this be normed? \3
             ([^\]]*)\]   # The rest of the text up to the terminating ] \4
             ''', re.VERBOSE)
@@ -855,7 +908,7 @@ class Markdown(object):
             if len(match.groups()) != 4:
                 continue
             counter = match.group(1)
-            text_before = match.group(2)
+            text_before = match.group(2).strip()
             ref_id = match.group(3)
             text_after = match.group(4)
             number = counters.get(counter, 1)
@@ -1013,11 +1066,11 @@ class Markdown(object):
         align_from_col_idx = {}
         for col_idx, col in enumerate(cols):
             if col[0] == ':' and col[-1] == ':':
-                align_from_col_idx[col_idx] = ' align="center"'
+                align_from_col_idx[col_idx] = ' style="text-align:center;"'
             elif col[0] == ':':
-                align_from_col_idx[col_idx] = ' align="left"'
+                align_from_col_idx[col_idx] = ' style="text-align:left;"'
             elif col[-1] == ':':
-                align_from_col_idx[col_idx] = ' align="right"'
+                align_from_col_idx[col_idx] = ' style="text-align:right;"'
 
         # thead
         hlines = ['<table%s>' % self._html_class_str_from_tag('table'), '<thead>', '<tr>']
@@ -1152,6 +1205,9 @@ class Markdown(object):
 
         if "strike" in self.extras:
             text = self._do_strike(text)
+
+        if "underline" in self.extras:
+            text = self._do_underline(text)
 
         text = self._do_italics_and_bold(text)
 
@@ -1828,7 +1884,7 @@ class Markdown(object):
         pre_class_str = self._html_class_str_from_tag("pre")
 
         if "highlightjs-lang" in self.extras and lexer_name:
-            code_class_str = ' class="%s"' % lexer_name
+            code_class_str = ' class="%s language-%s"' % (lexer_name, lexer_name)
         else:
             code_class_str = self._html_class_str_from_tag("code")
 
@@ -1870,9 +1926,9 @@ class Markdown(object):
 
     _fenced_code_block_re = re.compile(r'''
         (?:\n+|\A\n?)
-        ^```\s*?([\w+-]+)?\s*?\n    # opening fence, $1 = optional lang
-        (.*?)                       # $2 = code block content
-        ^```[ \t]*\n                # closing fence
+        ^```\s{0,99}([\w+-]+)?\s{0,99}\n  # opening fence, $1 = optional lang
+        (.*?)                             # $2 = code block content
+        ^```[ \t]*\n                      # closing fence
         ''', re.M | re.X | re.S)
 
     def _fenced_code_block_sub(self, match):
@@ -1954,6 +2010,11 @@ class Markdown(object):
         text = self._strike_re.sub(r"<strike>\1</strike>", text)
         return text
 
+    _underline_re = re.compile(r"--(?=\S)(.+?)(?<=\S)--", re.S)
+    def _do_underline(self, text):
+        text = self._underline_re.sub(r"<u>\1</u>", text)
+        return text
+
     _strong_re = re.compile(r"(\*\*|__)(?=\S)(.+?[*_]*)(?<=\S)\1", re.S)
     _em_re = re.compile(r"(\*|_)(?=\S)(.+?)(?<=\S)\1", re.S)
     _code_friendly_strong_re = re.compile(r"\*\*(?=\S)(.+?[*_]*)(?<=\S)\*\*", re.S)
@@ -2027,7 +2088,6 @@ class Markdown(object):
             ^[ \t]*>%s[ \t]?        # '>' at the start of a line
               .+\n                  # rest of the first line
             (.+\n)*                 # subsequent consecutive lines
-            \n*                     # blanks
           )+
         )
     '''
@@ -2172,12 +2232,12 @@ class Markdown(object):
         text = self._naked_gt_re.sub('&gt;', text)
         return text
 
-    _incomplete_tags_re = re.compile("<(/?\w+?(?!\w).+?[\s/]+?)")
+    _incomplete_tags_re = re.compile(r"<(/?\w+?(?!\w).+?[\s/]+?)")
 
     def _encode_incomplete_tags(self, text):
         if self.safe_mode not in ("replace", "escape"):
             return text
-            
+
         if text.endswith(">"):
             return text  # this is not an incomplete tag, this is a link in the form <http://x.y.z>
 
@@ -2377,7 +2437,7 @@ def _regex_from_encoded_pattern(s):
     if s.startswith('/') and s.rfind('/') != 0:
         # Parse it: /PATTERN/FLAGS
         idx = s.rfind('/')
-        pattern, flags_str = s[1:idx], s[idx+1:]
+        _, flags_str = s[1:idx], s[idx+1:]
         flag_from_char = {
             "i": re.IGNORECASE,
             "l": re.LOCALE,

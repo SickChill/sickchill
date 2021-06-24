@@ -144,8 +144,8 @@ data = (
 'Hao ',    # 0x8e
 'Ti ',    # 0x8f
 'Chang ',    # 0x90
-'[?] ',    # 0x91
-'[?] ',    # 0x92
+None,    # 0x91
+None,    # 0x92
 'Ca ',    # 0x93
 'Ti ',    # 0x94
 'Lu ',    # 0x95
@@ -212,8 +212,8 @@ data = (
 'Lan ',    # 0xd2
 'Nie ',    # 0xd3
 'Nang ',    # 0xd4
-'[?] ',    # 0xd5
-'[?] ',    # 0xd6
+None,    # 0xd5
+None,    # 0xd6
 'Wei ',    # 0xd7
 'Hui ',    # 0xd8
 'Yin ',    # 0xd9

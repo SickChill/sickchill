@@ -1,10 +1,11 @@
 # testing/fixtures.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
+import contextlib
 import re
 import sys
 
@@ -12,26 +13,21 @@ import sqlalchemy as sa
 from . import assertions
 from . import config
 from . import schema
-from .engines import drop_all_tables
 from .entities import BasicEntity
 from .entities import ComparableEntity
+from .entities import ComparableMixin  # noqa
 from .util import adict
+from .util import drop_all_tables_from_metadata
 from .. import event
 from .. import util
-from ..ext.declarative import declarative_base
-from ..ext.declarative import DeclarativeMeta
+from ..orm import declarative_base
+from ..orm import registry
+from ..orm.decl_api import DeclarativeMeta
 from ..schema import sort_tables_and_constraints
 
 
-# whether or not we use unittest changes things dramatically,
-# as far as how pytest collection works.
-
-
+@config.mark_base_test_class()
 class TestBase(object):
-    # A sequence of database names to always run, regardless of the
-    # constraints below.
-    __whitelist__ = ()
-
     # A sequence of requirement names matching testing.requires decorators
     __requires__ = ()
 
@@ -46,43 +42,287 @@ class TestBase(object):
     # skipped.
     __skip_if__ = None
 
+    # if True, the testing reaper will not attempt to touch connection
+    # state after a test is completed and before the outer teardown
+    # starts
+    __leave_connections_for_teardown__ = False
+
     def assert_(self, val, msg=None):
         assert val, msg
 
-    # apparently a handful of tests are doing this....OK
-    def setup(self):
-        if hasattr(self, "setUp"):
-            self.setUp()
+    @config.fixture()
+    def connection_no_trans(self):
+        eng = getattr(self, "bind", None) or config.db
 
-    def teardown(self):
-        if hasattr(self, "tearDown"):
-            self.tearDown()
+        with eng.connect() as conn:
+            yield conn
 
     @config.fixture()
     def connection(self):
-        conn = config.db.connect()
-        trans = conn.begin()
-        try:
-            yield conn
-        finally:
-            trans.rollback()
-            conn.close()
+        global _connection_fixture_connection
 
-    # propose a replacement for @testing.provide_metadata.
-    # the problem with this is that TablesTest below has a ".metadata"
-    # attribute already which is accessed directly as part of the
-    # @testing.provide_metadata pattern.  Might need to call this _metadata
-    # for it to be useful.
-    # @config.fixture()
-    # def metadata(self):
-    #    """Provide bound MetaData for a single test, dropping afterwards."""
-    #
-    #    from . import engines
-    #    metadata = schema.MetaData(config.db)
-    #    try:
-    #        yield metadata
-    #    finally:
-    #       engines.drop_all_tables(metadata, config.db)
+        eng = getattr(self, "bind", None) or config.db
+
+        conn = eng.connect()
+        trans = conn.begin()
+
+        _connection_fixture_connection = conn
+        yield conn
+
+        _connection_fixture_connection = None
+
+        if trans.is_active:
+            trans.rollback()
+        # trans would not be active here if the test is using
+        # the legacy @provide_metadata decorator still, as it will
+        # run a close all connections.
+        conn.close()
+
+    @config.fixture()
+    def registry(self, metadata):
+        reg = registry(metadata=metadata)
+        yield reg
+        reg.dispose()
+
+    @config.fixture()
+    def future_connection(self, future_engine, connection):
+        # integrate the future_engine and connection fixtures so
+        # that users of the "connection" fixture will get at the
+        # "future" connection
+        yield connection
+
+    @config.fixture()
+    def future_engine(self):
+        eng = getattr(self, "bind", None) or config.db
+        with _push_future_engine(eng):
+            yield
+
+    @config.fixture()
+    def testing_engine(self):
+        from . import engines
+
+        def gen_testing_engine(
+            url=None,
+            options=None,
+            future=None,
+            asyncio=False,
+            transfer_staticpool=False,
+        ):
+            if options is None:
+                options = {}
+            options["scope"] = "fixture"
+            return engines.testing_engine(
+                url=url,
+                options=options,
+                future=future,
+                asyncio=asyncio,
+                transfer_staticpool=transfer_staticpool,
+            )
+
+        yield gen_testing_engine
+
+        engines.testing_reaper._drop_testing_engines("fixture")
+
+    @config.fixture()
+    def async_testing_engine(self, testing_engine):
+        def go(**kw):
+            kw["asyncio"] = True
+            return testing_engine(**kw)
+
+        return go
+
+    @config.fixture()
+    def metadata(self, request):
+        """Provide bound MetaData for a single test, dropping afterwards."""
+
+        from ..sql import schema
+
+        metadata = schema.MetaData()
+        request.instance.metadata = metadata
+        yield metadata
+        del request.instance.metadata
+
+        if (
+            _connection_fixture_connection
+            and _connection_fixture_connection.in_transaction()
+        ):
+            trans = _connection_fixture_connection.get_transaction()
+            trans.rollback()
+            with _connection_fixture_connection.begin():
+                drop_all_tables_from_metadata(
+                    metadata, _connection_fixture_connection
+                )
+        else:
+            drop_all_tables_from_metadata(metadata, config.db)
+
+    @config.fixture(
+        params=[
+            (rollback, second_operation, begin_nested)
+            for rollback in (True, False)
+            for second_operation in ("none", "execute", "begin")
+            for begin_nested in (
+                True,
+                False,
+            )
+        ]
+    )
+    def trans_ctx_manager_fixture(self, request, metadata):
+        rollback, second_operation, begin_nested = request.param
+
+        from sqlalchemy import Table, Column, Integer, func, select
+        from . import eq_
+
+        t = Table("test", metadata, Column("data", Integer))
+        eng = getattr(self, "bind", None) or config.db
+
+        t.create(eng)
+
+        def run_test(subject, trans_on_subject, execute_on_subject):
+            with subject.begin() as trans:
+
+                if begin_nested:
+                    if not config.requirements.savepoints.enabled:
+                        config.skip_test("savepoints not enabled")
+                    if execute_on_subject:
+                        nested_trans = subject.begin_nested()
+                    else:
+                        nested_trans = trans.begin_nested()
+
+                    with nested_trans:
+                        if execute_on_subject:
+                            subject.execute(t.insert(), {"data": 10})
+                        else:
+                            trans.execute(t.insert(), {"data": 10})
+
+                        # for nested trans, we always commit/rollback on the
+                        # "nested trans" object itself.
+                        # only Session(future=False) will affect savepoint
+                        # transaction for session.commit/rollback
+
+                        if rollback:
+                            nested_trans.rollback()
+                        else:
+                            nested_trans.commit()
+
+                        if second_operation != "none":
+                            with assertions.expect_raises_message(
+                                sa.exc.InvalidRequestError,
+                                "Can't operate on closed transaction "
+                                "inside context "
+                                "manager.  Please complete the context "
+                                "manager "
+                                "before emitting further commands.",
+                            ):
+                                if second_operation == "execute":
+                                    if execute_on_subject:
+                                        subject.execute(
+                                            t.insert(), {"data": 12}
+                                        )
+                                    else:
+                                        trans.execute(t.insert(), {"data": 12})
+                                elif second_operation == "begin":
+                                    if execute_on_subject:
+                                        subject.begin_nested()
+                                    else:
+                                        trans.begin_nested()
+
+                    # outside the nested trans block, but still inside the
+                    # transaction block, we can run SQL, and it will be
+                    # committed
+                    if execute_on_subject:
+                        subject.execute(t.insert(), {"data": 14})
+                    else:
+                        trans.execute(t.insert(), {"data": 14})
+
+                else:
+                    if execute_on_subject:
+                        subject.execute(t.insert(), {"data": 10})
+                    else:
+                        trans.execute(t.insert(), {"data": 10})
+
+                    if trans_on_subject:
+                        if rollback:
+                            subject.rollback()
+                        else:
+                            subject.commit()
+                    else:
+                        if rollback:
+                            trans.rollback()
+                        else:
+                            trans.commit()
+
+                    if second_operation != "none":
+                        with assertions.expect_raises_message(
+                            sa.exc.InvalidRequestError,
+                            "Can't operate on closed transaction inside "
+                            "context "
+                            "manager.  Please complete the context manager "
+                            "before emitting further commands.",
+                        ):
+                            if second_operation == "execute":
+                                if execute_on_subject:
+                                    subject.execute(t.insert(), {"data": 12})
+                                else:
+                                    trans.execute(t.insert(), {"data": 12})
+                            elif second_operation == "begin":
+                                if hasattr(trans, "begin"):
+                                    trans.begin()
+                                else:
+                                    subject.begin()
+                            elif second_operation == "begin_nested":
+                                if execute_on_subject:
+                                    subject.begin_nested()
+                                else:
+                                    trans.begin_nested()
+
+            expected_committed = 0
+            if begin_nested:
+                # begin_nested variant, we inserted a row after the nested
+                # block
+                expected_committed += 1
+            if not rollback:
+                # not rollback variant, our row inserted in the target
+                # block itself would be committed
+                expected_committed += 1
+
+            if execute_on_subject:
+                eq_(
+                    subject.scalar(select(func.count()).select_from(t)),
+                    expected_committed,
+                )
+            else:
+                with subject.connect() as conn:
+                    eq_(
+                        conn.scalar(select(func.count()).select_from(t)),
+                        expected_committed,
+                    )
+
+        return run_test
+
+
+_connection_fixture_connection = None
+
+
+@contextlib.contextmanager
+def _push_future_engine(engine):
+
+    from ..future.engine import Engine
+    from sqlalchemy import testing
+
+    facade = Engine._future_facade(engine)
+    config._current.push_engine(facade, testing)
+
+    yield facade
+
+    config._current.pop(testing)
+
+
+class FutureEngineMixin(object):
+    @config.fixture(autouse=True, scope="class")
+    def _push_future_engine(self):
+        eng = getattr(self, "bind", None) or config.db
+        with _push_future_engine(eng):
+            yield
 
 
 class TablesTest(TestBase):
@@ -106,17 +346,36 @@ class TablesTest(TestBase):
     run_dispose_bind = None
 
     bind = None
-    metadata = None
+    _tables_metadata = None
     tables = None
     other = None
+    sequences = None
 
-    @classmethod
-    def setup_class(cls):
+    @config.fixture(autouse=True, scope="class")
+    def _setup_tables_test_class(self):
+        cls = self.__class__
         cls._init_class()
 
         cls._setup_once_tables()
 
         cls._setup_once_inserts()
+
+        yield
+
+        cls._teardown_once_metadata_bind()
+
+    @config.fixture(autouse=True, scope="function")
+    def _setup_tables_test_instance(self):
+        self._setup_each_tables()
+        self._setup_each_inserts()
+
+        yield
+
+        self._teardown_each_tables()
+
+    @property
+    def tables_test_metadata(self):
+        return self._tables_metadata
 
     @classmethod
     def _init_class(cls):
@@ -127,10 +386,10 @@ class TablesTest(TestBase):
 
         cls.other = adict()
         cls.tables = adict()
+        cls.sequences = adict()
 
         cls.bind = cls.setup_bind()
-        cls.metadata = sa.MetaData()
-        cls.metadata.bind = cls.bind
+        cls._tables_metadata = sa.MetaData()
 
     @classmethod
     def _setup_once_inserts(cls):
@@ -142,19 +401,21 @@ class TablesTest(TestBase):
     @classmethod
     def _setup_once_tables(cls):
         if cls.run_define_tables == "once":
-            cls.define_tables(cls.metadata)
+            cls.define_tables(cls._tables_metadata)
             if cls.run_create_tables == "once":
-                cls.metadata.create_all(cls.bind)
-            cls.tables.update(cls.metadata.tables)
+                cls._tables_metadata.create_all(cls.bind)
+            cls.tables.update(cls._tables_metadata.tables)
+            cls.sequences.update(cls._tables_metadata._sequences)
 
     def _setup_each_tables(self):
         if self.run_define_tables == "each":
-            self.define_tables(self.metadata)
+            self.define_tables(self._tables_metadata)
             if self.run_create_tables == "each":
-                self.metadata.create_all(self.bind)
-            self.tables.update(self.metadata.tables)
+                self._tables_metadata.create_all(self.bind)
+            self.tables.update(self._tables_metadata.tables)
+            self.sequences.update(self._tables_metadata._sequences)
         elif self.run_create_tables == "each":
-            self.metadata.create_all(self.bind)
+            self._tables_metadata.create_all(self.bind)
 
     def _setup_each_inserts(self):
         if self.run_inserts == "each":
@@ -166,19 +427,23 @@ class TablesTest(TestBase):
         if self.run_define_tables == "each":
             self.tables.clear()
             if self.run_create_tables == "each":
-                drop_all_tables(self.metadata, self.bind)
-            self.metadata.clear()
+                drop_all_tables_from_metadata(self._tables_metadata, self.bind)
+            self._tables_metadata.clear()
         elif self.run_create_tables == "each":
-            drop_all_tables(self.metadata, self.bind)
+            drop_all_tables_from_metadata(self._tables_metadata, self.bind)
 
         # no need to run deletes if tables are recreated on setup
-        if self.run_define_tables != "each" and self.run_deletes == "each":
-            with self.bind.connect() as conn:
+        if (
+            self.run_define_tables != "each"
+            and self.run_create_tables != "each"
+            and self.run_deletes == "each"
+        ):
+            with self.bind.begin() as conn:
                 for table in reversed(
                     [
                         t
                         for (t, fks) in sort_tables_and_constraints(
-                            self.metadata.tables.values()
+                            self._tables_metadata.tables.values()
                         )
                         if t is not None
                     ]
@@ -191,29 +456,18 @@ class TablesTest(TestBase):
                             file=sys.stderr,
                         )
 
-    def setup(self):
-        self._setup_each_tables()
-        self._setup_each_inserts()
-
-    def teardown(self):
-        self._teardown_each_tables()
-
     @classmethod
     def _teardown_once_metadata_bind(cls):
         if cls.run_create_tables:
-            drop_all_tables(cls.metadata, cls.bind)
+            drop_all_tables_from_metadata(cls._tables_metadata, cls.bind)
 
         if cls.run_dispose_bind == "once":
             cls.dispose_bind(cls.bind)
 
-        cls.metadata.bind = None
+        cls._tables_metadata.bind = None
 
         if cls.run_setup_bind is not None:
             cls.bind = None
-
-    @classmethod
-    def teardown_class(cls):
-        cls._teardown_once_metadata_bind()
 
     @classmethod
     def setup_bind(cls):
@@ -256,19 +510,20 @@ class TablesTest(TestBase):
             headers[table] = data[0]
             rows[table] = data[1:]
         for table, fks in sort_tables_and_constraints(
-            cls.metadata.tables.values()
+            cls._tables_metadata.tables.values()
         ):
             if table is None:
                 continue
             if table not in headers:
                 continue
-            cls.bind.execute(
-                table.insert(),
-                [
-                    dict(zip(headers[table], column_values))
-                    for column_values in rows[table]
-                ],
-            )
+            with cls.bind.begin() as conn:
+                conn.execute(
+                    table.insert(),
+                    [
+                        dict(zip(headers[table], column_values))
+                        for column_values in rows[table]
+                    ],
+                )
 
 
 class RemovesEvents(object):
@@ -280,26 +535,45 @@ class RemovesEvents(object):
         self._event_fns.add((target, name, fn))
         event.listen(target, name, fn, **kw)
 
-    def teardown(self):
+    @config.fixture(autouse=True, scope="function")
+    def _remove_events(self):
+        yield
         for key in self._event_fns:
             event.remove(*key)
-        super_ = super(RemovesEvents, self)
-        if hasattr(super_, "teardown"):
-            super_.teardown()
 
 
-class _ORMTest(object):
-    @classmethod
-    def teardown_class(cls):
-        sa.orm.session.close_all_sessions()
-        sa.orm.clear_mappers()
+_fixture_sessions = set()
 
 
-class ORMTest(_ORMTest, TestBase):
+def fixture_session(**kw):
+    kw.setdefault("autoflush", True)
+    kw.setdefault("expire_on_commit", True)
+    sess = sa.orm.Session(config.db, **kw)
+    _fixture_sessions.add(sess)
+    return sess
+
+
+def _close_all_sessions():
+    # will close all still-referenced sessions
+    sa.orm.session.close_all_sessions()
+    _fixture_sessions.clear()
+
+
+def stop_test_class_inside_fixtures(cls):
+    _close_all_sessions()
+    sa.orm.clear_mappers()
+
+
+def after_test():
+    if _fixture_sessions:
+        _close_all_sessions()
+
+
+class ORMTest(TestBase):
     pass
 
 
-class MappedTest(_ORMTest, TablesTest, assertions.AssertsExecutionResults):
+class MappedTest(TablesTest, assertions.AssertsExecutionResults):
     # 'once', 'each', None
     run_setup_classes = "once"
 
@@ -308,8 +582,9 @@ class MappedTest(_ORMTest, TablesTest, assertions.AssertsExecutionResults):
 
     classes = None
 
-    @classmethod
-    def setup_class(cls):
+    @config.fixture(autouse=True, scope="class")
+    def _setup_tables_test_class(self):
+        cls = self.__class__
         cls._init_class()
 
         if cls.classes is None:
@@ -320,18 +595,20 @@ class MappedTest(_ORMTest, TablesTest, assertions.AssertsExecutionResults):
         cls._setup_once_mappers()
         cls._setup_once_inserts()
 
-    @classmethod
-    def teardown_class(cls):
+        yield
+
         cls._teardown_once_class()
         cls._teardown_once_metadata_bind()
 
-    def setup(self):
+    @config.fixture(autouse=True, scope="function")
+    def _setup_tables_test_instance(self):
         self._setup_each_tables()
         self._setup_each_classes()
         self._setup_each_mappers()
         self._setup_each_inserts()
 
-    def teardown(self):
+        yield
+
         sa.orm.session.close_all_sessions()
         self._teardown_each_mappers()
         self._teardown_each_classes()
@@ -340,7 +617,6 @@ class MappedTest(_ORMTest, TablesTest, assertions.AssertsExecutionResults):
     @classmethod
     def _teardown_once_class(cls):
         cls.classes.clear()
-        _ORMTest.teardown_class()
 
     @classmethod
     def _setup_once_classes(cls):
@@ -350,15 +626,22 @@ class MappedTest(_ORMTest, TablesTest, assertions.AssertsExecutionResults):
     @classmethod
     def _setup_once_mappers(cls):
         if cls.run_setup_mappers == "once":
+            cls.mapper = cls._generate_mapper()
             cls._with_register_classes(cls.setup_mappers)
 
     def _setup_each_mappers(self):
         if self.run_setup_mappers == "each":
+            self.__class__.mapper = self._generate_mapper()
             self._with_register_classes(self.setup_mappers)
 
     def _setup_each_classes(self):
         if self.run_setup_classes == "each":
             self._with_register_classes(self.setup_classes)
+
+    @classmethod
+    def _generate_mapper(cls):
+        decl = registry()
+        return decl.map_imperatively
 
     @classmethod
     def _with_register_classes(cls, fn):
@@ -368,6 +651,8 @@ class MappedTest(_ORMTest, TablesTest, assertions.AssertsExecutionResults):
 
         """
         cls_registry = cls.classes
+
+        assert cls_registry is not None
 
         class FindFixture(type):
             def __init__(cls, classname, bases, dict_):
@@ -428,18 +713,19 @@ class DeclarativeMappedTest(MappedTest):
             __table_cls__ = schema.Table
 
         _DeclBase = declarative_base(
-            metadata=cls.metadata,
+            metadata=cls._tables_metadata,
             metaclass=FindFixtureDeclarative,
             cls=DeclarativeBasic,
         )
+
         cls.DeclarativeBasic = _DeclBase
 
         # sets up cls.Basic which is helpful for things like composite
         # classes
         super(DeclarativeMappedTest, cls)._with_register_classes(fn)
 
-        if cls.metadata.tables and cls.run_create_tables:
-            cls.metadata.create_all(config.db)
+        if cls._tables_metadata.tables and cls.run_create_tables:
+            cls._tables_metadata.create_all(config.db)
 
 
 class ComputedReflectionFixtureTest(TablesTest):

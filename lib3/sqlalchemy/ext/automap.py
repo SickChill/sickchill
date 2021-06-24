@@ -1,5 +1,5 @@
 # ext/automap.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -529,14 +529,44 @@ the :meth:`.AutomapBase.prepare` method is required; if not called, the classes
 we've declared are in an un-mapped state.
 
 
+.. _automap_intercepting_columns:
+
+Intercepting Column Definitions
+===============================
+
+The :class:`_schema.MetaData` and :class:`_schema.Table` objects support an
+event hook :meth:`_events.DDLEvents.column_reflect` that may be used to intercept
+the information reflected about a database column before the :class:`_schema.Column`
+object is constructed.   For example if we wanted to map columns using a
+naming convention such as ``"attr_<columnname>"``, the event could
+be applied as::
+
+    @event.listens_for(Base.metadata, "column_reflect")
+    def column_reflect(inspector, table, column_info):
+        # set column.key = "attr_<lower_case_name>"
+        column_info['key'] = "attr_%s" % column_info['name'].lower()
+
+    # run reflection
+    Base.prepare(engine, reflect=True)
+
+.. versionadded:: 1.4.0b2 the :meth:`_events.DDLEvents.column_reflect` event
+   may be applied to a :class:`_schema.MetaData` object.
+
+.. seealso::
+
+      :meth:`_events.DDLEvents.column_reflect`
+
+      :ref:`mapper_automated_reflection_schemes` - in the ORM mapping documentation
+
+
 """  # noqa
-from .declarative import declarative_base as _declarative_base
-from .declarative.base import _DeferredMapperConfig
 from .. import util
 from ..orm import backref
+from ..orm import declarative_base as _declarative_base
 from ..orm import exc as orm_exc
 from ..orm import interfaces
 from ..orm import relationship
+from ..orm.decl_base import _DeferredMapperConfig
 from ..orm.mapper import _CONFIGURE_MUTEX
 from ..schema import ForeignKeyConstraint
 from ..sql import and_
@@ -720,16 +750,36 @@ class AutomapBase(object):
     """
 
     @classmethod
+    @util.deprecated_params(
+        engine=(
+            "2.0",
+            "The :paramref:`_automap.AutomapBase.prepare.engine` parameter "
+            "is deprecated and will be removed in a future release.  "
+            "Please use the "
+            ":paramref:`_automap.AutomapBase.prepare.autoload_with` "
+            "parameter.",
+        ),
+        reflect=(
+            "2.0",
+            "The :paramref:`_automap.AutomapBase.prepare.reflect` "
+            "parameter is deprecated and will be removed in a future "
+            "release.  Reflection is enabled when "
+            ":paramref:`_automap.AutomapBase.prepare.autoload_with` "
+            "is passed.",
+        ),
+    )
     def prepare(
         cls,
+        autoload_with=None,
         engine=None,
         reflect=False,
         schema=None,
-        classname_for_table=classname_for_table,
-        collection_class=list,
-        name_for_scalar_relationship=name_for_scalar_relationship,
-        name_for_collection_relationship=name_for_collection_relationship,
-        generate_relationship=generate_relationship,
+        classname_for_table=None,
+        collection_class=None,
+        name_for_scalar_relationship=None,
+        name_for_collection_relationship=None,
+        generate_relationship=None,
+        reflection_options=util.EMPTY_DICT,
     ):
         """Extract mapped classes and relationships from the
         :class:`_schema.MetaData` and
@@ -781,17 +831,47 @@ class AutomapBase(object):
 
          .. versionadded:: 1.1
 
+        :param reflection_options: When present, this dictionary of options
+         will be passed to :meth:`_schema.MetaData.reflect`
+         to supply general reflection-specific options like ``only`` and/or
+         dialect-specific options like ``oracle_resolve_synonyms``.
+
+         .. versionadded:: 1.4
+
         """
+        glbls = globals()
+        if classname_for_table is None:
+            classname_for_table = glbls["classname_for_table"]
+        if name_for_scalar_relationship is None:
+            name_for_scalar_relationship = glbls[
+                "name_for_scalar_relationship"
+            ]
+        if name_for_collection_relationship is None:
+            name_for_collection_relationship = glbls[
+                "name_for_collection_relationship"
+            ]
+        if generate_relationship is None:
+            generate_relationship = glbls["generate_relationship"]
+        if collection_class is None:
+            collection_class = list
+
+        if autoload_with:
+            reflect = True
+
+        if engine:
+            autoload_with = engine
+
         if reflect:
-            cls.metadata.reflect(
-                engine,
+            opts = dict(
                 schema=schema,
                 extend_existing=True,
                 autoload_replace=False,
             )
+            if reflection_options:
+                opts.update(reflection_options)
+            cls.metadata.reflect(autoload_with, **opts)
 
-        _CONFIGURE_MUTEX.acquire()
-        try:
+        with _CONFIGURE_MUTEX:
             table_to_map_config = dict(
                 (m.local_table, m)
                 for m in _DeferredMapperConfig.classes_for_base(
@@ -846,8 +926,6 @@ class AutomapBase(object):
 
             for map_config in _DeferredMapperConfig.classes_for_base(cls):
                 map_config.map()
-        finally:
-            _CONFIGURE_MUTEX.release()
 
     _sa_decl_prepare = True
     """Indicate that the mapping of classes should be deferred.

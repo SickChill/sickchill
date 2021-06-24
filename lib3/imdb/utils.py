@@ -71,7 +71,7 @@ re_index = re.compile(r'^\(([IVXLCDM]+)\)$')
 re_parentheses = re.compile(r'(\(.*\))')
 
 # Match the number of episodes.
-re_episodes = re.compile('\s?\((\d+) episodes\)', re.I)
+re_episodes = re.compile(r'\s?\((\d+) episodes\)', re.I)
 re_episode_info = re.compile(
     r'{\s*(.+?)?\s?(\([0-9\?]{4}-[0-9\?]{1,2}-[0-9\?]{1,2}\))?\s?(\(#[0-9]+\.[0-9]+\))?}'
 )
@@ -598,7 +598,7 @@ def analyze_company_name(name, stripNotes=False):
     name = name.strip()
     country = None
     if name.startswith('['):
-        name = re.sub('[!@#$\(\)\[\]]', '', name)
+        name = re.sub(r'[!@#$\(\)\[\]]', '', name)
     else:
         if name.endswith(']'):
             idx = name.rfind('[')

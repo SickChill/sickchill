@@ -1,5 +1,5 @@
 # orm/dynamic.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -17,17 +17,18 @@ from . import exc as orm_exc
 from . import interfaces
 from . import object_mapper
 from . import object_session
-from . import properties
+from . import relationships
 from . import strategies
 from . import util as orm_util
 from .query import Query
 from .. import exc
 from .. import log
 from .. import util
+from ..engine import result
 
 
 @log.class_logger
-@properties.RelationshipProperty.strategy_for(lazy="dynamic")
+@relationships.RelationshipProperty.strategy_for(lazy="dynamic")
 class DynaLoader(strategies.AbstractRelationshipLoader):
     def init_class_attribute(self, mapper):
         self.is_class_level = True
@@ -65,6 +66,7 @@ class DynamicAttributeImpl(attributes.AttributeImpl):
     supports_population = False
     collection = False
     dynamic = True
+    order_by = ()
 
     def __init__(
         self,
@@ -81,7 +83,8 @@ class DynamicAttributeImpl(attributes.AttributeImpl):
             class_, key, typecallable, dispatch, **kw
         )
         self.target_mapper = target_mapper
-        self.order_by = order_by
+        if order_by:
+            self.order_by = tuple(order_by)
         if not query_class:
             self.query_class = AppenderQuery
         elif AppenderMixin in query_class.mro():
@@ -105,10 +108,11 @@ class DynamicAttributeImpl(attributes.AttributeImpl):
         passive=attributes.PASSIVE_NO_INITIALIZE,
     ):
         if not passive & attributes.SQL_OK:
-            return self._get_collection_history(state, passive).added_items
+            data = self._get_collection_history(state, passive).added_items
         else:
             history = self._get_collection_history(state, passive)
-            return history.added_plus_unchanged
+            data = history.added_plus_unchanged
+        return DynamicCollectionAdapter(data)
 
     @util.memoized_property
     def _append_token(self):
@@ -259,6 +263,27 @@ class DynamicAttributeImpl(attributes.AttributeImpl):
         self.remove(state, dict_, value, initiator, passive=passive)
 
 
+class DynamicCollectionAdapter(object):
+    """simplified CollectionAdapter for internal API consistency"""
+
+    def __init__(self, data):
+        self.data = data
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def _reset_empty(self):
+        pass
+
+    def __len__(self):
+        return len(self.data)
+
+    def __bool__(self):
+        return True
+
+    __nonzero__ = __bool__
+
+
 class AppenderMixin(object):
     query_class = None
 
@@ -279,10 +304,12 @@ class AppenderMixin(object):
             # doesn't fail, and secondary is then in _from_obj[1].
             self._from_obj = (prop.mapper.selectable, prop.secondary)
 
-        self._criterion = prop._with_parent(instance, alias_secondary=False)
+        self._where_criteria = (
+            prop._with_parent(instance, alias_secondary=False),
+        )
 
         if self.attr.order_by:
-            self._order_by = self.attr.order_by
+            self._order_by_clauses = self.attr.order_by
 
     def session(self):
         sess = object_session(self.instance)
@@ -300,17 +327,28 @@ class AppenderMixin(object):
 
     session = property(session, lambda s, x: None)
 
-    def __iter__(self):
+    def _iter(self):
         sess = self.session
         if sess is None:
-            return iter(
+            state = attributes.instance_state(self.instance)
+            if state.detached:
+                util.warn(
+                    "Instance %s is detached, dynamic relationship cannot "
+                    "return a correct result.   This warning will become "
+                    "a DetachedInstanceError in a future release."
+                    % (orm_util.state_str(state))
+                )
+
+            return result.IteratorResult(
+                result.SimpleResultMetaData([self.attr.class_.__name__]),
                 self.attr._get_collection_history(
                     attributes.instance_state(self.instance),
                     attributes.PASSIVE_NO_INITIALIZE,
-                ).added_items
-            )
+                ).added_items,
+                _source_supports_scalars=True,
+            ).scalars()
         else:
-            return iter(self._clone(sess))
+            return self._generate(sess)._iter()
 
     def __getitem__(self, index):
         sess = self.session
@@ -320,7 +358,7 @@ class AppenderMixin(object):
                 attributes.PASSIVE_NO_INITIALIZE,
             ).indexed(index)
         else:
-            return self._clone(sess).__getitem__(index)
+            return self._generate(sess).__getitem__(index)
 
     def count(self):
         sess = self.session
@@ -332,9 +370,9 @@ class AppenderMixin(object):
                 ).added_items
             )
         else:
-            return self._clone(sess).count()
+            return self._generate(sess).count()
 
-    def _clone(self, sess=None):
+    def _generate(self, sess=None):
         # note we're returning an entirely new Query class instance
         # here without any assignment capabilities; the class of this
         # query is determined by the session.
@@ -354,9 +392,9 @@ class AppenderMixin(object):
         else:
             query = sess.query(self.attr.target_mapper)
 
-        query._criterion = self._criterion
+        query._where_criteria = self._where_criteria
         query._from_obj = self._from_obj
-        query._order_by = self._order_by
+        query._order_by_clauses = self._order_by_clauses
 
         return query
 

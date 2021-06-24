@@ -1,5 +1,5 @@
 # ext/hybrid.py
-# Copyright (C) 2005-2020 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2021 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -64,9 +64,10 @@ mechanics::
 When dealing with the ``Interval`` class itself, the :class:`.hybrid_property`
 descriptor evaluates the function body given the ``Interval`` class as
 the argument, which when evaluated with SQLAlchemy expression mechanics
+(here using the :attr:`.QueryableAttribute.expression` accessor)
 returns a new SQL expression::
 
-    >>> print(Interval.length)
+    >>> print(Interval.length.expression)
     interval."end" - interval.start
 
     >>> print(Session().query(Interval).filter(Interval.length > 10))
@@ -262,6 +263,34 @@ is supported, for more complex SET expressions it will usually be necessary
 to use either the "fetch" or False synchronization strategy as illustrated
 above.
 
+.. note:: For ORM bulk updates to work with hybrids, the function name
+   of the hybrid must match that of how it is accessed.    Something
+   like this wouldn't work::
+
+        class Interval(object):
+            # ...
+
+            def _get(self):
+                return self.end - self.start
+
+            def _set(self, value):
+                self.end = self.start + value
+
+            def _update_expr(cls, value):
+                return [
+                    (cls.end, cls.start + value)
+                ]
+
+            length = hybrid_property(
+                fget=_get, fset=_set, update_expr=_update_expr
+            )
+
+    The Python descriptor protocol does not provide any reliable way for
+    a descriptor to know what attribute name it was accessed as, and
+    the UPDATE scheme currently relies upon being able to access the
+    attribute from an instance by name in order to perform the instance
+    synchronization step.
+
 .. versionadded:: 1.2 added support for bulk updates to hybrid properties.
 
 Working with Relationships
@@ -384,7 +413,7 @@ we can adjust our ``SavingsAccount`` example to aggregate the balances for
 
         @balance.expression
         def balance(cls):
-            return select([func.sum(SavingsAccount.balance)]).\
+            return select(func.sum(SavingsAccount.balance)).\
                     where(SavingsAccount.user_id==cls.id).\
                     label('total_balance')
 
@@ -776,7 +805,7 @@ things it can be used for.
 from .. import util
 from ..orm import attributes
 from ..orm import interfaces
-
+from ..sql import elements
 
 HYBRID_METHOD = util.symbol("HYBRID_METHOD")
 """Symbol indicating an :class:`InspectionAttr` that's
@@ -950,7 +979,7 @@ class hybrid_property(interfaces.InspectionAttrInfo):
 
             :ref:`hybrid_reuse_subclass`
 
-         """
+        """
         return self
 
     def getter(self, fget):
@@ -1097,9 +1126,20 @@ class hybrid_property(interfaces.InspectionAttrInfo):
         proxy_attr = attributes.create_proxied_attribute(self)
 
         def expr_comparator(owner):
+            # because this is the descriptor protocol, we don't really know
+            # what our attribute name is.  so search for it through the
+            # MRO.
+            for lookup in owner.__mro__:
+                if self.__name__ in lookup.__dict__:
+                    if lookup.__dict__[self.__name__] is self:
+                        name = self.__name__
+                        break
+            else:
+                name = attributes.NO_KEY
+
             return proxy_attr(
                 owner,
-                self.__name__,
+                name,
                 self,
                 comparator(owner),
                 doc=comparator.__doc__ or self.__doc__,
@@ -1143,6 +1183,9 @@ class ExprComparator(Comparator):
         return self.hybrid.info
 
     def _bulk_update_tuples(self, value):
+        if isinstance(value, elements.BindParameter):
+            value = value.value
+
         if isinstance(self.expression, attributes.QueryableAttribute):
             return self.expression._bulk_update_tuples(value)
         elif self.hybrid.update_expr is not None:

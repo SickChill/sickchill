@@ -205,7 +205,7 @@ data = (
 'Que ',    # 0xcb
 'Lan ',    # 0xcc
 'Du ',    # 0xcd
-'[?] ',    # 0xce
+None,    # 0xce
 'Phwung ',    # 0xcf
 'Tian ',    # 0xd0
 'Nie ',    # 0xd1
@@ -230,7 +230,7 @@ data = (
 'Huan ',    # 0xe4
 'Ta ',    # 0xe5
 'Wen ',    # 0xe6
-'[?] ',    # 0xe7
+None,    # 0xe7
 'Men ',    # 0xe8
 'Shuan ',    # 0xe9
 'Shan ',    # 0xea

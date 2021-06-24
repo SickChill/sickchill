@@ -85,6 +85,8 @@ class SimpleHandlerTestCase(WebTestCase):
     To use, define a nested class named ``Handler``.
     """
 
+    Handler = None
+
     def get_handlers(self):
         return [("/", self.Handler)]
 
@@ -100,9 +102,11 @@ class CookieTestRequestHandler(RequestHandler):
         # don't call super.__init__
         self._cookies = {}  # type: typing.Dict[str, bytes]
         if key_version is None:
-            self.application = ObjectDict(settings=dict(cookie_secret=cookie_secret))
+            self.application = ObjectDict(  # type: ignore
+                settings=dict(cookie_secret=cookie_secret)
+            )
         else:
-            self.application = ObjectDict(
+            self.application = ObjectDict(  # type: ignore
                 settings=dict(cookie_secret=cookie_secret, key_version=key_version)
             )
 
@@ -215,6 +219,8 @@ class SecureCookieV2Test(unittest.TestCase):
 
 
 class FinalReturnTest(WebTestCase):
+    final_return = None  # type: Future
+
     def get_handlers(self):
         test = self
 
@@ -273,7 +279,9 @@ class CookieTest(WebTestCase):
 
         class GetCookieHandler(RequestHandler):
             def get(self):
-                self.write(self.get_cookie("foo", "default"))
+                cookie = self.get_cookie("foo", "default")
+                assert cookie is not None
+                self.write(cookie)
 
         class SetCookieDomainHandler(RequestHandler):
             def get(self):
@@ -385,6 +393,7 @@ class CookieTest(WebTestCase):
     def test_set_cookie_expires_days(self):
         response = self.fetch("/set_expires_days")
         header = response.headers.get("Set-Cookie")
+        assert header is not None
         match = re.match("foo=bar; expires=(?P<expires>.+); Path=/", header)
         assert match is not None
 
@@ -492,12 +501,12 @@ class EchoHandler(RequestHandler):
         for key in self.request.arguments:
             if type(key) != str:
                 raise Exception("incorrect type for key: %r" % type(key))
-            for value in self.request.arguments[key]:
-                if type(value) != bytes:
-                    raise Exception("incorrect type for value: %r" % type(value))
-            for value in self.get_arguments(key):
-                if type(value) != unicode_type:
-                    raise Exception("incorrect type for value: %r" % type(value))
+            for bvalue in self.request.arguments[key]:
+                if type(bvalue) != bytes:
+                    raise Exception("incorrect type for value: %r" % type(bvalue))
+            for svalue in self.get_arguments(key):
+                if type(svalue) != unicode_type:
+                    raise Exception("incorrect type for value: %r" % type(svalue))
         for arg in path_args:
             if type(arg) != unicode_type:
                 raise Exception("incorrect type for path arg: %r" % type(arg))
@@ -649,7 +658,7 @@ class MultiHeaderHandler(RequestHandler):
 class RedirectHandler(RequestHandler):
     def get(self):
         if self.get_argument("permanent", None) is not None:
-            self.redirect("/", permanent=int(self.get_argument("permanent")))
+            self.redirect("/", permanent=bool(int(self.get_argument("permanent"))))
         elif self.get_argument("status", None) is not None:
             self.redirect("/", status=int(self.get_argument("status")))
         else:
@@ -689,7 +698,7 @@ class GetArgumentHandler(RequestHandler):
         elif self.get_argument("source", None) == "body":
             method = self.get_body_argument
         else:
-            method = self.get_argument
+            method = self.get_argument  # type: ignore
         self.finish(method("foo", "default"))
 
 
@@ -735,7 +744,7 @@ class WSGISafeWebTest(WebTestCase):
         )
 
     def tearDown(self):
-        super(WSGISafeWebTest, self).tearDown()
+        super().tearDown()
         RequestHandler._template_loaders.clear()
 
     def get_handlers(self):
@@ -1052,15 +1061,18 @@ class ErrorResponseTest(WebTestCase):
 
 
 class StaticFileTest(WebTestCase):
-    # The expected MD5 hash of robots.txt, used in tests that call
+    # The expected SHA-512 hash of robots.txt, used in tests that call
     # StaticFileHandler.get_version
-    robots_txt_hash = b"f71d20196d4caf35b6a670db8c70b03d"
+    robots_txt_hash = (
+        b"63a36e950e134b5217e33c763e88840c10a07d80e6057d92b9ac97508de7fb1f"
+        b"a6f0e9b7531e169657165ea764e8963399cb6d921ffe6078425aaafe54c04563"
+    )
     static_dir = os.path.join(os.path.dirname(__file__), "static")
 
     def get_handlers(self):
         class StaticUrlHandler(RequestHandler):
             def get(self, path):
-                with_v = int(self.get_argument("include_version", 1))
+                with_v = int(self.get_argument("include_version", "1"))
                 self.write(self.static_url(path, include_version=with_v))
 
         class AbsoluteStaticUrlHandler(StaticUrlHandler):
@@ -1175,7 +1187,6 @@ class StaticFileTest(WebTestCase):
         )
         self.assertEqual(response2.code, 304)
         self.assertTrue("Content-Length" not in response2.headers)
-        self.assertTrue("Last-Modified" not in response2.headers)
 
     def test_static_304_if_none_match(self):
         response1 = self.get_and_head("/static/robots.txt")
@@ -1645,7 +1656,8 @@ class StatusReasonTest(SimpleHandlerTestCase):
         def get(self):
             reason = self.request.arguments.get("reason", [])
             self.set_status(
-                int(self.get_argument("code")), reason=reason[0] if reason else None
+                int(self.get_argument("code")),
+                reason=to_unicode(reason[0]) if reason else None,
             )
 
     def get_http_client(self):
@@ -1910,7 +1922,7 @@ class UIMethodUIModuleTest(SimpleHandlerTestCase):
             def render(self, x):
                 return "In MyModule(%s) with handler value %s." % (
                     x,
-                    self.handler.value(),
+                    typing.cast(UIMethodUIModuleTest.Handler, self.handler).value(),
                 )
 
         loader = DictLoader(
@@ -1923,7 +1935,7 @@ class UIMethodUIModuleTest(SimpleHandlerTestCase):
         )
 
     def tearDown(self):
-        super(UIMethodUIModuleTest, self).tearDown()
+        super().tearDown()
         # TODO: fix template loader caching so this isn't necessary.
         RequestHandler._template_loaders.clear()
 
@@ -2002,7 +2014,7 @@ class GetCurrentUserTest(WebTestCase):
         )
 
     def tearDown(self):
-        super(GetCurrentUserTest, self).tearDown()
+        super().tearDown()
         RequestHandler._template_loaders.clear()
 
     def get_handlers(self):
@@ -2101,6 +2113,7 @@ class UnimplementedNonStandardMethodsTest(SimpleHandlerTestCase):
 class AllHTTPMethodsTest(SimpleHandlerTestCase):
     class Handler(RequestHandler):
         def method(self):
+            assert self.request.method is not None
             self.write(self.request.method)
 
         get = delete = options = post = put = method  # type: ignore
@@ -2249,7 +2262,7 @@ class StreamingRequestBodyTest(WebTestCase):
                 self.test = test
 
             def on_connection_close(self):
-                super(CloseDetectionHandler, self).on_connection_close()
+                super().on_connection_close()
                 self.test.close_future.set_result(None)
 
         return [
@@ -2284,7 +2297,7 @@ class StreamingRequestBodyTest(WebTestCase):
         self.data = Future()
         stream.write(b"4\r\nqwer\r\n")
         data = yield self.data
-        self.assertEquals(data, b"qwer")
+        self.assertEqual(data, b"qwer")
         stream.write(b"0\r\n\r\n")
         yield self.finished
         data = yield stream.read_until_close()
@@ -2360,7 +2373,7 @@ class BaseStreamingRequestFlowControlTest(object):
         return SimpleAsyncHTTPClient()
 
     # Test all the slightly different code paths for fixed, chunked, etc bodies.
-    def test_flow_control_fixed_body(self):
+    def test_flow_control_fixed_body(self: typing.Any):
         response = self.fetch("/", body="abcdefghijklmnopqrstuvwxyz", method="POST")
         response.rethrow()
         self.assertEqual(
@@ -2376,7 +2389,7 @@ class BaseStreamingRequestFlowControlTest(object):
             ),
         )
 
-    def test_flow_control_chunked_body(self):
+    def test_flow_control_chunked_body(self: typing.Any):
         chunks = [b"abcd", b"efgh", b"ijkl"]
 
         @gen.coroutine
@@ -2399,7 +2412,7 @@ class BaseStreamingRequestFlowControlTest(object):
             ),
         )
 
-    def test_flow_control_compressed_body(self):
+    def test_flow_control_compressed_body(self: typing.Any):
         bytesio = BytesIO()
         gzip_file = gzip.GzipFile(mode="w", fileobj=bytesio)
         gzip_file.write(b"abcdefghijklmnopqrstuvwxyz")
@@ -2521,14 +2534,14 @@ class ClientCloseTest(SimpleHandlerTestCase):
                 # server should respond gracefully (without logging errors
                 # because we were unable to write out as many bytes as
                 # Content-Length said we would)
-                self.request.connection.stream.close()
+                self.request.connection.stream.close()  # type: ignore
                 self.write("hello")
             else:
                 # TODO: add a HTTP2-compatible version of this test.
                 self.write("requires HTTP/1.x")
 
     def test_client_close(self):
-        with self.assertRaises((HTTPClientError, unittest.SkipTest)):
+        with self.assertRaises((HTTPClientError, unittest.SkipTest)):  # type: ignore
             response = self.fetch("/", raise_error=True)
             if response.body == b"requires HTTP/1.x":
                 self.skipTest("requires HTTP/1.x")
@@ -2721,7 +2734,7 @@ class XSRFTest(SimpleHandlerTestCase):
         return dict(xsrf_cookies=True)
 
     def setUp(self):
-        super(XSRFTest, self).setUp()
+        super().setUp()
         self.xsrf_token = self.get_token()
 
     def get_token(self, old_token=None, version=None):
@@ -2923,6 +2936,7 @@ class XSRFCookieKwargsTest(SimpleHandlerTestCase):
         self.assertIn("httponly;", response.headers["Set-Cookie"].lower())
         self.assertIn("expires=", response.headers["Set-Cookie"].lower())
         header = response.headers.get("Set-Cookie")
+        assert header is not None
         match = re.match(".*; expires=(?P<expires>.+);.*", header)
         assert match is not None
 
@@ -3106,6 +3120,10 @@ class URLSpecReverseTest(unittest.TestCase):
     def test_reverse_arguments(self):
         self.assertEqual(
             "/api/v1/foo/bar", url(r"^/api/v1/foo/(\w+)$", None).reverse("bar")
+        )
+        self.assertEqual(
+            "/api.v1/foo/5/icon.png",
+            url(r"/api\.v1/foo/([0-9]+)/icon\.png", None).reverse(5),
         )
 
 

@@ -38,7 +38,7 @@ See https://github.com/tcalmant/jsonrpclib for more info.
 :authors: Josh Marshall, Thomas Calmant
 :copyright: Copyright 2020, Thomas Calmant
 :license: Apache License 2.0
-:version: 0.4.1
+:version: 0.4.2
 
 ..
 
@@ -69,7 +69,7 @@ try:
     # Python 3
     # pylint: disable=F0401,E0611
     from http.client import HTTPConnection
-    from urllib.parse import splittype, splithost
+    from urllib.parse import urlparse
     from xmlrpc.client import Transport as XMLTransport
     from xmlrpc.client import SafeTransport as XMLSafeTransport
     from xmlrpc.client import ServerProxy as XMLServerProxy
@@ -77,12 +77,12 @@ try:
 except ImportError:
     # Python 2
     # pylint: disable=F0401,E0611
-    from httplib import HTTPConnection
-    from urllib import splittype, splithost
-    from xmlrpclib import Transport as XMLTransport
-    from xmlrpclib import SafeTransport as XMLSafeTransport
-    from xmlrpclib import ServerProxy as XMLServerProxy
-    from xmlrpclib import _Method as XML_Method
+    from httplib import HTTPConnection  # type: ignore
+    from urlparse import urlparse  # type: ignore
+    from xmlrpclib import Transport as XMLTransport  # type: ignore
+    from xmlrpclib import SafeTransport as XMLSafeTransport  # type: ignore
+    from xmlrpclib import ServerProxy as XMLServerProxy  # type: ignore
+    from xmlrpclib import _Method as XML_Method  # type: ignore
 
 try:
     # Check GZip support
@@ -90,7 +90,7 @@ try:
 except ImportError:
     # Python can be built without zlib/gzip support
     # pylint: disable=C0103
-    gzip = None
+    gzip = None  # type: ignore
 
 # Library includes
 import jsonrpclib.config
@@ -100,7 +100,7 @@ import jsonrpclib.utils as utils
 # ------------------------------------------------------------------------------
 
 # Module version
-__version_info__ = (0, 4, 1)
+__version_info__ = (0, 4, 2)
 __version__ = ".".join(str(x) for x in __version_info__)
 
 # Documentation strings format
@@ -115,11 +115,12 @@ _logger = logging.getLogger(__name__)
 try:
     # pylint: disable=F0401,E0611
     # Using cjson
-    import cjson
+    import cjson  # type: ignore
+
     _logger.debug("Using cjson as JSON library")
 
     # Declare cjson methods
-    def jdumps(obj, encoding='utf-8'):
+    def jdumps(obj, encoding="utf-8"):  # pylint: disable=unused-argument
         """
         Serializes ``obj`` to a JSON formatted string, using cjson.
         """
@@ -131,32 +132,40 @@ try:
         to a Python object, using cjson.
         """
         return cjson.decode(json_string)
+
+
 except ImportError:
     # pylint: disable=F0401,E0611
     # Use json or simplejson
     try:
         import json
+
         _logger.debug("Using json as JSON library")
     except ImportError:
         try:
-            import simplejson as json
+            import simplejson as json  # type: ignore
+
             _logger.debug("Using simplejson as JSON library")
         except ImportError:
             _logger.error("No supported JSON library found")
-            raise ImportError('You must have the cjson, json, or simplejson '
-                              'module(s) available.')
+            raise ImportError(
+                "You must have the cjson, json, or simplejson "
+                "module(s) available."
+            )
 
     # Declare json methods
     if sys.version_info[0] < 3:
-        def jdumps(obj, encoding='utf-8'):
+
+        def jdumps(obj, encoding="utf-8"):
             """
             Serializes ``obj`` to a JSON formatted string.
             """
             # Python 2 (explicit encoding)
             return json.dumps(obj, encoding=encoding)
+
     else:
         # Python 3
-        def jdumps(obj, encoding='utf-8'):
+        def jdumps(obj, encoding="utf-8"):  # pylint: disable=unused-argument
             """
             Serializes ``obj`` to a JSON formatted string.
             """
@@ -170,6 +179,7 @@ except ImportError:
         """
         return json.loads(json_string)
 
+
 # ------------------------------------------------------------------------------
 # XMLRPClib re-implementations
 
@@ -182,7 +192,6 @@ class ProtocolError(Exception):
     * an error message (string)
     * a (code, message) tuple
     """
-    pass
 
 
 class AppError(ProtocolError):
@@ -193,19 +202,47 @@ class AppError(ProtocolError):
     AppError.args[0][1]: Error message or trace
     AppError.args[0][2]: Associated data
     """
+
     def data(self):
         """
         Retrieves the value found in the 'data' entry of the error, or None
 
         :return: The data associated to the error, or None
         """
-        return self.args[0][2]
+        # Don't know why the pylint error shows up
+        return self.args[0][2]  # pylint: disable=unsubscriptable-object
+
+
+class TransportError(ProtocolError):
+    """
+    Transport error: a specialized protocol error
+    """
+
+    def __init__(self, url, errcode, errmsg, msg):
+        """
+        :param url: Target URL
+        :param errcode: HTTP error code
+        :param errmsg: HTTP error code description
+        :param msg: Exception message
+        """
+        ProtocolError.__init__(self, url, errcode, errmsg, msg)
+
+        self.url = url
+        self.errcode = errcode
+        self.errmsg = errmsg
+        self.msg = msg
+
+    def __repr__(self):
+        return "<{} for {}: {} {}>".format(
+            type(self).__name__, self.url, self.errcode, self.errmsg
+        )
 
 
 class JSONParser(object):
     """
     Default JSON parser
     """
+
     def __init__(self, target):
         """
         Associates the target loader to the parser
@@ -225,13 +262,13 @@ class JSONParser(object):
         """
         Does nothing
         """
-        pass
 
 
 class JSONTarget(object):
     """
     Unmarshalls stream data to a string
     """
+
     def __init__(self):
         """
         Sets up the unmarshaller
@@ -250,14 +287,14 @@ class JSONTarget(object):
         Unmarshalls the buffered data
         """
         if not self.data:
-            return ''
+            return ""
         else:
             # Use type to have a valid join (str vs. bytes)
             data = type(self.data[0])().join(self.data)
             try:
                 # Convert the whole final string
                 data = utils.from_bytes(data)
-            except:
+            except (TypeError, ValueError):
                 # Try a pass-through
                 pass
 
@@ -266,12 +303,13 @@ class JSONTarget(object):
 
 class TransportMixIn(object):
     """ Just extends the XML-RPC transport where necessary. """
+
     # for Python 2.7 support
     _connection = None
 
     # List of non-overridable headers
     # Use the configuration to change the content-type
-    readonly_headers = ('content-length', 'content-type')
+    readonly_headers = ("content-length", "content-type")
 
     def __init__(self, config=jsonrpclib.config.DEFAULT, context=None):
         """
@@ -343,7 +381,8 @@ class TransportMixIn(object):
         # Normalize keys and values
         additional_headers = dict(
             (str(key).lower(), str(value))
-            for key, value in additional_headers.items())
+            for key, value in additional_headers.items()
+        )
 
         # Remove forbidden keys
         for forbidden in self.readonly_headers:
@@ -386,9 +425,9 @@ class TransportMixIn(object):
         # Discard any response data and raise exception
         if response.getheader("content-length", 0):
             response.read()
-        raise ProtocolError(host + handler,
-                            response.status, response.reason,
-                            response.msg)
+        raise TransportError(
+            host + handler, response.status, response.reason, response.msg
+        )
 
     def send_request(self, connection, handler, request_body, debug=0):
         """
@@ -454,6 +493,7 @@ class Transport(TransportMixIn, XMLTransport):
     """
     Mixed-in HTTP transport
     """
+
     def __init__(self, config):
         TransportMixIn.__init__(self, config)
         XMLTransport.__init__(self)
@@ -463,6 +503,7 @@ class SafeTransport(TransportMixIn, XMLSafeTransport):
     """
     Mixed-in HTTPS transport
     """
+
     def __init__(self, config, context):
         TransportMixIn.__init__(self, config, context)
         try:
@@ -475,6 +516,7 @@ class SafeTransport(TransportMixIn, XMLSafeTransport):
             # wasn't available
             XMLSafeTransport.__init__(self)
 
+
 # ------------------------------------------------------------------------------
 
 
@@ -482,6 +524,7 @@ class UnixHTTPConnection(HTTPConnection):
     """
     Replaces the connect() method of HTTPConnection to use a Unix socket
     """
+
     def __init__(self, path, *args, **kwargs):
         """
         Constructs the HTTP connection.
@@ -491,7 +534,10 @@ class UnixHTTPConnection(HTTPConnection):
 
         :param path: Path to the Unix socket
         """
-        HTTPConnection.__init__(self, path, *args, **kwargs)
+
+        # Use localhost as the hostname since a HTTP/1.1 client MUST send a
+        # 'Host:' header.
+        HTTPConnection.__init__(self, "localhost", *args, **kwargs)
         self.path = path
 
     def connect(self):
@@ -506,6 +552,7 @@ class UnixTransport(TransportMixIn, XMLTransport):
     """
     Mixed-in HTTP transport over a UNIX socket
     """
+
     def __init__(self, config, path=None):
         """
         :param config: The jsonrpclib configuration
@@ -539,6 +586,7 @@ class UnixTransport(TransportMixIn, XMLTransport):
         self._connection = host, UnixHTTPConnection(path)
         return self._connection[1]
 
+
 # ------------------------------------------------------------------------------
 
 
@@ -547,9 +595,19 @@ class ServerProxy(XMLServerProxy):
     Unfortunately, much more of this class has to be copied since
     so much of it does the serialization.
     """
-    def __init__(self, uri, transport=None, encoding=None,
-                 verbose=0, version=None, headers=None, history=None,
-                 config=jsonrpclib.config.DEFAULT, context=None):
+
+    def __init__(
+        self,
+        uri,
+        transport=None,
+        encoding=None,
+        verbose=0,
+        version=None,
+        headers=None,
+        history=None,
+        config=jsonrpclib.config.DEFAULT,
+        context=None,
+    ):
         """
         Sets up the server proxy
 
@@ -567,42 +625,45 @@ class ServerProxy(XMLServerProxy):
         self._config = config
         self.__version = version or config.version
 
-        schema, uri = splittype(uri)
+        su = urlparse(uri)
+        schema = su.scheme
+        self.__host = su.netloc
+        self.__handler = su.path
+
         use_unix = False
         if schema.startswith("unix+"):
-            schema = schema[len("unix+"):]
+            schema = schema[len("unix+") :]
             use_unix = True
 
-        if schema not in ('http', 'https'):
-            _logger.error("jsonrpclib only support http(s) URIs, not %s",
-                          schema)
-            raise IOError('Unsupported JSON-RPC protocol.')
+        if schema not in ("http", "https"):
+            _logger.error(
+                "jsonrpclib only support http(s) URIs, not %s", schema
+            )
+            raise IOError("Unsupported JSON-RPC protocol.")
 
-        self.__host, self.__handler = splithost(uri)
         if use_unix:
             unix_path = self.__handler
-            self.__handler = '/'
+            self.__handler = "/"
         elif not self.__handler:
             # Not sure if this is in the JSON spec?
-            self.__handler = '/'
+            self.__handler = "/"
 
         if transport is None:
             if use_unix:
                 if schema == "http":
                     # In Unix mode, we use the path part of the URL (handler)
                     # as the path to the socket file
-                    transport = UnixTransport(
-                        config=config, path=unix_path
-                    )
-            elif schema == 'https':
+                    transport = UnixTransport(config=config, path=unix_path)
+            elif schema == "https":
                 transport = SafeTransport(config=config, context=context)
             else:
                 transport = Transport(config=config)
 
             if transport is None:
                 raise IOError(
-                    "Unhandled combination: UNIX={}, protocol={}"
-                    .format(use_unix, schema)
+                    "Unhandled combination: UNIX={}, protocol={}".format(
+                        use_unix, schema
+                    )
                 )
 
         self.__transport = transport
@@ -623,12 +684,17 @@ class ServerProxy(XMLServerProxy):
         :param rpcid: ID of the remote call
         :return: The parsed result of the call
         """
-        request = dumps(params, methodname, encoding=self.__encoding,
-                        rpcid=rpcid, version=self.__version,
-                        config=self._config)
+        request = dumps(
+            params,
+            methodname,
+            encoding=self.__encoding,
+            rpcid=rpcid,
+            version=self.__version,
+            config=self._config,
+        )
         response = self._run_request(request)
         check_for_errors(response)
-        return response['result']
+        return response["result"]
 
     def _request_notify(self, methodname, params, rpcid=None):
         """
@@ -638,9 +704,15 @@ class ServerProxy(XMLServerProxy):
         :param params: Method parameters
         :param rpcid: ID of the remote call
         """
-        request = dumps(params, methodname, encoding=self.__encoding,
-                        rpcid=rpcid, version=self.__version, notify=True,
-                        config=self._config)
+        request = dumps(
+            params,
+            methodname,
+            encoding=self.__encoding,
+            rpcid=rpcid,
+            version=self.__version,
+            notify=True,
+            config=self._config,
+        )
         response = self._run_request(request, notify=True)
         check_for_errors(response)
 
@@ -656,10 +728,7 @@ class ServerProxy(XMLServerProxy):
             self.__history.add_request(request)
 
         response = self.__transport.request(
-            self.__host,
-            self.__handler,
-            request,
-            verbose=self.__verbose
+            self.__host, self.__handler, request, verbose=self.__verbose
         )
 
         # Here, the XMLRPC library translates a single list
@@ -730,6 +799,7 @@ class ServerProxy(XMLServerProxy):
         yield self
         self.__transport.pop_headers(headers)
 
+
 # ------------------------------------------------------------------------------
 
 
@@ -737,13 +807,16 @@ class _Method(XML_Method):
     """
     Some magic to bind an JSON-RPC method to an RPC server.
     """
+
     def __call__(self, *args, **kwargs):
         """
         Sends an RPC request and returns the unmarshalled result
         """
         if args and kwargs:
-            raise ProtocolError("Cannot use both positional and keyword "
-                                "arguments (according to JSON-RPC spec.)")
+            raise ProtocolError(
+                "Cannot use both positional and keyword "
+                "arguments (according to JSON-RPC spec.)"
+            )
         if args:
             return self.__send(self.__name, args)
         else:
@@ -769,6 +842,7 @@ class _Notify(object):
     """
     Same as _Method, but to send notifications
     """
+
     def __init__(self, request):
         """
         Sets the method to call to send a request to the server
@@ -781,6 +855,7 @@ class _Notify(object):
         """
         return _Method(self._request, name)
 
+
 # ------------------------------------------------------------------------------
 # Batch implementation
 
@@ -789,6 +864,7 @@ class MultiCallMethod(object):
     """
     Stores calls made to a MultiCall object for batch execution
     """
+
     def __init__(self, method, notify=False, config=jsonrpclib.config.DEFAULT):
         """
         Sets up the store
@@ -807,8 +883,10 @@ class MultiCallMethod(object):
         Normalizes call parameters
         """
         if kwargs and args:
-            raise ProtocolError('JSON-RPC does not support both ' +
-                                'positional and keyword arguments.')
+            raise ProtocolError(
+                "JSON-RPC does not support both "
+                + "positional and keyword arguments."
+            )
         if kwargs:
             self.params = kwargs
         else:
@@ -818,9 +896,15 @@ class MultiCallMethod(object):
         """
         Returns the request object as JSON-formatted string
         """
-        return dumps(self.params, self.method, version=2.0,
-                     encoding=encoding, rpcid=rpcid, notify=self.notify,
-                     config=self._config)
+        return dumps(
+            self.params,
+            self.method,
+            version=2.0,
+            encoding=encoding,
+            rpcid=rpcid,
+            notify=self.notify,
+            config=self._config,
+        )
 
     def __repr__(self):
         """
@@ -840,6 +924,7 @@ class MultiCallNotify(object):
     """
     Same as MultiCallMethod but for notifications
     """
+
     def __init__(self, multicall, config=jsonrpclib.config.DEFAULT):
         """
         Sets ip the store
@@ -864,6 +949,7 @@ class MultiCallIterator(object):
     Iterates over the results of a MultiCall.
     Exceptions are raised in response to JSON-RPC faults
     """
+
     def __init__(self, results):
         """
         Sets up the results store
@@ -877,7 +963,7 @@ class MultiCallIterator(object):
         result.
         """
         check_for_errors(item)
-        return item['result']
+        return item["result"]
 
     def __iter__(self):
         """
@@ -919,6 +1005,7 @@ class MultiCall(object):
 
     add_result, address = multicall()
     """
+
     def __init__(self, server, config=jsonrpclib.config.DEFAULT):
         """
         Sets up the multicall
@@ -940,7 +1027,8 @@ class MultiCall(object):
             # Should we alert? This /is/ pretty obvious.
             return
         request_body = "[ {0} ]".format(
-            ','.join(job.request() for job in self._job_list))
+            ",".join(job.request() for job in self._job_list)
+        )
         responses = self._server._run_request(request_body)
         del self._job_list[:]
         if not responses:
@@ -964,6 +1052,7 @@ class MultiCall(object):
 
     __call__ = _request
 
+
 # These lines conform to xmlrpclib's "compatibility" line.
 # Not really sure if we should include these, but oh well.
 Server = ServerProxy
@@ -975,8 +1064,15 @@ class Fault(object):
     """
     JSON-RPC error class
     """
-    def __init__(self, code=-32000, message='Server error', rpcid=None,
-                 config=jsonrpclib.config.DEFAULT, data=None):
+
+    def __init__(
+        self,
+        code=-32000,
+        message="Server error",
+        rpcid=None,
+        config=jsonrpclib.config.DEFAULT,
+        data=None,
+    ):
         """
         Sets up the error description
 
@@ -998,8 +1094,11 @@ class Fault(object):
 
         :returns: A {'code', 'message'} dictionary
         """
-        return {'code': self.faultCode, 'message': self.faultString,
-                'data': self.data}
+        return {
+            "code": self.faultCode,
+            "message": self.faultString,
+            "data": self.data,
+        }
 
     def response(self, rpcid=None, version=None):
         """
@@ -1015,8 +1114,13 @@ class Fault(object):
         if rpcid:
             self.rpcid = rpcid
 
-        return dumps(self, methodresponse=True, rpcid=self.rpcid,
-                     version=version, config=self.config)
+        return dumps(
+            self,
+            methodresponse=True,
+            rpcid=self.rpcid,
+            version=version,
+            config=self.config,
+        )
 
     def dump(self, rpcid=None, version=None):
         """
@@ -1032,22 +1136,29 @@ class Fault(object):
         if rpcid:
             self.rpcid = rpcid
 
-        return dump(self, is_response=True, rpcid=self.rpcid,
-                    version=version, config=self.config)
+        return dump(
+            self,
+            is_response=True,
+            rpcid=self.rpcid,
+            version=version,
+            config=self.config,
+        )
 
     def __repr__(self):
         """
         String representation
         """
-        return '<Fault {0}: {1}>'.format(self.faultCode, self.faultString)
+        return "<Fault {0}: {1}>".format(self.faultCode, self.faultString)
 
 
 class Payload(object):
     """
     JSON-RPC content handler
     """
-    def __init__(self, rpcid=None, version=None,
-                 config=jsonrpclib.config.DEFAULT):
+
+    def __init__(
+        self, rpcid=None, version=None, config=jsonrpclib.config.DEFAULT
+    ):
         """
         Sets up the JSON-RPC handler
 
@@ -1070,18 +1181,18 @@ class Payload(object):
         :return: A JSON-RPC request dictionary
         """
         if not isinstance(method, utils.STRING_TYPES):
-            raise ValueError('Method name must be a string.')
+            raise ValueError("Method name must be a string.")
 
         if not self.id:
             # Generate a request ID
             self.id = str(uuid.uuid4())
 
-        request = {'id': self.id, 'method': method}
+        request = {"id": self.id, "method": method}
         if params or self.version < 1.1:
-            request['params'] = params or []
+            request["params"] = params or []
 
         if self.version >= 2:
-            request['jsonrpc'] = str(self.version)
+            request["jsonrpc"] = str(self.version)
 
         return request
 
@@ -1098,9 +1209,9 @@ class Payload(object):
 
         # Remove the request ID, as it's a notification
         if self.version >= 2:
-            del request['id']
+            del request["id"]
         else:
-            request['id'] = None
+            request["id"] = None
 
         return request
 
@@ -1111,16 +1222,16 @@ class Payload(object):
         :param result: The result of method call
         :return: A JSON-RPC response dictionary
         """
-        response = {'result': result, 'id': self.id}
+        response = {"result": result, "id": self.id}
 
         if self.version >= 2:
-            response['jsonrpc'] = str(self.version)
+            response["jsonrpc"] = str(self.version)
         else:
-            response['error'] = None
+            response["error"] = None
 
         return response
 
-    def error(self, code=-32000, message='Server error.', data=None):
+    def error(self, code=-32000, message="Server error.", data=None):
         """
         Prepares an error dictionary
 
@@ -1131,19 +1242,27 @@ class Payload(object):
         """
         error = self.response()
         if self.version >= 2:
-            del error['result']
+            del error["result"]
         else:
-            error['result'] = None
-        error['error'] = {'code': code, 'message': message}
+            error["result"] = None
+        error["error"] = {"code": code, "message": message}
         if data is not None:
-            error['error']['data'] = data
+            error["error"]["data"] = data
         return error
+
 
 # ------------------------------------------------------------------------------
 
 
-def dump(params=None, methodname=None, rpcid=None, version=None,
-         is_response=None, is_notify=None, config=jsonrpclib.config.DEFAULT):
+def dump(
+    params=None,
+    methodname=None,
+    rpcid=None,
+    version=None,
+    is_response=None,
+    is_notify=None,
+    config=jsonrpclib.config.DEFAULT,
+):
     """
     Prepares a JSON-RPC dictionary (request, notification, response or error)
 
@@ -1168,14 +1287,16 @@ def dump(params=None, methodname=None, rpcid=None, version=None,
     if is_response:
         valid_params.append(type(None))
 
-    if isinstance(methodname, utils.STRING_TYPES) and \
-            not isinstance(params, tuple(valid_params)):
+    if isinstance(methodname, utils.STRING_TYPES) and not isinstance(
+        params, tuple(valid_params)
+    ):
         """
         If a method, and params are not in a listish or a Fault,
         error out.
         """
-        raise TypeError("Params must be a dict, list, tuple "
-                        "or Fault instance.")
+        raise TypeError(
+            "Params must be a dict, list, tuple " "or Fault instance."
+        )
 
     # Prepares the JSON-RPC content
     payload = Payload(rpcid=rpcid, version=version)
@@ -1187,8 +1308,10 @@ def dump(params=None, methodname=None, rpcid=None, version=None,
 
     if not isinstance(methodname, utils.STRING_TYPES) and not is_response:
         # Neither a request nor a response
-        raise ValueError('Method name must be a string, or is_response '
-                         'must be set to True.')
+        raise ValueError(
+            "Method name must be a string, or is_response "
+            "must be set to True."
+        )
 
     if config.use_jsonclass:
         # Use jsonclass to convert the parameters
@@ -1198,7 +1321,7 @@ def dump(params=None, methodname=None, rpcid=None, version=None,
         # Prepare a response dictionary
         if rpcid is None:
             # A response must have a request ID
-            raise ValueError('A method response must have an rpcid.')
+            raise ValueError("A method response must have an rpcid.")
         return payload.response(params)
 
     if is_notify:
@@ -1209,9 +1332,16 @@ def dump(params=None, methodname=None, rpcid=None, version=None,
         return payload.request(methodname, params)
 
 
-def dumps(params=None, methodname=None, methodresponse=None,
-          encoding=None, rpcid=None, version=None, notify=None,
-          config=jsonrpclib.config.DEFAULT):
+def dumps(
+    params=None,
+    methodname=None,
+    methodresponse=None,
+    encoding=None,
+    rpcid=None,
+    version=None,
+    notify=None,
+    config=jsonrpclib.config.DEFAULT,
+):
     """
     Prepares a JSON-RPC request/response string
 
@@ -1226,8 +1356,9 @@ def dumps(params=None, methodname=None, methodresponse=None,
     :return: A JSON-RPC dictionary
     """
     # Prepare the dictionary
-    request = dump(params, methodname, rpcid, version, methodresponse, notify,
-                   config)
+    request = dump(
+        params, methodname, rpcid, version, methodresponse, notify, config
+    )
 
     # Returns it as a JSON string
     return jdumps(request, encoding=encoding or "UTF-8")
@@ -1263,7 +1394,7 @@ def loads(data, config=jsonrpclib.config.DEFAULT):
     :param config: A JSONRPClib Config instance (or None for default values)
     :return: A parsed dictionary or None
     """
-    if data == '':
+    if data == "":
         # Notification
         return None
 
@@ -1272,6 +1403,7 @@ def loads(data, config=jsonrpclib.config.DEFAULT):
 
     # Load the beans
     return load(result, config)
+
 
 # ------------------------------------------------------------------------------
 
@@ -1293,27 +1425,27 @@ def check_for_errors(result):
 
     if not isinstance(result, utils.DictType):
         # Invalid argument
-        raise TypeError('Response is not a dict.')
+        raise TypeError("Response is not a dict.")
 
-    if 'jsonrpc' in result and float(result['jsonrpc']) > 2.0:
+    if "jsonrpc" in result and float(result["jsonrpc"]) > 2.0:
         # Unknown JSON-RPC version
-        raise NotImplementedError('JSON-RPC version not yet supported.')
+        raise NotImplementedError("JSON-RPC version not yet supported.")
 
-    if 'result' not in result and 'error' not in result:
+    if "result" not in result and "error" not in result:
         # Invalid dictionary content
-        raise ValueError('Response does not have a result or error key.')
+        raise ValueError("Response does not have a result or error key.")
 
-    if 'error' in result and result['error']:
+    if "error" in result and result["error"]:
         # Server-side error
-        if 'code' in result['error']:
+        if "code" in result["error"]:
             # Code + Message
-            code = result['error']['code']
+            code = result["error"]["code"]
             try:
                 # Get the message (jsonrpclib)
-                message = result['error']['message']
+                message = result["error"]["message"]
             except KeyError:
                 # Get the trace (jabsorb)
-                message = result['error'].get('trace', '<no error message>')
+                message = result["error"].get("trace", "<no error message>")
 
             if -32700 <= code <= -32000:
                 # Pre-defined errors
@@ -1321,17 +1453,17 @@ def check_for_errors(result):
                 raise ProtocolError((code, message))
             else:
                 # Application error
-                data = result['error'].get('data', None)
+                data = result["error"].get("data", None)
                 raise AppError((code, message, data))
 
-        elif isinstance(result['error'], dict) and len(result['error']) == 1:
+        elif isinstance(result["error"], dict) and len(result["error"]) == 1:
             # Error with a single entry ('reason', ...): use its content
-            error_key = result['error'].keys()[0]
-            raise ProtocolError(result['error'][error_key])
+            error_key = result["error"].keys()[0]
+            raise ProtocolError(result["error"][error_key])
 
         else:
             # Use the raw error content
-            raise ProtocolError(result['error'])
+            raise ProtocolError(result["error"])
 
     return result
 
@@ -1352,12 +1484,12 @@ def isbatch(request):
         # One of the requests is not a dictionary, i.e. a JSON Object
         # therefore it is not a valid JSON-RPC request
         return False
-    elif 'jsonrpc' not in request[0].keys():
+    elif "jsonrpc" not in request[0].keys():
         # No "jsonrpc" version in the JSON object: not a request
         return False
 
     try:
-        version = float(request[0]['jsonrpc'])
+        version = float(request[0]["jsonrpc"])
     except ValueError:
         # Bad version of JSON-RPC
         raise ProtocolError('"jsonrpc" key must be a float(able) value.')
@@ -1376,11 +1508,11 @@ def isnotification(request):
     :param request: A request dictionary
     :return: True if the request is a notification
     """
-    if 'id' not in request:
+    if "id" not in request:
         # 2.0 notification
         return True
 
-    if request['id'] is None:
+    if request["id"] is None:
         # 1.0 notification
         return True
 

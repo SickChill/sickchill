@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Andrew Bettison <andrewb@zip.com.au>                          #
@@ -24,6 +22,7 @@
 # Copyright 2018 per1234 <accounts@perglass.com>                               #
 # Copyright 2018 sfdye <tsfdye@gmail.com>                                      #
 # Copyright 2019 Nick Campbell <nicholas.j.campbell@gmail.com>                 #
+# Copyright 2020 Huan-Cheng Chang <changhc84@gmail.com>                        #
 #                                                                              #
 # This file is part of PyGithub.                                               #
 # http://pygithub.readthedocs.io/                                              #
@@ -63,7 +62,7 @@ from . import Consts
 
 class Issue(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Issues. The reference can be found here https://developer.github.com/v3/issues/
+    This class represents Issues. The reference can be found here https://docs.github.com/en/rest/reference/issues
     """
 
     def __repr__(self):
@@ -273,7 +272,7 @@ class Issue(github.GithubObject.CompletableGithubObject):
 
     def as_pull_request(self):
         """
-        :calls: `GET /repos/:owner/:repo/pulls/:number <http://developer.github.com/v3/pulls>`_
+        :calls: `GET /repos/{owner}/{repo}/pulls/{number} <http://docs.github.com/en/rest/reference/pulls>`_
         :rtype: :class:`github.PullRequest.PullRequest`
         """
         headers, data = self._requester.requestJsonAndCheck(
@@ -285,7 +284,7 @@ class Issue(github.GithubObject.CompletableGithubObject):
 
     def add_to_assignees(self, *assignees):
         """
-        :calls: `POST /repos/:owner/:repo/issues/:number/assignees <https://developer.github.com/v3/issues/assignees>`_
+        :calls: `POST /repos/{owner}/{repo}/issues/{number}/assignees <https://docs.github.com/en/rest/reference/issues#assignees>`_
         :param assignee: :class:`github.NamedUser.NamedUser` or string
         :rtype: None
         """
@@ -302,13 +301,13 @@ class Issue(github.GithubObject.CompletableGithubObject):
             ]
         }
         headers, data = self._requester.requestJsonAndCheck(
-            "POST", self.url + "/assignees", input=post_parameters
+            "POST", f"{self.url}/assignees", input=post_parameters
         )
         self._useAttributes(data)
 
     def add_to_labels(self, *labels):
         """
-        :calls: `POST /repos/:owner/:repo/issues/:number/labels <http://developer.github.com/v3/issues/labels>`_
+        :calls: `POST /repos/{owner}/{repo}/issues/{number}/labels <http://docs.github.com/en/rest/reference/issues#labels>`_
         :param label: :class:`github.Label.Label` or string
         :rtype: None
         """
@@ -320,12 +319,12 @@ class Issue(github.GithubObject.CompletableGithubObject):
             for label in labels
         ]
         headers, data = self._requester.requestJsonAndCheck(
-            "POST", self.url + "/labels", input=post_parameters
+            "POST", f"{self.url}/labels", input=post_parameters
         )
 
     def create_comment(self, body):
         """
-        :calls: `POST /repos/:owner/:repo/issues/:number/comments <http://developer.github.com/v3/issues/comments>`_
+        :calls: `POST /repos/{owner}/{repo}/issues/{number}/comments <http://docs.github.com/en/rest/reference/issues#comments>`_
         :param body: string
         :rtype: :class:`github.IssueComment.IssueComment`
         """
@@ -334,7 +333,7 @@ class Issue(github.GithubObject.CompletableGithubObject):
             "body": body,
         }
         headers, data = self._requester.requestJsonAndCheck(
-            "POST", self.url + "/comments", input=post_parameters
+            "POST", f"{self.url}/comments", input=post_parameters
         )
         return github.IssueComment.IssueComment(
             self._requester, headers, data, completed=True
@@ -342,11 +341,11 @@ class Issue(github.GithubObject.CompletableGithubObject):
 
     def delete_labels(self):
         """
-        :calls: `DELETE /repos/:owner/:repo/issues/:number/labels <http://developer.github.com/v3/issues/labels>`_
+        :calls: `DELETE /repos/{owner}/{repo}/issues/{number}/labels <http://docs.github.com/en/rest/reference/issues#labels>`_
         :rtype: None
         """
         headers, data = self._requester.requestJsonAndCheck(
-            "DELETE", self.url + "/labels"
+            "DELETE", f"{self.url}/labels"
         )
 
     def edit(
@@ -360,7 +359,7 @@ class Issue(github.GithubObject.CompletableGithubObject):
         assignees=github.GithubObject.NotSet,
     ):
         """
-        :calls: `PATCH /repos/:owner/:repo/issues/:number <http://developer.github.com/v3/issues>`_
+        :calls: `PATCH /repos/{owner}/{repo}/issues/{number} <http://docs.github.com/en/rest/reference/issues>`_
         :param title: string
         :param body: string
         :param assignee: string or :class:`github.NamedUser.NamedUser` or None
@@ -421,7 +420,7 @@ class Issue(github.GithubObject.CompletableGithubObject):
 
     def lock(self, lock_reason):
         """
-        :calls: `PUT /repos/:owner/:repo/issues/:issue_number/lock <https://developer.github.com/v3/issues>`_
+        :calls: `PUT /repos/{owner}/{repo}/issues/{issue_number}/lock <https://docs.github.com/en/rest/reference/issues>`_
         :param lock_reason: string
         :rtype: None
         """
@@ -430,29 +429,29 @@ class Issue(github.GithubObject.CompletableGithubObject):
         put_parameters["lock_reason"] = lock_reason
         headers, data = self._requester.requestJsonAndCheck(
             "PUT",
-            self.url + "/lock",
+            f"{self.url}/lock",
             input=put_parameters,
             headers={"Accept": Consts.mediaTypeLockReasonPreview},
         )
 
     def unlock(self):
         """
-        :calls: `DELETE /repos/:owner/:repo/issues/:issue_number/lock <https://developer.github.com/v3/issues>`_
+        :calls: `DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock <https://docs.github.com/en/rest/reference/issues>`_
         :rtype: None
         """
         headers, data = self._requester.requestJsonAndCheck(
-            "DELETE", self.url + "/lock"
+            "DELETE", f"{self.url}/lock"
         )
 
     def get_comment(self, id):
         """
-        :calls: `GET /repos/:owner/:repo/issues/comments/:id <http://developer.github.com/v3/issues/comments>`_
+        :calls: `GET /repos/{owner}/{repo}/issues/comments/{id} <http://docs.github.com/en/rest/reference/issues#comments>`_
         :param id: integer
         :rtype: :class:`github.IssueComment.IssueComment`
         """
         assert isinstance(id, int), id
         headers, data = self._requester.requestJsonAndCheck(
-            "GET", self._parentUrl(self.url) + "/comments/" + str(id)
+            "GET", f"{self._parentUrl(self.url)}/comments/{id}"
         )
         return github.IssueComment.IssueComment(
             self._requester, headers, data, completed=True
@@ -460,7 +459,7 @@ class Issue(github.GithubObject.CompletableGithubObject):
 
     def get_comments(self, since=github.GithubObject.NotSet):
         """
-        :calls: `GET /repos/:owner/:repo/issues/:number/comments <http://developer.github.com/v3/issues/comments>`_
+        :calls: `GET /repos/{owner}/{repo}/issues/{number}/comments <http://docs.github.com/en/rest/reference/issues#comments>`_
         :param since: datetime.datetime format YYYY-MM-DDTHH:MM:SSZ
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.IssueComment.IssueComment`
         """
@@ -473,35 +472,35 @@ class Issue(github.GithubObject.CompletableGithubObject):
         return github.PaginatedList.PaginatedList(
             github.IssueComment.IssueComment,
             self._requester,
-            self.url + "/comments",
+            f"{self.url}/comments",
             url_parameters,
         )
 
     def get_events(self):
         """
-        :calls: `GET /repos/:owner/:repo/issues/:issue_number/events <http://developer.github.com/v3/issues/events>`_
+        :calls: `GET /repos/{owner}/{repo}/issues/{issue_number}/events <http://docs.github.com/en/rest/reference/issues#events>`_
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.IssueEvent.IssueEvent`
         """
         return github.PaginatedList.PaginatedList(
             github.IssueEvent.IssueEvent,
             self._requester,
-            self.url + "/events",
+            f"{self.url}/events",
             None,
             headers={"Accept": Consts.mediaTypeLockReasonPreview},
         )
 
     def get_labels(self):
         """
-        :calls: `GET /repos/:owner/:repo/issues/:number/labels <http://developer.github.com/v3/issues/labels>`_
+        :calls: `GET /repos/{owner}/{repo}/issues/{number}/labels <http://docs.github.com/en/rest/reference/issues#labels>`_
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Label.Label`
         """
         return github.PaginatedList.PaginatedList(
-            github.Label.Label, self._requester, self.url + "/labels", None
+            github.Label.Label, self._requester, f"{self.url}/labels", None
         )
 
     def remove_from_assignees(self, *assignees):
         """
-        :calls: `DELETE /repos/:owner/:repo/issues/:number/assignees <https://developer.github.com/v3/issues/assignees>`_
+        :calls: `DELETE /repos/{owner}/{repo}/issues/{number}/assignees <https://docs.github.com/en/rest/reference/issues#assignees>`_
         :param assignee: :class:`github.NamedUser.NamedUser` or string
         :rtype: None
         """
@@ -518,13 +517,13 @@ class Issue(github.GithubObject.CompletableGithubObject):
             ]
         }
         headers, data = self._requester.requestJsonAndCheck(
-            "DELETE", self.url + "/assignees", input=post_parameters
+            "DELETE", f"{self.url}/assignees", input=post_parameters
         )
         self._useAttributes(data)
 
     def remove_from_labels(self, label):
         """
-        :calls: `DELETE /repos/:owner/:repo/issues/:number/labels/:name <http://developer.github.com/v3/issues/labels>`_
+        :calls: `DELETE /repos/{owner}/{repo}/issues/{number}/labels/{name} <http://docs.github.com/en/rest/reference/issues#labels>`_
         :param label: :class:`github.Label.Label` or string
         :rtype: None
         """
@@ -534,12 +533,12 @@ class Issue(github.GithubObject.CompletableGithubObject):
         else:
             label = urllib.parse.quote(label)
         headers, data = self._requester.requestJsonAndCheck(
-            "DELETE", self.url + "/labels/" + label
+            "DELETE", f"{self.url}/labels/{label}"
         )
 
     def set_labels(self, *labels):
         """
-        :calls: `PUT /repos/:owner/:repo/issues/:number/labels <http://developer.github.com/v3/issues/labels>`_
+        :calls: `PUT /repos/{owner}/{repo}/issues/{number}/labels <http://docs.github.com/en/rest/reference/issues#labels>`_
         :param labels: list of :class:`github.Label.Label` or strings
         :rtype: None
         """
@@ -551,25 +550,25 @@ class Issue(github.GithubObject.CompletableGithubObject):
             for label in labels
         ]
         headers, data = self._requester.requestJsonAndCheck(
-            "PUT", self.url + "/labels", input=post_parameters
+            "PUT", f"{self.url}/labels", input=post_parameters
         )
 
     def get_reactions(self):
         """
-        :calls: `GET /repos/:owner/:repo/issues/:number/reactions <https://developer.github.com/v3/reactions/#list-reactions-for-an-issue>`_
+        :calls: `GET /repos/{owner}/{repo}/issues/{number}/reactions <https://docs.github.com/en/rest/reference/reactions#list-reactions-for-an-issue>`_
         :return: :class: :class:`github.PaginatedList.PaginatedList` of :class:`github.Reaction.Reaction`
         """
         return github.PaginatedList.PaginatedList(
             github.Reaction.Reaction,
             self._requester,
-            self.url + "/reactions",
+            f"{self.url}/reactions",
             None,
             headers={"Accept": Consts.mediaTypeReactionsPreview},
         )
 
     def create_reaction(self, reaction_type):
         """
-        :calls: `POST /repos/:owner/:repo/issues/:number/reactions <https://developer.github.com/v3/reactions>`_
+        :calls: `POST /repos/{owner}/{repo}/issues/{number}/reactions <https://docs.github.com/en/rest/reference/reactions>`_
         :param reaction_type: string
         :rtype: :class:`github.Reaction.Reaction`
         """
@@ -579,21 +578,35 @@ class Issue(github.GithubObject.CompletableGithubObject):
         }
         headers, data = self._requester.requestJsonAndCheck(
             "POST",
-            self.url + "/reactions",
+            f"{self.url}/reactions",
             input=post_parameters,
             headers={"Accept": Consts.mediaTypeReactionsPreview},
         )
         return github.Reaction.Reaction(self._requester, headers, data, completed=True)
 
+    def delete_reaction(self, reaction_id):
+        """
+        :calls: `DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id} <https://docs.github.com/en/rest/reference/reactions#delete-an-issue-reaction>`_
+        :param reaction_id: integer
+        :rtype: bool
+        """
+        assert isinstance(reaction_id, int), reaction_id
+        status, _, _ = self._requester.requestJson(
+            "DELETE",
+            f"{self.url}/reactions/{reaction_id}",
+            headers={"Accept": Consts.mediaTypeReactionsPreview},
+        )
+        return status == 204
+
     def get_timeline(self):
         """
-        :calls: `GET /repos/:owner/:repo/issues/:number/timeline <https://developer.github.com/v3/issues/timeline/#list-events-for-an-issue>`_
+        :calls: `GET /repos/{owner}/{repo}/issues/{number}/timeline <https://docs.github.com/en/rest/reference/issues/timeline#list-events-for-an-issue>`_
         :return: :class: :class:`github.PaginatedList.PaginatedList` of :class:`github.TimelineEvent.TimelineEvent`
         """
         return github.PaginatedList.PaginatedList(
             github.TimelineEvent.TimelineEvent,
             self._requester,
-            self.url + "/timeline",
+            f"{self.url}/timeline",
             None,
             headers={"Accept": Consts.issueTimelineEventsPreview},
         )

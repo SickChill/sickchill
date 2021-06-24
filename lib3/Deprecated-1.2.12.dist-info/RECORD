@@ -1,0 +1,13 @@
+../../../../home/miigotu/.pycache/tmp/pip-target-oja4ycib/lib/python/deprecated/__init__.cpython-38.pyc,,
+../../../../home/miigotu/.pycache/tmp/pip-target-oja4ycib/lib/python/deprecated/classic.cpython-38.pyc,,
+../../../../home/miigotu/.pycache/tmp/pip-target-oja4ycib/lib/python/deprecated/sphinx.cpython-38.pyc,,
+Deprecated-1.2.12.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+Deprecated-1.2.12.dist-info/LICENSE.rst,sha256=HoPt0VvkGbXVveNy4yXlJ_9PmRX1SOfHUxS0H2aZ6Dw,1081
+Deprecated-1.2.12.dist-info/METADATA,sha256=xWQmROP_QPX-PBZtpIVfvhP8ne1EvdlcuH1vP-zy9WE,5791
+Deprecated-1.2.12.dist-info/RECORD,,
+Deprecated-1.2.12.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+Deprecated-1.2.12.dist-info/WHEEL,sha256=8zNYZbwQSXoB9IfXOjPfeNwvAsALAjffgk27FqvCWbo,110
+Deprecated-1.2.12.dist-info/top_level.txt,sha256=nHbOYawKPQQE5lQl-toUB1JBRJjUyn_m_Mb8RVJ0RjA,11
+deprecated/__init__.py,sha256=igPBvVhQ-ki_t4-PU926Vw_56yMywu3TsUur8ikdaDk,349
+deprecated/classic.py,sha256=QugmUi7IhBvp2nDvMtyWqFDPRR43-9nfSZG1ZJSDpFM,9880
+deprecated/sphinx.py,sha256=89Wnvh6s5NHWpdZqBYDkw9cHISOl3CuMTfvBCBpV7qU,10021

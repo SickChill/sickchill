@@ -25,7 +25,7 @@ data = (
 'Mei ',    # 0x17
 'Rang ',    # 0x18
 'Chan ',    # 0x19
-'[?] ',    # 0x1a
+None,    # 0x1a
 'Cuan ',    # 0x1b
 'Xi ',    # 0x1c
 'She ',    # 0x1d
@@ -142,7 +142,7 @@ data = (
 'Bin ',    # 0x8c
 'Jue ',    # 0x8d
 'Zhai ',    # 0x8e
-'[?] ',    # 0x8f
+None,    # 0x8f
 'Fei ',    # 0x90
 'Ban ',    # 0x91
 'Ban ',    # 0x92

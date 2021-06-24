@@ -51,10 +51,13 @@ class AsyncTestCaseTest(AsyncTestCase):
         This test makes sure that a second call to wait()
         clears the first timeout.
         """
+        # The first wait ends with time left on the clock
         self.io_loop.add_timeout(self.io_loop.time() + 0.00, self.stop)
-        self.wait(timeout=0.02)
-        self.io_loop.add_timeout(self.io_loop.time() + 0.03, self.stop)
-        self.wait(timeout=0.15)
+        self.wait(timeout=0.1)
+        # The second wait has enough time for itself but would fail if the
+        # first wait's deadline were still in effect.
+        self.io_loop.add_timeout(self.io_loop.time() + 0.2, self.stop)
+        self.wait(timeout=0.4)
 
 
 class LeakTest(AsyncTestCase):
@@ -83,7 +86,7 @@ class LeakTest(AsyncTestCase):
 
 class AsyncHTTPTestCaseTest(AsyncHTTPTestCase):
     def setUp(self):
-        super(AsyncHTTPTestCaseTest, self).setUp()
+        super().setUp()
         # Bind a second port.
         sock, port = bind_unused_port()
         app = Application()
@@ -110,7 +113,7 @@ class AsyncHTTPTestCaseTest(AsyncHTTPTestCase):
 
     def tearDown(self):
         self.second_server.stop()
-        super(AsyncHTTPTestCaseTest, self).tearDown()
+        super().tearDown()
 
 
 class AsyncTestCaseWrapperTest(unittest.TestCase):
@@ -218,12 +221,12 @@ class AsyncHTTPTestCaseSetUpTearDownTest(unittest.TestCase):
 
 class GenTest(AsyncTestCase):
     def setUp(self):
-        super(GenTest, self).setUp()
+        super().setUp()
         self.finished = False
 
     def tearDown(self):
         self.assertTrue(self.finished)
-        super(GenTest, self).tearDown()
+        super().tearDown()
 
     @gen_test
     def test_sync(self):
@@ -333,17 +336,17 @@ class GetNewIOLoopTest(AsyncTestCase):
         self.orig_loop = asyncio.get_event_loop()
         self.new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.new_loop)
-        super(GetNewIOLoopTest, self).setUp()
+        super().setUp()
 
     def tearDown(self):
-        super(GetNewIOLoopTest, self).tearDown()
+        super().tearDown()
         # AsyncTestCase must not affect the existing asyncio loop.
         self.assertFalse(asyncio.get_event_loop().is_closed())
         asyncio.set_event_loop(self.orig_loop)
         self.new_loop.close()
 
     def test_loop(self):
-        self.assertIs(self.io_loop.asyncio_loop, self.new_loop)
+        self.assertIs(self.io_loop.asyncio_loop, self.new_loop)  # type: ignore
 
 
 if __name__ == "__main__":

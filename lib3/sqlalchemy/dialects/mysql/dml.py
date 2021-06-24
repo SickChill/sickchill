@@ -1,6 +1,8 @@
 from ... import exc
 from ... import util
+from ...sql.base import _exclusive_against
 from ...sql.base import _generative
+from ...sql.base import ColumnCollection
 from ...sql.dml import Insert as StandardInsert
 from ...sql.elements import ClauseElement
 from ...sql.expression import alias
@@ -21,6 +23,8 @@ class Insert(StandardInsert):
     .. versionadded:: 1.2
 
     """
+
+    stringify_dialect = "mysql"
 
     @property
     def inserted(self):
@@ -47,6 +51,13 @@ class Insert(StandardInsert):
         return alias(self.table, name="inserted")
 
     @_generative
+    @_exclusive_against(
+        "_post_values_clause",
+        msgs={
+            "_post_values_clause": "This Insert construct already "
+            "has an ON DUPLICATE KEY clause present"
+        },
+    )
     def on_duplicate_key_update(self, *args, **kw):
         r"""
         Specifies the ON DUPLICATE KEY UPDATE clause.
@@ -108,7 +119,6 @@ class Insert(StandardInsert):
 
         inserted_alias = getattr(self, "inserted_alias", None)
         self._post_values_clause = OnDuplicateClause(inserted_alias, values)
-        return self
 
 
 insert = public_factory(
@@ -120,6 +130,8 @@ class OnDuplicateClause(ClauseElement):
     __visit_name__ = "on_duplicate_key_update"
 
     _parameter_ordering = None
+
+    stringify_dialect = "mysql"
 
     def __init__(self, inserted_alias, update):
         self.inserted_alias = inserted_alias
@@ -134,6 +146,17 @@ class OnDuplicateClause(ClauseElement):
             self._parameter_ordering = [key for key, value in update]
             update = dict(update)
 
-        if not update or not isinstance(update, dict):
-            raise ValueError("update parameter must be a non-empty dictionary")
+        if isinstance(update, dict):
+            if not update:
+                raise ValueError(
+                    "update parameter dictionary must not be empty"
+                )
+        elif isinstance(update, ColumnCollection):
+            update = dict(update)
+        else:
+            raise ValueError(
+                "update parameter must be a non-empty dictionary "
+                "or a ColumnCollection such as the `.c.` collection "
+                "of a Table object"
+            )
         self.update = update

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 ############################ Copyrights and license ############################
 #                                                                              #
 # Copyright 2012 Vincent Jacques <vincent@vincent-jacques.net>                 #
@@ -40,7 +38,7 @@ import github.PaginatedList
 
 class Milestone(github.GithubObject.CompletableGithubObject):
     """
-    This class represents Milestones. The reference can be found here http://developer.github.com/v3/issues/milestones/
+    This class represents Milestones. The reference can be found here http://docs.github.com/en/rest/reference/issues#milestones
     """
 
     def __repr__(self):
@@ -154,7 +152,7 @@ class Milestone(github.GithubObject.CompletableGithubObject):
 
     def delete(self):
         """
-        :calls: `DELETE /repos/:owner/:repo/milestones/:number <http://developer.github.com/v3/issues/milestones>`_
+        :calls: `DELETE /repos/{owner}/{repo}/milestones/{number} <http://docs.github.com/en/rest/reference/issues#milestones>`_
         :rtype: None
         """
         headers, data = self._requester.requestJsonAndCheck("DELETE", self.url)
@@ -167,7 +165,7 @@ class Milestone(github.GithubObject.CompletableGithubObject):
         due_on=github.GithubObject.NotSet,
     ):
         """
-        :calls: `PATCH /repos/:owner/:repo/milestones/:number <http://developer.github.com/v3/issues/milestones>`_
+        :calls: `PATCH /repos/{owner}/{repo}/milestones/{number} <http://docs.github.com/en/rest/reference/issues#milestones>`_
         :param title: string
         :param state: string
         :param description: string
@@ -198,11 +196,11 @@ class Milestone(github.GithubObject.CompletableGithubObject):
 
     def get_labels(self):
         """
-        :calls: `GET /repos/:owner/:repo/milestones/:number/labels <http://developer.github.com/v3/issues/labels>`_
+        :calls: `GET /repos/{owner}/{repo}/milestones/{number}/labels <http://docs.github.com/en/rest/reference/issues#labels>`_
         :rtype: :class:`github.PaginatedList.PaginatedList` of :class:`github.Label.Label`
         """
         return github.PaginatedList.PaginatedList(
-            github.Label.Label, self._requester, self.url + "/labels", None
+            github.Label.Label, self._requester, f"{self.url}/labels", None
         )
 
     @property

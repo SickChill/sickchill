@@ -285,10 +285,10 @@ class GenCoroutineTest(AsyncTestCase):
         # so we need explicit checks here to make sure the tests run all
         # the way through.
         self.finished = False
-        super(GenCoroutineTest, self).setUp()
+        super().setUp()
 
     def tearDown(self):
-        super(GenCoroutineTest, self).tearDown()
+        super().tearDown()
         assert self.finished
 
     def test_attributes(self):
@@ -952,7 +952,7 @@ class RunnerGCTest(AsyncTestCase):
 
     @gen_test
     def test_gc(self):
-        # Github issue 1769: Runner objects can get GCed unexpectedly
+        # GitHub issue 1769: Runner objects can get GCed unexpectedly
         # while their future is alive.
         weakref_scope = [None]  # type: List[Optional[weakref.ReferenceType]]
 
@@ -970,7 +970,7 @@ class RunnerGCTest(AsyncTestCase):
         yield gen.with_timeout(datetime.timedelta(seconds=0.2), tester())
 
     def test_gc_infinite_coro(self):
-        # Github issue 2229: suspended coroutines should be GCed when
+        # GitHub issue 2229: suspended coroutines should be GCed when
         # their loop is closed, even if they're involved in a reference
         # cycle.
         loop = self.get_new_ioloop()
@@ -1105,6 +1105,14 @@ class ContextVarsTest(AsyncTestCase):
             self.gen_root(3),
             self.gen_root(4),
         ]
+
+    @gen_test
+    def test_reset(self):
+        token = ctx_var.set(1)
+        yield
+        # reset asserts that we are still at the same level of the context tree,
+        # so we must make sure that we maintain that property across yield.
+        ctx_var.reset(token)
 
 
 if __name__ == "__main__":
