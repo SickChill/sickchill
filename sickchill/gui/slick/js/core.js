@@ -4126,6 +4126,7 @@ const SICKCHILL = {
                     url: scRoot + '/addShows/searchIndexersForShowName',
                     data: {
                         search_term: $('#show-name').val().trim(), // eslint-disable-line camelcase
+                        exact: $('#exact-match').is(':checked') ? 1 : 0,
                         lang: $('#indexerLangSelect').val(),
                         indexer: $('#providedIndexer').val()
                     },

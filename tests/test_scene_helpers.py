@@ -102,7 +102,7 @@ class SceneExceptionTestCase(conftest.SickChillTestDBCase):
         """
         # clear the exceptions
         test_cache_db_con = db.DBConnection("cache.db")
-        test_cache_db_con.action("DELETE FROM scene_exceptions")
+        test_cache_db_con.action("DELETE FROM scene_exceptions WHERE 1")
 
         # put something in the cache
         name_cache.add_name("Cached Name", 0)

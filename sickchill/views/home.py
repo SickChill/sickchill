@@ -1253,7 +1253,7 @@ class Home(WebRoot):
 
         logger.debug("Updating show exceptions")
         try:
-            sickchill.oldbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)
+            sickchill.oldbeard.scene_exceptions.update_custom_scene_exceptions(show_obj.indexerid, exceptions)
             time.sleep(cpu_presets[settings.CPU_PRESET])
         except CantUpdateShowException:
             logger.debug(traceback.format_exc())
