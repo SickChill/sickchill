@@ -109,9 +109,10 @@ def allPossibleShowNames(show, season=-1):
 
     showNames.append(show.name)
     if show.name.lower().strip() != helpers.full_sanitizeSceneName(show.name):
-        showNames.append(helpers.full_sanitizeSceneName(show.name))
-        logger.debug("append full sanitized show name to list: show_name_helpers")
-    
+        if helpers.full_sanitizeSceneName(show.name) not in showNames:
+            showNames.append(helpers.full_sanitizeSceneName(show.name))
+            logger.debug("SNH append full sanitized {} to list".format(helpers.full_sanitizeSceneName(show.name)))
+
     if not show.is_anime:
         newShowNames = []
         country_list = common.countryList
