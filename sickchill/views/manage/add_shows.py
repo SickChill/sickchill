@@ -1,5 +1,6 @@
 import datetime
 import json
+from operator import itemgetter
 import os
 import re
 import traceback
@@ -15,6 +16,7 @@ from sickchill.helper import sanitize_filename, try_int
 from sickchill.oldbeard import config, db, filters, helpers, ui
 from sickchill.oldbeard.blackandwhitelist import short_group_names
 from sickchill.oldbeard.common import Quality
+from sickchill.oldbeard.show_name_helpers import containsAtLeastOneWord
 from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.favorites import favorites
@@ -38,7 +40,7 @@ class AddShows(Home):
     def sanitizeFileName(name):
         return sanitize_filename(name)
 
-    def searchIndexersForShowName(self, search_term, lang=None, indexer=None):
+    def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
         if not lang or lang == "null":
@@ -46,29 +48,29 @@ class AddShows(Home):
 
         search_term = xhtml_unescape(search_term)
 
-        searchTerms = [search_term]
+        search_terms = [search_term]
 
         # If search term ends with what looks like a year, enclose it in ()
         matches = re.match(r"^(.+ |)([12][0-9]{3})$", search_term)
         if matches:
-            searchTerms.append("{0}({1})".format(matches.group(1), matches.group(2)))
+            search_terms.append("{0}({1})".format(matches.group(1), matches.group(2)))
 
-        for searchTerm in searchTerms:
+        for term in search_terms:
             # If search term begins with an article, let's also search for it without
-            matches = re.match(r"^(?:a|an|the) (.+)$", searchTerm, re.I)
+            matches = re.match(r"^(?:a|an|the) (.+)$", term, re.I)
             if matches:
-                searchTerms.append(matches.group(1))
+                search_terms.append(matches.group(1))
 
         results = {}
         final_results = []
 
         # Query Indexers for each search term and build the list of results
         for i, j in sickchill.indexer if not int(indexer) else [(int(indexer), None)]:
-            logger.debug("Searching for Show with searchterm(s): {0} on Indexer: {1}".format(searchTerms, "theTVDB"))
-            for searchTerm in searchTerms:
+            logger.debug(_(f"Searching for Show with search term(s): {search_terms} on Indexer: {sickchill.indexer[i].name} (exact: {exact})"))
+            for term in search_terms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = sickchill.indexer[i].search(searchTerm, language=lang)
+                    indexerResults = sickchill.indexer[i].search(term, language=lang, exact=exact)
                 except Exception:
                     logger.exception(traceback.format_exc())
                     continue
@@ -92,6 +94,13 @@ class AddShows(Home):
                     for show in shows
                 }
             )
+
+        if exact:
+            logger.debug(_("Filtering and sorting out excess results because exact match was checked"))
+            final_results = [item for item in final_results if search_term.lower() in item[4].lower()]
+            final_results.sort(key=itemgetter(4))
+            final_results.sort(key=lambda x: x[4].lower().index(search_term.lower()))
+            final_results.sort(key=lambda x: x[4].lower() == search_term.lower(), reverse=True)
 
         lang_id = sickchill.indexer.lang_dict()[lang]
         return json.dumps({"results": final_results, "langid": lang_id, "success": len(final_results) > 0})

@@ -3,6 +3,7 @@ import re
 import sqlite3
 import threading
 import time
+import traceback
 import warnings
 from sqlite3 import OperationalError
 from typing import List
@@ -80,14 +81,9 @@ class DBConnection(object):
             )
 
             # Lets print out all of the arguments so we can debug this better
-            # noinspection PyUnresolvedReferences
+            logger.info(traceback.format_exc())
             logger.info(_("If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"))
-            # noinspection PyUnresolvedReferences
-            logger.info(
-                _("Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables}").format(
-                    local_variables=local_variables
-                )
-            )
+            logger.info(_(f"Here are the arguments that were passed to this function (This is what the developers need to know): {local_variables}"))
 
     @staticmethod
     def _is_locked_or_denied(exception):

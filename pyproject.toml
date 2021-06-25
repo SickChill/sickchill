@@ -131,11 +131,12 @@ yarn = "yarn"
 xo = "xo"
 ava = "ava"
 
-style = {cmd = "black . --check --diff", help = "Check code style using black"}
-isort = {cmd = "isort .", help = "Fix import order"}
+_black = {cmd = "black . --check --diff", help = "Check code style using black"}
+_isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
+flake8 = {cmd = "flake8 --select C103 sickchill tests SickChill.py", help = "Check for undefined variables"}
 
+isort = {cmd = "isort .", help = "Fix import order"}
 black = {cmd = "black .", help = "Reformat code using black"}
-flake8 = {cmd = "flake8 --select C103 sickchill tests SickChill.py setup.py", help = "Check for undefined variables"}
 
 test_providers = {cmd = "pytest tests/sickchill_tests/providers/torrent/test_parsing.py", help = "Run provider tests"}
 crowdin_upload = "crowdin-cli-py upload sources -c .github/crowdin.yml"
@@ -143,7 +144,14 @@ crowdin_download = "crowdin-cli-py download -c .github/crowdin.yml"
 po2json = "po2json --format jed "
 codecov = "codecov"
 
+lint = ["_black", "_isort", "flake8"]
 format = ["black", "isort", "flake8"]
+
+_yarn_upgrade = {cmd = "yarn upgrade", help = "update yarn dependancies"}
+_poetry_update = {shell = "poetry update", help = "update python dependancies"}
+
+depup = ["_poetry_update", "_yarn_upgrade"]
+
 update_translations = ["babel_extract", "babel_update", "crowdin_upload", "crowdin_download", "babel_compile", "po2json"]
 update_dependencies = {shell = "poetry update && yarn upgrade && git add poetry.lock yarn.lock"}
 

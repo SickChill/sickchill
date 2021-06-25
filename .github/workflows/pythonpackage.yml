@@ -102,7 +102,7 @@ jobs:
         poetry config virtualenvs.in-project true
         poetry install --no-root
     - name: Lint Python and Javascript
-      run: poe format
+      run: poe lint
     - name: Test Javascript
       run: poe yarn test
     - name: Test Python

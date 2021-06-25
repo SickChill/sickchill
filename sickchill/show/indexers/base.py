@@ -14,7 +14,7 @@ class Indexer(metaclass=abc.ABCMeta):
         self.timeout = settings.INDEXER_TIMEOUT
 
     @abc.abstractmethod
-    def search(self, name, language=None):
+    def search(self, name, language=None, exact=False, indexer_id=False):
         raise NotImplementedError
 
     @abc.abstractmethod
