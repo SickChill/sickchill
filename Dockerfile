@@ -23,7 +23,7 @@ RUN apt-get update -qq && apt-get install -yqq git libxml2 libxslt1.1 mediainfo 
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --preview && \
-    export PATH="/root/.local/bin:$PATH" && poetry run pip install -U wheel setuptools pip && poetry install --no-root --no-dev
+    export PATH="/root/.local/bin:$PATH" && poetry run pip install -U wheel setuptools pip && poetry install --no-interaction --no-root --no-dev -vvv
 
 COPY . /app/sickchill
 RUN chmod -R 777 /app/sickchill
