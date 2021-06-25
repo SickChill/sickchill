@@ -3542,9 +3542,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.3.723:
-  version "1.3.756"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.756.tgz#942cee59cd64d19f576d8d5804eef09cb423740c"
-  integrity sha512-WsmJym1TMeHVndjPjczTFbnRR/c4sbzg8fBFtuhlb2Sru3i/S1VGpzDSrv/It8ctMU2bj8G7g7/O3FzYMGw6eA==
+  version "1.3.758"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.758.tgz#0baeb8f0a89d1850cc65f92da5f669343e4f6241"
+  integrity sha512-StYtiDbgZdjcck3OLwsVVVif7QDuD5m5v2gF+XpETp5lHa7X0y3129YBlYaHRPyj1fep1oAaC6i//gAdp+rhbw==
 
 elfy@^1.0.0:
   version "1.0.0"
@@ -9558,9 +9558,9 @@ snyk-try-require@^2.0.0:
     lru-cache "^5.1.1"
 
 snyk@^1.28.1:
-  version "1.643.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.643.0.tgz#6b24b3746294db6bb5f9acbd9f7c82fae2c3684a"
-  integrity sha512-inwLksXolh3LN9s8V/borvySSsEJMEZNFUARBe/0VAUOYExU+j9h2nudObeIe7Fw/AB9G4D1z+h15dToRTW47w==
+  version "1.645.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.645.0.tgz#6f3bde741d78b7f7b66d1f4548ef55bddaf36d29"
+  integrity sha512-hNUJmivOFLLx6KxBO7s6E8Qpgb3DNqLEXs2QO+ujaYQ4zw5rFp4X6usTS7eVQc/jfWAuxxIehZuVxil5/bo2xQ==
   dependencies:
     "@open-policy-agent/opa-wasm" "^1.2.0"
     "@snyk/cli-interface" "2.11.0"

@@ -100,7 +100,7 @@ jobs:
     - name: Install dependencies
       run: |
         poetry config virtualenvs.in-project true
-        poetry install --no-root
+        poetry install --no-interaction --no-root -vvv
     - name: Lint Python and Javascript
       run: poe lint
     - name: Test Javascript

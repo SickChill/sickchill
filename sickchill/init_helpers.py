@@ -22,9 +22,9 @@ def setup_gettext(language=None):
 
 def check_installed():
     try:
-        from importlib.metadata import Distribution, PackageNotFoundError # noqa
+        from importlib.metadata import Distribution, PackageNotFoundError  # noqa
     except ImportError:
-        from importlib_metadata import Distribution, PackageNotFoundError # noqa
+        from importlib_metadata import Distribution, PackageNotFoundError  # noqa
 
     try:
         Distribution.from_name("sickchill")
