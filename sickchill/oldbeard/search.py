@@ -123,8 +123,8 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
                 try:
                     failed_history.logFailed(result.name)
                     logger.info("log failed success {}".format(result.name))
-                except:
-                    logger.info("log failed failed {}".format(result.name))
+                except Exception as e:
+                    logger.info("log failed failed {} {}".format(result.name, e))
                 dlResult = False
     else:
         logger.exception(f"Unknown result type, unable to download it ({result.resultType})")
