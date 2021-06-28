@@ -1121,7 +1121,7 @@
     "@types/emscripten" "^1.38.0"
     tslib "^1.13.0"
 
-"@yarnpkg/lockfile@^1.1.0":
+"@yarnpkg/lockfile@1.1.0", "@yarnpkg/lockfile@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
   integrity sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==
@@ -7285,6 +7285,11 @@ mkdirp@^1.0.3, mkdirp@^1.0.4, mkdirp@~1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
+mock-fs@^4.12.0:
+  version "4.14.0"
+  resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-4.14.0.tgz#ce5124d2c601421255985e6e94da80a7357b1b18"
+  integrity sha512-qYvlv/exQ4+svI3UOvPUpLDF0OMX5euvUH0Ny4N5QyRyhNdgAgUrVH3iUINSzEPLvx0kbo/Bp28GJKIqvE7URw==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -11151,6 +11156,15 @@ yargs-parser@^20.2.3:
   version "20.2.9"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.9.tgz#2eb7dc3b0289718fc295f362753845c41a0c94ee"
   integrity sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==
+
+yarn-minify@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/yarn-minify/-/yarn-minify-1.0.1.tgz#438494693954e4ca9a1fec5298206dbcf99c9920"
+  integrity sha512-TEjlwf0SSJXrmgHI4SikJ/QcLDz+MaEZxZF2Gu+s0iqD7zZvtoWLwc0ZoQfYfApwE4WC72sWmKII7MQlGjeZ+A==
+  dependencies:
+    "@yarnpkg/lockfile" "1.1.0"
+    mock-fs "^4.12.0"
+    semver "^7.3.2"
 
 yocto-queue@^0.1.0:
   version "0.1.0"
