@@ -63,6 +63,7 @@ ANIME_SPLIT_HOME = False
 ANIME_SPLIT_HOME_IN_TABS = False
 ANIMESUPPORT = False
 ANON_REDIRECT = None
+DEFAULT_ANON_REDIRECT = "https://blankrefer.com/?"
 API_KEY = None
 API_ROOT = None
 AUTO_UPDATE = False

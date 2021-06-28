@@ -149,8 +149,8 @@ format = ["black", "isort", "flake8"]
 
 _yarn_upgrade = {cmd = "yarn upgrade", help = "update yarn dependancies"}
 _poetry_update = {shell = "poetry update", help = "update python dependancies"}
-
-depup = ["_poetry_update", "_yarn_upgrade"]
+_add_locks = {shell = "git add poetry.lock yarn.lock", help = "Add yarn and poetry lock files"}
+depup = ["_poetry_update", "_yarn_upgrade", "_add_locks"]
 
 update_translations = ["babel_extract", "babel_update", "crowdin_upload", "crowdin_download", "babel_compile", "po2json"]
 update_dependencies = {shell = "poetry update && yarn upgrade && git add poetry.lock yarn.lock"}
