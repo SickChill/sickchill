@@ -34,7 +34,7 @@ class FailedProcessor(object):
             cache_db_con = DBConnection("cache.db")
             cache_result = cache_db_con.select_one("SELECT name FROM results WHERE url = ?", [self.release_name])
             if cache_result:
-                self.release_name = cache_result[0]
+                self.release_name = cache_result["name"]
 
         release_name = show_name_helpers.determine_release_name(self.directory, self.release_name)
         if not release_name:

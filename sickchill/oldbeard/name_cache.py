@@ -39,7 +39,7 @@ def get_id_from_name(name):
         cache_db_con = db.DBConnection("cache.db")
         results = cache_db_con.select_one("SELECT indexer_id FROM scene_names WHERE name = ?", [name])
         if results:
-            indexer_id = results[0]["indexer_id"]
+            indexer_id = results["indexer_id"]
             show = Show.find(settings.showList, indexer_id)
             if show:
                 build_name_cache(show)

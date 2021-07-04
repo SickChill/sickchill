@@ -877,13 +877,11 @@ def check_url(url):
         return False
     return True
 
-
-def anon_url(url):
+def anon_url(*url):
     """
     Return a URL string consisting of the Anonymous redirect URL and an arbitrary number of values appended.
     """
-    return "" if not url else f"{settings.ANON_REDIRECT}{url}"
-
+    return "" if None in url else f"{settings.ANON_REDIRECT}{''.join(str(s) for s in url)}"
 
 """
 Encryption

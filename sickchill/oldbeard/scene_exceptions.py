@@ -87,7 +87,8 @@ def get_all_scene_exceptions(indexer_id):
     cache_db_con = db.DBConnection("cache.db")
     exceptions = cache_db_con.select("SELECT show_name, season, custom FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
 
-    del exceptions_cache[indexer_id]
+    if indexer_id in exceptions_cache:
+        del exceptions_cache[indexer_id]
 
     for cur_exception in exceptions:
         if cur_exception["season"] not in all_exceptions_dict:
@@ -104,15 +105,31 @@ def get_all_scene_exceptions(indexer_id):
 
     show = Show.find(settings.showList, indexer_id)
     if show:
-        if -1 not in all_exceptions_dict and show.show_name or show.custom_name:
-            all_exceptions_dict[-1] = []
-        if show.show_name:
-            all_exceptions_dict[-1].append({"show_name": helpers.full_sanitizeSceneName(show.show_name), "custom": False})
-        if show.custom_name:
-            all_exceptions_dict[-1].append({"show_name": helpers.full_sanitizeSceneName(show.custom_name), "custom": False})
+        sanitized_name = helpers.full_sanitizeSceneName(show.show_name)
+        sanitized_custom_name = helpers.full_sanitizeSceneName(show.custom_name)
+
+        if sanitized_name or sanitized_custom_name:
+
+            if -1 not in all_exceptions_dict:
+                all_exceptions_dict[-1] = []
+
+            if indexer_id not in exceptions_cache:
+                exceptions_cache[indexer_id] = {}
+
+            if -1 not in exceptions_cache[indexer_id]:
+                exceptions_cache[indexer_id][-1] = []
+
+            if sanitized_name:
+                all_exceptions_dict[-1].append({"show_name": sanitized_name, "custom": False})
+                if sanitized_name not in exceptions_cache[indexer_id][-1]:
+                    exceptions_cache[indexer_id][-1].append(sanitized_name)
+            if sanitized_custom_name:
+                all_exceptions_dict[-1].append({"show_name": sanitized_custom_name, "custom": False})
+                if sanitized_custom_name not in exceptions_cache[indexer_id][-1]:
+                    exceptions_cache[indexer_id][-1].append(sanitized_custom_name)
 
     logger.debug(f"get_all_scene_exceptions: {all_exceptions_dict}")
-    logger.debug(f"exceptions_cache: {exceptions_cache[indexer_id]}")
+    logger.debug(f"exceptions_cache for {indexer_id}: {exceptions_cache.get(indexer_id)}")
     return all_exceptions_dict
 
 
