@@ -61,7 +61,7 @@
             </div>
         </div>
     </div>
-    % if len(settings.showQueueScheduler.action):
+    % if settings.showQueueScheduler.action:
     <br/>
     <div class="row">
         <div class="col-md-12">
@@ -91,7 +91,7 @@
         </div>
     </div>
     % endif
-    % if len(settings.postProcessorTaskScheduler.action):
+    % if settings.postProcessorTaskScheduler.action:
     <br/>
     <div class="row">
         <div class="col-md-12">

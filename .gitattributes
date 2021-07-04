@@ -89,6 +89,3 @@ init.*			text
 *.zip			binary
 *.7z			binary
 *.rar			binary
-
-#linguist overides
-lib3/* linguist-vendored

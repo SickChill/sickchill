@@ -321,8 +321,11 @@ class Manage(Home, WebRoot):
             [
                 x
                 for x in settings.showList
-                if (showCounts[x.indexerid][Overview.QUAL] or showCounts[x.indexerid][Overview.WANTED] or
-                    (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0])
+                if (
+                    showCounts[x.indexerid][Overview.QUAL]
+                    or showCounts[x.indexerid][Overview.WANTED]
+                    or (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]
+                )
             ],
             key=lambda x: x.sort_name,
         )
@@ -572,7 +575,7 @@ class Manage(Home, WebRoot):
                 logger.exception("Errors: " + str(curErrors))
                 errors.append("<b>{0}:</b>\n<ul>".format(show_obj.name) + " ".join(["<li>{0}</li>".format(error) for error in curErrors]) + "</ul>")
 
-        if len(errors) > 0:
+        if errors:
             ui.notifications.error(
                 _("{num_errors:d} error{plural} while saving changes:").format(num_errors=len(errors), plural="" if len(errors) == 1 else "s"), " ".join(errors)
             )

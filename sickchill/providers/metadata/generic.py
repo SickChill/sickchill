@@ -271,13 +271,13 @@ class GenericMetadata(object):
 
     def create_episode_metadata(self, ep_obj):
         if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
-            logger.debug("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name())
+            logger.debug("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name)
             return self.write_ep_file(ep_obj)
         return False
 
     def update_episode_metadata(self, ep_obj):
         if self.episode_metadata and ep_obj and self._has_episode_metadata(ep_obj):
-            logger.debug("Metadata provider " + self.name + " updating episode indexer info metadata file for " + ep_obj.pretty_name())
+            logger.debug("Metadata provider " + self.name + " updating episode indexer info metadata file for " + ep_obj.pretty_name)
             nfo_file_path = self.get_episode_file_path(ep_obj)
 
             attribute_map = {
@@ -345,7 +345,7 @@ class GenericMetadata(object):
 
     def create_episode_thumb(self, ep_obj):
         if self.episode_thumbnails and ep_obj and not self._has_episode_thumb(ep_obj):
-            logger.debug("Metadata provider " + self.name + " creating episode thumbnail for " + ep_obj.pretty_name())
+            logger.debug("Metadata provider " + self.name + " creating episode thumbnail for " + ep_obj.pretty_name)
             return self.save_thumbnail(ep_obj)
         return False
 

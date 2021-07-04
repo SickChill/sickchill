@@ -102,7 +102,8 @@ class ShowTests(unittest.TestCase):
         ]
 
         assert len(indexer_id_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(indexer_id_list), len(results_list))
+            len(indexer_id_list), len(results_list)
+        )
 
         for (index, indexer_id) in enumerate(indexer_id_list):
             assert Show._validate_indexer_id(indexer_id) == results_list[index]

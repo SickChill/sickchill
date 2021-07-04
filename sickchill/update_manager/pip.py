@@ -1,7 +1,8 @@
 from packaging import version as packaging_version
 
 from sickchill import settings, version
-from sickchill.oldbeard import helpers
+from sickchill.init_helpers import pip_install
+from sickchill.oldbeard import helpers, notifiers
 
 from .abstract import UpdateManagerBase
 
@@ -27,16 +28,17 @@ class PipUpdateManager(UpdateManagerBase):
         return self.get_current_version()
 
     def get_newest_version(self):
-        return packaging_version.parse(self.session.get("https://pypi.org/pypi/sickchill/json").json()["info"]["version"])
+        self._newest_version = packaging_version.parse(self.session.get("https://pypi.org/pypi/sickchill/json").json()["info"]["version"])
+        return self._newest_version
 
     def get_newest_commit_hash(self):
-        return self.get_newest_version()
+        return self._newest_version
 
     def get_num_commits_behind(self):
         if not self.need_update():
             return 0
 
-        newest, current = self.get_newest_version(), self.get_current_version()
+        newest, current = self._newest_version, self.get_current_version()
         return f"Major: {newest.major - current.major}, Minor: {newest.minor - current.minor}, Micro: {newest.micro - current.micro}"
 
     def list_remote_branches(self):
@@ -67,8 +69,13 @@ class PipUpdateManager(UpdateManagerBase):
     def need_update(self):
         return self.get_newest_version() > self.get_current_version()
 
-    def get_update_url(self):
-        return self.session.get("https://pypi.org/pypi/sickchill/json").json()["info"]["release_url"]
+    # def get_update_url(self):
+    #     return self.session.get("https://pypi.org/pypi/sickchill/json").json()["info"]["release_url"]
 
     def update(self):
-        pass
+        if not pip_install("sickchill"):
+            return False
+
+        settings.CUR_COMMIT_HASH = self._newest_commit_hash
+        notifiers.notify_git_update(settings.CUR_COMMIT_HASH or "")
+        return True

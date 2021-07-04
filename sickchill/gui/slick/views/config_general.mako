@@ -880,7 +880,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="anon_redirect">${_('backlink protection via anonymizer service, must end in "?"')}</label>
+                                        <label for="anon_redirect">${_('backlink protection via anonymizer service, must end in "?" (default: {} )').format(settings.DEFAULT_ANON_REDIRECT)}</label>
                                     </div>
                                 </div>
                             </div>

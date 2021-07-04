@@ -19,7 +19,7 @@
     <div id="core-component-group1" class="tab-pane active component-group">
         <div class="row">
             <div class="col-md-12">
-                <form id="addShowForm" method="post" action="${scRoot}/addShows/addNewShow" accept-charset="utf-8">
+                <form id="addShowForm" method="post" action="${scRoot}/addShows/addNewShow" accept-charset="utf-8" class="form form-inline">
 
                     <legend class="legendStep">#1 ${_('Search for a Show')}</legend>
                     <div class="row stepDiv">
@@ -35,15 +35,30 @@
                                 <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}"/>
                                 <input type="hidden" id="providedName" value="${provided_indexer_name}"/>
                             % else:
-                                <div class="field-pair row">
+                                <div class="row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <span class="component-title">${_('Show name')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="text" id="show-name" value="${default_show_name}"
-                                               placeholder="Show name" autofocus
-                                               class="form-control form-control-inline input-sm input350"
-                                               autocapitalize="off"/>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                                    <input type="text" id="show-name" value="${default_show_name}"
+                                                           placeholder="Show name" autofocus
+                                                           autocapitalize="off"
+                                                           class="form-control"
+                                                    />
+                                                    <span class="input-group-addon">
+                                                        <input type="checkbox" id="exact-match" name="exact-match">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="field-pair row">
+                                            <div class="col-md-12">
+                                                <span><i>${_('Check the box for exact string search')}</i></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="field-pair row">

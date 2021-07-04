@@ -276,14 +276,13 @@ const SICKCHILL = {
                 });
             },
             init() {
-                const selfObject = this;
                 const qualityPresets = $('#qualityPreset');
 
                 qualityPresets.on('change', () => {
-                    selfObject.setFromPresets(qualityPresets.find(':selected').val());
+                    this.setFromPresets(qualityPresets.find(':selected').val());
                 });
 
-                selfObject.setFromPresets(qualityPresets.find(':selected').val());
+                this.setFromPresets(qualityPresets.find(':selected').val());
             }
         },
         updateBlackWhiteList(showName) {
@@ -1006,7 +1005,7 @@ const SICKCHILL = {
             $('#authTrakt').on('click', () => {
                 const trakt = {};
                 trakt.pin = $('#trakt_pin').val();
-                if (trakt.pin.length !== 0) {
+                if (trakt.pin.length > 0) {
                     $.post(scRoot + '/home/getTraktToken', {
                         trakt_pin: trakt.pin // eslint-disable-line camelcase
                     }).done(data => {
@@ -1061,21 +1060,21 @@ const SICKCHILL = {
                 const from = $('#email_from').val().length > 0 ? $('#email_from').val() : 'root@localhost';
                 const user = $('#email_user').val().trim();
                 const pwd = $('#email_password').val();
-                let err = '';
+                let error = '';
                 let to = '';
                 if (host === null) {
-                    err += '<li style="color: red;">You must specify an SMTP hostname!</li>';
+                    error += '<li style="color: red;">You must specify an SMTP hostname!</li>';
                 }
 
                 if (port === null) {
-                    err += '<li style="color: red;">You must specify an SMTP port!</li>';
+                    error += '<li style="color: red;">You must specify an SMTP port!</li>';
                 } else if (port.match(/^\d+$/) === null || Number.parseInt(port, 10) > 65535) {
-                    err += '<li style="color: red;">SMTP port must be between 0 and 65535!</li>';
+                    error += '<li style="color: red;">SMTP port must be between 0 and 65535!</li>';
                 }
 
-                if (err.length > 0) {
-                    err = '<ol>' + err + '</ol>';
-                    status.html(err);
+                if (error.length > 0) {
+                    error = '<ol>' + error + '</ol>';
+                    status.html(error);
                 } else {
                     to = prompt('Enter an email address to send the test to:', null); // eslint-disable-line no-alert
                     if (to === null || to.length === 0 || to.match(/.*@.*/) === null) {
@@ -1243,10 +1242,8 @@ const SICKCHILL = {
                     // Convert the 'list' object to a js array of objects so that we can sort it
                     const _list = [];
                     for (const _show in list) {
-                        if ({}.hasOwnProperty.call(list, _show)) {
-                            if (_show.charAt(0) !== '_') {
-                                _list.push(list[_show]);
-                            }
+                        if ({}.hasOwnProperty.call(list, _show) && _show.charAt(0) !== '_') {
+                            _list.push(list[_show]);
                         }
                     }
 
@@ -1263,10 +1260,8 @@ const SICKCHILL = {
                     });
                     let html = '<option value="-1">-- Select --</option>';
                     for (const _show in sortedList) {
-                        if ({}.hasOwnProperty.call(sortedList, _show)) {
-                            if (sortedList[_show].id && sortedList[_show].name) {
-                                html += '<option value="' + sortedList[_show].id + '">' + $('<div>').text(sortedList[_show].name).html() + '</option>';
-                            }
+                        if ({}.hasOwnProperty.call(sortedList, _show) && sortedList[_show].id && sortedList[_show].name) {
+                            html += '<option value="' + sortedList[_show].id + '">' + $('<div>').text(sortedList[_show].name).html() + '</option>';
                         }
                     }
 
@@ -1758,16 +1753,7 @@ const SICKCHILL = {
                     const seasonAllPoster = $('#' + generatorName + '_season_all_poster').is(':checked');
                     const seasonAllBanner = $('#' + generatorName + '_season_all_banner').is(':checked');
 
-                    configArray.push(showMetadata ? '1' : '0');
-                    configArray.push(episodeMetadata ? '1' : '0');
-                    configArray.push(fanart ? '1' : '0');
-                    configArray.push(poster ? '1' : '0');
-                    configArray.push(banner ? '1' : '0');
-                    configArray.push(episodeThumbnails ? '1' : '0');
-                    configArray.push(seasonPosters ? '1' : '0');
-                    configArray.push(seasonBanners ? '1' : '0');
-                    configArray.push(seasonAllPoster ? '1' : '0');
-                    configArray.push(seasonAllBanner ? '1' : '0');
+                    configArray.push(showMetadata ? '1' : '0', episodeMetadata ? '1' : '0', fanart ? '1' : '0', poster ? '1' : '0', banner ? '1' : '0', episodeThumbnails ? '1' : '0', seasonPosters ? '1' : '0', seasonBanners ? '1' : '0', seasonAllPoster ? '1' : '0', seasonAllBanner ? '1' : '0');
 
                     let curNumber = 0;
                     for (const element of configArray) {
@@ -2310,14 +2296,7 @@ const SICKCHILL = {
                     },
                     5(node) {
                         const progress = $(node).find('div').attr('data-progress-sort');
-                        let result;
-                        if (progress === undefined) {
-                            result = Number.NEGATIVE_INFINITY;
-                        } else {
-                            result = (progress.length && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
-                        }
-
-                        return result;
+                        return progress === undefined ? Number.NEGATIVE_INFINITY : (progress.length > 0 && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
                     },
                     6(node) {
                         return $(node).data('show-size');
@@ -2374,27 +2353,17 @@ const SICKCHILL = {
                                 }
 
                                 result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
-                                if (result) {
-                                    if ((result[2] === '-') || (result[2] === 'to')) {
-                                        if ((pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
-                                            test = true;
-                                        }
-                                    }
+                                if (result && ((result[2] === '-') || (result[2] === 'to')) && (pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
+                                    test = true;
                                 }
 
                                 result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/i);
-                                if (result) {
-                                    if ((result[1] === '=') || (result[3] === '=')) {
-                                        if (Number.parseInt(result[2], 10) === pct) {
-                                            test = true;
-                                        }
-                                    }
+                                if (result && ((result[1] === '=') || (result[3] === '=')) && Number.parseInt(result[2], 10) === pct) {
+                                    test = true;
                                 }
 
-                                if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput)) {
-                                    if (Number.parseInt(filterInput, 10) === pct) {
-                                        test = true;
-                                    }
+                                if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput) && Number.parseInt(filterInput, 10) === pct) {
+                                    test = true;
                                 }
                             }
 
@@ -2426,11 +2395,11 @@ const SICKCHILL = {
                         network: '[data-network]',
                         date(itemElement) {
                             const date = $(itemElement).attr('data-date');
-                            return (date.length && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
+                            return (date.length > 0 && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
                         },
                         progress(itemElement) {
                             const progress = $(itemElement).attr('data-progress-sort');
-                            return (progress.length && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                            return (progress.length > 0 && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
                         },
                         status: '[data-status]'
                     }
@@ -2726,22 +2695,22 @@ const SICKCHILL = {
             });
 
             $('.seasonCheck').on('click', function () {
-                const seasCheck = this;
-                const seasNo = $(seasCheck).attr('id');
+                const seasCheck = this.checked;
+                const seasNo = $(this).attr('id');
                 $('#collapseSeason-' + seasNo).collapse('show');
                 $('.epCheck:visible[id^="' + seasNo + 'x"]').each(function () {
-                    this.checked = seasCheck.checked;
+                    this.checked = seasCheck;
                 });
             });
 
             let lastCheck = null;
             $('.epCheck').on('click', function (event) {
                 if (!lastCheck || !event.shiftKey) {
-                    lastCheck = this;
+                    lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
                     return;
                 }
 
-                const check = this;
+                const check = this; // eslint-disable-line unicorn/no-this-assignment
                 let found = 0;
 
                 $('.epCheck').each(function () {
@@ -3380,16 +3349,16 @@ const SICKCHILL = {
                 });
             });
 
-            ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(name => {
+            for (const name of ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck']) {
                 let lastCheck = null;
 
                 $(name).on('click', function (event) {
                     if (!lastCheck || !event.shiftKey) {
-                        lastCheck = this;
+                        lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
                         return;
                     }
 
-                    const check = this;
+                    const check = this; // eslint-disable-line unicorn/no-this-assignment
                     let found = 0;
 
                     $(name).each(function () {
@@ -3406,7 +3375,7 @@ const SICKCHILL = {
                         }
                     });
                 });
-            });
+            }
         },
         backlogOverview() {
             $('#pickShow').on('change', event => {
@@ -3449,11 +3418,11 @@ const SICKCHILL = {
                     let lastCheck = null;
                     $(name).on('click', function (event) {
                         if (!lastCheck || !event.shiftKey) {
-                            lastCheck = this;
+                            lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
                             return;
                         }
 
-                        const check = this;
+                        const check = this; // eslint-disable-line unicorn/no-this-assignment
                         let found = 0;
 
                         $(name + ':visible').each(function () {
@@ -3617,9 +3586,7 @@ const SICKCHILL = {
         }
     },
     history: {
-        init() {
-
-        },
+        init() {},
         index() {
             $('#historyTable:has(tbody tr)').tablesorter({
                 widgets: ['zebra', 'filter'],
@@ -3732,16 +3699,16 @@ const SICKCHILL = {
                 return false;
             });
 
-            ['.removeCheck'].forEach(name => {
+            for (const name of ['.removeCheck']) {
                 let lastCheck = null;
 
                 $(name).on('click', function (event) {
                     if (!lastCheck || !event.shiftKey) {
-                        lastCheck = this;
+                        lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
                         return;
                     }
 
-                    const check = this;
+                    const check = this; // eslint-disable-line unicorn/no-this-assignment
                     let found = 0;
 
                     $(name).each(function () {
@@ -3756,16 +3723,12 @@ const SICKCHILL = {
                         }
                     });
                 });
-            });
+            }
         }
     },
     errorlogs: {
-        init() {
-
-        },
-        index() {
-
-        },
+        init() {},
+        index() {},
         viewlogs() {
             $('#min_level,#log_filter,#log_search').on('keyup change', __.debounce(() => {
                 if ($('#log_search').val().length > 0) {
@@ -4023,9 +3986,7 @@ const SICKCHILL = {
 
             SICKCHILL.common.QualityChooser.init();
         },
-        index() {
-
-        },
+        index() {},
         newShow() {
             const updateSampleText = function () {
                 // If something's selected then we have some behavior to figure out
@@ -4114,7 +4075,7 @@ const SICKCHILL = {
                     return !show.inShowList;
                 });
 
-                shows.forEach((show, index) => {
+                for (const [index, show] of shows.entries()) {
                     table +=
                         '<tr class="' + (show.inShowList ? 'in-list' : '') + '">' +
                         '<td>' +
@@ -4124,11 +4085,7 @@ const SICKCHILL = {
                         '<td>' +
                         (function () {
                             let string = '<a href=';
-                            if (show.inShowList) {
-                                string += '"/home/displayShow?show=' + show.id + '"';
-                            } else {
-                                string += '"' + show.url + '" target="_blank"';
-                            }
+                            string += show.inShowList ? '"/home/displayShow?show=' + show.id + '"' : '"' + show.url + '" target="_blank"';
 
                             string += '>' + show.title + '</a>';
 
@@ -4138,7 +4095,7 @@ const SICKCHILL = {
                         '<td>' + show.debut + '</td>' +
                         '<td>' + show.indexer + '</td>' +
                         '</tr>';
-                });
+                }
 
                 table +=
                     '</tbody>' +
@@ -4169,6 +4126,7 @@ const SICKCHILL = {
                     url: scRoot + '/addShows/searchIndexersForShowName',
                     data: {
                         search_term: $('#show-name').val().trim(), // eslint-disable-line camelcase
+                        exact: $('#exact-match').is(':checked') ? 1 : 0,
                         lang: $('#indexerLangSelect').val(),
                         indexer: $('#providedIndexer').val()
                     },
@@ -4264,9 +4222,9 @@ const SICKCHILL = {
         },
         addExistingShow() {
             $('#tableDiv').on('click', '#checkAll', function () {
-                const seasCheck = this;
+                const seasCheck = this.checked;
                 $('.dirCheck').each(function () {
-                    this.checked = seasCheck.checked;
+                    this.checked = seasCheck;
                 });
             });
 
@@ -4546,11 +4504,7 @@ const UTIL = {
 
 // Handle js-gettext + load javascript functions
 $.getJSON(scRoot + '/ui/locale.json', {lang: getMeta('settings.GUI_LANG')}, data => {
-    if (data === undefined) {
-        window.gt = new Gettext();
-    } else {
-        window.gt = new Gettext(data.messages);
-    }
+    window.gt = data === undefined ? new Gettext() : new Gettext(data.messages);
 
     // Shortcut for normal gettext
     window._ = function (string) {

@@ -1,10 +1,14 @@
 [tool.poetry]
 name = "sickchill"
-version = "2021.6.16-3"
+version = "2021.6.24"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPLv3"
 
 authors = [
+    "Dustyn Gibson <miigotu@gmail.com>"
+]
+
+maintainers = [
     "Dustyn Gibson <miigotu@gmail.com>"
 ]
 
@@ -49,12 +53,12 @@ regex = '__version__ = "{version}"'
 
 [tool.flake8]
 exclude = [
+    ".eggs",
     ".git",
     "__pycache__",
     "docs/source/conf.py",
     "build",
     "dist",
-    "lib3"
 ]
 inline-quotes = "double"
 docstring-convention = "numpy"
@@ -82,15 +86,16 @@ ignore = [
 
 max_line_length = 160
 show_source = "True"
-no-accept-encodings = "True"
 builtins = ["_"]
 #select = 'C103'
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "sickchill", "SickChill.py", "setup.py"]
+testpaths = ["tests", "sickchill", "SickChill.py"]
 addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail"
 
 [tool.isort]
+profile = "black"
+multi_line_output = 3
 line_length = 160
 combine_as_imports = true
 order_by_type = false
@@ -99,7 +104,6 @@ known_first_party = "sickchill"
 extra_standard_library = [ "posixpath", "ntpath" ]
 use_parentheses = true
 src_paths = [ "sickchill", "tests", "SickChill.py", "setup.py" ]
-profile = "hug"
 
 [tool.black]
 line-length = 160
@@ -113,90 +117,85 @@ exclude = '''
     | \.git          # root of the project
     | \.tox
     | \.venv
-    | lib3
     | build
     | dist
   )/
 )
 '''
 
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-skipsdist = true
-envlist = py38-{flake8,linux,windows}
-setenv = PYTHONPATH = {toxinidir}/lib3{:}{env:PYTHONPATH:}
-passenv = DEBUG VERBOSE
+[tool.poetry.extras]
 
-[testenv:py38-linux]
-platform = linux
-whitelist_externals = /bin/rm
-envdir = {toxworkdir}/tox
-setenv = PYTHONPATH = {toxinidir}/lib3{:}{env:PYTHONPATH:}
-passenv = CI GITHUB_* CODECOV_TOKEN DEBUG VERBOSE
-deps =
-    mock
-    pytest
-    pytest-vcr
-    pytest-cov
-    codecov
-commands =
-    /bin/rm -f {toxinidir}/tests/sickchill.db
-    /bin/rm -f {toxinidir}/tests/cache.db
-    /bin/rm -f {toxinidir}/tests/failed.db
-    pip install -Ur requirements.txt
-    pytest
-    - codecov -e GITHUB_RUN_ID GITHUB_REF
+[tool.poe.tasks]
+pytest = "pytest"
+yarn = "yarn"
+xo = "xo"
+ava = "ava"
 
-[testenv:py38-windows]
-platform = win
-whitelist_externals = {env:SYSTEMROOT:C:\\Windows\\}\\System32\\cmd.exe
-envdir = {toxworkdir}/tox
-setenv = PYTHONPATH = {toxinidir}/lib3{:}{env:PYTHONPATH:}
-passenv = CI APPVEYOR APPVEYOR_* PYTHON_ARCH DEBUG VERBOSE
-deps =
-    mock
-    pytest
-    pytest-vcr
-    pytest-cov
-    codecov
-commands =
-    cmd /c del /f /q {toxinidir}\\tests\\sickchill.db {toxinidir}\\tests\\cache.db {toxinidir}\\tests\\failed.db 2> nul
-    pip install -Ur requirements.txt
-    pytest
-    - codecov -e APPVEYOR_REPO_BRANCH PYTHON_ARCH
+_black = {cmd = "black . --check --diff", help = "Check code style using black"}
+_isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
+flake8 = {cmd = "flake8 --select C103 sickchill tests SickChill.py", help = "Check for undefined variables"}
 
-[testenv:py38-flake8]
-envdir = {toxworkdir}/flake8
-setenv = PYTHONPATH = {toxinidir}/lib3{:}{env:PYTHONPATH:}
-deps =
-    flake9
-    isort
-commands =
-    flake8 --select C103 sickchill tests SickChill.py setup.py
-    isort --check-only --diff sickchill tests SickChill.py setup.py
+isort = {cmd = "isort .", help = "Fix import order"}
+black = {cmd = "black .", help = "Reformat code using black"}
 
-[testenv:py38-isort]
-envdir = {toxworkdir}/flake8
-setenv = PYTHONPATH = {toxinidir}/lib3{:}{env:PYTHONPATH:}
-deps =
-    flake9
-    isort
-commands =
-    flake8 --select C103 sickchill tests SickChill.py setup.py
-    isort sickchill SickChill.py tests setup.py
+test_providers = {cmd = "pytest tests/sickchill_tests/providers/torrent/test_parsing.py", help = "Run provider tests"}
+crowdin_upload = "crowdin-cli-py upload sources -c .github/crowdin.yml"
+crowdin_download = "crowdin-cli-py download -c .github/crowdin.yml"
+po2json = "po2json --format jed "
+codecov = "codecov"
 
-[testenv:py38-providers]
-platform = linux
-whitelist_externals = /bin/rm
-envdir = {toxworkdir}/tox
-setenv = PYTHONPATH = {toxinidir}/lib3{:}{env:PYTHONPATH:}
-passenv = CI DEBUG VERBOSE
-commands =
-    /bin/rm -f {toxinidir}/tests/sickchill.db
-    /bin/rm -f {toxinidir}/tests/cache.db
-    /bin/rm -f {toxinidir}/tests/failed.db
-    pytest tests/sickchill_tests/providers/torrent/test_parsing.py
+lint = ["_black", "_isort", "flake8"]
+format = ["black", "isort", "flake8"]
+
+_yarn_upgrade = {cmd = "yarn upgrade", help = "update yarn dependancies"}
+_poetry_update = {shell = "poetry update", help = "update python dependancies"}
+_add_locks = {shell = "git add poetry.lock yarn.lock", help = "Add yarn and poetry lock files"}
+depup = ["_poetry_update", "_yarn_upgrade", "_add_locks"]
+
+update_translations = ["babel_extract", "babel_update", "crowdin_upload", "crowdin_download", "babel_compile", "po2json"]
+update_dependencies = {shell = "poetry update && yarn upgrade && git add poetry.lock yarn.lock"}
+
+test = [
+    { ref = "format" },
+    { cmd = "yarn test" },
+    { cmd = "pytest" }
+]
+
+babel_extract = """
+pybabel extract
+--project=sickchill
+--mapping-file=.github/babel-mapping.cfg
+--width=80
+--charset=utf-8
+--output-file=sickchill/locale/messages.pot
+--input-dirs=sickchill
+--keywords=_n:1,2
+--copyright-holder=SickChill
+--msgid-bugs-address=miigotu@gmail.com
+--add-comments="TRANSLATORS:"
+--sort-output
+"""
+
+babel_compile = """
+pybabel compile
+--mapping-file=.github/babel-mapping.cfg
+--directory=sickchill/locale
+"""
+
+babel_init = """
+pybabel init
+--mapping_file=.github/babel-mapping.cfg
+--output-dir=sickchill/locale
+--input-file=sickchill/locale/messages.pot
+"""
+
+babel_update = """
+pybabel update
+--mapping-file=.github/babel-mapping.cfg
+--output-dir=sickchill/locale
+--input-file=sickchill/locale/messages.pot
+--ignore-obsolete
+--previous
 """
 
 [tool.poetry.dependencies]
@@ -258,7 +257,6 @@ babelfish = {git = "https://github.com/Diaoul/babelfish", rev = "master"}
 coveralls = "^3.1.0"
 mock = "^4.0.3"
 Babel = "^2.9.0"
-wheel = "^0.36.2"
 pytest-vcr = "^1.0.2"
 pytest-cov = "^2.12.1"
 pytest-isort = "^2.0.0"
@@ -270,3 +268,7 @@ flake8-docstrings = "^1.6.0"
 flake9 = "^3.8.3"
 codecov = "^2.1.11"
 black = "^20.8b1"
+pytest = "^6.2.4"
+isort = "^5.8.0"
+poethepoet = "^0.10.0"
+po2json = "^0.2.2"

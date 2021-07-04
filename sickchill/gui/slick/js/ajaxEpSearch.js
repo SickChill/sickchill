@@ -97,12 +97,8 @@ function updateImages(data) {
                 if (ep.overview.toLowerCase() === 'snatched') {
                     // Find Banner or Poster
                     let actionElement = elementCompleteEpisodes.closest('div.ep_listing');
-                    if (actionElement.length === 0) {
-                        if (elementCompleteEpisodes.closest('table.calendarTable').length === 0) {
-                            // List view
-                            actionElement = elementCompleteEpisodes.closest('tr');
-                        }
-                        // Else - Calendar view is ignored
+                    if (actionElement.length === 0 && elementCompleteEpisodes.closest('table.calendarTable').length === 0) {
+                        actionElement = elementCompleteEpisodes.closest('tr');
                     }
 
                     if (actionElement.length > 0) {
@@ -126,11 +122,7 @@ function checkManualSearches() {
     $.ajax({
         url,
         success(data) {
-            if (data.episodes) {
-                pollInterval = 5000;
-            } else {
-                pollInterval = 15000;
-            }
+            pollInterval = data.episodes ? 5000 : 15000;
 
             updateImages(data);
         },
@@ -171,15 +163,15 @@ $(document).ready(checkManualSearches);
         url = url + '&downCurQuality=' + (qualityDownload ? '1' : '0');
 
         $.getJSON(url, data => {
-            let imageName = null; // eslint-disable-line no-unused-vars
-            let imageResult = null; // eslint-disable-line no-unused-vars
+            let imageName = null;
+            let imageResult = null;
             // If they failed then just put the red X
             if (data.result.toLowerCase() === 'failure') {
                 imageName = stupidOptions.noImage;
-                imageResult = 'Failed';
+                imageResult = _('Failed');
             } else {
-                imageName = stupidOptions.loadingImage;
-                imageResult = 'Success';
+                imageName = stupidOptions.loadingClass;
+                imageResult = _('Success');
                 // Color the row
                 if (stupidOptions.colorRow) {
                     parent.parent().removeClass('skipped wanted qual good unaired').addClass('snatched');
@@ -195,9 +187,9 @@ $(document).ready(checkManualSearches);
             }
 
             // Put the corresponding image as the result of queuing of the manual search
-            // icon.prop('title', imageResult);
-            // icon.prop('alt', imageResult);
-            // icon.prop('class', imageName);
+            icon.prop('title', imageResult);
+            icon.prop('alt', imageResult);
+            icon.prop('class', imageName);
         });
 
         // Don't follow the link
