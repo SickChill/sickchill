@@ -60,10 +60,13 @@ class TVDB(Indexer):
             return self.get_series_by_id(indexerid, language)
 
         # Just return the first result for now
-        result = self._series(self.search(name, language)[0]["id"])
-        if result:
-            result.info(language=language)
-        return result
+        try:
+            result = self._series(self.search(name, language)[0]["id"])
+            if result:
+                result.info(language=language)
+            return result
+        except Exception:
+            pass
 
     @ExceptionDecorator()
     def episodes(self, show, season=None):
@@ -112,8 +115,8 @@ class TVDB(Indexer):
                     series = self._series(name, language=language)
                     if series:
                         result = [series.info(language)]
-            except requests.exceptions.RequestException:
-                logger.exception(traceback.format_exc())
+            except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
+                logger.debug(traceback.format_exc())
         else:
             # Name as provided (usually from nfo)
             names = [name]
@@ -134,8 +137,8 @@ class TVDB(Indexer):
                     result = self._search(attempt, language=language)
                     if result:
                         break
-                except requests.exceptions.RequestException:
-                    logger.exception(traceback.format_exc())
+                except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
+                    logger.debug(traceback.format_exc())
 
         return result
 
