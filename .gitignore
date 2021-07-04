@@ -82,14 +82,16 @@ coverage.xml
 ######################
 contrib/nzbToMedia
 
-# setup.py #
+# pyproject #
 ######################
 *.egg-info
 .eggs
 build
+.pytest_cache
 
 # virtualenv #
 venv
+.venv
 
 # diffs
 /*.diff

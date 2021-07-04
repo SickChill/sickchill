@@ -1605,7 +1605,7 @@ class CMDSickChillDeleteRootDir(ApiCall):
                 break
 
         root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs_new]
-        if len(root_dirs_new) > 0:
+        if root_dirs_new:
             root_dirs_new.insert(0, new_index)
         # noinspection PyCompatibility
         root_dirs_new = "|".join(str(x) for x in root_dirs_new)
@@ -1725,6 +1725,7 @@ class CMDSickChillSearchIndexers(ApiCall):
             "indexerid": {"desc": "Unique ID of a show"},
             "lang": {"desc": "The 2-letter language code of the desired show"},
             "only_new": {"desc": "Discard shows that are already in your show list"},
+            "exact": {"desc": "Match show with search exactly"},
         },
     }
 
@@ -1735,6 +1736,7 @@ class CMDSickChillSearchIndexers(ApiCall):
         self.lang, args = self.check_params(args, kwargs, "lang", settings.INDEXER_DEFAULT_LANGUAGE, False, "string", list(self.valid_languages))
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, False, "int", [])
         self.only_new, args = self.check_params(args, kwargs, "only_new", True, False, "bool", [])
+        self.exact, args = self.check_params(args, kwargs, "exact", False, False, "bool", [])
 
     def run(self):
         """ Search for a show with a given name on all the indexers, in a specific language """

@@ -637,7 +637,7 @@ class Home(WebRoot):
         else:
             backend_dirs = []
 
-        if len(backend_dirs):
+        if backend_dirs:
             for subject in backend_dirs:
                 rootDir[subject] = helpers.disk_usage_hr(subject)
 
@@ -1107,7 +1107,7 @@ class Home(WebRoot):
             bestQualities = [bestQualities]
 
         if isinstance(exceptions_list, list):
-            if len(exceptions_list) > 0:
+            if exceptions_list:
                 exceptions_list = exceptions_list[0]
             else:
                 exceptions_list = None
@@ -1253,7 +1253,7 @@ class Home(WebRoot):
 
         logger.debug("Updating show exceptions")
         try:
-            sickchill.oldbeard.scene_exceptions.update_scene_exceptions(show_obj.indexerid, exceptions)
+            sickchill.oldbeard.scene_exceptions.update_custom_scene_exceptions(show_obj.indexerid, exceptions)
             time.sleep(cpu_presets[settings.CPU_PRESET])
         except CantUpdateShowException:
             logger.debug(traceback.format_exc())

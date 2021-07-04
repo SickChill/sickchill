@@ -1,14 +1,6 @@
 import gettext
 import os
-import sys
-
-
-def setup_lib_path(additional=None):
-    lib_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "lib3"))
-    if lib_path not in sys.path:
-        sys.path.insert(1, lib_path)
-    if additional and additional not in sys.path:
-        sys.path.insert(1, additional)
+import subprocess
 
 
 def sickchill_dir():
@@ -30,12 +22,36 @@ def setup_gettext(language=None):
 
 def check_installed():
     try:
-        from importlib.metadata import Distribution, PackageNotFoundError
+        from importlib.metadata import Distribution, PackageNotFoundError  # noqa
     except ImportError:
-        from importlib_metadata import Distribution, PackageNotFoundError
+        from importlib_metadata import Distribution, PackageNotFoundError  # noqa
 
     try:
         Distribution.from_name("sickchill")
     except PackageNotFoundError:
         return False
     return True
+
+
+def pip_install(packages):
+    if not isinstance(packages, list):
+        packages = [packages]
+
+    args = ["pip", "install", "--no-input", "--disable-pip-version-check", "--no-color", "--no-python-version-warning", "-qqU"]
+    args.extend(packages)
+    try:
+        subprocess.check_call(args)
+    except subprocess.CalledProcessError:
+        try:
+            args.append("--user")
+            subprocess.check_call(args)
+        except subprocess.CalledProcessError:
+            return False
+    return True
+
+
+def poetry_install():
+    if not check_installed():
+        pip_install("poetry")
+        requirements = subprocess.getoutput(["poetry export -f requirements.txt --without-hashes"]).splitlines()
+        pip_install(requirements)

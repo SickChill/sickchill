@@ -1,18 +1,12 @@
 import datetime
 import os
-import platform
 import re
 import shutil
 import socket
 import sys
 
-from configobj import ConfigObj
-
-from .init_helpers import setup_lib_path
-
-setup_lib_path()
-
 import rarfile
+from configobj import ConfigObj
 from tornado.locale import load_gettext_translations
 
 import sickchill
@@ -231,10 +225,12 @@ def initialize(consoleLogging=True):
 
         settings.CPU_PRESET = check_setting_str(settings.CFG, "General", "cpu_preset", "NORMAL")
 
-        settings.ANON_REDIRECT = check_setting_str(settings.CFG, "General", "anon_redirect", "http://dereferer.org/?")
-        # attempt to help prevent users from breaking links by using a bad url
-        if not settings.ANON_REDIRECT.endswith("?"):
+        settings.ANON_REDIRECT = check_setting_str(settings.CFG, "General", "anon_redirect", settings.DEFAULT_ANON_REDIRECT)
+        if settings.ANON_REDIRECT == "disabled" or not settings.ANON_REDIRECT.endswith("?"):
             settings.ANON_REDIRECT = ""
+        if settings.ANON_REDIRECT == "http://dereferer.org/?":
+            settings.ANON_REDIRECT = settings.DEFAULT_ANON_REDIRECT
+
 
         settings.PROXY_SETTING = check_setting_str(settings.CFG, "General", "proxy_setting")
         if settings.PROXY_SETTING:
@@ -1178,7 +1174,7 @@ def save_config():
                 "download_url": settings.DOWNLOAD_URL,
                 "localhost_ip": settings.LOCALHOST_IP,
                 "cpu_preset": settings.CPU_PRESET,
-                "anon_redirect": settings.ANON_REDIRECT,
+                "anon_redirect": settings.ANON_REDIRECT or "disabled",
                 "tvdb_user": settings.TVDB_USER,
                 "tvdb_user_key": settings.TVDB_USER_KEY,
                 "api_key": settings.API_KEY,

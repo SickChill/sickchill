@@ -11,7 +11,6 @@ from secrets import compare_digest
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
-from mako.lookup import TemplateLookup
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine

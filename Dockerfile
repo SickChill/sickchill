@@ -14,16 +14,23 @@ ENV PYTHONIOENCODING="UTF-8"
 VOLUME /data /downloads /tv
 RUN mkdir /app /var/run/sickchill
 WORKDIR /app/sickchill
-COPY requirements.txt /app/sickchill
+COPY pyproject.toml /app/sickchill
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
-RUN apt-get update -q && \
- apt-get install -yq git libxml2 libxslt1.1 mediainfo unrar && \
- pip install -U pip wheel && pip install --no-cache-dir --no-input -Ur requirements.txt && \
- apt-get clean -yq && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -qq && apt-get install -yqq git libxml2 libxslt1.1 mediainfo unrar curl && apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
+
+# Break layer cache, always install poetry and depends.
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --preview && \
+    export PATH="/root/.local/bin:$PATH" && poetry run pip install -U wheel setuptools pip && poetry install --no-interaction --no-root --no-dev -vvv
 
 COPY . /app/sickchill
 RUN chmod -R 777 /app/sickchill
 
-CMD /usr/local/bin/python SickChill.py -q --nolaunch --datadir=/data --port 8081
+CMD poetry run python SickChill.py -q --nolaunch --datadir=/data --port 8081
+
 EXPOSE 8081
+
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://localhost:8081/ || curl -f https://localhost:8081/ || exit 1
