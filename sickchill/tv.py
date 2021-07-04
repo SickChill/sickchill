@@ -837,7 +837,7 @@ class TVShow(object):
 
         try:
             int(self.imdb_id.lstrip("t"))
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, AttributeError):
             self.imdb_id = ""
 
     def load_imdb_imfo(self):
