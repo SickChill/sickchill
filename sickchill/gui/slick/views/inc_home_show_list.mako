@@ -154,7 +154,7 @@
                                 <td align="center" class="nowrap">
                                     <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
                                 </td>
-                            % except ValueError:
+                            % except (ValueError, OSError):
                                 <td align="center" class="nowrap"></td>
                             % endtry
                         % else:
@@ -167,7 +167,7 @@
                                 <td align="center" class="nowrap">
                                     <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
                                 </td>
-                            % except ValueError:
+                            % except (ValueError, OSError):
                                 <td align="center" class="nowrap"></td>
                             % endtry
                         % else:

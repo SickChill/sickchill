@@ -52,14 +52,17 @@ def pip_install(packages, log=print):
         packages = [packages]
 
     args = [
-        sys.executable, '-m', 'pip', 'install',
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
         "--no-input",
         "--disable-pip-version-check",
         "--no-python-version-warning",
         "--no-color",
-        '--trusted-host=pypi.org',
-        '--trusted-host=files.pythonhosted.org',
-        "-qqU"
+        "--trusted-host=pypi.org",
+        "--trusted-host=files.pythonhosted.org",
+        "-qqU",
     ]
 
     args.extend(packages)
@@ -85,4 +88,3 @@ def poetry_install():
         pip_install(["setuptools", "poetry", "--pre"])
         requirements = subprocess.getoutput(["poetry export -f requirements.txt --without-hashes"]).splitlines()
         pip_install(requirements)
-

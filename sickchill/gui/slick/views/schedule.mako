@@ -270,7 +270,7 @@
                                                 % if settings.TRIM_ZERO:
                                                     <% airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE) %>
                                                 % endif
-                                                % except OverflowError:
+                                            % except OverflowError:
                                                 <% airtime = "Invalid" %>
                                             % endtry
                                             <tr>

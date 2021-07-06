@@ -231,7 +231,6 @@ def initialize(consoleLogging=True):
         if settings.ANON_REDIRECT == "http://dereferer.org/?":
             settings.ANON_REDIRECT = settings.DEFAULT_ANON_REDIRECT
 
-
         settings.PROXY_SETTING = check_setting_str(settings.CFG, "General", "proxy_setting")
         if settings.PROXY_SETTING:
             settings.PROXY_SETTING = config.clean_url(settings.PROXY_SETTING).rstrip("/")
