@@ -1,6 +1,7 @@
 import gettext
 import os
 import subprocess
+import sys
 
 
 def sickchill_dir():
@@ -33,25 +34,55 @@ def check_installed():
     return True
 
 
-def pip_install(packages):
+def print_result(result: str, error: subprocess.CalledProcessError = None, log=print):
+    if not log:
+        return
+
+    if result:
+        log(result)
+    if error:
+        if error.stdout:
+            log(error.stdout)
+        if error.stderr:
+            log(error.stderr)
+
+
+def pip_install(packages, log=print):
     if not isinstance(packages, list):
         packages = [packages]
 
-    args = ["pip", "install", "--no-input", "--disable-pip-version-check", "--no-color", "--no-python-version-warning", "-qqU"]
+    args = [
+        sys.executable, '-m', 'pip', 'install',
+        "--no-input",
+        "--disable-pip-version-check",
+        "--no-python-version-warning",
+        "--no-color",
+        '--trusted-host=pypi.org',
+        '--trusted-host=files.pythonhosted.org',
+        "-qqU"
+    ]
+
     args.extend(packages)
+
+    result = ""
     try:
-        subprocess.check_call(args)
-    except subprocess.CalledProcessError:
+        result = subprocess.check_output(args, text=True)
+    except subprocess.CalledProcessError as error:
+        print_result(result, error, log)
         try:
             args.append("--user")
-            subprocess.check_call(args)
-        except subprocess.CalledProcessError:
+            result = subprocess.check_output(args, text=True)
+        except subprocess.CalledProcessError as error:
+            print_result(result, error, log)
             return False
+
+    print_result(result, log=log)
     return True
 
 
 def poetry_install():
     if not check_installed():
-        pip_install("poetry")
+        pip_install(["setuptools", "poetry", "--pre"])
         requirements = subprocess.getoutput(["poetry export -f requirements.txt --without-hashes"]).splitlines()
         pip_install(requirements)
+
