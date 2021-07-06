@@ -10,31 +10,31 @@ $(() => {
                     data: {
                         show: match[1],
                         episode: match[3],
-                        season: match[2]
+                        season: match[2],
                     },
                     success(data) {
                         this.set('content.text', data);
-                    }
-                }
+                    },
+                },
             },
             show: {
-                solo: true
+                solo: true,
             },
             position: {
                 viewport: $(window),
                 my: 'left center',
                 adjust: {
                     y: -10,
-                    x: 2
-                }
+                    x: 2,
+                },
             },
             style: {
                 tip: {
                     corner: true,
-                    method: 'polygon'
+                    method: 'polygon',
                 },
-                classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'
-            }
+                classes: 'qtip-rounded qtip-shadow ui-tooltip-sb',
+            },
         });
     });
 });

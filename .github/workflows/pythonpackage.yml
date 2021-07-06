@@ -104,7 +104,7 @@ jobs:
     - name: Lint Python and Javascript
       run: poe lint
     - name: Test Javascript
-      run: poe yarn test
+      run: poe yarn --dev && poe yarn test
     - name: Test Python
       run: |
         poe pytest

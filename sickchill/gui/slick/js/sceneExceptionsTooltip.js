@@ -8,15 +8,15 @@ $(() => {
                     url: scRoot + '/home/sceneExceptions',
                     type: 'GET',
                     data: {
-                        show: match[1]
+                        show: match[1],
                     },
                     success(data) {
                         this.set('content.text', data);
-                    }
-                }
+                    },
+                },
             },
             show: {
-                solo: true
+                solo: true,
             },
             position: {
                 viewport: $(window),
@@ -24,16 +24,16 @@ $(() => {
                 at: 'top center',
                 adjust: {
                     y: 10,
-                    x: 0
-                }
+                    x: 0,
+                },
             },
             style: {
                 tip: {
                     corner: true,
-                    method: 'polygon'
+                    method: 'polygon',
                 },
-                classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'
-            }
+                classes: 'qtip-rounded qtip-shadow ui-tooltip-sb',
+            },
         });
     });
 });

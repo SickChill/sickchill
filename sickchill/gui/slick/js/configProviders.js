@@ -356,9 +356,7 @@ $(document).ready(function () {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map((i, opt) => {
-            return $(opt).text();
-        }).toArray().join(',');
+        const cat = $('#newznab_cat option').map((i, opt) => $(opt).text()).toArray().join(',');
 
         $(this).updateProvider(selectedProvider, url, key, cat);
     });
@@ -421,9 +419,7 @@ $(document).ready(function () {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map((i, opt) => {
-            return $(opt).text();
-        }).toArray().join(',');
+        const cat = $('#newznab_cat option').map((i, opt) => $(opt).text()).toArray().join(',');
 
         $('#newznab_cat option:not([value])').remove();
 
@@ -436,9 +432,7 @@ $(document).ready(function () {
         const key = $.trim($('#newznab_key').val());
         // Var cat = $.trim($('#newznab_cat').val());
 
-        const cat = $.trim($('#newznab_cat option').map((i, opt) => {
-            return $(opt).text();
-        }).toArray().join(','));
+        const cat = $.trim($('#newznab_cat option').map((i, opt) => $(opt).text()).toArray().join(','));
 
         if (!name || !url || !key) {
             return;
@@ -534,7 +528,7 @@ $(document).ready(function () {
         placeholder: 'ui-state-highlight',
         update() {
             $(this).refreshProviderList();
-        }
+        },
     });
 
     $('#provider_order_list').disableSelection();

@@ -8,8 +8,8 @@
             autocompleteURL: scRoot + '/browser/complete',
             includeFiles: 0,
             fileTypes: [], // File extensions to include, 'images' is an alias for image types
-            showBrowseButton: true
-        }
+            showBrowseButton: true,
+        },
     };
 
     let fileBrowserDialog = null;
@@ -32,16 +32,14 @@
         currentRequest = $.getJSON(endpoint, {
             path,
             includeFiles,
-            fileTypes: fileTypes.join(',')
+            fileTypes: fileTypes.join(','),
         }, data => {
             fileBrowserDialog.empty();
             const firstValue = data[0];
             let i = 0;
             let list = null;
             let link = null;
-            data = $.grep(data, () => {
-                return i++ !== 0;
-            });
+            data = $.grep(data, () => i++ !== 0);
 
             const inputContainer = $('<div class="fileBrowserFieldContainer"></div>');
             $('<input type="text" class="form-control input-sm">').val(firstValue.currentPath).on('keypress', event_ => {
@@ -49,7 +47,7 @@
                     browse(event_.target.value, endpoint, includeFiles, fileTypes);
                 }
             }).appendTo(inputContainer.appendTo(fileBrowserDialog)).fileBrowser({
-                showBrowseButton: false
+                showBrowseButton: false,
             }).on('autocompleteselect', (event_, ui) => {
                 browse(ui.item.value, endpoint, includeFiles, fileTypes);
             });
@@ -106,7 +104,7 @@
             fileBrowserDialog = $('<div class="fileBrowserDialog" style="display:none"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
                 classes: {
-                    'ui-dialog': 'ui-dialog-scrollable-by-child'
+                    'ui-dialog': 'ui-dialog-scrollable-by-child',
                 },
                 title: options.title,
                 position: {my: 'center top', at: 'center top+60', of: window},
@@ -115,7 +113,7 @@
                 maxHeight: Math.min($(document).height() - 80, $(window).height() - 80),
                 maxWidth: $(document).width() - 80,
                 modal: true,
-                autoOpen: false
+                autoOpen: false,
             });
         }
 
@@ -126,13 +124,13 @@
                 // Store the browsed path to the associated text field
                 callback(options.includeFiles ? currentBrowserPath : $(this).find('.fileBrowserField').val(), options);
                 $(this).dialog('close');
-            }
+            },
         }, {
             text: 'Cancel',
             class: 'btn',
             click() {
                 $(this).dialog('close');
-            }
+            },
         }]);
 
         // Set up the browser and launch the dialog
@@ -166,23 +164,19 @@
                         success(data) {
                             // Implement a startsWith filter for the results
                             const matcher = new RegExp('^' + query, 'i');
-                            const a = $.grep(data, item => {
-                                return matcher.test(item);
-                            });
+                            const a = $.grep(data, item => matcher.test(item));
                             response(a);
-                        }
+                        },
                     });
                 },
                 open() {
                     $('.ui-autocomplete li.ui-menu-item a').removeClass('ui-corner-all');
-                }
+                },
             }).data('ui-autocomplete')._renderItem = function (ul, item) {
                 // Highlight the matched search term from the item -- note that this is global and will match anywhere
                 let resultItem = item.label;
                 const x = new RegExp('(?![^&;]+;)(?!<[^<>]*)(' + query + ')(?![^<>]*>)(?![^&;]+;)', 'gi');
-                resultItem = resultItem.replace(x, fullMatch => {
-                    return '<b>' + fullMatch + '</b>';
-                });
+                resultItem = resultItem.replace(x, fullMatch => '<b>' + fullMatch + '</b>');
                 return $('<li></li>')
                     .data('ui-autocomplete-item', item)
                     .append('<a class="nowrap">' + resultItem + '</a>')
@@ -224,7 +218,7 @@
                     const optionsWithInitialDir = $.extend({}, options, {initialDir});
                     $(this).nFileBrowser(callback, optionsWithInitialDir);
                     return false;
-                })
+                }),
             );
         }
 

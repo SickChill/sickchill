@@ -15,8 +15,8 @@ $(document).ready(() => {
                     return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^(the|a|an)\s/i, '')).toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
-                votes: '[data-votes] parseInt'
-            }
+                votes: '[data-votes] parseInt',
+            },
         });
     });
 
@@ -49,7 +49,7 @@ $(document).ready(() => {
 
     $('#showsortdirection').on('change', function () {
         $('#container').isotope({
-            sortAscending: (this.value === 'asc')
+            sortAscending: (this.value === 'asc'),
         });
     });
 });

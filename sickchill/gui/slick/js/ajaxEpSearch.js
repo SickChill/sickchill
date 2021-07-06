@@ -103,9 +103,7 @@ function updateImages(data) {
 
                     if (actionElement.length > 0) {
                         // Remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
-                        actionElement.attr('class', (i, value) => {
-                            return value.replace(/(^|\s)listing-\S+/g, '');
-                        }).addClass('listing-snatched');
+                        actionElement.attr('class', (i, value) => value.replace(/(^|\s)listing-\S+/g, '')).addClass('listing-snatched');
                     }
                 }
 
@@ -134,7 +132,7 @@ function checkManualSearches() {
         complete() {
             setTimeout(checkManualSearches, pollInterval);
         },
-        timeout: 15000 // Timeout every 15 secs
+        timeout: 15000, // Timeout every 15 secs
     });
 }
 
@@ -203,8 +201,8 @@ $(document).ready(checkManualSearches);
             loadingClass: 'loading-spinner16',
             queuedClass: 'displayshow-icon-clock',
             noImage: 'displayshow-icon-disable',
-            yesImage: 'displayshow-icon-enable'
-        }
+            yesImage: 'displayshow-icon-enable',
+        },
     };
 
     $.fn.ajaxEpSearch = function (options) {
