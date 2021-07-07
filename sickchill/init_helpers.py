@@ -2,6 +2,12 @@ import gettext
 import os
 import subprocess
 import sys
+from pathlib import Path
+from typing import Callable, List, Union
+
+sickchill_module = Path(__file__).parent.resolve()
+pyproject_path = sickchill_module.parent / "pyproject.toml"
+# locale_dir = sickchill_dir / "locale"
 
 
 def sickchill_dir():
@@ -12,29 +18,32 @@ def locale_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "locale"))
 
 
-def setup_gettext(language=None):
+def setup_gettext(language: str = None) -> None:
     languages = [language] if language else None
     if not [key for key in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG") if os.environ.get(key)]:
         os.environ["LC_MESSAGES"] = "en_US.UTF-8"
-    print(locale_dir())
     gt = gettext.translation("messages", locale_dir(), languages=languages, fallback=True)
     gt.install(names=["ngettext"])
 
 
-def check_installed():
+def check_installed(name: str = __package__) -> bool:
     try:
         from importlib.metadata import Distribution, PackageNotFoundError  # noqa
     except ImportError:
-        from importlib_metadata import Distribution, PackageNotFoundError  # noqa
+        try:
+            from importlib_metadata import Distribution, PackageNotFoundError  # noqa
+        except ImportError:
+            requirements = subprocess.getoutput([f"{sys.executable} -m pip freeze"]).splitlines()
+            return name in [req.split("==")[0] for req in requirements]
 
     try:
-        Distribution.from_name("sickchill")
+        Distribution.from_name(name)
     except PackageNotFoundError:
         return False
     return True
 
 
-def print_result(result: str, error: subprocess.CalledProcessError = None, log=print):
+def print_result(result: str, error: subprocess.CalledProcessError = None, log: Callable[[str], None] = print) -> None:
     if not log:
         return
 
@@ -47,7 +56,7 @@ def print_result(result: str, error: subprocess.CalledProcessError = None, log=p
             log(error.stderr)
 
 
-def pip_install(packages, log=print):
+def pip_install(packages: Union[List[str], str], log: Callable[[str], None] = print) -> bool:
     if not isinstance(packages, list):
         packages = [packages]
 
@@ -83,8 +92,10 @@ def pip_install(packages, log=print):
     return True
 
 
-def poetry_install():
+def poetry_install() -> None:
     if not check_installed():
-        pip_install(["setuptools", "poetry", "--pre"])
-        requirements = subprocess.getoutput(["poetry export -f requirements.txt --without-hashes"]).splitlines()
-        pip_install(requirements)
+        pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
+        if pyproject_path.exists():
+            pip_install(["setuptools", "poetry", "--pre"])
+            requirements = subprocess.getoutput([f"cd {pyproject_path.parent} && poetry export -f requirements.txt --without-hashes"]).splitlines()
+            pip_install(requirements)

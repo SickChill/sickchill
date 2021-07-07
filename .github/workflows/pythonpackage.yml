@@ -16,16 +16,16 @@ jobs:
   Test:
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
         os: [ubuntu-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
         experimental: [false]
         include:
           - os: windows-latest
-            experimental: true
             python-version: 3.9
+            experimental: true
           - os: macos-latest
-            experimental: true
             python-version: 3.9
+            experimental: true
       fail-fast: true
     continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
@@ -42,7 +42,7 @@ jobs:
         fetch-depth: 1
         persist-credentials: false
     - name: Lint shell scripts
-      if: success() && startsWith(runner.os, 'Linux') && !env.ACT
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9 && !env.ACT
       uses: ludeeus/action-shellcheck@master
       with:
         format: diff
@@ -51,6 +51,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set up Node
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
       uses: actions/setup-node@v2
       with:
         node-version: '14.x'
@@ -63,6 +64,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.python-version }}-
     - name: Restore npm cache
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
       uses: actions/cache@v2
       with:
         path: $(npm config get cache)
@@ -70,7 +72,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
     - name: Install yarn
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
       run: npm install -g yarn
+      shell: bash
     - name: Install Poetry
       uses: snok/install-poetry@v1.1.6
       with:
@@ -93,15 +97,25 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install --no-interaction --no-root
-        poetry run poe yarn
+        pip install poethepoet
+      shell: bash
+    - name: Run yarn
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      run: poe yarn
+      shell: bash
     - name: Lint Python
-      run: poetry run poe lint
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      run: poe lint
+      shell: bash
     - name: Lint and test Javascript
-      run: poetry run poe yarn test
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      run: poe yarn test
+      shell: bash
     - name: Test Python
       run: |
-        poetry run poe pytest
-        poetry run poe codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+        poe pytest
+        poe codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+      shell: bash
   Deploy:
     needs: [Test]
     runs-on: ubuntu-latest
