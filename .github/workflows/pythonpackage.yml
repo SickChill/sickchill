@@ -93,15 +93,15 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install --no-interaction --no-root
-        poe yarn
+        poetry run poe yarn
     - name: Lint Python
-      run: poe lint
+      run: poetry run poe lint
     - name: Lint and test Javascript
-      run: poe yarn test
+      run: poetry run poe yarn test
     - name: Test Python
       run: |
-        poe pytest
-        poe codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+        poetry run poe pytest
+        poetry run poe codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
   Deploy:
     needs: [Test]
     runs-on: ubuntu-latest
