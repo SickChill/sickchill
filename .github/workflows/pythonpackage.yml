@@ -59,7 +59,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: $(python -m pip cache dir)
-        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.python-version }}-
     - name: Restore npm cache
@@ -69,39 +69,34 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    - name: Set up poetry
-      uses: abatilo/actions-poetry@v2.0.0
+    - name: Install yarn
+      run: npm install -g yarn
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.1.6
       with:
-        poetry-version: 1.2.0a1
-    - name: Install tools
-      run: |
-        pip install -U pip
-        pip install -U poethepoet
-        npm install -g yarn
+        version: 1.2.0a1
+        virtualenvs-path: .venv
+        virtualenvs-create: true
+        virtualenvs-in-project: true
     - name: Restore poetry cache
       if: success() && !env.ACT
       uses: actions/cache@v2
       with:
         path: $(poetry config cache-dir)
-        key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
-        restore-keys: |
-          ${{ runner.os }}-poetry-${{ matrix.python-version }}-
+        key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Restore virtualenv
       if: success() && !env.ACT
       uses: actions/cache@v2
       with:
         path: .venv
-        key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
-        restore-keys: |
-          ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-
+        key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Install dependencies
       run: |
-        pip install poethepoet
-        poetry install
+        poetry install --no-interaction --no-root
         poe yarn
-    - name: Lint Python and Javascript
+    - name: Lint Python
       run: poe lint
-    - name: Test Javascript
+    - name: Lint and test Javascript
       run: poe yarn test
     - name: Test Python
       run: |

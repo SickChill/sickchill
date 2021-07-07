@@ -41,7 +41,7 @@ SickChill = {reference = "SickChill.py", type = "file"}
 
 
 [build-system]
-requires = ["poetry-core>=1.1.0a5"]
+requires = ["poetry-core>=1.1.0a5", "poetry-date-version-plugin>=2021.5.10"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.plugins."poetry.application.plugin"]
@@ -156,7 +156,7 @@ update_translations = ["babel_extract", "babel_update", "crowdin_upload", "crowd
 update_dependencies = {shell = "poetry update && yarn upgrade && git add poetry.lock yarn.lock"}
 
 test = [
-    { ref = "format" },
+    { ref = "lint" },
     { cmd = "yarn test" },
     { cmd = "pytest" }
 ]
@@ -272,3 +272,4 @@ pytest = "^6.2.4"
 isort = "^5.8.0"
 poethepoet = "^0.10.0"
 po2json = "^0.2.2"
+poetry-date-version-plugin = "^2021.5.10"
