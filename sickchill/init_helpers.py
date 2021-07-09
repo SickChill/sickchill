@@ -97,5 +97,5 @@ def poetry_install() -> None:
         pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
         if pyproject_path.exists():
             pip_install(["setuptools", "poetry", "--pre"])
-            requirements = subprocess.getoutput([f"cd {pyproject_path.parent} && poetry export -f requirements.txt --without-hashes"]).splitlines()
+            requirements = subprocess.getoutput([f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"]).splitlines()
             pip_install(requirements)
