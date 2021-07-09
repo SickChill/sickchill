@@ -43,11 +43,15 @@ def check_installed(name: str = __package__) -> bool:
     return True
 
 
-def print_result(result: str, error: subprocess.CalledProcessError = None, log: Callable[[str], None] = print) -> None:
+def print_result(result: Union[str, List[str]], error: subprocess.CalledProcessError = None, log: Callable[[str], None] = print) -> None:
     if not log:
         return
 
     if result:
+        if isinstance(result, list):
+            for line in result:
+                log(line)
+
         log(result)
     if error:
         if error.stdout:
@@ -97,5 +101,10 @@ def poetry_install() -> None:
         pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
         if pyproject_path.exists():
             pip_install(["setuptools", "poetry", "--pre"])
-            requirements = subprocess.getoutput([f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"]).splitlines()
-            pip_install(requirements)
+            requirements = subprocess.getoutput(
+                [f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"]
+            ).splitlines()
+            if len(requirements) <= 1:
+                print_result(requirements)
+            else:
+                pip_install(requirements)
