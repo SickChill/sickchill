@@ -1,9 +1,11 @@
+from pathlib import Path
+
 from . import aniDBfileInfo as fileInfo
 
 
 class TvDBMap(object):
-    def __init__(self, filePath=None):
-        self.xmlMap = fileInfo.read_tvdb_map_xml(filePath)
+    def __init__(self, cache_dir: Path):
+        self.xmlMap = fileInfo.read_tvdb_map_xml(cache_dir)
 
     def get_tvdb_for_anidb(self, anidb_id):
         return self._get_x_for_y(anidb_id, "anidbid", "tvdbid")

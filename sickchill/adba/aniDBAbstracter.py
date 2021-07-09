@@ -1,5 +1,6 @@
 import re
 import string
+from pathlib import Path
 
 from . import aniDBfileInfo as fileInfo
 from .aniDBerrors import AniDBIncorrectParameterError
@@ -98,10 +99,16 @@ class AniDBabstractObject(object):
 
 
 class Anime(AniDBabstractObject):
-    def __init__(self, aniDB, name=None, aid=None, tvdbid=None, paramsA=None, autoCorrectName=False, load=False):
+    def __init__(self, aniDB, cache_dir: Path, name=None, aid=None, tvdbid=None, paramsA=None, autoCorrectName=False, load=False):
+        if not cache_dir.is_dir():
+            raise
+        self.cache_dir = cache_dir / "anime"
+        if not self.cache_dir.is_dir():
+            self.cache_dir.mkdir()
 
         self.mapper = AniDBMapper()
-        self.tvDBMap = TvDBMap()
+
+        self.tvDBMap = TvDBMap(cache_dir=self.cache_dir)
         self.allAnimeXML = None
 
         self.name = name
@@ -158,7 +165,7 @@ class Anime(AniDBabstractObject):
     # TODO: refactor and use the new functions in anidbFileinfo
     def _get_aid_from_xml(self, name):
         if not self.allAnimeXML:
-            self.allAnimeXML = read_anidb_xml()
+            self.allAnimeXML = read_anidb_xml(self.cache_dir)
 
         regex = re.compile(r"( \(\d{4}\))|[%s]" % re.escape(string.punctuation))  # remove any punctuation and e.g. ' (2011)'
         # regex = re.compile('[%s]'  % re.escape(string.punctuation)) # remove any punctuation and e.g. ' (2011)'
@@ -177,7 +184,7 @@ class Anime(AniDBabstractObject):
     # TODO: refactor and use the new functions in anidbFileinfo
     def _get_name_from_xml(self, aid, onlyMain=True):
         if not self.allAnimeXML:
-            self.allAnimeXML = read_anidb_xml()
+            self.allAnimeXML = read_anidb_xml(self.cache_dir)
 
         for anime in self.allAnimeXML.findall("anime"):
             if int(anime.get("aid", False)) == aid:
@@ -204,14 +211,15 @@ class Anime(AniDBabstractObject):
 
 
 class Episode(AniDBabstractObject):
-    def __init__(self, aniDB, number=None, epid=None, filePath=None, fid=None, epno=None, paramsA=None, paramsF=None, load=False, calculate=False):
+    def __init__(self, aniDB, number=None, epid=None, file_path: Path = None, fid=None, epno=None, paramsA=None, paramsF=None, load=False, calculate=False):
         self.mapper = AniDBMapper()
         self.epid = epid
-        self.filePath = filePath
+        self.file_path = file_path
         self.fid = fid
         self.epno = epno
+
         if calculate:
-            (self.ed2k, self.size) = self._calculate_file_stuff(self.filePath)
+            self.ed2k, self.size = self._calculate_file_stuff
 
         if not paramsA:
             self.bitCodeA = "C000F0C0"
@@ -231,8 +239,7 @@ class Episode(AniDBabstractObject):
 
     def load_data(self):
         """load the data from anidb"""
-        if self.filePath and not (self.ed2k or self.size):
-            (self.ed2k, self.size) = self._calculate_file_stuff(self.filePath)
+        self.ed2k, self.size = self._calculate_file_stuff
 
         self.rawData = self.aniDB.file(
             fid=self.fid,
@@ -259,8 +266,7 @@ class Episode(AniDBabstractObject):
         3    deleted    - the file has been deleted or is not available for other reasons (i.e. reencoded)
 
         """
-        if self.filePath and not (self.ed2k or self.size):
-            (self.ed2k, self.size) = self._calculate_file_stuff(self.filePath)
+        self.ed2k, self.size = self._calculate_file_stuff
 
         try:
             self.aniDB.mylistadd(size=self.size, ed2k=self.ed2k, state=status)
@@ -270,10 +276,15 @@ class Episode(AniDBabstractObject):
             # TODO: add the name or something
             self.log("Added the episode to anidb")
 
-    def _calculate_file_stuff(self, filePath):
-        if not filePath:
+    @property
+    def _calculate_file_stuff(self):
+        if not (self.file_path and self.file_path.is_file()):
             return None, None
+
+        if self.ed2k and self.size:
+            return self.ed2k, self.size
+
         self.log("Calculating the ed2k. Please wait...")
-        ed2k = fileInfo.get_file_hash(filePath)
-        size = fileInfo.get_file_size(filePath)
+        ed2k = fileInfo.get_file_hash(self.file_path)
+        size = self.file_path.stat().st_size
         return ed2k, size

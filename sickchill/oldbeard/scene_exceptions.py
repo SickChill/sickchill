@@ -1,5 +1,6 @@
 import datetime
 import time
+from pathlib import Path
 
 import sickchill
 from sickchill import adba, logger, settings
@@ -289,7 +290,7 @@ def _anidb_exceptions_fetcher():
         for show in settings.showList:
             if show.is_anime and show.indexer == 1:
                 try:
-                    anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
+                    anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True, cache_dir=Path(settings.CACHE_DIR))
                 except Exception:
                     continue
                 else:

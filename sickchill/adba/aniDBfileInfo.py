@@ -2,16 +2,16 @@ import hashlib
 import os
 import time
 from functools import reduce
+from pathlib import Path
 from xml.etree import ElementTree
 
 # http://www.radicand.org/blog/orz/2010/2/21/edonkey2000-hash-in-python/
 import requests
 
 
-def get_file_hash(filePath):
+def get_file_hash(filePath: Path):
     """ Returns the ed2k hash of a given file."""
-    if not filePath:
-        return None
+
     md4 = hashlib.new("md4").copy
 
     def gen(f):
@@ -27,7 +27,7 @@ def get_file_hash(filePath):
         m.update(data)
         return m
 
-    with open(filePath, "rb") as f:
+    with filePath.open("rb") as f:
         a = gen(f)
         hashes = [md4_hash(data).digest() for data in a]
         if len(hashes) == 1:
@@ -36,78 +36,60 @@ def get_file_hash(filePath):
             return md4_hash(reduce(lambda b, c: b + c, hashes, b"")).hexdigest()
 
 
-def get_file_size(path):
-    size = os.path.getsize(path)
-    return size
-
-
-def _remove_file_failed(file):
-    try:
-        os.remove(file)
-    except Exception:
-        pass
-
-
-def download_file(url, filename):
+def download_file(url, filename: Path):
     try:
         r = requests.get(url, stream=True, verify=False)
         r.raise_for_status()
-        with open(filename, "wb") as fp:
+        with filename.open("wb") as fp:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
                     fp.write(chunk)
                     fp.flush()
 
     except requests.exceptions.RequestException:
-        _remove_file_failed(filename)
+        filename.unlink(True)
         return False
 
     return True
 
 
-def get_anime_titles_xml(path):
+def get_anime_titles_xml(path: Path):
     return download_file("https://raw.githubusercontent.com/ScudLee/anime-lists/master/animetitles.xml", path)
 
 
-def get_anime_list_xml(path):
+def get_anime_list_xml(path: Path):
     return download_file("https://raw.githubusercontent.com/ScudLee/anime-lists/master/anime-list.xml", path)
 
 
-def read_anidb_xml(filePath=None):
-    if not filePath:
-        filePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "animetitles.xml")
+def read_anidb_xml(cache_dir: Path):
+    file_path = cache_dir / "animetitles.xml"
 
-    if not os.path.isfile(filePath):
-        if not get_anime_titles_xml(filePath):
+    if not file_path.exists():
+        if not get_anime_titles_xml(file_path):
             return
     else:
-        mtime = os.path.getmtime(filePath)
+        mtime = os.path.getmtime(file_path)
         if time.time() > mtime + 24 * 60 * 60:
-            if not get_anime_titles_xml(filePath):
+            if not get_anime_titles_xml(file_path):
                 return
 
-    return read_xml_into_etree(filePath)
+    return read_xml_into_etree(file_path)
 
 
-def read_tvdb_map_xml(filePath=None):
-    if not filePath:
-        filePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "anime-list.xml")
-
-    if not os.path.isfile(filePath):
-        if not get_anime_list_xml(filePath):
+def read_tvdb_map_xml(cache_dir: Path):
+    file_path = cache_dir / "anime-list.xml"
+    if not file_path.is_file():
+        if not get_anime_list_xml(file_path):
             return
     else:
-        mtime = os.path.getmtime(filePath)
+        mtime = os.path.getmtime(file_path)
         if time.time() > mtime + 24 * 60 * 60:
-            if not get_anime_list_xml(filePath):
+            if not get_anime_list_xml(file_path):
                 return
 
-    return read_xml_into_etree(filePath)
+    return read_xml_into_etree(file_path)
 
 
-def read_xml_into_etree(filePath):
-    if not filePath:
-        return None
-
-    with open(filePath, "r") as f:
+def read_xml_into_etree(file_path):
+    with file_path.open("r") as f:
         return ElementTree.ElementTree(file=f)

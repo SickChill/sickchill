@@ -4,8 +4,10 @@ import datetime
 import json
 import os
 import time
+import traceback
 import urllib.parse
 from operator import attrgetter
+from pathlib import Path
 from urllib.parse import unquote_plus
 
 from github.GithubException import GithubException
@@ -1039,7 +1041,7 @@ class Home(WebRoot):
 
                 if helpers.set_up_anidb_connection() and not anidb_failed:
                     try:
-                        anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name)
+                        anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name, cache_dir=Path(settings.CACHE_DIR))
                         groups = anime.get_groups()
                     except Exception as e:
                         ui.notifications.error(_("Unable to retreive Fansub Groups from AniDB."))
@@ -1977,11 +1979,12 @@ class Home(WebRoot):
         logger.info("ReleaseGroups: {0}".format(show_name))
         if helpers.set_up_anidb_connection():
             try:
-                anime = adba.Anime(settings.ADBA_CONNECTION, name=show_name)
+                anime = adba.Anime(settings.ADBA_CONNECTION, name=show_name, cache_dir=Path(settings.CACHE_DIR))
                 groups = anime.get_groups()
                 logger.info("ReleaseGroups: {0}".format(groups))
                 return json.dumps({"result": "success", "groups": groups})
             except AttributeError as error:
                 logger.debug("Unable to get ReleaseGroups: {0}".format(error))
+                logger.debug(traceback.format_exc())
 
         return json.dumps({"result": "failure"})
