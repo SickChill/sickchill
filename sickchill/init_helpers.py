@@ -46,6 +46,11 @@ def check_installed(name: str = __package__) -> bool:
     return True
 
 
+def in_virtualenv():
+    base_prefix = getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
+    return base_prefix != sys.prefix
+
+
 def pip_install(packages: Union[List[str], str]) -> bool:
     if not isinstance(packages, list):
         packages = packages.splitlines()
@@ -95,8 +100,9 @@ def make_virtualenv_and_rerun(location: Path) -> None:
     result = 0  # Ok
 
     if str(location) == str(current_venv_root):
-        print(f"Unable to install to the existing virtual environment located at {current_venv_root}")
-        print("Please check the permissions, and that it does not include global site packages")
+        if in_virtualenv():
+            print(f"Unable to install to the existing virtual environment located at {current_venv_root}")
+            print("Please check the permissions, and that it does not include global site packages")
         result = 126  # Command invoked cannot execute
     else:
         if not location.is_dir():
