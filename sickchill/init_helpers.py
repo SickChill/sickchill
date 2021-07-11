@@ -1,5 +1,6 @@
 import gettext
 import os
+import site
 import subprocess
 import sys
 from pathlib import Path
@@ -37,11 +38,15 @@ def check_installed(name: str = __package__) -> bool:
             result, output = subprocess.getstatusoutput([f"{sys.executable} -m pip freeze"])
             if result != 0:  # Not Ok
                 return False
-            return name in [requirement.split("==")[0] for requirement in output.splitlines()]
+            is_installed = name in [requirement.split("==")[0] for requirement in output.splitlines()]
+            print(f"{name} found: {is_installed}")
+            return is_installed
 
     try:
         Distribution.from_name(name)
+        print(f"{name} found: True")
     except PackageNotFoundError:
+        print(f"{name} found: False")
         return False
     return True
 
@@ -49,6 +54,19 @@ def check_installed(name: str = __package__) -> bool:
 def in_virtualenv():
     base_prefix = getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
     return base_prefix != sys.prefix
+
+
+def subprocess_call(cmd_list):
+    try:
+        process = subprocess.Popen(cmd_list, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        stdout, stderr = process.communicate()
+        process.wait()
+        if stdout or stderr:
+            print(f"Command result: {stdout or stderr}")
+    except Exception as error:
+        print(f"Unable to run command: {error}")
+        return 126
+    return process.returncode
 
 
 def pip_install(packages: Union[List[str], str]) -> bool:
@@ -67,21 +85,24 @@ def pip_install(packages: Union[List[str], str]) -> bool:
         "--trusted-host=pypi.org",
         "--trusted-host=files.pythonhosted.org",
         "-qqU",
-    ]
+    ] + packages
 
-    cmd.extend(packages)
+    print(f"pip args: {' '.join(cmd)}")
 
-    result, output = subprocess.getstatusoutput(cmd)
+    result = subprocess_call(cmd)
     if result != 0:  # Not Ok
-        print(output)
-        cmd.append("--user")
-        result, output = subprocess.getstatusoutput(cmd)
+        print("Trying user site-packages")
+        result = subprocess_call(cmd + ["--user"])
         if result != 0:  # Not Ok
-            print(output)
             return False
-
-    print(output)
     return True
+
+
+def check_env_writable():
+    locations = [site.getsitepackages()[0]]
+    if site.ENABLE_USER_SITE:
+        locations.append(site.getusersitepackages())
+    return any([os.access(location, os.W_OK) for location in locations])
 
 
 def make_virtualenv_and_rerun(location: Path) -> None:
@@ -111,23 +132,24 @@ def make_virtualenv_and_rerun(location: Path) -> None:
                 print("virtualenv module not found, cannot create virtualenv")
                 result = 126  # Command invoked cannot execute
             else:
-                result, output = subprocess.getstatusoutput(f"{sys.executable} -m virtualenv {location}")
+                result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", f"{location}"])
                 if result != 0:  # Not Ok
-                    print(output)
                     print("Due to the above error, we cannot continue! Exiting")
                 else:
                     print(f"Created new virtualenvironment in {location}")
 
-            if result == 0:  # Ok
-                # append the bin/python.ext to the new venv path
-                for part in current_interpreter.parts[-2:]:
-                    location = location / part
+        if location.is_dir() and result == 0:  # Ok
+            # append the bin/python.ext to the new venv path
+            for part in current_interpreter.parts[-2:]:
+                location = location / part
 
+            if location.is_file():
                 # add original arguments to this re-call
                 new_argv = [str(location)] + sys.argv
                 print(f"Restarting SickChill with {new_argv}")
-
-                subprocess.run(new_argv, cwd=os.getcwd(), universal_newlines=True)
+                os.execvp(new_argv[0], new_argv)
+            else:
+                print(f"Something weird happend when creating the virtualenv, {location} does not exist. Exiting")
 
     os._exit(result)
 
@@ -138,15 +160,21 @@ def poetry_install() -> None:
         pyproject_path = pyproject_path.resolve()
 
         if pyproject_path.exists():
+            # Check if we can write to this virtualenv
+            if not check_env_writable():
+                print(f"Current environment is not writable!")
+                make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
+
+            # Cool, we can write to site-packages
             pip_install(["setuptools", "poetry", "--pre"])
             if check_installed("poetry"):
                 result, output = subprocess.getstatusoutput(
                     f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
                 )
-                if result != 0:  # Not Ok
+                if result == 0:  # Ok
+                    pip_install(output)
+                else:  # Not Ok
                     print(output)
                     make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
-                else:
-                    pip_install(output)
-            else:
+            else:  # Couldn't install poetry, make new venv
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
