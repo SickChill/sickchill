@@ -63,7 +63,7 @@ def in_virtualenv():
 
 def subprocess_call(cmd_list):
     try:
-        process = subprocess.Popen(cmd_list, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        process = subprocess.Popen(cmd_list, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         stdout, stderr = process.communicate()
         process.wait()
         if stdout or stderr:
