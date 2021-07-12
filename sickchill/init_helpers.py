@@ -189,6 +189,8 @@ def make_virtualenv_and_rerun(location: Path) -> None:
         if location.is_dir() and result == 0:  # Ok
             # append the bin/python.ext to the new venv path
             for part in current_interpreter.parts[-2:]:
+                if sys.platform == "win32" and part == "tools":
+                    part = "Scripts"
                 location = location / part
 
             if location.is_file():
