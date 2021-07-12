@@ -51,9 +51,12 @@ def check_installed(name: str = __package__) -> bool:
     return True
 
 
+def base_prefix():
+    return getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
+
+
 def in_virtualenv():
-    base_prefix = getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
-    return base_prefix != sys.prefix
+    return base_prefix() != sys.prefix
 
 
 def subprocess_call(cmd_list):
@@ -117,6 +120,7 @@ def make_virtualenv_and_rerun(location: Path) -> None:
     location = location.resolve()
     current_interpreter = Path(sys.executable).resolve()
     current_venv_root = current_interpreter.parent.parent
+    base_interpreter = Path(base_prefix()) / "bin" / current_interpreter.name
 
     result = 0  # Ok
 
@@ -132,7 +136,9 @@ def make_virtualenv_and_rerun(location: Path) -> None:
                 print("virtualenv module not found, cannot create virtualenv")
                 result = 126  # Command invoked cannot execute
             else:
-                result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", f"{location}"])
+
+                print(f"Using {base_interpreter} as base interpreter")
+                result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", "-p", f"{base_interpreter}", f"{location}"])
                 if result != 0:  # Not Ok
                     print("Due to the above error, we cannot continue! Exiting")
                 else:
