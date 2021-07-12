@@ -29,7 +29,7 @@
     "eslint-plugin-unicorn": "^29.0.0",
     "grunt": "^1.0.1",
     "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
-    "grunt-bower-task": "git+https://github.com/miigotu/grunt-bower-task.git",
+    "grunt-bower-task": "^0.5.0",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-copy": "^1.0.0",

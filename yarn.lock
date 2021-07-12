@@ -2161,7 +2161,7 @@ bower-json@^0.8.1:
     intersect "^1.0.1"
     sort-keys-length "^1.0.0"
 
-bower@^1.8.8, bower@~1.8.8:
+bower@^1.7.9, bower@^1.8.8, bower@~1.8.8:
   version "1.8.12"
   resolved "https://registry.yarnpkg.com/bower/-/bower-1.8.12.tgz#44cfca2a5e04b8d9a066621e24c8b179d8ac321e"
   integrity sha512-u1xy9SrwwoPlgjuHNjhV+YUPVdqyBj2ALBxuzeIUKXaPI2i2xypGgxqXkuHcITGdi5yBj5JuXgyMvgiWiS1S3Q==
@@ -5096,12 +5096,13 @@ grapheme-splitter@^1.0.4:
     lodash "~4.17.15"
     underscore.string "~3.2.3"
 
-"grunt-bower-task@git+https://github.com/miigotu/grunt-bower-task.git":
+grunt-bower-task@^0.5.0:
   version "0.5.0"
-  resolved "git+https://github.com/miigotu/grunt-bower-task.git#7d06a5e30cf179108bf5a3ac41f45ca552584d3a"
+  resolved "https://registry.yarnpkg.com/grunt-bower-task/-/grunt-bower-task-0.5.0.tgz#c3c16983fabf18e412e26dfdd2114db465174584"
+  integrity sha1-w8Fpg/q/GOQS4m390hFNtGUXRYQ=
   dependencies:
     async "^2.3.0"
-    bower "^1.8.8"
+    bower "^1.7.9"
     bower-json "^0.8.1"
     colors "^1.1.2"
     fs-extra "^2.1.2"
