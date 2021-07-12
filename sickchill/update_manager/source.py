@@ -143,18 +143,18 @@ class SourceUpdateManager(UpdateManagerBase):
 
         try:
             # prepare the update dir
-            sr_update_dir = os.path.join(settings.DATA_DIR, "sr-update")
+            sc_update_dir = os.path.join(settings.DATA_DIR, "sc-update")
 
-            if os.path.isdir(sr_update_dir):
-                logger.info("Clearing out update folder " + sr_update_dir + " before extracting")
-                shutil.rmtree(sr_update_dir)
+            if os.path.isdir(sc_update_dir):
+                logger.info("Clearing out update folder " + sc_update_dir + " before extracting")
+                shutil.rmtree(sc_update_dir)
 
-            logger.info("Creating update folder " + sr_update_dir + " before extracting")
-            os.makedirs(sr_update_dir)
+            logger.info("Creating update folder " + sc_update_dir + " before extracting")
+            os.makedirs(sc_update_dir)
 
             # retrieve file
             logger.info("Downloading update from {url}".format(url=tar_download_url))
-            tar_download_path = os.path.join(sr_update_dir, "sr-update.tar")
+            tar_download_path = os.path.join(sc_update_dir, "sc-update.tar")
             helpers.download_file(tar_download_url, tar_download_path, session=self.session)
 
             if not os.path.isfile(tar_download_path):
@@ -165,10 +165,10 @@ class SourceUpdateManager(UpdateManagerBase):
                 logger.exception("Retrieved version from " + tar_download_url + " is corrupt, can't update")
                 return False
 
-            # extract to sr-update dir
+            # extract to sc-update dir
             logger.info("Extracting file " + tar_download_path)
             tar = tarfile.open(tar_download_path)
-            tar.extractall(sr_update_dir)
+            tar.extractall(sc_update_dir)
             tar.close()
 
             # delete .tar.gz
@@ -176,14 +176,14 @@ class SourceUpdateManager(UpdateManagerBase):
             os.remove(tar_download_path)
 
             # find update dir name
-            update_dir_contents = [x for x in os.listdir(sr_update_dir) if os.path.isdir(os.path.join(sr_update_dir, x))]
+            update_dir_contents = [x for x in os.listdir(sc_update_dir) if os.path.isdir(os.path.join(sc_update_dir, x))]
 
             if len(update_dir_contents) != 1:
                 logger.exception("Invalid update data, update failed: " + str(update_dir_contents))
                 return False
 
             # walk temp folder and move files to main folder
-            content_dir = os.path.join(sr_update_dir, update_dir_contents[0])
+            content_dir = os.path.join(sc_update_dir, update_dir_contents[0])
             logger.info("Moving files from " + content_dir + " to " + os.path.dirname(settings.PROG_DIR))
             for dirname, stderr_, filenames in os.walk(content_dir):
                 dirname = dirname[len(content_dir) + 1 :]
