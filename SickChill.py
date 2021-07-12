@@ -13,10 +13,9 @@ import traceback
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.init_helpers import check_installed, setup_gettext, setup_lib_path
+from sickchill.init_helpers import check_installed, setup_gettext
 from sickchill.movies import MovieList
 
-setup_lib_path()
 setup_gettext()
 
 import mimetypes

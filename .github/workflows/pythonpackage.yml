@@ -5,104 +5,119 @@ name: Python Packaging
 
 on:
   push:
-    branches-ignore:
-      - 'l10n_*'
+    branches:
+      - master
+      - develop
   pull_request:
-    branches-ignore:
-      - 'l10n_*'
+    branches:
+      - develop
 
 jobs:
-  Shellcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-          persist-credentials: false
-      - name: Shellcheck
-        uses: ludeeus/action-shellcheck@master
-#        with:
-#          additional_files: 'init.*'
   Test:
     strategy:
       matrix:
-        python-version: [3.8]
-        os: [ubuntu-latest, windows-latest]
-      fail-fast: false
+        os: [ubuntu-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        experimental: [false]
+        include:
+          - os: windows-latest
+            python-version: 3.9
+            experimental: true
+          - os: macos-latest
+            python-version: 3.9
+            experimental: true
+      fail-fast: true
+    continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     steps:
     - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.8.0
+      if: success() && !env.ACT
+      uses: styfle/cancel-workflow-action@0.9.0
       with:
         access_token: ${{ github.token }}
     - name: Checkout
+      if: success() && !env.ACT
       uses: actions/checkout@v2
       with:
         fetch-depth: 1
         persist-credentials: false
+    - name: Lint shell scripts
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9 && !env.ACT
+      uses: ludeeus/action-shellcheck@master
+      with:
+        format: diff
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set up Node
-      uses: actions/setup-node@v1
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      uses: actions/setup-node@v2
       with:
         node-version: '14.x'
-    - name: Prepare
-      id: prepare
-      run: |
-        echo "::set-output name=npm_cache::$(npm config get cache)"
-        echo "::set-output name=yarn_cache::$(yarn cache dir)"
-        echo "::set-output name=pip_cache::$(python -m pip cache dir)"
-        echo "::set-output name=os::$(echo "print('${{ runner.os }}'.lower())" | python)"
-    - name: Restore npm cache
+    - name: Restore pip cache
+      if: success() && !env.ACT
       uses: actions/cache@v2
       with:
-        path: ${{ steps.prepare.outputs.npm_cache }}
+        path: $(python -m pip cache dir)
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+    - name: Restore npm cache
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      uses: actions/cache@v2
+      with:
+        path: $(npm config get cache)
         key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    - name: Restore yarn cache
+    - name: Install yarn
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      run: npm install -g yarn
+      shell: bash
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.1.6
+      with:
+        version: 1.2.0a1
+        virtualenvs-path: .venv
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Restore poetry cache
+      if: success() && !env.ACT
       uses: actions/cache@v2
       with:
-        path: ${{ steps.prepare.outputs.yarn_cache }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-    - name: Restore pip cache
+        path: $(poetry config cache-dir)
+        key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Restore virtualenv
+      if: success() && !env.ACT
       uses: actions/cache@v2
       with:
-        path: ${{ steps.prepare.outputs.pip_cache }}
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        path: .venv
+        key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Install dependencies
       run: |
-        yarn --silent
-        pip install wheel
-        pip install --upgrade --user pip tox babel crowdin-cli-py
-    - name: Restore tox workdir
-      uses: actions/cache@v2
-      with:
-        path: $(tox --showconfig | grep '^toxworkdir = .*$' | tail -c+14)
-        key: ${{ runner.os }}-tox-${{ hashFiles('**/tox.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-tox-
-#    - name: Install xo
-#      run: |
-#        npm config set strict-ssl false
-#        npm config set registry "http://registry.npmjs.org/"
-#        npm install -g xo
-#    - name: Test with XO
-#      run: xo
-    - name: Test with tox
-      id: tox
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        poetry install --no-interaction --no-root
+        pip install poethepoet
+      shell: bash
+    - name: Run yarn
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      run: poe yarn
+      shell: bash
+    - name: Lint Python
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      run: poe lint
+      shell: bash
+    - name: Lint and test Javascript
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      run: poe yarn test
+      shell: bash
+    - name: Test Python
       run: |
-        tox -v --recreate -e "py38-{flake8,${{ steps.prepare.outputs.os }}}"
+        poe pytest
+        poe codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+      shell: bash
   Deploy:
-    needs: [Shellcheck, Test]
+    needs: [Test]
     runs-on: ubuntu-latest
     steps:
     - name: Cancel Previous Runs
@@ -110,6 +125,7 @@ jobs:
       with:
         access_token: ${{ github.token }}
     - name: Checkout
+      if: success() && !env.ACT
       uses: actions/checkout@v2
       with:
         fetch-depth: 1
@@ -117,7 +133,6 @@ jobs:
     # https://github.com/docker/setup-qemu-action
     - name: Set up QEMU
       if: success()
-      id: qemu
       uses: docker/setup-qemu-action@v1
       with:
         image: tonistiigi/binfmt:latest
@@ -152,17 +167,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
     - name: Docker Log out fix
+      if: success() && !env.ACT
       run: |
         docker logout
         docker logout ghcr.io
     - name: Login to DockerHub
-      if: success() && github.actor == 'miigotu'
+      if: success() && github.actor == 'miigotu' && !env.ACT
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Login to GitHub Container Registry
-      if: success() && github.actor == 'miigotu'
+      if: success() && github.actor == 'miigotu' && !env.ACT
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
@@ -174,7 +190,7 @@ jobs:
       with:
         context: .
         platforms: ${{ steps.prepare.outputs.docker_platforms }}
-        push: true
+        push: ${{ !env.ACT }}
         tags: |
           ghcr.io/sickchill/sickchill:master
           ghcr.io/ps3dev/ps3dev:latest
@@ -188,7 +204,7 @@ jobs:
       with:
         context: .
         platforms: ${{ steps.prepare.outputs.docker_platforms }}
-        push: true
+        push: ${{ !env.ACT }}
         tags: |
           ghcr.io/sickchill/sickchill:${{ steps.prepare.outputs.version }}
           sickchill/sickchill:${{ steps.prepare.outputs.version }}

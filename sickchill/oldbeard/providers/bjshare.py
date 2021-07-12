@@ -137,7 +137,6 @@ class Provider(TorrentProvider):
             return ret
 
         items = []
-        has_next_page = False
         with BS4Parser(data, "html5lib") as html:
             torrent_table = html.find("table", id="torrent_table")
             torrent_rows = torrent_table("tr") if torrent_table else []
@@ -160,7 +159,6 @@ class Provider(TorrentProvider):
                 cells = result("td")
                 result_class = result.get("class")
                 # When "Grouping Torrents" is enabled, the structure of table change
-                group_index = -2 if "group_torrent" in result_class else 0
                 try:
                     title = result.select('a[href^="torrents.php?id="]')[0].get_text()
                     title = re.sub(r"\s+", " ", title).strip()  # clean empty lines and multiple spaces

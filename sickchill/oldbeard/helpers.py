@@ -670,8 +670,8 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
     episodes = []
     season = None
 
-    if len(absolute_numbers):
-        if not show and indexer_id:
+    if absolute_numbers:
+        if indexer_id and not show:
             show = Show.find(settings.showList, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:
@@ -691,14 +691,12 @@ def sanitizeSceneName(name, anime=False):
     :return: A string containing the scene version of the show name given.
     """
 
-    # assert isinstance(name, unicode), name + ' is not unicode'
-
     if not name:
         return ""
 
     bad_chars = ",:()!?\u2019"
     if not anime:
-        bad_chars += "'"
+        bad_chars += "'’`"
 
     # strip out any bad chars
     for x in bad_chars:
@@ -706,7 +704,7 @@ def sanitizeSceneName(name, anime=False):
 
     # tidy up stuff that doesn't belong in scene names
     name = name.replace("&", "and")
-    name = re.sub(r"[- /]+", ".", name)
+    name = re.sub(r"[-/\s]+", ".", name)
     name = re.sub(r"[.]+", ".", name)
 
     if name.endswith("."):
@@ -884,7 +882,7 @@ def anon_url(*url):
     """
     Return a URL string consisting of the Anonymous redirect URL and an arbitrary number of values appended.
     """
-    return "" if None in url else "{0}{1}".format(settings.ANON_REDIRECT, "".join(str(s) for s in url))
+    return "" if None in url else f"{settings.ANON_REDIRECT}{''.join(str(s) for s in url)}"
 
 
 """

@@ -2,6 +2,7 @@ import threading
 
 from sickchill import settings
 from sickchill.oldbeard import helpers, scene_exceptions
+from sickchill.show.Show import Show
 
 from .. import logger
 from . import db
@@ -17,12 +18,12 @@ def add_name(name, indexer_id=0):
     :param name: The show name to cache
     :param indexer_id: the TVDB id that this show should be cached with (can be None/0 for unknown)
     """
-    cache_db_con = db.DBConnection("cache.db")
 
     # standardize the name we're using to account for small differences in providers
     name = helpers.full_sanitizeSceneName(name)
     if name not in name_cache:
         name_cache[name] = int(indexer_id)
+        cache_db_con = db.DBConnection("cache.db")
         cache_db_con.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
@@ -34,7 +35,15 @@ def get_id_from_name(name):
     :return: the TVDB id that resulted from the cache lookup or None if the show wasn't found in the cache
     """
     name = helpers.full_sanitizeSceneName(name)
-    if name in name_cache:
+    if name not in name_cache:
+        cache_db_con = db.DBConnection("cache.db")
+        results = cache_db_con.select_one("SELECT indexer_id FROM scene_names WHERE name = ?", [name])
+        if results:
+            indexer_id = results["indexer_id"]
+            show = Show.find(settings.showList, indexer_id)
+            if show:
+                build_name_cache(show)
+    else:
         return int(name_cache[name])
 
 

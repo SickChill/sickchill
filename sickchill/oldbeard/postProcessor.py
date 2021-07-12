@@ -5,6 +5,7 @@ import os
 import re
 import stat
 import subprocess
+from pathlib import Path
 
 import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
@@ -584,7 +585,7 @@ class PostProcessor(object):
         """
         ep = adba.Episode(
             connection,
-            filePath=filePath,
+            file_path=Path(filePath),
             paramsF=["quality", "anidb_file_name", "crc32"],
             paramsA=["epno", "english_name", "short_name_list", "other_name", "synonym_list"],
         )

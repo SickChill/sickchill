@@ -25,9 +25,9 @@ $(document).ready(() => {
             url += '&profile=1';
         }
 
-        const requestTime = new Date.now();
+        const requestTime = Date.now();
         $.get(url, (data, textStatus, jqXHR) => {
-            const responseTime = new Date.now() - requestTime;
+            const responseTime = Date.now() - requestTime;
             const jsonp = $('#option-jsonp').is(':checked');
             const responseType = jqXHR.getResponseHeader('content-type') || '';
             const target = $(targetId);
@@ -70,7 +70,7 @@ $(document).ready(() => {
             for (const episode in episodes[show][season]) { // eslint-disable-line no-undef,guard-for-in
                 select.append($('<option>', {
                     value: episodes[show][season][episode], // eslint-disable-line no-undef
-                    label: 'Episode ' + episodes[show][season][episode] // eslint-disable-line no-undef
+                    label: 'Episode ' + episodes[show][season][episode], // eslint-disable-line no-undef
                 }));
             }
         }
@@ -89,7 +89,7 @@ $(document).ready(() => {
             for (const season in episodes[show]) { // eslint-disable-line no-undef,guard-for-in
                 select.append($('<option>', {
                     value: season,
-                    label: (season === 0) ? 'Specials' : 'Season ' + season
+                    label: (season === 0) ? 'Specials' : 'Season ' + season,
                 }));
             }
         }
@@ -98,13 +98,13 @@ $(document).ready(() => {
     // Enable command search
     $.fn.goTo = function () {
         $('html, body').animate({
-            scrollTop: $(this).offset().top - $('nav').outerHeight(true) + 'px'
+            scrollTop: $(this).offset().top - $('nav').outerHeight(true) + 'px',
         }, 'fast');
         return this;
     };
 
     $('#command-search').typeahead({
-        source: commands // eslint-disable-line no-undef
+        source: commands, // eslint-disable-line no-undef
     });
     $('#command-search').on('change', function () {
         const command = $(this).typeahead('getActive');

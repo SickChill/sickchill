@@ -203,31 +203,9 @@ class SourceUpdateManager(UpdateManagerBase):
             logger.debug("Traceback: {}".format(traceback.format_exc()))
             return False
 
-        self._clean_libs()
-
         # Notify update successful
         notifiers.notify_git_update(settings.CUR_COMMIT_HASH or "")
         return True
-
-    def _clean_libs(self):
-        lib_path = os.path.join(os.path.dirname(settings.PROG_DIR), "lib3")
-
-        def remove_empty_folders(path):
-            if not os.path.isdir(path):
-                return
-
-            files = os.listdir(path)
-            for f in files:
-                full_path = os.path.join(path, f)
-                if os.path.isdir(full_path):
-                    remove_empty_folders(full_path)
-
-            files = os.listdir(path)
-            if len(files) == 0 and path != lib_path:
-                os.rmdir(path)
-
-        self._clean_pyc("lib3")
-        remove_empty_folders(lib_path)
 
     def list_remote_branches(self):
         if not settings.gh:

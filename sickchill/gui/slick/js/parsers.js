@@ -10,7 +10,7 @@ $.tablesorter.addParser({
 
         return latinize(metaToBool('settings.SORT_ARTICLE') ? (s || '') : (s || '').replace(/^(the|a|an)\s/i, '').normalize('NFC'));
     },
-    type: 'text'
+    type: 'text',
 });
 $.tablesorter.addParser({
     id: 'quality',
@@ -20,7 +20,7 @@ $.tablesorter.addParser({
     format(s, table, cell) {
         return $(cell).find('span').data('quality');
     },
-    type: 'numeric'
+    type: 'numeric',
 });
 $.tablesorter.addParser({
     id: 'realISODate',
@@ -30,7 +30,7 @@ $.tablesorter.addParser({
     format(s) {
         return new Date(s).getTime();
     },
-    type: 'numeric'
+    type: 'numeric',
 });
 
 $.tablesorter.addParser({
@@ -41,7 +41,7 @@ $.tablesorter.addParser({
     format(s) {
         return s;
     },
-    type: 'numeric'
+    type: 'numeric',
 });
 $.tablesorter.addParser({
     id: 'eps',
@@ -76,5 +76,5 @@ $.tablesorter.addParser({
 
         return finalNumber + pct;
     },
-    type: 'numeric'
+    type: 'numeric',
 });

@@ -21,30 +21,12 @@ module.exports = function(grunt) {
         grunt.task.run([
             'exec:git:checkout:master',
             'default', // Run default task
-            'update_trans', // Update translations
+            'exec:update_translations', // Update translations
             'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
             'exec:git:reset --hard', // Reset unstaged changes (to allow for a rebase)
             'exec:git:checkout:develop', 'exec:git:rebase:master', // FF develop to the updated master
             'exec:git_push:origin:master develop' // Push master and develop
         ]);
-    });
-
-    grunt.registerTask('update_trans', 'Update translations', function() {
-        grunt.log.writeln('Updating translations...'.magenta);
-        var tasks = [
-            'exec:babel_extract',
-            'exec:babel_update',
-            // + crowdin
-            'exec:babel_compile',
-            'po2json'
-        ];
-        if (process.env.CROWDIN_API_KEY) {
-            tasks.splice(2, 0, 'exec:crowdin_upload', 'exec:crowdin_download'); // insert items at index 2
-        } else {
-            grunt.log.warn('Environment variable `CROWDIN_API_KEY` is not set, not syncing with Crowdin.'.bold);
-        }
-
-        grunt.task.run(tasks);
     });
 
     /****************************************
@@ -241,11 +223,7 @@ module.exports = function(grunt) {
         },
         exec: {
             // Translations
-            'babel_extract': {cmd: 'python setup.py extract_messages'},
-            'babel_update': {cmd: 'python setup.py update_catalog'},
-            'crowdin_upload': {cmd: 'crowdin-cli-py upload sources'},
-            'crowdin_download': {cmd: 'crowdin-cli-py download'},
-            'babel_compile': {cmd: 'python setup.py compile_catalog'},
+            'update_translations': {cmd: 'poe update_translations'},
 
             // Run tests
             'test': {cmd: 'yarn run test || npm run test'},

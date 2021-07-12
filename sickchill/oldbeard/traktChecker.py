@@ -353,7 +353,9 @@ class TraktChecker(object):
                     if show.status in ("Ended", "Canceled"):
                         if not show.imdb_id:
                             logger.warning(
-                                "Could not check trakt progress for {0} because the imdb id is missing from {1} data, skipping".format(show.name, show.idxr.name)
+                                "Could not check trakt progress for {0} because the imdb id is missing from {1} data, skipping".format(
+                                    show.name, show.idxr.name
+                                )
                             )
                             continue
 

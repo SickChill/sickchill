@@ -24,7 +24,7 @@
         'timeEnd',
         'timeStamp',
         'trace',
-        'warn'
+        'warn',
     ];
     let length = methods.length;
     const console = (window.console = window.console || {}); // eslint-disable-line no-multi-assign
@@ -160,7 +160,7 @@ $(document).ready(() => {
 
         refreshRootDirs();
         $.get(scRoot + '/config/general/saveRootDirs', {
-            rootDirString: $('#rootDirText').val()
+            rootDirString: $('#rootDirText').val(),
         });
     }
 
@@ -169,7 +169,7 @@ $(document).ready(() => {
     });
     $('#editRootDir').on('click', function () {
         $(this).nFileBrowser(editRootDir, {
-            initialDir: $('#rootDirs option:selected').val()
+            initialDir: $('#rootDirs option:selected').val(),
         });
     });
 
@@ -202,7 +202,7 @@ $(document).ready(() => {
 
         refreshRootDirs();
         $.get(scRoot + '/config/general/saveRootDirs', {
-            rootDirString: $('#rootDirText').val()
+            rootDirString: $('#rootDirText').val(),
         });
     });
 
@@ -213,7 +213,7 @@ $(document).ready(() => {
 
         refreshRootDirs();
         $.get(scRoot + '/config/general/saveRootDirs', {
-            rootDirString: $('#rootDirText').val()
+            rootDirString: $('#rootDirText').val(),
         });
     });
     $('#rootDirs').click(refreshRootDirs);

@@ -60,10 +60,13 @@ class TVDB(Indexer):
             return self.get_series_by_id(indexerid, language)
 
         # Just return the first result for now
-        result = self._series(self.search(name, language)[0]["id"])
-        if result:
-            result.info(language=language)
-        return result
+        try:
+            result = self._series(self.search(name, language)[0]["id"])
+            if result:
+                result.info(language=language)
+            return result
+        except Exception:
+            pass
 
     @ExceptionDecorator()
     def episodes(self, show, season=None):
@@ -112,8 +115,8 @@ class TVDB(Indexer):
                     series = self._series(name, language=language)
                     if series:
                         result = [series.info(language)]
-            except requests.exceptions.RequestException:
-                logger.exception(traceback.format_exc())
+            except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
+                logger.debug(traceback.format_exc())
         else:
             # Name as provided (usually from nfo)
             names = [name]
@@ -134,14 +137,14 @@ class TVDB(Indexer):
                     result = self._search(attempt, language=language)
                     if result:
                         break
-                except requests.exceptions.RequestException:
-                    logger.exception(traceback.format_exc())
+                except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
+                    logger.debug(traceback.format_exc())
 
         return result
 
     @property
     def languages(self):
-        return ["da", "fi", "nl", "de", "it", "es", "fr", "pl", "hu", "el", "tr", "ru", "he", "ja", "pt", "zh", "cs", "sl", "hr", "ko", "en", "sv", "no"]
+        return ["cs", "da", "de", "el", "en", "es", "fi", "fr", "he", "hr", "hu", "it", "ja", "ko", "nl", "no", "pl", "pt", "ru", "sl", "sv", "tr", "zh"]
 
     @property
     def lang_dict(self):

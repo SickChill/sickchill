@@ -57,9 +57,9 @@ function addSiteMessage(level = 'danger', tag = '', message = '') {
             messagesDiv.empty();
             for (const key in siteMessages) {
                 if ({}.hasOwnProperty.call(siteMessages, key)) {
-                    messagesDiv.append('<div class="alert alert-' + siteMessages[key].level + ' upgrade-notification hidden-print" id="site-message-' + key + '" role="alert">' +
-                        '<span>' + siteMessages[key].message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + key + '"/>' +
-                        '</div>');
+                    messagesDiv.append('<div class="alert alert-' + siteMessages[key].level + ' upgrade-notification hidden-print" id="site-message-' + key + '" role="alert">'
+                        + '<span>' + siteMessages[key].message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + key + '"/>'
+                        + '</div>');
                 }
             }
         }
@@ -115,43 +115,43 @@ const SICKCHILL = {
                 post: false,
                 confirm(event) {
                     location.href = event.context.href;
-                }
+                },
             };
 
             $('a.shutdown').confirm({
                 title: 'Shutdown',
-                text: 'Are you sure you want to shutdown SickChill?'
+                text: 'Are you sure you want to shutdown SickChill?',
             });
 
             $('a.restart').confirm({
                 title: 'Restart',
-                text: 'Are you sure you want to restart SickChill?'
+                text: 'Are you sure you want to restart SickChill?',
             });
 
             $('a.removeshow').confirm({
                 title: 'Remove Show',
-                text: 'Are you sure you want to remove <span class="footerhighlight">' + $('#showtitle').data('showname') +
-                    '</span> from the database?<br><br>' +
-                    '<input type="checkbox" id="deleteFiles" name="deleteFiles"/>&nbsp;' +
-                    '<label for="deleteFiles" class="red-text">Check to delete files as well. IRREVERSIBLE</label>',
+                text: 'Are you sure you want to remove <span class="footerhighlight">' + $('#showtitle').data('showname')
+                    + '</span> from the database?<br><br>'
+                    + '<input type="checkbox" id="deleteFiles" name="deleteFiles"/>&nbsp;'
+                    + '<label for="deleteFiles" class="red-text">Check to delete files as well. IRREVERSIBLE</label>',
                 confirm(event) {
                     location.href = event.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '');
-                }
+                },
             });
 
             $('a.clearhistory').confirm({
                 title: 'Clear History',
-                text: 'Are you sure you want to clear all download history?'
+                text: 'Are you sure you want to clear all download history?',
             });
 
             $('a.trimhistory').confirm({
                 title: 'Trim History',
-                text: 'Are you sure you want to trim all download history older than 30 days?'
+                text: 'Are you sure you want to trim all download history older than 30 days?',
             });
 
             $('a.submiterrors').confirm({
                 title: 'Submit Errors',
-                text: 'Are you sure you want to submit these errors ?<br><br><span class="red-text">Make sure SickChill is updated and trigger<br> this error with debug enabled before submitting</span>'
+                text: 'Are you sure you want to submit these errors ?<br><br><span class="red-text">Make sure SickChill is updated and trigger<br> this error with debug enabled before submitting</span>',
             });
 
             $('#config-components').tabs({
@@ -186,7 +186,7 @@ const SICKCHILL = {
 
                     // Saving the last tab has been opened
                     $(this).data('lastOpenedPanel', $(ui.newPanel));
-                }
+                },
             });
 
             // @TODO Replace this with a real touchscreen check
@@ -219,7 +219,7 @@ const SICKCHILL = {
                     year: 'a year',
                     years: '%d years',
                     wordSeparator: ' ',
-                    numbers: []
+                    numbers: [],
                 };
                 $('[datetime]').timeago();
             }
@@ -276,15 +276,14 @@ const SICKCHILL = {
                 });
             },
             init() {
-                const selfObject = this;
                 const qualityPresets = $('#qualityPreset');
 
                 qualityPresets.on('change', () => {
-                    selfObject.setFromPresets(qualityPresets.find(':selected').val());
+                    this.setFromPresets(qualityPresets.find(':selected').val());
                 });
 
-                selfObject.setFromPresets(qualityPresets.find(':selected').val());
-            }
+                this.setFromPresets(qualityPresets.find(':selected').val());
+            },
         },
         updateBlackWhiteList(showName) {
             $('#white').children().remove();
@@ -295,7 +294,7 @@ const SICKCHILL = {
                 $('#blackwhitelist').show();
                 if (showName) {
                     $.getJSON(scRoot + '/home/fetch_releasegroups', {
-                        show_name: showName // eslint-disable-line camelcase
+                        show_name: showName, // eslint-disable-line camelcase
                     }, data => {
                         if (data.result === 'success') {
                             $.each(data.groups, (i, group) => {
@@ -310,7 +309,7 @@ const SICKCHILL = {
             } else {
                 $('#blackwhitelist').hide();
             }
-        }
+        },
     },
     config: {
         init() {
@@ -360,7 +359,7 @@ const SICKCHILL = {
                 },
                 success() {
                     setTimeout(configSuccess, 2000);
-                }
+                },
             });
 
             $('#api_key').on('click', () => {
@@ -403,10 +402,10 @@ const SICKCHILL = {
 
             $('#create_access_token').on('click', () => {
                 notifyModal(
-                    '<p>Copy the generated token and paste it in the token input box.</p>' +
-                    '<p>Provide permissions for repo:status, public_repo, write:discussion, read:discussion, user, gist, and notifications</p>' +
-                    '<p><a href="' + anonURL + 'https://github.com/settings/tokens/new?description=SickChill&scopes=user,gist,public_repo" target="_blank">' +
-                    '<input class="btn" type="button" value="Continue to Github..."></a></p>');
+                    '<p>Copy the generated token and paste it in the token input box.</p>'
+                    + '<p>Provide permissions for repo:status, public_repo, write:discussion, read:discussion, user, gist, and notifications</p>'
+                    + '<p><a href="' + anonURL + 'https://github.com/settings/tokens/new?description=SickChill&scopes=user,gist,public_repo" target="_blank">'
+                    + '<input class="btn" type="button" value="Continue to Github..."></a></p>');
                 $('#git_token').select();
             });
 
@@ -483,7 +482,7 @@ const SICKCHILL = {
                 $('#testGrowl-result').html(loading);
                 $.get(scRoot + '/home/testGrowl', {
                     host: growl.host,
-                    password: growl.password
+                    password: growl.password,
                 }).done(data => {
                     $('#testGrowl-result').html(data);
                     $('#testGrowl').prop('disabled', false);
@@ -505,7 +504,7 @@ const SICKCHILL = {
                 $('#testProwl-result').html(loading);
                 $.get(scRoot + '/home/testProwl', {
                     prowl_api: prowl.api, // eslint-disable-line camelcase
-                    prowl_priority: prowl.priority // eslint-disable-line camelcase
+                    prowl_priority: prowl.priority, // eslint-disable-line camelcase
                 }).done(data => {
                     $('#testProwl-result').html(data);
                     $('#testProwl').prop('disabled', false);
@@ -529,7 +528,7 @@ const SICKCHILL = {
                 $.get(scRoot + '/home/testKODI', {
                     host: kodi.host,
                     username: kodi.username,
-                    password: kodi.password
+                    password: kodi.password,
                 }).done(data => {
                     $('#testKODI-result').html(data);
                     $('#testKODI').prop('disabled', false);
@@ -554,7 +553,7 @@ const SICKCHILL = {
                 $.get(scRoot + '/home/testPHT', {
                     host: plex.client.host,
                     username: plex.client.username,
-                    password: plex.client.password
+                    password: plex.client.password,
                 }).done(data => {
                     $('#testPHT-result').html(data);
                     $('#testPHT').prop('disabled', false);
@@ -581,7 +580,7 @@ const SICKCHILL = {
                     host: plex.server.host,
                     username: plex.server.username,
                     password: plex.server.password,
-                    plex_server_token: plex.server.token // eslint-disable-line camelcase
+                    plex_server_token: plex.server.token, // eslint-disable-line camelcase
                 }).done(data => {
                     $('#testPMS-result').html(data);
                     $('#testPMS').prop('disabled', false);
@@ -614,7 +613,7 @@ const SICKCHILL = {
                 $('#testEMBY-result').html(loading);
                 $.get(scRoot + '/home/testEMBY', {
                     host: emby.host,
-                    emby_apikey: emby.apikey // eslint-disable-line camelcase
+                    emby_apikey: emby.apikey, // eslint-disable-line camelcase
                 }).done(data => {
                     $('#testEMBY-result').html(data);
                     $('#testEMBY').prop('disabled', false);
@@ -634,7 +633,7 @@ const SICKCHILL = {
                 $(this).prop('disabled', true);
                 $('#testBoxcar2-result').html(loading);
                 $.get(scRoot + '/home/testBoxcar2', {
-                    accesstoken: boxcar2.accesstoken
+                    accesstoken: boxcar2.accesstoken,
                 }).done(data => {
                     $('#testBoxcar2-result').html(data);
                     $('#testBoxcar2').prop('disabled', false);
@@ -667,7 +666,7 @@ const SICKCHILL = {
                 $('#testPushover-result').html(loading);
                 $.get(scRoot + '/home/testPushover', {
                     userKey: pushover.userkey,
-                    apiKey: pushover.apikey
+                    apiKey: pushover.apikey,
                 }).done(data => {
                     $('#testPushover-result').html(data);
                     $('#testPushover').prop('disabled', false);
@@ -702,7 +701,7 @@ const SICKCHILL = {
                 $('#twitter_key').removeClass('warning');
                 $('#testTwitter-result').html(loading);
                 $.get(scRoot + '/home/twitterStep2', {
-                    key: twitter.key
+                    key: twitter.key,
                 }, data => {
                     $('#testTwitter-result').html(data);
                 });
@@ -761,7 +760,7 @@ const SICKCHILL = {
                     webhook: discord.webhook,
                     name: discord.name,
                     avatar: discord.avatar,
-                    tts: discord.tts
+                    tts: discord.tts,
                 }).done(data => {
                     $('#testDiscord-result').html(data);
                     $('#testDiscord').prop('disabled', false);
@@ -821,7 +820,7 @@ const SICKCHILL = {
                 $.post(scRoot + '/home/testNMJ', {
                     host: nmj.host,
                     database: nmj.database,
-                    mount: nmj.mount
+                    mount: nmj.mount,
                 }).done(data => {
                     $('#testNMJ-result').html(data);
                     $('#testNMJ').prop('disabled', false);
@@ -851,7 +850,7 @@ const SICKCHILL = {
                 $.post(scRoot + '/home/settingsNMJv2', {
                     host: nmjv2.host,
                     dbloc: nmjv2.dbloc,
-                    instance: nmjv2.dbinstance
+                    instance: nmjv2.dbinstance,
                 }, data => {
                     if (data === null) {
                         $('#nmjv2_database').removeAttr('readonly');
@@ -882,7 +881,7 @@ const SICKCHILL = {
                 $(this).prop('disabled', true);
                 $('#testNMJv2-result').html(loading);
                 $.post(scRoot + '/home/testNMJv2', {
-                    host: nmjv2.host
+                    host: nmjv2.host,
                 }).done(data => {
                     $('#testNMJv2-result').html(data);
                     $('#testNMJv2').prop('disabled', false);
@@ -915,7 +914,7 @@ const SICKCHILL = {
                 $('#testFreeMobile-result').html(loading);
                 $.post(scRoot + '/home/testFreeMobile', {
                     freemobile_id: freemobile.id, // eslint-disable-line camelcase
-                    freemobile_apikey: freemobile.apikey // eslint-disable-line camelcase
+                    freemobile_apikey: freemobile.apikey, // eslint-disable-line camelcase
                 }).done(data => {
                     $('#testFreeMobile-result').html(data);
                     $('#testFreeMobile').prop('disabled', false);
@@ -948,7 +947,7 @@ const SICKCHILL = {
                 $('#testTelegram-result').html(loading);
                 $.post(scRoot + '/home/testTelegram', {
                     telegram_id: telegram.id, // eslint-disable-line camelcase
-                    telegram_apikey: telegram.apikey // eslint-disable-line camelcase
+                    telegram_apikey: telegram.apikey, // eslint-disable-line camelcase
                 }).done(data => {
                     $('#testTelegram-result').html(data);
                     $('#testTelegram').prop('disabled', false);
@@ -981,7 +980,7 @@ const SICKCHILL = {
                 $('#testJoin-result').html(loading);
                 $.post(scRoot + '/home/testJoin', {
                     join_id: join.id, // eslint-disable-line camelcase
-                    join_apikey: join.apikey // eslint-disable-line camelcase
+                    join_apikey: join.apikey, // eslint-disable-line camelcase
                 }).done(data => {
                     $('#testJoin-result').html(data);
                     $('#testJoin').prop('disabled', false);
@@ -1006,9 +1005,9 @@ const SICKCHILL = {
             $('#authTrakt').on('click', () => {
                 const trakt = {};
                 trakt.pin = $('#trakt_pin').val();
-                if (trakt.pin.length !== 0) {
+                if (trakt.pin.length > 0) {
                     $.post(scRoot + '/home/getTraktToken', {
-                        trakt_pin: trakt.pin // eslint-disable-line camelcase
+                        trakt_pin: trakt.pin, // eslint-disable-line camelcase
                     }).done(data => {
                         $('#testTrakt-result').html(data);
                         $('#authTrakt').addClass('hide');
@@ -1045,7 +1044,7 @@ const SICKCHILL = {
                 $('#testTrakt-result').html(loading);
                 $.post(scRoot + '/home/testTrakt', {
                     username: trakt.username,
-                    blacklist_name: trakt.trendingBlacklist // eslint-disable-line camelcase
+                    blacklist_name: trakt.trendingBlacklist, // eslint-disable-line camelcase
                 }).done(data => {
                     $('#testTrakt-result').html(data);
                     $('#testTrakt').prop('disabled', false);
@@ -1061,21 +1060,21 @@ const SICKCHILL = {
                 const from = $('#email_from').val().length > 0 ? $('#email_from').val() : 'root@localhost';
                 const user = $('#email_user').val().trim();
                 const pwd = $('#email_password').val();
-                let err = '';
+                let error = '';
                 let to = '';
                 if (host === null) {
-                    err += '<li style="color: red;">You must specify an SMTP hostname!</li>';
+                    error += '<li style="color: red;">You must specify an SMTP hostname!</li>';
                 }
 
                 if (port === null) {
-                    err += '<li style="color: red;">You must specify an SMTP port!</li>';
+                    error += '<li style="color: red;">You must specify an SMTP port!</li>';
                 } else if (port.match(/^\d+$/) === null || Number.parseInt(port, 10) > 65535) {
-                    err += '<li style="color: red;">SMTP port must be between 0 and 65535!</li>';
+                    error += '<li style="color: red;">SMTP port must be between 0 and 65535!</li>';
                 }
 
-                if (err.length > 0) {
-                    err = '<ol>' + err + '</ol>';
-                    status.html(err);
+                if (error.length > 0) {
+                    error = '<ol>' + error + '</ol>';
+                    status.html(error);
                 } else {
                     to = prompt('Enter an email address to send the test to:', null); // eslint-disable-line no-alert
                     if (to === null || to.length === 0 || to.match(/.*@.*/) === null) {
@@ -1088,7 +1087,7 @@ const SICKCHILL = {
                             use_tls: tls, // eslint-disable-line camelcase
                             user,
                             pwd,
-                            to
+                            to,
                         }, message => {
                             $('#testEmail-result').html(message);
                         });
@@ -1109,7 +1108,7 @@ const SICKCHILL = {
                 $(this).prop('disabled', true);
                 $('#testPushalot-result').html(loading);
                 $.post(scRoot + '/home/testPushalot', {
-                    authorizationToken: pushalot.authToken
+                    authorizationToken: pushalot.authToken,
                 }).done(data => {
                     $('#testPushalot-result').html(data);
                     $('#testPushalot').prop('disabled', false);
@@ -1129,7 +1128,7 @@ const SICKCHILL = {
                 $(this).prop('disabled', true);
                 $('#testPushbullet-result').html(loading);
                 $.post(scRoot + '/home/testPushbullet', {
-                    api: pushbullet.api
+                    api: pushbullet.api,
                 }).done(data => {
                     $('#testPushbullet-result').html(data);
                     $('#testPushbullet').prop('disabled', false);
@@ -1151,7 +1150,7 @@ const SICKCHILL = {
                 }
 
                 $.post(scRoot + '/home/getPushbulletDevices', {
-                    api: pushbullet.api
+                    api: pushbullet.api,
                 }, data => {
                     pushbullet.devices = $.parseJSON(data).devices;
                     pushbullet.currentDevice = $('#pushbullet_device').val();
@@ -1178,7 +1177,7 @@ const SICKCHILL = {
                 });
 
                 $.post(scRoot + '/home/getPushbulletChannels', {
-                    api: pushbullet.api
+                    api: pushbullet.api,
                 }, data => {
                     pushbullet.channels = $.parseJSON(data).channels;
                     pushbullet.currentChannel = $('#pushbullet_channel').val();
@@ -1243,10 +1242,8 @@ const SICKCHILL = {
                     // Convert the 'list' object to a js array of objects so that we can sort it
                     const _list = [];
                     for (const _show in list) {
-                        if ({}.hasOwnProperty.call(list, _show)) {
-                            if (_show.charAt(0) !== '_') {
-                                _list.push(list[_show]);
-                            }
+                        if ({}.hasOwnProperty.call(list, _show) && _show.charAt(0) !== '_') {
+                            _list.push(list[_show]);
                         }
                     }
 
@@ -1263,10 +1260,8 @@ const SICKCHILL = {
                     });
                     let html = '<option value="-1">-- Select --</option>';
                     for (const _show in sortedList) {
-                        if ({}.hasOwnProperty.call(sortedList, _show)) {
-                            if (sortedList[_show].id && sortedList[_show].name) {
-                                html += '<option value="' + sortedList[_show].id + '">' + $('<div>').text(sortedList[_show].name).html() + '</option>';
-                            }
+                        if ({}.hasOwnProperty.call(sortedList, _show) && sortedList[_show].id && sortedList[_show].name) {
+                            html += '<option value="' + sortedList[_show].id + '">' + $('<div>').text(sortedList[_show].name).html() + '</option>';
                         }
                     }
 
@@ -1292,7 +1287,7 @@ const SICKCHILL = {
             $('#email_show_save').on('click', () => {
                 $.post(scRoot + '/home/saveShowNotifyList', {
                     show: $('#email_show').val(),
-                    emails: $('#email_show_list').val()
+                    emails: $('#email_show_list').val(),
                 }, () => {
                     // Reload the per show notify lists to reflect changes
                     loadShowNotifyLists();
@@ -1301,7 +1296,7 @@ const SICKCHILL = {
             $('#prowl_show_save').on('click', () => {
                 $.post(scRoot + '/home/saveShowNotifyList', {
                     show: $('#prowl_show').val(),
-                    prowlAPIs: $('#prowl_show_list').val()
+                    prowlAPIs: $('#prowl_show_list').val(),
                 }, () => {
                     // Reload the per show notify lists to reflect changes
                     loadShowNotifyLists();
@@ -1336,7 +1331,7 @@ const SICKCHILL = {
                     if (data !== 'supported') {
                         $('#unpack').qtip('option', {
                             'content.text': 'Unrar Executable not found.',
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $('#unpack').qtip('toggle', true);
                         $('#unpack').css('background-color', '#FFFFDD');
@@ -1352,7 +1347,7 @@ const SICKCHILL = {
                 example.animeType = $('input[name="naming_anime"]:checked').val();
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
-                    pattern: example.pattern
+                    pattern: example.pattern,
                 }, data => {
                     if (data) {
                         $('#naming_example').text(data + '.ext');
@@ -1364,7 +1359,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
-                    multi: example.multi
+                    multi: example.multi,
                 }, data => {
                     if (data) {
                         $('#naming_example_multi').text(data + '.ext');
@@ -1376,14 +1371,14 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern: example.pattern,
-                    multi: example.multi
+                    multi: example.multi,
                 }, data => {
                     let info;
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
                         $('#naming_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $('#naming_pattern').qtip('toggle', true);
                         $('#naming_pattern').css('background-color', '#FFDDDD');
@@ -1391,7 +1386,7 @@ const SICKCHILL = {
                         info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
                         $('#naming_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $('#naming_pattern').qtip('toggle', true);
                         $('#naming_pattern').css('background-color', '#FFFFDD');
@@ -1399,7 +1394,7 @@ const SICKCHILL = {
                         info = _('This pattern is valid.');
                         $('#naming_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-green'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-green',
                         });
                         $('#naming_pattern').qtip('toggle', false);
                         $('#naming_pattern').css('background-color', '#FFFFFF');
@@ -1414,7 +1409,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern,
-                    abd: 'True'
+                    abd: 'True',
                 }, data => {
                     if (data) {
                         $('#naming_abd_example').text(data + '.ext');
@@ -1426,14 +1421,14 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern,
-                    abd: 'True'
+                    abd: 'True',
                 }, data => {
                     let info;
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
                         $('#naming_abd_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $('#naming_abd_pattern').qtip('toggle', true);
                         $('#naming_abd_pattern').css('background-color', '#FFDDDD');
@@ -1441,7 +1436,7 @@ const SICKCHILL = {
                         info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
                         $('#naming_abd_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $('#naming_abd_pattern').qtip('toggle', true);
                         $('#naming_abd_pattern').css('background-color', '#FFFFDD');
@@ -1449,7 +1444,7 @@ const SICKCHILL = {
                         info = _('This pattern is valid.');
                         $('#naming_abd_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-green'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-green',
                         });
                         $('#naming_abd_pattern').qtip('toggle', false);
                         $('#naming_abd_pattern').css('background-color', '#FFFFFF');
@@ -1464,7 +1459,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern,
-                    sports: 'True' // @TODO does this actually need to be a string or can it be a boolean?
+                    sports: 'True', // @TODO does this actually need to be a string or can it be a boolean?
                 }, data => {
                     if (data) {
                         $('#naming_sports_example').text(data + '.ext');
@@ -1476,14 +1471,14 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern,
-                    sports: 'True' // @TODO does this actually need to be a string or can it be a boolean?
+                    sports: 'True', // @TODO does this actually need to be a string or can it be a boolean?
                 }, data => {
                     let info;
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
                         $('#naming_sports_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $('#naming_sports_pattern').qtip('toggle', true);
                         $('#naming_sports_pattern').css('background-color', '#FFDDDD');
@@ -1491,7 +1486,7 @@ const SICKCHILL = {
                         info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
                         $('#naming_sports_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $('#naming_sports_pattern').qtip('toggle', true);
                         $('#naming_sports_pattern').css('background-color', '#FFFFDD');
@@ -1499,7 +1494,7 @@ const SICKCHILL = {
                         info = _('This pattern is valid.');
                         $('#naming_sports_pattern').qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-green'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-green',
                         });
                         $('#naming_sports_pattern').qtip('toggle', false);
                         $('#naming_sports_pattern').css('background-color', '#FFFFFF');
@@ -1517,7 +1512,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
-                    anime_type: example.animeType // eslint-disable-line camelcase
+                    anime_type: example.animeType, // eslint-disable-line camelcase
                 }, data => {
                     if (data) {
                         $('#naming_example_anime').text(data + '.ext');
@@ -1530,7 +1525,7 @@ const SICKCHILL = {
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern: example.pattern,
                     multi: example.multi,
-                    anime_type: example.animeType // eslint-disable-line camelcase
+                    anime_type: example.animeType, // eslint-disable-line camelcase
                 }, data => {
                     if (data) {
                         $('#naming_example_multi_anime').text(data + '.ext');
@@ -1543,7 +1538,7 @@ const SICKCHILL = {
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern: example.pattern,
                     multi: example.multi,
-                    anime_type: example.animeType // eslint-disable-line camelcase
+                    anime_type: example.animeType, // eslint-disable-line camelcase
                 }, data => {
                     let info;
                     const $namingAnimePatternInput = $('#naming_anime_pattern');
@@ -1551,7 +1546,7 @@ const SICKCHILL = {
                         info = _('This pattern is invalid.');
                         $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $namingAnimePatternInput.qtip('toggle', true);
                         $namingAnimePatternInput.css('background-color', '#FFDDDD');
@@ -1559,7 +1554,7 @@ const SICKCHILL = {
                         info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
                         $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-red'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
                         $namingAnimePatternInput.qtip('toggle', true);
                         $namingAnimePatternInput.css('background-color', '#FFFFDD');
@@ -1567,7 +1562,7 @@ const SICKCHILL = {
                         info = _('This pattern is valid.');
                         $namingAnimePatternInput.qtip('option', {
                             'content.text': info,
-                            'style.classes': 'qtip-rounded qtip-shadow qtip-green'
+                            'style.classes': 'qtip-rounded qtip-shadow qtip-green',
                         });
                         $namingAnimePatternInput.qtip('toggle', false);
                         $namingAnimePatternInput.css('background-color', '#FFFFFF');
@@ -1758,16 +1753,7 @@ const SICKCHILL = {
                     const seasonAllPoster = $('#' + generatorName + '_season_all_poster').is(':checked');
                     const seasonAllBanner = $('#' + generatorName + '_season_all_banner').is(':checked');
 
-                    configArray.push(showMetadata ? '1' : '0');
-                    configArray.push(episodeMetadata ? '1' : '0');
-                    configArray.push(fanart ? '1' : '0');
-                    configArray.push(poster ? '1' : '0');
-                    configArray.push(banner ? '1' : '0');
-                    configArray.push(episodeThumbnails ? '1' : '0');
-                    configArray.push(seasonPosters ? '1' : '0');
-                    configArray.push(seasonBanners ? '1' : '0');
-                    configArray.push(seasonAllPoster ? '1' : '0');
-                    configArray.push(seasonAllBanner ? '1' : '0');
+                    configArray.push(showMetadata ? '1' : '0', episodeMetadata ? '1' : '0', fanart ? '1' : '0', poster ? '1' : '0', banner ? '1' : '0', episodeThumbnails ? '1' : '0', seasonPosters ? '1' : '0', seasonBanners ? '1' : '0', seasonAllPoster ? '1' : '0', seasonAllBanner ? '1' : '0');
 
                     let curNumber = 0;
                     for (const element of configArray) {
@@ -1803,49 +1789,49 @@ const SICKCHILL = {
                 position: {
                     viewport: $(window),
                     at: 'bottom center',
-                    my: 'top right'
+                    my: 'top right',
                 },
                 style: {
                     tip: {
                         corner: true,
-                        method: 'polygon'
+                        method: 'polygon',
                     },
-                    classes: 'qtip-shadow qtip-dark'
-                }
+                    classes: 'qtip-shadow qtip-dark',
+                },
             });
             $('i[title]').qtip({
                 position: {
                     viewport: $(window),
                     at: 'top center',
-                    my: 'bottom center'
+                    my: 'bottom center',
                 },
                 style: {
                     tip: {
                         corner: true,
-                        method: 'polygon'
+                        method: 'polygon',
                     },
-                    classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'
-                }
+                    classes: 'qtip-rounded qtip-shadow ui-tooltip-sb',
+                },
             });
             $('.custom-pattern,#unpack').qtip({
                 content: 'validating...',
                 show: {
                     event: false,
-                    ready: false
+                    ready: false,
                 },
                 hide: false,
                 position: {
                     viewport: $(window),
                     at: 'center left',
-                    my: 'center right'
+                    my: 'center right',
                 },
                 style: {
                     tip: {
                         corner: true,
-                        method: 'polygon'
+                        method: 'polygon',
                     },
-                    classes: 'qtip-rounded qtip-shadow qtip-red'
-                }
+                    classes: 'qtip-rounded qtip-shadow qtip-red',
+                },
             });
         },
         search() {
@@ -1866,9 +1852,7 @@ const SICKCHILL = {
                 const testDSM = '#testDSM';
                 const testDSMResult = '#testDSM_result';
 
-                $('#nzb_method_icon').removeClass((index, css) => {
-                    return (css.match(/(^|\s)add-client-icon-\S+/g) || []).join(' ');
-                });
+                $('#nzb_method_icon').removeClass((index, css) => (css.match(/(^|\s)add-client-icon-\S+/g) || []).join(' '));
                 $('#nzb_method_icon').addClass('add-client-icon-' + selectedProvider.replace('_', '-'));
 
                 $(blackholeSettings).hide();
@@ -1908,9 +1892,7 @@ const SICKCHILL = {
                 let optionPanel = '#options_torrent_blackhole';
                 let client = '';
 
-                $('#torrent_method_icon').removeClass((index, css) => {
-                    return (css.match(/(^|\s)add-client-icon-\S+/g) || []).join(' ');
-                });
+                $('#torrent_method_icon').removeClass((index, css) => (css.match(/(^|\s)add-client-icon-\S+/g) || []).join(' '));
                 $('#torrent_method_icon').addClass('add-client-icon-' + selectedProvider.replace('_', '-'));
 
                 if (selectedProvider.toLowerCase() !== 'blackhole') {
@@ -1985,8 +1967,8 @@ const SICKCHILL = {
                         $('#path_synology').show();
                     } else if (selectedProvider.toLowerCase() === 'rtorrent') {
                         client = 'rTorrent';
-                        $('#host_desc_torrent').html(_('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> ' +
-                                                        'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
+                        $('#host_desc_torrent').html(_('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> '
+                                                        + 'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
                         $('#torrent_verify_cert_option').show();
                         $('#torrent_auth_type_option').show();
                     } else if (selectedProvider.toLowerCase() === 'qbittorrent') {
@@ -2010,8 +1992,8 @@ const SICKCHILL = {
                         $('#torrent_host_option').hide();
                         $('#host_desc_torrent').text(_('URL to your putio client (e.g. http://localhost:8080)'));
                         $('label[for="torrent_password"]').html(
-                            '<a href="' + anonURL + 'https://app.put.io/oauth/apps/new" target="_blank">' +
-                            _('Create a new OAuth app for put.io') + '</a>');
+                            '<a href="' + anonURL + 'https://app.put.io/oauth/apps/new" target="_blank">'
+                            + _('Create a new OAuth app for put.io') + '</a>');
                         $('#username_title.component-title').text(_('Put.io Parent Folder'));
                         $('#password_title.component-title').text(_('Put.io OAuth Token'));
                     }
@@ -2063,7 +2045,7 @@ const SICKCHILL = {
                     host: sab.host,
                     username: sab.username,
                     password: sab.password,
-                    apikey: sab.apiKey
+                    apikey: sab.apiKey,
                 }, data => {
                     $('#testSABnzbd_result').html(data);
                 });
@@ -2079,7 +2061,7 @@ const SICKCHILL = {
                 $.post(scRoot + '/home/testDSM', {
                     host: dsm.host,
                     username: dsm.username,
-                    password: dsm.password
+                    password: dsm.password,
                 }, data => {
                     $('#testDSM_result').html(data);
                 });
@@ -2100,7 +2082,7 @@ const SICKCHILL = {
                     torrent_method: torrent.method, // eslint-disable-line camelcase
                     host: torrent.host,
                     username: torrent.username,
-                    password: torrent.password
+                    password: torrent.password,
                 }, data => {
                     $('#test_torrent_result').html(data);
                 });
@@ -2170,7 +2152,7 @@ const SICKCHILL = {
                 },
                 create() {
                     $(this).refreshServiceList();
-                }
+                },
             });
 
             $('#service_order_list').disableSelection();
@@ -2178,7 +2160,7 @@ const SICKCHILL = {
         providers() {
             // @TODO This function need to be filled with ConfigProviders.js but can't be as we've got scope issues currently.
             console.log('This function need to be filled with ConfigProviders.js but can\'t be as we\'ve got scope issues currently.');
-        }
+        },
     },
     home: {
         init() {
@@ -2186,7 +2168,7 @@ const SICKCHILL = {
             $('#showTabs').tabs({
                 activate() {
                     $('.show-grid').isotope('layout');
-                }
+                },
             });
         },
         index() {
@@ -2201,7 +2183,7 @@ const SICKCHILL = {
                     filter() {
                         const name = $(this).find('.show-title').html().trim().toLowerCase();
                         return name.includes($('#filterShowName').val().toLowerCase());
-                    }
+                    },
                 });
             }, 500));
 
@@ -2240,7 +2222,7 @@ const SICKCHILL = {
                 $('.show-container').css({
                     width: newSize,
                     borderWidth,
-                    borderRadius
+                    borderRadius,
                 });
             }
 
@@ -2266,7 +2248,7 @@ const SICKCHILL = {
 
                     resizePosters(ui.value);
                     $('.show-grid').isotope('layout');
-                }
+                },
             });
 
             $('#rootDirSelect').on('change', () => {
@@ -2310,21 +2292,14 @@ const SICKCHILL = {
                     },
                     5(node) {
                         const progress = $(node).find('div').attr('data-progress-sort');
-                        let result;
-                        if (progress === undefined) {
-                            result = Number.NEGATIVE_INFINITY;
-                        } else {
-                            result = (progress.length && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
-                        }
-
-                        return result;
+                        return progress === undefined ? Number.NEGATIVE_INFINITY : (progress.length > 0 && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
                     },
                     6(node) {
                         return $(node).data('show-size');
                     },
                     7(node) {
                         return ($(node).find('span').attr('title') || 'No').toLowerCase();
-                    }
+                    },
                 },
                 widgets: ['saveSort', 'zebra', 'stickyHeaders', 'filter', 'columnSelector'],
                 headers: {
@@ -2334,7 +2309,7 @@ const SICKCHILL = {
                     4: {sorter: 'quality'},
                     5: {sorter: 'digit'},
                     6: {sorter: 'digit'},
-                    7: {filter: 'parsed'}
+                    7: {filter: 'parsed'},
                 },
                 widgetOptions: {
                     filter_columnFilters: true, // eslint-disable-line camelcase
@@ -2358,7 +2333,7 @@ const SICKCHILL = {
                                 },
                                 '>'(a, b) {
                                     return a > b;
-                                }
+                                },
                             };
 
                             if (filterInput === '') {
@@ -2374,37 +2349,27 @@ const SICKCHILL = {
                                 }
 
                                 result = filterInput.match(/(\d+)\s(-|to)\s+(\d+)/i);
-                                if (result) {
-                                    if ((result[2] === '-') || (result[2] === 'to')) {
-                                        if ((pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
-                                            test = true;
-                                        }
-                                    }
+                                if (result && ((result[2] === '-') || (result[2] === 'to')) && (pct >= Number.parseInt(result[1], 10)) && (pct <= Number.parseInt(result[3], 10))) {
+                                    test = true;
                                 }
 
                                 result = filterInput.match(/(=)?\s?(\d+)\s?(=)?/i);
-                                if (result) {
-                                    if ((result[1] === '=') || (result[3] === '=')) {
-                                        if (Number.parseInt(result[2], 10) === pct) {
-                                            test = true;
-                                        }
-                                    }
+                                if (result && ((result[1] === '=') || (result[3] === '=')) && Number.parseInt(result[2], 10) === pct) {
+                                    test = true;
                                 }
 
-                                if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput)) {
-                                    if (Number.parseInt(filterInput, 10) === pct) {
-                                        test = true;
-                                    }
+                                if (!Number.isNaN(Number.parseFloat(filterInput)) && Number.isFinite(filterInput) && Number.parseInt(filterInput, 10) === pct) {
+                                    test = true;
                                 }
                             }
 
                             return test;
-                        }
+                        },
                     },
-                    columnSelector_mediaquery: false // eslint-disable-line camelcase
+                    columnSelector_mediaquery: false, // eslint-disable-line camelcase
                 },
                 sortStable: true,
-                sortAppend: [[2, 0]]
+                sortAppend: [[2, 0]],
             });
 
             $('.show-grid').imagesLoaded(() => {
@@ -2416,7 +2381,7 @@ const SICKCHILL = {
                     sortAscending: getMeta('settings.POSTER_SORTDIR'),
                     layoutMode: 'masonry',
                     masonry: {
-                        isFitWidth: true
+                        isFitWidth: true,
                     },
                     getSortData: {
                         name(itemElement) {
@@ -2426,14 +2391,14 @@ const SICKCHILL = {
                         network: '[data-network]',
                         date(itemElement) {
                             const date = $(itemElement).attr('data-date');
-                            return (date.length && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
+                            return (date.length > 0 && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
                         },
                         progress(itemElement) {
                             const progress = $(itemElement).attr('data-progress-sort');
-                            return (progress.length && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                            return (progress.length > 0 && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
                         },
-                        status: '[data-status]'
-                    }
+                        status: '[data-status]',
+                    },
                 });
 
                 // When posters are small enough to not display the .show-details
@@ -2449,7 +2414,7 @@ const SICKCHILL = {
                         posterHoverTimer = null;
                         $('#posterPopup').remove();
                         const popup = poster.clone().attr({
-                            id: 'posterPopup'
+                            id: 'posterPopup',
                         });
                         const origLeft = poster.offset().left;
                         const origTop = poster.offset().top;
@@ -2458,7 +2423,7 @@ const SICKCHILL = {
                             margin: 0,
                             top: origTop,
                             left: origLeft,
-                            zIndex: 9999
+                            zIndex: 9999,
                         });
 
                         popup.find('.show-details').show();
@@ -2498,7 +2463,7 @@ const SICKCHILL = {
                             top: newTop,
                             left: newLeft,
                             width: 250,
-                            height: 438
+                            height: 438,
                         });
                     }, 300);
                 }).on('mouseleave', () => {
@@ -2525,7 +2490,7 @@ const SICKCHILL = {
             $('#popover').popover({
                 placement: 'bottom',
                 html: true, // Required if content has HTML
-                content: '<div id="popover-target"></div>'
+                content: '<div id="popover-target"></div>',
             }).on('shown.bs.popover', () => { // Bootstrap popover event triggered when the popover opens
                 // call this function to copy the column selection code into the popover
                 $.tablesorter.columnSelector.attachTo($('#showListTableShows'), '#popover-target');
@@ -2548,8 +2513,8 @@ const SICKCHILL = {
                     columnSelector_layout: '<label><input type="checkbox"/>{name}</label>', // eslint-disable-line camelcase
                     columnSelector_mediaquery: false, // eslint-disable-line camelcase
                     columnSelector_cssChecked: 'checked', // eslint-disable-line camelcase
-                    stickyHeaders_offset: 50 // eslint-disable-line camelcase
-                }
+                    stickyHeaders_offset: 50, // eslint-disable-line camelcase
+                },
             });
 
             $('.displayShowTable').ajaxEpSearch({colorRow: true});
@@ -2726,22 +2691,22 @@ const SICKCHILL = {
             });
 
             $('.seasonCheck').on('click', function () {
-                const seasCheck = this;
-                const seasNo = $(seasCheck).attr('id');
+                const seasCheck = this.checked;
+                const seasNo = $(this).attr('id');
                 $('#collapseSeason-' + seasNo).collapse('show');
                 $('.epCheck:visible[id^="' + seasNo + 'x"]').each(function () {
-                    this.checked = seasCheck.checked;
+                    this.checked = seasCheck;
                 });
             });
 
             let lastCheck = null;
             $('.epCheck').on('click', function (event) {
                 if (!lastCheck || !event.shiftKey) {
-                    lastCheck = this;
+                    lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
                     return;
                 }
 
-                const check = this;
+                const check = this; // eslint-disable-line unicorn/no-this-assignment
                 let found = 0;
 
                 $('.epCheck').each(function () {
@@ -2852,7 +2817,7 @@ const SICKCHILL = {
                     forSeason,
                     forEpisode,
                     sceneSeason,
-                    sceneEpisode
+                    sceneEpisode,
                 }, data => {
                     // Set the values we get back
                     if (data.sceneSeason === null || data.sceneEpisode === null) {
@@ -2883,7 +2848,7 @@ const SICKCHILL = {
                     show: showId,
                     indexer,
                     forAbsolute,
-                    sceneAbsolute
+                    sceneAbsolute,
                 },
                 data => {
                     // Set the values we get back
@@ -2962,7 +2927,7 @@ const SICKCHILL = {
                 $(this).qtip({
                     show: {solo: true},
                     position: {viewport: $(window), my: 'left center', adjust: {y: -10, x: 2}},
-                    style: {tip: {corner: true, method: 'polygon'}, classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'}
+                    style: {tip: {corner: true, method: 'polygon'}, classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'},
                 });
             });
             $.fn.generateStars = function () {
@@ -2976,7 +2941,7 @@ const SICKCHILL = {
             $('#popover').popover({
                 placement: 'bottom',
                 html: true, // Required if content has HTML
-                content: '<div id="popover-target"></div>'
+                content: '<div id="popover-target"></div>',
             })
             // Bootstrap popover event triggered when the popover opens
                 .on('shown.bs.popover', () => {
@@ -3024,9 +2989,7 @@ const SICKCHILL = {
                     }
 
                     return [season, exceptions].join(':');
-                }).filter(item => {
-                    return item;
-                });
+                }).filter(item => item);
 
                 $('#exceptions').val(allExceptions);
 
@@ -3042,9 +3005,7 @@ const SICKCHILL = {
                 const group = $('.exceptions_list optgroup[data-season="' + season + '"]').get()[0];
                 const placeholder = $(group).find('option.empty');
 
-                const exceptions = new Set($(group).find('option:not(.empty)').get().map(element => {
-                    return $(element).val();
-                }));
+                const exceptions = new Set($(group).find('option:not(.empty)').get().map(element => $(element).val()));
 
                 // If we already have the exception or the field is empty return
                 if (exceptions.has(sceneEx) || sceneEx.trim() === '') {
@@ -3083,25 +3044,25 @@ const SICKCHILL = {
                     return {
                         0(node) { // Provider
                             return $(node).attr('title');
-                        }
+                        },
                     };
                 })(),
                 headers: (function () {
                     return {
                         3: {sorter: 'quality'},
                         4: {sorter: 'metric'},
-                        7: {sorter: false, filter: false}
+                        7: {sorter: false, filter: false},
                     };
                 })(),
                 widgetOptions: {
-                    filter_hideFilters: true // eslint-disable-line camelcase
-                }
+                    filter_hideFilters: true, // eslint-disable-line camelcase
+                },
             });
         },
         postProcess() {
             $('#episodeDir').fileBrowser({
                 title: _('Select Unprocessed Episode Folder'),
-                key: 'postprocessPath'
+                key: 'postprocessPath',
             });
         },
         status() {
@@ -3113,16 +3074,16 @@ const SICKCHILL = {
                     },
                     6(node) {
                         return $(node).data('seconds');
-                    }
+                    },
                 },
                 headers: {
                     5: {sorter: 'digit'},
-                    6: {sorter: 'digit'}
-                }
+                    6: {sorter: 'digit'},
+                },
             });
             $('#queueStatusTable').tablesorter({
                 widgets: ['saveSort', 'zebra'],
-                sortList: [[3, 0], [4, 0], [2, 1]]
+                sortList: [[3, 0], [4, 0], [2, 1]],
             });
         },
         restart() {
@@ -3159,7 +3120,7 @@ const SICKCHILL = {
                     });
                 }, 1000);
             }, 5000);
-        }
+        },
     },
     manage: {
         init() {
@@ -3236,7 +3197,7 @@ const SICKCHILL = {
                     },
                     11(node) { // Show Status
                         return $(node).text().toLowerCase();
-                    }
+                    },
                 },
                 widgets: ['zebra', 'filter', 'columnSelector'],
                 headers: {
@@ -3257,16 +3218,16 @@ const SICKCHILL = {
                     14: {sorter: false},
                     15: {sorter: false},
                     16: {sorter: false},
-                    17: {sorter: false}
+                    17: {sorter: false},
                 },
                 widgetOptions: {
-                    columnSelector_mediaquery: false // eslint-disable-line camelcase
-                }
+                    columnSelector_mediaquery: false, // eslint-disable-line camelcase
+                },
             });
             $('#popover').popover({
                 placement: 'bottom',
                 html: true, // Required if content has HTML
-                content: '<div id="popover-target"></div>'
+                content: '<div id="popover-target"></div>',
             }).on('shown.bs.popover', () => { // Bootstrap popover event triggered when the popover opens
                 // call this function to copy the column selection code into the popover
                 $.tablesorter.columnSelector.attachTo($('#massUpdateTable'), '#popover-target');
@@ -3286,9 +3247,9 @@ const SICKCHILL = {
                 }
 
                 const submitForm = $(
-                    '<form method=\'post\' action=\'' + scRoot + '/manage/massEdit\'>' +
-                        '<input type=\'hidden\' name=\'toEdit\' value=\'' + editArray.join('|') + '\'/>' +
-                    '</form>'
+                    '<form method=\'post\' action=\'' + scRoot + '/manage/massEdit\'>'
+                        + '<input type=\'hidden\' name=\'toEdit\' value=\'' + editArray.join('|') + '\'/>'
+                    + '</form>',
                 );
                 submitForm.appendTo('body');
 
@@ -3365,7 +3326,7 @@ const SICKCHILL = {
                             $.post(url, parameters, () => {
                                 location.reload(true);
                             });
-                        }
+                        },
                     });
                 }
 
@@ -3380,16 +3341,16 @@ const SICKCHILL = {
                 });
             });
 
-            ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck'].forEach(name => {
+            for (const name of ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck']) {
                 let lastCheck = null;
 
                 $(name).on('click', function (event) {
                     if (!lastCheck || !event.shiftKey) {
-                        lastCheck = this;
+                        lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
                         return;
                     }
 
-                    const check = this;
+                    const check = this; // eslint-disable-line unicorn/no-this-assignment
                     let found = 0;
 
                     $(name).each(function () {
@@ -3406,7 +3367,7 @@ const SICKCHILL = {
                         }
                     });
                 });
-            });
+            }
         },
         backlogOverview() {
             $('#pickShow').on('change', event => {
@@ -3420,7 +3381,7 @@ const SICKCHILL = {
             $('#failedTable:has(tbody tr)').tablesorter({
                 widgets: ['zebra'],
                 sortList: [[1, 0]],
-                headers: {3: {sorter: false}}
+                headers: {3: {sorter: false}},
             });
             $('#limit').on('change', event => {
                 window.location.href = scRoot + '/manage/failedDownloads/?limit=' + $(event.currentTarget).val();
@@ -3449,11 +3410,11 @@ const SICKCHILL = {
                     let lastCheck = null;
                     $(name).on('click', function (event) {
                         if (!lastCheck || !event.shiftKey) {
-                            lastCheck = this;
+                            lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
                             return;
                         }
 
-                        const check = this;
+                        const check = this; // eslint-disable-line unicorn/no-this-assignment
                         let found = 0;
 
                         $(name + ':visible').each(function () {
@@ -3519,7 +3480,7 @@ const SICKCHILL = {
                 if (!clicked) {
                     $.getJSON(scRoot + '/manage/showEpisodeStatuses', {
                         indexer_id: curIndexerId, // eslint-disable-line camelcase
-                        whichStatus: $('#oldStatus').val()
+                        whichStatus: $('#oldStatus').val(),
                     }, data => {
                         $.each(data, (season, eps) => {
                             $.each(eps, (episode, name) => {
@@ -3574,7 +3535,7 @@ const SICKCHILL = {
                 if (!clicked) {
                     $.getJSON(scRoot + '/manage/showSubtitleMissed', {
                         indexer_id: indexerId, // eslint-disable-line camelcase
-                        whichSubs: $('#selectSubLang').val()
+                        whichSubs: $('#selectSubLang').val(),
                     }, data => {
                         $.each(data, (season, eps) => {
                             $.each(eps, (episode, data) => {
@@ -3614,12 +3575,10 @@ const SICKCHILL = {
                     this.checked = false;
                 });
             });
-        }
+        },
     },
     history: {
-        init() {
-
-        },
+        init() {},
         index() {
             $('#historyTable:has(tbody tr)').tablesorter({
                 widgets: ['zebra', 'filter'],
@@ -3632,7 +3591,7 @@ const SICKCHILL = {
                             },
                             4(node) { // Quality
                                 return $(node).find('span').text().toLowerCase();
-                            }
+                            },
                         };
                     }
 
@@ -3642,7 +3601,7 @@ const SICKCHILL = {
                         },
                         2(node) { // Provider
                             return $(node).attr('provider').toLowerCase();
-                        }
+                        },
                     };
 
                     if (isMeta('settings.USE_SUBTITLES', ['True'])) {
@@ -3667,7 +3626,7 @@ const SICKCHILL = {
                             0: {sorter: 'realISODate'},
                             1: {sorter: 'loadingNames'},
                             4: {sorter: 'quality'},
-                            5: {sorter: false, filter: false}
+                            5: {sorter: false, filter: false},
                         };
                     }
 
@@ -3677,7 +3636,7 @@ const SICKCHILL = {
                             1: {sorter: 'loadingNames'},
                             4: {sorter: false},
                             5: {sorter: 'quality'},
-                            6: {sorter: false, filter: false}
+                            6: {sorter: false, filter: false},
                         };
                     }
 
@@ -3685,9 +3644,9 @@ const SICKCHILL = {
                         0: {sorter: 'realISODate'},
                         1: {sorter: 'loadingNames'},
                         4: {sorter: 'quality'},
-                        5: {sorter: false, filter: false}
+                        5: {sorter: false, filter: false},
                     };
-                })()
+                })(),
             });
 
             $('#layout').on('change', function () {
@@ -3726,22 +3685,22 @@ const SICKCHILL = {
                         $.post(url, parameters, () => {
                             location.reload(true);
                         });
-                    }
+                    },
                 });
 
                 return false;
             });
 
-            ['.removeCheck'].forEach(name => {
+            for (const name of ['.removeCheck']) {
                 let lastCheck = null;
 
                 $(name).on('click', function (event) {
                     if (!lastCheck || !event.shiftKey) {
-                        lastCheck = this;
+                        lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
                         return;
                     }
 
-                    const check = this;
+                    const check = this; // eslint-disable-line unicorn/no-this-assignment
                     let found = 0;
 
                     $(name).each(function () {
@@ -3756,16 +3715,12 @@ const SICKCHILL = {
                         }
                     });
                 });
-            });
-        }
+            }
+        },
     },
     errorlogs: {
-        init() {
-
-        },
-        index() {
-
-        },
+        init() {},
+        index() {},
         viewlogs() {
             $('#min_level,#log_filter,#log_search').on('keyup change', __.debounce(() => {
                 if ($('#log_search').val().length > 0) {
@@ -3809,7 +3764,7 @@ const SICKCHILL = {
                 $(this).attr('title', wasActive ? _('Resume updating the log on this page.') : _('Pause updating the log on this page.'));
                 return false;
             });
-        }
+        },
     },
     schedule: {
         init() {
@@ -3841,7 +3796,7 @@ const SICKCHILL = {
                         },
                         7(node) {
                             return $(node).find('span').text().toLowerCase();
-                        }
+                        },
                     },
                     headers: {
                         0: {sorter: 'realISODate'},
@@ -3850,15 +3805,15 @@ const SICKCHILL = {
                         4: {sorter: 'loadingNames'},
                         7: {sorter: 'quality'},
                         8: {sorter: false},
-                        9: {sorter: false}
+                        9: {sorter: false},
                     },
                     widgetOptions: {
                         filter_columnFilters: true, // eslint-disable-line camelcase
                         filter_hideFilters: true, // eslint-disable-line camelcase
                         filter_saveFilters: false, // eslint-disable-line camelcase
                         columnSelector_mediaquery: false, // eslint-disable-line camelcase
-                        stickyHeaders_offset: 50 // eslint-disable-line camelcase
-                    }
+                        stickyHeaders_offset: 50, // eslint-disable-line camelcase
+                    },
                 });
 
                 $(document).ajaxEpSearch();
@@ -3879,7 +3834,7 @@ const SICKCHILL = {
             $('#popover').popover({
                 placement: 'bottom',
                 html: true, // Required if content has HTML
-                content: '<div id="popover-target"></div>'
+                content: '<div id="popover-target"></div>',
             }).on('shown.bs.popover', () => { // Bootstrap popover event triggered when the popover opens
                 // call this function to copy the column selection code into the popover
                 $.tablesorter.columnSelector.attachTo($('#showListTable'), '#popover-target');
@@ -3888,13 +3843,13 @@ const SICKCHILL = {
             $('#sort, #viewpaused, #viewsnatched, #layout').on('change', function () {
                 window.location.href = $(this).find('option:selected').val();
             });
-        }
+        },
     },
     addShows: {
         init() {
             $('#tabs').tabs({
                 collapsible: true,
-                selected: (metaToBool('settings.SORT_ARTICLE') ? -1 : 0)
+                selected: (metaToBool('settings.SORT_ARTICLE') ? -1 : 0),
             });
 
             $.initRemoteShowGrid = function () {
@@ -3930,13 +3885,13 @@ const SICKCHILL = {
                     }
 
                     $('#container').isotope({
-                        sortBy: sortCriteria
+                        sortBy: sortCriteria,
                     });
                 });
 
                 $('#showsortdirection').on('change', function () {
                     $('#container').isotope({
-                        sortAscending: (this.value === 'asc')
+                        sortAscending: (this.value === 'asc'),
                     });
                 });
 
@@ -3950,8 +3905,8 @@ const SICKCHILL = {
                         },
                         rating: '[data-rating] parseInt',
                         votes: '[data-votes] parseInt',
-                        rank: '[data-rank] parseInt'
-                    }
+                        rank: '[data-rank] parseInt',
+                    },
                 });
             };
 
@@ -4011,7 +3966,7 @@ const SICKCHILL = {
                     subtitles: $('#subtitles').is(':checked'),
                     anime: $('#anime').is(':checked'),
                     scene: $('#scene').is(':checked'),
-                    defaultStatusAfter: $('#statusSelectAfter').val()
+                    defaultStatusAfter: $('#statusSelectAfter').val(),
                 });
 
                 $(this).attr('disabled', true);
@@ -4023,16 +3978,14 @@ const SICKCHILL = {
 
             SICKCHILL.common.QualityChooser.init();
         },
-        index() {
-
-        },
+        index() {},
         newShow() {
             const updateSampleText = function () {
                 // If something's selected then we have some behavior to figure out
                 const object = {
                     showName: '',
                     dir: 'unknown dir.',
-                    sepChar: ''
+                    sepChar: '',
                 };
 
                 // If they've picked a radio button then use that
@@ -4096,55 +4049,49 @@ const SICKCHILL = {
             };
 
             const buildTable = function (shows) {
-                let table =
-                    '<div class="row">' +
-                    '<div class="col-lg-6 col-md-12">' +
-                    '<table class="sickchillTable new-show-table tablesorter">' +
-                    '<thead>' +
-                    '<tr>' +
-                    '<th></th>' +
-                    '<th>Show Name</th>' +
-                    '<th>Premiere</th>' +
-                    '<th>Indexer</th>' +
-                    '</tr>' +
-                    '</thead>' +
-                    '<tbody>';
+                let table
+                    = '<div class="row">'
+                    + '<div class="col-lg-6 col-md-12">'
+                    + '<table class="sickchillTable new-show-table tablesorter">'
+                    + '<thead>'
+                    + '<tr>'
+                    + '<th></th>'
+                    + '<th>Show Name</th>'
+                    + '<th>Premiere</th>'
+                    + '<th>Indexer</th>'
+                    + '</tr>'
+                    + '</thead>'
+                    + '<tbody>';
 
-                const selectedIndex = shows.indexOf(show => {
-                    return !show.inShowList;
-                });
+                const selectedIndex = shows.indexOf(show => !show.inShowList);
 
-                shows.forEach((show, index) => {
-                    table +=
-                        '<tr class="' + (show.inShowList ? 'in-list' : '') + '">' +
-                        '<td>' +
-                        '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj + '" ' +
-                        (selectedIndex === index ? 'checked ' : '') + (show.inShowList ? 'disabled' : '') + '/>' +
-                        '</td>' +
-                        '<td>' +
-                        (function () {
+                for (const [index, show] of shows.entries()) {
+                    table
+                        += '<tr class="' + (show.inShowList ? 'in-list' : '') + '">'
+                        + '<td>'
+                        + '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj + '" '
+                        + (selectedIndex === index ? 'checked ' : '') + (show.inShowList ? 'disabled' : '') + '/>'
+                        + '</td>'
+                        + '<td>'
+                        + (function () {
                             let string = '<a href=';
-                            if (show.inShowList) {
-                                string += '"/home/displayShow?show=' + show.id + '"';
-                            } else {
-                                string += '"' + show.url + '" target="_blank"';
-                            }
+                            string += show.inShowList ? '"/home/displayShow?show=' + show.id + '"' : '"' + show.url + '" target="_blank"';
 
                             string += '>' + show.title + '</a>';
 
                             return string;
-                        })() +
-                        '</td>' +
-                        '<td>' + show.debut + '</td>' +
-                        '<td>' + show.indexer + '</td>' +
-                        '</tr>';
-                });
+                        })()
+                        + '</td>'
+                        + '<td>' + show.debut + '</td>'
+                        + '<td>' + show.indexer + '</td>'
+                        + '</tr>';
+                }
 
-                table +=
-                    '</tbody>' +
-                    '</table>' +
-                    '</div>' +
-                    '</div>';
+                table
+                    += '</tbody>'
+                    + '</table>'
+                    + '</div>'
+                    + '</div>';
 
                 return table;
             };
@@ -4161,16 +4108,17 @@ const SICKCHILL = {
 
                 const searchingFor = _($('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
                 $('#searchResults').empty().html(
-                    '<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> ' +
-                    _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor)
+                    '<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> '
+                    + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor),
                 );
 
                 searchRequestXhr = $.ajax({
                     url: scRoot + '/addShows/searchIndexersForShowName',
                     data: {
                         search_term: $('#show-name').val().trim(), // eslint-disable-line camelcase
+                        exact: $('#exact-match').is(':checked') ? 1 : 0,
                         lang: $('#indexerLangSelect').val(),
-                        indexer: $('#providedIndexer').val()
+                        indexer: $('#providedIndexer').val(),
                     },
                     timeout: Number.parseInt($('#indexer_timeout').val(), 10) * 1000,
                     dataType: 'json',
@@ -4196,7 +4144,7 @@ const SICKCHILL = {
                                     title: object[4],
                                     debut: object[5],
                                     inShowList: object[6],
-                                    url: anonURL + object[2] + object[3]
+                                    url: anonURL + object[2] + object[3],
                                 };
 
                                 if (data.langid) {
@@ -4216,9 +4164,9 @@ const SICKCHILL = {
                         $('.new-show-table').tablesorter(
                             {
                                 widgets: ['stickyHeaders', 'zebra', 'saveSort'],
-                                headers: {0: {sorter: false}}
+                                headers: {0: {sorter: false}},
                             });
-                    }
+                    },
                 });
             };
 
@@ -4264,9 +4212,9 @@ const SICKCHILL = {
         },
         addExistingShow() {
             $('#tableDiv').on('click', '#checkAll', function () {
-                const seasCheck = this;
+                const seasCheck = this.checked;
                 $('.dirCheck').each(function () {
-                    this.checked = seasCheck.checked;
+                    this.checked = seasCheck;
                 });
             });
 
@@ -4280,7 +4228,7 @@ const SICKCHILL = {
                         $('<input>', {
                             type: 'hidden',
                             name: 'shows_to_add',
-                            value: indexer + '|' + show
+                            value: indexer + '|' + show,
                         }).appendTo(submitForm);
                         selectedShows = true;
                     }
@@ -4293,7 +4241,7 @@ const SICKCHILL = {
                 $('<input>', {
                     type: 'hidden',
                     name: 'promptForSettings',
-                    value: $('#promptForSettings').is(':checked') ? 'on' : 'off'
+                    value: $('#promptForSettings').is(':checked') ? 'on' : 'off',
                 }).appendTo(submitForm);
 
                 submitForm.submit();
@@ -4318,8 +4266,8 @@ const SICKCHILL = {
                         // SortList: [[1,0]],
                         widgets: ['zebra'],
                         headers: {
-                            0: {sorter: false}
-                        }
+                            0: {sorter: false},
+                        },
                     });
                 });
             }
@@ -4357,14 +4305,14 @@ const SICKCHILL = {
             $('#recommendedShows').loadRemoteShows(
                 '/addShows/getRecommendedShows/',
                 'Loading recommended shows...',
-                'Trakt timed out, refresh page to try again'
+                'Trakt timed out, refresh page to try again',
             );
         },
         trendingShows() {
             $('#trendingShows').loadRemoteShows(
                 '/addShows/getTrendingShows/?traktList=' + $('#traktList').val(),
                 'Loading trending shows...',
-                'Trakt timed out, refresh page to try again'
+                'Trakt timed out, refresh page to try again',
             );
 
             $('#traktlistselection').on('change', event => {
@@ -4373,13 +4321,13 @@ const SICKCHILL = {
                 $('#trendingShows').loadRemoteShows(
                     '/addShows/getTrendingShows/?traktList=' + traktList,
                     'Loading trending shows...',
-                    'Trakt timed out, refresh page to try again'
+                    'Trakt timed out, refresh page to try again',
                 );
             });
         },
         popularShows() {
             $.initRemoteShowGrid();
-        }
+        },
     },
     movies: {
         init() {
@@ -4387,7 +4335,7 @@ const SICKCHILL = {
             $('#movieTabs').tabs({
                 activate() {
                     $('.movie-grid').isotope('layout');
-                }
+                },
             });
         },
         index() {
@@ -4402,7 +4350,7 @@ const SICKCHILL = {
                     filter() {
                         const name = $(this).find('.movie-title').html().trim().toLowerCase();
                         return name.includes($('#filterShowName').val().toLowerCase());
-                    }
+                    },
                 });
             }, 500));
 
@@ -4441,7 +4389,7 @@ const SICKCHILL = {
                 $('.movie-container').css({
                     width: newSize,
                     borderWidth,
-                    borderRadius
+                    borderRadius,
                 });
             }
 
@@ -4467,7 +4415,7 @@ const SICKCHILL = {
 
                     resizePosters(ui.value);
                     $('.movie-grid').isotope('layout');
-                }
+                },
             });
 
             $('#rootDirSelect').on('change', () => {
@@ -4497,7 +4445,7 @@ const SICKCHILL = {
                 $(this).qtip({
                     show: {solo: true},
                     position: {viewport: $(window), my: 'left center', adjust: {y: -10, x: 2}},
-                    style: {tip: {corner: true, method: 'polygon'}, classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'}
+                    style: {tip: {corner: true, method: 'polygon'}, classes: 'qtip-rounded qtip-shadow ui-tooltip-sb'},
                 });
             });
 
@@ -4512,7 +4460,7 @@ const SICKCHILL = {
             $('#popover').popover({
                 placement: 'bottom',
                 html: true, // Required if content has HTML
-                content: '<div id="popover-target"></div>'
+                content: '<div id="popover-target"></div>',
             })
                 // Bootstrap popover event triggered when the popover opens
                 .on('shown.bs.popover', () => {
@@ -4520,8 +4468,8 @@ const SICKCHILL = {
                         $.tablesorter.columnSelector.attachTo(item, '#popover-target');
                     });
                 });
-        }
-    }
+        },
+    },
 };
 
 const UTIL = {
@@ -4541,16 +4489,12 @@ const UTIL = {
         UTIL.exec('common');
         UTIL.exec(controller);
         UTIL.exec(controller, action);
-    }
+    },
 };
 
 // Handle js-gettext + load javascript functions
 $.getJSON(scRoot + '/ui/locale.json', {lang: getMeta('settings.GUI_LANG')}, data => {
-    if (data === undefined) {
-        window.gt = new Gettext();
-    } else {
-        window.gt = new Gettext(data.messages);
-    }
+    window.gt = data === undefined ? new Gettext() : new Gettext(data.messages);
 
     // Shortcut for normal gettext
     window._ = function (string) {

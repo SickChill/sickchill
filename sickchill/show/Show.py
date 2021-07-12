@@ -68,6 +68,39 @@ class Show(object):
         raise MultipleShowObjectsException()
 
     @staticmethod
+    def find_name(shows, name):
+        """
+        Find a show by its indexer id in the provided list of shows
+        :param shows: The list of shows to search in
+        :param name: The known name of the desired show
+        :return: The desired show if found, ``None`` if not found
+        :throw: ``MultipleShowObjectsException`` if multiple shows match the provided ``indexer_id``
+        """
+        if not name or not shows:
+            return None
+
+        if not isinstance(name, str):
+            return None
+
+        if isinstance(name, list):
+            names = name
+            for item in names:
+                if not isinstance(item, str):
+                    return None
+        else:
+            names = [name]
+
+        results = [show for show in shows if show.name in names]
+
+        if not results:
+            return None
+
+        if len(results) == 1:
+            return results[0]
+
+        raise MultipleShowObjectsException()
+
+    @staticmethod
     def overall_stats():
         db = DBConnection()
         shows = settings.showList

@@ -15,13 +15,14 @@ $(document).ready(function () {
     const ifExists = function (loopThroughArray, searchFor) {
         let found = false;
 
-        loopThroughArray.forEach(rootObject => {
+        for (const rootObject of loopThroughArray) {
             if (rootObject.name === searchFor) {
                 found = true;
             }
 
             console.log(rootObject.name + ' while searching for: ' + searchFor);
-        });
+        }
+
         return found;
     };
 
@@ -171,20 +172,17 @@ $(document).ready(function () {
         $('#newznab_key').val(data[2]);
 
         // Check if not already array
-        if (typeof data[3] === 'string') {
-            rrcat = data[3].split(',');
-        } else {
-            rrcat = data[3];
-        }
+        rrcat = typeof data[3] === 'string' ? data[3].split(',') : data[3];
 
         // Update the category select box (on the right)
         const newCatOptions = [];
         if (rrcat) {
-            rrcat.forEach(cat => {
+            for (const cat of rrcat) {
                 if (cat !== '') {
                     newCatOptions.push({text: cat, value: cat});
                 }
-            });
+            }
+
             $('#newznab_cat').replaceOptions(newCatOptions);
         }
 
@@ -226,18 +224,21 @@ $(document).ready(function () {
         // Loop through the array and if currently selected newznab provider name matches one in the array, use it to
         // update the capabilities select box (on the left).
         $('#newznab_cap').empty();
-        if (selectedProvider[0]) {
-            newznabProvidersCapabilities.forEach(newzNabCap => {
-                if (newzNabCap.name && newzNabCap.name === selectedProvider[0] && Array.isArray(newzNabCap.categories)) {
-                    const newCapOptions = [];
-                    newzNabCap.categories.forEach(categorySet => {
-                        if (categorySet.id && categorySet.name) {
-                            newCapOptions.push({value: categorySet.id, text: categorySet.name + '(' + categorySet.id + ')'});
-                        }
-                    });
-                    $('#newznab_cap').replaceOptions(newCapOptions);
+        if (!selectedProvider[0]) {
+            return;
+        }
+
+        for (const newzNabCap of newznabProvidersCapabilities) {
+            if (newzNabCap.name && newzNabCap.name === selectedProvider[0] && Array.isArray(newzNabCap.categories)) {
+                const newCapOptions = [];
+                for (const categorySet of newzNabCap.categories) {
+                    if (categorySet.id && categorySet.name) {
+                        newCapOptions.push({value: categorySet.id, text: categorySet.name + '(' + categorySet.id + ')'});
+                    }
                 }
-            });
+
+                $('#newznab_cap').replaceOptions(newCapOptions);
+            }
         }
     };
 
@@ -355,9 +356,7 @@ $(document).ready(function () {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map((i, opt) => {
-            return $(opt).text();
-        }).toArray().join(',');
+        const cat = $('#newznab_cat option').map((i, opt) => $(opt).text()).toArray().join(',');
 
         $(this).updateProvider(selectedProvider, url, key, cat);
     });
@@ -420,9 +419,7 @@ $(document).ready(function () {
         const url = $('#newznab_url').val();
         const key = $('#newznab_key').val();
 
-        const cat = $('#newznab_cat option').map((i, opt) => {
-            return $(opt).text();
-        }).toArray().join(',');
+        const cat = $('#newznab_cat option').map((i, opt) => $(opt).text()).toArray().join(',');
 
         $('#newznab_cat option:not([value])').remove();
 
@@ -435,9 +432,7 @@ $(document).ready(function () {
         const key = $.trim($('#newznab_key').val());
         // Var cat = $.trim($('#newznab_cat').val());
 
-        const cat = $.trim($('#newznab_cat option').map((i, opt) => {
-            return $(opt).text();
-        }).toArray().join(','));
+        const cat = $.trim($('#newznab_cat option').map((i, opt) => $(opt).text()).toArray().join(','));
 
         if (!name || !url || !key) {
             return;
@@ -516,13 +511,15 @@ $(document).ready(function () {
     });
 
     $.fn.replaceOptions = function (options) {
-        this.empty();
-        const self = this;
+        function addOptions(providerObject, options) {
+            providerObject.empty();
+            $.each(options, (index, option) => {
+                const $option = $('<option></option>').attr('value', option.value).text(option.text);
+                providerObject.append($option);
+            });
+        }
 
-        $.each(options, (index, option) => {
-            const $option = $('<option></option>').attr('value', option.value).text(option.text);
-            self.append($option);
-        });
+        addOptions(this, options);
     };
 
     $(this).showHideProviders();
@@ -531,7 +528,7 @@ $(document).ready(function () {
         placeholder: 'ui-state-highlight',
         update() {
             $(this).refreshProviderList();
-        }
+        },
     });
 
     $('#provider_order_list').disableSelection();

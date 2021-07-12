@@ -92,10 +92,12 @@ class NZBProviderTests(GenericProviderTests):
         unicode_results_list = [-1, -1, -1, -1, -1, 0, 123, -1, -123, -1, 0, 123, 12, -123, -12]
 
         assert len(items_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(items_list), len(results_list))
+            len(items_list), len(results_list)
+        )
 
         assert len(unicode_items_list) == len(unicode_results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(unicode_items_list), len(unicode_results_list))
+            len(unicode_items_list), len(unicode_results_list)
+        )
 
         for (index, item) in enumerate(items_list):
             assert NZBProvider("Test Provider")._get_size(item) == results_list[index]

@@ -426,7 +426,7 @@ class ConfigNotifications(Config):
 
         sickchill.start.save_config()
 
-        if len(results) > 0:
+        if results:
             for x in results:
                 logger.exception(x)
             ui.notifications.error(_("Error(s) Saving Configuration"), "<br>\n".join(results))

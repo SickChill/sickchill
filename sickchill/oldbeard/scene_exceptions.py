@@ -1,16 +1,14 @@
 import datetime
 import time
+from pathlib import Path
 
 import sickchill
 from sickchill import adba, logger, settings
+from sickchill.show.Show import Show
 
 from . import db, helpers
 
-exception_dict = {}
-anidb_exception_dict = {}
-xem_exception_dict = {}
-
-exeptions_cache = {}
+exceptions_cache = {}
 
 
 def should_refresh(exception_list):
@@ -46,26 +44,36 @@ def get_scene_exceptions(indexer_id, season=-1):
     Given a indexer_id, return a list of all the scene exceptions.
     """
 
-    if indexer_id not in exeptions_cache or season not in exeptions_cache[indexer_id]:
+    if indexer_id not in exceptions_cache or season not in exceptions_cache[indexer_id]:
         cache_db_con = db.DBConnection("cache.db")
         exceptions = cache_db_con.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?", [indexer_id, season])
         if exceptions:
             exeptions_list = list({cur_exception["show_name"] for cur_exception in exceptions})
-            if indexer_id not in exeptions_cache:
-                exeptions_cache[indexer_id] = {}
-            exeptions_cache[indexer_id][season] = exeptions_list
+            if indexer_id not in exceptions_cache:
+                exceptions_cache[indexer_id] = {}
+            exceptions_cache[indexer_id][season] = exeptions_list
 
     results = []
-    if indexer_id in exeptions_cache and season in exeptions_cache[indexer_id]:
-        results += exeptions_cache[indexer_id][season]
+    if indexer_id in exceptions_cache and season in exceptions_cache[indexer_id]:
+        results += exceptions_cache[indexer_id][season]
 
     # Add generic exceptions regardless of the season if there is no exception for season
     if season != -1:
         get_scene_exceptions(indexer_id)
-        if indexer_id in exeptions_cache and -1 in exeptions_cache[indexer_id]:
-            results += exeptions_cache[indexer_id][-1]
+        if indexer_id in exceptions_cache and -1 in exceptions_cache[indexer_id]:
+            results += exceptions_cache[indexer_id][-1]
+    else:
+        show = Show.find(settings.showList, indexer_id)
+        if show:
+            if show.show_name:
+                results.append(helpers.full_sanitizeSceneName(show.show_name))
+            if show.custom_name:
+                results.append(helpers.full_sanitizeSceneName(show.custom_name))
 
-    return list({result for result in results})
+    response = list({result for result in results})
+    logger.debug(f"get_scene_exceptions: {response}")
+    logger.debug(f"exceptions_cache: {exceptions_cache.get(indexer_id)}")
+    return response
 
 
 def get_all_scene_exceptions(indexer_id):
@@ -80,22 +88,49 @@ def get_all_scene_exceptions(indexer_id):
     cache_db_con = db.DBConnection("cache.db")
     exceptions = cache_db_con.select("SELECT show_name, season, custom FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
 
-    if exceptions:
-        for cur_exception in exceptions:
-            if cur_exception["season"] not in all_exceptions_dict:
-                all_exceptions_dict[cur_exception["season"]] = []
-            all_exceptions_dict[cur_exception["season"]].append({"show_name": cur_exception["show_name"], "custom": bool(cur_exception["custom"])})
+    if indexer_id in exceptions_cache:
+        del exceptions_cache[indexer_id]
 
-    shows = [show for show in settings.showList if show.indexerid == indexer_id]
-    if len(shows) == 1:
-        show = shows[0]
-        if -1 not in all_exceptions_dict and show.show_name or show.custom_name:
-            all_exceptions_dict[-1] = []
-        if show.show_name:
-            all_exceptions_dict[-1].append({"show_name": helpers.full_sanitizeSceneName(show.show_name), "custom": False})
-        if show.custom_name:
-            all_exceptions_dict[-1].append({"show_name": helpers.full_sanitizeSceneName(show.custom_name), "custom": False})
+    for cur_exception in exceptions:
+        if cur_exception["season"] not in all_exceptions_dict:
+            all_exceptions_dict[cur_exception["season"]] = []
+        all_exceptions_dict[cur_exception["season"]].append({"show_name": cur_exception["show_name"], "custom": bool(cur_exception["custom"])})
 
+        if indexer_id not in exceptions_cache:
+            exceptions_cache[indexer_id] = {}
+
+        if cur_exception["season"] not in exceptions_cache[indexer_id]:
+            exceptions_cache[indexer_id][cur_exception["season"]] = []
+
+        exceptions_cache[indexer_id][cur_exception["season"]].append(cur_exception["show_name"])
+
+    show = Show.find(settings.showList, indexer_id)
+    if show:
+        sanitized_name = helpers.full_sanitizeSceneName(show.show_name)
+        sanitized_custom_name = helpers.full_sanitizeSceneName(show.custom_name)
+
+        if sanitized_name or sanitized_custom_name:
+
+            if -1 not in all_exceptions_dict:
+                all_exceptions_dict[-1] = []
+
+            if indexer_id not in exceptions_cache:
+                exceptions_cache[indexer_id] = {}
+
+            if -1 not in exceptions_cache[indexer_id]:
+                exceptions_cache[indexer_id][-1] = []
+
+            if sanitized_name:
+                all_exceptions_dict[-1].append({"show_name": sanitized_name, "custom": False})
+                if sanitized_name not in exceptions_cache[indexer_id][-1]:
+                    exceptions_cache[indexer_id][-1].append(sanitized_name)
+            if sanitized_custom_name:
+                all_exceptions_dict[-1].append({"show_name": sanitized_custom_name, "custom": False})
+                if sanitized_custom_name not in exceptions_cache[indexer_id][-1]:
+                    exceptions_cache[indexer_id][-1].append(sanitized_custom_name)
+
+    logger.debug(f"get_all_scene_exceptions: {all_exceptions_dict}")
+    logger.debug(f"exceptions_cache for {indexer_id}: {exceptions_cache.get(indexer_id)}")
     return all_exceptions_dict
 
 
@@ -140,11 +175,73 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
     Looks up the exceptions on github, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
+    # SC exceptions
+    exception_dict = _sickchill_exceptions_fetcher()
+
+    # XEM scene exceptions
+    xem_exception_dict = _xem_exceptions_fetcher()
+    for xem_ex in xem_exception_dict:
+        if xem_ex in exception_dict:
+            exception_dict[xem_ex] += exception_dict[xem_ex]
+        else:
+            exception_dict[xem_ex] = xem_exception_dict[xem_ex]
+
+    # AniDB scene exceptions
+    anidb_exception_dict = _anidb_exceptions_fetcher()
+    for anidb_ex in anidb_exception_dict:
+        if anidb_ex in exception_dict:
+            exception_dict[anidb_ex] += anidb_exception_dict[anidb_ex]
+        else:
+            exception_dict[anidb_ex] = anidb_exception_dict[anidb_ex]
+
+    queries = []
+    cache_db_con = db.DBConnection("cache.db")
+    for cur_indexer_id, cur_exception_list in exception_dict.items():
+        sql_ex = cache_db_con.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ?;", [cur_indexer_id])
+        existing_exceptions = (x["show_name"] for x in sql_ex)
+
+        for cur_exception_dict in cur_exception_list:
+            for cur_exception, cur_season in cur_exception_dict.items():
+                if cur_exception not in existing_exceptions:
+                    queries.append(
+                        ["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?);", [cur_indexer_id, cur_exception, cur_season]]
+                    )
+    if queries:
+        cache_db_con.mass_action(queries)
+        main_db_con = db.DBConnection("sickchill.db")
+        sql_ex = main_db_con.select("SELECT indexer_id FROM tv_shows")
+        for result in sql_ex:
+            rebuild_exception_cache(result["indexer_id"])
+        logger.debug("Updated scene exceptions")
+
+
+def update_custom_scene_exceptions(indexer_id, scene_exceptions):
+    """
+    Given a indexer_id, and a list of all show scene exceptions, update the db.
+    """
+    cache_db_con = db.DBConnection("cache.db")
+    cache_db_con.action("DELETE FROM scene_exceptions WHERE indexer_id = ? and custom = 1", [indexer_id])
+
+    logger.info("Updating scene exceptions")
+
+    for season in scene_exceptions:
+        for cur_exception in scene_exceptions[season]:
+            cache_db_con.action(
+                "INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
+                [indexer_id, cur_exception["show_name"], season, cur_exception["custom"]],
+            )
+
+    rebuild_exception_cache(indexer_id)
+
+
+def _sickchill_exceptions_fetcher():
+    sickchill_exception_dict = {}
 
     do_refresh = False
     for indexer, instance in sickchill.indexer:
         if should_refresh(instance.name):
             do_refresh = True
+            break
 
     if do_refresh:
         loc = "https://sickchill.github.io/scene_exceptions/scene_exceptions.json"
@@ -179,76 +276,21 @@ def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
                             for scene_season in jdata[instance.slug][indexer_id]
                             for scene_exception in jdata[instance.slug][indexer_id][scene_season]
                         ]
-                        exception_dict[indexer_id] = alias_list
+                        sickchill_exception_dict[indexer_id] = alias_list
                 except Exception:
                     continue
-
-    # XEM scene exceptions
-    _xem_exceptions_fetcher()
-    for xem_ex in xem_exception_dict:
-        if xem_ex in exception_dict:
-            exception_dict[xem_ex] += exception_dict[xem_ex]
-        else:
-            exception_dict[xem_ex] = xem_exception_dict[xem_ex]
-
-    # AniDB scene exceptions
-    _anidb_exceptions_fetcher()
-    for anidb_ex in anidb_exception_dict:
-        if anidb_ex in exception_dict:
-            exception_dict[anidb_ex] += anidb_exception_dict[anidb_ex]
-        else:
-            exception_dict[anidb_ex] = anidb_exception_dict[anidb_ex]
-
-    queries = []
-    cache_db_con = db.DBConnection("cache.db")
-    for cur_indexer_id in exception_dict:
-        sql_ex = cache_db_con.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ?;", [cur_indexer_id])
-        existing_exceptions = [x["show_name"] for x in sql_ex]
-        if cur_indexer_id not in exception_dict:
-            continue
-
-        for cur_exception_dict in exception_dict[cur_indexer_id]:
-            for cur_exception, cur_season in cur_exception_dict.items():
-                if cur_exception not in existing_exceptions:
-                    queries.append(
-                        ["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season) VALUES (?,?,?);", [cur_indexer_id, cur_exception, cur_season]]
-                    )
-    if queries:
-        cache_db_con.mass_action(queries)
-        logger.debug("Updated scene exceptions")
-
-    # cleanup
-    exception_dict.clear()
-    anidb_exception_dict.clear()
-    xem_exception_dict.clear()
-
-
-def update_scene_exceptions(indexer_id, scene_exceptions):
-    """
-    Given a indexer_id, and a list of all show scene exceptions, update the db.
-    """
-    cache_db_con = db.DBConnection("cache.db")
-    cache_db_con.action("DELETE FROM scene_exceptions WHERE indexer_id = ? and custom = 1", [indexer_id])
-
-    logger.info("Updating scene exceptions")
-
-    for season in scene_exceptions:
-        for cur_exception in scene_exceptions[season]:
-            cache_db_con.action(
-                "INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?,?)",
-                [indexer_id, cur_exception["show_name"], season, cur_exception["custom"]],
-            )
-
-    rebuild_exception_cache(indexer_id)
+    return sickchill_exception_dict
 
 
 def _anidb_exceptions_fetcher():
+    anidb_exception_dict = {}
+
     if should_refresh("anidb"):
         logger.info("Checking for scene exception updates for AniDB")
         for show in settings.showList:
             if show.is_anime and show.indexer == 1:
                 try:
-                    anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True)
+                    anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True, cache_dir=Path(settings.CACHE_DIR))
                 except Exception:
                     continue
                 else:
@@ -263,6 +305,8 @@ xem_session = helpers.make_session()
 
 
 def _xem_exceptions_fetcher():
+    xem_exception_dict = {}
+
     if should_refresh("xem"):
         for indexer, instance in sickchill.indexer:
             logger.info("Checking for XEM scene exception updates for {0}".format(instance.name))
@@ -301,4 +345,4 @@ def rebuild_exception_cache(indexer_id):
 
         exceptions_cache_list[result["season"]].append(result["show_name"])
 
-    exeptions_cache[indexer_id] = exceptions_cache_list
+    exceptions_cache[indexer_id] = exceptions_cache_list

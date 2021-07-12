@@ -15,14 +15,14 @@ PNotify.prototype.options.desktop = {desktop: !0, icon: scRoot + '/images/ico/fa
 function displayPNotify(type, title, message, id) {
     new PNotify({ // eslint-disable-line no-new
         desktop: {
-            tag: id
+            tag: id,
         },
         type,
         title,
         text: message.replace(/<br[\s/]*(?:\s[^>]*)?>/gi, '\n')
             .replace(/<\/?b(?:\s[^>]*)?>/gi, '*')
             .replace(/<i(?:\s[^>]*)?>/gi, '[').replace(/<\/i>/gi, ']')
-            .replace(/<(?:\/?ul|\/li)(?:\s[^>]*)?>/gi, '').replace(/<li(?:\s[^>]*)?>/gi, '\n* ')
+            .replace(/<(?:\/?ul|\/li)(?:\s[^>]*)?>/gi, '').replace(/<li(?:\s[^>]*)?>/gi, '\n* '),
     });
 }
 

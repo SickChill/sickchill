@@ -159,13 +159,31 @@
                 </div>
             </div>
             <br/>
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                    <i class="icon16-config-python"></i>&nbsp;&nbsp;${_('Executable')}:
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+                    ${sys.executable}
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                    <i class="icon16-config-arguments"></i>&nbsp;&nbsp;${_('Main Script')}:
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+                    ${settings.MY_FULLNAME}
+                </div>
+            </div>
+            <br/>
             % if settings.MY_ARGS:
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <i class="icon16-config-arguments"></i>&nbsp;&nbsp;${_('Arguments')}:
                     </div>
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                        ${settings.MY_ARGS}
+                        ${" ".join(settings.MY_ARGS)}
                     </div>
                 </div>
                 <br/>

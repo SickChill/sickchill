@@ -1,8 +1,6 @@
 path_classifiers:
   test:
     - test
-  library:
-    - lib3
 
 queries:
   - exclude: py/import-and-import-from
@@ -11,7 +9,4 @@ extraction:
   python:
     python_setup:
       version: 3
-    index:
-      exclude:
-        - lib3
 
