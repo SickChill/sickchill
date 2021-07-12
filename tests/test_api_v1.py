@@ -1,5 +1,5 @@
 """
-Test the SR API
+Test the SC API
 """
 
 import unittest

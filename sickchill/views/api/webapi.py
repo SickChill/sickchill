@@ -2050,7 +2050,7 @@ class CMDShowAddExisting(ApiCall):
         if not indexer_name:
             return _responds(RESULT_FAILURE, msg="Unable to retrieve information from indexer")
 
-        # set indexer so we can pass it along when adding show to SR
+        # set indexer so we can pass it along when adding show to SC
         indexer = indexer_result["data"]["results"][0]["indexer"]
 
         # use default quality as a fail-safe

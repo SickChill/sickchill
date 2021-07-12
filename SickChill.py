@@ -399,7 +399,7 @@ class SickChill(object):
                     if "--nolaunch" not in popen_list:
                         popen_list += ["--nolaunch"]
                     logger.info("Restarting SickChill with {options}".format(options=popen_list))
-                    # shutdown the logger to make sure it's released the logfile BEFORE it restarts SR.
+                    # shutdown the logger to make sure it's released the logfile BEFORE it restarts SC.
                     logger.shutdown()
                     subprocess.Popen(popen_list, cwd=os.getcwd(), universal_newlines=True)
 
