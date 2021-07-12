@@ -163,6 +163,14 @@ def poetry_install() -> None:
             # Check if we can write to this virtualenv
             if not check_env_writable():
                 print(f"Current environment is not writable!")
+                if not os.access(pyproject_path.parent, os.W_OK):
+                    print(f"Source dir is not writable by this user either, we cannot continue: f{pyproject_path.parent}")
+                    os._exit(126)
+
+                make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
+
+            if check_installed("virtualenv") and not in_virtualenv():
+                print(f"We always run from virtualenv when running from source")
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
 
             # Cool, we can write to site-packages
