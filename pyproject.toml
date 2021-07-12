@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sickchill"
-version = "2021.6.24"
+version = "2021.7.12"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPLv3"
 
@@ -251,7 +251,7 @@ python-slugify = ">=4.0.1,<6.0.0"
 guessit = "^3.3.1"
 requests = "^2.25.1"
 IMDbPY = ">=2020.09.25"
-babelfish = {git = "https://github.com/Diaoul/babelfish", rev = "master"}
+temp-babelfish = "^0.5.6-dev.0"
 
 [tool.poetry.dev-dependencies]
 coveralls = "^3.1.0"

@@ -41,18 +41,11 @@ pytz = ">=2015.7"
 
 [[package]]
 name = "babelfish"
-version = "0.5.6.dev0"
+version = "0.5.5"
 description = "A module to work with countries and languages"
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-develop = false
-
-[package.source]
-type = "git"
-url = "https://github.com/Diaoul/babelfish"
-reference = "master"
-resolved_reference = "764ecb61d30c57392fd54817b5504fcb586bae18"
+python-versions = "*"
 
 [[package]]
 name = "bandit"
@@ -1614,6 +1607,14 @@ test = ["mock", "pytest-cov", "pytest-flakes", "pytest-pep8", "pytest", "sympy",
 dev = ["sphinx-rtd-theme", "sphinx", "sphinxcontrib-programoutput", "tox", "wheel"]
 
 [[package]]
+name = "temp-babelfish"
+version = "0.5.6.dev0"
+description = "A module to work with countries and languages"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
 name = "text-unidecode"
 version = "1.3"
 description = "The most basic Text::Unidecode port"
@@ -1843,7 +1844,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6,<4"
-content-hash = "908f06ea3713a7ff6675fea835989985ffb7b2b81c8244c493348097de1281a9"
+content-hash = "679bd620a17fd61a958d454f9418b04bb1fd128109252f0ce78d96ac3141d728"
 
 [metadata.files]
 appdirs = [
@@ -1862,7 +1863,9 @@ babel = [
     {file = "Babel-2.9.1-py2.py3-none-any.whl", hash = "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9"},
     {file = "Babel-2.9.1.tar.gz", hash = "sha256:bc0c176f9f6a994582230df350aa6e05ba2ebe4b3ac317eab29d9be5d2768da0"},
 ]
-babelfish = []
+babelfish = [
+    {file = "babelfish-0.5.5.tar.gz", hash = "sha256:8380879fa51164ac54a3e393f83c4551a275f03617f54a99d70151358e444104"},
+]
 bandit = [
     {file = "bandit-1.7.0-py3-none-any.whl", hash = "sha256:216be4d044209fa06cf2a3e51b319769a51be8318140659719aa7a115c35ed07"},
     {file = "bandit-1.7.0.tar.gz", hash = "sha256:8a4c7415254d75df8ff3c3b15cfe9042ecee628a1e40b44c15a98890fbfc2608"},
@@ -2778,6 +2781,10 @@ subliminal = [
     {file = "subliminal-2.1.0-py2-none-any.whl", hash = "sha256:4b659bd523baefa7e260be4010311b2056bc3a4cc484e76c7fc3d213c9daebc0"},
     {file = "subliminal-2.1.0-py3-none-any.whl", hash = "sha256:c7751e7af83e8e80c924c2c596318d9e2535f249784a41840eaee5f4a4f49d79"},
     {file = "subliminal-2.1.0.tar.gz", hash = "sha256:c6439cc733a4f37f01f8c14c096d44fd28d75d1f6f6e2d1d1003b1b82c65628b"},
+]
+temp-babelfish = [
+    {file = "temp-babelfish-0.5.6.dev0.tar.gz", hash = "sha256:d011a17b59f73f12d50ae47bf06f0e07afc2cea63c5df45e74b70d8928901bab"},
+    {file = "temp_babelfish-0.5.6.dev0-py3-none-any.whl", hash = "sha256:34dae416e59efa408193c231c227913f1b21c72d850ee4d4eba4682c2cd23836"},
 ]
 text-unidecode = [
     {file = "text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93"},
