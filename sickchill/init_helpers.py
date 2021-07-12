@@ -3,12 +3,10 @@ import os
 import site
 import subprocess
 import sys
-from pathlib import Path
 import tempfile
-
+from pathlib import Path
 from typing import List, Union
 from urllib.request import urlopen
-
 
 sickchill_module = Path(__file__).parent.resolve()
 pyproject_path = sickchill_module.parent / "pyproject.toml"
@@ -119,7 +117,7 @@ def get_virtualenv_portable() -> Path:
     """
     Reads portable virtualenv to a temp file and returns the path to the file.
     """
-    tfd, tfname = tempfile.mkstemp(suffix='.pyz')
+    tfd, tfname = tempfile.mkstemp(suffix=".pyz")
     virtualenv = Path(tfname)
     virtualenv.write_bytes(urlopen("https://bootstrap.pypa.io/virtualenv.pyz").read())
     return virtualenv
@@ -134,7 +132,7 @@ def check_and_install_pip() -> None:
         print("Installing pip")
         tfd, tfname = tempfile.mkstemp(suffix=".py", prefix="get-pip")
         get_pip = Path(tfname)
-        get_pip.write_bytes(urlopen('https://bootstrap.pypa.io/get-pip.py').read())
+        get_pip.write_bytes(urlopen("https://bootstrap.pypa.io/get-pip.py").read())
         result = subprocess_call([f"{sys.executable}", f"{get_pip}"])
         if result == 0:
             print("Pip installed")
@@ -154,10 +152,16 @@ def make_virtualenv_and_rerun(location: Path) -> None:
     location = location.resolve()
     current_interpreter = Path(sys.executable).resolve()
     current_venv_root = current_interpreter.parent.parent
-    base_interpreter = Path(base_prefix()) / "bin" / current_interpreter.name
+
+    if not in_virtualenv():
+        base_interpreter = current_interpreter
+    else:
+        base_interpreter = Path(base_prefix())
+        if "bin" in current_interpreter.parts:
+            base_interpreter = base_interpreter / "bin"
+        base_interpreter = base_interpreter / current_interpreter.name
 
     result = 0  # Ok
-
     if str(location) == str(current_venv_root):
         if in_virtualenv():
             print(f"Unable to install to the existing virtual environment located at {current_venv_root}")
@@ -170,7 +174,6 @@ def make_virtualenv_and_rerun(location: Path) -> None:
                 print("virtualenv module not found, getting a portable one to use temporarily")
                 virtualenv = get_virtualenv_portable()
                 result = subprocess_call([f"{sys.executable}", f"{virtualenv}", "-p", f"{base_interpreter}", f"{location}"])
-                virtualenv.unlink(True)
                 if result != 0:  # Not Ok
                     print("Due to the above error, we cannot continue! Exiting")
                 else:
