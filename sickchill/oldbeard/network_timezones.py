@@ -19,7 +19,7 @@ missing_network_timezones = set()
 
 
 def update_network_dict():
-    """Update timezone information from SR repositories"""
+    """Update timezone information from SC repositories"""
 
     url = "https://sickchill.github.io/sb_network_timezones/network_timezones.txt"
     data = helpers.getURL(url, session=helpers.make_session(), returns="text")
