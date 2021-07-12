@@ -121,7 +121,7 @@ def get_virtualenv_portable() -> Path:
     """
     tfd, tfname = tempfile.mkstemp(suffix='.pyz')
     virtualenv = Path(tfname)
-    virtualenv.write_bytes(urlopen("bootstrap.pypa.io/virtualenv.pyz").read())
+    virtualenv.write_bytes(urlopen("https://bootstrap.pypa.io/virtualenv.pyz").read())
     return virtualenv
 
 
