@@ -67,6 +67,7 @@ class GitUpdateManager(UpdateManagerBase):
         if platform.system() == "Windows":
             if main_git != main_git.lower():
                 alternative_git.append(main_git.lower())
+            alternative_git.append("c:\\SickChill\\Git\\bin\\git.exe")
 
         if alternative_git:
             logger.debug("Trying known alternative git locations")

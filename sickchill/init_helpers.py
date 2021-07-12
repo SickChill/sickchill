@@ -3,8 +3,10 @@ import os
 import site
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import List, Union
+from urllib.request import urlopen
 
 sickchill_module = Path(__file__).parent.resolve()
 pyproject_path = sickchill_module.parent / "pyproject.toml"
@@ -51,9 +53,12 @@ def check_installed(name: str = __package__) -> bool:
     return True
 
 
+def base_prefix():
+    return getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
+
+
 def in_virtualenv():
-    base_prefix = getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
-    return base_prefix != sys.prefix
+    return base_prefix() != sys.prefix
 
 
 def subprocess_call(cmd_list):
@@ -99,10 +104,40 @@ def pip_install(packages: Union[List[str], str]) -> bool:
 
 
 def check_env_writable():
+    """
+    Checks if we can install packages to the current environment
+    """
     locations = [site.getsitepackages()[0]]
     if site.ENABLE_USER_SITE:
         locations.append(site.getusersitepackages())
     return any([os.access(location, os.W_OK) for location in locations])
+
+
+def get_virtualenv_portable() -> Path:
+    """
+    Reads portable virtualenv to a temp file and returns the path to the file.
+    """
+    tfd, tfname = tempfile.mkstemp(suffix=".pyz")
+    virtualenv = Path(tfname)
+    virtualenv.write_bytes(urlopen("https://bootstrap.pypa.io/virtualenv.pyz").read())
+    return virtualenv
+
+
+def check_and_install_pip() -> None:
+    """
+    Downloads and runs get-pip.py, installing pip in the current environment
+    """
+
+    if not check_installed("pip"):
+        print("Installing pip")
+        tfd, tfname = tempfile.mkstemp(suffix=".py", prefix="get-pip")
+        get_pip = Path(tfname)
+        get_pip.write_bytes(urlopen("https://bootstrap.pypa.io/get-pip.py").read())
+        result = subprocess_call([f"{sys.executable}", f"{get_pip}"])
+        if result == 0:
+            print("Pip installed")
+        else:
+            print("There was an error installing pip!")
 
 
 def make_virtualenv_and_rerun(location: Path) -> None:
@@ -118,8 +153,15 @@ def make_virtualenv_and_rerun(location: Path) -> None:
     current_interpreter = Path(sys.executable).resolve()
     current_venv_root = current_interpreter.parent.parent
 
-    result = 0  # Ok
+    if not in_virtualenv():
+        base_interpreter = current_interpreter
+    else:
+        base_interpreter = Path(base_prefix())
+        if "bin" in current_interpreter.parts:
+            base_interpreter = base_interpreter / "bin"
+        base_interpreter = base_interpreter / current_interpreter.name
 
+    result = 0  # Ok
     if str(location) == str(current_venv_root):
         if in_virtualenv():
             print(f"Unable to install to the existing virtual environment located at {current_venv_root}")
@@ -129,10 +171,16 @@ def make_virtualenv_and_rerun(location: Path) -> None:
         if not location.is_dir():
             print(f"Because of the above errors, we will try creating a new virtualenvironment in {location}")
             if not check_installed("virtualenv"):
-                print("virtualenv module not found, cannot create virtualenv")
-                result = 126  # Command invoked cannot execute
+                print("virtualenv module not found, getting a portable one to use temporarily")
+                virtualenv = get_virtualenv_portable()
+                result = subprocess_call([f"{sys.executable}", f"{virtualenv}", "-p", f"{base_interpreter}", f"{location}"])
+                if result != 0:  # Not Ok
+                    print("Due to the above error, we cannot continue! Exiting")
+                else:
+                    print(f"Created new virtualenvironment in {location}")
             else:
-                result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", f"{location}"])
+                print(f"Using {base_interpreter} as base interpreter")
+                result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", "-p", f"{base_interpreter}", f"{location}"])
                 if result != 0:  # Not Ok
                     print("Due to the above error, we cannot continue! Exiting")
                 else:
@@ -141,6 +189,8 @@ def make_virtualenv_and_rerun(location: Path) -> None:
         if location.is_dir() and result == 0:  # Ok
             # append the bin/python.ext to the new venv path
             for part in current_interpreter.parts[-2:]:
+                if sys.platform == "win32" and part == "tools":
+                    part = "Scripts"
                 location = location / part
 
             if location.is_file():
@@ -169,9 +219,11 @@ def poetry_install() -> None:
 
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
 
-            if check_installed("virtualenv") and not in_virtualenv():
+            if not in_virtualenv():
                 print(f"We always run from virtualenv when running from source")
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
+
+            check_and_install_pip()
 
             # Cool, we can write to site-packages
             pip_install(["setuptools", "poetry", "--pre"])
