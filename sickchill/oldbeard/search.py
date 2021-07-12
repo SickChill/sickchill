@@ -156,7 +156,7 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
             try:
                 notifiers.notify_snatch(f"{curEpObj._format_pattern('%SN - %Sx%0E - %EN - %QN')} from {result.provider.name}")
             except Exception:
-                # Without this, when notification fail, it crashes the snatch thread and SR will
+                # Without this, when notification fail, it crashes the snatch thread and SC will
                 # keep snatching until notification is sent
                 logger.debug("Failed to send snatch notification")
 
