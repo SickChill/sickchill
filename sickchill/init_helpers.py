@@ -151,9 +151,9 @@ def check_installed(name: str = __package__) -> bool:
 
     try:
         Distribution.from_name(name)
-        logger.info(f"{name} found: True")
+        logger.debug(f"{name} found: True")
     except PackageNotFoundError:
-        logger.info(f"{name} found: False")
+        logger.debug(f"{name} found: False")
         return False
     return True
 
