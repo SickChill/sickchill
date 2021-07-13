@@ -1,3 +1,5 @@
+from typing import Union
+
 from packaging import version as packaging_version
 
 from sickchill import settings, version
@@ -5,7 +7,6 @@ from sickchill.init_helpers import pip_install
 from sickchill.oldbeard import helpers, notifiers
 
 from .abstract import UpdateManagerBase
-from typing import Union
 
 
 class PipUpdateManager(UpdateManagerBase):
