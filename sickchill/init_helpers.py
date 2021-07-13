@@ -206,9 +206,37 @@ def check_env_writable():
     """
     Checks if we can install packages to the current environment
     """
-    locations = [site.getsitepackages()[0]]
-    if site.ENABLE_USER_SITE:
-        locations.append(site.getusersitepackages())
+    locations = []
+    try:
+        locations = [site.getsitepackages()[0]]
+    except (AttributeError, IndexError):
+        pass
+
+    try:
+        if site.ENABLE_USER_SITE or site.check_enableusersite():
+            if site.USER_SITE:
+                locations.append(site.USER_SITE)
+            else:
+                locations.append(site.getusersitepackages())
+    except AttributeError:
+        pass
+
+    if not locations:
+        try:
+            from distutils.sysconfig import get_python_lib
+
+            locations = [get_python_lib()]
+        except (ImportError, ModuleNotFoundError):
+            pass
+
+    if not locations:
+        try:
+            import pip
+
+            locations = [str(Path(pip.__path__[0]).parent.resolve())]
+        except (ImportError, AttributeError, IndexError):
+            pass
+
     return any([os.access(location, os.W_OK) for location in locations])
 
 
