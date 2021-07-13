@@ -89,7 +89,9 @@ def pip_install(packages: Union[List[str], str]) -> bool:
         "--no-color",
         "--trusted-host=pypi.org",
         "--trusted-host=files.pythonhosted.org",
-        "-qqU",
+        "--find-links=https://wheel-index.linuxserver.io/alpine/",
+        "--find-links=https://wheel-index.linuxserver.io/ubuntu/",
+        "-qU",
     ] + packages
 
     print(f"pip args: {' '.join(cmd)}")
