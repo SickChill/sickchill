@@ -5,15 +5,16 @@ from sickchill.init_helpers import pip_install
 from sickchill.oldbeard import helpers, notifiers
 
 from .abstract import UpdateManagerBase
+from typing import Union
 
 
 class PipUpdateManager(UpdateManagerBase):
     def __init__(self):
-        self._newest_version = ""
+        self._newest_version: Union[packaging_version.LegacyVersion, packaging_version.Version] = None
         self.session = helpers.make_session()
         self.branch = "pip"
 
-    def get_current_version(self):
+    def get_current_version(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
         return packaging_version.parse(version.__version__)
 
     def get_clean_version(self, use_version: packaging_version.Version = None):
@@ -24,14 +25,14 @@ class PipUpdateManager(UpdateManagerBase):
 
         return result
 
-    def get_current_commit_hash(self):
+    def get_current_commit_hash(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
         return self.get_current_version()
 
-    def get_newest_version(self):
+    def get_newest_version(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
         self._newest_version = packaging_version.parse(self.session.get("https://pypi.org/pypi/sickchill/json").json()["info"]["version"])
         return self._newest_version
 
-    def get_newest_commit_hash(self):
+    def get_newest_commit_hash(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
         return self._newest_version
 
     def get_num_commits_behind(self):
@@ -56,9 +57,7 @@ class PipUpdateManager(UpdateManagerBase):
             newest_tag = "newer_version_available"
             update_url = self.get_update_url()
             newest_text = _(
-                'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> &mdash; <a href="{update_url}">Update Now</a>'.format(
-                    url=url, update_url=update_url
-                )
+                f'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> &mdash; <a href="{update_url}">Update Now</a>'
             )
 
         else:
@@ -76,6 +75,6 @@ class PipUpdateManager(UpdateManagerBase):
         if not pip_install("sickchill"):
             return False
 
-        settings.CUR_COMMIT_HASH = self._newest_commit_hash
+        settings.CUR_COMMIT_HASH = self._newest_version
         notifiers.notify_git_update(settings.CUR_COMMIT_HASH or "")
         return True
