@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM python:3.9.6-slim
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
