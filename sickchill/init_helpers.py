@@ -228,7 +228,7 @@ def check_and_install_pip() -> None:
 
     if not check_installed("pip"):
         logger.info("Installing pip")
-        tfd = download_to_temp_file("https://bootstrap.pypa.io/get-pip.py", suffix=".py", prefix="get-pip")
+        tfd = download_to_temp_file("https://bootstrap.pypa.io/get-pip.py")
         result = subprocess_call([f"{sys.executable}", f"{tfd.name}"])
         os.unlink(tfd.name)
         if result == 0:
@@ -260,7 +260,7 @@ def make_virtualenv_and_rerun(location: Path) -> None:
             logger.info(f"Because of the above errors, we will try creating a new virtualenvironment in {location}")
             if not check_installed("virtualenv"):
                 logger.info("virtualenv module not found, getting a portable one to use temporarily")
-                tfd = download_to_temp_file("https://bootstrap.pypa.io/virtualenv.pyz", suffix=".pyz", prefix="virtualenv")
+                tfd = download_to_temp_file("https://bootstrap.pypa.io/virtualenv.pyz")
                 result = subprocess_call([f"{sys.executable}", f"{tfd.name}", "-p", f"{sys.executable}", f"{location}"])
                 os.unlink(tfd.name)
                 if result != 0:  # Not Ok
