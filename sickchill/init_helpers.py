@@ -119,6 +119,7 @@ def download_to_temp_file(url: str) -> tempfile.NamedTemporaryFile:
     tfd.close()
     return tfd
 
+
 def check_and_install_pip() -> None:
     """
     Downloads and runs get-pip.py, installing pip in the current environment
@@ -186,9 +187,9 @@ def make_virtualenv_and_rerun(location: Path) -> None:
             locations_to_check.append(location / "bin" / current_interpreter.parts[-1])
             locations_to_check.append(location / "Scripts" / current_interpreter.parts[-1])
 
-            locations_to_check.extend(x for x in location.rglob('*python3.?') if x.is_file())
-            locations_to_check.extend(x for x in location.rglob('*python3') if x.is_file())
-            locations_to_check.extend(x for x in location.rglob('*python') if x.is_file())
+            locations_to_check.extend(x for x in location.rglob("*python3.?") if x.is_file())
+            locations_to_check.extend(x for x in location.rglob("*python3") if x.is_file())
+            locations_to_check.extend(x for x in location.rglob("*python") if x.is_file())
 
             for place in locations_to_check:
                 if place.is_file() and place.stat().st_mode & os.X_OK:
