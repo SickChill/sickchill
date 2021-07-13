@@ -13,7 +13,7 @@ import traceback
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.init_helpers import check_installed, setup_gettext
+from sickchill.init_helpers import check_installed, remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
 
 setup_gettext()
@@ -57,8 +57,6 @@ class SickChill(object):
 
         # daemon constants
         self.run_as_daemon = False
-        self.create_pid = False
-        self.pid_file = ""
 
         # web server constants
         self.web_server = None
@@ -112,35 +110,18 @@ class SickChill(object):
 
         # Need console logging for SickChill.py and SickChill-console.exe
         settings.NO_RESIZE = args.noresize
-        self.console_logging = (not hasattr(sys, "frozen")) or (settings.MY_NAME.lower().find("-console") > 0) and not args.quiet
-        self.no_launch = args.nolaunch
+        self.console_logging = not (hasattr(sys, "frozen") or args.quiet or args.daemon)
+        self.no_launch = args.nolaunch or args.daemon
         self.forced_port = args.port
-        if args.daemon:
-            self.run_as_daemon = platform.system() != "Windows"
-            self.console_logging = False
-            self.no_launch = True
+        self.run_as_daemon = args.daemon and platform.system() != "Windows"
 
-        self.create_pid = bool(args.pidfile)
-        self.pid_file = args.pidfile
-        if self.pid_file and os.path.exists(self.pid_file):
-            # If the pid file already exists, SickChill may still be running, so exit
-            raise SystemExit("PID file: {0} already exists. Exiting.".format(self.pid_file))
+        # The pid file is only useful in daemon mode, make sure we can write the file properly
+        if bool(args.pidfile) and not self.run_as_daemon:
+            if self.console_logging:
+                sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
 
         settings.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else settings.DATA_DIR
         settings.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(settings.DATA_DIR, "config.ini")
-
-        # The pid file is only useful in daemon mode, make sure we can write the file properly
-        if self.create_pid:
-            if self.run_as_daemon:
-                pid_dir = os.path.dirname(self.pid_file)
-                if not os.access(pid_dir, os.F_OK):
-                    sys.exit("PID dir: {0} doesn't exist. Exiting.".format(pid_dir))
-                if not os.access(pid_dir, os.W_OK):
-                    raise SystemExit("PID dir: {0} must be writable (write permissions). Exiting.".format(pid_dir))
-            else:
-                if self.console_logging:
-                    sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
-                self.create_pid = False
 
         # Make sure that we can create the data dir
         if not os.access(settings.DATA_DIR, os.F_OK):
@@ -174,9 +155,6 @@ class SickChill(object):
             sys.stdout.write("Unable to find {0}, all settings will be default!\n".format(settings.CONFIG_FILE))
 
         settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
-
-        if self.run_as_daemon:
-            self.daemonize()
 
         # Initialize the config and our threads
         sickchill.start.initialize(consoleLogging=self.console_logging)
@@ -227,90 +205,12 @@ class SickChill(object):
         # oldbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
-        if settings.LAUNCH_BROWSER and not (self.no_launch or self.run_as_daemon):
+        if settings.LAUNCH_BROWSER and not self.no_launch:
             sickchill.start.launchBrowser("https" if settings.ENABLE_HTTPS else "http", self.start_port, settings.WEB_ROOT)
 
         # main loop
         while True:
             time.sleep(1)
-
-    def daemonize(self):
-        """
-        Fork off as a daemon
-        """
-
-        # An object is accessed for a non-existent member.
-        # Access to a protected member of a client class
-        # Make a non-session-leader child process
-        try:
-            pid = os.fork()  # @UndefinedVariable - only available in UNIX
-            if pid != 0:
-                os._exit(0)
-        except OSError as error:
-            sys.stderr.write("fork #1 failed: {error_num}: {error_message}\n".format(error_num=error.errno, error_message=error.strerror))
-            sys.exit(1)
-
-        os.setsid()  # @UndefinedVariable - only available in UNIX
-
-        # https://github.com/SickChill/SickChill/issues/2969
-        # http://www.microhowto.info/howto/cause_a_process_to_become_a_daemon_in_c.html#idp23920
-        # https://www.safaribooksonline.com/library/view/python-cookbook/0596001673/ch06s08.html
-        # Previous code simply set the umask to whatever it was because it was ANDing instead of OR-ing
-        # Daemons traditionally run with umask 0 anyways and this should not have repercussions
-        os.umask(0)
-
-        # Make the child a session-leader by detaching from the terminal
-        try:
-            pid = os.fork()  # @UndefinedVariable - only available in UNIX
-            if pid != 0:
-                os._exit(0)
-        except OSError as error:
-            sys.stderr.write("fork #2 failed: Error {error_num}: {error_message}\n".format(error_num=error.errno, error_message=error.strerror))
-            sys.exit(1)
-
-        # Write pid
-        if self.create_pid:
-            pid = os.getpid()
-            logger.info("Writing PID: {pid} to {filename}".format(pid=pid, filename=self.pid_file))
-
-            try:
-                with os.fdopen(os.open(self.pid_file, os.O_CREAT | os.O_WRONLY, 0o644), "w") as f_pid:
-                    f_pid.write("{0}\n".format(pid))
-            except EnvironmentError as error:
-                logger.log_error_and_exit(
-                    "Unable to write PID file: {filename} Error {error_num}: {error_message}".format(
-                        filename=self.pid_file, error_num=error.errno, error_message=error.strerror
-                    )
-                )
-
-        # Redirect all output
-        sys.stdout.flush()
-        sys.stderr.flush()
-
-        devnull = getattr(os, "devnull", "/dev/null")
-        stdin = open(devnull)
-        stdout = open(devnull, "a+")
-        stderr = open(devnull, "a+")
-
-        os.dup2(stdin.fileno(), getattr(sys.stdin, "device", sys.stdin).fileno())
-        os.dup2(stdout.fileno(), getattr(sys.stdout, "device", sys.stdout).fileno())
-        os.dup2(stderr.fileno(), getattr(sys.stderr, "device", sys.stderr).fileno())
-
-    @staticmethod
-    def remove_pid_file(pid_file):
-        """
-        Remove pid file
-
-        :param pid_file: to remove
-        :return:
-        """
-        try:
-            if os.path.exists(pid_file):
-                os.remove(pid_file)
-        except EnvironmentError:
-            return False
-
-        return True
 
     @staticmethod
     def load_shows_from_db():
@@ -389,8 +289,7 @@ class SickChill(object):
             self.clear_cache()  # Clean cache
 
             # if run as daemon delete the pid file
-            if self.run_as_daemon and self.create_pid:
-                self.remove_pid_file(self.pid_file)
+            remove_pid_file()
 
             if event == sickchill.oldbeard.event_queue.Events.SystemEvent.RESTART:
                 popen_list = [sys.executable, settings.MY_FULLNAME]
@@ -457,3 +356,4 @@ class SickChill(object):
 if __name__ == "__main__":
     # start SickChill
     SickChill().start()
+    remove_pid_file()

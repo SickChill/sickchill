@@ -1,5 +1,6 @@
-from sickchill.init_helpers import poetry_install
+from sickchill.init_helpers import maybe_daemonize, poetry_install
 
+maybe_daemonize()
 poetry_install()
 
 from .show.indexers import indexer, ShowIndexer

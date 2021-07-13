@@ -1,4 +1,6 @@
+import argparse
 import gettext
+import logging
 import os
 import site
 import subprocess
@@ -8,9 +10,14 @@ from pathlib import Path
 from typing import List, Union
 from urllib.request import urlopen
 
+logger = logging.getLogger(__file__)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
+
 sickchill_module = Path(__file__).parent.resolve()
 pyproject_path = sickchill_module.parent / "pyproject.toml"
 # locale_dir = sickchill_dir / "locale"
+pid_file: Path = None
 
 
 def sickchill_dir():
@@ -33,6 +40,100 @@ def setup_gettext(language: str = None) -> None:
     gt.install(names=["ngettext"])
 
 
+def maybe_daemonize():
+    """
+    Fork off as a daemon
+    """
+    if sys.platform == "win32":
+        return
+
+    args = argparse.ArgumentParser(add_help=False)
+    args.add_argument("-d", "--daemon", action="store_true")
+    args.add_argument("--pidfile")
+    args, extra = args.parse_known_args(sys.argv)
+
+    if not args.daemon:
+        return
+
+    global pid_file
+    if args.pidfile:
+        pid_file = Path(args.pidfile).resolve()
+
+    if pid_file:
+        if pid_file.is_file():
+            # If the pid file already exists, SickChill may still be running, so exit
+            raise SystemExit(f"PID file: {pid_file} already exists. Exiting.")
+        pid_dir = pid_file.parent
+        if not os.access(pid_dir, os.F_OK):
+            raise SystemExit(f"PID dir: {pid_dir} doesn't exist. Exiting.")
+        if not os.access(pid_dir, os.W_OK):
+            raise SystemExit(f"PID dir: {pid_dir} must be writable (write permissions). Exiting.")
+
+    # An object is accessed for a non-existent member.
+    # Access to a protected member of a client class
+    # Make a non-session-leader child process
+    try:
+        pid = os.fork()  # @UndefinedVariable - only available in UNIX
+        if pid != 0:
+            os._exit(0)
+    except OSError as error:
+        raise SystemExit(f"fork #1 failed: {error.errno}: {error.strerror}\n")
+
+    os.setsid()  # @UndefinedVariable - only available in UNIX
+
+    # https://github.com/SickChill/SickChill/issues/2969
+    # http://www.microhowto.info/howto/cause_a_process_to_become_a_daemon_in_c.html#idp23920
+    # https://www.safaribooksonline.com/library/view/python-cookbook/0596001673/ch06s08.html
+    # Previous code simply set the umask to whatever it was because it was ANDing instead of OR-ing
+    # Daemons traditionally run with umask 0 anyways and this should not have repercussions
+    os.umask(0)
+
+    # Make the child a session-leader by detaching from the terminal
+    try:
+        pid = os.fork()
+        if pid != 0:
+            os._exit(0)
+    except OSError as error:
+        raise SystemExit(f"fork #2 failed: {error.errno}: {error.strerror}\n")
+
+    # Write pid
+    if pid_file:
+        pid = os.getpid()
+
+        logger.info(f"Writing PID: {pid} to {pid_file}\n")
+        try:
+            with open(pid_file, "w") as pid_fd:
+                pid_fd.write(f"{pid}\n")
+        except EnvironmentError as error:
+            raise SystemExit(f"Unable to write PID file: {pid_file} Error {error.errno}: {error.strerror}")
+
+    # Redirect all output
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    devnull = getattr(os, "devnull", "/dev/null")
+    stdin = open(devnull)
+    stdout = open(devnull, "a+")
+    stderr = open(devnull, "a+")
+
+    os.dup2(stdin.fileno(), getattr(sys.stdin, "device", sys.stdin).fileno())
+    os.dup2(stdout.fileno(), getattr(sys.stdout, "device", sys.stdout).fileno())
+    os.dup2(stderr.fileno(), getattr(sys.stderr, "device", sys.stderr).fileno())
+
+
+def remove_pid_file():
+    """
+    Remove pid file
+
+    :return:
+    """
+    try:
+        if pid_file and pid_file.exists():
+            pid_file.unlink()
+    except EnvironmentError:
+        pass
+
+
 def check_installed(name: str = __package__) -> bool:
     try:
         from importlib.metadata import Distribution, PackageNotFoundError  # noqa
@@ -45,14 +146,14 @@ def check_installed(name: str = __package__) -> bool:
             if result != 0:  # Not Ok
                 return False
             is_installed = name in [requirement.split("==")[0] for requirement in output.splitlines()]
-            print(f"{name} found: {is_installed}")
+            logger.debug(f"{name} found: {is_installed}")
             return is_installed
 
     try:
         Distribution.from_name(name)
-        print(f"{name} found: True")
+        logger.info(f"{name} found: True")
     except PackageNotFoundError:
-        print(f"{name} found: False")
+        logger.info(f"{name} found: False")
         return False
     return True
 
@@ -63,9 +164,9 @@ def subprocess_call(cmd_list):
         stdout, stderr = process.communicate()
         process.wait()
         if stdout or stderr:
-            print(f"Command result: {stdout or stderr}")
+            logger.info(f"Command result: {stdout or stderr}")
     except Exception as error:
-        print(f"Unable to run command: {error}")
+        logger.info(f"Unable to run command: {error}")
         return 126
     return process.returncode
 
@@ -90,11 +191,11 @@ def pip_install(packages: Union[List[str], str]) -> bool:
         "-qU",
     ] + packages
 
-    print(f"pip args: {' '.join(cmd)}")
+    logger.debug(f"pip args: {' '.join(cmd)}")
 
     result = subprocess_call(cmd)
     if result != 0:  # Not Ok
-        print("Trying user site-packages")
+        logger.info("Trying user site-packages")
         result = subprocess_call(cmd + ["--user"])
         if result != 0:  # Not Ok
             return False
@@ -126,14 +227,14 @@ def check_and_install_pip() -> None:
     """
 
     if not check_installed("pip"):
-        print("Installing pip")
+        logger.info("Installing pip")
         tfd = download_to_temp_file("https://bootstrap.pypa.io/get-pip.py", suffix=".py", prefix="get-pip")
         result = subprocess_call([f"{sys.executable}", f"{tfd.name}"])
         os.unlink(tfd.name)
         if result == 0:
-            print("Pip installed")
+            logger.info("Pip installed")
         else:
-            print("There was an error installing pip!")
+            logger.info("There was an error installing pip!")
 
 
 def make_virtualenv_and_rerun(location: Path) -> None:
@@ -151,27 +252,27 @@ def make_virtualenv_and_rerun(location: Path) -> None:
     result = 0  # Ok
     if str(location) == str(sys.prefix):
         if IS_VIRTUALENV:
-            print(f"Unable to install to the existing virtual environment located at {sys.prefix}")
-            print("Please check the permissions, and that it does not include global site packages")
+            logger.info(f"Unable to install to the existing virtual environment located at {sys.prefix}")
+            logger.info("Please check the permissions, and that it does not include global site packages")
         result = 126  # Command invoked cannot execute
     else:
         if not location.is_dir():
-            print(f"Because of the above errors, we will try creating a new virtualenvironment in {location}")
+            logger.info(f"Because of the above errors, we will try creating a new virtualenvironment in {location}")
             if not check_installed("virtualenv"):
-                print("virtualenv module not found, getting a portable one to use temporarily")
+                logger.info("virtualenv module not found, getting a portable one to use temporarily")
                 tfd = download_to_temp_file("https://bootstrap.pypa.io/virtualenv.pyz", suffix=".pyz", prefix="virtualenv")
                 result = subprocess_call([f"{sys.executable}", f"{tfd.name}", "-p", f"{sys.executable}", f"{location}"])
                 os.unlink(tfd.name)
                 if result != 0:  # Not Ok
-                    print("Due to the above error, we cannot continue! Exiting")
+                    logger.info("Due to the above error, we cannot continue! Exiting")
                 else:
-                    print(f"Created new virtualenvironment in {location}")
+                    logger.info(f"Created new virtualenvironment in {location}")
             else:
                 result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", "-p", f"{sys.executable}", f"{location}"])
                 if result != 0:  # Not Ok
-                    print("Due to the above error, we cannot continue! Exiting")
+                    logger.info("Due to the above error, we cannot continue! Exiting")
                 else:
-                    print(f"Created new virtualenvironment in {location}")
+                    logger.info(f"Created new virtualenvironment in {location}")
 
         if location.is_dir() and result == 0:  # Ok
             locations_to_check = []
@@ -196,28 +297,29 @@ def make_virtualenv_and_rerun(location: Path) -> None:
                     # add original arguments to this re-call
                     new_argv = [str(place)] + sys.argv
 
-                    print(f"Restarting SickChill with {new_argv}")
+                    logger.info(f"Restarting SickChill with {new_argv}")
                     return os.execvp(new_argv[0], new_argv)
 
-            print(f"Something weird happend when creating the virtualenv, Could not find the bin dir or executable in {location}. Exiting")
+            logger.info(f"Something weird happend when creating the virtualenv, Could not find the bin dir or executable in {location}. Exiting")
 
     os._exit(result)
 
 
 def poetry_install() -> None:
+    logger.info("Checking poetry")
     if not check_installed():
         if pyproject_path.exists():
             # Check if we can write to this virtualenv
             if not check_env_writable():
-                print(f"Current environment is not writable!")
+                logger.info(f"Current environment is not writable!")
                 if not os.access(pyproject_path.parent, os.W_OK):
-                    print(f"Source dir is not writable by this user either, we cannot continue: f{pyproject_path.parent}")
+                    logger.info(f"Source dir is not writable by this user either, we cannot continue: f{pyproject_path.parent}")
                     os._exit(126)
 
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
 
             if not IS_VIRTUALENV:
-                print(f"We always run from virtualenv when running from source")
+                logger.info(f"We always run from virtualenv when running from source")
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
 
             check_and_install_pip()
@@ -231,7 +333,7 @@ def poetry_install() -> None:
                 if result == 0:  # Ok
                     pip_install(output)
                 else:  # Not Ok
-                    print(output)
+                    logger.info(output)
                     make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
             else:  # Couldn't install poetry, make new venv
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
