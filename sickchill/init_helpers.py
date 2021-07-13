@@ -21,6 +21,10 @@ def locale_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "locale"))
 
 
+BASE_PREFIX = getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
+IS_VIRTUALENV = BASE_PREFIX != sys.prefix
+
+
 def setup_gettext(language: str = None) -> None:
     languages = [language] if language else None
     if not [key for key in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG") if os.environ.get(key)]:
@@ -51,14 +55,6 @@ def check_installed(name: str = __package__) -> bool:
         print(f"{name} found: False")
         return False
     return True
-
-
-def base_prefix():
-    return getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
-
-
-def in_virtualenv():
-    return base_prefix() != sys.prefix
 
 
 def subprocess_call(cmd_list):
@@ -115,15 +111,13 @@ def check_env_writable():
     return any([os.access(location, os.W_OK) for location in locations])
 
 
-def get_virtualenv_portable() -> Path:
-    """
-    Reads portable virtualenv to a temp file and returns the path to the file.
-    """
-    tfd, tfname = tempfile.mkstemp(suffix=".pyz")
-    virtualenv = Path(tfname)
-    virtualenv.write_bytes(urlopen("https://bootstrap.pypa.io/virtualenv.pyz").read())
-    return virtualenv
-
+def download_to_temp_file(url: str) -> tempfile.NamedTemporaryFile:
+    filename = url.rsplit("/", 1)[-1]
+    prefix, suffix = filename.rsplit(".", 1)
+    tfd = tempfile.NamedTemporaryFile(delete=False, suffix="." + suffix, prefix=prefix, mode="wb")
+    tfd.write(urlopen(url).read())
+    tfd.close()
+    return tfd
 
 def check_and_install_pip() -> None:
     """
@@ -132,10 +126,9 @@ def check_and_install_pip() -> None:
 
     if not check_installed("pip"):
         print("Installing pip")
-        tfd, tfname = tempfile.mkstemp(suffix=".py", prefix="get-pip")
-        get_pip = Path(tfname)
-        get_pip.write_bytes(urlopen("https://bootstrap.pypa.io/get-pip.py").read())
-        result = subprocess_call([f"{sys.executable}", f"{get_pip}"])
+        tfd = download_to_temp_file("https://bootstrap.pypa.io/get-pip.py", suffix=".py", prefix="get-pip")
+        result = subprocess_call([f"{sys.executable}", f"{tfd.name}"])
+        os.unlink(tfd.name)
         if result == 0:
             print("Pip installed")
         else:
@@ -153,20 +146,11 @@ def make_virtualenv_and_rerun(location: Path) -> None:
 
     location = location.resolve()
     current_interpreter = Path(sys.executable).resolve()
-    current_venv_root = current_interpreter.parent.parent
-
-    if not in_virtualenv():
-        base_interpreter = current_interpreter
-    else:
-        base_interpreter = Path(base_prefix())
-        if "bin" in current_interpreter.parts:
-            base_interpreter = base_interpreter / "bin"
-        base_interpreter = base_interpreter / current_interpreter.name
 
     result = 0  # Ok
-    if str(location) == str(current_venv_root):
-        if in_virtualenv():
-            print(f"Unable to install to the existing virtual environment located at {current_venv_root}")
+    if str(location) == str(sys.prefix):
+        if IS_VIRTUALENV:
+            print(f"Unable to install to the existing virtual environment located at {sys.prefix}")
             print("Please check the permissions, and that it does not include global site packages")
         result = 126  # Command invoked cannot execute
     else:
@@ -174,43 +158,53 @@ def make_virtualenv_and_rerun(location: Path) -> None:
             print(f"Because of the above errors, we will try creating a new virtualenvironment in {location}")
             if not check_installed("virtualenv"):
                 print("virtualenv module not found, getting a portable one to use temporarily")
-                virtualenv = get_virtualenv_portable()
-                result = subprocess_call([f"{sys.executable}", f"{virtualenv}", "-p", f"{base_interpreter}", f"{location}"])
+                tfd = download_to_temp_file("https://bootstrap.pypa.io/virtualenv.pyz", suffix=".pyz", prefix="virtualenv")
+                result = subprocess_call([f"{sys.executable}", f"{tfd.name}", "-p", f"{sys.executable}", f"{location}"])
+                os.unlink(tfd.name)
                 if result != 0:  # Not Ok
                     print("Due to the above error, we cannot continue! Exiting")
                 else:
                     print(f"Created new virtualenvironment in {location}")
             else:
-                print(f"Using {base_interpreter} as base interpreter")
-                result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", "-p", f"{base_interpreter}", f"{location}"])
+                result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", "-p", f"{sys.executable}", f"{location}"])
                 if result != 0:  # Not Ok
                     print("Due to the above error, we cannot continue! Exiting")
                 else:
                     print(f"Created new virtualenvironment in {location}")
 
         if location.is_dir() and result == 0:  # Ok
+            locations_to_check = []
             # append the bin/python.ext to the new venv path
+
+            check = location
             for part in current_interpreter.parts[-2:]:
                 if sys.platform == "win32" and part == "tools":
                     part = "Scripts"
-                location = location / part
+                check /= part
+            locations_to_check.append(check)
 
-            if location.is_file():
-                # add original arguments to this re-call
-                new_argv = [str(location)] + sys.argv
-                print(f"Restarting SickChill with {new_argv}")
-                os.execvp(new_argv[0], new_argv)
-            else:
-                print(f"Something weird happend when creating the virtualenv, {location} does not exist. Exiting")
+            locations_to_check.append(location / "bin" / current_interpreter.parts[-1])
+            locations_to_check.append(location / "Scripts" / current_interpreter.parts[-1])
+
+            locations_to_check.extend(x for x in location.rglob('*python3.?') if x.is_file())
+            locations_to_check.extend(x for x in location.rglob('*python3') if x.is_file())
+            locations_to_check.extend(x for x in location.rglob('*python') if x.is_file())
+
+            for place in locations_to_check:
+                if place.is_file() and place.stat().st_mode & os.X_OK:
+                    # add original arguments to this re-call
+                    new_argv = [str(place)] + sys.argv
+
+                    print(f"Restarting SickChill with {new_argv}")
+                    return os.execvp(new_argv[0], new_argv)
+
+            print(f"Something weird happend when creating the virtualenv, Could not find the bin dir or executable in {location}. Exiting")
 
     os._exit(result)
 
 
 def poetry_install() -> None:
     if not check_installed():
-        pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
-        pyproject_path = pyproject_path.resolve()
-
         if pyproject_path.exists():
             # Check if we can write to this virtualenv
             if not check_env_writable():
@@ -221,7 +215,7 @@ def poetry_install() -> None:
 
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
 
-            if not in_virtualenv():
+            if not IS_VIRTUALENV:
                 print(f"We always run from virtualenv when running from source")
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
 
