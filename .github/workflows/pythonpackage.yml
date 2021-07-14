@@ -164,7 +164,6 @@ jobs:
           ${{ env.GITHUB_REPOSITORY }}
           ghcr.io/${{ env.GITHUB_REPOSITORY }}
         labels: |
-          org.opencontainers.image.description="Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic."
           org.opencontainers.image.url=https://sickchill.github.io
           org.opencontainers.image.source=https://github.com/sickchill/sickchill
     - name: Build and Push
