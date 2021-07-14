@@ -722,15 +722,11 @@ def create_https_certificates(ssl_cert, ssl_key):
     :return: True on success, False on failure
     """
 
-    # assert isinstance(ssl_key, unicode)
-    # assert isinstance(ssl_cert, unicode)
-
-    # noinspection PyBroadException
     try:
         from OpenSSL import crypto
 
         from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
-    except Exception:
+    except (ImportError, ModuleNotFoundError):
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))
         return False

@@ -170,9 +170,11 @@ jobs:
       with:
         version: 1.2.0a1
         virtualenvs-create: false
-    - name: Set version
-      id: poetry
-      run: echo ::set-output name=version::$(poetry version --short)
+    - name: Set variables
+      id: vars
+      run: |
+        echo ::set-output name=version::$(poetry version --short)
+        echo ::set-output name=docker_name::${GITHUB_REPOSITORY,,}
     - name: Build and Push
       if: github.actor == 'miigotu'
       uses: docker/build-push-action@v2
@@ -182,8 +184,8 @@ jobs:
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
         tags: |
           ${{ steps.meta.outputs.tags }}
-          ${GITHUB_REPOSITORY,,}:${{ steps.poetry.outputs.version }}
-          ghcr.io/${GITHUB_REPOSITORY,,}:${{ steps.poetry.outputs.version }}
+          ${{ steps.vars.outputs.docker_name }}:${{ steps.vars.outputs.version }}
+          ghcr.io/${{ steps.vars.outputs.docker_name }}:${{ steps.vars.outputs.version }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
