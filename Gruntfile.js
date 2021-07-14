@@ -413,12 +413,14 @@ module.exports = function(grunt) {
         grunt.config.requires('last_tag');
         var lastTag = grunt.config('last_tag');
 
-        var lastPatch = lastTag.match(/[0-9]+$/)[0];
+        var lastPatch = lastTag.match(/-[0-9]+$/);
         lastTag = grunt.template.date(lastTag.replace(/^v|-[0-9]*-?$/g, ''), 'yyyy.mm.dd');
-        var today = grunt.template.today('yyyy.mm.dd');
-        var patch = lastTag === today ? (parseInt(lastPatch) + 1).toString() : '1';
+        var nextTag = grunt.template.today('yyyy.mm.dd');
+        if (lastTag === nextTag) {
+            nextTag += '-';
+            nextTag += lastPatch ? (parseInt(lastPatch[0].slice(1)) + 1).toString() : '1';
+        }
 
-        var nextTag = 'v' + today + '-' + patch;
         grunt.log.ok(('Creating tag ' + nextTag).green);
         grunt.config('next_tag', nextTag);
     });
