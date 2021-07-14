@@ -150,7 +150,7 @@ class SourceUpdateManager(UpdateManagerBase):
             # retrieve file
             logger.info(f"Downloading update from {tar_download_url}")
             tar_download_path = sc_update_dir / "sc-update.tar"
-            helpers.download_file(tar_download_url, tar_download_path, session=self.session)
+            helpers.download_file(str(tar_download_url), str(tar_download_path), session=self.session)
 
             if not tar_download_path.is_file():
                 logger.warning(f"Unable to retrieve new version from {tar_download_url}, can't update")
