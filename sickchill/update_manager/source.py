@@ -184,7 +184,7 @@ class SourceUpdateManager(UpdateManagerBase):
             logger.info(f"Moving files from {content_dir} to {os.path.dirname(settings.PROG_DIR)}")
 
             for dirname, stderr_, filenames in os.walk(content_dir):
-                dirname = dirname[len(content_dir) + 1 :]
+                dirname = dirname[len(str(content_dir)) + 1 :]
                 for curfile in filenames:
                     old_path = content_dir / dirname / curfile
                     new_path = os.path.join(os.path.dirname(settings.PROG_DIR), dirname, curfile)
