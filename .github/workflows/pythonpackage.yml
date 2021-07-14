@@ -162,11 +162,17 @@ jobs:
           ${{ github.repository }}
           ghcr.io/${{ github.repository }}
         labels: |
-          org.opencontainers.image.url=https://sickchill.github.io
           org.opencontainers.image.source=https://github.com/sickchill/sickchill
-    - name: Generate tags
-      id: docker_tags
-      uses: dnaka91/action-docker-tags@v0.1
+          org.opencontainers.image.url=https://sickchill.github.io
+          org.opencontainers.image.licenses=GPL-3.0+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.1.6
+      with:
+        version: 1.2.0a1
+        virtualenvs-create: false
+    - name: Set version
+      id: poetry
+      run: echo ::set-output name=version::$(poetry version --short)
     - name: Build and Push
       if: github.actor == 'miigotu'
       uses: docker/build-push-action@v2
@@ -174,7 +180,10 @@ jobs:
         context: .
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
-        tags: ${{ steps.docker_tags.outputs.tags }}
+        tags: |
+          ${{ steps.meta.outputs.tags }}
+          ${{ github.repository }}:${{ steps.poetry.outputs.version }}
+          ghcr.io/${{ github.repository }}:${{ steps.poetry.outputs.version }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new

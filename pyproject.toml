@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "sickchill"
-version = "2021.7.14-1"
+version = "2021.7.14-7"
 description = 'Automatic Video Library Manager for TV Shows'
-license = "GPLv3"
+license = "GPL-3.0+"
 
 authors = [
     "Dustyn Gibson <miigotu@gmail.com>"
