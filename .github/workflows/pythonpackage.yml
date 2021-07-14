@@ -130,35 +130,12 @@ jobs:
       with:
         fetch-depth: 1
         persist-credentials: false
-    # https://github.com/docker/setup-qemu-action
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v3.x
     - name: Set up QEMU
-      if: success()
       uses: docker/setup-qemu-action@v1
-      with:
-        image: tonistiigi/binfmt:latest
-        platforms: all
-    # https://github.com/docker/setup-buildx-action
     - name: Set up Docker Buildx
-      if: success()
-      id: buildx
       uses: docker/setup-buildx-action@v1
-    - name: Available platforms
-      if: success()
-      run: echo ${{ steps.buildx.outputs.platforms }}
-    - name: Prepare
-      if: success()
-      id: prepare
-      run: |
-        echo ::set-output name=docker_platforms::linux/amd64,linux/arm64
-        # Remove refs/heads and refs/tags
-        VERSION_TAG=${GITHUB_REF#refs/*/}
-        # Remove /merge from the end
-        VERSION_TAG=${VERSION_TAG%/merge}
-        # Replace slashes
-        VERSION_TAG=${VERSION_TAG//\//_}
-        # Limit length to 128
-        VERSION_TAG=${VERSION_TAG:0:128}
-        echo ::set-output name=version::${VERSION_TAG}
     - name: Cache Docker layers
       uses: actions/cache@v2
       with:
@@ -166,48 +143,39 @@ jobs:
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
-    - name: Docker Log out fix
-      if: success() && !env.ACT
-      run: |
-        docker logout
-        docker logout ghcr.io
     - name: Login to DockerHub
-      if: success() && github.actor == 'miigotu' && !env.ACT
+      if: github.actor == 'miigotu' && !env.ACT
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Login to GitHub Container Registry
-      if: success() && github.actor == 'miigotu' && !env.ACT
+      if: github.actor == 'miigotu' && !env.ACT
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build and Push (master)
-      if: success() && contains(steps.prepare.outputs.version, 'master') && github.actor == 'miigotu'
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: |
+          ${{ env.GITHUB_REPOSITORY }}
+          ghcr.io/${{ env.GITHUB_REPOSITORY }}
+        labels: |
+          org.opencontainers.image.description="Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic."
+          org.opencontainers.image.url=https://sickchill.github.io
+          org.opencontainers.image.source=https://github.com/sickchill/sickchill
+    - name: Build and Push
+      if: github.actor == 'miigotu'
       uses: docker/build-push-action@v2
       with:
         context: .
-        platforms: ${{ steps.prepare.outputs.docker_platforms }}
-        push: ${{ !env.ACT }}
-        tags: |
-          ghcr.io/sickchill/sickchill:master
-          ghcr.io/ps3dev/ps3dev:latest
-          sickchill/sickchill:master
-          sickchill/sickchill:latest
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new
-    - name: Build and Push (non-master)
-      if: success() && !contains(steps.prepare.outputs.version, 'master')
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        platforms: ${{ steps.prepare.outputs.docker_platforms }}
-        push: ${{ !env.ACT }}
-        tags: |
-          ghcr.io/sickchill/sickchill:${{ steps.prepare.outputs.version }}
-          sickchill/sickchill:${{ steps.prepare.outputs.version }}
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' && !env.ACT }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
       # Temp fix
