@@ -130,8 +130,6 @@ jobs:
       with:
         fetch-depth: 1
         persist-credentials: false
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v3.x
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
@@ -161,8 +159,8 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: |
-          ${{ env.GITHUB_REPOSITORY }}
-          ghcr.io/${{ env.GITHUB_REPOSITORY }}
+          ${{ github.repository }}
+          ghcr.io/${{ github.repository }}
         labels: |
           org.opencontainers.image.url=https://sickchill.github.io
           org.opencontainers.image.source=https://github.com/sickchill/sickchill
