@@ -175,12 +175,14 @@ def get_os_id():
     os_release = Path("/etc/os-release").resolve()
     if os_release.is_file():
         from configparser import ConfigParser
+
         parser = ConfigParser()
         parser.read_string("[DEFAULT]\n" + os_release.read_text())
         try:
-            return parser['DEFAULT']['ID']
+            return parser["DEFAULT"]["ID"]
         except (KeyError, IndexError):
             pass
+
 
 def pip_install(packages: Union[List[str], str]) -> bool:
     if not isinstance(packages, list):
