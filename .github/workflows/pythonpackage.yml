@@ -182,8 +182,8 @@ jobs:
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
         tags: |
           ${{ steps.meta.outputs.tags }}
-          ${{ github.repository }}:${{ steps.poetry.outputs.version }}
-          ghcr.io/${{ github.repository }}:${{ steps.poetry.outputs.version }}
+          ${GITHUB_REPOSITORY,,}:${{ steps.poetry.outputs.version }}
+          ghcr.io/${GITHUB_REPOSITORY,,}:${{ steps.poetry.outputs.version }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
