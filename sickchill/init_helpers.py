@@ -206,6 +206,12 @@ def pip_install(packages: Union[List[str], str]) -> bool:
     if os_id in ("alpine", "ubuntu"):
         cmd.append(f"--find-links=https://wheel-index.linuxserver.io/{os_id}/")
 
+    if os_id == "alpine":
+        cmd.append(f"--extra-index-url=https://alpine-wheels.github.io/index")
+
+    elif os_id in ("raspian", "osmc"):
+        cmd.append(f"--extra-index-url=https://www.piwheels.org/simple")
+
     cmd += packages
 
     logger.debug(f"pip args: {' '.join(cmd)}")
