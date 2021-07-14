@@ -150,6 +150,8 @@ class SourceUpdateManager(UpdateManagerBase):
             # retrieve file
             logger.info(f"Downloading update from {tar_download_url}")
             tar_download_path = sc_update_dir / "sc-update.tar"
+            tar_download_path = tar_download_path.resolve()
+
             helpers.download_file(str(tar_download_url), str(tar_download_path), session=self.session)
 
             if not tar_download_path.is_file():
@@ -168,7 +170,7 @@ class SourceUpdateManager(UpdateManagerBase):
 
             # delete .tar.gz
             logger.info(f"Deleting file {tar_download_path}")
-            tar_download_path.unlink(True)
+            tar_download_path.unlink()
 
             # find update dir name
             update_dir_contents = [x for x in sc_update_dir.iterdir() if x.is_dir()]

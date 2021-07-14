@@ -103,6 +103,8 @@ class Anime(AniDBabstractObject):
         if not cache_dir.is_dir():
             raise
         self.cache_dir = cache_dir / "anime"
+        self.cache_dir = self.cache_dir.absolute()
+
         if not self.cache_dir.is_dir():
             self.cache_dir.mkdir()
 

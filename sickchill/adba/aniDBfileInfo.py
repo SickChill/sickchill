@@ -47,7 +47,8 @@ def download_file(url, filename: Path):
                     fp.flush()
 
     except requests.exceptions.RequestException:
-        filename.unlink(True)
+        if filename.is_file():
+            filename.unlink()
         return False
 
     return True
