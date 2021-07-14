@@ -164,6 +164,9 @@ jobs:
         labels: |
           org.opencontainers.image.url=https://sickchill.github.io
           org.opencontainers.image.source=https://github.com/sickchill/sickchill
+    - name: Generate tags
+      id: docker_tags
+      uses: dnaka91/action-docker-tags@v0.1
     - name: Build and Push
       if: github.actor == 'miigotu'
       uses: docker/build-push-action@v2
@@ -171,7 +174,7 @@ jobs:
         context: .
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
-        tags: ${{ steps.meta.outputs.tags }}
+        tags: ${{ steps.docker_tags.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
