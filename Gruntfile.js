@@ -298,11 +298,11 @@ module.exports = function(grunt) {
                 }
             },
             'git_get_last_tag': {
-                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:lstrip=2)" refs/tags/20[0-9][0-9].[0-9][0-9].[0-9][0-9]* refs/tags/v202[0-1].[0-9][0-9].[0-9][0-9]*',
+                cmd: 'git for-each-ref --sort=-refname --count=1 --format "%(refname:lstrip=2)" refs/tags/20[0-9][0-9].[0-9][0-9].[0-9][0-9]*',
                 stdout: false,
                 callback: function(err, stdout) {
                     stdout = stdout.trim();
-                    if (/^v\d{4}.\d{1,2}.\d{1,2}.\d+$/.test(stdout)) {
+                    if (/^\d{4}.\d{1,2}.\d{1,2}.\d+$/.test(stdout)) {
                         grunt.config('last_tag', stdout);
                         grunt.log.write(stdout);
                     } else {
