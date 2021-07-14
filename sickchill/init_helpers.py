@@ -171,6 +171,17 @@ def subprocess_call(cmd_list):
     return process.returncode
 
 
+def get_os_id():
+    os_release = Path("/etc/os-release").resolve()
+    if os_release.is_file():
+        from configparser import ConfigParser
+        parser = ConfigParser()
+        parser.read_string("[DEFAULT]\n" + os_release.read_text())
+        try:
+            return parser['DEFAULT']['ID']
+        except (KeyError, IndexError):
+            pass
+
 def pip_install(packages: Union[List[str], str]) -> bool:
     if not isinstance(packages, list):
         packages = packages.splitlines()
@@ -186,10 +197,14 @@ def pip_install(packages: Union[List[str], str]) -> bool:
         "--no-color",
         "--trusted-host=pypi.org",
         "--trusted-host=files.pythonhosted.org",
-        "--find-links=https://wheel-index.linuxserver.io/alpine/",
-        "--find-links=https://wheel-index.linuxserver.io/ubuntu/",
         "-qU",
-    ] + packages
+    ]
+
+    os_id = get_os_id()
+    if os_id in ("alpine", "ubuntu"):
+        cmd.append(f"--find-links=https://wheel-index.linuxserver.io/{os_id}/")
+
+    cmd += packages
 
     logger.debug(f"pip args: {' '.join(cmd)}")
 

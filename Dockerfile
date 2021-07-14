@@ -32,22 +32,13 @@ apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 
 
-RUN pip install --pre --upgrade --prefer-binary \
---find-links https://wheel-index.linuxserver.io/alpine/ \
---find-links https://wheel-index.linuxserver.io/ubuntu/ \
-poetry pip wheel setuptools virtualenv && \
-export PATH="/root/.local/bin:$PATH" && ln -s /usr/bin/python3 /usr/bin/python && \
-poetry export --format requirements.txt > requirements.txt && \
-python -m virtualenv -p python3.7 .venv && \
-.venv/bin/python3 -m pip install --pre --upgrade --prefer-binary \
---find-links https://wheel-index.linuxserver.io/alpine/ \
---find-links https://wheel-index.linuxserver.io/ubuntu/ \
--r requirements.txt && rm requirements.txt
+RUN pip install --pre --upgrade --prefer-binary poetry pip wheel setuptools virtualenv && \
+export PATH="/root/.local/bin:$PATH" && ln -s /usr/bin/python3 /usr/bin/python
 
 COPY . /app/sickchill
 RUN chmod -R 777 /app/sickchill
 
-CMD .venv/bin/python3 SickChill.py -q --nolaunch --datadir=/data --port 8081
+CMD python3 SickChill.py -q --nolaunch --datadir=/data --port 8081
 
 EXPOSE 8081
 
