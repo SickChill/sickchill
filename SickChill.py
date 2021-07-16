@@ -108,7 +108,6 @@ class SickChill(object):
             result = self.force_update()
             sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 
-        # Need console logging for SickChill.py and SickChill-console.exe
         settings.NO_RESIZE = args.noresize
         self.console_logging = not (hasattr(sys, "frozen") or args.quiet or args.daemon)
         self.no_launch = args.nolaunch or args.daemon

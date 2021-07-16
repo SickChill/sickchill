@@ -11,7 +11,7 @@ from typing import List, Union
 from urllib.request import urlopen
 
 logger = logging.getLogger(__file__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 
 sickchill_module = Path(__file__).parent.resolve()
@@ -69,8 +69,6 @@ def maybe_daemonize():
         if not os.access(pid_dir, os.W_OK):
             raise SystemExit(f"PID dir: {pid_dir} must be writable (write permissions). Exiting.")
 
-    # An object is accessed for a non-existent member.
-    # Access to a protected member of a client class
     # Make a non-session-leader child process
     try:
         pid = os.fork()  # @UndefinedVariable - only available in UNIX
@@ -102,8 +100,7 @@ def maybe_daemonize():
 
         logger.info(f"Writing PID: {pid} to {pid_file}\n")
         try:
-            with open(pid_file, "w") as pid_fd:
-                pid_fd.write(f"{pid}\n")
+            pid_file.write_text(f"{pid}\n")
         except EnvironmentError as error:
             raise SystemExit(f"Unable to write PID file: {pid_file} Error {error.errno}: {error.strerror}")
 
