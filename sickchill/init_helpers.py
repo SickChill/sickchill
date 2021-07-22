@@ -28,8 +28,7 @@ def locale_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "locale"))
 
 
-BASE_PREFIX = getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
-IS_VIRTUALENV = BASE_PREFIX != sys.prefix
+IS_VIRTUALENV = hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)
 
 
 def setup_gettext(language: str = None) -> None:
@@ -157,7 +156,7 @@ def check_installed(name: str = __package__) -> bool:
 
 def subprocess_call(cmd_list):
     try:
-        process = subprocess.Popen(cmd_list, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        process = subprocess.Popen(cmd_list, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, cwd=os.getcwd())
         stdout, stderr = process.communicate()
         process.wait()
         if stdout or stderr:
@@ -194,8 +193,8 @@ def pip_install(packages: Union[List[str], str]) -> bool:
         "--disable-pip-version-check",
         "--no-python-version-warning",
         "--no-color",
-        "--trusted-host=pypi.org",
-        "--trusted-host=files.pythonhosted.org",
+        # "--trusted-host=pypi.org",
+        # "--trusted-host=files.pythonhosted.org",
         "-qU",
     ]
 
@@ -228,9 +227,21 @@ def check_env_writable():
     """
     locations = []
     try:
-        locations = [site.getsitepackages()[0]]
+        locations.append(site.getsitepackages()[0])
     except (AttributeError, IndexError):
-        pass
+        try:
+            from distutils.sysconfig import get_python_lib
+
+            locations.append(get_python_lib())
+        except (ImportError, ModuleNotFoundError):
+            pass
+
+        try:
+            import pip
+
+            locations.append(str(Path(pip.__path__[0]).parent.resolve()))
+        except (ImportError, AttributeError, IndexError):
+            pass
 
     try:
         if site.ENABLE_USER_SITE or site.check_enableusersite():
@@ -241,23 +252,10 @@ def check_env_writable():
     except AttributeError:
         pass
 
-    if not locations:
-        try:
-            from distutils.sysconfig import get_python_lib
+    for location in set(locations):
+        logger.debug(f"Can write to {location}: {os.access(location, os.W_OK)}")
 
-            locations = [get_python_lib()]
-        except (ImportError, ModuleNotFoundError):
-            pass
-
-    if not locations:
-        try:
-            import pip
-
-            locations = [str(Path(pip.__path__[0]).parent.resolve())]
-        except (ImportError, AttributeError, IndexError):
-            pass
-
-    return any([os.access(location, os.W_OK) for location in locations])
+    return any([os.access(location, os.W_OK) for location in set(locations)])
 
 
 def download_to_temp_file(url: str) -> tempfile.NamedTemporaryFile:
@@ -278,11 +276,17 @@ def check_and_install_pip() -> None:
         logger.info("Installing pip")
         tfd = download_to_temp_file("https://bootstrap.pypa.io/get-pip.py")
         result = subprocess_call([f"{sys.executable}", f"{tfd.name}"])
-        os.unlink(tfd.name)
         if result == 0:
             logger.info("Pip installed")
         else:
-            logger.info("There was an error installing pip!")
+            logger.info("There was an error installing pip! Trying user site")
+            result = subprocess_call([f"{sys.executable}", f"{tfd.name}", "--user"])
+            if result == 0:
+                logger.info("Pip installed")
+            else:
+                logger.info("There was an error installing pip!")
+
+        os.unlink(tfd.name)
 
 
 def make_virtualenv_and_rerun(location: Path) -> None:
@@ -306,21 +310,26 @@ def make_virtualenv_and_rerun(location: Path) -> None:
     else:
         if not location.is_dir():
             logger.info(f"Because of the above errors, we will try creating a new virtualenvironment in {location}")
-            if not check_installed("virtualenv"):
-                logger.info("virtualenv module not found, getting a portable one to use temporarily")
-                tfd = download_to_temp_file("https://bootstrap.pypa.io/virtualenv.pyz")
-                result = subprocess_call([f"{sys.executable}", f"{tfd.name}", "-p", f"{sys.executable}", f"{location}"])
-                os.unlink(tfd.name)
-                if result != 0:  # Not Ok
-                    logger.info("Due to the above error, we cannot continue! Exiting")
+            try:
+                import venv
+                venv.create(location, system_site_packages=False, clear=True, symlinks=os.name!='nt', with_pip=True)
+                logger.info(f"Created new virtualenvironment in {location} using venv module!")
+            except:
+                if check_installed("virtualenv"):
+                    result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", "-p", f"{sys.executable}", f"{location}"])
+                    if result != 0:  # Not Ok
+                        logger.info("Due to the above error, we cannot continue! Exiting")
+                    else:
+                        logger.info(f"Created new virtualenvironment in {location}")
                 else:
-                    logger.info(f"Created new virtualenvironment in {location}")
-            else:
-                result = subprocess_call([f"{sys.executable}", "-m", "virtualenv", "-p", f"{sys.executable}", f"{location}"])
-                if result != 0:  # Not Ok
-                    logger.info("Due to the above error, we cannot continue! Exiting")
-                else:
-                    logger.info(f"Created new virtualenvironment in {location}")
+                    logger.info("virtualenv module not found, getting a portable one to use temporarily")
+                    tfd = download_to_temp_file("https://bootstrap.pypa.io/virtualenv.pyz")
+                    result = subprocess_call([f"{sys.executable}", f"{tfd.name}", "-p", f"{sys.executable}", f"{location}"])
+                    os.unlink(tfd.name)
+                    if result != 0:  # Not Ok
+                        logger.info("Due to the above error, we cannot continue! Exiting")
+                    else:
+                        logger.info(f"Created new virtualenvironment in {location}")
 
         if location.is_dir() and result == 0:  # Ok
             locations_to_check = []
@@ -373,7 +382,7 @@ def poetry_install() -> None:
             check_and_install_pip()
 
             # Cool, we can write to site-packages
-            pip_install(["setuptools", "poetry", "--pre"])
+            pip_install(["setuptools", "poetry", "poetry-date-version-plugin", "wheel", "--pre"])
             if check_installed("poetry"):
                 result, output = subprocess.getstatusoutput(
                     f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
