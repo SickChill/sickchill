@@ -1,6 +1,4 @@
 (function ($) {
-    'use strict';
-
     const SIZES_BY_TYPE = {
         poster: {
             minHeight: 269,

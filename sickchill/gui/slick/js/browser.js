@@ -1,6 +1,4 @@
 (function ($) {
-    'use strict';
-
     $.Browser = {
         defaults: {
             title: _('Choose Directory'),

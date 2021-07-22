@@ -120,19 +120,19 @@ function checkManualSearches() {
     $.ajax({
         url,
         success(data) {
-            pollInterval = data.episodes ? 5000 : 15000;
+            pollInterval = data.episodes ? 5000 : 15_000;
 
             updateImages(data);
         },
         error() {
-            pollInterval = 30000;
+            pollInterval = 30_000;
         },
         type: 'GET',
         dataType: 'json',
         complete() {
             setTimeout(checkManualSearches, pollInterval);
         },
-        timeout: 15000, // Timeout every 15 secs
+        timeout: 15_000, // Timeout every 15 secs
     });
 }
 

@@ -56,7 +56,7 @@ function addSiteMessage(level = 'danger', tag = '', message = '') {
         if (messagesDiv !== undefined) {
             messagesDiv.empty();
             for (const key in siteMessages) {
-                if ({}.hasOwnProperty.call(siteMessages, key)) {
+                if (Object.prototype.hasOwnProperty.call(siteMessages, key)) {
                     messagesDiv.append('<div class="alert alert-' + siteMessages[key].level + ' upgrade-notification hidden-print" id="site-message-' + key + '" role="alert">'
                         + '<span>' + siteMessages[key].message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + key + '"/>'
                         + '</div>');
@@ -1068,7 +1068,7 @@ const SICKCHILL = {
 
                 if (port === null) {
                     error += '<li style="color: red;">You must specify an SMTP port!</li>';
-                } else if (port.match(/^\d+$/) === null || Number.parseInt(port, 10) > 65535) {
+                } else if (port.match(/^\d+$/) === null || Number.parseInt(port, 10) > 65_535) {
                     error += '<li style="color: red;">SMTP port must be between 0 and 65535!</li>';
                 }
 
@@ -1242,7 +1242,7 @@ const SICKCHILL = {
                     // Convert the 'list' object to a js array of objects so that we can sort it
                     const _list = [];
                     for (const _show in list) {
-                        if ({}.hasOwnProperty.call(list, _show) && _show.charAt(0) !== '_') {
+                        if (Object.prototype.hasOwnProperty.call(list, _show) && _show.charAt(0) !== '_') {
                             _list.push(list[_show]);
                         }
                     }
@@ -1260,7 +1260,7 @@ const SICKCHILL = {
                     });
                     let html = '<option value="-1">-- Select --</option>';
                     for (const _show in sortedList) {
-                        if ({}.hasOwnProperty.call(sortedList, _show) && sortedList[_show].id && sortedList[_show].name) {
+                        if (Object.prototype.hasOwnProperty.call(sortedList, _show) && sortedList[_show].id && sortedList[_show].name) {
                             html += '<option value="' + sortedList[_show].id + '">' + $('<div>').text(sortedList[_show].name).html() + '</option>';
                         }
                     }
@@ -3144,7 +3144,7 @@ const SICKCHILL = {
                     row += '<td style="width: 8%;">';
                     subtitles = subtitles.split(',');
                     for (const i in subtitles) {
-                        if ({}.hasOwnProperty.call(subtitles, i)) {
+                        if (Object.prototype.hasOwnProperty.call(subtitles, i)) {
                             row += '<img src="' + scRoot + '/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
                         }
                     }
