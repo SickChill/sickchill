@@ -28,7 +28,7 @@ def locale_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "locale"))
 
 
-BASE_PREFIX = getattr(sys, "base_prefix", getattr(sys, "real_prefix", sys.prefix))
+BASE_PREFIX = getattr(sys, "real_prefix", getattr(sys, "base_prefix", sys.prefix))
 IS_VIRTUALENV = BASE_PREFIX != sys.prefix
 
 
