@@ -1068,7 +1068,7 @@ const SICKCHILL = {
 
                 if (port === null) {
                     error += '<li style="color: red;">You must specify an SMTP port!</li>';
-                } else if (port.match(/^\d+$/) === null || Number.parseInt(port, 10) > 65_535) {
+                } else if (port.match(/^\d+$/) === null || Number.parseInt(port, 10) > 65535) { // eslint-disable-line unicorn/numeric-separators-style
                     error += '<li style="color: red;">SMTP port must be between 0 and 65535!</li>';
                 }
 
