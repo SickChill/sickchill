@@ -87,7 +87,7 @@ copyfileobj_orig = shutil.copyfileobj
 
 
 def _copyfileobj(fsrc, fdst, length=10485760):
-    """ Run shutil.copyfileobj with a bigger buffer """
+    """Run shutil.copyfileobj with a bigger buffer"""
     return copyfileobj_orig(fsrc, fdst, length)
 
 
@@ -1392,7 +1392,7 @@ def get_size(start_path="."):
 
 
 def generateApiKey():
-    """ Return a new randomized API_KEY"""
+    """Return a new randomized API_KEY"""
     logger.info(_("Generating New API key"))
     secure_hash = hashlib.sha512(str(time.time()).encode())
     secure_hash.update(str(random.SystemRandom().getrandbits(4096)).encode())

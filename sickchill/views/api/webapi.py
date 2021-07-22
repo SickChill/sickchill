@@ -61,7 +61,7 @@ result_type_map = {
 
 # noinspection PyAbstractClass
 class ApiHandler(RequestHandler):
-    """ api class that returns json results """
+    """api class that returns json results"""
 
     version = 5  # use an int since float-point is unpredictable
 
@@ -426,7 +426,7 @@ class TVDBShorthandWrapper(ApiCall):
         self.args = args
 
     def run(self):
-        """ internal function wrapper """
+        """internal function wrapper"""
         args = (self.sid,) + self.origArgs
         if self.e:
             return CMDEpisode(args, self.kwargs).run()
@@ -655,7 +655,7 @@ class CMDHelp(ApiCall):
         self.subject, args = self.check_params(args, kwargs, "subject", "help", False, "string", list(function_mapper))
 
     def run(self):
-        """ Get help about a given command """
+        """Get help about a given command"""
         if self.subject in function_mapper:
             out = _responds(RESULT_SUCCESS, function_mapper.get(self.subject)((), {"help": 1}).run())
         else:
@@ -681,7 +681,7 @@ class CMDComingEpisodes(ApiCall):
         self.paused, args = self.check_params(args, kwargs, "paused", bool(settings.COMING_EPS_DISPLAY_PAUSED), False, "bool", [])
 
     def run(self):
-        """ Get the coming episodes """
+        """Get the coming episodes"""
         grouped_coming_episodes = ComingEpisodes.get_coming_episodes(self.type, self.sort, True, self.paused)
         data = {section: [] for section in grouped_coming_episodes.keys()}
 
@@ -733,7 +733,7 @@ class CMDEpisode(ApiCall):
         self.fullPath, args = self.check_params(args, kwargs, "full_path", False, False, "bool", [])
 
     def run(self):
-        """ Get detailed information about an episode """
+        """Get detailed information about an episode"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -800,7 +800,7 @@ class CMDEpisodeSearch(ApiCall):
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
 
     def run(self):
-        """ Search for an episode """
+        """Search for an episode"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -937,7 +937,7 @@ class CMDEpisodeSetStatus(ApiCall):
         self.force, args = self.check_params(args, kwargs, "force", False, False, "bool", [])
 
     def run(self):
-        """ Set the status of an episode or a season (when no episode is provided) """
+        """Set the status of an episode or a season (when no episode is provided)"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -1041,7 +1041,7 @@ class CMDSubtitleSearch(ApiCall):
         self.e, args = self.check_params(args, kwargs, "episode", None, True, "int", [])
 
     def run(self):
-        """ Search for an episode subtitles """
+        """Search for an episode subtitles"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -1086,7 +1086,7 @@ class CMDExceptions(ApiCall):
         self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
     def run(self):
-        """ Get the scene exceptions for all or a given show """
+        """Get the scene exceptions for all or a given show"""
         cache_db_con = db.DBConnection("cache.db", row_type="dict")
 
         if self.indexerid is None:
@@ -1128,7 +1128,7 @@ class CMDHistory(ApiCall):
         self.type = self.type.lower() if isinstance(self.type, str) else ""
 
     def run(self):
-        """ Get the downloaded and/or snatched history """
+        """Get the downloaded and/or snatched history"""
         data = History().get(self.limit, self.type)
         results = []
 
@@ -1164,7 +1164,7 @@ class CMDHistoryClear(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Clear the entire history """
+        """Clear the entire history"""
         History().clear()
 
         return _responds(RESULT_SUCCESS, msg="History cleared")
@@ -1178,7 +1178,7 @@ class CMDHistoryTrim(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Trim history entries older than 30 days """
+        """Trim history entries older than 30 days"""
         History().trim()
 
         return _responds(RESULT_SUCCESS, msg="Removed history entries older than 30 days")
@@ -1198,7 +1198,7 @@ class CMDFailed(ApiCall):
         self.limit, args = self.check_params(args, kwargs, "limit", 100, False, "int", [])
 
     def run(self):
-        """ Get the failed downloads """
+        """Get the failed downloads"""
 
         failed_db_con = db.DBConnection("failed.db", row_type="dict")
 
@@ -1219,7 +1219,7 @@ class CMDBacklog(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Get the backlogged episodes """
+        """Get the backlogged episodes"""
 
         shows = []
 
@@ -1262,7 +1262,7 @@ class CMDLogs(ApiCall):
         self.min_level, args = self.check_params(args, kwargs, "min_level", "error", False, "string", ["error", "warning", "info", "debug"])
 
     def run(self):
-        """ Get the logs """
+        """Get the logs"""
         # 10 = Debug / 20 = Info / 30 = Warning / 40 = Error
         min_level = logger.LOGGING_LEVELS[str(self.min_level).upper()]
 
@@ -1321,7 +1321,7 @@ class CMDLogsClear(ApiCall):
         self.level, args = self.check_params(args, kwargs, "level", "warning", False, "string", ["warning", "error"])
 
     def run(self):
-        """ Clear the logs """
+        """Clear the logs"""
         if self.level == "error":
             msg = "Error logs cleared"
 
@@ -1381,7 +1381,7 @@ class CMDPostProcess(ApiCall):
         self.type, args = self.check_params(args, kwargs, "type", "auto", None, "string", ["auto", "manual"])
 
     def run(self):
-        """ Manually post-process the files in the download folder """
+        """Manually post-process the files in the download folder"""
         if not self.path and not settings.TV_DOWNLOAD_DIR:
             return _responds(RESULT_FAILURE, msg="You need to provide a path or set TV Download Dir")
 
@@ -1417,7 +1417,7 @@ class CMDSickChill(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ dGet miscellaneous information about SickChill """
+        """dGet miscellaneous information about SickChill"""
         data = {"sc_version": settings.BRANCH, "api_version": self.version, "api_commands": sorted(function_mapper)}
         return _responds(RESULT_SUCCESS, data)
 
@@ -1440,7 +1440,7 @@ class CMDSickChillAddRootDir(ApiCall):
         self.default, args = self.check_params(args, kwargs, "default", False, False, "bool", [])
 
     def run(self):
-        """ Add a new root (parent) directory to SickChill """
+        """Add a new root (parent) directory to SickChill"""
 
         self.location = urllib.parse.unquote_plus(self.location)
         location_matched = 0
@@ -1550,7 +1550,7 @@ class CMDSickChillCheckScheduler(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Get information about the scheduler """
+        """Get information about the scheduler"""
         main_db_con = db.DBConnection(row_type="dict")
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
@@ -1581,7 +1581,7 @@ class CMDSickChillDeleteRootDir(ApiCall):
         self.location, args = self.check_params(args, kwargs, "location", None, True, "string", [])
 
     def run(self):
-        """ Delete a root (parent) directory from SickChill """
+        """Delete a root (parent) directory from SickChill"""
         if settings.ROOT_DIRS == "":
             return _responds(RESULT_FAILURE, _get_root_dirs(), msg="No root directories detected")
 
@@ -1623,7 +1623,7 @@ class CMDSickChillGetDefaults(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Get SickChill's user default configuration value """
+        """Get SickChill's user default configuration value"""
 
         any_qualities, best_qualities = _map_quality(settings.QUALITY_DEFAULT)
 
@@ -1660,7 +1660,7 @@ class CMDSickChillGetRootDirs(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Get all root (parent) directories """
+        """Get all root (parent) directories"""
 
         return _responds(RESULT_SUCCESS, _get_root_dirs())
 
@@ -1677,7 +1677,7 @@ class CMDSickChillPauseBacklog(ApiCall):
         self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
 
     def run(self):
-        """ Pause or un-pause the backlog search """
+        """Pause or un-pause the backlog search"""
         if self.pause:
             settings.searchQueueScheduler.action.pause_backlog()  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog paused")
@@ -1694,7 +1694,7 @@ class CMDSickChillPing(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Ping SickChill to check if it is running """
+        """Ping SickChill to check if it is running"""
         if settings.started:
             return _responds(RESULT_SUCCESS, {"pid": settings.PID}, "Pong")
         else:
@@ -1709,7 +1709,7 @@ class CMDSickChillRestart(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Restart SickChill """
+        """Restart SickChill"""
         if not Restart.restart(settings.PID):
             return _responds(RESULT_FAILURE, msg="SickChill can not be restarted")
 
@@ -1739,7 +1739,7 @@ class CMDSickChillSearchIndexers(ApiCall):
         self.exact, args = self.check_params(args, kwargs, "exact", False, False, "bool", [])
 
     def run(self):
-        """ Search for a show with a given name on all the indexers, in a specific language """
+        """Search for a show with a given name on all the indexers, in a specific language"""
 
         results = []
         lang_id = self.valid_languages[self.lang]
@@ -1843,7 +1843,7 @@ class CMDSickChillSetDefaults(ApiCall):
         self.status, args = self.check_params(args, kwargs, "status", None, False, "string", ["wanted", "skipped", "archived", "ignored"])
 
     def run(self):
-        """ Set SickChill's user default configuration value """
+        """Set SickChill's user default configuration value"""
 
         i_quality_id = []
         a_quality_id = []
@@ -1886,7 +1886,7 @@ class CMDSickChillShutdown(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Shutdown SickChill """
+        """Shutdown SickChill"""
         if not Shutdown.stop(settings.PID):
             return _responds(RESULT_FAILURE, msg="SickChill can not be shut down")
 
@@ -1928,7 +1928,7 @@ class CMDShow(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Get detailed information about a show """
+        """Get detailed information about a show"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2030,7 +2030,7 @@ class CMDShowAddExisting(ApiCall):
         self.subtitles, args = self.check_params(args, kwargs, "subtitles", int(settings.USE_SUBTITLES), False, "int", [])
 
     def run(self):
-        """ Add an existing show in SickChill """
+        """Add an existing show in SickChill"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
@@ -2123,7 +2123,7 @@ class CMDShowAddNew(ApiCall):
         self.future_status, args = self.check_params(args, kwargs, "future_status", None, False, "string", ["wanted", "skipped", "ignored"])
 
     def run(self):
-        """ Add a new show to SickChill """
+        """Add a new show to SickChill"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in database")
@@ -2241,7 +2241,7 @@ class CMDShowCache(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Check SickChill's cache to see if the images (poster, banner, fanart) for a show are valid """
+        """Check SickChill's cache to see if the images (poster, banner, fanart) for a show are valid"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2289,7 +2289,7 @@ class CMDShowDelete(ApiCall):
         self.removefiles, args = self.check_params(args, kwargs, "removefiles", False, False, "bool", [])
 
     def run(self):
-        """ Delete a show in SickChill """
+        """Delete a show in SickChill"""
         error, show = Show.delete(self.indexerid, self.removefiles)
 
         if error:
@@ -2315,7 +2315,7 @@ class CMDShowGetQuality(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Get the quality setting of a show """
+        """Get the quality setting of a show"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2345,7 +2345,7 @@ class CMDShowGetPoster(ApiCall):
         self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
-        """ Get the poster a show """
+        """Get the poster a show"""
         method = (settings.IMAGE_CACHE.poster_path, settings.IMAGE_CACHE.poster_thumb_path)[self.media_format == "thumb"]
         return {
             "outputType": "image",
@@ -2373,7 +2373,7 @@ class CMDShowGetBanner(ApiCall):
         self.media_format, args = self.check_params(args, kwargs, "media_format", "normal", False, "string", ["normal", "thumb"])
 
     def run(self):
-        """ Get the banner of a show """
+        """Get the banner of a show"""
         method = (settings.IMAGE_CACHE.banner_path, settings.IMAGE_CACHE.banner_thumb_path)[self.media_format == "thumb"]
         return {
             "outputType": "image",
@@ -2424,7 +2424,7 @@ class CMDShowGetFanArt(ApiCall):
         self.tvdbid, args = self.check_params(args, kwargs, "tvdbid", None, False, "int", [])
 
     def run(self):
-        """ Get the fan art of a show """
+        """Get the fan art of a show"""
         return {
             "outputType": "image",
             "image": settings.IMAGE_CACHE.fanart_path(self.tvdbid or self.indexerid),
@@ -2450,7 +2450,7 @@ class CMDShowPause(ApiCall):
         self.pause, args = self.check_params(args, kwargs, "pause", False, False, "bool", [])
 
     def run(self):
-        """ Pause or un-pause a show """
+        """Pause or un-pause a show"""
         error, show = Show.pause(self.indexerid, self.pause)
 
         if error:
@@ -2476,7 +2476,7 @@ class CMDShowRefresh(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Refresh a show in SickChill """
+        """Refresh a show in SickChill"""
         error, show = Show.refresh(self.indexerid)
 
         if error:
@@ -2501,7 +2501,7 @@ class CMDShowSeasonList(ApiCall):
         self.sort, args = self.check_params(args, kwargs, "sort", "desc", False, "string", ["asc", "desc"])
 
     def run(self):
-        """ Get the list of seasons of a show """
+        """Get the list of seasons of a show"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2537,7 +2537,7 @@ class CMDShowSeasons(ApiCall):
         self.season, args = self.check_params(args, kwargs, "season", None, False, "int", [])
 
     def run(self):
-        """ Get the list of episodes for one or all seasons of a show """
+        """Get the list of episodes for one or all seasons of a show"""
         sho_obj = Show.find(settings.showList, int(self.indexerid))
         if not sho_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2614,7 +2614,7 @@ class CMDShowSetQuality(ApiCall):
         self.archive, args = self.check_params(args, kwargs, "archive", [], False, "list", PREFERRED_QUALITY_LIST)
 
     def run(self):
-        """ Set the quality setting of a show. If no quality is provided, the default user setting is used. """
+        """Set the quality setting of a show. If no quality is provided, the default user setting is used."""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2657,7 +2657,7 @@ class CMDShowStats(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Get episode statistics for a given show """
+        """Get episode statistics for a given show"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2757,7 +2757,7 @@ class CMDShowUpdate(ApiCall):
         self.indexerid, args = self.check_params(args, kwargs, "indexerid", None, True, "int", [])
 
     def run(self):
-        """ Update a show in SickChill """
+        """Update a show in SickChill"""
         show_obj = Show.find(settings.showList, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
@@ -2786,7 +2786,7 @@ class CMDShows(ApiCall):
         self.paused, args = self.check_params(args, kwargs, "paused", None, False, "bool", [])
 
     def run(self):
-        """ Get all shows in SickChill """
+        """Get all shows in SickChill"""
         shows = {}
         for curShow in settings.showList:
             # If self.paused is None: show all, 0: show un-paused, 1: show paused
@@ -2835,7 +2835,7 @@ class CMDShowsStats(ApiCall):
         super().__init__(args, kwargs)
 
     def run(self):
-        """ Get the global shows and episodes statistics """
+        """Get the global shows and episodes statistics"""
         stats = Show.overall_stats()
 
         return _responds(

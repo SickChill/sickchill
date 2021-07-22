@@ -30,7 +30,7 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _check_auth_from_data(parsed_json):
-        """ Check that we are authenticated. """
+        """Check that we are authenticated."""
 
         if "status" in parsed_json and "message" in parsed_json and parsed_json.get("status") == 5:
             logger.warning("Invalid username or password. Check your settings")

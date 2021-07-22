@@ -12,7 +12,7 @@ class Provider(TorrentProvider):
     """Main provider object"""
 
     def __init__(self):
-        """ Initialize the class """
+        """Initialize the class"""
         super().__init__("Norbits")
 
         self.username = None
@@ -34,7 +34,7 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _check_auth_from_data(parsed_json):
-        """ Check that we are authenticated. """
+        """Check that we are authenticated."""
 
         if "status" in parsed_json and "message" in parsed_json and parsed_json.get("status") == 3:
             logger.warning("Invalid username or password. Check your settings")
@@ -42,7 +42,7 @@ class Provider(TorrentProvider):
         return True
 
     def search(self, search_params, age=0, ep_obj=None):
-        """ Do the actual searching and JSON parsing"""
+        """Do the actual searching and JSON parsing"""
 
         results = []
 

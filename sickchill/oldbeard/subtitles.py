@@ -85,7 +85,7 @@ class SubtitleProviderPool(object):
         SubtitleProviderPool._creation = None
 
     def __getattr__(self, attr):
-        """ Delegate access to implementation """
+        """Delegate access to implementation"""
         return getattr(self._instance, attr)
 
 

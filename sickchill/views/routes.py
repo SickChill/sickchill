@@ -9,7 +9,7 @@ class Route(object):
         self.name = name
 
     def __call__(self, handler):
-        """ Gets called when we decorate a class """
+        """Gets called when we decorate a class"""
         name = self.name or handler.__name__
         self.routes.append((self._uri, handler, name))
         return handler

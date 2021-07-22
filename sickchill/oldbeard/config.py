@@ -542,7 +542,7 @@ def change_process_automatically(process_automatically):
 
 
 def check_section(cfg, sec):
-    """ Check if INI section exists, if not create it """
+    """Check if INI section exists, if not create it"""
 
     if sec in cfg:
         return True
@@ -648,7 +648,7 @@ def clean_url(url):
 # min_max                                                                      #
 ################################################################################
 def min_max(val, default, low, high):
-    """ Return value forced within range """
+    """Return value forced within range"""
 
     val = try_int(val, default)
 
@@ -1071,7 +1071,7 @@ class ConfigMigrator(object):
 
     # Migration v4: Add default newznab catIDs
     def _migrate_v4(self):
-        """ Update newznab providers so that the category IDs can be set independently via the config """
+        """Update newznab providers so that the category IDs can be set independently via the config"""
 
         new_newznab_data = []
         old_newznab_data = check_setting_str(self.config_obj, "Newznab", "newznab_data")
@@ -1101,7 +1101,7 @@ class ConfigMigrator(object):
 
     # Migration v5: Metadata upgrade
     def _migrate_v5(self):
-        """ Updates metadata values to the new format """
+        """Updates metadata values to the new format"""
 
         """ Quick overview of what the upgrade does:
 

@@ -268,7 +268,7 @@ class InitialSchema(db.SchemaUpgrade):
 
 
 class AddPreferWords(InitialSchema):
-    """ Adding column rls_prefer_words to tv_shows """
+    """Adding column rls_prefer_words to tv_shows"""
 
     def test(self):
         return self.has_column("tv_shows", "rls_prefer_words")
@@ -283,7 +283,7 @@ class AddPreferWords(InitialSchema):
 
 
 class AddCustomNameToShow(AddPreferWords):
-    """ Adding column rls_prefer_words to tv_shows """
+    """Adding column rls_prefer_words to tv_shows"""
 
     def test(self):
         return self.has_column("tv_shows", "custom_name")

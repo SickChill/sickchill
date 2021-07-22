@@ -210,7 +210,7 @@ class WebRoot(WebHandler):
         return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
     def robots_txt(self):
-        """ Keep web crawlers out """
+        """Keep web crawlers out"""
         self.set_header("Content-Type", "text/plain")
         return "User-agent: *\nDisallow: /"
 

@@ -10,7 +10,7 @@ import requests
 
 
 def get_file_hash(filePath: Path):
-    """ Returns the ed2k hash of a given file."""
+    """Returns the ed2k hash of a given file."""
 
     md4 = hashlib.new("md4").copy
 

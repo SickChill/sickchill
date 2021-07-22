@@ -132,7 +132,7 @@ class Home(WebRoot):
 
     @staticmethod
     def show_statistics():
-        """ Loads show and episode statistics from db """
+        """Loads show and episode statistics from db"""
         main_db_con = db.DBConnection()
         today = str(datetime.date.today().toordinal())
 
@@ -1737,7 +1737,7 @@ class Home(WebRoot):
 
             # noinspection PyProtectedMember
             def relative_ep_location(ep_loc, show_loc):
-                """ Returns the relative location compared to the show's location """
+                """Returns the relative location compared to the show's location"""
                 if ep_loc and show_loc and ep_loc.lower().startswith(show_loc.lower()):
                     return ep_loc[len(show_loc) + 1 :]
                 else:
