@@ -302,7 +302,7 @@ module.exports = function(grunt) {
                 stdout: false,
                 callback: function(err, stdout) {
                     stdout = stdout.trim();
-                    if (/^\d{4}.\d{1,2}.\d{1,2}.\d+$/.test(stdout)) {
+                    if (/^\d{4}.\d{1,2}.\d{1,2}(.\d+)?$/.test(stdout)) {
                         grunt.config('last_tag', stdout);
                         grunt.log.write(stdout);
                     } else {
