@@ -239,7 +239,7 @@ python-slugify = ">=4.0.1,<6.0.0"
 guessit = "^3.3.1"
 requests = "^2.25.1"
 IMDbPY = ">=2020.09.25"
-temp-babelfish = "^0.5.6-dev.0"
+babelfish = ">=0.6.0b1"
 kodipydent-alt = "^2021.7.16"
 beekeeper-alt = "^2021.7.16"
 
