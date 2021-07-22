@@ -23,7 +23,12 @@ class Notifier(object):
                 else:
                     kodi = Kodi(host, username or settings.KODI_USERNAME, password or settings.KODI_PASSWORD)
                 kodi.host = kodi.variables()["hostname"]["value"]
-                kodi.name = kodi.Settings.GetSettingValue(setting="services.devicename")["result"]["value"]
+                try:
+                    server_name = kodi.Settings.GetSettingValue(setting="services.devicename")["result"]["value"]
+                    kodi.name = server_name
+                except:
+                    pass
+
                 if kodi not in self._connections:
                     self._connections.append(kodi)
             except (URLError, RequestTimeout, KeyError, IndexError):
