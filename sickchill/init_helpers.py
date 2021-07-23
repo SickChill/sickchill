@@ -208,6 +208,10 @@ def pip_install(packages: Union[List[str], str]) -> bool:
     elif os_id in ("raspian", "osmc"):
         cmd.append(f"--extra-index-url=https://www.piwheels.org/simple")
 
+    syno_wheelhouse = pyproject_path.parent.with_name("wheelhouse")
+    if syno_wheelhouse.is_dir():
+        cmd.append(f"-f {syno_wheelhouse}")
+
     cmd += packages
 
     logger.debug(f"pip args: {' '.join(cmd)}")
