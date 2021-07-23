@@ -28,7 +28,7 @@ def locale_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "locale"))
 
 
-IS_VIRTUALENV = hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)
+IS_VIRTUALENV = hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix)
 
 
 def setup_gettext(language: str = None) -> None:
@@ -208,6 +208,11 @@ def pip_install(packages: Union[List[str], str]) -> bool:
     elif os_id in ("raspian", "osmc"):
         cmd.append(f"--extra-index-url=https://www.piwheels.org/simple")
 
+    syno_wheelhouse = pyproject_path.parent.with_name("wheelhouse")
+    if syno_wheelhouse.is_dir():
+        logger.debug(f"Found wheelhouse dir at {syno_wheelhouse}")
+        cmd.append(f"-f{syno_wheelhouse}")
+
     cmd += packages
 
     logger.debug(f"pip args: {' '.join(cmd)}")
@@ -312,7 +317,8 @@ def make_virtualenv_and_rerun(location: Path) -> None:
             logger.info(f"Because of the above errors, we will try creating a new virtualenvironment in {location}")
             try:
                 import venv
-                venv.create(location, system_site_packages=False, clear=True, symlinks=os.name!='nt', with_pip=True)
+
+                venv.create(location, system_site_packages=False, clear=True, symlinks=os.name != "nt", with_pip=True)
                 logger.info(f"Created new virtualenvironment in {location} using venv module!")
             except:
                 if check_installed("virtualenv"):
