@@ -69,13 +69,10 @@ class PipUpdateManager(UpdateManagerBase):
     def need_update(self):
         return self.get_newest_version() > self.get_current_version()
 
-    # def get_update_url(self):
-    #     return self.session.get("https://pypi.org/pypi/sickchill/json").json()["info"]["release_url"]
-
     def update(self):
         if not pip_install("sickchill"):
             return False
 
         settings.CUR_COMMIT_HASH = self._newest_version
-        notifiers.notify_git_update(settings.CUR_COMMIT_HASH or "")
+        notifiers.notify_git_update(f"{settings.CUR_COMMIT_HASH or ''}")
         return True
