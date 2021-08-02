@@ -8,13 +8,13 @@
   dependencies:
     grapheme-splitter "^1.0.4"
 
-"@babel/code-frame@7.12.11", "@babel/code-frame@^7.0.0":
+"@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.12.11.tgz"
   dependencies:
     "@babel/highlight" "^7.10.4"
 
-"@babel/code-frame@^7.14.5":
+"@babel/code-frame@^7.0.0", "@babel/code-frame@^7.14.5":
   version "7.14.5"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.14.5.tgz"
   dependencies:
@@ -2514,9 +2514,9 @@ eslint-visitor-keys@^2.0.0, eslint-visitor-keys@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-2.1.0.tgz"
 
-eslint@^7.30.0, eslint@^7.31.0:
-  version "7.31.0"
-  resolved "https://registry.npmjs.org/eslint/-/eslint-7.31.0.tgz"
+eslint@^7.30.0, eslint@^7.32.0:
+  version "7.32.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.32.0.tgz#c6d328a14be3fb08c8d1d21e12c02fdb7a2a812d"
   dependencies:
     "@babel/code-frame" "7.12.11"
     "@eslint/eslintrc" "^0.4.3"
