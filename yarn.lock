@@ -141,9 +141,9 @@
   dependencies:
     "@babel/types" "^7.14.5"
 
-"@babel/helper-validator-identifier@^7.14.5", "@babel/helper-validator-identifier@^7.14.8":
-  version "7.14.8"
-  resolved "https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.14.8.tgz"
+"@babel/helper-validator-identifier@^7.14.5", "@babel/helper-validator-identifier@^7.14.8", "@babel/helper-validator-identifier@^7.14.9":
+  version "7.14.9"
+  resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.14.9.tgz#6654d171b2024f6d8ee151bf2509699919131d48"
 
 "@babel/helper-validator-option@^7.14.5":
   version "7.14.5"
@@ -2454,6 +2454,23 @@ eslint-plugin-unicorn@^34.0.1:
     read-pkg-up "^7.0.1"
     regexp-tree "^0.1.23"
     reserved-words "^0.1.2"
+    safe-regex "^2.1.1"
+    semver "^7.3.5"
+
+eslint-plugin-unicorn@^35.0.0:
+  version "35.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-35.0.0.tgz#40797793d4f645bafaaa7a1396b8f4ca7b2a7dbd"
+  dependencies:
+    "@babel/helper-validator-identifier" "^7.14.9"
+    ci-info "^3.2.0"
+    clean-regexp "^1.0.0"
+    eslint-template-visitor "^2.3.2"
+    eslint-utils "^3.0.0"
+    is-builtin-module "^3.1.0"
+    lodash "^4.17.21"
+    pluralize "^8.0.0"
+    read-pkg-up "^7.0.1"
+    regexp-tree "^0.1.23"
     safe-regex "^2.1.1"
     semver "^7.3.5"
 
