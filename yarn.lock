@@ -2323,6 +2323,12 @@ eslint-config-xo@^0.37.0:
   dependencies:
     confusing-browser-globals "1.0.10"
 
+eslint-config-xo@^0.38.0:
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-xo/-/eslint-config-xo-0.38.0.tgz#50cbe676a90d5582e1bbf1de750286e7cf09378e"
+  dependencies:
+    confusing-browser-globals "1.0.10"
+
 eslint-formatter-pretty@^4.1.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/eslint-formatter-pretty/-/eslint-formatter-pretty-4.1.0.tgz"
