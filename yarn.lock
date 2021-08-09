@@ -6012,16 +6012,16 @@ snyk-poetry-lockfile-parser@^1.1.6:
     toml "^3.0.0"
     tslib "^2.0.0"
 
-snyk-policy@1.19.0:
-  version "1.19.0"
-  resolved "https://registry.npmjs.org/snyk-policy/-/snyk-policy-1.19.0.tgz"
+snyk-policy@1.22.0:
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/snyk-policy/-/snyk-policy-1.22.0.tgz#6c9c82cf474f31af749c08d82b0d179a4bcc2a48"
   dependencies:
     debug "^4.1.1"
     email-validator "^2.0.4"
     js-yaml "^3.13.1"
     lodash.clonedeep "^4.5.0"
     promise-fs "^2.1.1"
-    semver "^6.0.0"
+    semver "^7.3.4"
     snyk-module "^3.0.0"
     snyk-resolve "^1.1.0"
     snyk-try-require "^2.0.0"
@@ -6094,9 +6094,9 @@ snyk-try-require@^2.0.0:
     lodash.clonedeep "^4.3.0"
     lru-cache "^5.1.1"
 
-snyk@^1.675.0:
-  version "1.675.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.675.0.tgz#fb89421fbd5d3d25f813589ad4bd4396a2a04484"
+snyk@^1.677.0:
+  version "1.677.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.677.0.tgz#5142042101ca13de734470cfb03d79e9407c3759"
   dependencies:
     "@open-policy-agent/opa-wasm" "^1.2.0"
     "@snyk/cli-interface" "2.11.0"
@@ -6155,7 +6155,7 @@ snyk@^1.675.0:
     snyk-nodejs-lockfile-parser "1.35.0"
     snyk-nuget-plugin "1.22.0"
     snyk-php-plugin "1.9.2"
-    snyk-policy "1.19.0"
+    snyk-policy "1.22.0"
     snyk-python-plugin "1.19.11"
     snyk-resolve "1.1.0"
     snyk-resolve-deps "4.7.2"
