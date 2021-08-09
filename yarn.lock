@@ -222,6 +222,20 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@eslint/eslintrc@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-1.0.0.tgz#08309b915051dbfcfea8c3cdfc832375303396c9"
+  dependencies:
+    ajv "^6.12.4"
+    debug "^4.3.2"
+    espree "^8.0.0"
+    globals "^13.9.0"
+    ignore "^4.0.6"
+    import-fresh "^3.2.1"
+    js-yaml "^3.13.1"
+    minimatch "^3.0.4"
+    strip-json-comments "^3.1.1"
+
 "@humanwhocodes/config-array@^0.5.0":
   version "0.5.0"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.5.0.tgz"
@@ -996,13 +1010,6 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-aggregate-error@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/aggregate-error/-/aggregate-error-4.0.0.tgz"
-  dependencies:
-    clean-stack "^4.0.0"
-    indent-string "^5.0.0"
-
 ajv-keywords@^3.5.2:
   version "3.5.2"
   resolved "https://registry.npmjs.org/ajv-keywords/-/ajv-keywords-3.5.2.tgz"
@@ -1602,12 +1609,6 @@ clean-regexp@^1.0.0:
 clean-stack@^2.0.0:
   version "2.2.0"
   resolved "https://registry.npmjs.org/clean-stack/-/clean-stack-2.2.0.tgz"
-
-clean-stack@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/clean-stack/-/clean-stack-4.1.0.tgz"
-  dependencies:
-    escape-string-regexp "5.0.0"
 
 clean-yaml-object@^0.1.0:
   version "0.1.0"
@@ -2280,10 +2281,6 @@ escape-goat@^2.0.0:
   version "2.1.1"
   resolved "https://registry.npmjs.org/escape-goat/-/escape-goat-2.1.1.tgz"
 
-escape-string-regexp@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-5.0.0.tgz"
-
 escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz"
@@ -2311,9 +2308,9 @@ eslint-config-prettier@^8.3.0:
   version "8.3.0"
   resolved "https://registry.npmjs.org/eslint-config-prettier/-/eslint-config-prettier-8.3.0.tgz"
 
-eslint-config-xo-typescript@^0.43.0:
-  version "0.43.0"
-  resolved "https://registry.npmjs.org/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.43.0.tgz"
+eslint-config-xo-typescript@^0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.44.0.tgz#972285f401ea6b26c5802e177431de8b15851b0f"
   dependencies:
     typescript ">=4.3"
 
@@ -2450,23 +2447,6 @@ eslint-plugin-promise@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npmjs.org/eslint-plugin-promise/-/eslint-plugin-promise-5.1.0.tgz"
 
-eslint-plugin-unicorn@^34.0.1:
-  version "34.0.1"
-  resolved "https://registry.npmjs.org/eslint-plugin-unicorn/-/eslint-plugin-unicorn-34.0.1.tgz"
-  dependencies:
-    ci-info "^3.2.0"
-    clean-regexp "^1.0.0"
-    eslint-template-visitor "^2.3.2"
-    eslint-utils "^3.0.0"
-    is-builtin-module "^3.1.0"
-    lodash "^4.17.21"
-    pluralize "^8.0.0"
-    read-pkg-up "^7.0.1"
-    regexp-tree "^0.1.23"
-    reserved-words "^0.1.2"
-    safe-regex "^2.1.1"
-    semver "^7.3.5"
-
 eslint-plugin-unicorn@^35.0.0:
   version "35.0.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-35.0.0.tgz#40797793d4f645bafaaa7a1396b8f4ca7b2a7dbd"
@@ -2525,6 +2505,10 @@ eslint-visitor-keys@^2.0.0, eslint-visitor-keys@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-2.1.0.tgz"
 
+eslint-visitor-keys@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.0.0.tgz#e32e99c6cdc2eb063f204eda5db67bfe58bb4186"
+
 eslint@^7.31.0, eslint@^7.32.0:
   version "7.32.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.32.0.tgz#c6d328a14be3fb08c8d1d21e12c02fdb7a2a812d"
@@ -2581,6 +2565,14 @@ espree@^7.3.0, espree@^7.3.1:
     acorn "^7.4.0"
     acorn-jsx "^5.3.1"
     eslint-visitor-keys "^1.3.0"
+
+espree@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/espree/-/espree-8.0.0.tgz#08c92c31814c96c96c54d3a35cc80f1cdb420275"
+  dependencies:
+    acorn "^8.4.1"
+    acorn-jsx "^5.3.1"
+    eslint-visitor-keys "^3.0.0"
 
 esprima@^4.0.0, esprima@^4.0.1:
   version "4.0.1"
@@ -4922,12 +4914,6 @@ p-event@^4.2.0:
   dependencies:
     p-timeout "^3.1.0"
 
-p-filter@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/p-filter/-/p-filter-2.1.0.tgz"
-  dependencies:
-    p-map "^2.0.0"
-
 p-finally@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/p-finally/-/p-finally-1.0.0.tgz"
@@ -4974,7 +4960,7 @@ p-locate@^5.0.0:
   dependencies:
     p-limit "^3.0.2"
 
-p-map@2.1.0, p-map@^2.0.0:
+p-map@2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/p-map/-/p-map-2.1.0.tgz"
 
@@ -4983,16 +4969,6 @@ p-map@^4.0.0:
   resolved "https://registry.npmjs.org/p-map/-/p-map-4.0.0.tgz"
   dependencies:
     aggregate-error "^3.0.0"
-
-p-map@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/p-map/-/p-map-5.1.0.tgz#1c31bdfc492910098bdb4e63d099efbdd9b37755"
-  dependencies:
-    aggregate-error "^4.0.0"
-
-p-reduce@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/p-reduce/-/p-reduce-3.0.0.tgz"
 
 p-timeout@^3.1.0:
   version "3.2.0"
@@ -5608,10 +5584,6 @@ require-directory@^2.1.1:
 require-from-string@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/require-from-string/-/require-from-string-2.0.2.tgz"
-
-reserved-words@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.npmjs.org/reserved-words/-/reserved-words-0.1.2.tgz"
 
 resolve-alpn@^1.0.0:
   version "1.2.0"
@@ -7087,11 +7059,11 @@ xmlchars@^2.1.1:
   version "2.2.0"
   resolved "https://registry.npmjs.org/xmlchars/-/xmlchars-2.2.0.tgz"
 
-xo@^0.43.0:
-  version "0.43.0"
-  resolved "https://registry.yarnpkg.com/xo/-/xo-0.43.0.tgz#5523a1ef9ca384bb5e3fdb0137466ea7f6e64a89"
+xo@^0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/xo/-/xo-0.44.0.tgz#94d4148c764c0c677377c9adcad2fd59c75dc6dd"
   dependencies:
-    "@eslint/eslintrc" "^0.4.3"
+    "@eslint/eslintrc" "^1.0.0"
     "@typescript-eslint/eslint-plugin" "^4.29.0"
     "@typescript-eslint/parser" "^4.29.0"
     arrify "^3.0.0"
@@ -7100,8 +7072,8 @@ xo@^0.43.0:
     define-lazy-prop "^3.0.0"
     eslint "^7.32.0"
     eslint-config-prettier "^8.3.0"
-    eslint-config-xo "^0.37.0"
-    eslint-config-xo-typescript "^0.43.0"
+    eslint-config-xo "^0.38.0"
+    eslint-config-xo-typescript "^0.44.0"
     eslint-formatter-pretty "^4.1.0"
     eslint-import-resolver-webpack "^0.13.1"
     eslint-plugin-ava "^12.0.0"
@@ -7111,7 +7083,7 @@ xo@^0.43.0:
     eslint-plugin-node "^11.1.0"
     eslint-plugin-prettier "^3.4.0"
     eslint-plugin-promise "^5.1.0"
-    eslint-plugin-unicorn "^34.0.1"
+    eslint-plugin-unicorn "^35.0.0"
     esm-utils "^1.1.0"
     find-cache-dir "^3.3.1"
     find-up "^5.0.0"
@@ -7126,9 +7098,6 @@ xo@^0.43.0:
     meow "^10.1.1"
     micromatch "^4.0.4"
     open-editor "^3.0.0"
-    p-filter "^2.1.0"
-    p-map "^5.1.0"
-    p-reduce "^3.0.0"
     path-exists "^4.0.0"
     prettier "^2.3.2"
     semver "^7.3.5"
