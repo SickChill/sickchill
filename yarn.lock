@@ -6070,9 +6070,9 @@ snyk-try-require@^2.0.0:
     lodash.clonedeep "^4.3.0"
     lru-cache "^5.1.1"
 
-snyk@^1.677.0:
-  version "1.677.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.677.0.tgz#5142042101ca13de734470cfb03d79e9407c3759"
+snyk@^1.679.0:
+  version "1.679.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.679.0.tgz#d9659940842aceb7183f21e7ced62afeea89718f"
   dependencies:
     "@open-policy-agent/opa-wasm" "^1.2.0"
     "@snyk/cli-interface" "2.11.0"
