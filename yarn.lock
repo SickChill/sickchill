@@ -5955,9 +5955,9 @@ snyk-nodejs-lockfile-parser@1.36.0:
     tslib "^1.9.3"
     uuid "^8.3.0"
 
-snyk-nuget-plugin@1.22.0:
-  version "1.22.0"
-  resolved "https://registry.yarnpkg.com/snyk-nuget-plugin/-/snyk-nuget-plugin-1.22.0.tgz#05c4aab0ebf1b74cea966503b8c272aee8502d9c"
+snyk-nuget-plugin@1.22.1:
+  version "1.22.1"
+  resolved "https://registry.yarnpkg.com/snyk-nuget-plugin/-/snyk-nuget-plugin-1.22.1.tgz#e50d9316234390e8112bd4ab10f12f517ab813f5"
   dependencies:
     debug "^4.1.1"
     dotnet-deps-parser "5.1.0"
@@ -6072,9 +6072,9 @@ snyk-try-require@^2.0.0:
     lodash.clonedeep "^4.3.0"
     lru-cache "^5.1.1"
 
-snyk@^1.681.0:
-  version "1.681.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.681.0.tgz#ff0300a94deffd5e82d14145a6b97ed9486eb71f"
+snyk@^1.682.0:
+  version "1.682.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.682.0.tgz#075dee958510280120f5eff7c48df86b3ec2b36d"
   dependencies:
     "@open-policy-agent/opa-wasm" "^1.2.0"
     "@snyk/cli-interface" "2.11.0"
@@ -6131,7 +6131,7 @@ snyk@^1.681.0:
     snyk-module "3.1.0"
     snyk-mvn-plugin "2.26.2"
     snyk-nodejs-lockfile-parser "1.35.0"
-    snyk-nuget-plugin "1.22.0"
+    snyk-nuget-plugin "1.22.1"
     snyk-php-plugin "1.9.2"
     snyk-policy "1.22.0"
     snyk-python-plugin "1.19.11"
