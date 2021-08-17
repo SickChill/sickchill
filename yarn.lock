@@ -248,6 +248,10 @@
   version "1.2.0"
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz"
 
+"@iarna/toml@^2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@iarna/toml/-/toml-2.2.5.tgz#b32366c89b43c6f8cefbdefac778b9c828e3ba8c"
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz"
@@ -5955,9 +5959,9 @@ snyk-nodejs-lockfile-parser@1.36.0:
     tslib "^1.9.3"
     uuid "^8.3.0"
 
-snyk-nuget-plugin@1.22.0:
-  version "1.22.0"
-  resolved "https://registry.yarnpkg.com/snyk-nuget-plugin/-/snyk-nuget-plugin-1.22.0.tgz#05c4aab0ebf1b74cea966503b8c272aee8502d9c"
+snyk-nuget-plugin@1.22.1:
+  version "1.22.1"
+  resolved "https://registry.yarnpkg.com/snyk-nuget-plugin/-/snyk-nuget-plugin-1.22.1.tgz#e50d9316234390e8112bd4ab10f12f517ab813f5"
   dependencies:
     debug "^4.1.1"
     dotnet-deps-parser "5.1.0"
@@ -5980,14 +5984,14 @@ snyk-php-plugin@1.9.2:
     "@snyk/composer-lockfile-parser" "^1.4.1"
     tslib "1.11.1"
 
-snyk-poetry-lockfile-parser@^1.1.6:
-  version "1.1.6"
-  resolved "https://registry.npmjs.org/snyk-poetry-lockfile-parser/-/snyk-poetry-lockfile-parser-1.1.6.tgz"
+snyk-poetry-lockfile-parser@^1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/snyk-poetry-lockfile-parser/-/snyk-poetry-lockfile-parser-1.1.7.tgz#c7e4af4c1aefe99d51a8a18e73b148906d655bc2"
   dependencies:
+    "@iarna/toml" "^2.2.5"
     "@snyk/cli-interface" "^2.9.2"
     "@snyk/dep-graph" "^1.23.0"
     debug "^4.2.0"
-    toml "^3.0.0"
     tslib "^2.0.0"
 
 snyk-policy@1.22.0:
@@ -6004,12 +6008,12 @@ snyk-policy@1.22.0:
     snyk-resolve "^1.1.0"
     snyk-try-require "^2.0.0"
 
-snyk-python-plugin@1.19.11:
-  version "1.19.11"
-  resolved "https://registry.npmjs.org/snyk-python-plugin/-/snyk-python-plugin-1.19.11.tgz"
+snyk-python-plugin@1.20.1:
+  version "1.20.1"
+  resolved "https://registry.yarnpkg.com/snyk-python-plugin/-/snyk-python-plugin-1.20.1.tgz#dcbc4fb4c67ec78d5161f4adb33799e5e24f1745"
   dependencies:
     "@snyk/cli-interface" "^2.0.3"
-    snyk-poetry-lockfile-parser "^1.1.6"
+    snyk-poetry-lockfile-parser "^1.1.7"
     tmp "0.2.1"
 
 snyk-resolve-deps@4.7.2:
@@ -6072,9 +6076,9 @@ snyk-try-require@^2.0.0:
     lodash.clonedeep "^4.3.0"
     lru-cache "^5.1.1"
 
-snyk@^1.681.0:
-  version "1.681.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.681.0.tgz#ff0300a94deffd5e82d14145a6b97ed9486eb71f"
+snyk@^1.683.0:
+  version "1.683.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.683.0.tgz#9cd1ce3742c6e4127f4addd5c2b2dff742619b66"
   dependencies:
     "@open-policy-agent/opa-wasm" "^1.2.0"
     "@snyk/cli-interface" "2.11.0"
@@ -6131,10 +6135,10 @@ snyk@^1.681.0:
     snyk-module "3.1.0"
     snyk-mvn-plugin "2.26.2"
     snyk-nodejs-lockfile-parser "1.35.0"
-    snyk-nuget-plugin "1.22.0"
+    snyk-nuget-plugin "1.22.1"
     snyk-php-plugin "1.9.2"
     snyk-policy "1.22.0"
-    snyk-python-plugin "1.19.11"
+    snyk-python-plugin "1.20.1"
     snyk-resolve "1.1.0"
     snyk-resolve-deps "4.7.2"
     snyk-sbt-plugin "2.11.3"
