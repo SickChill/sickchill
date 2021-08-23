@@ -303,9 +303,9 @@
   dependencies:
     "@types/graphlib" "^2"
 
-"@snyk/cloud-config-parser@^1.9.2":
-  version "1.9.3"
-  resolved "https://registry.npmjs.org/@snyk/cloud-config-parser/-/cloud-config-parser-1.9.3.tgz"
+"@snyk/cloud-config-parser@^1.10.2":
+  version "1.10.2"
+  resolved "https://registry.yarnpkg.com/@snyk/cloud-config-parser/-/cloud-config-parser-1.10.2.tgz#8899fed6c17278aa33e23fe65c1099ac946532b2"
   dependencies:
     esprima "^4.0.1"
     tslib "^1.10.0"
@@ -6076,13 +6076,13 @@ snyk-try-require@^2.0.0:
     lodash.clonedeep "^4.3.0"
     lru-cache "^5.1.1"
 
-snyk@^1.683.0:
-  version "1.683.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.683.0.tgz#9cd1ce3742c6e4127f4addd5c2b2dff742619b66"
+snyk@^1.684.0:
+  version "1.684.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.684.0.tgz#2871f7056d94a1ed7da40237e6a030edbac58cfd"
   dependencies:
     "@open-policy-agent/opa-wasm" "^1.2.0"
     "@snyk/cli-interface" "2.11.0"
-    "@snyk/cloud-config-parser" "^1.9.2"
+    "@snyk/cloud-config-parser" "^1.10.2"
     "@snyk/code-client" "4.0.0"
     "@snyk/dep-graph" "^1.27.1"
     "@snyk/fix" "1.650.0"
