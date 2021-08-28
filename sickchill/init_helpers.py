@@ -2,6 +2,7 @@ import argparse
 import gettext
 import logging
 import os
+import re
 import site
 import subprocess
 import sys
@@ -182,7 +183,9 @@ def get_os_id():
 
 def pip_install(packages: Union[List[str], str]) -> bool:
     if not isinstance(packages, list):
-        packages = packages.splitlines()
+        # clean out Warning line in list (dirty clean)
+        packages = re.sub(r'Warning.*', "", packages)
+        packages = packages.strip().splitlines()
 
     cmd = [
         sys.executable,
