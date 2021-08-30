@@ -30,7 +30,7 @@ class Provider(TorrentProvider):
         self.freeleech = None
 
         # URLs
-        self.url = "https://www.morethan.tv/"
+        self.url = "https://www.morethantv.me/"
         self.urls = {
             "login": urljoin(self.url, "login.php"),
             "search": urljoin(self.url, "torrents.php"),
