@@ -1,0 +1,85 @@
+name: 'Upgrade poetry and yarn dependencies'
+on:
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  depends:
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        if: success() && !env.ACT
+        uses: actions/checkout@v2
+        with:
+          ref: 'develop'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          cache: 'npm'
+      - name: Restore pip cache
+        if: success() && !env.ACT
+        uses: actions/cache@v2
+        with:
+          path: $(python -m pip cache dir)
+          key: ubuntu-latest-pip-3.9-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ubuntu-latest-pip-3.9-
+      - name: Restore npm cache
+        uses: actions/cache@v2
+        with:
+          path: $(npm config get cache)
+          key: ubuntu-latest-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ubuntu-latest-node-
+      - name: Install yarn
+        run: npm install -g yarn
+        shell: bash
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.8
+        with:
+          version: 1.1.8
+          virtualenvs-path: .venv
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Restore poetry cache
+        if: success() && !env.ACT
+        uses: actions/cache@v2
+        with:
+          path: $(poetry config cache-dir)
+          key: ubuntu-latest-poetry-3.9-${{ hashFiles('**/poetry.lock') }}
+      - name: Restore virtualenv
+        if: success() && !env.ACT
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ubuntu-latest-virtualenv-3.9-${{ hashFiles('**/poetry.lock') }}
+      - name: Run
+        run: |
+          pip install poethepoet
+          poe depup
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update poetry (python) and yarn (npm) dependencies
+
+          branch: depup
+          commit_options: '--no-verify --signoff'
+
+          file_pattern: package.json yarn.lock pyproject.toml poetry.lock
+
+          # Optional commit user and author settings
+          commit_user_name: miigotu
+          commit_user_email: miigotu@gmail.com
+          commit_author: miigotu <miigotu@gmail.com>
+
+          push_options: '--force'
+          disable_globbing: true
+          skip_fetch: true
+          add_options: '-u'
