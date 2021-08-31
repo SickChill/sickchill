@@ -4592,9 +4592,9 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-snyk@^1.692.0:
-  version "1.692.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.692.0.tgz#af64a8555dbe1e7dd35e5f96cfb109b092ca83da"
+snyk@^1.695.0:
+  version "1.695.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.695.0.tgz#9d20eb49806581344f1c4a477eac72083e0e9f57"
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
