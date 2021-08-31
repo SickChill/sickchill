@@ -143,14 +143,16 @@ def check_installed(name: str = __package__) -> bool:
             if result != 0:  # Not Ok
                 return False
             is_installed = name in [requirement.split("==")[0] for requirement in output.splitlines()]
-            logger.debug(f"{name} found: {is_installed}")
+            if name != "sickchill" or (name == "sickchill" and is_installed):
+                logger.debug(f"{name} installed: {is_installed}")
             return is_installed
 
     try:
         Distribution.from_name(name)
-        logger.debug(f"{name} found: True")
+        logger.debug(f"{name} installed: True")
     except PackageNotFoundError:
-        logger.debug(f"{name} found: False")
+        if name != "sickchill":
+            logger.debug(f"{name} installed: False")
         return False
     return True
 
@@ -184,7 +186,7 @@ def get_os_id():
 def pip_install(packages: Union[List[str], str]) -> bool:
     if not isinstance(packages, list):
         # clean out Warning line in list (dirty clean)
-        packages = re.sub(r'Warning.*', "", packages)
+        packages = re.sub(r"Warning.*", "", packages)
         packages = packages.strip().splitlines()
 
     cmd = [
@@ -391,7 +393,7 @@ def poetry_install() -> None:
             check_and_install_pip()
 
             # Cool, we can write to site-packages
-            pip_install(["setuptools", "poetry", "poetry-date-version-plugin", "wheel", "--pre"])
+            pip_install(["setuptools", "poetry", "wheel"])
             if check_installed("poetry"):
                 result, output = subprocess.getstatusoutput(
                     f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"

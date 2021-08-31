@@ -13,9 +13,7 @@ ENV PYTHONIOENCODING="UTF-8"
 # -p 8080:8081 sickchill/sickchill
 
 VOLUME /data /downloads /tv
-RUN mkdir -p /app/sickchill /var/run/sickchill $HOME/.cache/pip
-RUN chmod -R 777 /app/sickchill $HOME/.cache
-WORKDIR /app/sickchill
+RUN mkdir -p /var/run/sickchill
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -qq && apt-get install -yq git gosu libxml2 libxml2-dev \
@@ -23,18 +21,12 @@ libxslt1.1 libxslt1-dev libffi7 libffi-dev libssl1.1 libssl-dev python3-dev \
 libmediainfo0v5 libmediainfo-dev mediainfo unrar curl build-essential && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade --prefer-binary poetry pip wheel setuptools && \
+RUN pip install --upgrade --prefer-binary pip wheel setuptools && \
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-COPY . /app/sickchill
+RUN . $HOME/.cargo/env && export POETRY_INSTALLER_PARALLEL=false && pip install sickchill
 
-# Have to chmod again
-RUN chmod -R 777 /app/sickchill $HOME/.cache
-
-RUN export POETRY_INSTALLER_PARALLEL=false && export POETRY_VIRTUALENVS_CREATE=true && \
-. $HOME/.cargo/env && poetry install --no-root
-
-CMD poetry run python3 /app/sickchill/SickChill.py --nolaunch --datadir=/data --port 8081
+CMD SickChill.py --nolaunch --datadir=/data --port 8081
 
 EXPOSE 8081
 
