@@ -37,11 +37,11 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-SickChill = {reference = "SickChill.py", type = "file"}
+SickChill = {reference = "SickChill.py", type = "file", extras = ["cli"]}
 
 
 [build-system]
-requires = ["poetry-core>=1.1.0a5", "poetry-date-version-plugin>=2021.5.10"]
+requires = ["poetry-core>=1.0.4"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.plugins."poetry.application.plugin"]

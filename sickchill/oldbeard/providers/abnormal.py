@@ -64,10 +64,10 @@ class Provider(TorrentProvider):
 
         # Search Params
         search_params = {
-            "cat[]": [1, 4], # 1 for SERIE,  4 for ANIME
+            "cat[]": [1, 4],  # 1 for SERIE,  4 for ANIME
             # Both ASC and DESC are available for sort direction
             "SortOrder": "desc",
-            "SortOn": "Created"
+            "SortOn": "Created",
         }
 
         # Units
