@@ -32,7 +32,7 @@ class Provider(TorrentProvider):
         # URLs
         self.url = "https://www.morethantv.me/"
         self.urls = {
-            "login": urljoin(self.url, "login.php"),
+            "login": urljoin(self.url, "login"),
             "search": urljoin(self.url, "torrents.php"),
         }
 
@@ -53,12 +53,27 @@ class Provider(TorrentProvider):
         if any(dict_from_cookiejar(self.session.cookies).values()):
             return True
 
-        login_params = {
-            "username": self.username,
-            "password": self.password,
-            "keeplogged": "1",
-            "login": "Log in",
-        }
+        data = self.get_url(self.urls["login"], returns="text")
+        with BS4Parser(data, "html5lib") as html:
+            login_form = html.find("form", method="POST")
+
+            login_params = dict()
+
+            for hidden_param in login_form.find_all("input", type="hidden"):
+                login_params[hidden_param["name"]] = hidden_param["value"]
+
+            for checkbox in login_form.find_all("input", type="checkbox"):
+                login_params[checkbox["name"]] = "1" if "log" in checkbox["name"] else "0"
+
+            for username in login_form.find_all("input", type="text"):
+                if "username" in (username["name"], username["placeholder"].lower()):
+                    login_params[username["name"]] = self.username
+
+            for password in login_form.find_all("input", type="password"):
+                login_params[password["name"]] = self.password
+
+            for submit in login_form.find_all("input", type="submit"):
+                login_params[submit["name"]] = submit["value"]
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
@@ -77,7 +92,7 @@ class Provider(TorrentProvider):
             return results
 
         # Search Params
-        search_params = {"tags_type": 1, "order_by": "time", "order_way": "desc", "action": "basic", "searchsubmit": 1, "searchstr": ""}
+        search_params = {"order_way": "desc"}
 
         # Units
         units = ["B", "KB", "MB", "GB", "TB", "PB"]
@@ -98,11 +113,19 @@ class Provider(TorrentProvider):
 
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    if mode == "Season":
+                        search_params["filter_cat[5]"] = "1"  # HD Season packs
+                        search_params["filter_cat[6]"] = "1"  # SD Season packs
+                    else:
+                        search_params["filter_cat[3]"] = "1"  # HD Episodes
+                        search_params["filter_cat[4]"] = "1"  # SD Episodes
 
                 if mode == "Season":
                     searchedSeason = re.match(r".*\s(Season\s\d+|S\d+)", search_string).group(1)
 
-                search_params["searchstr"] = search_string
+                search_params["order_by"] = ("seeders", "time")[mode == "RSS"]
+                search_params["title"] = search_string
+
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")
 
                 if not data:
