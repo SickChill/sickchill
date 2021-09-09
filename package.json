@@ -2,7 +2,6 @@
   "name": "sickchill",
   "version": "4.0.72",
   "private": true,
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SickChill/SickChill.git"
@@ -28,6 +27,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-unicorn": "^35.0.0",
+    "esm": "^3.2.25",
     "grunt": "^1.0.1",
     "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
     "grunt-bower-task": "git+https://github.com/miigotu/grunt-bower-task.git",
@@ -52,10 +52,12 @@
   },
   "ava": {
     "require": [
+      "esm",
       "./tests/js/helpers/setup-browser-env.js"
     ],
     "files": [
-      "tests/js/**/*.js"
+      "tests/js/**/*.js",
+      "!tests/js/helpers/setup-browser-env.js"
     ],
     "source": [
       "sickchill/gui/slick/js/**/*.{js,jsx}",
