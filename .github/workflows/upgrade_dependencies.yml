@@ -43,7 +43,7 @@ jobs:
         run: npm install -g yarn
         shell: bash
       - name: Install Poetry
-        uses: snok/install-poetry@v1.1.8
+        uses: snok/install-poetry@v1.2.1
         with:
           version: 1.1.8
           virtualenvs-path: .venv
