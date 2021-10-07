@@ -20,7 +20,7 @@ COPY poetry.lock /app/sickchill
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -qq && apt-get install -yq git libxml2 libxml2-dev libxslt1.1 \
-libxslt1-dev libffi6 libffi-dev libssl1.1 libssl-dev python3-dev \
+libxslt1-dev libffi7 libffi-dev libssl1.1 libssl-dev python3-dev \
 libmediainfo0v5 libmediainfo-dev mediainfo unrar curl build-essential && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
