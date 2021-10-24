@@ -199,7 +199,7 @@ class GenericProvider(object):
                         logger.debug("This is supposed to be a season pack search but the result {0} is not a valid season pack, skipping it".format(title))
                         skip_release = True
                     elif not [ep for ep in episodes if parse_result.season_number == (ep.season, ep.scene_season)[ep.show.is_scene]]:
-                        logger.info("This season result {0} is for a season we are not searching for, skipping it".format(title), logger.DEBUG)
+                        logger.info("This season result {0} is for a season we are not searching for, skipping it".format(title))
                         skip_release = True
 
                 else:
