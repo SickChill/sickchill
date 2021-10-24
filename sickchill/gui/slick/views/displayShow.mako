@@ -152,7 +152,7 @@
                                 <a href="${anon_url(show.idxr.show_url, show.indexerid)}" target="_blank"
                                    title="${show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
                                 % if xem_numbering or xem_absolute_numbering:
-                                    <a href="${anon_url('http://thexem.de/search?q=', show.name)}" rel="noreferrer" target="_blank" title="http://thexem.de/search?q-${show.name}"><span class="displayshow-icon-xem"></span></a>
+                                    <a href="${anon_url('http://thexem.info/search?q=', show.name)}" rel="noreferrer" target="_blank" title="http://thexem.info/search?q-${show.name}"><span class="displayshow-icon-xem"></span></a>
                                 % endif
                                 <a href="${anon_url('https://fanart.tv/series/', show.indexerid)}" rel="noreferrer" target="_blank" title="https://fanart.tv/series/${show.name}"><span class="displayshow-icon-fanart"></span></a>
                             </div>
