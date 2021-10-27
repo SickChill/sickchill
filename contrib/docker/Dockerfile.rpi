@@ -3,6 +3,7 @@ FROM python:3.9-slim
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
+ENV PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
 
 # docker run -dit --user 1000:1000 --name sickchill --restart=always \
 # -v ShowPath:/ShowPath \
