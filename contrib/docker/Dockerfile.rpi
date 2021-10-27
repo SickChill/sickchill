@@ -4,6 +4,7 @@ LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
 ENV PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
+ENV PIP_FIND_LINKS=https://wheel-index.linuxserver.io/ubuntu/
 
 # docker run -dit --user 1000:1000 --name sickchill --restart=always \
 # -v ShowPath:/ShowPath \
