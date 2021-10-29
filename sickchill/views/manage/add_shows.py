@@ -545,7 +545,6 @@ class AddShows(Home):
         blacklist=None,
         whitelist=None,
         defaultStatusAfter=None,
-        exact_match=None
     ):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
