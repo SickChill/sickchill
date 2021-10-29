@@ -45,7 +45,7 @@
     "jquery": "^3.2.1",
     "load-grunt-tasks": "^5.1.0",
     "lodash": "^4.17.15",
-    "snyk": "^1.745.0",
+    "snyk": "^1.747.0",
     "webpack": "^5.60.0",
     "xo": "^0.45.0",
     "yarn-minify": "^1.0.1"
