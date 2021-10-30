@@ -49,7 +49,7 @@
                                                            class="form-control"
                                                     />
                                                     <span class="input-group-addon">
-                                                        <input type="checkbox" id="exact-match" name="exact-match">
+                                                        <input type="checkbox" id="exact-match">
                                                     </span>
                                                 </div>
                                             </div>
