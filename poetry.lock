@@ -145,7 +145,7 @@ version = "0.12.7"
 description = "httplib2 caching for requests"
 category = "main"
 optional = false
-python-versions = ">=3.6.0"
+python-versions = ">=3.6.1"
 
 [package.dependencies]
 msgpack = ">=0.5.2"
