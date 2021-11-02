@@ -266,12 +266,12 @@ const SICKCHILL = {
                 $('#customQuality').hide();
 
                 $('#anyQualities').find('option').each(function () {
-                    const result = preset & $(this).val();
+                    const result = preset & $(this).val(); // eslint-disable-line no-bitwise
                     $(this).attr('selected', result > 0 ? 'selected' : false);
                 });
 
                 $('#bestQualities').find('option').each(function () {
-                    const result = preset & ($(this).val() << 16);
+                    const result = preset & ($(this).val() << 16); // eslint-disable-line no-bitwise
                     $(this).attr('selected', result > 0 ? 'selected' : false);
                 });
             },
