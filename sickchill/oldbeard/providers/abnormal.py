@@ -25,10 +25,10 @@ class Provider(TorrentProvider):
         self.minleech = 0
 
         # URLs
-        self.url = "https://abnormal.ws"
+        self.url = "https://abn.lol"
         self.urls = {
-            "login": urljoin(self.url, "login.php"),
-            "search": urljoin(self.url, "torrents.php"),
+            "login": urljoin(self.url, "Home/Login"),
+            "search": urljoin(self.url, "Torrent"),
         }
 
         # Proper Strings
@@ -42,8 +42,8 @@ class Provider(TorrentProvider):
             return True
 
         login_params = {
-            "username": self.username,
-            "password": self.password,
+            "Username": self.username,
+            "Password": self.password,
         }
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
@@ -51,7 +51,7 @@ class Provider(TorrentProvider):
             logger.warning("Unable to connect to provider")
             return False
 
-        if not re.search("torrents.php", response):
+        if not re.search("Accueil", response):
             logger.warning("Invalid username or password. Check your settings")
             return False
 
@@ -64,13 +64,14 @@ class Provider(TorrentProvider):
 
         # Search Params
         search_params = {
-            "cat[]": ["TV|SD|VOSTFR", "TV|HD|VOSTFR", "TV|SD|VF", "TV|HD|VF", "TV|PACK|FR", "TV|PACK|VOSTFR", "TV|EMISSIONS", "ANIME"],
+            "cat[]": [1, 4],  # 1 for SERIE,  4 for ANIME
             # Both ASC and DESC are available for sort direction
-            "way": "DESC",
+            "SortOrder": "desc",
+            "SortOn": "Created",
         }
 
         # Units
-        units = ["O", "KO", "MO", "GO", "TO", "PO"]
+        units = ["O", "Ko", "Mo", "Go", "To", "Po"]
 
         for mode in search_strings:
             items = []
@@ -81,15 +82,13 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format(search_string))
 
-                # Sorting: Available parameters: ReleaseName, Seeders, Leechers, Snatched, Size
-                search_params["order"] = ("Seeders", "Time")[mode == "RSS"]
                 search_params["search"] = re.sub(r"[()]", "", search_string)
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")
                 if not data:
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    torrent_table = html.find(class_="torrent_table")
+                    torrent_table = html.find(class_="table-rows")
                     torrent_rows = torrent_table("tr") if torrent_table else []
 
                     # Continue only if at least one Release is found
@@ -97,8 +96,8 @@ class Provider(TorrentProvider):
                         logger.debug("Data returned from provider does not contain any torrents")
                         continue
 
-                    # Catégorie, Release, Date, DL, Size, C, S, L
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0]("td")]
+                    # Catégorie, Release, M, DL, Taille, S, L
+                    labels = [label.get_text(strip=True) for label in torrent_rows[0]("th")]
 
                     # Skip column headers
                     for result in torrent_rows[1:]:
@@ -108,7 +107,7 @@ class Provider(TorrentProvider):
 
                         try:
                             title = cells[labels.index("Release")].get_text(strip=True)
-                            download_url = urljoin(self.url, cells[labels.index("DL")].find("a", class_="tooltip")["href"])
+                            download_url = urljoin(self.url, cells[labels.index("DL")].find("a")["href"])
                             if not all([title, download_url]):
                                 continue
 

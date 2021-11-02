@@ -95,7 +95,7 @@ class AddShows(Home):
                 }
             )
 
-        if exact:
+        if exact in [True, "1"]:
             logger.debug(_("Filtering and sorting out excess results because exact match was checked"))
             final_results = [item for item in final_results if search_term.lower() in item[4].lower()]
             final_results.sort(key=itemgetter(4))

@@ -311,7 +311,7 @@ def _xem_exceptions_fetcher():
         for indexer, instance in sickchill.indexer:
             logger.info("Checking for XEM scene exception updates for {0}".format(instance.name))
 
-            url = "http://thexem.de/map/allNames?origin={0}&seasonNumbers=1".format(instance.slug)
+            url = "http://thexem.info/map/allNames?origin={0}&seasonNumbers=1".format(instance.slug)
 
             parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns="json")
             if not parsed_json:

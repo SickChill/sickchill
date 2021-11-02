@@ -13,7 +13,7 @@ $(document).ready(() => {
 
     $('.seasonCheck').on('click', function () {
         const seasCheck = this.checked;
-        const seasNo = $(seasCheck).attr('id');
+        const seasNo = $(this).attr('id');
 
         $('.epCheck:visible').each(function () {
             const epParts = $(this).attr('id').split('x');

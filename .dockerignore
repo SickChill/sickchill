@@ -5,3 +5,4 @@ sickchill.egg-info
 .pytest_cache
 /.eggs/
 /dist/
+.venv
