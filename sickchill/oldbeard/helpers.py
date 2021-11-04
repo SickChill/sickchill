@@ -1352,7 +1352,7 @@ def handle_requests_exception(requests_exception):
     except (TypeError, ValueError) as error:
         level = get_level(error)
         logger.log(level, default.format(error, type(error.__class__.__name__)))
-        if requests_exception.request:
+        if hasattr(requests_exception, "request") and requests_exception.request:
             logger.info(_("url is {0}").format(repr(requests_exception.request.url)))
             logger.info("headers are {0}".format(repr(requests_exception.request.headers)))
             logger.info("params are {0}".format(repr(requests_exception.request.params)))

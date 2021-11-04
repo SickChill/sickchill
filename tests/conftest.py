@@ -363,6 +363,11 @@ def vcr_cassette_name(request):
     return request.cls.provider.get_id() + ".yaml"
 
 
+@pytest.fixture(scope="module")
+def vcr_config():
+    return {"record_mode": ["new"]}
+
+
 def patch_open(open_func, files):
     def open_patched(path, mode="r", buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
         if "w" in mode and not os.path.isfile(path):
