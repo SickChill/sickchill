@@ -33,11 +33,12 @@ disabled_provider_tests = {
     "Torrentz": ["rss", "episode", "season", "cache", "result"],
     "ThePirateBay": ["rss", "episode", "season", "cache", "result"],
     "EZTV": ["rss", "episode", "season", "cache", "result"],
-    "Rarbg": ["season", "episode", "rss"],
+    "Rarbg": ["season", "episode", "rss", "movie"],
     # Demonoid is onion only now
     "Demonoid": ["rss", "episode", "season", "cache", "result"],
     # HorribleSubs needs rewritten
     "HorribleSubs": ["rss", "episode", "season", "cache", "result"],
+    "Nyaa": ["rss"],
 }
 
 test_string_overrides = {
@@ -124,6 +125,7 @@ class BaseParser(type):
                 results = self.provider.search(self.search_strings("Season"))
                 assert results, results
 
+        # @pytest.mark.skip("Need to add a movie to the database before movie search works")
         @magic_skip
         @pytest.mark.vcr()
         def test_movie_search(self):
@@ -172,15 +174,15 @@ class BaseParser(type):
                     assert all(self.provider._get_title_and_url(result))
                     assert self.provider._get_size(result)
 
-            @pytest.skip("Not yet implemented")
-            def test_season_search_strings_format(self):
-                """Check format of the provider's season search strings"""
-                pass
+        @pytest.mark.skip("Not yet implemented")
+        def test_season_search_strings_format(self):
+            """Check format of the provider's season search strings"""
+            pass
 
-            @pytest.skip("Not yet implemented")
-            def test_episode_search_strings_format(self):
-                """Check format of the provider's season search strings"""
-                pass
+        @pytest.mark.skip("Not yet implemented")
+        def test_episode_search_strings_format(self):
+            """Check format of the provider's season search strings"""
+            pass
 
 
 def generate_test_cases():

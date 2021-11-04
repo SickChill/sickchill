@@ -34,7 +34,7 @@ class Movie(Base):
     language = Column(String)
 
     result_pk = Column(Integer, ForeignKey("result.pk"))
-    results: list = relationship("Result", back_populates="movie")
+    results: list = relationship("Result", backref="movie")
 
     images: list = relationship("Images", backref="movie")
     indexer_data: list = relationship("IndexerData", backref="movie")
@@ -144,9 +144,6 @@ class Result(Base):
     guess = Column(JSON)
     found = Column(DateTime, default=datetime.datetime.now)
     updated = Column(DateTime, onupdate=datetime.datetime.now)
-
-    movie_pk = Column(Integer, ForeignKey("movie.pk"))
-    movie = relationship("Movie", back_populates="result")
 
     session = Session()
 
