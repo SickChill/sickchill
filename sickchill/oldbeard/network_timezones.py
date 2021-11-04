@@ -13,7 +13,7 @@ time_regex = re.compile(r"(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meri
 
 network_dict = {}
 
-sb_timezone = tz.gettz()
+sb_timezone = tz.tzlocal()
 
 
 def update_network_dict():
