@@ -372,7 +372,6 @@ def initialize(consoleLogging=True):
         config.change_unrar_tool(
             check_setting_str(settings.CFG, "General", "unrar_tool", rarfile.UNRAR_TOOL),
             check_setting_str(settings.CFG, "General", "unar_tool", rarfile.UNAR_TOOL),
-            check_setting_str(settings.CFG, "General", "bsdtar_tool", rarfile.BSDTAR_TOOL),
         )
 
         settings.RENAME_EPISODES = check_setting_bool(settings.CFG, "General", "rename_episodes", True)
@@ -1261,7 +1260,6 @@ def save_config():
                 "unpack_dir": settings.UNPACK_DIR,
                 "unrar_tool": settings.UNRAR_TOOL,
                 "unar_tool": settings.UNAR_TOOL,
-                "bsdtar_tool": settings.BSDTAR_TOOL,
                 "rename_episodes": int(settings.RENAME_EPISODES),
                 "airdate_episodes": int(settings.AIRDATE_EPISODES),
                 "file_timestamp_timezone": settings.FILE_TIMESTAMP_TIMEZONE,
