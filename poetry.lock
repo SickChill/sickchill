@@ -533,7 +533,7 @@ docs = ["sphinx"]
 
 [[package]]
 name = "guessit"
-version = "3.3.1"
+version = "3.4.0"
 description = "GuessIt - a library for guessing information from video filenames."
 category = "main"
 optional = false
@@ -541,12 +541,13 @@ python-versions = "*"
 
 [package.dependencies]
 babelfish = "*"
+importlib-resources = "*"
 python-dateutil = "*"
-rebulk = ">=3"
+rebulk = ">=3.1.0"
 
 [package.extras]
 dev = ["tox", "mkdocs", "mkdocs-material", "pyinstaller", "python-semantic-release"]
-test = ["pytest", "pytest-benchmark", "pylint", "pyyaml"]
+test = ["pytest", "pytest-mock", "pytest-benchmark", "pytest-cov", "pylint", "pyyaml"]
 
 [[package]]
 name = "html5lib"
@@ -1267,7 +1268,7 @@ python-versions = "*"
 
 [[package]]
 name = "rebulk"
-version = "3.0.1"
+version = "3.1.0"
 description = "Rebulk - Define simple search patterns in bulk to perform advanced matching on any string."
 category = "main"
 optional = false
@@ -2050,8 +2051,8 @@ greenlet = [
     {file = "greenlet-1.1.2.tar.gz", hash = "sha256:e30f5ea4ae2346e62cedde8794a56858a67b878dd79f7df76a0767e356b1744a"},
 ]
 guessit = [
-    {file = "guessit-3.3.1-py3-none-any.whl", hash = "sha256:b805d92d7c8bab288cef51f7240653f5504d3b82585dfb4cca16bd12f654a6e9"},
-    {file = "guessit-3.3.1.tar.gz", hash = "sha256:8305e0086129614a8820a508303f98f56c584811489499bcc54a7ea6f1b0391e"},
+    {file = "guessit-3.4.0-py3-none-any.whl", hash = "sha256:8ff81b9a2c158ce3bc4cda344cbab902eba4af1c6b658a74d5068a5c8dc9662d"},
+    {file = "guessit-3.4.0.tar.gz", hash = "sha256:2bac608f9075db4a430989e6c48c7e19abedf910e3701eaabefc6a299c8399dc"},
 ]
 html5lib = [
     {file = "html5lib-1.1-py2.py3-none-any.whl", hash = "sha256:0d78f8fde1c230e99fe37986a60526d7049ed4bf8a9fadbad5f00e22e58e041d"},
@@ -2565,8 +2566,8 @@ rarfile = [
     {file = "rarfile-4.0.tar.gz", hash = "sha256:67548769229c5bda0827c1663dce3f54644f9dbfba4ae86d4da2b2afd3e602a1"},
 ]
 rebulk = [
-    {file = "rebulk-3.0.1-py3-none-any.whl", hash = "sha256:6ff3eb030faf4d377a6bb0f31921ae65add320d272b805e0ea60df3b225f18d8"},
-    {file = "rebulk-3.0.1.tar.gz", hash = "sha256:025d191c11abf9174c6aff0006579624047d3371a654333c4bf7a4b421552cdc"},
+    {file = "rebulk-3.1.0-py3-none-any.whl", hash = "sha256:e56550ae25a822111bff8c8f5eeea14cb44f406e9a9ce67ad4e350253b2fff6c"},
+    {file = "rebulk-3.1.0.tar.gz", hash = "sha256:809de3a97c68afa831f7101b10d316fe62e061dc9f7f67a44b7738128721173a"},
 ]
 regex = [
     {file = "regex-2021.11.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ce0625900e4d6d9a43f50e897f6aaa1a52e5e4931f994a1b8e9f6a4e49185e4e"},
