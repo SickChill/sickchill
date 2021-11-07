@@ -37,7 +37,7 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-SickChill = {callable = "SickChill.py", type = "file", extras = ["cli"]}
+SickChill = {reference = "SickChill.py", type = "file", extras = ["cli"]}
 
 
 [build-system]
