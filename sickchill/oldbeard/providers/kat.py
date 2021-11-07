@@ -48,7 +48,7 @@ class Provider(TorrentProvider):
                 return results
 
         anime = (self.show and self.show.anime) or (ep_obj and ep_obj.show and ep_obj.show.anime) or False
-        search_params = {"field": "seeders", "sorder": "desc", "category": ("tv", "anime")[anime]}
+        search_params = OrderedDict(field="seeders", sorder="desc", category=("tv", "anime")[anime])
 
         for mode in search_strings:
             items = []
@@ -74,7 +74,7 @@ class Provider(TorrentProvider):
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
-                data = self.get_url(search_url, params=OrderedDict(sorted(list(search_params.items()), key=lambda x: x[0])), returns="text")
+                data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
                     logger.info("{url} did not return any data, it may be disabled. Trying to get a new domain".format(url=self.url))
                     self.disabled_mirrors.append(self.url)
@@ -143,16 +143,17 @@ class Provider(TorrentProvider):
         return results
 
     def find_domain(self):
-        data = self.get_url("https://kickass2.help")
+        data = self.get_url("https://ww1.kickass.help/")
         if data:
             with BS4Parser(data, "html5lib") as html:
                 mirrors = html(class_="domainLink")
                 if mirrors:
                     self.mirrors = []
+
                 for mirror in mirrors:
                     domain = mirror["href"]
-                    if domain not in self.disabled_mirrors:
-                        self.mirrors.append(mirror["href"])
+                    if domain and domain not in self.disabled_mirrors:
+                        self.mirrors.append(domain)
 
         if self.mirrors:
             self.url = self.mirrors[0]

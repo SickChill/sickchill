@@ -19,14 +19,15 @@
     "bower": "^1.8.8",
     "browser-env": "^3.1.0",
     "eslint": "^7.31.0",
-    "eslint-config-xo": "^0.37.0",
-    "eslint-plugin-ava": "^12.0.0",
+    "eslint-config-xo": "^0.39.0",
+    "eslint-plugin-ava": "^13.1.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-no-use-extend-native": "^0.5.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-unicorn": "^34.0.1",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-unicorn": "^38.0.0",
+    "esm": "^3.2.25",
     "grunt": "^1.0.1",
     "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
     "grunt-bower-task": "git+https://github.com/miigotu/grunt-bower-task.git",
@@ -34,7 +35,7 @@
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "^4.0.0",
-    "grunt-contrib-jshint": "^3.0.0",
+    "grunt-contrib-jshint": "^3.1.1",
     "grunt-contrib-sass": "^2.0.0",
     "grunt-contrib-uglify": "^5.0.1",
     "grunt-contrib-uglify-es": "^3.3.0",
@@ -44,17 +45,19 @@
     "jquery": "^3.2.1",
     "load-grunt-tasks": "^5.1.0",
     "lodash": "^4.17.15",
-    "snyk": "^1.666.0",
-    "webpack": "^5.46.0",
-    "xo": "^0.42.0",
+    "snyk": "^1.753.0",
+    "webpack": "^5.61.0",
+    "xo": "^0.46.4",
     "yarn-minify": "^1.0.1"
   },
   "ava": {
     "require": [
+      "esm",
       "./tests/js/helpers/setup-browser-env.js"
     ],
     "files": [
-      "tests/js/**/*.js"
+      "tests/js/**/*.js",
+      "!tests/js/helpers/setup-browser-env.js"
     ],
     "source": [
       "sickchill/gui/slick/js/**/*.{js,jsx}",

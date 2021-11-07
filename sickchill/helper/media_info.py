@@ -95,8 +95,9 @@ def video_screen_size(filename):
         return None, None
 
     # Need to implement mediainfo another way, pymediainfo 2.0 causes segfaults
-    # for method in [_mediainfo_screen_size, _mkv_screen_size, _avi_screen_size]:
-    for method in [_mkv_screen_size, _avi_screen_size]:
+    # It's at pymedia 5 and this was never switched back
+    for method in [_mediainfo_screen_size, _mkv_screen_size, _avi_screen_size]:
+        # for method in [_mkv_screen_size, _avi_screen_size]:
 
         screen_size = method(filename)
         if screen_size != (None, None):

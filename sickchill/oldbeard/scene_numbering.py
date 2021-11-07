@@ -486,7 +486,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         try:
             # XEM MAP URL
-            url = "http://thexem.de/map/havemap?origin={0}".format(sickchill.indexer.slug(indexer))
+            url = "http://thexem.info/map/havemap?origin={0}".format(sickchill.indexer.slug(indexer))
             parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
             if (
                 not parsed_json
@@ -498,7 +498,7 @@ def xem_refresh(indexer_id, indexer, force=False):
                 return
 
             # XEM API URL
-            url = "http://thexem.de/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, sickchill.indexer.slug(indexer))
+            url = "http://thexem.info/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, sickchill.indexer.slug(indexer))
 
             parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
             if not parsed_json or "result" not in parsed_json or "success" not in parsed_json["result"]:

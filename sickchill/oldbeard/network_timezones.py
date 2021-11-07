@@ -13,9 +13,7 @@ time_regex = re.compile(r"(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meri
 
 network_dict = {}
 
-sb_timezone = tz.gettz()
-
-missing_network_timezones = set()
+sb_timezone = tz.tzlocal()
 
 
 def update_network_dict():
@@ -92,22 +90,10 @@ def get_network_timezone(network):
     :return: network timezone if found, or sb_timezone
     """
 
-    orig_network = network
     if network:
         network = network.lower()
 
     network_tz_name = network_dict.get(network)
-    if network and not (network_tz_name or network in missing_network_timezones):
-        missing_network_timezones.add(network)
-        severity = (logger.ERROR, logger.INFO)[network.endswith("none")]
-        logger.log(
-            severity,
-            _(
-                "Missing time zone for network: {orig_network}. Check valid network is set in indexer (theTVDB) before filing issue.".format(
-                    orig_network=orig_network
-                )
-            ),
-        )
 
     try:
         network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone

@@ -36,10 +36,10 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 search_params = {
                     "page": "rss",
@@ -70,23 +70,14 @@ class Provider(TorrentProvider):
                         info_hash = curItem["nyaa_infohash"]
 
                         if seeders < self.minseed or leechers < self.minleech:
-                            if mode != "RSS":
-                                logger.debug(
-                                    "Discarding torrent because it doesn't meet the"
-                                    " minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
-                                )
+                            if mode != "RSS" or 1:
+                                logger.debug(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
                             continue
 
                         size = convert_size(torrent_size, units=["BYTES", "KIB", "MIB", "GIB", "TIB", "PIB"]) or -1
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
-                        if mode != "RSS":
-                            logger.debug(
-                                _(
-                                    "Found result: {title} with {seeders} seeders and {leechers} leechers".format(
-                                        title=title, seeders=seeders, leechers=leechers
-                                    )
-                                )
-                            )
+                        if mode != "RSS" or 1:
+                            logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                         items.append(result)
                     except Exception:

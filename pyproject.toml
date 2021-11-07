@@ -37,11 +37,11 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-SickChill = {reference = "SickChill.py", type = "file"}
+SickChill = {reference = "SickChill.py", type = "file", extras = ["cli"]}
 
 
 [build-system]
-requires = ["poetry-core>=1.1.0a5", "poetry-date-version-plugin>=2021.5.10"]
+requires = ["poetry-core>=1.0.4"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.plugins."poetry.application.plugin"]
@@ -204,7 +204,7 @@ jsonrpclib-pelix = "^0.4.2"
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
 PyGithub = "^1.54.1"
-pyOpenSSL = "^20.0.1"
+pyOpenSSL = ">=20.0.1,<22.0.0"
 python-dateutil = "^2.8.1"
 python-twitter = "^3.5"
 rarfile = "^4.0"
@@ -223,7 +223,7 @@ win-inet-pton = "^1.1.0"
 PyNMA = "^1.0"
 "putio.py" = "^8.7.0"
 profilehooks = "^1.12.0"
-httplib2 = "^0.19.0"
+httplib2 = ">=0.19,<0.21"
 PySocks = "^1.7.1"
 imagesize = "^1.2.0"
 Send2Trash = "^1.5.0"
@@ -232,7 +232,7 @@ ifaddr = "^0.1.7"
 pyaes = "^1.6.1"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = "^2021.3.18"
-packaging = "^20.9"
+packaging = ">=20.9,<22.0"
 timeago = "^1.0.15"
 SQLAlchemy = "^1.4.3"
 python-slugify = ">=4.0.1,<6.0.0"
@@ -244,22 +244,21 @@ kodipydent-alt = "^2021.7.16"
 beekeeper-alt = "^2021.7.16"
 
 [tool.poetry.dev-dependencies]
-coveralls = "^3.2.0"
+coveralls = "^3.3.0"
 mock = "^4.0.3"
 Babel = "^2.9.0"
 pytest-vcr = "^1.0.2"
-pytest-cov = "^2.12.1"
+pytest-cov = "^3.0.0"
 pytest-isort = "^2.0.0"
 flake8-pytest-style = "^1.5.0"
 flake8-commas = "^2.0.0"
-flake8-quotes = "^3.2.0"
+flake8-quotes = "^3.3.0"
 flake8-bandit = "^2.1.2"
 flake8-docstrings = "^1.6.0"
 flake9 = "^3.8.3"
-codecov = "^2.1.11"
-black = "^21.7b0"
+codecov = "^2.1.12"
+black = "^21.10b0"
 pytest = "^6.2.4"
-isort = "^5.8.0"
+isort = "^5.10.0"
 poethepoet = "^0.10.0"
 po2json = "^0.2.2"
-poetry-date-version-plugin = ">=2021.7.16-6"
