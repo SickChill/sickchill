@@ -533,15 +533,15 @@ docs = ["sphinx"]
 
 [[package]]
 name = "guessit"
-version = "3.4.0"
+version = "3.4.2"
 description = "GuessIt - a library for guessing information from video filenames."
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-babelfish = "*"
-importlib-resources = "*"
+babelfish = ">=0.6.0"
+importlib-resources = {version = "*", markers = "python_version < \"3.9\""}
 python-dateutil = "*"
 rebulk = ">=3.1.0"
 
@@ -2051,8 +2051,8 @@ greenlet = [
     {file = "greenlet-1.1.2.tar.gz", hash = "sha256:e30f5ea4ae2346e62cedde8794a56858a67b878dd79f7df76a0767e356b1744a"},
 ]
 guessit = [
-    {file = "guessit-3.4.0-py3-none-any.whl", hash = "sha256:8ff81b9a2c158ce3bc4cda344cbab902eba4af1c6b658a74d5068a5c8dc9662d"},
-    {file = "guessit-3.4.0.tar.gz", hash = "sha256:2bac608f9075db4a430989e6c48c7e19abedf910e3701eaabefc6a299c8399dc"},
+    {file = "guessit-3.4.2-py3-none-any.whl", hash = "sha256:090aeeb2ed665e8c54c0dbf41c6e86789b20f578375214547aa57d2283042596"},
+    {file = "guessit-3.4.2.tar.gz", hash = "sha256:1b16a077e5fc709a8a291e99527719a95f42e00bf55b8c977233ae195c6196d7"},
 ]
 html5lib = [
     {file = "html5lib-1.1-py2.py3-none-any.whl", hash = "sha256:0d78f8fde1c230e99fe37986a60526d7049ed4bf8a9fadbad5f00e22e58e041d"},
