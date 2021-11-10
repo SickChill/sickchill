@@ -116,7 +116,7 @@ jobs:
     - name: Test Python
       run: |
         poe pytest
-        poe codecov -e OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+        poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
       shell: bash
   Deploy:
     needs: [Test]
