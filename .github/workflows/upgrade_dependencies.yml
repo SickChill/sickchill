@@ -82,5 +82,5 @@ jobs:
 
           push_options: '--force'
           disable_globbing: true
-          skip_fetch: true
+          # skip_fetch: true
           add_options: '-u'

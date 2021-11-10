@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sickchill"
-version = "2021.11.07"
+version = "2021.11.10"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPL-3.0+"
 
@@ -36,16 +36,12 @@ packages = [
     { include = "SickChill.py" },
 ]
 
-# [tool.poetry.scripts]
-# SickChill = {reference = "SickChill.py", type = "file", extras = ["cli"]}
-
+[tool.poetry.scripts]
+SickChill = "SickChill:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.4"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.plugins."poetry.application.plugin"]
-plugin = "poetry_date_version_plugin.plugin:VersionPlugin"
 
 [tool.version-plugin]
 write_to = 'sickchill/version.py'
@@ -259,6 +255,6 @@ flake9 = "^3.8.3"
 codecov = "^2.1.12"
 black = "^21.10b0"
 pytest = "^6.2.4"
-isort = "^5.10.0"
+isort = "^5.10.1"
 poethepoet = "^0.10.0"
 po2json = "^0.2.2"

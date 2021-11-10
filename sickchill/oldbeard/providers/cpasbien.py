@@ -15,7 +15,7 @@ class Provider(TorrentProvider):
         self.public = True
         self.minseed = 0
         self.minleech = 0
-        self.url = "http://www.cpasbien.cx"
+        self.url = "http://www.cpasbien.ac"
 
         self.proper_strings = ["PROPER", "REPACK"]
         self.cache = tvcache.TVCache(self)
@@ -34,9 +34,9 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format(search_string))
 
-                    search_url = self.url + "/recherche/" + search_string.replace(".", "-").replace(" ", "-") + ".html,trie-seeds-d"
+                    search_url = self.url + "/recherche/" + search_string
                 else:
-                    search_url = self.url + "/view_cat.php?categorie=series&trie=date-d"
+                    search_url = self.url + "/torrents/series"
 
                 data = self.get_url(search_url, returns="text")
                 if not data:
