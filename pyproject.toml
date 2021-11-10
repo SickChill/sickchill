@@ -36,7 +36,6 @@ packages = [
     { include = "SickChill.py" },
 ]
 
-
 # [tool.poetry.scripts]
 # SickChill = {reference = "SickChill.py", type = "file", extras = ["cli"]}
 
