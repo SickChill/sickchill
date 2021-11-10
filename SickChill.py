@@ -352,7 +352,11 @@ class SickChill(object):
         return True
 
 
-if __name__ == "__main__":
+def main():
     # start SickChill
     SickChill().start()
     remove_pid_file()
+
+
+if __name__ == "__main__":
+    main()
