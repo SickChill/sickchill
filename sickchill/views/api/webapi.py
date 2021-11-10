@@ -3,6 +3,7 @@ import abc
 import datetime
 import json
 import os
+from pathlib import Path
 import re
 import time
 import traceback
@@ -2403,7 +2404,9 @@ class CMDShowGetNetworkLogo(ApiCall):
         :return: Get the network logo of a show
         """
         show = Show.find(settings.showList, self.tvdbid or self.indexerid)
-        return {"outputType": "image", "image": os.path.join(settings.PROG_DIR, "gui", settings.GUI_NAME, "images/network", show.network_logo_name)}
+        path = Path(settings.PROG_DIR) / "gui" / settings.GUI_NAME / "images" / "network"
+        path /= show.network_logo_name + ".png"
+        return {"outputType": "image", "image": path.resolve()}
 
 
 # noinspection PyAbstractClass
