@@ -141,7 +141,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "cachecontrol"
-version = "0.12.9"
+version = "0.12.10"
 description = "httplib2 caching for requests"
 category = "main"
 optional = false
@@ -1751,8 +1751,8 @@ black = [
     {file = "black-21.10b0.tar.gz", hash = "sha256:a9952229092e325fe5f3dae56d81f639b23f7131eb840781947e4b2886030f33"},
 ]
 cachecontrol = [
-    {file = "CacheControl-0.12.9-py2.py3-none-any.whl", hash = "sha256:1675f6b0ed902b419f60af4f1d33486e2379743e3723c594eca2f95b10e4370a"},
-    {file = "CacheControl-0.12.9.tar.gz", hash = "sha256:b5d0c98f7ee9f02e2d5a85af98b9a76c0a2c73c972c142291f823a0ed2eb7a78"},
+    {file = "CacheControl-0.12.10-py2.py3-none-any.whl", hash = "sha256:b0d43d8f71948ef5ebdee5fe236b86c6ffc7799370453dccb0e894c20dfa487c"},
+    {file = "CacheControl-0.12.10.tar.gz", hash = "sha256:d8aca75b82eec92d84b5d6eb8c8f66ea16f09d2adb09dbca27fe2d5fc8d3732d"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},
