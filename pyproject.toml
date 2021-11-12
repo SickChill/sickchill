@@ -240,7 +240,7 @@ kodipydent-alt = "^2021.7.16"
 beekeeper-alt = "^2021.7.16"
 
 [tool.poetry.dev-dependencies]
-coveralls = "^3.3.0"
+coveralls = "^3.3.1"
 mock = "^4.0.3"
 Babel = "^2.9.0"
 pytest-vcr = "^1.0.2"
