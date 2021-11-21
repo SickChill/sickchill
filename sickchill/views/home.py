@@ -565,7 +565,7 @@ class Home(WebRoot):
         entries = {"emails": emails or "", "prowlAPIs": prowlAPIs or ""}
         main_db_con = db.DBConnection()
 
-        # Clear entries in db if both null otherwise write updated value. Removed old data check as old vaules loaded in loadShowNotifyLists
+        # Clear entries in db if both null otherwise write updated value. Removed as loaded in loadShowNotifyLists
         if emails == "" and prowlAPIs == "":
             main_db_con.action("UPDATE tv_shows SET notify_list = Null WHERE show_id = ?", [show])
         else:
