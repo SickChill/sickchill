@@ -565,18 +565,11 @@ class Home(WebRoot):
         entries = {"emails": emails or "", "prowlAPIs": prowlAPIs or ""}
         main_db_con = db.DBConnection()
 
-        # Get current data
-        for subs in main_db_con.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
-            if subs["notify_list"] and len(subs["notify_list"]) > 0:
-                # First, handle legacy format (emails only)
-                if not subs["notify_list"][0] == "{":
-                    entries["emails"] = subs["notify_list"]
-                else:
-                    entries = dict(ast.literal_eval(subs["notify_list"]))
-
-        if emails or prowlAPIs:
-            if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
-                return "ERROR"
+        # Clear entries in db if both null otherwise write updated value. Removed old data check as old vaules loaded in loadShowNotifyLists
+        if emails == "" and prowlAPIs == "":
+            main_db_con.action("UPDATE tv_shows SET notify_list = Null WHERE show_id = ?", [show])
+        else:
+            main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show])
 
         return "OK"
 
