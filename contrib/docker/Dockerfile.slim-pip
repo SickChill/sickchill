@@ -1,0 +1,47 @@
+ARG SICKCHILL_VERSION=2021.11.10
+
+FROM python:3.9-slim as build
+ENV OLDPATH=$PATH
+RUN python -m venv /app/sickchill/.venv
+ENV VIRTUAL_ENV=/app/sickchill/.venv
+ENV PATH=$VIRTUAL_ENV/bin:$OLDPATH
+ARG SICKCHILL_VERSION
+RUN pip install --no-cache-dir --upgrade sickchill==${SICKCHILL_VERSION}
+
+FROM python:3.9-slim
+
+LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
+LABEL maintainer="miigotu@gmail.com"
+ENV PYTHONIOENCODING="UTF-8"
+
+# docker run -dit --user 1000:1000 --name sickchill --restart=always \
+# -v ShowPath:/ShowPath \
+# -v DownloadPath:/DownloadPath \
+# -v /docker/sickchill/data:/data \
+# -v /docker/sickchill/cache/gui:/app/sickchill/sickchill/gui/slick/cache \
+# -v /etc/localtime:/etc/localtime:ro
+# -p 8080:8081 sickchill/sickchill
+
+ENV VIRTUAL_ENV=/app/sickchill/.venv
+ENV PATH=$VIRTUAL_ENV/bin:$PATH
+CMD [ "SickChill", "--nolaunch", "--datadir=/data", "--port", "8081"]
+EXPOSE 8081
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://localhost:8081/ || curl -f https://localhost:8081/ || exit 1
+# hadolint ignore=DL3008,DL3015
+RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list\
+    && (umask 0; mkdir -p /data /downloads /tv)\
+    && apt-get update -qq && apt-get install -yq\
+      libxml2\
+      libxslt1.1\
+      libffi7\
+      libssl1.1\
+      libmediainfo0v5\
+      mediainfo\
+      unrar\
+      curl\
+    && apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
+VOLUME /data /downloads /tv
+
+COPY --from=build /app/sickchill /app/sickchill
+
