@@ -37,6 +37,9 @@ RUN chmod -R 777 /app/sickchill $HOME/.cache
 
 RUN . $HOME/.cargo/env && poetry install --no-root --no-interaction --no-ansi
 
+RUN chmod -R a+w /app/sickchill/.venv
+VOLUME /app/sickchill/.venv
+
 CMD poetry run python3 /app/sickchill/SickChill.py --nolaunch --datadir=/data --port 8081
 EXPOSE 8081
 
