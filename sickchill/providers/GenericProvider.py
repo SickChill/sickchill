@@ -109,7 +109,7 @@ class GenericProvider(object):
                 remove_file_failed(downloaded_filename)
 
         if urls:
-            logger.warning("Failed to download any results")
+            logger.warning("{0} : Failed to download any results".format(self.name))
 
         return False
 
