@@ -95,21 +95,21 @@ class GenericProvider(object):
             if url.startswith("http"):
                 self.headers.update({"Referer": referer})
 
-            logger.info("Downloading a result from {0} at {1}".format(self.name, url))
+            logger.info(f"Downloading a result from {self.name} at {url}")
 
             downloaded_filename = download_file(
                 url, filename, session=self.session, headers=self.headers, hooks={"response": self.get_url_hook}, return_filename=True
             )
             if downloaded_filename:
                 if self._verify_download(downloaded_filename):
-                    logger.info("Saved result to {0}".format(downloaded_filename))
+                    logger.info(f"Saved result to {downloaded_filename}")
                     return True
 
-                logger.warning("Could not download {0}".format(url))
+                logger.warning(f"Could not download {url}")
                 remove_file_failed(downloaded_filename)
 
         if urls:
-            logger.warning("Failed to download any results")
+            logger.warning(f"{self.name} : Failed to download any results")
 
         return False
 
@@ -182,7 +182,7 @@ class GenericProvider(object):
             try:
                 parse_result = NameParser(parse_method=("normal", "anime")[show.is_anime]).parse(title)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.debug("{0}".format(error))
+                logger.debug(f"{error}")
                 continue
 
             show_object = parse_result.show
@@ -196,10 +196,10 @@ class GenericProvider(object):
             if not (show_object.air_by_date or show_object.sports):
                 if search_mode == "sponly":
                     if parse_result.episode_numbers:
-                        logger.debug("This is supposed to be a season pack search but the result {0} is not a valid season pack, skipping it".format(title))
+                        logger.debug(f"This is supposed to be a season pack search but the result {title} is not a valid season pack, skipping it")
                         skip_release = True
                     elif not [ep for ep in episodes if parse_result.season_number == (ep.season, ep.scene_season)[ep.show.is_scene]]:
-                        logger.info("This season result {0} is for a season we are not searching for, skipping it".format(title))
+                        logger.info(f"This season result {title} is for a season we are not searching for, skipping it")
                         skip_release = True
 
                 else:
@@ -223,7 +223,7 @@ class GenericProvider(object):
                         ]
                     ):
 
-                        logger.info("The result {0} doesn't seem to match an episode that we are currently trying to snatch, skipping it".format(title))
+                        logger.info(f"The result {title} doesn't seem to match an episode that we are currently trying to snatch, skipping it")
                         skip_release = True
 
                 if not skip_release:
@@ -233,7 +233,7 @@ class GenericProvider(object):
                 same_day_special = False
 
                 if not parse_result.is_air_by_date:
-                    logger.debug("This is supposed to be a date search but the result {0} didn't parse as one, skipping it".format(title))
+                    logger.debug(f"This is supposed to be a date search but the result {title} didn't parse as one, skipping it")
                     skip_release = True
                 else:
                     air_date = parse_result.air_date.toordinal()
@@ -257,7 +257,7 @@ class GenericProvider(object):
                         actual_season = int(sql_results[0]["season"])
                         actual_episodes = [int(sql_results[0]["episode"])]
 
-            logger.debug("Adding item from search to cache: {0}".format(title))
+            logger.debug(f"Adding item from search to cache: {title}")
 
             ci = self.cache._add_cache_entry(title, url, size, seeders, leechers, parse_result=parse_result)
 
@@ -273,10 +273,10 @@ class GenericProvider(object):
                     break
 
             if skip_release:
-                logger.debug(_("Ignoring result ") + f"{title}.")
+                logger.debug(_(f"Ignoring result {title}."))
                 continue
 
-            logger.debug(_("Found result {title} at {url}".format(title=title, url=url)))
+            logger.debug(_(f"Found result {title} at {url}."))
 
             episode_object = []
             for current_episode in actual_episodes:
@@ -297,7 +297,7 @@ class GenericProvider(object):
                 logger.debug("Single episode result.")
             elif len(episode_object) > 1:
                 episode_number = MULTI_EP_RESULT
-                logger.debug("Separating multi-episode result to check for later - result contains episodes: {0}".format(parse_result.episode_numbers))
+                logger.debug(f"Separating multi-episode result to check for later - result contains episodes: {parse_result.episode_numbers}")
             elif len(episode_object) == 0:
                 episode_number = SEASON_RESULT
                 logger.debug("Separating full season result to check for later")
@@ -335,10 +335,10 @@ class GenericProvider(object):
     @staticmethod
     def get_url_hook(response, **kwargs_):
         if response:
-            logger.debug("{0} URL: {1} [Status: {2}]".format(response.request.method, response.request.url, response.status_code))
+            logger.debug(f"{response.request.method} URL: {response.request.url} [Status: {response.status_code}]")
 
             if response.request.method == "POST":
-                logger.debug("With post data: {0}".format(response.request.body))
+                logger.debug(f"With post data: {response.request.body}")
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
         kwargs["hooks"] = {"response": self.get_url_hook}
@@ -500,7 +500,7 @@ class GenericProvider(object):
                 torrent_hash = b16encode(b32decode(torrent_hash)).upper()
             return torrent_hash
         except Exception:
-            logger.exception("Unable to extract torrent hash or name from magnet: {0}".format(magnet))
+            logger.exception(f"Unable to extract torrent hash or name from magnet: {magnet}")
             return ""
 
     def _make_url(self, result):
@@ -560,7 +560,7 @@ class GenericProvider(object):
         if self.enable_cookies and self.cookies:
             cookie_validator = re.compile(r"^(\w+=[\w%-]+)(;\w+=[\w%-]+)*$")
             if not cookie_validator.match(self.cookies):
-                return False, "Cookie is not correctly formatted: {0}".format(self.cookies)
+                return False, f"Cookie is not correctly formatted: {self.cookies}"
 
             new_cookies = {}
             for cookie in self.cookies.split(";"):
@@ -570,4 +570,4 @@ class GenericProvider(object):
             add_dict_to_cookiejar(self.session.cookies, new_cookies)
             return True, "torrent cookie"
 
-        return False, "No Cookies added from ui for provider: {0}".format(self.name)
+        return False, f"No Cookies added from ui for provider: {self.name}"

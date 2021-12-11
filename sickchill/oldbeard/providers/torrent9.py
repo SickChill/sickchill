@@ -18,7 +18,7 @@ class Provider(TorrentProvider):
         self.public = True
         self.minseed = 0
         self.minleech = 0
-        self._original_url = "https://www.torrent9.pw/"
+        self._original_url = "https://www.torrent9.one/"
         self._custom_url = None
         self._used_url = None
         self._recheck_url = True
