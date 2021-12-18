@@ -156,6 +156,27 @@ def check_installed(name: str = __package__) -> bool:
         return False
     return True
 
+def check_req_installed():
+    # first get a list of installed packages in the freeze format then clean and drop case.
+    result_ins, output_ins = subprocess.getstatusoutput([f"{sys.executable} -m pip list --format freeze"])
+    output_ins = output_ins.strip().splitlines()
+    output_ins = [s.casefold() for s in output_ins]
+    # now get the poetry list. 
+    result, output_rq = subprocess.getstatusoutput(
+        f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
+    )
+    output_rq = output_rq.strip().splitlines()
+    # make the list of packages that need updating.
+    output_upd = [ x for x in output_rq ]
+    for a in output_ins:
+        for b in range(len(output_upd)):
+            a_case = a.casefold()
+            if output_upd[b].startswith(a_case):
+                output_upd[b] = ""
+    # clean the list up for pip install.
+    output = [x for x in output_upd if x]
+
+    return (result, output)
 
 def subprocess_call(cmd_list):
     try:
@@ -395,9 +416,12 @@ def poetry_install() -> None:
             # Cool, we can write to site-packages
             pip_install(["setuptools", "poetry", "wheel"])
             if check_installed("poetry"):
-                result, output = subprocess.getstatusoutput(
-                    f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
-                )
+                logger.debug(f"check installed poetry")
+                # change to check what's already installed and reduce the list for faster start.
+                # result, output = subprocess.getstatusoutput(
+                #    f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
+                #)
+                result, output = check_req_installed()
                 if result == 0:  # Ok
                     pip_install(output)
                 else:  # Not Ok
