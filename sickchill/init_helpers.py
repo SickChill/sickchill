@@ -423,7 +423,8 @@ def poetry_install() -> None:
                 #)
                 result, output = check_req_installed()
                 if result == 0:  # Ok
-                    pip_install(output)
+                    if output:
+                        pip_install(output)
                 else:  # Not Ok
                     logger.info(output)
                     make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
