@@ -165,6 +165,9 @@ def check_req_installed():
     result, output_rq = subprocess.getstatusoutput(
         f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
     )
+    output_rq = re.sub(r"Warning.*", "", output_rq)
+    output_rq = re.sub(r".*warnings\.warn.*", "", output_rq)
+    output_rq = re.sub(r".*SetuptoolsDeprecation.*", "", output_rq)
     output_rq = output_rq.strip().splitlines()
     # make the list of packages that need updating.
     output_upd = [ x for x in output_rq ]
