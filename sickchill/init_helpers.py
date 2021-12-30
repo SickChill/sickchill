@@ -165,6 +165,7 @@ def check_req_installed():
     result, output_rq = subprocess.getstatusoutput(
         f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
     )
+    # remove pip and setuptools warning messages.
     output_rq = re.sub(r"Warning.*", "", output_rq)
     output_rq = re.sub(r".*warnings\.warn.*", "", output_rq)
     output_rq = re.sub(r".*SetuptoolsDeprecation.*", "", output_rq)
@@ -173,10 +174,9 @@ def check_req_installed():
     output_upd = [ x for x in output_rq ]
     for a in output_ins:
         for b in range(len(output_upd)):
-            a_case = a.casefold()
-            if output_upd[b].startswith(a_case):
+            if output_upd[b].startswith(a):
                 output_upd[b] = ""
-    # clean the list up for pip install.
+    # clean the list up for pip install and send to output.
     output = [x for x in output_upd if x]
 
     return (result, output)
