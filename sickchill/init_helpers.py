@@ -163,12 +163,10 @@ def check_req_installed():
     output_ins = [s.casefold() for s in output_ins]
     # now get the poetry list. 
     result, output_rq = subprocess.getstatusoutput(
-        f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
+        f"cd {pyproject_path.parent} && SETUPTOOLS_USE_DISTUTILS=stdlib {sys.executable} -m poetry export -f requirements.txt --without-hashes"
     )
     # remove pip and setuptools warning messages.
     output_rq = re.sub(r"Warning.*", "", output_rq)
-    output_rq = re.sub(r".*warnings\.warn.*", "", output_rq)
-    output_rq = re.sub(r".*SetuptoolsDeprecation.*", "", output_rq)
     output_rq = output_rq.strip().splitlines()
     # make the list of packages that need updating.
     output_upd = [ x for x in output_rq ]
