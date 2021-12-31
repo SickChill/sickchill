@@ -396,7 +396,7 @@ def poetry_install() -> None:
             pip_install(["setuptools", "poetry", "wheel"])
             if check_installed("poetry"):
                 result, output = subprocess.getstatusoutput(
-                    f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
+                    f"cd {pyproject_path.parent} && SETUPTOOLS_USE_DISTUTILS=stdlib {sys.executable} -m poetry export -f requirements.txt --without-hashes"
                 )
                 if result == 0:  # Ok
                     pip_install(output)
