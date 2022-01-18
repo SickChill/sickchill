@@ -151,7 +151,8 @@ class Provider(TorrentProvider):
                                 logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
-                        except Exception:
+                        except Exception as e:
+                            logger.debug("Unable to process torrent: {0}".format(str(e)))
                             continue
 
             # For each search mode sort all the items by seeders if available
