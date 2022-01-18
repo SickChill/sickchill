@@ -118,8 +118,8 @@ class Provider(TorrentProvider):
                             if not all([title, info_hash]):
                                 continue
 
-                            seeders = result["seeders"]
-                            leechers = result["leechers"]
+                            seeders = int(result["seeders"])
+                            leechers = int(result["leechers"])
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
