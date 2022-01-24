@@ -901,15 +901,18 @@ babel = "*"
 
 [[package]]
 name = "poethepoet"
-version = "0.11.0"
+version = "0.12.2"
 description = "A task runner that works well with poetry."
 category = "dev"
 optional = false
-python-versions = ">=3.6.2,<4.0.0"
+python-versions = ">=3.6.2"
 
 [package.dependencies]
 pastel = ">=0.2.1,<0.3.0"
 tomli = ">=1.2.2,<2.0.0"
+
+[package.extras]
+poetry_plugin = ["poetry (>=1.0,<2.0)"]
 
 [[package]]
 name = "profilehooks"
@@ -1674,7 +1677,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4"
-content-hash = "a8ed512892001073fd7284763330f852b1c326a57c108d6acd5388cafd3def57"
+content-hash = "44bcbcd2b8f60365dacfb28c637a19a7430d4108007fda7757a8edb1db80a8f7"
 
 [metadata.files]
 appdirs = [
@@ -2394,8 +2397,8 @@ po2json = [
     {file = "po2json-0.2.2.tar.gz", hash = "sha256:aa77e0003acb564924b359137ec238aaaaae71771970024f120ec4e8457f03c2"},
 ]
 poethepoet = [
-    {file = "poethepoet-0.11.0-py3-none-any.whl", hash = "sha256:4aac200f52e0faa309a655c064f2a522d9d18b64f717de9805151421166ba4d8"},
-    {file = "poethepoet-0.11.0.tar.gz", hash = "sha256:a0618e198600db801588bae627982682f8bd5304a49a75c6dbc430feade5a8a9"},
+    {file = "poethepoet-0.12.2-py3-none-any.whl", hash = "sha256:dd91d7113d3d33a40cfe6ca01c0a1982e33dae5a4f1f0c638f57199a00d85405"},
+    {file = "poethepoet-0.12.2.tar.gz", hash = "sha256:76eee7111c1d63e765c441aee56fbc0abe151233df99e28b2da5b3dd1e7c9ea4"},
 ]
 profilehooks = [
     {file = "profilehooks-1.12.0-py2.py3-none-any.whl", hash = "sha256:dc87f319c9596b8c50fd374e3c08c51fa29a61553f1d9281482e4ca31829b021"},
