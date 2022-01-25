@@ -15,7 +15,7 @@
     "security": "snyk test"
   },
   "devDependencies": {
-    "ava": "^3.15.0",
+    "ava": "^4.0.1",
     "bower": "^1.8.13",
     "browser-env": "^3.1.0",
     "eslint": "^8.7.0",
@@ -45,8 +45,8 @@
     "jquery": "^3.2.1",
     "load-grunt-tasks": "^5.1.0",
     "lodash": "^4.17.15",
-    "snyk": "^1.833.0",
-    "webpack": "^5.64.1",
+    "snyk": "^1.836.0",
+    "webpack": "^5.67.0",
     "xo": "^0.47.0",
     "yarn-minify": "^1.0.1"
   },
