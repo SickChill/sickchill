@@ -544,17 +544,16 @@ class Home(WebRoot):
         data = {}
         size = 0
         for r in rows:
-            NotifyList = {"emails": "", "prowlAPIs": ""}
+            notify_list = {"emails": "", "prowlAPIs": ""}
             if r["notify_list"] and len(r["notify_list"]) > 0:
                 # First, handle legacy format (emails only)
                 if not r["notify_list"][0] == "{":
-                    NotifyList["emails"] = r["notify_list"]
+                    notify_list["emails"] = r["notify_list"]
                 else:
-                    NotifyList = dict(ast.literal_eval(r["notify_list"]))
+                    notify_list = dict(ast.literal_eval(r["notify_list"]))
 
-            data[r["show_id"]] = {"id": r["show_id"], "name": r["show_name"], "list": NotifyList["emails"], "prowl_notify_list": NotifyList["prowlAPIs"]}
-            size += 1
-        data["_size"] = size
+            data[r["show_id"]] = {"id": r["show_id"], "name": r["show_name"], "list": notify_list["emails"], "prowl_notify_list": notify_list["prowlAPIs"]}
+        data["_size"] = len(data)
         return json.dumps(data)
 
     def saveShowNotifyList(self):
@@ -562,22 +561,17 @@ class Home(WebRoot):
         emails = self.get_body_argument("emails", "")
         prowlAPIs = self.get_body_argument("prowlAPIs", "")
 
-        entries = {"emails": emails or "", "prowlAPIs": prowlAPIs or ""}
+        entries = {"emails": emails, "prowlAPIs": prowlAPIs}
         main_db_con = db.DBConnection()
 
-        # Get current data
-        for subs in main_db_con.select("SELECT notify_list FROM tv_shows WHERE show_id = ?", [show]):
-            if subs["notify_list"] and len(subs["notify_list"]) > 0:
-                # First, handle legacy format (emails only)
-                if not subs["notify_list"][0] == "{":
-                    entries["emails"] = subs["notify_list"]
-                else:
-                    entries = dict(ast.literal_eval(subs["notify_list"]))
-
+        # TODO: Split emails and do validators.email
         if emails or prowlAPIs:
-            if not main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show]):
-                return "ERROR"
+            result = main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show])
+        else:
+            result = main_db_con.action("UPDATE tv_shows SET notify_list = Null WHERE show_id = ?", [show])
 
+        if not result:
+            return "ERROR"
         return "OK"
 
     def testEmail(self):
