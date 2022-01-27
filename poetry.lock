@@ -1471,7 +1471,7 @@ python-versions = "*"
 
 [[package]]
 name = "tmdbsimple"
-version = "2.9.0"
+version = "2.9.1"
 description = "A Python wrapper for The Movie Database API v3"
 category = "main"
 optional = false
@@ -2666,8 +2666,8 @@ timeago = [
     {file = "timeago-1.0.15.tar.gz", hash = "sha256:cfce420d82892af6b2439d0f69eeb3e876bbeddab6670c3c88ebf7676407bf4c"},
 ]
 tmdbsimple = [
-    {file = "tmdbsimple-2.9.0-py3-none-any.whl", hash = "sha256:58c28dd19f4603719ef7b508720ddbd69fe95c30b3656c3163ef9e370edd1957"},
-    {file = "tmdbsimple-2.9.0.tar.gz", hash = "sha256:11a969ccce8731c553f6a3368789483fcc308356181a81ba38af68a423df47ed"},
+    {file = "tmdbsimple-2.9.1-py3-none-any.whl", hash = "sha256:b52387c667bad1dccf5f776a576a971622a111fc08b7f731e360fabcc9860616"},
+    {file = "tmdbsimple-2.9.1.tar.gz", hash = "sha256:636eaaaec82027929e8a91c2166e01f552ec63f869bf1fcd65aa561b705c7464"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
