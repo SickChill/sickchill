@@ -4922,10 +4922,10 @@ slice-ansi@^5.0.0:
     ansi-styles "^6.0.0"
     is-fullwidth-code-point "^4.0.0"
 
-snyk@^1.836.0:
-  version "1.836.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.836.0.tgz#291d94f9eb7910f292f344eee5b9ca90c9e3c64f"
-  integrity sha512-iPJ4SCAEArquqo1Aq11KbHOWEu0OFauRn/4Acoq+hDqgTYN9IV8i5d6uHPAo3ePV2g24nF0Pb9N0sxIGgp833w==
+snyk@^1.840.0:
+  version "1.840.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.840.0.tgz#f3e829f15f0f4e4056ba4e6f73124daf39b5c27a"
+  integrity sha512-yA74ZvbptsB88RWVN8sBdZRJIAFeRBNYxuASs3JNwTh77Am3LeWoxrLvCZ2TEwMlwKR/uQEyrqFXzNG/ss/5ig==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
