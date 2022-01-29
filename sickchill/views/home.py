@@ -557,12 +557,31 @@ class Home(WebRoot):
         return json.dumps(data)
 
     def saveShowNotifyList(self):
+
         show = self.get_body_argument("show")
-        emails = self.get_body_argument("emails", "")
-        prowlAPIs = self.get_body_argument("prowlAPIs", "")
+        main_db_con = db.DBConnection()
+        rows = main_db_con.select("SELECT show_id, notify_list FROM tv_shows WHERE show_id = ?", [show])
+        # Get existing data from db for both email and prowl
+        data = {}
+
+        for r in rows:
+            notify_list = {"emails": "", "prowlAPIs": ""}
+            if r["notify_list"] and len(r["notify_list"]) > 0:
+                # First, handle legacy format (emails only)
+                if not r["notify_list"][0] == "{":
+                    notify_list["emails"] = r["notify_list"]
+                else:
+                    notify_list = dict(ast.literal_eval(r["notify_list"]))
+            data = {"id": r["show_id"], "email_list": notify_list["emails"], "prowl_list": notify_list["prowlAPIs"]}
+        
+        show_email = data["email_list"]
+        show_prowl = data["prowl_list"]
+        
+        # Change email or prowl with new or keep the existing
+        emails = self.get_body_argument("emails", show_email)
+        prowlAPIs = self.get_body_argument("prowlAPIs", show_prowl)
 
         entries = {"emails": emails, "prowlAPIs": prowlAPIs}
-        main_db_con = db.DBConnection()
 
         # TODO: Split emails and do validators.email
         if emails or prowlAPIs:
