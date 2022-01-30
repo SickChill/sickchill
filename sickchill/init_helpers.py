@@ -395,9 +395,16 @@ def poetry_install() -> None:
             # Cool, we can write to site-packages
             pip_install(["setuptools", "poetry", "wheel"])
             if check_installed("poetry"):
-                result, output = subprocess.getstatusoutput(
-                    f"cd {pyproject_path.parent} && SETUPTOOLS_USE_DISTUTILS=stdlib {sys.executable} -m poetry export -f requirements.txt --without-hashes"
-                )
+                syno_wheelhouse = pyproject_path.parent.with_name("wheelhouse")
+                if syno_wheelhouse.is_dir():
+                    result, output = subprocess.getstatusoutput(
+                        f"cd {pyproject_path.parent} && SETUPTOOLS_USE_DISTUTILS=stdlib {sys.executable} "
+                        f"-m poetry export -f requirements.txt --without-hashes"
+                    )
+                else:
+                    result, output = subprocess.getstatusoutput(
+                        f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
+                    )
                 if result == 0:  # Ok
                     pip_install(output)
                 else:  # Not Ok
