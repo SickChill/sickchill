@@ -158,38 +158,38 @@ def check_installed(name: str = __package__) -> bool:
 
 
 def check_req_installed():
-    # check if DSM or not by checking if wheelhouse exists. (from def pip install)
+    # get the packages string from poetry
+    result, output = subprocess.getstatusoutput(
+        f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
+    )
+
+    # Clean up the string so no pip errors.
+    # pip lock file warning removal
+    output = re.sub(r"Warning.*", "", output)
+    # SETUPTOOLS_USE_DISTUTILS=stdlib warnings removal if OS and package cause it
+    output = re.sub(r".*warnings\.warn.*", "", output)
+    output = re.sub(r".*SetuptoolsDeprecation.*", "", output)
+    output = output.strip().splitlines()
+
+    # Synology remove existing upto date packages from update lists
     syno_wheelhouse = pyproject_path.parent.with_name("wheelhouse")
     if syno_wheelhouse.is_dir():
-        # Synology only cut out section ELSE load normal string
-        # Get a list of installed packages in the freeze format then clean and drop case.
+        # List installed packages in the freeze format then clean and drop case.
         result_ins, output_ins = subprocess.getstatusoutput([f"{sys.executable} -m pip list --format freeze"])
         output_ins = output_ins.strip().splitlines()
         output_ins = [s.casefold() for s in output_ins]
 
-        # Add some Python 38 installed packages which SC can't update
-        py38op = ["importlib-metadata==", "typing-extensions==3.10.0.2", "zipp==3.6.0"]
-        output_ins.extend(py38op)
-        # now get the poetry list including SETUPTOOLS parameter required for first install.
-        result, output_rq = subprocess.getstatusoutput(
-            f"cd {pyproject_path.parent} && SETUPTOOLS_USE_DISTUTILS=stdlib {sys.executable} -m poetry export"
-            f" -f requirements.txt --without-hashes"
-        )
-        # remove pip warning message.
-        output_rq = re.sub(r"Warning.*", "", output_rq)
-        output_rq = output_rq.strip().splitlines()
-        # make the list of packages that need updating by blanking duplicates.
-        output_upd = [x for x in output_rq]
+        # Add some Python 38 installed packages which SC can't update in DSM
+        py38pkg = ["importlib-metadata==", "typing-extensions==", "zipp==3.6.0"]
+        output_ins.extend(py38pkg)
+        # make the list of packages that need updating by blanking existing ones.
+        output_upd = [x for x in output]
         for a in output_ins:
             for b in range(len(output_upd)):
                 if output_upd[b].startswith(a):
                     output_upd[b] = ""
         # clean the list up for pip install and send to output.
         output = [x for x in output_upd if x]
-    else:
-        result, output = subprocess.getstatusoutput(
-            f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
-        )
 
     return result, output
 
