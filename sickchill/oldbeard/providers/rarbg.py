@@ -152,3 +152,18 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+    def get_season_search_strings(self, episode):
+        search_strings = super(Provider, self).get_season_search_strings(episode)
+        if episode and episode.show and episode.show.imdb_id:
+            if episode.show.air_by_date or episode.show.sports:
+                year = str(episode.airdate).split("-")[0]
+                season_string = f"{episode.show.imdb_id}.{year}"
+            elif episode.show.anime:
+                season_string = f"{episode.show.imdb_id}.Season"
+            else:
+                season_string = f"{episode.show.imdb_id}.S{episode.season:02d}"
+
+            search_strings[0]["Season"].append(season_string)
+
+        return search_strings

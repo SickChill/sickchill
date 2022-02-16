@@ -1,5 +1,6 @@
 import datetime
 import time
+import traceback
 from urllib.parse import urljoin
 
 import js2py
@@ -118,8 +119,8 @@ class Provider(TorrentProvider):
                             if not all([title, info_hash]):
                                 continue
 
-                            seeders = result["seeders"]
-                            leechers = result["leechers"]
+                            seeders = try_int(result["seeders"])
+                            leechers = try_int(result["leechers"])
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:
@@ -151,7 +152,9 @@ class Provider(TorrentProvider):
                                 logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
-                        except Exception:
+                        except Exception as error:
+                            logger.debug(f"Unable to process torrent on {self.name}: {error}")
+                            logger.debug(traceback.format_exc())
                             continue
 
             # For each search mode sort all the items by seeders if available

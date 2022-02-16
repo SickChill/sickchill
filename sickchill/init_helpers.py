@@ -157,6 +157,43 @@ def check_installed(name: str = __package__) -> bool:
     return True
 
 
+def check_req_installed():
+    # get the packages string from poetry
+    result, output = subprocess.getstatusoutput(
+        f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
+    )
+
+    # Clean up the string so no pip errors.
+    # pip lock file warning removal
+    output = re.sub(r"Warning.*", "", output)
+    # SETUPTOOLS_USE_DISTUTILS=stdlib warnings removal if OS and package cause it
+    output = re.sub(r".*warnings\.warn.*", "", output)
+    output = re.sub(r".*SetuptoolsDeprecation.*", "", output)
+    output = output.strip().splitlines()
+
+    # Synology remove existing upto date packages from update lists
+    syno_wheelhouse = pyproject_path.parent.with_name("wheelhouse")
+    if syno_wheelhouse.is_dir():
+        # List installed packages in the freeze format then clean and drop case.
+        result_ins, output_ins = subprocess.getstatusoutput([f"{sys.executable} -m pip list --format freeze"])
+        output_ins = output_ins.strip().splitlines()
+        output_ins = [s.casefold() for s in output_ins]
+
+        # Add some Python 38 installed packages which SC can't update in DSM
+        py38pkg = ["importlib-metadata==", "typing-extensions==", "zipp==3.6.0"]
+        output_ins.extend(py38pkg)
+        # make the list of packages that need updating by blanking existing ones.
+        output_upd = [x for x in output]
+        for a in output_ins:
+            for b in range(len(output_upd)):
+                if output_upd[b].startswith(a):
+                    output_upd[b] = ""
+        # clean the list up for pip install and send to output.
+        output = [x for x in output_upd if x]
+
+    return result, output
+
+
 def subprocess_call(cmd_list):
     try:
         process = subprocess.Popen(cmd_list, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, cwd=os.getcwd())
@@ -395,11 +432,13 @@ def poetry_install() -> None:
             # Cool, we can write to site-packages
             pip_install(["setuptools", "poetry", "wheel"])
             if check_installed("poetry"):
-                result, output = subprocess.getstatusoutput(
-                    f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
-                )
+                logger.debug(f"Poetry installed packages checker started")
+                # go check what's already installed and reduce the list for synology.
+                result, output = check_req_installed()
+                logger.debug(f"Poetry installed packages checker completed")
                 if result == 0:  # Ok
-                    pip_install(output)
+                    if output:
+                        pip_install(output)
                 else:  # Not Ok
                     logger.info(output)
                     make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
