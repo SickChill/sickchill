@@ -95,8 +95,8 @@ const SICKCHILL = {
             (function () {
                 const imgDefer = document.querySelectorAll('img');
                 for (const element of imgDefer) {
-                    if (element.getAttribute('data-src')) {
-                        element.setAttribute('src', element.getAttribute('data-src'));
+                    if (element.dataset.src) {
+                        element.setAttribute('src', element.dataset.src);
                     }
                 }
 
@@ -4483,8 +4483,8 @@ const UTIL = {
     },
     init() {
         const body = document.body;
-        const controller = body.getAttribute('data-controller');
-        const action = body.getAttribute('data-action');
+        const controller = body.dataset.controller;
+        const action = body.dataset.action;
 
         UTIL.exec('common');
         UTIL.exec(controller);

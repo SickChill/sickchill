@@ -96,7 +96,8 @@
       "vendor.min.js",
       "lib/**/*",
       "Gruntfile.js",
-      "sickchill/gui/slick/js/lib/*"
+      "sickchill/gui/slick/js/lib/*",
+      "tests/js/index.js"
     ]
   }
 }
