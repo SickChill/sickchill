@@ -161,12 +161,7 @@ def check_req_installed():
     # get the packages string from poetry
     result, output = subprocess.getstatusoutput(f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes")
 
-    # Clean up the string so no pip errors.
-    # pip lock file warning removal
-    output = re.sub(r"Warning.*", "", output)
-    # SETUPTOOLS_USE_DISTUTILS=stdlib warnings removal if OS and package cause it
-    output = re.sub(r".*warnings\.warn.*", "", output)
-    output = re.sub(r".*SetuptoolsDeprecation.*", "", output)
+    output = clean_output()
     output = output.strip().splitlines()
 
     # Synology remove existing upto date packages from update lists
@@ -219,14 +214,19 @@ def get_os_id():
             pass
 
 
+def clean_output(output: str) -> str:
+    # clean out Warning line in list (dirty clean)
+    # pip lock file warning removal
+    output = re.sub(r"Warning.*", "", output)
+    # SETUPTOOLS_USE_DISTUTILS=stdlib warnings removal if OS and package cause it
+    output = re.sub(r".*warnings\.warn.*", "", output)
+    output = re.sub(r".*SetuptoolsDeprecation.*", "", output)
+    return output
+
+
 def pip_install(packages: Union[List[str], str]) -> bool:
     if not isinstance(packages, list):
-        # clean out Warning line in list (dirty clean)
-        # pip lock file warning removal
-        packages = re.sub(r"Warning.*", "", packages)
-        # SETUPTOOLS_USE_DISTUTILS=stdlib warnings removal if OS and package cause it
-        packages = re.sub(r".*warnings\.warn.*", "", output)
-        packages = re.sub(r".*SetuptoolsDeprecation.*", "", output)
+        packages = clean_output(packages)
         packages = packages.strip().splitlines()
 
     cmd = [
