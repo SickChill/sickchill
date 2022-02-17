@@ -94,19 +94,19 @@
                                     ${curResult["name"]}
                                 </td>
                                 <td>
-                                    <% epResult = curResult %>
-                                    <% show = curShow %>
-                                    % if int(epResult['airdate']) > 1:
-                                    ## Lets do this exactly like ComingEpisodes and History
-                                    ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
-                                    <% airDate = datetime.datetime.fromordinal(epResult['airdate']) %>
-                                    % if airDate.year >= 1970 or show.network:
-                                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
-                                    % endif
-                                        <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
-                                    % else:
-                                        Never
-                                    % endif
+                                    % try:
+                                        % if int(curResult['airdate']) > 1:
+                                            <% airDate = datetime.datetime.fromordinal(curResult['airdate']) %>
+                                            % if airDate > datetime.datetime.utcfromtimestamp(0) or curShow.network:
+                                                <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
+                                            % endif
+                                            <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
+                                        % else:
+                                            Never
+                                        % endif
+                                    % except:
+                                        Unknown
+                                    % endtry
                                 </td>
                             </tr>
                         % endfor
