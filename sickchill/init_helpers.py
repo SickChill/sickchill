@@ -173,6 +173,7 @@ def check_req_installed():
     syno_wheelhouse = pyproject_path.parent.with_name("wheelhouse")
     if syno_wheelhouse.is_dir():
         # List installed packages in the freeze format then clean and drop case.
+        logger.debug("Synology bypass existing packages: Folder wheelhouse exists")
         result_ins, output_ins = subprocess.getstatusoutput([f"{sys.executable} -m pip list --format freeze"])
         output_ins = output_ins.strip().splitlines()
         output_ins = [s.casefold() for s in output_ins]
