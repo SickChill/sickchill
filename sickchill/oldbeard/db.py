@@ -462,21 +462,6 @@ def pretty_name(class_name):
     return " ".join([x.group() for x in re.finditer("([A-Z])([a-z0-9]+)", class_name)])
 
 
-def restore_database(version):
-    """
-    Restores a database to a previous version (backup file of version must still exist)
-
-    :param version: Version to restore to
-    :return: True if restore succeeds, False if it fails
-    """
-    logger.info("Restoring database before trying upgrade again")
-    if not sickchill.oldbeard.helpers.restoreVersionedFile(db_full_path(suffix="v" + str(version)), version):
-        logger.log_error_and_exit("Database restore failed, abort upgrading database")
-        return False
-    else:
-        return True
-
-
 def _process_upgrade(connection, upgrade_class):
     instance = upgrade_class(connection)
     # logger.debug("Checking " + pretty_name(upgrade_class.__name__) + " database upgrade")

@@ -29,7 +29,6 @@ Public Methods:
     sanitizeSceneName
     create_https_certificates
     backupVersionedFile
-    restoreVersionedFile
     get_lan_ip
     check_url
     anon_url
@@ -402,13 +401,6 @@ class HelpersFileTests(unittest.TestCase):
     def test_backup_versioned_file(self):
         """
         Test backupVersionedFile
-        """
-        pass
-
-    @unittest.skip("Not yet implemented")
-    def test_restore_versioned_file(self):
-        """
-        Test restoreVersionedFile
         """
         pass
 

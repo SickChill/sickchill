@@ -573,10 +573,10 @@ class Home(WebRoot):
                 else:
                     notify_list = dict(ast.literal_eval(r["notify_list"]))
             data = {"id": r["show_id"], "email_list": notify_list["emails"], "prowl_list": notify_list["prowlAPIs"]}
-        
+
         show_email = data["email_list"]
         show_prowl = data["prowl_list"]
-        
+
         # Change email or prowl with new or keep the existing
         emails = self.get_body_argument("emails", show_email)
         prowlAPIs = self.get_body_argument("prowlAPIs", show_prowl)

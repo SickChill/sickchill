@@ -46,7 +46,7 @@ class AniDBMapper:
         bitChain = int(bitChain, 16)
         mapLength = len(map)
         for i in reversed(list(range(mapLength))):
-            if bitChain & (2 ** i):
+            if bitChain & (2**i):
                 codeList.append(map[mapLength - i - 1])
         return codeList
 

@@ -1,6 +1,7 @@
 import re
 from urllib.parse import urljoin
 
+import js2py
 import validators
 
 from sickchill import logger
@@ -18,7 +19,7 @@ class Provider(TorrentProvider):
         self.public = True
         self.minseed = 0
         self.minleech = 0
-        self._original_url = "https://www.torrent9.one/"
+        self._original_url = "https://www.torrent9.nl/"
         self._custom_url = None
         self._used_url = None
         self._recheck_url = True
@@ -28,14 +29,28 @@ class Provider(TorrentProvider):
 
     def _retrieve_dllink_from_url(self, inner_url, _type="torrent"):
         data = self.get_url(inner_url, returns="text")
-        res = {
-            "torrent": "",
-            "magnet": "",
-        }
+        # js
+        map = {"torrent": r"redirect", "magnet": r"redir"}
+        regex = r".*?function\s+" + map[_type] + r"\(\).+?= '([^']+)'"
+        # href
+        res = {"torrent": "", "magnet": ""}
         with BS4Parser(data, "html5lib") as html:
+            # for manual testing:
+            # data = open('test.html', 'r').read()
+            # html = BeautifulSoup(data, "html5lib")
+            # try js
+            scripts = html.head.findAll("script")
+            if len(scripts):
+                script = scripts[-1].string
+                matches = re.match(regex, script, re.S)
+                if matches:
+                    return matches[1]
+            # try href
             download_btns = html.findAll("div", {"class": "download-btn"})
             for btn in download_btns:
                 link = btn.find("a")["href"]
+                if link.startswith("javascript"):
+                    return ""
                 if link.startswith("magnet"):
                     res["magnet"] = link
                 else:

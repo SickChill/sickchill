@@ -383,7 +383,7 @@ class SubtitlesFinder(object):
 
         def dhm(td):
             days = td.days
-            hours = td.seconds // 60 ** 2
+            hours = td.seconds // 60**2
             minutes = (td.seconds // 60) % 60
             ret = ("", "{0} days, ".format(days))[days > 0] + ("", "{0} hours, ".format(hours))[hours > 0] + ("", "{0} minutes".format(minutes))[minutes > 0]
             if days == 1:

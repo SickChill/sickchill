@@ -2381,9 +2381,9 @@ class TVEpisode(object):
 
             regex_replacement = None
             if anime_type == 2 and not ep_only_match:
-                regex_replacement = fr"\g<pre_sep>{ep_string}\g<post_sep>"
+                regex_replacement = rf"\g<pre_sep>{ep_string}\g<post_sep>"
             elif season_ep_match:
-                regex_replacement = fr"\g<pre_sep>\g<2>\g<3>{ep_string}\g<post_sep>"
+                regex_replacement = rf"\g<pre_sep>\g<2>\g<3>{ep_string}\g<post_sep>"
             elif ep_only_match:
                 regex_replacement = ep_string
 
