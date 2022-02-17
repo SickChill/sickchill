@@ -161,7 +161,7 @@ def check_req_installed():
     # get the packages string from poetry
     result, output = subprocess.getstatusoutput(f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes")
 
-    output = clean_output()
+    output = clean_output(output)
     output = output.strip().splitlines()
 
     # Synology remove existing upto date packages from update lists
