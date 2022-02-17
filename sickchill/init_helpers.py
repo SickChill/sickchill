@@ -221,7 +221,11 @@ def get_os_id():
 def pip_install(packages: Union[List[str], str]) -> bool:
     if not isinstance(packages, list):
         # clean out Warning line in list (dirty clean)
+        # pip lock file warning removal
         packages = re.sub(r"Warning.*", "", packages)
+        # SETUPTOOLS_USE_DISTUTILS=stdlib warnings removal if OS and package cause it
+        packages = re.sub(r".*warnings\.warn.*", "", output)
+        packages = re.sub(r".*SetuptoolsDeprecation.*", "", output)
         packages = packages.strip().splitlines()
 
     cmd = [
