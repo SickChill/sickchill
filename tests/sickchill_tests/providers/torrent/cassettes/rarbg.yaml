@@ -37,8 +37,6 @@ interactions:
       - __cf_bm=mwK2_ItPezpnHLIZFHZpmFU8OJNICOLsu3uYeIAAclM-1636001760-0-Ae4EzabWHzcQmr8WpX1xyV/XWFzymhPHwPpeYoe1M0gpATORGO9rtGST4IzE+EfcwKGqyIfPunK9VRCiXUlfd50=;
         path=/; expires=Thu, 04-Nov-21 05:26:00 GMT; domain=.torrentapi.org; HttpOnly;
         SameSite=None
-      Transfer-Encoding:
-      - chunked
       alt-svc:
       - h3=":443"; ma=86400, h3-29=":443"; ma=86400, h3-28=":443"; ma=86400, h3-27=":443";
         ma=86400
@@ -163,6 +161,56 @@ interactions:
       - gzip
       vary:
       - Accept-Encoding
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip,deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - SickChill/2022.02.16 (Linux x86_64 5.16.10-051610-generic; a3f795c0-8fa9-11ec-ac36-1f1d7d182af4)
+    method: GET
+    uri: http://torrentapi.org/pubapi_v2.php?app_id=sickchill&min_seeders=0&min_leechers=0&limit=100&format=json_extended&ranked=0&token=xglbnrqdwp&sort=last&mode=list&category=tv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6tWSi0qyi9SslLyzCtLzMlMUSjJz07N01MILU5VSE8tiQdzFdLyixQSFfJSyxXy
+        81IVlXQguuKT81NSlaxMagHwkYQRRgAAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 6dec41b67dd78d42-ATL
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 17 Feb 2022 04:26:18 GMT
+      NEL:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=tqmn0vGs1Myu%2Fgvd4O2EwW%2FP%2BZrSYFKQpjEoqikGsDKXqXFbDkdIZkHjNiI%2F5ivU8slqavdyvY1OInx%2F4Qjm%2BmXNOmoPsSXJQI1neHmqE0qo6IJSUJviRpOWiacTBdazXA%3D%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=t1Um1occGQN9eij6272NOonp93gSPBN5RvppFUsLdMA-1645071978-0-AZYig3q9XokFuT2fEP6AbHRvOy5UvlRcYj3rndzpfiCgG7LIdpUlz5Cq6lGdoZJBhFxU026al2Frq7uHUG8EdSs=;
+        path=/; expires=Thu, 17-Feb-22 04:56:18 GMT; domain=.torrentapi.org; HttpOnly;
+        SameSite=None
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400, h3-29=":443"; ma=86400
     status:
       code: 200
       message: OK

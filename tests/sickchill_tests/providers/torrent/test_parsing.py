@@ -22,7 +22,7 @@ settings.CPU_PRESET = "NORMAL"
 disabled_provider_tests = {
     # ???
     "Cpasbien": ["rss", "episode", "season"],
-    "SkyTorrents": ["rss", "episode", "season"],
+    "SkyTorrents": ["rss", "episode", "season", "cache", "result"],
     "ilCorsaroNero": ["rss"],
     # api_maintenance still
     "TorrentProject": ["rss", "episode", "season", "cache", "result"],
@@ -43,7 +43,7 @@ disabled_provider_tests = {
 
 test_string_overrides = {
     "Cpasbien": {"Episode": ["The 100 S07E08"], "Season": ["The 100 S06"]},
-    "Torrent9": {"Episode": ["The 100 S07E08"], "Season": ["The 100 S06"]},
+    "Torrent9": {"Episode": ["Power Book IV Force S01E01"], "Season": ["The Lost Symbol S01"]},
     "Nyaa": {"Episode": ["Fairy Tail S2"], "Season": ["Fairy Tail S2"]},
     "TokyoToshokan": {"Episode": ["Fairy Tail S2"], "Season": ["Fairy Tail S2"]},
     "HorribleSubs": {"Episode": ["Fairy Tail S2"], "Season": ["Fairy Tail S2"]},
