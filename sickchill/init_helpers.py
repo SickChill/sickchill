@@ -159,9 +159,7 @@ def check_installed(name: str = __package__) -> bool:
 
 def check_req_installed():
     # get the packages string from poetry
-    result, output = subprocess.getstatusoutput(
-        f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes"
-    )
+    result, output = subprocess.getstatusoutput(f"cd {pyproject_path.parent} && {sys.executable} -m poetry export -f requirements.txt --without-hashes")
 
     # Clean up the string so no pip errors.
     # pip lock file warning removal

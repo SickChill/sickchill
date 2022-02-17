@@ -30,10 +30,10 @@ class Provider(TorrentProvider):
     def _retrieve_dllink_from_url(self, inner_url, _type="torrent"):
         data = self.get_url(inner_url, returns="text")
         # js
-        map = { "torrent": r"redirect", "magnet": r"redir" }
+        map = {"torrent": r"redirect", "magnet": r"redir"}
         regex = r".*?function\s+" + map[_type] + r"\(\).+?= '([^']+)'"
         # href
-        res = { "torrent": "", "magnet": "" }
+        res = {"torrent": "", "magnet": ""}
         with BS4Parser(data, "html5lib") as html:
             # for manual testing:
             # data = open('test.html', 'r').read()

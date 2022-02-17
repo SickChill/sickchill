@@ -61,6 +61,8 @@ class Connection(threading.Thread):
         keep_alive=False,
     ):
         super().__init__()
+        self.name = "ANIDB"
+
         # setting the log function
         self.log_private = log_private
         if type(log) in (FunctionType, MethodType):  # if we get a function or a method use that.

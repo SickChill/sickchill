@@ -28,7 +28,6 @@ class MovieList:
             movie.Session.configure(
                 bind=create_engine(
                     f"sqlite:///{self.full_path}",
-                    echo=True,
                     connect_args={"check_same_thread": False},
                     json_serializer=lambda obj: json.dumps(obj, ensure_ascii=False),
                 )

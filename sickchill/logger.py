@@ -65,7 +65,7 @@ class DispatchFormatter(logging.Formatter, object):
         for item in censored:
             try:
                 # passwords that include ++ for example will error. Cannot escape or it wont match at all.
-                msg = re.sub(fr"\b({item})\b", "*" * 8, msg)
+                msg = re.sub(rf"\b({item})\b", "*" * 8, msg)
             except re.error:
                 msg = msg.replace(item, "*" * 8)
             except TypeError:
@@ -98,6 +98,9 @@ class Logger(object):
             logging.getLogger("subliminal"),
             logging.getLogger("tornado.access"),
             logging.getLogger("imdbpy.parser.http.piculet"),
+            logging.getLogger("sqlalchemy.engine"),
+            logging.getLogger("sqlalchemy.pool"),
+            logging.getLogger("sqlalchemy.dialect"),
         ]
 
         self.console_logging = False
@@ -142,6 +145,8 @@ class Logger(object):
         for logger in self.loggers:
             if logger.name in ("subliminal", "tornado.access", "tornado.general", "imdbpy.parser.http.piculet"):
                 logger.setLevel("CRITICAL")
+            elif logger.name.startswith("sqlalchemy") and not self.database_logging:
+                logger.setLevel("WARNING")
             else:
                 logger.setLevel(log_level)
 
@@ -255,7 +260,7 @@ class Logger(object):
                     title_error = "UNKNOWN"
 
                 gist = None
-                regex = fr"^(?P<time>{re.escape(cur_error.time)})\s+(?P<level>[A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::.*$"
+                regex = rf"^(?P<time>{re.escape(cur_error.time)})\s+(?P<level>[A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::.*$"
                 for i, data in enumerate(__log_data):
                     match = re.match(regex, data)
                     if match:

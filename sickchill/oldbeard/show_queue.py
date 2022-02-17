@@ -724,7 +724,7 @@ class QueueItemRemove(ShowQueueItem):
         super(QueueItemRemove, self).__init__(ShowQueueActions.REMOVE, show)
 
         # lets make sure this happens before any other high priority actions
-        self.priority = generic_queue.QueuePriorities.HIGH ** 2
+        self.priority = generic_queue.QueuePriorities.HIGH**2
         self.full = full
 
     def run(self):
