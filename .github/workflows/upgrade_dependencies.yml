@@ -69,8 +69,6 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update poetry (python) and yarn (npm) dependencies
-
-          branch: depup
           commit_options: '--no-verify --signoff'
 
           file_pattern: package.json yarn.lock pyproject.toml poetry.lock
