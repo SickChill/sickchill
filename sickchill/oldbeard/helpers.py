@@ -1373,7 +1373,7 @@ def handle_requests_exception(
     def get_level(exception):
         return (logger.ERROR, logger.WARNING)[exception and "s,t,o,p,b,r,e,a,k,i,n,g,f" in str(exception)]
 
-    default = _("{Request failed: {0} ({1})}")
+    default = _("Request failed: {0} ({1})")
 
     def classname(error: Exception) -> str:
         return error.__class__.__name__
