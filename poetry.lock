@@ -690,7 +690,7 @@ tzlocal = ">=1.2"
 
 [[package]]
 name = "jsonrpclib-pelix"
-version = "0.4.3.1"
+version = "0.4.3.2"
 description = "This project is an implementation of the JSON-RPC v2.0 specification (backwards-compatible) as a client library, for Python 2.7 and Python 3. This version is a fork of jsonrpclib by Josh Marshall, made to be also usable with Pelix/iPOPO remote services."
 category = "main"
 optional = false
@@ -1554,7 +1554,7 @@ test = ["pytest-mock (>=3.3)", "pytest (>=4.3)"]
 
 [[package]]
 name = "unidecode"
-version = "1.3.2"
+version = "1.3.3"
 description = "ASCII transliterations of Unicode text"
 category = "main"
 optional = false
@@ -2097,8 +2097,8 @@ js2py = [
     {file = "Js2Py-0.71.tar.gz", hash = "sha256:a41b1009dd1498ae7d436bfa5ac952a08ca92a4bb9e31dca6e8bb966b49f7fce"},
 ]
 jsonrpclib-pelix = [
-    {file = "jsonrpclib-pelix-0.4.3.1.tar.gz", hash = "sha256:f6f376c72ec1c0dfd69fcc2721d711f6ca1fe22bf71f99e6884c5e43e9b58c95"},
-    {file = "jsonrpclib_pelix-0.4.3.1-py2.py3-none-any.whl", hash = "sha256:36c44cc584113088e9b9c15e968fe5258708c26baf86e4ee140745c006c8719d"},
+    {file = "jsonrpclib-pelix-0.4.3.2.tar.gz", hash = "sha256:e9e0b33efa8fa20d817dd78dfd9e4cdb3967c8a5d3cb5a783be1ee81c4a89c7c"},
+    {file = "jsonrpclib_pelix-0.4.3.2-py2.py3-none-any.whl", hash = "sha256:a9c0178317562a179e83deb27f753840fad4afe3b2bd1ee64495592ce3df1b28"},
 ]
 kodipydent-alt = [
     {file = "kodipydent-alt-2021.7.16.tar.gz", hash = "sha256:ca99d4151dbba465e80de1a65ce059aaaa6d5fc2f382b8c25cd31f86c6852326"},
@@ -2759,8 +2759,8 @@ tzlocal = [
     {file = "tzlocal-4.1.tar.gz", hash = "sha256:0f28015ac68a5c067210400a9197fc5d36ba9bc3f8eaf1da3cbd59acdfed9e09"},
 ]
 unidecode = [
-    {file = "Unidecode-1.3.2-py3-none-any.whl", hash = "sha256:215fe33c9d1c889fa823ccb66df91b02524eb8cc8c9c80f9c5b8129754d27829"},
-    {file = "Unidecode-1.3.2.tar.gz", hash = "sha256:669898c1528912bcf07f9819dc60df18d057f7528271e31f8ec28cc88ef27504"},
+    {file = "Unidecode-1.3.3-py3-none-any.whl", hash = "sha256:a5a8a4b6fb033724ffba8502af2e65ca5bfc3dd53762dedaafe4b0134ad42e3c"},
+    {file = "Unidecode-1.3.3.tar.gz", hash = "sha256:8521f2853fd250891dc27d156a9d30e61c4e76319da963c4a1c27083a909ac30"},
 ]
 urllib3 = [
     {file = "urllib3-1.26.8-py2.py3-none-any.whl", hash = "sha256:000ca7f471a233c2251c6c7023ee85305721bfdf18621ebff4fd17a8653427ed"},
