@@ -56,13 +56,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $(poetry config cache-dir)
-          key: ubuntu-latest-poetry-3.9-${{ hashFiles('**/poetry.lock') }}
+          key: ubuntu-latest-poetry-3.9-${{ hashFiles('**/pyproject.toml') }}
       - name: Restore virtualenv
         if: success() && !env.ACT
         uses: actions/cache@v2
         with:
           path: .venv
-          key: ubuntu-latest-virtualenv-3.9-${{ hashFiles('**/poetry.lock') }}
+          key: ubuntu-latest-virtualenv-3.9-${{ hashFiles('**/pyproject.toml') }}
       - name: Run
         run: |
           pip install poethepoet
@@ -72,7 +72,7 @@ jobs:
           commit_message: Update poetry (python) and yarn (npm) dependencies
           commit_options: '--no-verify --signoff'
 
-          file_pattern: package.json yarn.lock pyproject.toml poetry.lock
+          file_pattern: package.json yarn.lock pyproject.toml
 
           # Optional commit user and author settings
           commit_user_name: miigotu

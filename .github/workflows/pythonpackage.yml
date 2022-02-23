@@ -89,13 +89,13 @@ jobs:
       uses: actions/cache@v2
       with:
         path: $(poetry config cache-dir)
-        key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
     - name: Restore virtualenv
       if: success() && !env.ACT
       uses: actions/cache@v2
       with:
         path: .venv
-        key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
     - name: Install dependencies
       run: |
         poetry install --no-interaction --no-root
