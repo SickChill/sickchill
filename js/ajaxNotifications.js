@@ -1,16 +1,21 @@
 const test = false;
 
-PNotify.prototype.options.addclass = 'stack-bottomright';
-PNotify.prototype.options.buttons.closer_hover = !1; // eslint-disable-line camelcase
-PNotify.prototype.options.delay = 5000;
-PNotify.prototype.options.hide = !0;
-PNotify.prototype.options.history = !1;
-PNotify.prototype.options.shadow = !1;
-PNotify.prototype.options.stack = {dir1: 'up', dir2: 'left', firstpos1: 25, firstpos2: 25};
-PNotify.prototype.options.styling = 'bootstrap3';
-PNotify.prototype.options.width = '340px';
-PNotify.desktop.permission();
-PNotify.prototype.options.desktop = {desktop: !0, icon: scRoot + '/images/ico/favicon-196.png'};
+var PNotify = require('@pnotify/core');
+import * as PNotifyDesktop from '@pnotify/desktop';
+import * as PNotifyMobile from '@pnotify/mobile';
+import { defaults } from '@pnotify/core';
+
+defaults.addclass = 'stack-bottomright';
+// defaults.buttons.closer_hover = !1; // eslint-disable-line camelcase
+defaults.delay = 5000;
+defaults.hide = !0;
+defaults.history = !1;
+defaults.shadow = !1;
+defaults.stack = {dir1: 'up', dir2: 'left', firstpos1: 25, firstpos2: 25};
+defaults.styling = 'bootstrap3';
+defaults.width = '340px';
+PNotifyDesktop.permission();
+defaults.desktop = {desktop: !0, icon: scRoot + '/images/ico/favicon-196.png'};
 
 function displayPNotify(type, title, message, id) {
     new PNotify({ // eslint-disable-line no-new

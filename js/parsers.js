@@ -1,3 +1,6 @@
+var $ = require('jquery');
+require('tablesorter');
+
 $.tablesorter.addParser({
     id: 'loadingNames',
     is() {

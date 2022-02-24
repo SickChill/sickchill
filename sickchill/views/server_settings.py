@@ -160,6 +160,7 @@ class SRWebServer(threading.Thread):
                 ),
                 url(rf'{self.options["web_root"]}/css/(.*)', SickChillStaticFileHandler, {"path": os.path.join(self.options["data_root"], "css")}, name="css"),
                 url(rf'{self.options["web_root"]}/js/(.*)', SickChillStaticFileHandler, {"path": os.path.join(self.options["data_root"], "js")}, name="js"),
+                url(rf'{self.options["web_root"]}/static/(.*)', SickChillStaticFileHandler, {"path": os.path.join(self.options["data_root"], "static")}, name="static"),
                 url(
                     rf'{self.options["web_root"]}/fonts/(.*)',
                     SickChillStaticFileHandler,

@@ -384,20 +384,22 @@
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript" src="${static_url('js/vendor.min.js')}"></script>
-                <script type="text/javascript" src="${static_url('js/lib/jquery.form.min.js')}"></script>
-                <script type="text/javascript" src="${static_url('js/lib/jquery.selectboxes.min.js')}"></script>
-                <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->
-                <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
-                <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
-                % if settings.DEVELOPER:
-                    <script type="text/javascript" src="${static_url('js/core.js')}"></script>
-                % else:
-                    <script type="text/javascript" src="${static_url('js/core.min.js')}"></script>
-                % endif
-                <script type="text/javascript" src="${static_url('js/lib/jquery.scrolltopcontrol-1.1.js')}"></script>
-                <script type="text/javascript" src="${static_url('js/browser.js')}" charset="utf-8"></script>
-                <script type="text/javascript" src="${static_url('js/ajaxNotifications.js')}"></script>
+##                 <script type="text/javascript" src="${static_url('js/vendor.min.js')}"></script>
+
+                <script type="text/javascript" src="${static_url('static/parsers-bundle.js')}"></script>
+                <script type="text/javascript" src="${static_url('static/rootDirs-bundle.js')}"></script>
+##                 % if settings.DEVELOPER:
+##                     <script type="text/javascript" src="${static_url('js/core.js')}"></script>
+##                 % else:
+                    <script type="text/javascript" src="${static_url('static/core-bundle.js')}"></script>
+##                 % endif
+                <script type="text/javascript" src="${static_url('static/jquery.form-bundle.js')}"></script>
+                <script type="text/javascript" src="${static_url('static/jquery.selectboxes-bundle.js')}"></script>
+                <script type="text/javascript" src="${static_url('static/formwizard-bundle.js')}"></script><!-- Can't be added to bower -->
+
+                <script type="text/javascript" src="${static_url('static/jquery.scrolltopcontrol-bundle.js')}"></script>
+                <script type="text/javascript" src="${static_url('static/browser-bundle.js')}" charset="utf-8"></script>
+                <script type="text/javascript" src="${static_url('static/ajaxNotifications-bundle.js')}"></script>
             % endif
             <%block name="scripts" />
         </div>

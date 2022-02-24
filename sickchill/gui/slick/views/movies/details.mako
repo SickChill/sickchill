@@ -10,7 +10,7 @@
 <%block name="css">
 </%block>
 <%block name="scripts">
-    <script type="text/javascript" src="${static_url('js/lib/jquery.bookmarkscroll.js')}"></script>
+    <script type="text/javascript" src="${static_url('static/jquery.bookmarkscroll-bundle.js')}"></script>
     <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
     <script type="text/javascript" src="${static_url('js/ratingTooltip.js')}"></script>
 </%block>

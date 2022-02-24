@@ -12,9 +12,9 @@
 %>
 <%block name="metas">
     <meta data-var="showBackgroundImage" data-content="${static_url(show.show_image_url('fanart'))}">
-</%block>
+</%block>`
 <%block name="scripts">
-    <script type="text/javascript" src="${static_url('js/lib/jquery.bookmarkscroll.js')}"></script>
+    <script type="text/javascript" src="${static_url('static/jquery.bookmarkscroll-bundle.js')}"></script>
     <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
     <script type="text/javascript" src="${static_url('js/sceneExceptionsTooltip.js')}"></script>
     <script type="text/javascript" src="${static_url('js/ratingTooltip.js')}"></script>

@@ -1,15 +1,4 @@
-function getMeta(pyVar) {
-    return $('meta[data-var="' + pyVar + '"]').data('content');
-}
-
-const scRoot = getMeta('scRoot');
-const srDefaultPage = getMeta('srDefaultPage');
-const themeSpinner = getMeta('themeSpinner');
-const anonURL = getMeta('anonURL');
-const topImageHtml = '<img src="' + scRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />'; // eslint-disable-line no-unused-vars
-const loading = '<img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
-
-let srPID = getMeta('srPID');
+import Translations from "gettextjs";
 
 function configSuccess() {
     $('.config_submitter').each(function () {
@@ -4610,7 +4599,7 @@ const UTIL = {
 
 // Handle js-gettext + load javascript functions
 $.getJSON(scRoot + '/ui/locale.json', {lang: getMeta('settings.GUI_LANG')}, data => {
-    window.gt = data === undefined ? new Gettext() : new Gettext(data.messages);
+    window.gt = data === undefined ? new Translations() : new Translations(data.messages);
 
     // Shortcut for normal gettext
     window._ = function (string) {
@@ -4621,7 +4610,7 @@ $.getJSON(scRoot + '/ui/locale.json', {lang: getMeta('settings.GUI_LANG')}, data
     window._n = function (string, pluralString, number) {
         return gt.ngettext(string, pluralString, number);
     };
-
+    navigator.userAgentData
     if (!navigator.userAgent.includes('PhantomJS')) {
         $(document).ready(UTIL.init);
     }
