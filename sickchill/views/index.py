@@ -151,7 +151,7 @@ class WebHandler(BaseHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.executor = ThreadPoolExecutor(cpu_count(), thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
+        self.executor = ThreadPoolExecutor(thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
 
     @authenticated
     @coroutine
