@@ -157,7 +157,7 @@ class WebHandler(BaseHandler):
     @coroutine
     def get(self, route, *args, **kwargs):
         try:
-            logger.debug(f"Call for {route} with args [{self.request.arguments}]")
+            # logger.debug(f"Call for {route} with args [{self.request.arguments}]")
             # route -> method obj
             route = route.strip("/").replace(".", "_").replace("-", "_") or "index"
             method = getattr(self, route)

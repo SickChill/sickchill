@@ -10,11 +10,12 @@ import sickchill.oldbeard.providers
 from sickchill import logger, settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.show import History
 
 if TYPE_CHECKING:  # pragma: no cover
     from sickchill.oldbeard.classes import TorrentSearchResult
 
-from . import clients, common, db, failed_history, helpers, history, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
+from . import clients, common, db, helpers, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from .common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 
 
@@ -119,12 +120,7 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
                 dlResult = client.sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
-                # attempt to log failed
-                try:
-                    failed_history.logFailed(result.name)
-                    logger.info("log failed success {}".format(result.name))
-                except Exception as e:
-                    logger.info("log failed failed {} {}".format(result.name, e))
+                History.history.logFailed(result.episodes, result.name.result.provider)
                 dlResult = False
     else:
         logger.exception(f"Unknown result type, unable to download it ({result.resultType})")
@@ -133,12 +129,8 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
     if not dlResult:
         return False
 
-    if settings.USE_FAILED_DOWNLOADS:
-        failed_history.logSnatch(result)
-
     ui.notifications.message("Episode snatched", result.name)
-
-    history.logSnatch(result)
+    History.history.logSnatch(result)
 
     # don't notify when we re-download an episode
     sql_l = []
@@ -215,7 +207,7 @@ def pickBestResult(results, show):
             continue
 
         if hasattr(cur_result, "size"):
-            if settings.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size, cur_result.provider.name):
+            if settings.USE_FAILED_DOWNLOADS and History.history.hasFailed(cur_result.name, cur_result.size, cur_result.provider.name):
                 logger.info(f"{cur_result.name} has previously failed, rejecting it")
                 continue
 

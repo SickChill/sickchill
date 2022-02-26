@@ -34,7 +34,7 @@ from sickchill.oldbeard.common import (
 )
 from sickchill.oldbeard.postProcessor import PROCESS_METHODS
 from sickchill.show.ComingEpisodes import ComingEpisodes
-from sickchill.show.History import History
+from sickchill.show import History
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -1130,7 +1130,7 @@ class CMDHistory(ApiCall):
 
     def run(self):
         """Get the downloaded and/or snatched history"""
-        data = History().get(self.limit, self.type)
+        data = History.history.get(self.limit, self.type)
         results = []
 
         for row in data:
@@ -1166,7 +1166,7 @@ class CMDHistoryClear(ApiCall):
 
     def run(self):
         """Clear the entire history"""
-        History().clear()
+        History.history.clear()
 
         return _responds(RESULT_SUCCESS, msg="History cleared")
 
@@ -1180,7 +1180,7 @@ class CMDHistoryTrim(ApiCall):
 
     def run(self):
         """Trim history entries older than 30 days"""
-        History().trim()
+        History.history.trim()
 
         return _responds(RESULT_SUCCESS, msg="Removed history entries older than 30 days")
 
