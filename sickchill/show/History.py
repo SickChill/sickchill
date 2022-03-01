@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import subliminal
 
 from sickchill import logger, settings
-from sickchill.helper.decorators import singleton
+from sickchill.helper.metaclasses import Singleton
 from sickchill.oldbeard.classes import SearchResult
 
 if TYPE_CHECKING:
@@ -18,8 +18,7 @@ from sickchill.oldbeard.common import FAILED, Quality, SNATCHED, SUBTITLED, WANT
 from sickchill.oldbeard.db import DBConnection
 
 
-@singleton
-class History(object):
+class History(object, metaclass=Singleton):
     date_format = "%Y%m%d%H%M%S"
 
     def __init__(self):
