@@ -18,7 +18,7 @@ import uuid
 import zipfile
 from contextlib import closing
 from itertools import cycle
-from typing import AnyStr, List, Union
+from typing import Union
 from urllib.parse import urljoin
 from xml.etree import ElementTree
 

@@ -14,7 +14,6 @@ from mako.exceptions import RichTraceback
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine
-from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
 import sickchill.start
