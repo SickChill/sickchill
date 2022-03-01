@@ -63,7 +63,7 @@ def log_scores(subtitle: Union[subliminal.Episode, subliminal.Movie], video: sub
         max_score[subliminal.Movie] = sum(subliminal.score.movie_scores.values())
 
     score = subliminal.score.compute_score(subtitle, video, hearing_impaired=settings.SUBTITLES_HEARING_IMPAIRED)
-    return Scores(score, round(score / max_score(type(video)) * 100), user_score, round(user_score / max_score(type(video)) * 100))
+    return Scores(score, round(score / max_score[type(video)] * 100), user_score, round(user_score / max_score[type(video)] * 100))
 
 
 class SubtitleProviderPool(object):
