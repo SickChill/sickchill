@@ -33,8 +33,8 @@ from sickchill.oldbeard.common import (
     WANTED,
 )
 from sickchill.oldbeard.postProcessor import PROCESS_METHODS
+from sickchill.show.History import History
 from sickchill.show.ComingEpisodes import ComingEpisodes
-from sickchill.show import History
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -1112,8 +1112,14 @@ class CMDExceptions(ApiCall):
         return _responds(RESULT_SUCCESS, scene_exceptions)
 
 
+class HistoryApiCall(ApiCall):
+    def __init__(self, args, kwargs):
+        super().__init__(args, kwargs)
+        self.history = History()
+
+
 # noinspection PyAbstractClass
-class CMDHistory(ApiCall):
+class CMDHistory(HistoryApiCall):
     _help = {
         "desc": "Get the downloaded and/or snatched history",
         "optionalParameters": {
@@ -1130,7 +1136,7 @@ class CMDHistory(ApiCall):
 
     def run(self):
         """Get the downloaded and/or snatched history"""
-        data = History.history.get(self.limit, self.type)
+        data = self.history.get(self.limit, self.type)
         results = []
 
         for row in data:
@@ -1158,7 +1164,7 @@ class CMDHistory(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDHistoryClear(ApiCall):
+class CMDHistoryClear(HistoryApiCall):
     _help = {"desc": "Clear the entire history"}
 
     def __init__(self, args, kwargs):
@@ -1166,13 +1172,13 @@ class CMDHistoryClear(ApiCall):
 
     def run(self):
         """Clear the entire history"""
-        History.history.clear()
+        self.history.clear()
 
         return _responds(RESULT_SUCCESS, msg="History cleared")
 
 
 # noinspection PyAbstractClass
-class CMDHistoryTrim(ApiCall):
+class CMDHistoryTrim(HistoryApiCall):
     _help = {"desc": "Trim history entries older than 30 days"}
 
     def __init__(self, args, kwargs):
@@ -1180,7 +1186,7 @@ class CMDHistoryTrim(ApiCall):
 
     def run(self):
         """Trim history entries older than 30 days"""
-        History.history.trim()
+        self.history.trim()
 
         return _responds(RESULT_SUCCESS, msg="Removed history entries older than 30 days")
 
@@ -1533,13 +1539,13 @@ class CMDSickChillBackup(ApiCall):
             if not os.path.isdir(self.location):
                 os.mkdir(self.location)
 
-        logger.info(_("API: sb.backup backing up to {location}").format(location=self.location))
+        logger.info(_("API: sc.backup backing up to {location}").format(location=self.location))
         result = update_manager._backup(self.location)
         if result:
-            logger.info(_("API: sb.backup successful!"))
+            logger.info(_("API: sc.backup successful!"))
             return _responds(RESULT_SUCCESS, msg="Backup successful")
         else:
-            logger.warning(_("API: sb.backup failed!"))
+            logger.warning(_("API: sc.backup failed!"))
             return _responds(RESULT_FAILURE, msg="Backup failed")
 
 
@@ -2869,12 +2875,53 @@ function_mapper = {
     "history": CMDHistory,
     "history.clear": CMDHistoryClear,
     "history.trim": CMDHistoryTrim,
+    "postprocess": CMDPostProcess,
     "failed": CMDFailed,
     "backlog": CMDBacklog,
     "logs": CMDLogs,
     "logs.clear": CMDLogsClear,
+    "sc": CMDSickChill,
+    "sc.addrootdir": CMDSickChillAddRootDir,
+    "sc.checkversion": CMDSickChillCheckVersion,
+    "sc.backup": CMDSickChillBackup,
+    "sc.checkscheduler": CMDSickChillCheckScheduler,
+    "sc.deleterootdir": CMDSickChillDeleteRootDir,
+    "sc.getdefaults": CMDSickChillGetDefaults,
+    "sc.getmessages": CMDSickChillGetMessages,
+    "sc.getrootdirs": CMDSickChillGetRootDirs,
+    "sc.pausebacklog": CMDSickChillPauseBacklog,
+    "sc.ping": CMDSickChillPing,
+    "sc.restart": CMDSickChillRestart,
+    "sc.dailysearch": CMDDailySearch,
+    "sc.propersearch": CMDProperSearch,
+    "sc.subtitlesearch": CMDFullSubtitleSearch,
+    "sc.searchindexers": CMDSickChillSearchIndexers,
+    "sc.searchtvdb": CMDSickChillSearchTVDB,
+    "sc.searchtvrage": CMDSickChillSearchTVRAGE,
+    "sc.setdefaults": CMDSickChillSetDefaults,
+    "sc.update": CMDSickChillUpdate,
+    "sc.shutdown": CMDSickChillShutdown,
+    "show": CMDShow,
+    "show.addexisting": CMDShowAddExisting,
+    "show.addnew": CMDShowAddNew,
+    "show.cache": CMDShowCache,
+    "show.delete": CMDShowDelete,
+    "show.getquality": CMDShowGetQuality,
+    "show.getposter": CMDShowGetPoster,
+    "show.getbanner": CMDShowGetBanner,
+    "show.getnetworklogo": CMDShowGetNetworkLogo,
+    "show.getfanart": CMDShowGetFanArt,
+    "show.pause": CMDShowPause,
+    "show.refresh": CMDShowRefresh,
+    "show.seasonlist": CMDShowSeasonList,
+    "show.seasons": CMDShowSeasons,
+    "show.setquality": CMDShowSetQuality,
+    "show.stats": CMDShowStats,
+    "show.update": CMDShowUpdate,
+    "shows": CMDShows,
+    "shows.stats": CMDShowsStats,
+    # Compatibility with old 3rd party tools
     "sb": CMDSickChill,
-    "postprocess": CMDPostProcess,
     "sb.addrootdir": CMDSickChillAddRootDir,
     "sb.checkversion": CMDSickChillCheckVersion,
     "sb.backup": CMDSickChillBackup,
@@ -2895,23 +2942,4 @@ function_mapper = {
     "sb.setdefaults": CMDSickChillSetDefaults,
     "sb.update": CMDSickChillUpdate,
     "sb.shutdown": CMDSickChillShutdown,
-    "show": CMDShow,
-    "show.addexisting": CMDShowAddExisting,
-    "show.addnew": CMDShowAddNew,
-    "show.cache": CMDShowCache,
-    "show.delete": CMDShowDelete,
-    "show.getquality": CMDShowGetQuality,
-    "show.getposter": CMDShowGetPoster,
-    "show.getbanner": CMDShowGetBanner,
-    "show.getnetworklogo": CMDShowGetNetworkLogo,
-    "show.getfanart": CMDShowGetFanArt,
-    "show.pause": CMDShowPause,
-    "show.refresh": CMDShowRefresh,
-    "show.seasonlist": CMDShowSeasonList,
-    "show.seasons": CMDShowSeasons,
-    "show.setquality": CMDShowSetQuality,
-    "show.stats": CMDShowStats,
-    "show.update": CMDShowUpdate,
-    "shows": CMDShows,
-    "shows.stats": CMDShowsStats,
 }

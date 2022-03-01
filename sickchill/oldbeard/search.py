@@ -10,7 +10,7 @@ import sickchill.oldbeard.providers
 from sickchill import logger, settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.show import History
+from sickchill.show.History import History
 
 if TYPE_CHECKING:  # pragma: no cover
     from sickchill.oldbeard.classes import TorrentSearchResult
@@ -120,7 +120,7 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
                 dlResult = client.sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
-                History.history.logFailed(result.episodes, result.name.result.provider)
+                History().logFailed(result.episodes, result.name.result.provider)
                 dlResult = False
     else:
         logger.exception(f"Unknown result type, unable to download it ({result.resultType})")
@@ -130,7 +130,7 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
         return False
 
     ui.notifications.message("Episode snatched", result.name)
-    History.history.logSnatch(result)
+    History().logSnatch(result)
 
     # don't notify when we re-download an episode
     sql_l = []
@@ -207,7 +207,7 @@ def pickBestResult(results, show):
             continue
 
         if hasattr(cur_result, "size"):
-            if settings.USE_FAILED_DOWNLOADS and History.history.hasFailed(cur_result.name, cur_result.size, cur_result.provider.name):
+            if settings.USE_FAILED_DOWNLOADS and History().hasFailed(cur_result.name, cur_result.size, cur_result.provider.name):
                 logger.info(f"{cur_result.name} has previously failed, rejecting it")
                 continue
 

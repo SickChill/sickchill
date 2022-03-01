@@ -16,7 +16,6 @@ from sickchill.oldbeard.config import check_section, check_setting_bool, check_s
 from sickchill.oldbeard.databases import failed, main
 from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
-from sickchill.show import History
 
 from .helper import setup_github
 from .init_helpers import locale_dir, setup_gettext
@@ -963,7 +962,6 @@ def initialize(consoleLogging=True):
             threadName="NOTIFICATIONS",
         )
 
-        History.history = History.History()
         settings.__INITIALIZED__["0"] = True
         return True
 

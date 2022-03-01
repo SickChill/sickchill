@@ -12,6 +12,7 @@ from babelfish import Language, language_converters
 from guessit import guessit
 
 import sickchill.oldbeard.helpers
+from sickchill.show.History import History
 from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num
 from sickchill.show.Show import Show
@@ -285,7 +286,7 @@ def download_subtitles(episode, force_lang=None):
         sickchill.oldbeard.helpers.chmodAsParent(subtitle_path)
         sickchill.oldbeard.helpers.fixSetGroupID(subtitle_path)
 
-        History.history.logSubtitle(
+        History().logSubtitle(
             episode.show.indexerid, episode.season, episode.episode, episode.status, subtitle, log_scores(subtitle, video, user_score=user_score)
         )
 

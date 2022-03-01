@@ -1,7 +1,6 @@
 import sickchill.start
-from sickchill import settings
+from sickchill import settings, show
 from sickchill.helper import try_int
-from sickchill.show import History as HistoryTool
 
 from ..oldbeard import ui
 from .common import PageTemplate
@@ -13,13 +12,14 @@ from .routes import Route
 class History(WebRoot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.history = show.History()
 
     def index(self, limit=None):
         settings.HISTORY_LIMIT = limit = try_int(limit or settings.HISTORY_LIMIT or 100, 100)
         sickchill.start.save_config()
 
         compact = []
-        data = HistoryTool.history.get(limit)
+        data = self.history.get(limit)
 
         for row in data:
             action = {"action": row["action"], "provider": row["provider"], "resource": row["resource"], "time": row["date"]}
@@ -82,21 +82,21 @@ class History(WebRoot):
             info = logItem.split(",")
             logsToRemove.append({"dates": info[0].split("$"), "show_id": info[1], "season": info[2], "episode": info[3]})
 
-        HistoryTool.history.remove(logsToRemove)
+        self.history.remove(logsToRemove)
 
         ui.notifications.message(_("Selected history entries removed"))
 
         return self.redirect("/history/")
 
     def clearHistory(self):
-        HistoryTool.history.clear()
+        self.history.clear()
 
         ui.notifications.message(_("History cleared"))
 
         return self.redirect("/history/")
 
     def trimHistory(self):
-        HistoryTool.history.trim()
+        self.history.trim()
 
         ui.notifications.message(_("Removed history entries older than 30 days"))
 

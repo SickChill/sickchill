@@ -1232,7 +1232,7 @@ def getURL(
         return None
 
     try:
-        return resp if response_type == "response" or response_type is None else resp.json() if response_type == "json" else getattr(resp, response_type, resp)
+        return resp if response_type in ("response", None) else resp.json() if response_type == "json" else getattr(resp, response_type, resp)
     except ValueError:
         logger.debug(_(f"Requested a json response but response was not json, check the url: {url}"))
         return None

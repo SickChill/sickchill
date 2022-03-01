@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import subliminal
 
 from sickchill import logger, settings
+from sickchill.helper.decorators import singleton
 from sickchill.oldbeard.classes import SearchResult
 
 if TYPE_CHECKING:
@@ -17,6 +18,7 @@ from sickchill.oldbeard.common import FAILED, Quality, SNATCHED, SUBTITLED, WANT
 from sickchill.oldbeard.db import DBConnection
 
 
+@singleton
 class History(object):
     date_format = "%Y%m%d%H%M%S"
 
@@ -197,8 +199,8 @@ class History(object):
         # :param scores: Scores named tuple
         """
         if settings.SUBTITLES_HISTORY:
-            logger.debug(f"history.logSubtitle {subtitle.provider_name}, {subtitle.language.opensubtitles}")
-            # logger.debug(f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores['res']}/{scores['percent']}% (min={scores['min']}/{scores['min_percent']})")
+            # logger.debug(f"history.logSubtitle {subtitle.provider_name}, {subtitle.language.opensubtitles}")
+            logger.debug(f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores['res']}/{scores['percent']}% (min={scores['min']}/{scores['min_percent']})")
             status, quality = Quality.splitCompositeStatus(status)
             # TODO: Split action and quality in database to simplify EVERYTHING.
             # self._logHistoryItem(Quality.compositeStatus(SUBTITLED, scores["percent"]), show, season, episode, quality, subtitle.language.opensubtitles, subtitle.provider_name)

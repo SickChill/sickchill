@@ -11,7 +11,7 @@ import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
-from sickchill.show import History
+from sickchill.show.History import History
 from sickchill.show.Show import Show
 
 from . import common, db, helpers, notifiers, show_name_helpers
@@ -76,6 +76,8 @@ class PostProcessor(object):
         self.version = None
 
         self.anidbEpisode = None
+
+        self.history = History()
 
     def _log(self, message, level=logging.INFO):
         """
@@ -1057,7 +1059,7 @@ class PostProcessor(object):
         # Just want to keep this consistent for failed handling right now
         releaseName = show_name_helpers.determine_release_name(self.folder_path, self.release_name)
         if releaseName:
-            History.history.logSuccess(releaseName)
+            self.history.logSuccess(releaseName)
         else:
             self._log(_("Couldn't find release in snatch history"), logger.WARNING)
 
@@ -1140,7 +1142,7 @@ class PostProcessor(object):
             logger.info(_("Could not create/update meta files. Continuing with postProcessing..."))
 
         # log it to history
-        History.history.logDownload(ep_obj, self.directory, new_ep_quality, self.release_group, new_ep_version)
+        self.history.logDownload(ep_obj, self.directory, new_ep_quality, self.release_group, new_ep_version)
 
         # If any notification fails, don't stop postProcessor
         try:

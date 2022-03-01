@@ -3,7 +3,7 @@ import traceback
 from typing import TYPE_CHECKING
 
 from sickchill import logger, settings
-from sickchill.show import History
+from sickchill.show.History import History
 
 if TYPE_CHECKING:
     from sickchill.oldbeard.databases.movie import Movie
@@ -277,7 +277,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         try:
             for epObj in self.segment:
-                History.history.markFailed(epObj)
+                History().markFailed(epObj)
                 logger.info(f"Beginning failed download search for: [{epObj.pretty_name}]")
 
             # If it is wanted, self.downCurQuality doesnt matter
