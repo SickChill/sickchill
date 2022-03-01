@@ -33,8 +33,8 @@ from sickchill.oldbeard.common import (
     WANTED,
 )
 from sickchill.oldbeard.postProcessor import PROCESS_METHODS
-from sickchill.show.History import History
 from sickchill.show.ComingEpisodes import ComingEpisodes
+from sickchill.show.History import History
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown

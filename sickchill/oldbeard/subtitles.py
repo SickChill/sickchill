@@ -12,9 +12,9 @@ from babelfish import Language, language_converters
 from guessit import guessit
 
 import sickchill.oldbeard.helpers
-from sickchill.show.History import History
 from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num
+from sickchill.show.History import History
 from sickchill.show.Show import Show
 
 from . import db

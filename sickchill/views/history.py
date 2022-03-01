@@ -1,7 +1,7 @@
 import sickchill.start
 from sickchill import settings
-from sickchill.show.History import History
 from sickchill.helper import try_int
+from sickchill.show.History import History
 
 from ..oldbeard import ui
 from .common import PageTemplate

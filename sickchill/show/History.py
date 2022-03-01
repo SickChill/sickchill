@@ -11,6 +11,7 @@ from sickchill.oldbeard.classes import SearchResult
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow
+    from sickchill.oldbeard.subtitles import Scores
 
 from sickchill.helper.common import try_int
 from sickchill.helper.exceptions import EpisodeNotFoundException
@@ -185,8 +186,7 @@ class History(object, metaclass=Singleton):
         """
         self._logHistoryItem(episode.status, episode.show.indexerid, episode.season, episode.episode, quality, filename, group or -1, version)
 
-    # def logSubtitle(self, show: int, season: int, episode: int, status: int, subtitle: subliminal.subtitle.Subtitle, scores: subtitles.Scores):
-    def logSubtitle(self, show: int, season: int, episode: int, status: int, subtitle: subliminal.subtitle.Subtitle):
+    def logSubtitle(self, show: int, season: int, episode: int, status: int, subtitle: subliminal.subtitle.Subtitle, scores: "Scores"):
         """
         Log download of subtitle
 
@@ -198,8 +198,9 @@ class History(object, metaclass=Singleton):
         # :param scores: Scores named tuple
         """
         if settings.SUBTITLES_HISTORY:
-            # logger.debug(f"history.logSubtitle {subtitle.provider_name}, {subtitle.language.opensubtitles}")
-            logger.debug(f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores['res']}/{scores['percent']}% (min={scores['min']}/{scores['min_percent']})")
+            logger.debug(
+                f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores['res']}/{scores['percent']}% (min={scores['min']}/{scores['min_percent']})"
+            )
             status, quality = Quality.splitCompositeStatus(status)
             # TODO: Split action and quality in database to simplify EVERYTHING.
             # self._logHistoryItem(Quality.compositeStatus(SUBTITLED, scores["percent"]), show, season, episode, quality, subtitle.language.opensubtitles, subtitle.provider_name)
