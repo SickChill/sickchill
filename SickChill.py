@@ -13,13 +13,12 @@ import traceback
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.init_helpers import check_installed, choose_data_dir, remove_pid_file, setup_gettext
+from sickchill.init_helpers import choose_data_dir, remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
 
 setup_gettext()
 
 import mimetypes
-from pathlib import Path
 
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/sfont", ".otf")
