@@ -33,7 +33,7 @@ jobs:
           path: .venv
           key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
       - name: Checkout SickChill
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: master
           path: sickchill
