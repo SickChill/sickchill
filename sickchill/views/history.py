@@ -1,7 +1,7 @@
 import sickchill.start
 from sickchill import settings
 from sickchill.helper import try_int
-from sickchill.show.History import History
+from sickchill.show.History import History as HistoryTool
 
 from ..oldbeard import ui
 from .common import PageTemplate
@@ -13,7 +13,7 @@ from .routes import Route
 class History(WebRoot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.history = History()
+        self.history = HistoryTool()
 
     def index(self, limit=None):
         settings.HISTORY_LIMIT = limit = try_int(limit or settings.HISTORY_LIMIT or 100, 100)
