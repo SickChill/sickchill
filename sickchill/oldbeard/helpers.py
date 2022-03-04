@@ -18,6 +18,7 @@ import uuid
 import zipfile
 from contextlib import closing
 from itertools import cycle
+from pathlib import Path
 from typing import Union
 from urllib.parse import urljoin
 from xml.etree import ElementTree
@@ -788,8 +789,10 @@ def backupVersionedFile(old_file, version):
 
     numTries = 0
 
-    new_file = old_file + "." + "v" + str(version)
+    if not isinstance(old_file, Path):
+        old_file = Path(old_file)
 
+    new_file = old_file.with_suffix(f"{old_file.suffix}.v{version}")
     while not os.path.isfile(new_file):
         if not os.path.isfile(old_file):
             logger.debug(_(f"Not creating backup, {old_file} doesn't exist"))
