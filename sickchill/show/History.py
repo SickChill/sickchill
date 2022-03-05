@@ -292,6 +292,9 @@ class History(object, metaclass=Singleton):
 
     def revertEpisode(self, episode_object: "TVEpisode"):
         """Restore the episodes of a failed download to their original state"""
+        if not settings.USE_FAILED_DOWNLOADS:
+            return
+
         sql_results = self.failed_db.select(
             "SELECT episode, old_status FROM history WHERE showid = ? AND season = ?", [episode_object.show.indexerid, episode_object.season]
         )
@@ -319,6 +322,9 @@ class History(object, metaclass=Singleton):
         :param episode_object: Episode object to mark as failed
         :return: empty string
         """
+        if not settings.USE_FAILED_DOWNLOADS:
+            return
+
         logger.info(f"Marking episode as bad: [{episode_object.pretty_name}]")
         try:
             with episode_object.lock:

@@ -31,6 +31,7 @@ class CacheDBConnection(db.DBConnection):
             sql_args.append(provider)
         self.action(sql, sql_args)
 
+
 class TVCache(object):
     def __init__(self, provider, **kwargs):
         self.provider = provider

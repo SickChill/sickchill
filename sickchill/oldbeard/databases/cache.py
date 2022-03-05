@@ -31,6 +31,7 @@ class InitialSchema(db.SchemaUpgrade):
         for query in queries:
             self.connection.action(query[0])
 
+
 class ResultsTable(InitialSchema):
     def test(self):
         return self.has_table("results")
