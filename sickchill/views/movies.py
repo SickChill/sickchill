@@ -10,9 +10,6 @@ logger = logging.getLogger("sickchill.movie")
 
 
 class MoviesHandler(WebRoot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
         return t.render(message=message, subject=subject, topmenu="movies", title="")

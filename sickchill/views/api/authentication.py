@@ -10,9 +10,6 @@ class KeyHandler(RequestHandler):
     def data_received(self, chunk):
         pass
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def get(self, *args, **kwargs):
         if self.get_query_argument("u", None) == settings.WEB_USERNAME and self.get_query_argument("p", None) == settings.WEB_PASSWORD:
             if not len(settings.API_KEY or ""):

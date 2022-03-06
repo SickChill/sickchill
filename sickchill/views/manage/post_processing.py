@@ -10,9 +10,6 @@ from sickchill.views.routes import Route
 
 @Route("/home/postprocess(/?.*)", name="home:postprocess")
 class PostProcess(Home):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="home_postprocess.mako")

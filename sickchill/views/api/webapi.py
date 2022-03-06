@@ -66,9 +66,6 @@ class ApiHandler(RequestHandler):
 
     version = 5  # use an int since float-point is unpredictable
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def set_default_headers(self):
         self.set_header("Content-Type", "application/json")
         self.set_header("Access-Control-Allow-Origin", "*")
