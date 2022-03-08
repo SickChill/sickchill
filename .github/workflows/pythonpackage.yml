@@ -8,6 +8,7 @@ on:
     branches:
       - master
       - develop
+      - history
   pull_request:
     branches:
       - develop
@@ -156,17 +157,6 @@ jobs:
         registry: ghcr.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Docker meta
-      id: meta
-      uses: docker/metadata-action@v3
-      with:
-        images: |
-          ${{ github.repository }}
-          ghcr.io/${{ github.repository }}
-        labels: |
-          org.opencontainers.image.source=https://github.com/sickchill/sickchill
-          org.opencontainers.image.url=https://sickchill.github.io
-          org.opencontainers.image.licenses=GPL-3.0+
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
@@ -178,6 +168,21 @@ jobs:
       run: |
         echo ::set-output name=version::$(poetry version --short)
         echo ::set-output name=docker_name::${GITHUB_REPOSITORY,,}
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: |
+          ${{ github.repository }}
+          ghcr.io/${{ github.repository }}
+        labels: |
+          org.opencontainers.image.source=https://github.com/sickchill/sickchill
+          org.opencontainers.image.url=https://sickchill.github.io
+          org.opencontainers.image.licenses=GPL-3.0+
+        tags: |
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          ${{ steps.vars.outputs.docker_name }}:${{ steps.vars.outputs.version }}
+          ghcr.io/${{ steps.vars.outputs.docker_name }}:${{ steps.vars.outputs.version }}
     - name: Build and Push
       if: github.actor == 'miigotu'
       uses: docker/build-push-action@v2
@@ -187,8 +192,6 @@ jobs:
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
         tags: |
           ${{ steps.meta.outputs.tags }}
-          ${{ steps.vars.outputs.docker_name }}:${{ steps.vars.outputs.version }}
-          ghcr.io/${{ steps.vars.outputs.docker_name }}:${{ steps.vars.outputs.version }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
