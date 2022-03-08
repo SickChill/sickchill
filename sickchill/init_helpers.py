@@ -11,8 +11,6 @@ from pathlib import Path
 from typing import List, Union
 from urllib.request import urlopen
 
-import appdirs
-
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
@@ -449,14 +447,3 @@ def poetry_install() -> None:
                     make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
             else:  # Couldn't install poetry, make new venv
                 make_virtualenv_and_rerun(pyproject_path.with_name(".venv"))
-
-
-def choose_data_dir(program_dir):
-    old_data_dir = Path(program_dir).parent
-    old_profile_path = Path.home().joinpath("sickchill")
-    proper_data_dir = Path(appdirs.user_config_dir(appname="sickchill"))
-    for location in [old_data_dir, old_profile_path, proper_data_dir]:
-        for check in ["sickbeard.db", "sickchill.db", "config.ini"]:
-            if location.joinpath(check).exists():
-                return location
-    return proper_data_dir

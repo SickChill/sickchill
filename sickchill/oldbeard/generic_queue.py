@@ -124,4 +124,4 @@ class QueueItem(threading.Thread):
 
         self.inProgress = False
 
-        threading.currentThread().name = self.name
+        threading.current_thread().name = self.name

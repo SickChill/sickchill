@@ -13,7 +13,8 @@ import traceback
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.init_helpers import choose_data_dir, remove_pid_file, setup_gettext
+from sickchill.helper.common import choose_data_dir
+from sickchill.init_helpers import remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
 
 setup_gettext()
@@ -91,7 +92,7 @@ class SickChill(object):
         settings.MY_ARGS = sys.argv[1:]
 
         # Rename the main thread
-        threading.currentThread().name = "MAIN"
+        threading.current_thread().name = "MAIN"
 
         args = SickChillArgumentParser(settings.DATA_DIR).parse_args()
 

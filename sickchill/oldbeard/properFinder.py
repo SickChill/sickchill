@@ -56,10 +56,10 @@ class ProperFinder(object):
         search_date = datetime.datetime.today() - datetime.timedelta(days=2)
 
         # for each provider get a list of the
-        origThreadName = threading.currentThread().name
+        original_thread_name = threading.current_thread().name
         providers = [x for x in oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active]
         for curProvider in providers:
-            threading.currentThread().name = origThreadName + " :: [" + curProvider.name + "]"
+            threading.current_thread().name = original_thread_name + " :: [" + curProvider.name + "]"
 
             logger.info("Searching for any new PROPER releases from " + curProvider.name)
 
@@ -85,7 +85,7 @@ class ProperFinder(object):
                     x.provider = curProvider
                     propers[name] = x
 
-            threading.currentThread().name = origThreadName
+            threading.current_thread().name = original_thread_name
 
         # take the list of unique propers and get it sorted by
         sortedPropers = sorted(list(propers.values()), key=operator.attrgetter("date"), reverse=True)

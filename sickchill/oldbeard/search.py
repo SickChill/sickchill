@@ -355,15 +355,15 @@ def searchForNeededEpisodes():
         logger.info("No episodes needed.")
         return list(foundResults.values())
 
-    origThreadName = threading.currentThread().name
+    original_thread_name = threading.current_thread().name
 
     providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
     for curProvider in providers:
-        threading.currentThread().name = f"{origThreadName} :: [{curProvider.name}]"
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
         curProvider.cache.update_cache()
 
     for curProvider in providers:
-        threading.currentThread().name = f"{origThreadName} :: [{curProvider.name}]"
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
         try:
             curFoundResults = curProvider.search_rss(episodes)
         except AuthException as error:
@@ -395,7 +395,7 @@ def searchForNeededEpisodes():
 
             foundResults[curEp] = bestResult
 
-    threading.currentThread().name = origThreadName
+    threading.current_thread().name = original_thread_name
 
     if not didSearch:
         logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
@@ -421,17 +421,17 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     # build name cache for show
     sickchill.oldbeard.name_cache.build_name_cache(show)
 
-    origThreadName = threading.currentThread().name
+    original_thread_name = threading.current_thread().name
 
     providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
     for curProvider in providers:
-        threading.currentThread().name = f"{origThreadName} :: [{curProvider.name}]"
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
         curProvider.cache.update_cache()
 
-    threading.currentThread().name = origThreadName
+    threading.current_thread().name = original_thread_name
 
     for curProvider in providers:
-        threading.currentThread().name = f"{origThreadName} :: [{curProvider.name}]"
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
 
         if curProvider.anime_only and not show.is_anime:
             logger.debug(f"{show.name} is not an anime, skipping")
@@ -541,7 +541,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 bestSeasonResult.episodes = epObjs
 
                 # Remove provider from thread name before return results
-                threading.currentThread().name = origThreadName
+                threading.current_thread().name = original_thread_name
 
                 return [bestSeasonResult]
 
@@ -679,5 +679,5 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         logger.info("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.")
 
     # Remove provider from thread name before return results
-    threading.currentThread().name = origThreadName
+    threading.current_thread().name = original_thread_name
     return finalResults
