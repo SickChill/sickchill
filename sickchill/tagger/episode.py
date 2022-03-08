@@ -28,7 +28,7 @@ class EpisodeTags(object):
             "netflix": tags.netflix,
             "amazon": tags.amazon,
             "hevc": tags.hevc,
-            "trueHD": tags.trueHD
+            "trueHD": tags.trueHD,
         }
 
     def _get_match_obj(self, attr, regex=None, flags=0):
