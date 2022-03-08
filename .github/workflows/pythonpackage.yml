@@ -186,6 +186,7 @@ jobs:
           type=edge,branch=develop
           type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
           type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          type=raw,value=${{GITHUB_REF##*/}}
     - name: Build and Push
       if: github.actor == 'miigotu'
       uses: docker/build-push-action@v2
