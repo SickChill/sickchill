@@ -1164,9 +1164,6 @@ class CMDHistory(HistoryApiCall):
 class CMDHistoryClear(HistoryApiCall):
     _help = {"desc": "Clear the entire history"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """Clear the entire history"""
         self.history.clear()
@@ -1177,9 +1174,6 @@ class CMDHistoryClear(HistoryApiCall):
 # noinspection PyAbstractClass
 class CMDHistoryTrim(HistoryApiCall):
     _help = {"desc": "Trim history entries older than 30 days"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Trim history entries older than 30 days"""
@@ -1218,9 +1212,6 @@ class CMDFailed(ApiCall):
 # noinspection PyAbstractClass
 class CMDBacklog(ApiCall):
     _help = {"desc": "Get the backlogged episodes"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Get the backlogged episodes"""
@@ -1417,9 +1408,6 @@ class CMDPostProcess(ApiCall):
 class CMDSickChill(ApiCall):
     _help = {"desc": "Get miscellaneous information about SickChill"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """dGet miscellaneous information about SickChill"""
         data = {"sc_version": settings.BRANCH, "api_version": self.version, "api_commands": sorted(function_mapper)}
@@ -1490,9 +1478,6 @@ class CMDSickChillAddRootDir(ApiCall):
 class CMDSickChillCheckVersion(ApiCall):
     _help = {"desc": "Check if a new version of SickChill is available"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         update_manager = UpdateManager()
         needs_update = update_manager.check_for_new_version()
@@ -1549,9 +1534,6 @@ class CMDSickChillBackup(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickChillCheckScheduler(ApiCall):
     _help = {"desc": "Get information about the scheduler"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Get information about the scheduler"""
@@ -1623,9 +1605,6 @@ class CMDSickChillDeleteRootDir(ApiCall):
 class CMDSickChillGetDefaults(ApiCall):
     _help = {"desc": "Get SickChill's user default configuration value"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """Get SickChill's user default configuration value"""
 
@@ -1646,9 +1625,6 @@ class CMDSickChillGetDefaults(ApiCall):
 class CMDSickChillGetMessages(ApiCall):
     _help = {"desc": "Get all messages"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         messages = []
         for cur_notification in ui.notifications.get_notifications(self.rh.request.remote_ip):
@@ -1659,9 +1635,6 @@ class CMDSickChillGetMessages(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickChillGetRootDirs(ApiCall):
     _help = {"desc": "Get all root (parent) directories"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Get all root (parent) directories"""
@@ -1694,9 +1667,6 @@ class CMDSickChillPauseBacklog(ApiCall):
 class CMDSickChillPing(ApiCall):
     _help = {"desc": "Ping SickChill to check if it is running"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """Ping SickChill to check if it is running"""
         if settings.started:
@@ -1708,9 +1678,6 @@ class CMDSickChillPing(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickChillRestart(ApiCall):
     _help = {"desc": "Restart SickChill"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Restart SickChill"""
@@ -1816,9 +1783,6 @@ class CMDSickChillSearchTVRAGE(CMDSickChillSearchIndexers):
         },
     }
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         return _responds(RESULT_FAILURE, msg="TVRage is no more, invalid result")
 
@@ -1886,9 +1850,6 @@ class CMDSickChillSetDefaults(ApiCall):
 class CMDSickChillShutdown(ApiCall):
     _help = {"desc": "Shutdown SickChill"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """Shutdown SickChill"""
         if not Shutdown.stop(settings.PID):
@@ -1900,9 +1861,6 @@ class CMDSickChillShutdown(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickChillUpdate(ApiCall):
     _help = {"desc": "Update SickChill to the latest version available"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         update_manager = UpdateManager()
@@ -2836,9 +2794,6 @@ class CMDShows(ApiCall):
 # noinspection PyAbstractClass
 class CMDShowsStats(ApiCall):
     _help = {"desc": "Get the global shows and episodes statistics"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Get the global shows and episodes statistics"""
