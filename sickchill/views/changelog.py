@@ -9,9 +9,6 @@ from .routes import Route
 
 @Route("/changes(/?.*)", name="changelog")
 class HomeChangeLog(Home):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def index(self, *args, **kwargs):
         # noinspection PyBroadException
         try:

@@ -545,6 +545,7 @@ USE_TRAKT = False
 USE_TWILIO = False
 USE_TWITTER = False
 USENET_RETENTION = None
+CACHE_RETENTION = 30
 VERSION_NOTIFY = False
 versionCheckScheduler = None
 WEB_COOKIE_SECRET = None

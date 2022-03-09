@@ -17,9 +17,6 @@ from . import Config
 
 @Route("/config/providers(/?.*)", name="config:providers")
 class ConfigProviders(Config):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_providers.mako")

@@ -324,6 +324,7 @@ def initialize(consoleLogging=True):
         settings.ALLOWED_EXTENSIONS = check_setting_str(settings.CFG, "General", "allowed_extensions", settings.ALLOWED_EXTENSIONS)
 
         settings.USENET_RETENTION = check_setting_int(settings.CFG, "General", "usenet_retention", 500)
+        settings.CACHE_RETENTION = check_setting_int(settings.CFG, "General", "cache_retention", 30)
 
         settings.AUTOPOSTPROCESSOR_FREQUENCY = check_setting_int(
             settings.CFG,
@@ -1189,6 +1190,7 @@ def save_config():
                 "nzb_method": settings.NZB_METHOD,
                 "torrent_method": settings.TORRENT_METHOD,
                 "usenet_retention": int(settings.USENET_RETENTION),
+                "cache_retention": int(settings.CACHE_RETENTION),
                 "autopostprocessor_frequency": int(settings.AUTOPOSTPROCESSOR_FREQUENCY),
                 "dailysearch_frequency": int(settings.DAILYSEARCH_FREQUENCY),
                 "backlog_frequency": int(settings.BACKLOG_FREQUENCY),

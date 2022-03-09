@@ -29,10 +29,7 @@ class InitialSchema(db.SchemaUpgrade):
             ("CREATE INDEX IF NOT EXISTS seeders ON results (seeders);",),
         )
         for query in queries:
-            if len(query) == 1:
-                self.connection.action(query[0])
-            else:
-                self.connection.action(query[0], query[1:])
+            self.connection.action(query[0])
 
 
 class ResultsTable(InitialSchema):

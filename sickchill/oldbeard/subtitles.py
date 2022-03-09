@@ -4,6 +4,8 @@ import re
 import subprocess
 import threading
 import traceback
+from collections import namedtuple
+from typing import Union
 
 import subliminal
 from babelfish import Language, language_converters
@@ -12,9 +14,10 @@ from guessit import guessit
 import sickchill.oldbeard.helpers
 from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num
+from sickchill.show.History import History
 from sickchill.show.Show import Show
 
-from . import db, history
+from . import db
 from .common import Quality
 from .helpers import is_media_file
 
@@ -49,6 +52,19 @@ PROVIDER_URLS = {
     "wizdom": "http://wizdom.xyz",
     "tvsubtitles": "http://www.tvsubtitles.net",
 }
+
+
+max_score = {}
+Scores = namedtuple("Scores", ["res", "percent", "min", "min_percent"])
+
+
+def log_scores(subtitle: Union[subliminal.Episode, subliminal.Movie], video: subliminal.Video, user_score: int = None) -> Scores:
+    if not max_score:
+        max_score[subliminal.Episode] = sum(subliminal.score.episode_scores.values())
+        max_score[subliminal.Movie] = sum(subliminal.score.movie_scores.values())
+
+    score = subliminal.score.compute_score(subtitle, video, hearing_impaired=settings.SUBTITLES_HEARING_IMPAIRED)
+    return Scores(score, round(score / max_score[type(video)] * 100), user_score, round(user_score / max_score[type(video)] * 100))
 
 
 class SubtitleProviderPool(object):
@@ -236,8 +252,10 @@ def download_subtitles(episode, force_lang=None):
             return existing_subtitles, None
 
         for subtitle in subtitles_list:
-            score = subliminal.score.compute_score(subtitle, video, hearing_impaired=settings.SUBTITLES_HEARING_IMPAIRED)
-            logger.debug("[{0}] Subtitle score for {1} is: {2} (min={3})".format(subtitle.provider_name, subtitle.id, score, user_score))
+            scores = log_scores(subtitle, video, user_score=user_score)
+            logger.debug(
+                f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores['res']}/{scores['percent']}% (min={scores['min']}/{scores['min_percent']}%)"
+            )
 
         found_subtitles = pool.download_best_subtitles(
             subtitles_list,
@@ -268,10 +286,9 @@ def download_subtitles(episode, force_lang=None):
         sickchill.oldbeard.helpers.chmodAsParent(subtitle_path)
         sickchill.oldbeard.helpers.fixSetGroupID(subtitle_path)
 
-        if settings.SUBTITLES_HISTORY:
-            logger.debug("history.logSubtitle {0}, {1}".format(subtitle.provider_name, subtitle.language.opensubtitles))
-
-            history.logSubtitle(episode.show.indexerid, episode.season, episode.episode, episode.status, subtitle)
+        History().logSubtitle(
+            episode.show.indexerid, episode.season, episode.episode, episode.status, subtitle, log_scores(subtitle, video, user_score=user_score)
+        )
 
         if settings.SUBTITLES_EXTRA_SCRIPTS and is_media_file(video_path) and not settings.EMBEDDED_SUBTITLES_ALL:
 

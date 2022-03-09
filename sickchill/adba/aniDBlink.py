@@ -16,6 +16,8 @@ class AniDBLink(threading.Thread):
         self.target = (server, port)
         self.timeout = timeout
 
+        self.name = "ANIDB-LINK"
+
         self.myport = myport
         self.sock = None
         self.bound = self.connectSocket(myport, self.timeout)

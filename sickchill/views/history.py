@@ -11,9 +11,8 @@ from .routes import Route
 
 @Route("/history(/?.*)", name="history")
 class History(WebRoot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+    def initialize(self):
+        super().initialize()
         self.history = HistoryTool()
 
     def index(self, limit=None):

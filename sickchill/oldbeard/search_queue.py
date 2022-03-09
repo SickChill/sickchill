@@ -3,11 +3,12 @@ import traceback
 from typing import TYPE_CHECKING
 
 from sickchill import logger, settings
+from sickchill.show.History import History
 
 if TYPE_CHECKING:
     from sickchill.oldbeard.databases.movie import Movie
 
-from . import common, failed_history, generic_queue, history, search, ui
+from . import common, generic_queue, search, ui
 
 BACKLOG_SEARCH = 10
 DAILY_SEARCH = 20
@@ -276,17 +277,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         try:
             for epObj in self.segment:
-
-                logger.info(f"Marking episode as bad: [{epObj.pretty_name}]")
-
-                failed_history.markFailed(epObj)
-
-                (release, provider) = failed_history.findRelease(epObj)
-                if release:
-                    failed_history.logFailed(release)
-                    history.logFailed(epObj, release, provider)
-
-                failed_history.revertEpisode(epObj)
+                History().markFailed(epObj)
                 logger.info(f"Beginning failed download search for: [{epObj.pretty_name}]")
 
             # If it is wanted, self.downCurQuality doesnt matter

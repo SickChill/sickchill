@@ -134,10 +134,16 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-db"></i>&nbsp;&nbsp;${_('Database File')}:
+                    <i class="icon16-config-db"></i>&nbsp;&nbsp;${_('Database Files')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${db.db_full_path()}
+                    % for file_name in db.db_cons:
+                        <div class="row">
+                            <div class="col-md-12">
+                                ${db.db_full_path(file_name)}
+                            </div>
+                        </div>
+                    % endfor
                 </div>
             </div>
             <br/>

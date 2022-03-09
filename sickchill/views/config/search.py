@@ -14,9 +14,6 @@ from . import Config
 
 @Route("/config/search(/?.*)", name="config:search")
 class ConfigSearch(Config):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_search.mako")
@@ -50,6 +47,7 @@ class ConfigSearch(Config):
         backlog_days=None,
         backlog_frequency=None,
         dailysearch_frequency=None,
+        cache_retention=None,
         nzb_method=None,
         torrent_method=None,
         usenet_retention=None,
@@ -106,6 +104,7 @@ class ConfigSearch(Config):
         settings.NZB_METHOD = nzb_method
         settings.TORRENT_METHOD = torrent_method
         settings.USENET_RETENTION = try_int(usenet_retention, 500)
+        settings.CACHE_RETENTION = try_int(cache_retention, 30)
 
         settings.IGNORE_WORDS = ignore_words if ignore_words else ""
         settings.TRACKERS_LIST = trackers_list if trackers_list else ""

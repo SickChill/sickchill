@@ -18,7 +18,8 @@ import uuid
 import zipfile
 from contextlib import closing
 from itertools import cycle
-from typing import AnyStr, List, Union
+from pathlib import Path
+from typing import Union
 from urllib.parse import urljoin
 from xml.etree import ElementTree
 
@@ -788,8 +789,10 @@ def backupVersionedFile(old_file, version):
 
     numTries = 0
 
-    new_file = old_file + "." + "v" + str(version)
+    if not isinstance(old_file, Path):
+        old_file = Path(old_file)
 
+    new_file = old_file.with_suffix(f"{old_file.suffix}.v{version}")
     while not os.path.isfile(new_file):
         if not os.path.isfile(old_file):
             logger.debug(_(f"Not creating backup, {old_file} doesn't exist"))
@@ -1232,7 +1235,7 @@ def getURL(
         return None
 
     try:
-        return resp if response_type == "response" or response_type is None else resp.json() if response_type == "json" else getattr(resp, response_type, resp)
+        return resp if response_type in ("response", None) else resp.json() if response_type == "json" else getattr(resp, response_type, resp)
     except ValueError:
         logger.debug(_(f"Requested a json response but response was not json, check the url: {url}"))
         return None

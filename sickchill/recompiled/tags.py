@@ -15,6 +15,8 @@ sat = re.compile(r"(dsr|satrip)", re.I)
 itunes = re.compile(r"itunes(hd|uhd)?", re.I)
 netflix = re.compile(r"netflix(hd|uhd)?", re.I)
 amazon = re.compile(r"(amzn|amazon)(hd|uhd)?", re.I)
+hevc = re.compile(r"\.hevc\.", re.I)
+trueHD = re.compile(r"\.TrueHD\.")
 
 # Codecs
 avc = re.compile(r"([xh].?26[45]|AVC)", re.I)

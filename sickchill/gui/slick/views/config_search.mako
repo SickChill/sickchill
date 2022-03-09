@@ -130,6 +130,25 @@
                             </div>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Cache Retention')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="number" min="1" step="1" name="cache_retention"
+                                                   value="${settings.CACHE_RETENTION}" class="form-control input-sm input75"
+                                                   autocapitalize="off" id="cache_retention"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="backlog_days">${_('number of day(s) that cached results should be kept (Default: 30 days)')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Ignore words')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
