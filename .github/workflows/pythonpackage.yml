@@ -167,7 +167,7 @@ jobs:
       run: |
         echo ::set-output name=version::$(poetry version --short)
         echo ::set-output name=docker_name::${GITHUB_REPOSITORY,,}
-        echo ::set-output name=branch_name::${{GITHUB_REF##*/}}
+        echo ::set-output name=branch_name::${GITHUB_REF##*/}
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v3
