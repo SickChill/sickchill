@@ -162,15 +162,6 @@ jobs:
         version: 1.1.10
         virtualenvs-create: false
         installer-parallel: false
-#     - name: Set variables
-#       id: vars
-#       run: |
-#         echo ::set-output name=version::$(poetry version --short)
-#         echo ::set-output name=docker_name::${GITHUB_REPOSITORY,,}
-#     - name: Dump GitHub context
-#       env:
-#         GITHUB_CONTEXT: ${{ toJson(github) }}
-#       run: echo "$GITHUB_CONTEXT"
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v3
@@ -200,8 +191,7 @@ jobs:
         context: .
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
-        tags: |
-          ${{ steps.meta.outputs.tags }}
+        tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
