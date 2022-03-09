@@ -167,6 +167,10 @@ jobs:
       run: |
         echo ::set-output name=version::$(poetry version --short)
         echo ::set-output name=docker_name::${GITHUB_REPOSITORY,,}
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v3
@@ -187,7 +191,6 @@ jobs:
           type=edge,branch=develop
           type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
           type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-          type=raw,value=${{ github.ref_name }}
     - name: Build and Push
       if: github.actor == 'miigotu'
       uses: docker/build-push-action@v2
