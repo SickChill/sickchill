@@ -2,7 +2,7 @@
 name = "sickchill"
 version = "2022.02.20"
 description = 'Automatic Video Library Manager for TV Shows'
-license = "GPL-3.0+"
+license = "GPL-3.0-or-later"
 
 authors = [
     "Dustyn Gibson <miigotu@gmail.com>"
