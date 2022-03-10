@@ -610,12 +610,11 @@ class QueueItemRename(ShowQueueItem):
             if cur_ep_obj.location:
                 if cur_ep_obj.relatedEps:
                     # do we have one of multi-episodes in the rename list already
-                    have_already = False
+                    
                     for cur_related_ep in cur_ep_obj.relatedEps + [cur_ep_obj]:
                         if cur_related_ep in ep_obj_rename_list:
-                            have_already = True
                             break
-                    if not have_already:
+                    else:
                         ep_obj_rename_list.append(cur_ep_obj)
 
                 else:
