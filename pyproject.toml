@@ -28,7 +28,8 @@ classifiers = [
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9"
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10"
 ]
 
 packages = [
@@ -135,11 +136,11 @@ format = ["black", "isort", "flake8"]
 
 _yarn_upgrade = {cmd = "yarn upgrade", help = "update yarn dependancies"}
 _poetry_update = {shell = "poetry update", help = "update python dependancies"}
-_add_locks = {shell = "git add poetry.lock yarn.lock", help = "Add yarn and poetry lock files"}
+_add_locks = {shell = "git add pyproject.toml yarn.lock", help = "Add yarn and poetry lock files"}
 depup = ["_poetry_update", "_yarn_upgrade", "_add_locks"]
 
 update_translations = ["babel_extract", "babel_update", "crowdin_upload", "crowdin_download", "babel_compile", "po2json"]
-update_dependencies = {shell = "poetry update && yarn upgrade && git add poetry.lock yarn.lock"}
+update_dependencies = {shell = "poetry update && yarn upgrade && git add pyproject.toml yarn.lock"}
 
 test = [
     { ref = "lint" },
@@ -256,5 +257,5 @@ codecov = "^2.1.12"
 black = "^22.1"
 pytest = "^7.0.1"
 isort = "^5.10.1"
-poethepoet = "^0.12.3"
+poethepoet = "^0.13.0"
 po2json = "^0.2.2"

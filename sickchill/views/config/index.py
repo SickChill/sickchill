@@ -11,9 +11,6 @@ from sickchill.views.routes import Route
 
 @Route("/config(/?.*)", name="config:main")
 class Config(WebRoot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @staticmethod
     def ConfigMenu():
         menu = [

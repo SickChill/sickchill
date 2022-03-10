@@ -228,7 +228,7 @@
                                  data-progress-text="${download_stat}"
                                  data-progress-tip="${download_stat_tip}"
                                  data-progress-percentage="${int(progressbar_percent)}"
-                                 data-progress-sort="${progressbar_percent + (cur_total/1000000.0)}"
+                                 data-progress-total="${cur_total}"
                             ></div>
                             <span class="visible-print-inline">${download_stat}</span>
                         </td>

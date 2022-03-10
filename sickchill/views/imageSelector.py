@@ -14,8 +14,8 @@ from .routes import Route
 
 @Route("/imageSelector(/?.*)", name="imageselector")
 class ImageSelector(Home):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def initialize(self):
+        super().initialize()
         self.indexer_session = make_indexer_session()
 
     def index(self, show=None, imageType="", provider: int = None):

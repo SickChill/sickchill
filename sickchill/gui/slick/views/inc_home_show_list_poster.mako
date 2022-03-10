@@ -14,7 +14,7 @@
         % for curLoadingShow in settings.showQueueScheduler.action.loading_show_list:
             <% loading_show = curLoadingShow.info %>
             <div class="show-container" data-name="${loading_show.sort_name}"
-                 data-date="1" data-network="0" data-progress="0" data-progress-sort="0" data-status="Loading">
+                 data-date="1" data-network="0" data-progress="0" data-progress-total="0" data-status="Loading">
                 <div class="show-image">
                     <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="${static_url("images/poster.png")}"
                          data-src="${static_url(loading_show.show_image_url('poster_thumb'))}" />
@@ -63,8 +63,12 @@
                     elif re.search(r'(?i)(?:nded)', curShow.status):
                         display_status = 'Ended'
 
+                if curShow.paused:
+                    display_status = _(display_status) + ' ' + _('Paused')
+
                 if curShow.indexerid in show_stat:
                     cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
+                    cur_airs_prev = show_stat[curShow.indexerid]['ep_airs_prev']
 
                     cur_snatched = show_stat[curShow.indexerid]['ep_snatched'] or 0
                     cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded'] or 0
@@ -87,20 +91,24 @@
                     progressbar_percent = 100.0
                     download_stat_tip = _('Unaired')
 
-
-                data_date = '6000000000.0'
                 if cur_airs_next:
                     data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
+##                 elif cur_airs_prev:
+##                     data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)).timetuple())
                 elif display_status:
-                    if display_status != 'Ended' and curShow.paused:
-                        data_date = '5000000500.0'
-                    elif display_status == 'Continuing':
+                    if display_status.startswith('Continuing'):
                         data_date = '5000000000.0'
-                    elif display_status == 'Ended':
+                    elif display_status.startswith('Upcoming'):
+                        data_date = '5000000050.0'
+                    elif display_status.startswith('Ended'):
                         data_date = '5000000100.0'
+                    elif curShow.paused:
+                        data_date = '5000000500.0'
+                else:
+                    data_date = '6000000000.0'
             %>
             <div class="show-container" id="show${curShow.indexerid}" data-name="${curShow.sort_name}" data-date="${data_date}" data-network="${curShow.network}"
-                 data-progress="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent + (cur_total/1000000.0)}" data-status="${curShow.status}">
+                 data-progress="${int(progressbar_percent)}" data-progress-total="${cur_total}" data-status="${curShow.status}">
                 <div class="show-image">
                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
                         <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
@@ -109,34 +117,25 @@
 
                 <div class="show-information">
                     <div class="progressbar hidden-print" style="position:relative;" data-show-id="${curShow.indexerid}"
-                         data-progress-percentage="${int(progressbar_percent)}" data-progress-sort="${progressbar_percent + (cur_total/1000000.0)}"></div>
+                         data-progress-percentage="${int(progressbar_percent)}" data-progress-total="${cur_total}"></div>
 
                     <div class="show-title">
                         ${curShow.name}
                     </div>
 
                     <div class="show-date">
-                        % if cur_airs_next:
+                        % if cur_airs_next or cur_airs_prev:
                         <%
-                            ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network))
+                            ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next or cur_airs_prev, curShow.airs, curShow.network))
                             try:
                                 out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
                             except (ValueError, OSError):
                                 out = _('Invalid date')
                                 pass
                         %>
-                        ${out}
+                        ${_(display_status)} ${out}
                         % else:
-                        <%
-                            output_html = '?'
-                            display_status = curShow.status
-                            if display_status:
-                                if display_status != 'Ended' and curShow.paused:
-                                    output_html = 'Paused'
-                                elif display_status:
-                                    output_html = display_status
-                        %>
-                        ${_(output_html)}
+                            ${_(display_status)}
                         % endif
                     </div>
 

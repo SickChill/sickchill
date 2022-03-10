@@ -10,11 +10,12 @@ import sickchill.oldbeard.providers
 from sickchill import logger, settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.show.History import History
 
 if TYPE_CHECKING:  # pragma: no cover
     from sickchill.oldbeard.classes import TorrentSearchResult
 
-from . import clients, common, db, failed_history, helpers, history, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
+from . import clients, common, db, helpers, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
 from .common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
 
 
@@ -119,12 +120,7 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
                 dlResult = client.sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
-                # attempt to log failed
-                try:
-                    failed_history.logFailed(result.name)
-                    logger.info("log failed success {}".format(result.name))
-                except Exception as e:
-                    logger.info("log failed failed {} {}".format(result.name, e))
+                History().logFailed(result.episodes, result.name, result.provider)
                 dlResult = False
     else:
         logger.exception(f"Unknown result type, unable to download it ({result.resultType})")
@@ -133,12 +129,8 @@ def snatchEpisode(result: "TorrentSearchResult", endStatus=SNATCHED):
     if not dlResult:
         return False
 
-    if settings.USE_FAILED_DOWNLOADS:
-        failed_history.logSnatch(result)
-
     ui.notifications.message("Episode snatched", result.name)
-
-    history.logSnatch(result)
+    History().logSnatch(result)
 
     # don't notify when we re-download an episode
     sql_l = []
@@ -215,7 +207,7 @@ def pickBestResult(results, show):
             continue
 
         if hasattr(cur_result, "size"):
-            if settings.USE_FAILED_DOWNLOADS and failed_history.hasFailed(cur_result.name, cur_result.size, cur_result.provider.name):
+            if settings.USE_FAILED_DOWNLOADS and History().hasFailed(cur_result.name, cur_result.size, cur_result.provider.name):
                 logger.info(f"{cur_result.name} has previously failed, rejecting it")
                 continue
 
@@ -363,15 +355,15 @@ def searchForNeededEpisodes():
         logger.info("No episodes needed.")
         return list(foundResults.values())
 
-    origThreadName = threading.currentThread().name
+    original_thread_name = threading.current_thread().name
 
     providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
     for curProvider in providers:
-        threading.currentThread().name = f"{origThreadName} :: [{curProvider.name}]"
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
         curProvider.cache.update_cache()
 
     for curProvider in providers:
-        threading.currentThread().name = f"{origThreadName} :: [{curProvider.name}]"
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
         try:
             curFoundResults = curProvider.search_rss(episodes)
         except AuthException as error:
@@ -403,7 +395,7 @@ def searchForNeededEpisodes():
 
             foundResults[curEp] = bestResult
 
-    threading.currentThread().name = origThreadName
+    threading.current_thread().name = original_thread_name
 
     if not didSearch:
         logger.info("No NZB/Torrent providers found or enabled in the sickchill config for daily searches. Please check your settings.")
@@ -429,17 +421,17 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
     # build name cache for show
     sickchill.oldbeard.name_cache.build_name_cache(show)
 
-    origThreadName = threading.currentThread().name
+    original_thread_name = threading.current_thread().name
 
     providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
     for curProvider in providers:
-        threading.currentThread().name = f"{origThreadName} :: [{curProvider.name}]"
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
         curProvider.cache.update_cache()
 
-    threading.currentThread().name = origThreadName
+    threading.current_thread().name = original_thread_name
 
     for curProvider in providers:
-        threading.currentThread().name = f"{origThreadName} :: [{curProvider.name}]"
+        threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
 
         if curProvider.anime_only and not show.is_anime:
             logger.debug(f"{show.name} is not an anime, skipping")
@@ -549,7 +541,7 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 bestSeasonResult.episodes = epObjs
 
                 # Remove provider from thread name before return results
-                threading.currentThread().name = origThreadName
+                threading.current_thread().name = original_thread_name
 
                 return [bestSeasonResult]
 
@@ -687,5 +679,5 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         logger.info("No NZB/Torrent providers found or enabled in the sickchill config for backlog searches. Please check your settings.")
 
     # Remove provider from thread name before return results
-    threading.currentThread().name = origThreadName
+    threading.current_thread().name = original_thread_name
     return finalResults

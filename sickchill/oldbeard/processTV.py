@@ -506,30 +506,32 @@ def process_media(process_path, video_files, release_name, process_method, force
 def process_failed(process_path, release_name, result):
     """Process a download that did not complete correctly"""
 
-    if settings.USE_FAILED_DOWNLOADS:
-        processor = None
+    if not settings.USE_FAILED_DOWNLOADS:
+        return
 
-        try:
-            processor = failedProcessor.FailedProcessor(process_path, release_name)
-            result.result = processor.process()
-            process_fail_message = ""
-        except FailedPostProcessingFailedException as e:
-            result.result = False
-            process_fail_message = str(e)
+    processor = None
 
-        if processor:
-            result.output += processor.log
+    try:
+        processor = failedProcessor.FailedProcessor(process_path, release_name)
+        result.result = processor.process()
+        process_fail_message = ""
+    except FailedPostProcessingFailedException as e:
+        result.result = False
+        process_fail_message = str(e)
 
-        if settings.DELETE_FAILED and result.result:
-            if delete_folder(process_path, check_empty=False):
-                result.output += log_helper("Deleted folder: {0}".format(process_path), logger.DEBUG)
+    if processor:
+        result.output += processor.log
 
-        if result.result:
-            result.output += log_helper("Failed Download Processing succeeded: ({0}, {1})".format(release_name, process_path))
-        else:
-            result.output += log_helper(
-                "Failed Download Processing failed: ({0}, {1}): {2}".format(release_name, process_path, process_fail_message), logger.WARNING
-            )
+    if settings.DELETE_FAILED and result.result:
+        if delete_folder(process_path, check_empty=False):
+            result.output += log_helper("Deleted folder: {0}".format(process_path), logger.DEBUG)
+
+    if result.result:
+        result.output += log_helper("Failed Download Processing succeeded: ({0}, {1})".format(release_name, process_path))
+    else:
+        result.output += log_helper(
+            "Failed Download Processing failed: ({0}, {1}): {2}".format(release_name, process_path, process_fail_message), logger.WARNING
+        )
 
 
 def subtitles_enabled(video):

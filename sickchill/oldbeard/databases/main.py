@@ -202,9 +202,9 @@ class MainSanityCheck(db.DBSanityCheck):
         self.connection.action("UPDATE tv_shows SET lang = '' WHERE lang = 0 or lang = '0'")
 
 
-def backup_database(version):
+def backup_database(full_path, version):
     logger.info("Backing up database before upgrade")
-    if not helpers.backupVersionedFile(db.db_full_path(), "{0}.{1}".format(*version)):
+    if not helpers.backupVersionedFile(full_path, "{0}.{1}".format(*version)):
         logger.log_error_and_exit("Database backup failed, abort upgrading database")
     else:
         logger.info("Proceeding with upgrade")
@@ -274,7 +274,7 @@ class AddPreferWords(InitialSchema):
         return self.has_column("tv_shows", "rls_prefer_words")
 
     def execute(self):
-        backup_database(self.connection.version)
+        backup_database(self.connection.full_path, self.connection.version)
 
         logger.info("Adding column rls_prefer_words to tvshows")
         self.add_column("tv_shows", "rls_prefer_words", "TEXT", "")
@@ -289,7 +289,7 @@ class AddCustomNameToShow(AddPreferWords):
         return self.has_column("tv_shows", "custom_name")
 
     def execute(self):
-        backup_database(self.connection.version)
+        backup_database(self.connection.full_path, self.connection.version)
 
         logger.info("Adding column custom_name to tvshows")
         self.add_column("tv_shows", "custom_name", "TEXT", "")

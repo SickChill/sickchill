@@ -8,7 +8,6 @@ import warnings
 from sqlite3 import OperationalError
 from typing import List
 
-import sickchill.oldbeard.helpers
 from sickchill import logger, settings
 
 db_cons = {}

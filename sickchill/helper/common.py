@@ -1,6 +1,8 @@
 import re
 from fnmatch import fnmatch
+from pathlib import Path
 
+import appdirs
 from github import Github
 from github.GithubException import (
     BadAttributeException,
@@ -391,3 +393,14 @@ def setup_github():
     except (GithubException, Exception) as error:
         settings.gh = None
         sickchill.logger.error(_("Unable to setup GitHub properly. GitHub will not be available. Error: {0}").format(error))
+
+
+def choose_data_dir(program_dir):
+    old_data_dir = Path(program_dir).parent
+    old_profile_path = Path.home().joinpath("sickchill")
+    proper_data_dir = Path(appdirs.user_config_dir(appname="sickchill"))
+    for location in [old_data_dir, old_profile_path, proper_data_dir]:
+        for check in ["sickbeard.db", "sickchill.db", "config.ini"]:
+            if location.joinpath(check).exists():
+                return location
+    return proper_data_dir

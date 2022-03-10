@@ -10,9 +10,6 @@ from .routes import Route
 
 @Route("/news(/?.*)", name="news")
 class HomeNews(Home):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def index(self):
         # noinspection PyBroadException
         try:

@@ -9,11 +9,11 @@ jobs:
     if: github.actor == 'miigotu'
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.x'
       - name: Install Poetry
-        uses: snok/install-poetry@v1.2.1
+        uses: snok/install-poetry@v1.3.1
         with:
           version: 1.1.10
           virtualenvs-path: .venv
@@ -25,15 +25,15 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $(poetry config cache-dir)
-          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
       - name: Restore virtualenv
         if: success() && !env.ACT
         uses: actions/cache@v2
         with:
           path: .venv
-          key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
       - name: Checkout SickChill
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: master
           path: sickchill
