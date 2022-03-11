@@ -30,13 +30,10 @@ class SickChillArgumentParser(ArgumentParser):
             "--datadir",
             help=f"full path to a folder where the database, config, cache and log files should be stored.",
             default=self.data_dir,
-            type=self.absolute_path
+            type=self.absolute_path,
         )
         self.add_argument(
-            "--config",
-            help=f"full file path to override the default configuration file.",
-            default=self.data_dir / "config.ini",
-            type=self.absolute_path
+            "--config", help=f"full file path to override the default configuration file.", default=self.data_dir / "config.ini", type=self.absolute_path
         )
         self.add_argument("--pidfile", help="combined with --daemon creates a pid file (full path)", type=Path)
         self.add_argument("--noresize", action="store_true", help="prevent resizing of show images even if PIL is installed")

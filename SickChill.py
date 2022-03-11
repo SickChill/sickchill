@@ -55,16 +55,10 @@ class SickChill(object):
         # system event callback for shutdown/restart
         settings.events = Events(self.shutdown)
 
-        # daemon constants
-        self.run_as_daemon = False
-
         # web server constants
         self.web_server = None
-        self.no_launch = False
 
         self.start_port = settings.WEB_PORT
-
-        self.console_logging = True
 
     @staticmethod
     def clear_cache():
@@ -92,14 +86,13 @@ class SickChill(object):
             sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 
         settings.NO_RESIZE = args.noresize
-        self.console_logging = not (hasattr(sys, "frozen") or args.quiet or args.daemon)
-        self.no_launch = args.nolaunch or args.daemon
-        self.run_as_daemon = args.daemon and platform.system() != "Windows"
+        console_logging = not (hasattr(sys, "frozen") or args.quiet or args.daemon)
+        no_launch = args.nolaunch or args.daemon
+        run_as_daemon = args.daemon and platform.system() != "Windows"
 
         # The pid file is only useful in daemon mode, make sure we can write the file properly
-        if bool(args.pidfile) and not self.run_as_daemon:
-            if self.console_logging:
-                sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
+        if console_logging and bool(args.pidfile) and not run_as_daemon:
+            sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
 
         settings.DATA_DIR = args.datadir
         settings.CONFIG_FILE = args.config
@@ -107,8 +100,8 @@ class SickChill(object):
         # Make sure that we can create the data dir
         if not os.access(settings.DATA_DIR, os.F_OK):
             try:
-                os.makedirs(settings.DATA_DIR, 0o744)
-            except os.error:
+                settings.DATA_DIR.mkdir(mode=0o777, parents=True, exist_ok=True)
+            except (OSError, FileNotFoundError):
                 raise SystemExit(_(f"Unable to create data directory: {settings.DATA_DIR}"))
 
         # Make sure we can write to the data dir
@@ -117,7 +110,7 @@ class SickChill(object):
 
         # Make sure we can write to the config file
         if not os.access(settings.CONFIG_FILE, os.W_OK):
-            if os.path.isfile(settings.CONFIG_FILE):
+            if settings.CONFIG_FILE.is_file():
                 raise SystemExit(_(f"Config file must be writeable: {settings.CONFIG_FILE}"))
                 settings.CONFIG_FILE.stat()
             elif not os.access(settings.CONFIG_FILE.parent, os.W_OK):
@@ -126,7 +119,7 @@ class SickChill(object):
         os.chdir(settings.DATA_DIR)
 
         # Initialize the config and our threads
-        sickchill.start.initialize(console_logging=self.console_logging)
+        sickchill.start.initialize(console_logging=console_logging)
 
         # Build from the DB to start with
         self.load_shows_from_db()
@@ -158,7 +151,7 @@ class SickChill(object):
         # oldbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
-        if settings.LAUNCH_BROWSER and not self.no_launch:
+        if settings.LAUNCH_BROWSER and not no_launch:
             sickchill.start.launchBrowser("https" if settings.ENABLE_HTTPS else "http", args.port, settings.WEB_ROOT)
 
         # main loop
@@ -185,7 +178,6 @@ class SickChill(object):
                 location = sql_show["location"]
                 logger.exception(_(f"There was an error creating the show in {location}: Error {error}"))
                 logger.debug(traceback.format_exc())
-
 
     def shutdown(self, event):
         """
@@ -255,7 +247,7 @@ class SickChill(object):
 
             return True
 
-        if os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), ".git")):  # update with git
+        if (settings.PROG_DIR.parent / ".git").is_dir():  # update with git
             print(_("Forcing SickChill to update using git..."))
             result = update_with_git()
             if result:

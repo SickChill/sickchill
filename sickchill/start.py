@@ -1648,38 +1648,33 @@ def launchBrowser(protocol="http", startPort=None, web_root="/"):
 
 
 def check_cache_restore():
-        # Check if we need to perform a restore of the cache folder
-        new_name = None
-        restore_dir = settings.DATA_DIR.absolute() / "restore"
-        cache_restore_dir = restore_dir / "cache"
-        cache_dir = settings.CACHE_DIR.absolute()
-        try:
-            if cache_restore_dir.exists():
-                new_name = rename_location_with_timestamp_if_exists(cache_dir)
-                cache_restore_dir.rename(cache_dir)
-                logger.info("Restore: restoring cache successful")
-        except Exception as error:
-            logger.exception(f"Restore: restoring cache failed: {error}")
-            if new_name:
-                new_name.replace(cache_dir)
-        finally:
-            if restore_dir.exists():
-                try:
-                    shutil.rmtree(restore_dir)
-                except Exception as error:
-                    logger.exception(f"Restore: settings.Unable to remove the restore directory: {error}")
+    # Check if we need to perform a restore of the cache folder
+    new_name = None
+    restore_dir = settings.DATA_DIR.absolute() / "restore"
+    cache_restore_dir = restore_dir / "cache"
+    cache_dir = settings.CACHE_DIR.absolute()
+    try:
+        if cache_restore_dir.exists():
+            new_name = rename_location_with_timestamp_if_exists(cache_dir)
+            cache_restore_dir.rename(cache_dir)
+            logger.info("Restore: restoring cache successful")
+    except Exception as error:
+        logger.exception(f"Restore: restoring cache failed: {error}")
+        if new_name:
+            new_name.replace(cache_dir)
+    finally:
+        if restore_dir.exists():
+            try:
+                shutil.rmtree(restore_dir)
+            except Exception as error:
+                logger.exception(f"Restore: settings.Unable to remove the restore directory: {error}")
 
-                for cleanup_dir in [
-                    settings.CACHE_DIR / "mako",
-                    settings.CACHE_DIR / "sessions",
-                    settings.CACHE_DIR / "indexers",
-                    settings.CACHE_DIR / "rss"
-                ]:
-                    try:
-                        shutil.rmtree(cleanup_dir)
-                    except Exception as error:
-                        if cleanup_dir not in ["rss", "sessions", "indexers"]:
-                            logger.info(f"Restore: Unable to remove the cache/{cleanup_dir} directory: {error}")
+            for cleanup_dir in [settings.CACHE_DIR / "mako", settings.CACHE_DIR / "sessions", settings.CACHE_DIR / "indexers", settings.CACHE_DIR / "rss"]:
+                try:
+                    shutil.rmtree(cleanup_dir)
+                except Exception as error:
+                    if cleanup_dir not in ["rss", "sessions", "indexers"]:
+                        logger.info(f"Restore: Unable to remove the cache/{cleanup_dir} directory: {error}")
 
 
 def check_db_restore():
@@ -1697,13 +1692,7 @@ def check_db_restore():
     if not restore_dir.exists():
         return
 
-    for filename in [
-        "sickbeard.db",
-        "sickchill.db",
-        "config.ini",
-        "failed.db",
-        "cache.db"
-    ]:
+    for filename in ["sickbeard.db", "sickchill.db", "config.ini", "failed.db", "cache.db"]:
         try:
             source_file = restore_dir / filename
             destination_file = destination / filename
@@ -1715,4 +1704,3 @@ def check_db_restore():
             new_name.replace(destination_file)
         else:
             logger.info(_(f"Restored {filename}"))
-

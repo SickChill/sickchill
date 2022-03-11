@@ -79,7 +79,7 @@ class UpdateManager(object):
                 ui.notifications.message(_("Backup"), _("Config backup successful"))
                 return True
             else:
-                logger.exception( _("Config backup failed"))
+                logger.exception(_("Config backup failed"))
                 ui.notifications.message(_("Backup"), _("Config backup failed"))
                 return False
         except Exception as error:

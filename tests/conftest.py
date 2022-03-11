@@ -382,7 +382,7 @@ def patch_open(open_func, files):
 @pytest.fixture(autouse=True, scope="session")
 def cleanup_files():
     # yield
-    for file in [os.path.join("tests", "sickchill.db"), os.path.join("tests", "cache.db"), os.path.join("tests", "failed.db")]:
-        if os.path.exists(file):
-            print(f"Removing {file}")
-            os.remove(file)
+    for filename in [TEST_DIR / TEST_DB_NAME, TEST_DIR / TEST_CACHE_DB_NAME, TEST_DIR / TEST_FAILED_DB_NAME]:
+        if filename.exists():
+            print(f"Removing {filename}")
+            filename.unlink(filename)

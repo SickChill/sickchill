@@ -317,14 +317,10 @@ class ImageCache(object):
                             file_type_str = self.image_str[cur_file_type]
                             file_type_needed = need_images[cur_file_type]
 
-                            logger.debug(
-                                _(f"[{show_obj.indexerid}] Checking if {cur_filename} ({file_type_str}) needs cached: {file_type_needed}")
-                            )
+                            logger.debug(_(f"[{show_obj.indexerid}] Checking if {cur_filename} ({file_type_str}) needs cached: {file_type_needed}"))
 
                             if cur_file_type in need_images and need_images[cur_file_type]:
-                                logger.debug(
-                                    _(f"[{show_obj.indexerid}] Found a {file_type_str} in the show dir that doesn't exist in the cache, caching it")
-                                )
+                                logger.debug(_(f"[{show_obj.indexerid}] Found a {file_type_str} in the show dir that doesn't exist in the cache, caching it"))
                                 need_images[cur_file_type] = self._cache_image_from_file(cur_filename, cur_file_type, show_obj.indexerid)
 
             except ShowDirectoryNotFoundException:

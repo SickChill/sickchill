@@ -9,8 +9,8 @@ from configobj import ConfigObj
 from sickchill.oldbeard.common import SD
 from sickchill.oldbeard.numdict import NumDict
 
-from .init_helpers import setup_gettext
 from .helper.common import sickchill_dir
+from .init_helpers import setup_gettext
 
 if TYPE_CHECKING:
     from .movies import MovieList

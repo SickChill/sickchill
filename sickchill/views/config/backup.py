@@ -4,10 +4,9 @@ from tornado.web import addslash
 
 from sickchill import settings
 from sickchill.oldbeard import helpers
+from sickchill.update_manager import UpdateManager
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
-
-from sickchill.update_manager import UpdateManager
 
 from .index import Config
 

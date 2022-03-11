@@ -19,7 +19,7 @@ import zipfile
 from contextlib import closing
 from itertools import cycle
 from pathlib import Path
-from typing import Union, List
+from typing import List, Union
 from urllib.parse import urljoin
 from xml.etree import ElementTree
 
