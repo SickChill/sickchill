@@ -103,8 +103,6 @@ class SickChill(object):
 
         settings.DATA_DIR = args.datadir
         settings.CONFIG_FILE = args.config
-        assert isinstance(settings.CONFIG_FILE, Path)
-        assert os.path.abspath(settings.CONFIG_FILE) == str(settings.CONFIG_FILE)
 
         # Make sure that we can create the data dir
         if not os.access(settings.DATA_DIR, os.F_OK):
