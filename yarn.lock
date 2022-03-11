@@ -1388,9 +1388,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.76:
-  version "1.4.80"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.80.tgz#299a1ea3e32810934b4e3c2e4d4cb53136fdab3f"
-  integrity sha512-COsbJCGVYCc/aAY4cd94x1Js3q0r406YKGbdL8LXHg0O9dEjuFEFU/vZneRxBxKo/f1lLHi0YyAR7sbFM+i8Bg==
+  version "1.4.81"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.81.tgz#a9ce8997232fb9fb0ec53de8931a85b18c0a7383"
+  integrity sha512-Gs7xVpIZ7tYYSDA+WgpzwpPvfGwUk3KSIjJ0akuj5XQHFdyQnsUoM76EA4CIHXNLPiVwTwOFay9RMb0ChG3OBw==
 
 emittery@^0.10.1:
   version "0.10.1"
@@ -4714,9 +4714,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.855.0:
-  version "1.865.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.865.0.tgz#9e4e731a3e3bc708a7a3567f8d0f63be39569deb"
-  integrity sha512-Cgl23n7rBSZL4O8h31UKeDvZJdxuAVg5KId/zupE07H1JXR4IjBMU9J1MYyJVki08tt9MGFWPeUq4ppML1G5XQ==
+  version "1.866.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.866.0.tgz#4a380ffbc65c2837379d94a67e2441c7b8c9461f"
+  integrity sha512-bV0yXm1iJtHKtV2OHA5eBYa6S/1p0bRe1cqDPTO2zzsfnhPJqpvIM6fDjCxSISYMqv00eGFoaNa0MPM25KmUoQ==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
@@ -5192,9 +5192,9 @@ uglify-es@~3.3.0:
     source-map "~0.6.1"
 
 uglify-js@^3.13.3:
-  version "3.15.2"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.15.2.tgz#1ed2c976f448063b1f87adb68c741be79959f951"
-  integrity sha512-peeoTk3hSwYdoc9nrdiEJk+gx1ALCtTjdYuKSXMTDqq7n1W7dHPqWDdSi+BPL0ni2YMeHD7hKUSdbj3TZauY2A==
+  version "3.15.3"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.15.3.tgz#9aa82ca22419ba4c0137642ba0df800cb06e0471"
+  integrity sha512-6iCVm2omGJbsu3JWac+p6kUiOpg3wFO2f8lIXjfEb8RrmLjzog1wTPMmwKB7swfzzqxj9YM+sGUM++u1qN4qJg==
 
 unbox-primitive@^1.0.1:
   version "1.0.1"
