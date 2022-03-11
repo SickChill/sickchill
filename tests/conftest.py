@@ -21,6 +21,7 @@ import os
 import os.path
 import shutil
 import unittest
+from pathlib import Path
 
 import pytest
 from configobj import ConfigObj
@@ -38,7 +39,7 @@ from sickchill.tv import TVEpisode, TVShow
 # =================
 #  test globals
 # =================
-TEST_DIR = os.path.abspath(os.path.dirname(__file__))
+TEST_DIR = Path(__file__).absolute().parent
 TEST_DB_NAME = "sickchill.db"
 TEST_CACHE_DB_NAME = "cache.db"
 TEST_FAILED_DB_NAME = "failed.db"
@@ -46,11 +47,11 @@ TEST_FAILED_DB_NAME = "failed.db"
 SHOW_NAME = "show name"
 SEASON = 4
 EPISODE = 2
-FILENAME = "show name - s0" + str(SEASON) + "e0" + str(EPISODE) + ".mkv"
-FILE_DIR = os.path.join(TEST_DIR, SHOW_NAME)
-FILE_PATH = os.path.join(FILE_DIR, FILENAME)
-SHOW_DIR = os.path.join(TEST_DIR, SHOW_NAME + " final")
-PROCESSING_DIR = os.path.join(TEST_DIR, "Downloads")
+FILENAME = f"show name - s0{SEASON}e0{EPISODE}.mkv"
+FILE_DIR = TEST_DIR / SHOW_NAME
+FILE_PATH = FILE_DIR / FILENAME
+SHOW_DIR = TEST_DIR / f"{SHOW_NAME} final"
+PROCESSING_DIR = TEST_DIR / "Downloads"
 NUM_SEASONS = 5
 EPISODES_PER_SEASON = 20
 
@@ -71,8 +72,8 @@ def create_test_cache_folder():
     """
     Create a cache folder for caching tests.
     """
-    if not os.path.isdir(settings.CACHE_DIR):
-        os.mkdir(settings.CACHE_DIR)
+    if not settings.CACHE_DIR.is_dir():
+        settings.CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # call env functions at appropriate time during SickChill var setup
@@ -97,8 +98,8 @@ settings.TV_DOWNLOAD_DIR = PROCESSING_DIR
 settings.providerList = providers.makeProviderList()
 
 settings.DATA_DIR = TEST_DIR
-settings.CONFIG_FILE = os.path.join(settings.DATA_DIR, "config.ini")
-settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
+settings.CONFIG_FILE = settings.DATA_DIR / "config.ini"
+settings.CFG = ConfigObj(str(settings.CONFIG_FILE), encoding="UTF-8", indent_type="  ")
 settings.GUI_NAME = "slick"
 
 settings.BRANCH = sickchill.oldbeard.config.check_setting_str(settings.CFG, "General", "branch")
@@ -106,11 +107,11 @@ settings.CUR_COMMIT_HASH = sickchill.oldbeard.config.check_setting_str(settings.
 settings.GIT_USERNAME = sickchill.oldbeard.config.check_setting_str(settings.CFG, "General", "git_username")
 settings.GIT_TOKEN = sickchill.oldbeard.config.check_setting_str(settings.CFG, "General", "git_token_password", censor_log=True)
 
-settings.LOG_DIR = os.path.join(TEST_DIR, "Logs")
+settings.LOG_DIR = TEST_DIR / "Logs"
 sickchill.logger.log_file = os.path.join(settings.LOG_DIR, "test_sickchill.log")
 create_test_log_folder()
 
-settings.CACHE_DIR = os.path.join(TEST_DIR, "cache")
+settings.CACHE_DIR = TEST_DIR / "cache"
 create_test_cache_folder()
 
 sickchill.logger.init_logging(False, True)
@@ -286,7 +287,7 @@ def teardown_test_db():
     #        try:
     #            os.remove(filename)
     #        except Exception as e:
-    #            print('ERROR: Failed to remove ' + filename)
+    #            print(f'ERROR: Failed to remove {filename}')
     #            print(Exception(e))
 
 
@@ -353,14 +354,15 @@ def teardown_test_show_dir():
 
 @pytest.fixture(scope="module")
 def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join(os.path.dirname(request.module.__file__), "cassettes")
+    # Put all cassettes in providers/{module}/cassettes/{provider}.yaml
+    return Path(request.module.__file__) / "cassettes"
 
 
 @pytest.fixture()
 def vcr_cassette_name(request):
     """Name of the VCR cassette"""
-    return request.cls.provider.get_id() + ".yaml"
+    provider_id = request.cls.provider.get_id()
+    return f"{provider_id}.yaml"
 
 
 @pytest.fixture(scope="module")

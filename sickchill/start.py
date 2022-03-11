@@ -4,6 +4,7 @@ import re
 import shutil
 import socket
 import sys
+from pathlib import Path
 
 import rarfile
 from configobj import ConfigObj
@@ -39,15 +40,22 @@ from .oldbeard import (
     traktChecker,
 )
 from .oldbeard.databases import cache
+from .oldbeard.helpers import rename_location_with_timestamp_if_exists
 from .providers import metadata
 from .system.Shutdown import Shutdown
 
 
-def initialize(consoleLogging=True):
+def initialize(console_logging=True):
     with settings.INIT_LOCK:
 
         if settings.__INITIALIZED__:
             return False
+
+            # Load the config and publish it to the oldbeard package
+        if console_logging and not settings.CONFIG_FILE.is_file():
+            sys.stdout.write(_(f"Unable to find {settings.CONFIG_FILE}, all settings will be default!\n"))
+
+        settings.CFG = ConfigObj(str(settings.CONFIG_FILE), encoding="UTF-8", indent_type="  ")
 
         check_section(settings.CFG, "General")
         check_section(settings.CFG, "Blackhole")
@@ -75,6 +83,8 @@ def initialize(consoleLogging=True):
         check_section(settings.CFG, "RocketChat")
         check_section(settings.CFG, "Discord")
 
+        settings.PID = os.getpid()
+
         # Need to be before any passwords
         settings.ENCRYPTION_VERSION = check_setting_int(settings.CFG, "General", "encryption_version", min_val=0, max_val=2)
         settings.ENCRYPTION_SECRET = check_setting_str(settings.CFG, "General", "encryption_secret", helpers.generateCookieSecret(), censor_log=True)
@@ -92,7 +102,7 @@ def initialize(consoleLogging=True):
         if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
             settings.DEFAULT_PAGE = "home"
 
-        settings.LOG_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
+        settings.LOG_DIR = settings.DATA_DIR / "Logs"
         settings.LOG_NR = check_setting_int(settings.CFG, "General", "log_nr", 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         settings.LOG_SIZE = check_setting_float(settings.CFG, "General", "log_size", 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
@@ -105,7 +115,7 @@ def initialize(consoleLogging=True):
             fileLogging = False
 
         # init logging
-        logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
+        logger.init_logging(console_logging=console_logging, file_logging=fileLogging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
 
         # Initializes oldbeard.gh
         setup_github()
@@ -122,9 +132,6 @@ def initialize(consoleLogging=True):
             settings.CFG, "General", "git_remote_url", "https://github.com/{0}/{1}.git".format(settings.GIT_ORG, settings.GIT_REPO)
         )
 
-        if "rage" in settings.GIT_REMOTE_URL.lower():
-            settings.GIT_REMOTE_URL = "https://github.com/{0}/{1}.git".format(settings.GIT_ORG, settings.GIT_REPO)
-
         # current commit hash
         settings.CUR_COMMIT_HASH = check_setting_str(settings.CFG, "General", "cur_commit_hash")
 
@@ -138,45 +145,10 @@ def initialize(consoleLogging=True):
 
         load_gettext_translations(locale_dir(), "messages")
 
-        settings.CACHE_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "cache"))
+        settings.CACHE_DIR = settings.DATA_DIR / "cache"
 
-        # Check if we need to perform a restore of the cache folder
-        try:
-            restoreDir = os.path.join(settings.DATA_DIR, "restore")
-            if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, "cache")):
-
-                def restoreCache(srcDir, dstDir):
-                    def path_leaf(path):
-                        head, tail = os.path.split(path)
-                        return tail or os.path.basename(head)
-
-                    try:
-                        if os.path.isdir(dstDir):
-                            # noinspection PyTypeChecker
-                            bakFilename = "{0}-{1}".format(path_leaf(dstDir), datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d_%H%M%S"))
-                            shutil.move(dstDir, os.path.join(os.path.dirname(dstDir), bakFilename))
-
-                        shutil.move(srcDir, dstDir)
-                        logger.info("Restore: restoring cache successful")
-                    except Exception as er:
-                        logger.exception("Restore: restoring cache failed: {0}".format(er))
-
-                restoreCache(os.path.join(restoreDir, "cache"), settings.CACHE_DIR)
-        except Exception as e:
-            logger.exception("Restore: restoring cache failed: {0}".format(str(e)))
-        finally:
-            if os.path.exists(os.path.join(settings.DATA_DIR, "restore")):
-                try:
-                    shutil.rmtree(os.path.join(settings.DATA_DIR, "restore"))
-                except Exception as e:
-                    logger.exception("Restore: settings.Unable to remove the restore directory: {0}".format(str(e)))
-
-                for cleanupDir in ["mako", "sessions", "indexers", "rss"]:
-                    try:
-                        shutil.rmtree(os.path.join(settings.CACHE_DIR, cleanupDir))
-                    except Exception as e:
-                        if cleanupDir not in ["rss", "sessions", "indexers"]:
-                            logger.info("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)))
+        check_cache_restore()
+        check_db_restore()
 
         settings.IMAGE_CACHE = image_cache.ImageCache()
         settings.THEME_NAME = check_setting_str(settings.CFG, "GUI", "theme_name", "dark")
@@ -1085,7 +1057,7 @@ def saveAll():
 
 
 def save_config():
-    new_config = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
+    new_config = ConfigObj(str(settings.CONFIG_FILE), encoding="UTF-8", indent_type="  ")
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
@@ -1673,3 +1645,74 @@ def launchBrowser(protocol="http", startPort=None, web_root="/"):
             webbrowser.open(browserURL, 1, True)
         except Exception:
             logger.exception("Unable to launch a browser")
+
+
+def check_cache_restore():
+        # Check if we need to perform a restore of the cache folder
+        new_name = None
+        restore_dir = settings.DATA_DIR.absolute() / "restore"
+        cache_restore_dir = restore_dir / "cache"
+        cache_dir = settings.CACHE_DIR.absolute()
+        try:
+            if cache_restore_dir.exists():
+                new_name = rename_location_with_timestamp_if_exists(cache_dir)
+                cache_restore_dir.rename(cache_dir)
+                logger.info("Restore: restoring cache successful")
+        except Exception as error:
+            logger.exception(f"Restore: restoring cache failed: {error}")
+            if new_name:
+                new_name.replace(cache_dir)
+        finally:
+            if restore_dir.exists():
+                try:
+                    shutil.rmtree(restore_dir)
+                except Exception as error:
+                    logger.exception(f"Restore: settings.Unable to remove the restore directory: {error}")
+
+                for cleanup_dir in [
+                    settings.CACHE_DIR / "mako",
+                    settings.CACHE_DIR / "sessions",
+                    settings.CACHE_DIR / "indexers",
+                    settings.CACHE_DIR / "rss"
+                ]:
+                    try:
+                        shutil.rmtree(cleanup_dir)
+                    except Exception as error:
+                        if cleanup_dir not in ["rss", "sessions", "indexers"]:
+                            logger.info(f"Restore: Unable to remove the cache/{cleanup_dir} directory: {error}")
+
+
+def check_db_restore():
+
+    """
+    Restore the Database from a backup
+
+    :param src_dir: Directory containing backup
+    :param dst_dir: Directory to restore to
+    :return:
+    """
+    destination = settings.DATA_DIR.absolute()
+    restore_dir = destination / "restore"
+
+    if not restore_dir.exists():
+        return
+
+    for filename in [
+        "sickbeard.db",
+        "sickchill.db",
+        "config.ini",
+        "failed.db",
+        "cache.db"
+    ]:
+        try:
+            source_file = restore_dir / filename
+            destination_file = destination / filename
+            new_name = rename_location_with_timestamp_if_exists(destination_file)
+            source_file.replace(destination_file)
+        except Exception as error:
+            logger.info(_(f"There was an error retoring the {filename}: {error}"))
+            logger.info(_(f"Reverting to the previously used {filename}, leaving the restore dir version intact in {restore_dir}"))
+            new_name.replace(destination_file)
+        else:
+            logger.info(_(f"Restored {filename}"))
+

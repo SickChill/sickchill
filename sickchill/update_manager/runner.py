@@ -2,7 +2,9 @@ import datetime
 import glob
 import os
 import re
+import shutil
 import time
+from pathlib import Path
 
 from sickchill import logger, settings
 from sickchill.helper.exceptions import UpdaterException
@@ -62,30 +64,31 @@ class UpdateManager(object):
     def run_backup_if_safe(self):
         return self.safe_to_update() is True and self._run_backup() is True
 
-    def _run_backup(self):
+    def _run_backup(self, location: Path = None):
         # Do a system backup before update
-        logger.info("Config backup in progress...")
+        logger.info(_("Config backup in progress..."))
         ui.notifications.message(_("Backup"), _("Config backup in progress..."))
         try:
-            backup_dir = os.path.join(settings.DATA_DIR, "backup")
-            if not os.path.isdir(backup_dir):
-                os.mkdir(backup_dir)
+            backup_dir = location or settings.DATA_DIR / "backup"
+            logger.info(_(f"Config backup location: {backup_dir}"))
+            if not backup_dir.is_dir():
+                backup_dir.mkdir(parents=True, exist_ok=True)
 
             if self._keep_latest_backup(backup_dir) and self._backup(backup_dir):
-                logger.info("Config backup successful, updating...")
-                ui.notifications.message(_("Backup"), _("Config backup successful, updating..."))
+                logger.info(_("Config backup successful"))
+                ui.notifications.message(_("Backup"), _("Config backup successful"))
                 return True
             else:
-                logger.exception("Config backup failed, aborting update")
-                ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
+                logger.exception( _("Config backup failed"))
+                ui.notifications.message(_("Backup"), _("Config backup failed"))
                 return False
         except Exception as error:
-            logger.exception("Update: Config backup failed. Error: {}".format(error))
+            logger.exception(_(f"Update: Config backup failed. Error: {error}"))
             ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
             return False
 
     @staticmethod
-    def _keep_latest_backup(backup_dir=None):
+    def _keep_latest_backup(backup_dir):
         if not backup_dir:
             return False
 
@@ -110,20 +113,20 @@ class UpdateManager(object):
     def _backup(backup_dir=None):
         if not backup_dir:
             return False
-        source = [
-            os.path.join(settings.DATA_DIR, "sickchill.db"),
-            settings.CONFIG_FILE,
-            os.path.join(settings.DATA_DIR, "failed.db"),
-            os.path.join(settings.DATA_DIR, "cache.db"),
-        ]
-        target = os.path.join(backup_dir, "sickchill-" + time.strftime("%Y%m%d%H%M%S") + ".zip")
 
-        for (path, dirs, files) in os.walk(settings.CACHE_DIR):
-            for dirname in dirs:
-                if path == settings.CACHE_DIR and dirname not in ["images"]:
-                    dirs.remove(dirname)
-            for filename in files:
-                source.append(os.path.join(path, filename))
+        source = [
+            settings.DATA_DIR / "sickchill.db",
+            settings.CONFIG_FILE,
+            settings.DATA_DIR / "failed.db",
+            settings.DATA_DIR / "cache.db",
+        ]
+        timestamp = time.strftime("%Y%m%d%H%M%S")
+        target = backup_dir / f"sickchill-{timestamp}.zip"
+
+        for path in settings.CACHE_DIR.rglob("**/"):
+            if path is settings.CACHE_DIR or (path.is_dir() and path.relative_to(settings.CACHE_DIR).parts[0] != "images"):
+                continue
+            source.append()
 
         return helpers.backup_config_zip(source, target, settings.DATA_DIR)
 
@@ -325,9 +328,9 @@ class UpdateManager(object):
         if self.updater:
             return self.updater.need_update()
 
-    def backup(self):
+    def backup(self, location: Path = None):
         if self.updater:
-            return self._run_backup
+            return self._run_backup(location)
 
     def get_current_commit_hash(self):
         if self.updater:

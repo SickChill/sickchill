@@ -192,11 +192,9 @@ class DBConnection(object):
         query_list = [i for i in query_list if i]
 
         sql_results = []
-        attempt = 0
-
         with db_locks[self.filename]:
             self._set_row_factory()
-            while attempt <= self.MAX_ATTEMPTS:
+            for attempt in range(0, self.MAX_ATTEMPTS):
                 try:
                     log_level = (logger.DB, logger.DEBUG)[log_transaction]
                     for qu in query_list:
@@ -229,8 +227,9 @@ class DBConnection(object):
                         self.connection.rollback()
                     self._error_log_helper(e, logger.ERROR, locals(), attempt, "db.mass_action")
                     raise
+            else:
+                logger.debug(_(f"{self.filename}: {query_list}"))
 
-                attempt += 1
             return sql_results
 
     def action(self, query, args=None, fetchall=False, fetchone=False):
@@ -250,11 +249,10 @@ class DBConnection(object):
         assert not (fetchall and fetchone), _("Cannot fetch all and only one at the same time!")
 
         sql_results = []
-        attempt = 0
 
         with db_locks[self.filename]:
             self._set_row_factory()
-            while attempt < self.MAX_ATTEMPTS:
+            for attempt in range(0, self.MAX_ATTEMPTS):
                 try:
                     if settings.DBDEBUG:
                         if args is None:
@@ -283,8 +281,8 @@ class DBConnection(object):
                         self.connection.rollback()
                     self._error_log_helper(e, logger.ERROR, locals(), attempt, "db.action")
                     raise
-
-                attempt += 1
+            else:
+                logger.debug(_(f"{self.filename}: {query}"))
 
             return sql_results
 

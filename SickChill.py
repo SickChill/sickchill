@@ -10,10 +10,10 @@ import sys
 import threading
 import time
 import traceback
+from pathlib import Path
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.helper.common import choose_data_dir
 from sickchill.init_helpers import remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
 
@@ -60,7 +60,6 @@ class SickChill(object):
 
         # web server constants
         self.web_server = None
-        self.forced_port = None
         self.no_launch = False
 
         self.start_port = settings.WEB_PORT
@@ -73,8 +72,8 @@ class SickChill(object):
         Remove the Mako cache directory
         """
         try:
-            cache_folder = os.path.join(settings.CACHE_DIR, "mako")
-            if os.path.isdir(cache_folder):
+            cache_folder = settings.CACHE_DIR / "mako"
+            if cache_folder.is_dir():
                 shutil.rmtree(cache_folder)
         except Exception:
             logger.warning("Unable to remove the cache/mako directory!")
@@ -83,18 +82,10 @@ class SickChill(object):
         """
         Start SickChill
         """
-        # do some preliminary stuff
-        settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
-        settings.MY_NAME = os.path.basename(settings.MY_FULLNAME)
-
-        settings.DATA_DIR = choose_data_dir(settings.PROG_DIR)
-
-        settings.MY_ARGS = sys.argv[1:]
-
         # Rename the main thread
         threading.current_thread().name = "MAIN"
 
-        args = SickChillArgumentParser(settings.DATA_DIR).parse_args()
+        args = SickChillArgumentParser().parse_args()
 
         if args.force_update:
             result = self.force_update()
@@ -103,7 +94,6 @@ class SickChill(object):
         settings.NO_RESIZE = args.noresize
         self.console_logging = not (hasattr(sys, "frozen") or args.quiet or args.daemon)
         self.no_launch = args.nolaunch or args.daemon
-        self.forced_port = args.port
         self.run_as_daemon = args.daemon and platform.system() != "Windows"
 
         # The pid file is only useful in daemon mode, make sure we can write the file properly
@@ -111,72 +101,50 @@ class SickChill(object):
             if self.console_logging:
                 sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
 
-        settings.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else settings.DATA_DIR
-        settings.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(settings.DATA_DIR, "config.ini")
+        settings.DATA_DIR = args.datadir
+        settings.CONFIG_FILE = args.config
+        assert isinstance(settings.CONFIG_FILE, Path)
+        assert os.path.abspath(settings.CONFIG_FILE) == str(settings.CONFIG_FILE)
 
         # Make sure that we can create the data dir
         if not os.access(settings.DATA_DIR, os.F_OK):
             try:
                 os.makedirs(settings.DATA_DIR, 0o744)
             except os.error:
-                raise SystemExit("Unable to create data directory: {0}".format(settings.DATA_DIR))
+                raise SystemExit(_(f"Unable to create data directory: {settings.DATA_DIR}"))
 
         # Make sure we can write to the data dir
         if not os.access(settings.DATA_DIR, os.W_OK):
-            raise SystemExit("Data directory must be writeable: {0}".format(settings.DATA_DIR))
+            raise SystemExit(_(f"Data directory must be writeable: {settings.DATA_DIR}"))
 
         # Make sure we can write to the config file
         if not os.access(settings.CONFIG_FILE, os.W_OK):
             if os.path.isfile(settings.CONFIG_FILE):
-                raise SystemExit("Config file must be writeable: {0}".format(settings.CONFIG_FILE))
-            elif not os.access(os.path.dirname(settings.CONFIG_FILE), os.W_OK):
-                raise SystemExit("Config file root dir must be writeable: {0}".format(os.path.dirname(settings.CONFIG_FILE)))
+                raise SystemExit(_(f"Config file must be writeable: {settings.CONFIG_FILE}"))
+                settings.CONFIG_FILE.stat()
+            elif not os.access(settings.CONFIG_FILE.parent, os.W_OK):
+                raise SystemExit(_(f"Config file parent dir must be writeable: {settings.CONFIG_FILE.parent}"))
 
         os.chdir(settings.DATA_DIR)
 
-        # Check if we need to perform a restore first
-        restore_dir = os.path.join(settings.DATA_DIR, "restore")
-        if os.path.exists(restore_dir):
-            success = self.restore_db(restore_dir, settings.DATA_DIR)
-            if self.console_logging:
-                sys.stdout.write("Restore: restoring DB and config.ini {0}!\n".format(("FAILED", "SUCCESSFUL")[success]))
-
-        # Load the config and publish it to the oldbeard package
-        if self.console_logging and not os.path.isfile(settings.CONFIG_FILE):
-            sys.stdout.write("Unable to find {0}, all settings will be default!\n".format(settings.CONFIG_FILE))
-
-        settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
-
         # Initialize the config and our threads
-        sickchill.start.initialize(consoleLogging=self.console_logging)
-
-        # Get PID
-        settings.PID = os.getpid()
+        sickchill.start.initialize(console_logging=self.console_logging)
 
         # Build from the DB to start with
         self.load_shows_from_db()
 
-        logger.info("Starting SickChill [{branch}] using '{config}'".format(branch=settings.BRANCH, config=settings.CONFIG_FILE))
+        logger.info(_(f"Starting SickChill [{settings.BRANCH}] using '{settings.CONFIG_FILE}'"))
 
         self.clear_cache()
 
         if settings.DEVELOPER:
             settings.movie_list = MovieList()
 
-        web_options = {}
-        if self.forced_port:
-            logger.info("Forcing web server to port {port}".format(port=self.forced_port))
-            self.start_port = self.forced_port
-            web_options.update(
-                {
-                    "port": int(self.start_port),
-                }
-            )
-        else:
-            self.start_port = settings.WEB_PORT
+        if args.port != settings.WEB_PORT:
+            logger.info(_(f"Forcing web server to port {args.port}"))
 
         # start web server
-        self.web_server = SRWebServer(web_options)
+        self.web_server = SRWebServer(args.port)
         self.web_server.start()
 
         # Fire up all our threads
@@ -193,7 +161,7 @@ class SickChill(object):
 
         # Launch browser
         if settings.LAUNCH_BROWSER and not self.no_launch:
-            sickchill.start.launchBrowser("https" if settings.ENABLE_HTTPS else "http", self.start_port, settings.WEB_ROOT)
+            sickchill.start.launchBrowser("https" if settings.ENABLE_HTTPS else "http", args.port, settings.WEB_ROOT)
 
         # main loop
         while True:
@@ -216,42 +184,10 @@ class SickChill(object):
                 cur_show.nextEpisode()
                 settings.showList.append(cur_show)
             except Exception as error:
-                logger.exception("There was an error creating the show in {0}: Error {1}".format(sql_show["location"], error))
+                location = sql_show["location"]
+                logger.exception(_(f"There was an error creating the show in {location}: Error {error}"))
                 logger.debug(traceback.format_exc())
 
-    @staticmethod
-    def restore_db(src_dir, dst_dir):
-        """
-        Restore the Database from a backup
-
-        :param src_dir: Directory containing backup
-        :param dst_dir: Directory to restore to
-        :return:
-        """
-        try:
-            files_list = ["sickbeard.db", "sickchill.db", "config.ini", "failed.db", "cache.db"]
-            for filename in files_list:
-                src_file = os.path.join(src_dir, filename)
-                dst_file = os.path.join(dst_dir, filename)
-                bak_file = os.path.join(dst_dir, "{0}.bak-{1}".format(filename, datetime.datetime.now().strftime("%Y%m%d_%H%M%S")))
-                sickchill_db = os.path.join(dst_dir, "sickchill.db")
-                sickbeard_db = os.path.join(src_dir, "sickbeard.db")
-                if os.path.isfile(src_file):
-                    if src_file == sickbeard_db:
-                        dst_file = sickchill_db
-
-                    if os.path.isfile(dst_file):
-                        shutil.move(dst_file, bak_file)
-                    shutil.move(src_file, dst_file)
-
-            sickbeard_db = os.path.join(dst_dir, "sickbeard.db")
-            sickchill_db = os.path.join(dst_dir, "sickchill.db")
-            if os.path.isfile(sickbeard_db) and not os.path.isfile(sickchill_db):
-                shutil.move(sickbeard_db, sickchill_db)
-
-            return True
-        except Exception:
-            return False
 
     def shutdown(self, event):
         """
@@ -279,15 +215,14 @@ class SickChill(object):
             remove_pid_file()
 
             if event == sickchill.oldbeard.event_queue.Events.SystemEvent.RESTART:
-                popen_list = [sys.executable, settings.MY_FULLNAME]
-                if popen_list and not settings.NO_RESTART:
-                    popen_list += settings.MY_ARGS
-                    if "--nolaunch" not in popen_list:
-                        popen_list += ["--nolaunch"]
-                    logger.info("Restarting SickChill with {options}".format(options=popen_list))
+                if not settings.NO_RESTART:
+                    options = [sys.executable, Path(__file__).absolute()] + sys.argv[1:]
+                    if "--nolaunch" not in options:
+                        options += ["--nolaunch"]
+                    logger.info(_(f"Restarting SickChill with {options}"))
                     # shutdown the logger to make sure it's released the logfile BEFORE it restarts SC.
                     logger.shutdown()
-                    subprocess.Popen(popen_list, cwd=os.getcwd(), universal_newlines=True)
+                    subprocess.Popen(options, cwd=os.getcwd(), universal_newlines=True)
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()
@@ -305,7 +240,7 @@ class SickChill(object):
             def run_git(updater, cmd):
                 stdout_, stderr_, exit_status = updater._run_git(updater._git_path, cmd)
                 if not exit_status == 0:
-                    print("Failed to run command: {0} {1}".format(updater._git_path, cmd))
+                    print(f"Failed to run command: {updater._git_path} {cmd}")
                     return False
                 else:
                     return True
@@ -323,20 +258,20 @@ class SickChill(object):
             return True
 
         if os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), ".git")):  # update with git
-            print("Forcing SickChill to update using git...")
+            print(_("Forcing SickChill to update using git..."))
             result = update_with_git()
             if result:
-                print("Successfully updated to latest commit. You may now run SickChill normally.")
+                print(_("Successfully updated to latest commit. You may now run SickChill normally."))
                 return True
             else:
-                print("Error while trying to force an update using git.")
+                print(_("Error while trying to force an update using git."))
 
-        print("Forcing SickChill to update using source...")
+        print(_("Forcing SickChill to update using source..."))
         if not SourceUpdateManager().update():
             print("Failed to force an update.")
             return False
 
-        print("Successfully updated to latest commit. You may now run SickChill normally.")
+        print(_("Successfully updated to latest commit. You may now run SickChill normally."))
         return True
 
 

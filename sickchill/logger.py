@@ -1,3 +1,4 @@
+import datetime
 import locale
 import logging
 import logging.handlers
@@ -7,6 +8,7 @@ import re
 import sys
 import traceback
 from logging import NullHandler
+from pathlib import Path
 from urllib.parse import quote
 
 from github import InputFileContent
@@ -303,7 +305,7 @@ class Logger(object):
                 title_error = f"[APP SUBMITTED]: {title_error}"
 
                 repo = settings.gh.get_organization(settings.GIT_ORG).get_repo(settings.GIT_REPO)
-                reports = repo.get_issues(state="all")
+                reports = repo.get_issues(state="all", since=datetime.datetime.today() - datetime.timedelta(weeks=52), sort="updated-desc")
 
                 def is_ascii_error(title):
                     # [APP SUBMITTED]: 'ascii' codec can't encode characters in position 00-00: ordinal not in range(128)
@@ -317,7 +319,6 @@ class Logger(object):
                 ascii_error = is_ascii_error(title_error)
                 malformed_error = is_malformed_error(title_error)
 
-                issue_found = False
                 for report in reports:
                     if (
                         title_error.rsplit(" :: ")[-1] in report.title
@@ -334,10 +335,8 @@ class Logger(object):
                         else:
                             submitter_result = f"Issue #{issue_id} is locked, check GitHub to find info about the error."
 
-                        issue_found = True
                         break
-
-                if not issue_found:
+                else:
                     issue = repo.create_issue(title_error, message)
                     if issue:
                         issue_id = issue.number
@@ -445,7 +444,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
             if not settings.DBDEBUG and level == "DB":
                 continue
 
-            if level not in LOGGING_LEVELS:
+            if settings.DEBUG and level not in LOGGING_LEVELS:
                 final_data.append("AA " + x)
                 found_lines += 1
             elif log_search and log_search.lower() in x.lower():
@@ -454,12 +453,14 @@ def log_data(min_level, log_filter, log_search, max_lines):
             elif not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == "<NONE>" or log_name.startswith(log_filter)):
                 final_data.append(x)
                 found_lines += 1
-        else:
+        elif settings.DEBUG:
             final_data.append("AA " + x)
             found_lines += 1
 
         if found_lines >= max_lines:
             break
+    else:
+        final_data.append(_("No logs are available yet"))
 
     return final_data
 

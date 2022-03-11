@@ -65,6 +65,7 @@ Private Methods:
 
 import os
 import unittest
+from pathlib import Path
 from shutil import rmtree
 from zipfile import BadZipFile
 
@@ -194,36 +195,34 @@ class HelpersZipTests(unittest.TestCase):
         """
         Test backup_config_zip
         """
-        here = os.path.dirname(__file__)
-        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
-        zip_path = os.path.join(here, "_backup_test.zip")
+        here = Path(__file__).parent
+        files = [here / f for f in here.iterdir() if f.suffix in [".db", ".py"]]
+        zip_path = here / "_backup_test.zip"
 
         assert helpers.backup_config_zip(files, zip_path, here)
-        assert not helpers.backup_config_zip(files, "/:/_backup_test.zip")
+        assert not helpers.backup_config_zip(files, "/:/_backup_test.zip", here)
 
-        if os.path.isfile(zip_path):
-            os.remove(zip_path)
+        zip_path.unlink(missing_ok=True)
 
     def test_restore_config_zip(self):
         """
         Test restore_config_zip
         """
-        here = os.path.dirname(__file__)
-        files = [os.path.join(here, f) for f in os.listdir(here) if f[-3:] in [".db", ".py"]]
-        zip_path = os.path.join(here, "_backup_test.zip")
+        here = Path(__file__).parent
+        files = [here / f for f in here.iterdir() if f.suffix in [".db", ".py"]]
+        zip_path = here / "_backup_test.zip"
 
         helpers.backup_config_zip(files, zip_path, here)
-        restore_container = os.path.join(here, "_restore_tests")
-        os.path.exists(restore_container) or os.mkdir(restore_container)
-        restore_path = os.path.join(restore_container, "test")
+        restore_container = here / "_restore_tests"
+        restore_container.mkdir(parents=True, exist_ok=True)
+
+        restore_path = restore_container / "test"
         assert not helpers.restore_config_zip(files[1], restore_path)  # test invalid zip
         assert helpers.restore_config_zip(zip_path, restore_path)
         assert helpers.restore_config_zip(zip_path, restore_path)  # test extractDir exists
 
-        if os.path.isfile(zip_path):
-            os.remove(zip_path)
-        if os.path.isdir(restore_container):
-            rmtree(restore_container)
+        zip_path.unlink(missing_ok=True)
+        rmtree(restore_container, ignore_errors=True)
 
     def test_is_rar_file(self):
         """

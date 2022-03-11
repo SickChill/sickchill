@@ -1,3 +1,4 @@
+import os
 import re
 from fnmatch import fnmatch
 from pathlib import Path
@@ -404,3 +405,7 @@ def choose_data_dir(program_dir):
             if location.joinpath(check).exists():
                 return location
     return proper_data_dir
+
+
+def sickchill_dir():
+    return Path(__file__).parent.parent

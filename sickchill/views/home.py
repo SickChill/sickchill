@@ -1051,7 +1051,7 @@ class Home(WebRoot):
 
                 if helpers.set_up_anidb_connection() and not anidb_failed:
                     try:
-                        anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name, cache_dir=Path(settings.CACHE_DIR))
+                        anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name, cache_dir=settings.CACHE_DIR)
                         groups = anime.get_groups()
                     except Exception as e:
                         ui.notifications.error(_("Unable to retreive Fansub Groups from AniDB."))

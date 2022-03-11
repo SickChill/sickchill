@@ -37,7 +37,7 @@ class SickChillStaticFileHandler(StaticFileHandler):
 
         custom_settings = settings.copy()
         if "cache/" in path:
-            custom_settings["static_path"] = os.path.dirname(sickchill.settings.CACHE_DIR)
+            custom_settings["static_path"] = str(sickchill.settings.CACHE_DIR.parent)
 
         version_hash = cls.get_version(custom_settings, path)
         if not version_hash:
@@ -47,33 +47,28 @@ class SickChillStaticFileHandler(StaticFileHandler):
 
 
 class SRWebServer(threading.Thread):
-    def __init__(self, options=None):
+    def __init__(self, port):
         super().__init__()
         self.daemon = True
         self.alive = True
         self.name = "WEBSERVER"
-
-        self.options = options
 
         if settings.WEB_HOST and settings.WEB_HOST != "0.0.0.0":
             web_host = settings.WEB_HOST
         else:
             web_host = ("0.0.0.0", "")[settings.WEB_IPV6]
 
-        self.options.update(
-            {
-                "data_root": os.path.join(settings.PROG_DIR, "gui", settings.GUI_NAME),
-                "web_root": settings.WEB_ROOT,
-                "host": web_host,
-                "enable_https": settings.ENABLE_HTTPS,
-                "handle_reverse_proxy": settings.HANDLE_REVERSE_PROXY,
-                "log_dir": (None, settings.LOG_DIR)[settings.WEB_LOG],
-                # 'username': oldbeard.WEB_USERNAME or '',
-                # 'password': oldbeard.WEB_PASSWORD or '',
-            }
-        )
-
-        self.options.setdefault("port", settings.WEB_PORT or 8081)
+        self.options = {
+            "data_root": os.path.join(settings.PROG_DIR, "gui", settings.GUI_NAME),
+            "web_root": settings.WEB_ROOT,
+            "host": web_host,
+            "enable_https": settings.ENABLE_HTTPS,
+            "handle_reverse_proxy": settings.HANDLE_REVERSE_PROXY,
+            "log_dir": (None, settings.LOG_DIR)[settings.WEB_LOG],
+            "port": port
+            # 'username': oldbeard.WEB_USERNAME or '',
+            # 'password': oldbeard.WEB_PASSWORD or '',
+        }
 
         self.server = None
 

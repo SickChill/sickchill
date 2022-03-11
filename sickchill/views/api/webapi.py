@@ -355,6 +355,7 @@ class ApiCall(ApiHandler):
         - bool: will be converted to False / True
         - list: will always return a list
         - string: will do nothing for now
+        - path: converts to pathlike object
         - ignore: will ignore it, just like "string"
         """
         error = False
@@ -376,6 +377,8 @@ class ApiCall(ApiHandler):
             value = value.split("|")
         elif arg_type == "string":
             pass
+        elif arg_type == "path":
+            value = Path(value)
         elif arg_type == "ignore":
             pass
         else:
@@ -1509,20 +1512,12 @@ class CMDSickChillBackup(ApiCall):
 
     def __init__(self, args, kwargs):
         super().__init__(args, kwargs)
-        self.location, args = self.check_params(args, kwargs, "location", None, False, "string", [])
+        self.location, args = self.check_params(args, kwargs, "location", None, False, "path", [])
 
     def run(self):
         update_manager = UpdateManager()
-        if self.location:
-            if not os.path.isdir(self.location):
-                return _responds(RESULT_FAILURE, msg="Not a valid location")
-        else:
-            self.location = os.path.join(settings.DATA_DIR, "backup")
-            if not os.path.isdir(self.location):
-                os.mkdir(self.location)
-
-        logger.info(_("API: sc.backup backing up to {location}").format(location=self.location))
-        result = update_manager._backup(self.location)
+        logger.info(_(f"API: sc.backup backing up to {self.location}"))
+        result = update_manager.backup(self.location)
         if result:
             logger.info(_("API: sc.backup successful!"))
             return _responds(RESULT_SUCCESS, msg="Backup successful")

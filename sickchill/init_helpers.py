@@ -21,10 +21,6 @@ pyproject_path = sickchill_module.parent / "pyproject.toml"
 pid_file: Path = None
 
 
-def sickchill_dir():
-    return os.path.abspath(os.path.dirname(__file__))
-
-
 def locale_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "locale"))
 

@@ -1,13 +1,16 @@
 import random
+from pathlib import Path
 from threading import Lock
 from typing import TYPE_CHECKING
 
 import rarfile
+from configobj import ConfigObj
 
 from sickchill.oldbeard.common import SD
 from sickchill.oldbeard.numdict import NumDict
 
-from .init_helpers import setup_gettext, sickchill_dir
+from .init_helpers import setup_gettext
+from .helper.common import sickchill_dir
 
 if TYPE_CHECKING:
     from .movies import MovieList
@@ -78,12 +81,12 @@ BOXCAR2_NOTIFY_ONDOWNLOAD = False
 BOXCAR2_NOTIFY_ONSNATCH = False
 BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = False
 BRANCH = ""
-CACHE_DIR = None
+CACHE_DIR: Path = None
 CALENDAR_ICONS = False
 CALENDAR_UNPROTECTED = False
 CF_AUTH_DOMAIN = ""
 CF_POLICY_AUD = ""
-CFG = None
+CFG: ConfigObj = None
 CHECK_PROPERS_INTERVAL = None
 CLIENT_WEB_URLS = {"torrent": "", "newznab": ""}
 COMING_EPS_DISPLAY_PAUSED = False
@@ -91,7 +94,7 @@ COMING_EPS_DISPLAY_SNATCHED = False
 COMING_EPS_LAYOUT = None
 COMING_EPS_MISSED_RANGE = None
 COMING_EPS_SORT = None
-CONFIG_FILE = ""
+CONFIG_FILE: Path = ""
 CONFIG_VERSION = 8
 CPU_PRESET = None
 CREATE_MISSING_SHOW_DIRS = False
@@ -103,7 +106,7 @@ CUSTOM_CSS_PATH = None
 DAEMON = None
 DAILYSEARCH_FREQUENCY = 40
 dailySearchScheduler = None
-DATA_DIR = ""
+DATA_DIR: Path = ""
 DATE_PRESET = None
 DBDEBUG = False
 DEBUG = False
@@ -239,9 +242,6 @@ MIN_BACKLOG_FREQUENCY = 10
 MIN_DAILYSEARCH_FREQUENCY = 10
 MIN_UPDATE_FREQUENCY = 1
 MOVE_ASSOCIATED_FILES = False
-MY_ARGS = []
-MY_FULLNAME = None
-MY_NAME = None
 NAMING_ABD_PATTERN = None
 NAMING_ANIME = None
 NAMING_ANIME_MULTI_EP = False
@@ -322,7 +322,7 @@ PREFER_WORDS = ""
 PROCESS_AUTOMATICALLY = False
 PROCESS_METHOD = None
 PROCESSOR_FOLLOW_SYMLINKS = False
-PROG_DIR = sickchill_dir()
+PROG_DIR: Path = sickchill_dir()
 properFinderScheduler = None
 PROVIDER_ORDER = []
 providerList = []

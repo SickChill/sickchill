@@ -19,7 +19,7 @@ import zipfile
 from contextlib import closing
 from itertools import cycle
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 from urllib.parse import urljoin
 from xml.etree import ElementTree
 
@@ -1053,7 +1053,7 @@ def makeZip(fileList, archive):
     """
 
     try:
-        a = zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, allowZip64=True)
+        a = zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED)
         for f in fileList:
             a.write(f)
         a.close()
@@ -1075,7 +1075,7 @@ def extractZip(archive, targetDir):
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
 
-        zip_file = zipfile.ZipFile(archive, "r", allowZip64=True)
+        zip_file = zipfile.ZipFile(archive, "r")
         for member in zip_file.namelist():
             filename = os.path.basename(member)
             # skip directories
@@ -1095,7 +1095,17 @@ def extractZip(archive, targetDir):
         return False
 
 
-def backup_config_zip(fileList, archive, arcname=None):
+def rename_location_with_timestamp_if_exists(location: Path) -> Path:
+    new_name = None
+    if location.is_dir():
+        time_tag = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d_%H%M%S")
+        backup_file_name = f"{location.name}-{time_tag}"
+        new_name = location.with_name(backup_file_name)
+        location.replace(new_name)
+    return new_name
+
+
+def backup_config_zip(fileList: List[Path], archive: Path, arcname: Path = None):
     """
     Store the config file as a ZIP
 
@@ -1108,7 +1118,7 @@ def backup_config_zip(fileList, archive, arcname=None):
     try:
         a = zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED)
         for f in fileList:
-            a.write(f, os.path.relpath(f, arcname))
+            a.write(f, f.relative_to(arcname))
         a.close()
         return True
     except Exception as error:
@@ -1116,37 +1126,26 @@ def backup_config_zip(fileList, archive, arcname=None):
         return False
 
 
-def restore_config_zip(archive, targetDir):
+def restore_config_zip(archive: Path, target: Path):
     """
     Restores a Config ZIP file back in place
 
     :param archive: ZIP filename
-    :param targetDir: Directory to restore to
+    :param target: Directory to restore to
     :return: True on success, False on failure
     """
 
     try:
-        if not os.path.exists(targetDir):
-            os.mkdir(targetDir)
-        else:
-
-            def path_leaf(path):
-                head, tail = os.path.split(path)
-                return tail or os.path.basename(head)
-
-            base_backup_name = path_leaf(targetDir)
-            date_time_string = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            backup_filename = f"{base_backup_name}-{date_time_string}"
-            shutil.move(targetDir, os.path.join(os.path.dirname(targetDir), backup_filename))
-
-        zip_file = zipfile.ZipFile(archive, "r", allowZip64=True)
-        for member in zip_file.namelist():
-            zip_file.extract(member, targetDir)
-        zip_file.close()
+        new_name = rename_location_with_timestamp_if_exists(target)
+        target.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(archive, "r") as zip_file:
+            zip_file.extractall(target)
         return True
     except Exception as error:
         logger.exception(_(f"There was a problem extracting zip file {archive}. Error: {error}"))
-        shutil.rmtree(targetDir)
+        shutil.rmtree(target)
+        if new_name:
+            new_name.replace(target)
         return False
 
 

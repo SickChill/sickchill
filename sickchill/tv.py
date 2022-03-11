@@ -957,14 +957,14 @@ class TVShow(object):
         settings.showList = [x for x in settings.showList if int(x.indexerid) != self.indexerid]
 
         # clear the cache
-        image_cache_dir = os.path.join(settings.CACHE_DIR, "images")
-        for cache_file in glob.glob(os.path.join(glob.escape(image_cache_dir), f"{self.indexerid}.*")):
+        image_cache_dir = settings.CACHE_DIR / "images"
+        for cache_file in image_cache_dir.rglob(f"{self.indexerid}.*"):
             logger.info("Attempt to {0} cache file {1}".format(action, cache_file))
             try:
                 if settings.TRASH_REMOVE_SHOW:
                     send2trash(cache_file)
                 else:
-                    os.remove(cache_file)
+                    cache_file.unlink()
 
             except OSError as error:
                 logger.warning("Unable to {0} {1}: {2}".format(action, cache_file, error))

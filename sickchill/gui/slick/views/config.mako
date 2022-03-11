@@ -179,17 +179,17 @@
                     <i class="icon16-config-arguments"></i>&nbsp;&nbsp;${_('Main Script')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    ${settings.MY_FULLNAME}
+                    ${sys.argv[0]}
                 </div>
             </div>
             <br/>
-            % if settings.MY_ARGS:
+            % if sys.argv:
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                         <i class="icon16-config-arguments"></i>&nbsp;&nbsp;${_('Arguments')}:
                     </div>
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                        ${" ".join(settings.MY_ARGS)}
+                        ${" ".join(sys.argv)}
                     </div>
                 </div>
                 <br/>
