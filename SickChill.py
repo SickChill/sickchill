@@ -29,8 +29,6 @@ mimetypes.add_type("application/font-woff", ".woff")
 # Not sure about this one, but we also have halflings in .woff so I think it wont matter
 # mimetypes.add_type("application/font-woff2", ".woff2")
 
-from configobj import ConfigObj
-
 from sickchill.helper.argument_parser import SickChillArgumentParser
 from sickchill.oldbeard import db, name_cache, network_timezones
 from sickchill.oldbeard.event_queue import Events
@@ -57,8 +55,6 @@ class SickChill(object):
 
         # web server constants
         self.web_server = None
-
-        self.start_port = settings.WEB_PORT
 
     @staticmethod
     def clear_cache():
@@ -112,7 +108,6 @@ class SickChill(object):
         if not os.access(settings.CONFIG_FILE, os.W_OK):
             if settings.CONFIG_FILE.is_file():
                 raise SystemExit(_(f"Config file must be writeable: {settings.CONFIG_FILE}"))
-                settings.CONFIG_FILE.stat()
             elif not os.access(settings.CONFIG_FILE.parent, os.W_OK):
                 raise SystemExit(_(f"Config file parent dir must be writeable: {settings.CONFIG_FILE.parent}"))
 

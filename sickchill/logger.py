@@ -8,7 +8,6 @@ import re
 import sys
 import traceback
 from logging import NullHandler
-from pathlib import Path
 from urllib.parse import quote
 
 from github import InputFileContent

@@ -4,7 +4,6 @@ import re
 import shutil
 import socket
 import sys
-from pathlib import Path
 
 import rarfile
 from configobj import ConfigObj

@@ -1,5 +1,3 @@
-import time
-
 from tornado.web import addslash
 
 from sickchill import settings
