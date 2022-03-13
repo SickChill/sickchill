@@ -121,7 +121,7 @@ ava = "ava"
 _black = {cmd = "black . --check --diff", help = "Check code style using black"}
 _isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
 flake8 = {cmd = "flake8 --select C103 sickchill tests SickChill.py", help = "Check for undefined variables"}
-
+flake8_2 = {cmd = "flake8 --select F401  --exclude  __init__.py --builtins _ SickChill.py sickchill tests", help="Check for unused imports"}
 isort = {cmd = "isort .", help = "Fix import order"}
 black = {cmd = "black .", help = "Reformat code using black"}
 
@@ -131,8 +131,8 @@ crowdin_download = "crowdin-cli-py download -c .github/crowdin.yml"
 po2json = "po2json --format jed "
 codecov = "codecov"
 
-lint = ["_black", "_isort", "flake8"]
-format = ["black", "isort", "flake8"]
+lint = ["_black", "_isort", "flake8", "flake8_2"]
+format = ["black", "isort", "flake8", "flake8_2"]
 
 _yarn_upgrade = {cmd = "yarn upgrade", help = "update yarn dependancies"}
 _poetry_update = {shell = "poetry update", help = "update python dependancies"}
