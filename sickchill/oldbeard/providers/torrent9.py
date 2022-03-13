@@ -1,7 +1,6 @@
 import re
 from urllib.parse import urljoin
 
-import js2py
 import validators
 
 from sickchill import logger

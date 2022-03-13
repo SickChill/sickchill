@@ -2,7 +2,6 @@ import json
 import re
 
 import sickchill
-from sickchill import settings
 from sickchill.oldbeard.helpers import make_indexer_session
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.show.indexers.handler import ShowIndexer

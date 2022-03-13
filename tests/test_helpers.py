@@ -67,9 +67,6 @@ import os
 import unittest
 from pathlib import Path
 from shutil import rmtree
-from zipfile import BadZipFile
-
-import pytest
 
 from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
