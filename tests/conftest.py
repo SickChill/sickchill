@@ -64,16 +64,14 @@ def create_test_log_folder():
     """
     Create a log folder for test logs.
     """
-    if not os.path.isdir(settings.LOG_DIR):
-        os.mkdir(settings.LOG_DIR)
+    settings.LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def create_test_cache_folder():
     """
     Create a cache folder for caching tests.
     """
-    if not settings.CACHE_DIR.is_dir():
-        settings.CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    settings.CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # call env functions at appropriate time during SickChill var setup
@@ -108,7 +106,7 @@ settings.GIT_USERNAME = sickchill.oldbeard.config.check_setting_str(settings.CFG
 settings.GIT_TOKEN = sickchill.oldbeard.config.check_setting_str(settings.CFG, "General", "git_token_password", censor_log=True)
 
 settings.LOG_DIR = TEST_DIR / "Logs"
-sickchill.logger.log_file = os.path.join(settings.LOG_DIR, "test_sickchill.log")
+sickchill.logger.log_file = settings.LOG_DIR / "test_sickchill.log"
 create_test_log_folder()
 
 settings.CACHE_DIR = TEST_DIR / "cache"
@@ -227,8 +225,8 @@ class TestDBConnection(db.DBConnection, object):
     __test__ = False
 
     def __init__(self, filename=TEST_DB_NAME, suffix=None, row_type=None):
-        if TEST_DIR not in filename:
-            filename = os.path.join(TEST_DIR, filename)
+        if TEST_DIR not in filename.parents:
+            filename = TEST_DIR / TEST_DB_NAME
         super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
 
@@ -240,8 +238,8 @@ class TestCacheDBConnection(TestDBConnection, object):
     __test__ = False
 
     def __init__(self, filename=TEST_CACHE_DB_NAME, suffix=None, row_type="dict"):
-        if TEST_DIR not in filename:
-            filename = os.path.join(TEST_DIR, filename)
+        if TEST_DIR not in filename.parents:
+            filename = TEST_DIR / TEST_CACHE_DB_NAME
         super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
 
@@ -282,10 +280,10 @@ def teardown_test_db():
     #     db_cons[connection].close()
     #
     # for current_db in [ TEST_DB_NAME, TEST_CACHE_DB_NAME, TEST_FAILED_DB_NAME ]:
-    #    filename = os.path.join(TEST_DIR, current_db)
-    #    if os.path.exists(filename):
+    #    filename = TEST_DIR / current_db
+    #    if filename.exists(filename):
     #        try:
-    #            os.remove(filename)
+    #            filename.unlink()
     #        except Exception as e:
     #            print(f'ERROR: Failed to remove {filename}')
     #            print(Exception(e))
@@ -295,11 +293,10 @@ def setup_test_episode_file():
     """
     Create a test episode directory with a test episode in it.
     """
-    if not os.path.exists(FILE_DIR):
-        os.makedirs(FILE_DIR)
+    FILE_DIR.mkdir(parents=True, exist_ok=True)
 
     try:
-        with open(FILE_PATH, "w") as ep_file:
+        with FILE_PATH.open("w") as ep_file:
             ep_file.write("foo bar")
             ep_file.flush()
 
@@ -310,21 +307,18 @@ def setup_test_episode_file():
 
 
 def setup_test_processing_dir():
-    if not os.path.exists(PROCESSING_DIR):
-        os.makedirs(PROCESSING_DIR)
+    PROCESSING_DIR.mkdir(parents=True, exist_ok=True)
 
     for season in range(1, NUM_SEASONS):
         for episode in range(11, EPISODES_PER_SEASON):
-            path = os.path.join(
-                PROCESSING_DIR, "{show_name}.S0{season}E{episode}.HDTV.x264.[SickChill].mkv".format(show_name=SHOW_NAME, season=season, episode=episode)
-            )
-            with open(path, "w") as ep_file:
+            path = PROCESSING_DIR / f"{SHOW_NAME}.S0{season}E{episode}.HDTV.x264.[SickChill].mkv"
+            with path.open("w") as ep_file:
                 ep_file.write("foo bar")
                 ep_file.flush()
 
 
 def teardown_test_processing_dir():
-    if os.path.exists(PROCESSING_DIR):
+    if PROCESSING_DIR.is_dir():
         shutil.rmtree(PROCESSING_DIR)
 
 
@@ -332,7 +326,7 @@ def teardown_test_episode_file():
     """
     Remove the test episode.
     """
-    if os.path.exists(FILE_DIR):
+    if FILE_DIR.is_dir():
         shutil.rmtree(FILE_DIR)
 
 
@@ -340,15 +334,14 @@ def setup_test_show_dir():
     """
     Create a test show directory.
     """
-    if not os.path.exists(SHOW_DIR):
-        os.makedirs(SHOW_DIR)
+    SHOW_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def teardown_test_show_dir():
     """
     Remove the test show.
     """
-    if os.path.exists(SHOW_DIR):
+    if SHOW_DIR.is_dir():
         shutil.rmtree(SHOW_DIR)
 
 
