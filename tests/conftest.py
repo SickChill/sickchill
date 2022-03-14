@@ -225,7 +225,7 @@ class TestDBConnection(db.DBConnection, object):
     __test__ = False
 
     def __init__(self, filename=TEST_DB_NAME, suffix=None, row_type=None):
-        if TEST_DIR not in filename.parents:
+        if TEST_DIR not in Path(filename).parents:
             filename = TEST_DIR / TEST_DB_NAME
         super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
@@ -238,7 +238,7 @@ class TestCacheDBConnection(TestDBConnection, object):
     __test__ = False
 
     def __init__(self, filename=TEST_CACHE_DB_NAME, suffix=None, row_type="dict"):
-        if TEST_DIR not in filename.parents:
+        if TEST_DIR not in Path(filename).parents:
             filename = TEST_DIR / TEST_CACHE_DB_NAME
         super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
