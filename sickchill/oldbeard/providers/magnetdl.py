@@ -18,7 +18,7 @@ class Provider(TorrentProvider):
         self.minseed = 0
         self.minleech = 0
 
-        self.url = "http://www.magnetdl.com"
+        self.url = "https://www.magnetdl.com"
         self.urls = {"rss": urljoin(self.url, "download/tv/age/desc/")}
 
         self.custom_url = None
