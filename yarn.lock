@@ -1220,9 +1220,9 @@ debug@^3.1.0, debug@^3.2.7:
     ms "^2.1.1"
 
 debug@^4.1.1, debug@^4.3.2, debug@^4.3.3:
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.3.tgz#04266e0b70a98d4462e6e288e38259213332b664"
-  integrity sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
+  integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
   dependencies:
     ms "2.1.2"
 
@@ -1717,9 +1717,9 @@ eslint-plugin-unicorn@^40.1.0:
     strip-indent "^3.0.0"
 
 eslint-plugin-unicorn@^41.0.0:
-  version "41.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-41.0.0.tgz#bf0974f8551ab4dd4aaae7d9cf53894040defbbd"
-  integrity sha512-xoJCaRc1uy5REg9DkVga1BkZV57jJxoqOcrU28QHZB89Lk5LdSqdVyTIt9JQVfHNKaiyJ7X+3iLlIn+VEHWEzA==
+  version "41.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-41.0.1.tgz#b49205b38e71e227d21fb5776f8d078a1dc637ca"
+  integrity sha512-gF5vo2dIj0YdNMQ/IMegiBkQdQ22GBFFVpdkJP+0og3w7XD4ypea0xQVRv6iofkLVR2w0phAdikcnU01ybd4Ow==
   dependencies:
     "@babel/helper-validator-identifier" "^7.15.7"
     ci-info "^3.3.0"
@@ -4704,9 +4704,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.855.0:
-  version "1.873.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.873.0.tgz#854a53865fab37ecac07819337a69631236558c4"
-  integrity sha512-xmBvD6z5yUavhd7Saebi5SgYhJgc2F6ncsRWTf9AgGjZhX41Sg4hUWoR37QQZqkapjcwQ1AigJakTu0+g1UYMQ==
+  version "1.875.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.875.0.tgz#c8ec1e964a38625e906528c6abe444ed4bc16223"
+  integrity sha512-md8qWPE4ZqMa8GSfeDt9KMYijz5Ib6WmcMqUSPVdmnYbfFVp0uUuoURWcBCdnAZ8FQ1JXhv3A4SrltNV2B498A==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
