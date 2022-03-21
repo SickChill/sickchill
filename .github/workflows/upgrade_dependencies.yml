@@ -27,14 +27,14 @@ jobs:
           cache: 'npm'
       - name: Restore pip cache
         if: success() && !env.ACT
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $(python -m pip cache dir)
           key: ubuntu-latest-pip-3.9-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ubuntu-latest-pip-3.9-
       - name: Restore npm cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $(npm config get cache)
           key: ubuntu-latest-node-${{ hashFiles('**/package.json') }}
@@ -53,13 +53,13 @@ jobs:
           installer-parallel: false
       - name: Restore poetry cache
         if: success() && !env.ACT
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $(poetry config cache-dir)
           key: ubuntu-latest-poetry-3.9-${{ hashFiles('**/pyproject.toml') }}
       - name: Restore virtualenv
         if: success() && !env.ACT
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: ubuntu-latest-virtualenv-3.9-${{ hashFiles('**/pyproject.toml') }}
