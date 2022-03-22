@@ -65,7 +65,7 @@ class Provider(TorrentProvider):
                             size = convert_size(desc_bottom.split("|")[1].strip("Size: ")) or -1
 
                             stats = bot.find("td", class_="stats").get_text(strip=True)
-                            sl = re.match(r"S:(?P<seeders>\d+)L:(?P<leechers>\d+)C:(?:\d+)ID:(?:\d+)", stats.replace(" ", ""))
+                            sl = re.match(r"S:(?P<seeders>\d+)L:(?P<leechers>\d+)C:\d+ID:\d+", stats.replace(" ", ""))
                             seeders = try_int(sl.group("seeders")) if sl else 0
                             leechers = try_int(sl.group("leechers")) if sl else 0
                         except Exception:

@@ -20,6 +20,7 @@ class Command(object):
         self.session = None
         self.tag = None
         self.resp = None
+        self.started: float = None
 
     def __repr__(self):
         return "Command(%s,%s) %s\n%s\n" % (repr(self.tag), repr(self.command), repr(self.parameters), self.raw_data())

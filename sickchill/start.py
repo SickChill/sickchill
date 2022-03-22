@@ -1285,7 +1285,7 @@ def save_config():
                 "display_all_seasons": int(settings.DISPLAY_ALL_SEASONS),
                 "ended_shows_update_interval": int(settings.ENDED_SHOWS_UPDATE_INTERVAL),
                 "news_last_read": settings.NEWS_LAST_READ,
-                "flaresolverr_url": settings.FLARESOLVERR_URI,
+                "flaresolverr_uri": settings.FLARESOLVERR_URI,
             },
             "Cloudflare": {"auth_domain": settings.CF_AUTH_DOMAIN, "audience_policy": settings.CF_POLICY_AUD},
             "Shares": settings.WINDOWS_SHARES,

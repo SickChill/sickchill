@@ -16,7 +16,6 @@ from sickchill.helper import sanitize_filename, try_int
 from sickchill.oldbeard import config, db, filters, helpers, ui
 from sickchill.oldbeard.blackandwhitelist import short_group_names
 from sickchill.oldbeard.common import Quality
-from sickchill.oldbeard.show_name_helpers import containsAtLeastOneWord
 from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.favorites import favorites

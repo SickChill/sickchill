@@ -2088,17 +2088,18 @@ const SICKCHILL = {
                 });
             });
             $('#testFlareSolverr').on('click', function () {
-                const flaresolverr_uri = $.trim($('#flaresolverr_uri').val());
-                if (!flaresolverr_uri) {
+                const flaresolverrUri = $.trim($('#flaresolverr_uri').val());
+                if (!flaresolverrUri) {
                     $('#testFlaresolverr-result').html(_('Please fill out the necessary fields above.'));
                     $('#flaresolverr_uri').addClass('warning');
-                    return
+                    return;
                 }
+
                 $('#flaresolverr_uri').removeClass('warning');
                 $(this).prop('disabled', true);
                 $('#testFlaresolverr-result').html(loading);
                 $.post(scRoot + '/home/testFlareSolverr', {
-                    flaresolverr_uri: flaresolverr_uri,
+                    flaresolverr_uri: flaresolverrUri, // eslint-disable-line camelcase
                 }).done(data => {
                     $('#testFlaresolverr-result').html(data);
                     $('#testFlareSolverr').prop('disabled', false);

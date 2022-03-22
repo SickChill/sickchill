@@ -55,7 +55,7 @@ class Provider(TorrentProvider):
                 logger.warning("Invalid custom url: {0}".format(self.custom_url))
                 return False
 
-        # Get the index, redirects to login
+        # Get the index, redirects to log in
         data = self.get_url(self.custom_url or self.url, returns="text")
         if not data:
             logger.warning("Unable to connect to provider")

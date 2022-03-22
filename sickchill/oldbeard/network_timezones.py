@@ -35,7 +35,7 @@ def update_network_dict():
             if key and val:
                 d[key.lower()] = val
     except (IOError, OSError):
-        pass
+        raise
 
     if not d:
         logger.warning("Parsing network timezones failed, not going to touch the db")

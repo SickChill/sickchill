@@ -1721,7 +1721,7 @@ class Home(WebRoot):
             result = json.dumps({"result": "failure", "message": _("Result not found in the cache")})
 
         if isinstance(result, str):
-            sickchill.oldbeard.logger.info(_("Could not snatch manually selected result: {}").format(result))
+            sickchill.logger.info(_(f"Could not snatch manually selected result: {result}"))
         elif isinstance(result, sickchill.oldbeard.classes.SearchResult):
             sickchill.oldbeard.search.snatchEpisode(result, SNATCHED_BEST)
 
