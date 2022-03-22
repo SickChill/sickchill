@@ -1,5 +1,6 @@
 import re
 from xml.etree import ElementTree
+from requests.structures import CaseInsensitiveDict
 
 import sickchill.oldbeard.common
 from sickchill import logger, settings
@@ -9,12 +10,12 @@ from sickchill.oldbeard.helpers import getURL, make_session
 
 class Notifier(object):
     def __init__(self):
-        self.headers = {
+        self.headers = CaseInsensitiveDict({
             "X-Plex-Device-Name": "SickChill",
             "X-Plex-Product": "SickChill Notifier",
             "X-Plex-Client-Identifier": sickchill.oldbeard.common.USER_AGENT,
             "X-Plex-Version": "2016.02.10",
-        }
+        })
         self.session = make_session()
 
     @staticmethod

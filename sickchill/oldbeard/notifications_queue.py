@@ -3,6 +3,7 @@ import time
 import traceback
 
 import requests
+from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings
 
@@ -133,7 +134,7 @@ class DiscordTask(generic_queue.QueueItem):
         logger.info("Sending discord message: " + ", ".join(f["value"] for f in self.embed["fields"]))
         logger.info("Sending discord message to url: " + discord_webhook)
 
-        headers = {"Content-Type": "application/json"}
+        headers = CaseInsensitiveDict({"Content-Type": "application/json"})
         try:
             r = requests.post(
                 discord_webhook, data=json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, tts=discord_tts)), headers=headers
