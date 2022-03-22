@@ -1240,7 +1240,7 @@ def getURL(
     params=None,
     headers=None,
     timeout=30,
-    session=None,
+    session: requests.Session = None,
     **kwargs,
 ) -> Union[requests.Response, dict]:
     """
@@ -1253,7 +1253,38 @@ def getURL(
 
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
-        resp = session.request(
+        flaresolverr = kwargs.pop("flaresolverr", False)
+        if flaresolverr and settings.FLARESOLVERR_URI:
+            if params:
+                url = f"{url}?{urllib.parse.urlencode(params)}"
+
+            fs_json = {"cmd": "request.get", "url": url, "userAgent": "Windows NT 10.0; Win64; x64) AppleWebKit/5...", "maxTimeout": 60000}
+
+            if post_data:
+                fs_json.update(cmd="request.post", postData=post_data)
+
+            if cookies:
+                fs_json.update(cookies=cookies)
+
+            if proxies:
+                fs_json.update(proxy=proxies)
+
+            response = session.post(
+                settings.FLARESOLVERR_URI,
+                json=fs_json,
+                headers={"Content-Type": "application/json"},
+                timeout=timeout,
+                hooks=hooks,
+                verify=False,
+            )
+
+            json_result = response.json()
+            response.raise_for_status()
+            session.cookies = json_result["solution"]["cookies"]
+            session.headers = json_result["solution"]["headers"]
+            return json_result["response"]
+
+        response = session.request(
             "POST" if post_data else "GET",
             url,
             data=post_data or {},
@@ -1267,13 +1298,13 @@ def getURL(
             proxies=proxies,
             verify=verify,
         )
-        resp.raise_for_status()
+        response.raise_for_status()
     except Exception as error:
         handle_requests_exception(error)
         return None
 
     try:
-        return resp if response_type in ("response", None) else resp.json() if response_type == "json" else getattr(resp, response_type, resp)
+        return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
     except ValueError:
         logger.debug(_(f"Requested a json response but response was not json, check the url: {url}"))
         return None
@@ -1487,6 +1518,7 @@ def remove_article(text=""):
     """Remove the english articles from a text string"""
 
     return re.sub(r"(?i)^(?:A(?!\s+to)n?|The)\s(\w)", r"\1", text)
+
 
 def generateCookieSecret():
     """Generate a new cookie secret"""

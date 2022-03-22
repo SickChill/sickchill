@@ -148,7 +148,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         directories_from_rars = set()
 
         # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
-        if release_name and validators.url(release_name):
+        if release_name and validators.url(release_name) == True:
             result.output += log_helper(_("Processing {0}").format(release_name), logger.INFO)
             generator_to_use = [("", [], [release_name])]
         elif release_name and (helpers.is_media_file(release_name) or helpers.is_rar_file(release_name)):

@@ -2,7 +2,6 @@ import json
 import time
 
 import certifi
-
 import requests
 from requests.exceptions import RequestException
 from requests.structures import CaseInsensitiveDict

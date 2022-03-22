@@ -55,7 +55,7 @@ class Provider(TorrentProvider):
             login_params = {"username": self.username, "password": self.password, "submit.x": 0, "submit.y": 0}
             login_url = self.urls["login"]
             if self.custom_url:
-                if not validators.url(self.custom_url):
+                if validators.url(self.custom_url) != True:
                     logger.warning("Invalid custom url: {0}".format(self.custom_url))
                     return False
 
@@ -85,7 +85,7 @@ class Provider(TorrentProvider):
         search_url = self.urls["search"]
         download_url = self.urls["download"]
         if self.custom_url:
-            if not validators.url(self.custom_url):
+            if validators.url(self.custom_url) != True:
                 logger.warning("Invalid custom url: {0}".format(self.custom_url))
                 return results
 

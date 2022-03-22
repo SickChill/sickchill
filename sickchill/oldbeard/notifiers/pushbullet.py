@@ -1,4 +1,5 @@
 from urllib.parse import urljoin
+
 from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings

@@ -30,7 +30,7 @@ class FailedProcessor(object):
         """
         self._log(_("Failed download detected:") + " (" + str(self.release_name) + ", " + str(self.directory) + ")")
 
-        if self.release_name and validators.url(self.release_name):
+        if self.release_name and validators.url(self.release_name) == True:
             cache_db_con = DBConnection("cache.db")
             cache_result = cache_db_con.select_one("SELECT name FROM results WHERE url = ?", [self.release_name])
             if cache_result:

@@ -497,6 +497,8 @@ def initialize(consoleLogging=True):
         settings.FREEMOBILE_ID = check_setting_str(settings.CFG, "FreeMobile", "freemobile_id")
         settings.FREEMOBILE_APIKEY = check_setting_str(settings.CFG, "FreeMobile", "freemobile_apikey")
 
+        settings.FLARESOLVERR_URI = check_setting_str(settings.CFG, "General", "flaresolverr_uri")
+
         settings.USE_TELEGRAM = check_setting_bool(settings.CFG, "Telegram", "use_telegram")
         settings.TELEGRAM_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Telegram", "telegram_notify_onsnatch")
         settings.TELEGRAM_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Telegram", "telegram_notify_ondownload")
@@ -1283,6 +1285,7 @@ def save_config():
                 "display_all_seasons": int(settings.DISPLAY_ALL_SEASONS),
                 "ended_shows_update_interval": int(settings.ENDED_SHOWS_UPDATE_INTERVAL),
                 "news_last_read": settings.NEWS_LAST_READ,
+                "flaresolverr_url": settings.FLARESOLVERR_URI,
             },
             "Cloudflare": {"auth_domain": settings.CF_AUTH_DOMAIN, "audience_policy": settings.CF_POLICY_AUD},
             "Shares": settings.WINDOWS_SHARES,

@@ -5,8 +5,8 @@ from itertools import chain
 from os.path import join
 from random import shuffle
 
-from requests.utils import add_dict_to_cookiejar
 from requests.structures import CaseInsensitiveDict
+from requests.utils import add_dict_to_cookiejar
 
 import sickchill.oldbeard
 from sickchill import logger

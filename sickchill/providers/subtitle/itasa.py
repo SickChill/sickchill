@@ -85,7 +85,7 @@ class ItaSAProvider(Provider):
 
     def initialize(self):
         self.session = Session()
-        self.session.headers["User-Agent"] = "Subliminal/%s" % __version__
+        self.session.headers["User-Agent"] = f"Subliminal/{__version__}"
 
         # login
         if self.username is not None and self.password is not None:
