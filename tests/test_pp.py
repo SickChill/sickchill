@@ -2,12 +2,11 @@
 Test post processing
 """
 
-import os.path
 import shutil
 import unittest
+from pathlib import Path
 
 from sickchill import settings
-from sickchill.oldbeard.helpers import make_dirs
 from sickchill.oldbeard.name_cache import add_name
 from sickchill.oldbeard.postProcessor import PostProcessor
 from sickchill.tv import TVEpisode, TVShow
@@ -67,7 +66,7 @@ class PPBasicTests(conftest.SickChillTestDBCase):
 class ListAssociatedFiles(unittest.TestCase):
     def __init__(self, test_case):
         super().__init__(test_case)
-        self.test_tree = os.path.join("Show Name", "associated_files", "random", "recursive", "subdir")
+        self.test_tree = Path("Show Name") / "associated_files" / "random" / "recursive" / "subdir"
 
         filenames = [
             "Show Name [SickChill].avi",
@@ -79,14 +78,14 @@ class ListAssociatedFiles(unittest.TestCase):
             "Show [SickChill] Non-Associated.en.srt",
             "Show [SickChill] Non-Associated.srt",
         ]
-        self.file_list = [os.path.join("Show Name", f) for f in filenames] + [os.path.join(self.test_tree, f) for f in filenames]
-        self.post_processor = PostProcessor("Show Name")
+        self.file_list = [(Path("Show Name") / f).resolve() for f in filenames] + [(self.test_tree / f) for f in filenames]
+        self.post_processor = PostProcessor(Path("Show Name"))
         self.maxDiff = None
         settings.MOVE_ASSOCIATED_FILES = True
         settings.ALLOWED_EXTENSIONS = ""
 
     def setUp(self):
-        make_dirs(self.test_tree)
+        self.test_tree.mkdir(parents=True, exist_ok=True)
         for test_file in self.file_list:
             open(test_file, "a").close()
 
@@ -95,43 +94,36 @@ class ListAssociatedFiles(unittest.TestCase):
 
     def test_subfolders(self):
         # Test edge cases first:
-        assert self.post_processor.list_associated_files("", subfolders=True) == []  # empty file_path
-        assert self.post_processor.list_associated_files("\\Show Name\\.nomedia", subfolders=True) == []  # no file name
+        assert self.post_processor.list_associated_files(Path(""), subfolders=True) == []  # empty file_path
+        assert self.post_processor.list_associated_files(Path("\\Show Name\\.nomedia"), subfolders=True) == []  # no file name
 
-        associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=True)
-
-        associated_files = sorted(filename.lstrip("./") for filename in associated_files)
-        out_list = sorted(filename for filename in self.file_list[1:] if "Non-Associated" not in filename)
-
-        assert out_list == associated_files
+        associated_files = sorted(self.post_processor.list_associated_files(self.file_list[0], subfolders=True))
+        out_list = sorted(filename for filename in self.file_list[1:] if "Non-Associated" not in filename.__fspath__())
+        assert associated_files == out_list
 
         # Test no associated files:
-        associated_files = self.post_processor.list_associated_files("Fools Quest.avi", subfolders=True)
+        associated_files = self.post_processor.list_associated_files(Path("Fools Quest.avi"), subfolders=True)
+        assert associated_files == []
 
     def test_no_subfolders(self):
-        associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=False)
+        associated_files = sorted(self.post_processor.list_associated_files(self.file_list[0], subfolders=False))
+        out_list = sorted(filename for filename in self.file_list[1:] if "associated_files" not in filename.__fspath__() and "Non-Associated" not in filename.__fspath__())
 
-        associated_files = sorted(filename.lstrip("./") for filename in associated_files)
-        out_list = sorted(filename for filename in self.file_list[1:] if "associated_files" not in filename and "Non-Associated" not in filename)
-
-        assert out_list == associated_files
+        assert associated_files == out_list
 
     def test_subtitles_only(self):
-        associated_files = self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=True)
+        associated_files = sorted(self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=True))
+        out_list = sorted(filename for filename in self.file_list if filename.suffix == ".srt" and "Non-Associated" not in filename.__fspath__())
 
-        associated_files = sorted(filename.lstrip("./") for filename in associated_files)
-        out_list = sorted(filename for filename in self.file_list if filename.endswith(".srt") and "Non-Associated" not in filename)
-
-        assert out_list == associated_files
+        assert associated_files == out_list
 
     def test_subtitles_only_no_subfolders(self):
-        associated_files = self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=False)
-        associated_files = sorted(filename.lstrip("./") for filename in associated_files)
+        associated_files = sorted(self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=False))
         out_list = sorted(
-            filename for filename in self.file_list if filename.endswith(".srt") and "associated_files" not in filename and "Non-Associated" not in filename
+            filename for filename in self.file_list if filename.suffix == ".srt" and "associated_files" not in filename.__fspath__() and "Non-Associated" not in filename.__fspath__()
         )
 
-        assert out_list == associated_files
+        assert associated_files == out_list
 
 
 if __name__ == "__main__":

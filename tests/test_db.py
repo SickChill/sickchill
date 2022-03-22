@@ -92,7 +92,7 @@ class CacheDBTests(conftest.SickChillTestDBCase):
             {"url": "url"},
         )
 
-        self.cache_db_con.action("DELETE FROM results")
+        self.cache_db_con.action("DELETE FROM results WHERE 1")
         query = "INSERT OR IGNORE INTO results ({col}) VALUES ({rep})".format(col=", ".join(self.record[0].keys()), rep=", ".join(["?"] * len(self.record[0])))
         self.cache_db_con.action(query, list(self.record[0].values()))
 

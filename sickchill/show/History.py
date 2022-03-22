@@ -132,7 +132,7 @@ class History(object, metaclass=Singleton):
         """
         return self.db.action(
             "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [action, datetime.today().strftime(self.date_format), showid, season, episode, quality, resource, provider, version],
+            [action, datetime.today().strftime(self.date_format), showid, season, episode, quality, str(resource), provider, version],
         )
 
     def logSnatch(self, result: SearchResult):

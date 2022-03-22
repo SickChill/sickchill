@@ -258,7 +258,7 @@ class Quality(object):
         if quality != Quality.UNKNOWN:
             return quality
 
-        if name.lower().endswith(".ts"):
+        if str(name).lower().endswith(".ts"):
             return Quality.RAWHDTV
         else:
             return Quality.UNKNOWN

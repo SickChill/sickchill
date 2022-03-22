@@ -1,6 +1,5 @@
-import fnmatch
-import os
 import re
+from pathlib import Path
 
 import validators
 
@@ -23,7 +22,7 @@ def containsAtLeastOneWord(name, words):
     name: name to check
     words : string of words separated by a ',' or list of words
 
-    Returns: False if the name doesn't contain any word of words list, or the found word from the list.
+    Returns: False if the name doesn't contain any word of words lists, or the found word from the list.
     """
     if isinstance(words, str):
         words = words.split(",")
@@ -33,7 +32,7 @@ def containsAtLeastOneWord(name, words):
         return True
 
     for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.I) for word in words}.items():
-        if regexp.search(name):
+        if regexp.search(str(name)):
             return word
     return False
 
@@ -48,6 +47,7 @@ def filter_bad_releases(name, parse=True, show=None):
     Returns: True if the release name is OK, False if it's bad.
     """
 
+    name = str(name)
     try:
         if parse:
             NameParser().parse(name)
@@ -68,7 +68,7 @@ def filter_bad_releases(name, parse=True, show=None):
     ignore_words = ignore_words.union(clean_set(show and show.rls_ignore_words or ""))  # Show specific ignored words
     ignore_words = ignore_words.union(clean_set(settings.IGNORE_WORDS))  # Plus Global ignored words
     ignore_words = ignore_words.difference(clean_set(show and show.rls_require_words or ""))  # Minus show specific required words
-    if settings.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
+    if settings.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we aren't using show ignore words
         ignore_words = ignore_words.difference(clean_set(settings.REQUIRE_WORDS))
 
     word = containsAtLeastOneWord(name, ignore_words)
@@ -81,7 +81,7 @@ def filter_bad_releases(name, parse=True, show=None):
     require_words = require_words.union(clean_set(show and show.rls_require_words or ""))  # Show specific required words
     require_words = require_words.union(clean_set(settings.REQUIRE_WORDS))  # Plus Global required words
     require_words = require_words.difference(clean_set(show and show.rls_ignore_words or ""))  # Minus show specific ignored words
-    if settings.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
+    if settings.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we aren't using show require words
         require_words = require_words.difference(clean_set(settings.IGNORE_WORDS))
 
     if require_words and not containsAtLeastOneWord(name, require_words):
@@ -94,7 +94,7 @@ def filter_bad_releases(name, parse=True, show=None):
 def allPossibleShowNames(show, season=-1):
     """
     Figures out every possible variation of the name for a particular show. Includes TVDB name, TVRage name,
-    country codes on the end, eg. "Show Name (AU)", and any scene exception names.
+    country codes on the end, e.g. "Show Name (AU)", and any scene exception names.
 
     show: a TVShow object that we should get the names of
 
@@ -102,7 +102,7 @@ def allPossibleShowNames(show, season=-1):
     """
 
     showNames = get_scene_exceptions(show.indexerid, season=season)
-    if not showNames:  # if we dont have any season specific exceptions fallback to generic exceptions
+    if not showNames:  # if we don't have any season specific exceptions fallback to generic exceptions
         season = -1
         showNames = get_scene_exceptions(show.indexerid, season=season)
 
@@ -133,7 +133,7 @@ def allPossibleShowNames(show, season=-1):
     return set(showNames)
 
 
-def determine_release_name(directory=None, release_name=None):
+def determine_release_name(directory: Path = None, release_name=None):
     """Determine a release name from an nzb and/or folder name"""
 
     if release_name is not None:
@@ -144,33 +144,27 @@ def determine_release_name(directory=None, release_name=None):
         logger.info(_("Using release for release name."))
         return release_name.rpartition(".")[0]
 
-    if directory is None:
+    if directory is None or not directory.exists():
         return None
 
     # try to get the release name from nzb/nfo
     file_types = ["*.nzb", "*.nfo"]
 
     for search in file_types:
-
-        reg_expr = re.compile(fnmatch.translate(search), re.I)
-        files = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
-
-        results = [f for f in files if reg_expr.search(f)]
-
+        results = sorted(directory.glob(search))
         if len(results) == 1:
-            found_file = os.path.basename(results[0])
-            found_file = found_file.rpartition(".")[0]
+            found_file = results[0].stem
             if filter_bad_releases(found_file):
-                logger.info("Release name (" + found_file + ") found from file (" + results[0] + ")")
-                return found_file.rpartition(".")[0]
+                logger.info(f"Release name ({found_file}) found from file ({results[0]})")
+                return found_file
 
     # If that fails, we try the folder
-    folder = os.path.basename(directory)
+    folder = directory.parent
     if filter_bad_releases(folder):
         # NOTE: Multiple failed downloads will change the folder name.
         # (e.g., appending #s)
         # Should we handle that?
-        logger.debug("Folder name (" + folder + ") appears to be a valid release name. Using it.")
+        logger.debug(f"Folder name ({folder}) appears to be a valid release name. Using it.")
         return folder
 
     return None
@@ -195,7 +189,7 @@ def hasPreferredWords(name, show=None):
 
     prefer_words = []
 
-    # Because we weigh values, we can not union global and show based values, so we don't do that
+    # Because we weigh values, we can not join global and show based values, so we don't do that
     if settings.PREFER_WORDS:
         prefer_words = clean_set(settings.PREFER_WORDS)
     if show and show.rls_prefer_words:

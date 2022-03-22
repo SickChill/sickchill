@@ -226,7 +226,7 @@ class TestDBConnection(db.DBConnection, object):
 
     def __init__(self, filename=TEST_DB_NAME, suffix=None, row_type=None):
         if TEST_DIR not in Path(filename).parents:
-            filename = TEST_DIR / TEST_DB_NAME
+            filename = TEST_DIR / filename
         super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
 
@@ -239,7 +239,7 @@ class TestCacheDBConnection(TestDBConnection, object):
 
     def __init__(self, filename=TEST_CACHE_DB_NAME, suffix=None, row_type="dict"):
         if TEST_DIR not in Path(filename).parents:
-            filename = TEST_DIR / TEST_CACHE_DB_NAME
+            filename = TEST_DIR / filename
         super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
 
@@ -348,7 +348,7 @@ def teardown_test_show_dir():
 @pytest.fixture(scope="module")
 def vcr_cassette_dir(request):
     # Put all cassettes in providers/{module}/cassettes/{provider}.yaml
-    return Path(request.module.__file__) / "cassettes"
+    return Path(request.module.__file__).with_name("cassettes").__fspath__()
 
 
 @pytest.fixture()

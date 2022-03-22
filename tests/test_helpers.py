@@ -16,7 +16,6 @@ Public Methods:
     hardlinkFile
     symlink
     moveAndSymlinkFile
-    make_dirs
     rename_ep_file
     delete_empty_folders
     fileBitFilter
@@ -238,13 +237,6 @@ class HelpersDirectoryTests(unittest.TestCase):
     """
     Test directory methods
     """
-
-    @unittest.skip("Not yet implemented")
-    def test_make_dirs(self):
-        """
-        Test make_dirs
-        """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_delete_empty_folders(self):

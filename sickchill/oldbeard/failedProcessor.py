@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import validators
 
@@ -17,7 +18,7 @@ class FailedProcessor(object):
         :param directory: Full path to the folder of the failed download
         :param release_name: Full name of the release file that failed
         """
-        self.directory = directory
+        self.directory: Path = directory
         self.release_name = release_name
 
         self.log = ""
@@ -28,7 +29,7 @@ class FailedProcessor(object):
 
         :return: True
         """
-        self._log(_("Failed download detected:") + " (" + str(self.release_name) + ", " + str(self.directory) + ")")
+        self._log(_(f"Failed download detected: ({self.release_name}, {self.directory})"))
 
         if self.release_name and validators.url(self.release_name):
             cache_db_con = DBConnection("cache.db")
@@ -44,16 +45,16 @@ class FailedProcessor(object):
         try:
             parsed = NameParser(False).parse(release_name)
         except (InvalidNameException, InvalidShowException) as error:
-            self._log("{0}".format(error), logger.DEBUG)
+            self._log(f"{error}", logger.DEBUG)
             raise FailedPostProcessingFailedException()
 
         self._log("name_parser info: ", logger.DEBUG)
-        self._log(" - " + str(parsed.series_name), logger.DEBUG)
-        self._log(" - " + str(parsed.season_number), logger.DEBUG)
-        self._log(" - " + str(parsed.episode_numbers), logger.DEBUG)
-        self._log(" - " + str(parsed.extra_info), logger.DEBUG)
-        self._log(" - " + str(parsed.release_group), logger.DEBUG)
-        self._log(" - " + str(parsed.air_date), logger.DEBUG)
+        self._log(f" - {parsed.series_name}", logger.DEBUG)
+        self._log(f" - {parsed.season_number}", logger.DEBUG)
+        self._log(f" - {parsed.episode_numbers}", logger.DEBUG)
+        self._log(f" - {parsed.extra_info}", logger.DEBUG)
+        self._log(f" - {parsed.release_group}", logger.DEBUG)
+        self._log(f" - {parsed.air_date}", logger.DEBUG)
 
         for episode in parsed.episode_numbers:
             segment = parsed.show.getEpisode(parsed.season_number, episode)
@@ -66,4 +67,4 @@ class FailedProcessor(object):
     def _log(self, message, level=logging.INFO):
         """Log to regular logfile and save for return for PP script log"""
         logger.log(level, message)
-        self.log += message + "\n"
+        self.log += f"{message}\n"

@@ -7,6 +7,7 @@ import stat
 import threading
 import time
 import traceback
+from pathlib import Path
 from sqlite3 import OperationalError
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
@@ -126,7 +127,7 @@ class TVShow(object):
         self.episodes = {}
         self.nextaired = ""
         self.release_groups = None
-        self._location = ""
+        self._location: Path = ""
         self.indexer = indexer
         self.indexerid = indexerid
         self.lang = lang
@@ -182,15 +183,15 @@ class TVShow(object):
 
     def _getLocation(self):
         # no dir check needed if missing show dirs are created during post-processing
-        if settings.CREATE_MISSING_SHOW_DIRS or os.path.isdir(self._location):
+        if settings.CREATE_MISSING_SHOW_DIRS or self._location.is_dir():
             return self._location
 
         raise ShowDirectoryNotFoundException("Show folder doesn't exist, you shouldn't be using it")
 
-    def _setLocation(self, newLocation):
+    def _setLocation(self, newLocation: Path):
         logger.debug(f"Setter sets location to {newLocation}")
         # Don't validate dir if user wants to add shows without creating a dir
-        if settings.ADD_SHOWS_WO_DIR or os.path.isdir(newLocation):
+        if settings.ADD_SHOWS_WO_DIR or newLocation.is_dir():
             if self._location != newLocation:
                 self.dirty = True
             self._location = newLocation
@@ -763,7 +764,7 @@ class TVShow(object):
             self.paused = int(sql_results[0]["paused"] or 0)
             self.paused = int(sql_results[0]["paused"] or 0)
 
-            self._location = sql_results[0]["location"]
+            self._location = Path(sql_results[0]["location"])
 
             if not self.lang:
                 self.lang = sql_results[0]["lang"]
@@ -979,7 +980,7 @@ class TVShow(object):
                     # File is read-only, so make it writeable
                     logger.debug("Attempting to make writeable the read only folder {0}".format(self._location))
                     try:
-                        os.chmod(self.location, stat.S_IWRITE)
+                        self.location.chmod(stat.S_IWRITE)
                     except Exception as error:
                         logger.warning("Unable to change permissions of {0}: {1}".format(self._location, error))
 
@@ -1129,7 +1130,7 @@ class TVShow(object):
             "indexer": self.indexer,
             "show_name": self.show_name,
             "custom_name": self.custom_name,
-            "location": self._location,
+            "location": str(self._location),
             "network": self.network,
             "genre": "|".join(self.genre) if isinstance(self.genre, list) else self.genre,
             "classification": self.classification,
@@ -1360,7 +1361,7 @@ class TVEpisode(object):
     # location = DirtySetter('')
     indexer = DirtySetter(1)
 
-    def __init__(self, show, season, episode, ep_file=""):
+    def __init__(self, show, season, episode, ep_file: Path = ""):
         self.season = season
         self.episode = episode
         self._location = ep_file
@@ -1406,7 +1407,7 @@ class TVEpisode(object):
     # version = property(lambda self: self._version, dirty_setter("_version"))
     # release_group = property(lambda self: self._release_group, dirty_setter("_release_group"))
 
-    def _set_location(self, new_location):
+    def _set_location(self, new_location: Path):
         logger.debug(f"Setter sets location to {new_location}")
 
         # self._location = newLocation
@@ -1415,7 +1416,7 @@ class TVEpisode(object):
 
         self._location = new_location
 
-        if new_location and os.path.isfile(new_location):
+        if new_location and new_location.is_file():
             self.file_size = os.path.getsize(new_location)
         else:
             self.file_size = 0
@@ -1566,7 +1567,7 @@ class TVEpisode(object):
 
             # don't overwrite my location
             if sql_results[0]["location"] and not self._location:
-                self.location = os.path.normpath(sql_results[0]["location"])
+                self.location = Path(sql_results[0]["location"])
 
             if sql_results[0]["file_size"]:
                 self.file_size = int(sql_results[0]["file_size"])
@@ -1915,7 +1916,7 @@ class TVEpisode(object):
                             self.hasnfo,
                             self.hastbn,
                             self.status,
-                            self.location,
+                            str(self.location),
                             self.file_size,
                             self.release_name,
                             self.is_proper,
@@ -1946,7 +1947,7 @@ class TVEpisode(object):
                             self.hasnfo,
                             self.hastbn,
                             self.status,
-                            self.location,
+                            str(self.location),
                             self.file_size,
                             self.release_name,
                             self.is_proper,
@@ -1982,7 +1983,7 @@ class TVEpisode(object):
                         self.hasnfo,
                         self.hastbn,
                         self.status,
-                        self.location,
+                        str(self.location),
                         self.file_size,
                         self.release_name,
                         self.is_proper,
@@ -2021,7 +2022,7 @@ class TVEpisode(object):
             "hasnfo": self.hasnfo,
             "hastbn": self.hastbn,
             "status": self.status,
-            "location": self.location,
+            "location": str(self.location),
             "file_size": self.file_size,
             "release_name": self.release_name,
             "is_proper": self.is_proper,

@@ -402,52 +402,7 @@ def moveAndSymlinkFile(srcFile, destFile):
         copyFile(srcFile, destFile)
 
 
-def make_dirs(path):
-    """
-    Creates any folders that are missing and assigns them the permissions of their
-    parents
-    """
-
-    logger.debug(_(f"Checking if the path {path} already exists"))
-
-    if not os.path.isdir(path):
-        # Windows, create all missing folders
-        if platform.system() == "Windows":
-            try:
-                logger.debug(_(f"Folder {path} didn't exist, creating it"))
-                os.makedirs(path)
-            except (OSError, IOError) as error:
-                logger.exception(_(f"There was a problem creating {path}. Error: {error}"))
-                return False
-
-        # not Windows, create all missing folders and set permissions
-        else:
-            sofar = ""
-            folder_list = path.split(os.path.sep)
-
-            # look through each subfolder and make sure they all exist
-            for cur_folder in folder_list:
-                sofar += cur_folder + os.path.sep
-
-                # if it exists then just keep walking down the line
-                if os.path.isdir(sofar):
-                    continue
-
-                try:
-                    logger.debug(_(f"Folder {sofar} didn't exist, creating it"))
-                    os.mkdir(sofar)
-                    # use normpath to remove end separator, otherwise checks permissions against itself
-                    chmodAsParent(os.path.normpath(sofar))
-                    # do the library update for synoindex
-                    sickchill.oldbeard.notifiers.synoindex_notifier.addFolder(sofar)
-                except (OSError, IOError) as error:
-                    logger.exception(_(f"There was a problem creating {sofar}. Error: {error}"))
-                    return False
-
-    return True
-
-
-def rename_ep_file(cur_path, new_path, old_path_length=0):
+def rename_ep_file(cur_path: Path, new_path: Path, old_path_length=0):
     """
     Creates all folders needed to move a file to its new location, renames it, then cleans up any folders
     left that are now empty.
@@ -457,28 +412,19 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     :param old_path_length: The length of media file path (old name) WITHOUT THE EXTENSION
     """
 
-    # new_dest_dir, new_dest_name = os.path.split(new_path)
-
-    if old_path_length == 0 or old_path_length > len(cur_path):
-        # approach from the right
-        cur_filename, cur_file_ext = os.path.splitext(cur_path)
-    else:
-        # approach from the left
-        cur_file_ext = cur_path[old_path_length:]
-        cur_filename = cur_path[:old_path_length]
-
-    if cur_file_ext[1:] in SUBTITLE_EXTENSIONS:
+    current_extension = cur_path.suffix
+    if current_extension[1:] in SUBTITLE_EXTENSIONS:
         # Extract subtitle language from filename
-        sublang = os.path.splitext(cur_filename)[1][1:]
+        sublang = Path(cur_path.stem).suffix[1:]
 
         # Check if the language extracted from filename is a valid language
         if sublang in sickchill.oldbeard.subtitles.subtitle_code_filter():
-            cur_file_ext = "." + sublang + cur_file_ext
+            current_extension = "." + sublang + cur_path.suffix
 
     # put the extension on the incoming file
-    new_path += cur_file_ext
+    new_path += current_extension
 
-    make_dirs(os.path.dirname(new_path))
+    new_path.mkdir(parents=True, exist_ok=True)
 
     # move the file
     try:
@@ -494,7 +440,7 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     return True
 
 
-def delete_empty_folders(check_empty_dir, keep_dir=None):
+def delete_empty_folders(check_empty_dir: Path, keep_dir: Path = None):
     """
     Walks backwards up the path and deletes any empty folders found.
 
@@ -508,21 +454,21 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     logger.info(_(f"Trying to clean any empty folders under {check_empty_dir}"))
 
     # as long as the folder exists and doesn't contain any files, delete it
-    while os.path.isdir(check_empty_dir) and check_empty_dir != keep_dir:
-        check_files = os.listdir(check_empty_dir)
+    while check_empty_dir.is_dir() and check_empty_dir != keep_dir:
+        check_files = sorted(check_empty_dir.iterdir())
 
         if not check_files or (len(check_files) <= len(ignore_items) and all(check_file in ignore_items for check_file in check_files)):
             # directory is empty or contains only ignore_items
             try:
                 logger.info(_(f"Deleting empty folder: {check_empty_dir}"))
                 # need shutil.rmtree when ignore_items is really implemented
-                os.rmdir(check_empty_dir)
+                check_empty_dir.rmdir()
                 # do the library update for synoindex
                 sickchill.oldbeard.notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as error:
                 logger.warning(_(f"There was a problem trying to delete {check_empty_dir}. Error: {error}"))
                 break
-            check_empty_dir = os.path.dirname(check_empty_dir)
+            check_empty_dir = check_empty_dir.parent
         else:
             break
 
@@ -542,32 +488,32 @@ def fileBitFilter(mode):
     return mode
 
 
-def chmodAsParent(childPath):
+def chmodAsParent(child_path: Path):
     """
     Retain permissions of parent for childs
     (Does not work for Windows hosts)
 
-    :param childPath: Child Path to change permissions to sync from parent
+    :param child_path: Child Path to change permissions to sync from parent
     """
 
     if platform.system() == "Windows":
         return
 
-    parentPath = os.path.dirname(childPath)
+    if not isinstance(child_path, Path):
+        child_path = Path(child_path)
 
-    if not parentPath:
-        logger.debug(_(f"No parent path provided in {childPath} unable to get permissions from it"))
+    child_path = child_path.resolve()
+
+    if not child_path.parent:
+        logger.debug(_(f"No parent path provided in {child_path} unable to get permissions from it"))
         return
 
-    childPath = os.path.join(parentPath, os.path.basename(childPath))
+    parentMode = stat.S_IMODE(child_path.parent.stat().st_mode)
 
-    parentPathStat = os.stat(parentPath)
-    parentMode = stat.S_IMODE(parentPathStat[stat.ST_MODE])
+    childPathStat = child_path.stat()
+    childPath_mode = stat.S_IMODE(childPathStat.st_mode)
 
-    childPathStat = os.stat(childPath)
-    childPath_mode = stat.S_IMODE(childPathStat[stat.ST_MODE])
-
-    if os.path.isfile(childPath):
+    if os.path.isfile(child_path):
         childMode = fileBitFilter(parentMode)
     else:
         childMode = parentMode
@@ -579,37 +525,34 @@ def chmodAsParent(childPath):
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
     if user_id not in (childPath_owner, 0):
-        logger.debug(_(f"Not running as root or owner of {childPath}, not trying to set permissions"))
+        logger.debug(_(f"Not running as root or owner of {child_path}, not trying to set permissions"))
         return
 
     try:
-        os.chmod(childPath, childMode)
+        child_path.chmod(childMode)
     except OSError as error:
-        logger.debug(_(f"There was a problem setting permissions of {childPath} to {childMode:o}, parent directory has {parentMode:o}. Error: {error}"))
+        logger.debug(_(f"There was a problem setting permissions of {child_path} to {childMode:o}, parent directory has {parentMode:o}. Error: {error}"))
 
 
-def fixSetGroupID(childPath):
+def fixSetGroupID(child_path: Path):
     """
     Inherid SGID from parent
     (does not work on Windows hosts)
 
-    :param childPath: Path to inherit SGID permissions from parent
+    :param child_path: Path to inherit SGID permissions from parent
     """
 
     if platform.system() == "Windows":
         return
 
     try:
-        parentPath = os.path.dirname(childPath)
-        parentStat = os.stat(parentPath)
-        parentMode = stat.S_IMODE(parentStat[stat.ST_MODE])
-
-        childPath = os.path.join(parentPath, os.path.basename(childPath))
+        parentStat = child_path.parent.stat()
+        parentMode = stat.S_IMODE(parentStat.st_mode)
 
         if parentMode & stat.S_ISGID:
-            parentGID = parentStat[stat.ST_GID]
-            childStat = os.stat(childPath)
-            childGID = childStat[stat.ST_GID]
+            parentGID = parentStat.st_gid
+            childStat = child_path.stat()
+            childGID = childStat.st_gid
 
             if childGID == parentGID:
                 return
@@ -618,20 +561,20 @@ def fixSetGroupID(childPath):
             user_id = os.geteuid()
 
             if user_id not in (childPath_owner, 0):
-                logger.debug(_(f"Not running as root or owner of {childPath}, not trying to set the set-group-ID"))
+                logger.debug(_(f"Not running as root or owner of {child_path}, not trying to set the set-group-ID"))
                 return
 
             try:
-                os.chown(childPath, -1, parentGID)
-                logger.debug(_(f"Respecting the set-group-ID bit on the parent directory of {childPath}"))
+                os.chown(child_path, -1, parentGID)
+                logger.debug(_(f"Respecting the set-group-ID bit on the parent directory of {child_path}"))
             except (OSError, PermissionError) as error:
                 logger.debug(
                     _(
-                        f"There was a problem respecting the set-group-ID bit on the parent directory of {childPath} (setting group ID {parentGID}). Error: {error}"
+                        f"There was a problem respecting the set-group-ID bit on the parent directory of {child_path} (setting group ID {parentGID}). Error: {error}"
                     )
                 )
     except Exception as error:
-        logger.debug(_(f"There was a problem setting set-group-id on the parent directory of {childPath}. Error: {error}"))
+        logger.debug(_(f"There was a problem setting set-group-id on the parent directory of {child_path}. Error: {error}"))
 
 
 def is_anime_in_show_list():
@@ -968,11 +911,15 @@ def is_hidden_folder(folder):
     :param folder: Full path of folder to check
     """
 
-    def is_hidden(filepath):
-        name = os.path.basename(os.path.abspath(filepath))
-        return name == "@eaDir" or name.startswith(".") or has_hidden_attribute(filepath)
+    if not isinstance(folder, Path):
+        folder = Path(folder)
 
-    def has_hidden_attribute(filepath):
+    folder = folder.absolute().resolve()
+
+    def is_hidden(filepath: Path):
+        return filepath.name == "@eaDir" or filepath.name.startswith(".") or has_hidden_attribute(filepath)
+
+    def has_hidden_attribute(filepath: Path):
         try:
             attrs = ctypes.windll.kernel32.GetFileAttributesW(ctypes.c_wchar_p(str(filepath)))
             assert attrs != -1
@@ -981,7 +928,7 @@ def is_hidden_folder(folder):
             result = False
         return result
 
-    if os.path.isdir(folder) and is_hidden(folder):
+    if folder.is_dir() and is_hidden(folder):
         return True
 
     return False

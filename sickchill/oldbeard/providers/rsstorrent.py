@@ -157,13 +157,12 @@ class TorrentRssProvider(TorrentProvider):
 
     @staticmethod
     def dumpHTML(data):
-        dumpName = os.path.join(settings.CACHE_DIR, "custom_torrent.html")
+        dump_name = settings.CACHE_DIR / "custom_torrent.html"
 
         try:
-            fileOut = open(dumpName, "wb")
-            fileOut.write(data)
-            fileOut.close()
-            helpers.chmodAsParent(dumpName)
+            with dump_name.open("wb") as file_out:
+                file_out.write(data)
+            helpers.chmodAsParent(dump_name)
         except IOError as error:
             logger.exception("Unable to save the file: {0}".format(str(error)))
             return False

@@ -1223,13 +1223,13 @@ class Home(WebRoot):
                 show_obj.rls_require_words = rls_require_words.strip()
                 show_obj.rls_prefer_words = rls_prefer_words.strip()
 
-            location = os.path.normpath(xhtml_unescape(location))
+            location = Path(xhtml_unescape(location)).resolve()
             # noinspection PyProtectedMember
-            old_location = os.path.normpath(show_obj._location)
+            old_location = show_obj._location.resolve()
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if old_location != location:
                 logger.debug(old_location + " != " + location)
-                if not (os.path.isdir(location) or settings.CREATE_MISSING_SHOW_DIRS or settings.ADD_SHOWS_WO_DIR):
+                if not (location.is_dir() or settings.CREATE_MISSING_SHOW_DIRS or settings.ADD_SHOWS_WO_DIR):
                     errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
                 else:
                     # change it

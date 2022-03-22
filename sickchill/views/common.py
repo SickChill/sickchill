@@ -18,7 +18,7 @@ def get_lookup():
         "mako",
         TemplateLookup(
             directories=[os.path.join(settings.PROG_DIR, "gui/" + settings.GUI_NAME + "/views/")],
-            module_directory=os.path.join(settings.CACHE_DIR, "mako"),
+            module_directory=(settings.CACHE_DIR / "mako").__fspath__(),
             strict_undefined=settings.BRANCH and settings.BRANCH != "master",
             #  format_exceptions=True,
             filesystem_checks=True,
