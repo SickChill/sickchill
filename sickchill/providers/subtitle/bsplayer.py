@@ -11,8 +11,9 @@ from time import sleep
 from xml.etree import ElementTree
 from xmlrpc.client import ServerProxy
 
+import requests
 from babelfish import Language, language_converters
-from requests import Session
+from requests.structures import CaseInsensitiveDict
 from subliminal import __short_version__
 from subliminal.providers import Provider, TimeoutSafeTransport
 from subliminal.subtitle import fix_line_ending, Subtitle
@@ -114,16 +115,17 @@ class BSPlayerProvider(Provider):
         self.server = ServerProxy(self.server_url, TimeoutSafeTransport(10), context=make_context(settings.SSL_VERIFY))
         # None values not allowed for logging in, so replace it by ''
         self.token = None
-        self.session = Session()
         self.search_url = search_url or get_sub_domain()
 
     def _api_request(self, func_name="logIn", params="", tries=5):
-        headers = {
-            "User-Agent": "BSPlayer/2.x (1022.12360)",
-            "Content-Type": "text/xml; charset=utf-8",
-            "Connection": "close",
-            "SOAPAction": '"http://api.bsplayer-subtitles.com/v1.php#{func_name}"'.format(func_name=func_name),
-        }
+        headers = CaseInsensitiveDict(
+            {
+                "User-Agent": "BSPlayer/2.x (1022.12360)",
+                "Content-Type": "text/xml; charset=utf-8",
+                "Connection": "close",
+                "SOAPAction": '"http://api.bsplayer-subtitles.com/v1.php#{func_name}"'.format(func_name=func_name),
+            }
+        )
         data = (
             '<?xml version="1.0" encoding="UTF-8"?>\n'
             '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" '
@@ -136,7 +138,7 @@ class BSPlayerProvider(Provider):
 
         for i in range(tries):
             try:
-                res = self.session.post(self.search_url, data=data, headers=headers)
+                res = requests.post(self.search_url, data=data, headers=headers)
                 return ElementTree.fromstring(res.content)
             except ElementTree.ParseError:
                 logger.warning(f"[BSPlayer]: {res.content}")
@@ -230,12 +232,14 @@ class BSPlayerProvider(Provider):
 
     def download_subtitle(self, subtitle):
         logger.info("Downloading subtitle %r", subtitle)
-        headers = {
-            "User-Agent": "BSPlayer/2.x (1022.12360)",
-            "Content-Length": "0",
-        }
+        headers = CaseInsensitiveDict(
+            {
+                "User-Agent": "BSPlayer/2.x (1022.12360)",
+                "Content-Length": "0",
+            }
+        )
 
-        response = self.session.get(subtitle.page_link, headers=headers)
+        response = requests.get(subtitle.page_link, headers=headers)
 
         subtitle.content = fix_line_ending(zlib.decompress(response.content, 47))
 

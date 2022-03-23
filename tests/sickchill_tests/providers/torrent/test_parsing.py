@@ -168,7 +168,7 @@ class BaseParser(type):
                     if result["link"].startswith("magnet"):
                         assert magnet_regex.match(result["link"])
                     else:
-                        assert validators.url(result["link"]), result["link"]
+                        assert validators.url(result["link"]) == True, result["link"]
 
                     self.assertIsInstance(self.provider._get_size(result), int)
                     assert all(self.provider._get_title_and_url(result))

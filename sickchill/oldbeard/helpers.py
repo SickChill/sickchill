@@ -24,13 +24,11 @@ from urllib.parse import urljoin
 from xml.etree import ElementTree
 
 import certifi
-import cloudscraper
 import ifaddr
 import rarfile
 import requests
 import urllib3.exceptions
 from cachecontrol import CacheControl
-from cloudscraper.exceptions import CloudflareException
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 from urllib3 import disable_warnings
@@ -72,10 +70,13 @@ def set_opener(verify: bool):
     disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     try:
         from urllib.request import HTTPSHandler
+    except ImportError:
+        HTTPSHandler = None
 
+    if HTTPSHandler:
         https_handler = HTTPSHandler(context=make_context(verify), check_hostname=True)
         opener = urllib.request.build_opener(https_handler)
-    except ImportError:
+    else:
         opener = urllib.request.build_opener()
 
     opener.addheaders = [("User-agent", sickchill.oldbeard.common.USER_AGENT)]
@@ -84,7 +85,7 @@ def set_opener(verify: bool):
 
 set_opener(settings.SSL_VERIFY)
 
-# Override original shutil function to increase its speed by increasing its buffer to 10MB (optimal)
+# Override original shutil function to increase its speed by increasing it's buffer to 10MB (optimal)
 copyfileobj_orig = shutil.copyfileobj
 
 
@@ -207,8 +208,10 @@ def is_media_file(filename):
     """
     Check if named file may contain media
 
-    :param filename: Filename to check
-    :return: True if this is a known media file, False if not
+    Parameters:
+        filename: Filename to check
+    Returns:
+        True if this is a known media file, False if not
     """
 
     # ignore samples
@@ -228,7 +231,7 @@ def is_media_file(filename):
         if filename == "tvshow-trailer.mp4":
             return False
 
-        # ignore MAC OS's retarded "resource fork" files
+        # ignore MACOS's retarded "resource fork" files
         if filename.startswith("._"):
             return False
 
@@ -247,8 +250,10 @@ def is_rar_file(filename):
     """
     Check if file is a RAR file, or part of a RAR set
 
-    :param filename: Filename to check
-    :return: True if this is RAR/Part file, False if not
+    Parameters:
+        filename: Filename to check
+    Returns:
+         True if this is RAR/Part file, False if not
     """
     archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
     ret = re.search(archive_regex, filename) is not None
@@ -265,7 +270,8 @@ def remove_file_failed(failed_file):
     """
     Remove file from filesystem
 
-    :param failed_file: File to remove
+    Parameters:
+        failed_file: File to remove
     """
 
     # noinspection PyBroadException
@@ -279,8 +285,10 @@ def makeDir(path):
     """
     Make a directory on the filesystem
 
-    :param path: directory to make
-    :return: True if success, False if failure
+    Parameters:
+        path: directory to make
+    Returns:
+         True if success, False if failure
     """
 
     if not os.path.isdir(path):
@@ -297,8 +305,10 @@ def list_media_files(path):
     """
     Get a list of files possibly containing media in a path
 
-    :param path: Path to check for files
-    :return: list of files
+    Parameters:
+        path: Path to check for files
+    Returns:
+         list of files
     """
 
     if not path or not os.path.isdir(path):
@@ -322,8 +332,9 @@ def copyFile(srcFile, destFile):
     """
     Copy a file from source to destination
 
-    :param srcFile: Path of source file
-    :param destFile: Path of destination file
+    Parameters:
+        srcFile: Path of source file
+        destFile: Path of destination file
     """
 
     try:
@@ -347,8 +358,9 @@ def moveFile(srcFile, destFile):
     """
     Move a file from source to destination
 
-    :param srcFile: Path of source file
-    :param destFile: Path of destination file
+    Parameters:
+        srcFile: Path of source file
+        destFile: Path of destination file
     """
     try:
         shutil.move(srcFile, destFile)
@@ -363,8 +375,9 @@ def hardlinkFile(srcFile, destFile):
     """
     Create a hard-link (inside filesystem link) between source and destination
 
-    :param srcFile: Source file
-    :param destFile: Destination file
+    Parameters:
+        srcFile: Source file
+        destFile: Destination file
     """
 
     try:
@@ -390,8 +403,9 @@ def moveAndSymlinkFile(srcFile, destFile):
     Move a file from source to destination, then create a symlink back from destination from source. If this fails, copy
     the file from source to destination
 
-    :param srcFile: Source file
-    :param destFile: Destination file
+    Parameters:
+        srcFile: Source file
+        destFile: Destination file
     """
 
     try:
@@ -452,9 +466,10 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
     Creates all folders needed to move a file to its new location, renames it, then cleans up any folders
     left that are now empty.
 
-    :param  cur_path: The absolute path to the file you want to move/rename
-    :param new_path: The absolute path to the destination for the file WITHOUT THE EXTENSION
-    :param old_path_length: The length of media file path (old name) WITHOUT THE EXTENSION
+    Parameters:
+        cur_path: The absolute path to the file you want to move/rename
+        new_path: The absolute path to the destination for the file WITHOUT THE EXTENSION
+        old_path_length: The length of media file path (old name) WITHOUT THE EXTENSION
     """
 
     # new_dest_dir, new_dest_name = os.path.split(new_path)
@@ -498,8 +513,9 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     """
     Walks backwards up the path and deletes any empty folders found.
 
-    :param check_empty_dir: The path to clean (absolute path to a folder)
-    :param keep_dir: Clean until this path is reached
+    Parameters:
+        check_empty_dir: The path to clean (absolute path to a folder)
+        keep_dir: Clean until this path is reached
     """
 
     # treat check_empty_dir as empty when it only contains these items
@@ -531,8 +547,10 @@ def fileBitFilter(mode):
     """
     Strip special filesystem bits from file
 
-    :param mode: mode to check and strip
-    :return: required mode for media file
+    Parameters:
+        mode: mode to check and strip
+    Returns:
+         required mode for media file
     """
 
     for bit in [stat.S_IXUSR, stat.S_IXGRP, stat.S_IXOTH, stat.S_ISUID, stat.S_ISGID]:
@@ -547,7 +565,8 @@ def chmodAsParent(childPath):
     Retain permissions of parent for childs
     (Does not work for Windows hosts)
 
-    :param childPath: Child Path to change permissions to sync from parent
+    Parameters:
+        childPath: Child Path to change permissions to sync from parent
     """
 
     if platform.system() == "Windows":
@@ -593,7 +612,8 @@ def fixSetGroupID(childPath):
     Inherid SGID from parent
     (does not work on Windows hosts)
 
-    :param childPath: Path to inherit SGID permissions from parent
+    Parameters:
+        childPath: Path to inherit SGID permissions from parent
     """
 
     if platform.system() == "Windows":
@@ -638,7 +658,8 @@ def is_anime_in_show_list():
     """
     Check if any shows in list contain anime
 
-    :return: True if global showlist contains Anime, False if not
+    Returns:
+         True if global showlist contains Anime, False if not
     """
 
     for show in settings.showList:
@@ -657,10 +678,12 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
     """
     Find the absolute number for a show episode
 
-    :param show: Show object
-    :param season: Season number
-    :param episode: Episode number
-    :return: The absolute number
+    Parameters:
+        show: Show object
+        season: Season number
+        episode: Episode number
+    Returns:
+         The absolute number
     """
 
     absolute_number = None
@@ -699,9 +722,11 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
 def sanitizeSceneName(name, anime=False):
     """
     Takes a show name and returns the "scenified" version of it.
-    :param name: The name to sanitize
-    :param anime: Some show have a ' in their name(Kuroko's Basketball) and is needed for search.
-    :return: A string containing the scene version of the show name given.
+    Parameters:
+        name: The name to sanitize
+        anime: Some show have a ' in their name(Kuroko's Basketball) and is needed for search.
+    Returns:
+         A string containing the scene version of the show name given.
     """
 
     if not name:
@@ -730,9 +755,11 @@ def create_https_certificates(ssl_cert, ssl_key):
     """
     Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
 
-    :param ssl_cert: Path of SSL certificate file to write
-    :param ssl_key: Path of SSL keyfile to write
-    :return: True on success, False on failure
+    Parameters:
+        ssl_cert: Path of SSL certificate file to write
+        ssl_key: Path of SSL keyfile to write
+    Returns:
+         True on success, False on failure
     """
 
     try:
@@ -782,9 +809,11 @@ def backupVersionedFile(old_file, version):
     """
     Back up an old version of a file
 
-    :param old_file: Original file, to take a backup from
-    :param version: Version of file to store in backup
-    :return: True if success, False if failure
+    Parameters:
+        old_file: Original file, to take a backup from
+        version: Version of file to store in backup
+    Returns:
+         True if success, False if failure
     """
 
     numTries = 0
@@ -965,7 +994,8 @@ def is_hidden_folder(folder):
     """
     Returns True if folder is hidden.
     On Linux based systems hidden folders start with . (dot)
-    :param folder: Full path of folder to check
+    Parameters:
+        folder: Full path of folder to check
     """
 
     def is_hidden(filepath):
@@ -989,7 +1019,8 @@ def is_hidden_folder(folder):
 
 def real_path(path):
     """
-    Returns: the canonicalized absolute pathname. The resulting path will have no symbolic link, '/./' or '/../' components.
+    Returns:
+        the canonicalized absolute pathname. The resulting path will have no symbolic link, '/./' or '/../' components.
     """
     return os.path.normpath(os.path.normcase(os.path.realpath(path)))
 
@@ -999,8 +1030,9 @@ def is_subdirectory(subdir_path, topdir_path):
     Returns true if a subdir_path is a subdirectory of topdir_path
     else otherwise.
 
-    :param subdir_path: The full path to the sub-directory
-    :param topdir_path: The full path to the top directory to check subdir_path against
+    Parameters:
+        subdir_path: The full path to the subdirectory
+        topdir_path: The full path to the top directory to check subdir_path against
     """
     topdir_path = real_path(topdir_path)
     subdir_path = real_path(subdir_path)
@@ -1048,8 +1080,9 @@ def makeZip(fileList, archive):
     """
     Create a ZIP of files
 
-    :param fileList: A list of file names - full path each name
-    :param archive: File name for the archive with a full path
+    Parameters:
+        fileList: A list of file names - full path each name
+        archive: File name for the archive with a full path
     """
 
     try:
@@ -1067,8 +1100,9 @@ def extractZip(archive, targetDir):
     """
     Unzip a file to a directory
 
-    :param archive: The file name of the archive to extract with a full path
-    :param targetDir: The full path to the extraction target directory
+    Parameters:
+        archive: The file name of the archive to extract with a full path
+        targetDir: The full path to the extraction target directory
     """
 
     try:
@@ -1099,10 +1133,12 @@ def backup_config_zip(fileList, archive, arcname=None):
     """
     Store the config file as a ZIP
 
-    :param fileList: List of files to store
-    :param archive: ZIP file name
-    :param arcname: Archive path
-    :return: True on success, False on failure
+    Parameters:
+        fileList: List of files to store
+        archive: ZIP file name
+        arcname: Archive path
+    Returns:
+         True on success, False on failure
     """
 
     try:
@@ -1120,9 +1156,11 @@ def restore_config_zip(archive, targetDir):
     """
     Restores a Config ZIP file back in place
 
-    :param archive: ZIP filename
-    :param targetDir: Directory to restore to
-    :return: True on success, False on failure
+    Parameters:
+        archive: ZIP filename
+        targetDir: Directory to restore to
+    Returns:
+         True on success, False on failure
     """
 
     try:
@@ -1154,9 +1192,11 @@ def touchFile(fname, atime=None):
     """
     Touch a file (change modification date)
 
-    :param fname: Filename to touch
-    :param atime: Specific access time (defaults to None)
-    :return: True on success, False on failure
+    Parameters:
+        fname: Filename to touch
+        atime: Specific access time (defaults to None)
+    Returns:
+         True on success, False on failure
     """
 
     if atime and fname and os.path.isfile(fname):
@@ -1178,7 +1218,6 @@ def make_indexer_session():
 def make_session():
     session = requests.Session()
     session.headers.update({"User-Agent": USER_AGENT, "Accept-Encoding": "gzip,deflate"})
-    session = cloudscraper.create_scraper(sess=session, delay=6)
     return CacheControl(sess=session, cache_etags=True)
 
 
@@ -1199,11 +1238,11 @@ def getURL(
     url,
     post_data=None,
     params=None,
-    headers=None,  # pylint:disable=too-many-arguments, too-many-return-statements, too-many-branches, too-many-locals
+    headers=None,
     timeout=30,
-    session=None,
+    session: requests.Session = None,
     **kwargs,
-):
+) -> Union[requests.Response, dict]:
     """
     Returns data retrieved from the url provider.
     """
@@ -1214,7 +1253,38 @@ def getURL(
 
         hooks, cookies, verify, proxies = request_defaults(kwargs)
 
-        resp = session.request(
+        flaresolverr = kwargs.pop("flaresolverr", False)
+        if flaresolverr and settings.FLARESOLVERR_URI:
+            if params:
+                url = f"{url}?{urllib.parse.urlencode(params)}"
+
+            fs_json = {"cmd": "request.get", "url": url, "userAgent": "Windows NT 10.0; Win64; x64) AppleWebKit/5...", "maxTimeout": 60000}
+
+            if post_data:
+                fs_json.update(cmd="request.post", postData=post_data)
+
+            if cookies:
+                fs_json.update(cookies=cookies)
+
+            if proxies:
+                fs_json.update(proxy=proxies)
+
+            response = session.post(
+                settings.FLARESOLVERR_URI,
+                json=fs_json,
+                headers={"Content-Type": "application/json"},
+                timeout=timeout,
+                hooks=hooks,
+                verify=False,
+            )
+
+            json_result = response.json()
+            response.raise_for_status()
+            session.cookies = json_result["solution"]["cookies"]
+            session.headers = json_result["solution"]["headers"]
+            return json_result["response"]
+
+        response = session.request(
             "POST" if post_data else "GET",
             url,
             data=post_data or {},
@@ -1228,14 +1298,13 @@ def getURL(
             proxies=proxies,
             verify=verify,
         )
-        resp.raise_for_status()
+        response.raise_for_status()
     except Exception as error:
-        # noinspection PyTypeChecker
         handle_requests_exception(error)
         return None
 
     try:
-        return resp if response_type in ("response", None) else resp.json() if response_type == "json" else getattr(resp, response_type, resp)
+        return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
     except ValueError:
         logger.debug(_(f"Requested a json response but response was not json, check the url: {url}"))
         return None
@@ -1245,11 +1314,13 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
     """
     Downloads a file specified
 
-    :param url: Source URL
-    :param filename: Target file on filesystem
-    :param session: request session to use
-    :param headers: override existing headers in request session
-    :return: True on success, False on failure
+    Parameters:
+        url: Source URL
+        filename: the target file on the filesystem
+        session: request session to use
+        headers: override existing headers in request session
+    Returns:
+         True on success, False on failure
     """
 
     return_filename = kwargs.get("return_filename", False)
@@ -1291,22 +1362,6 @@ def handle_requests_exception(
         Exception,
         TypeError,
         ValueError,
-        "cloudscraper.exceptions.CaptchaAPIError",
-        "cloudscraper.exceptions.CaptchaAccountError",
-        "cloudscraper.exceptions.CaptchaBadJobID",
-        "cloudscraper.exceptions.CaptchaException",
-        "cloudscraper.exceptions.CaptchaParameter",
-        "cloudscraper.exceptions.CaptchaReportError",
-        "cloudscraper.exceptions.CaptchaServiceUnavailable",
-        "cloudscraper.exceptions.CaptchaTimeout",
-        "cloudscraper.exceptions.CloudflareCaptchaError",
-        "cloudscraper.exceptions.CloudflareCaptchaProvider",
-        "cloudscraper.exceptions.CloudflareChallengeError",
-        "cloudscraper.exceptions.CloudflareCode1020",
-        "cloudscraper.exceptions.CloudflareException",
-        "cloudscraper.exceptions.CloudflareIUAMError",
-        "cloudscraper.exceptions.CloudflareLoopProtection",
-        "cloudscraper.exceptions.CloudflareSolveError",
         "requests.exceptions.BaseHTTPError",
         "requests.exceptions.ChunkedEncodingError",
         "requests.exceptions.ConnectTimeout",
@@ -1397,8 +1452,6 @@ def handle_requests_exception(
         logger.debug(traceback.format_exc())
     except urllib3.exceptions.ProxySchemeUnknown as error:
         logger.info(default.format("You must prefix your proxy setting with a scheme (http/https/etc)", error))
-    except CloudflareException as error:
-        logger.info(default.format(error, classname(error)))
     except requests.exceptions.RequestException as error:
         if not (
             hasattr(error, "response")
@@ -1428,8 +1481,10 @@ def get_size(start_path="."):
     """
     Find the total dir and filesize of a path
 
-    :param start_path: Path to recursively count size
-    :return: total filesize
+    Parameters:
+        start_path: Path to recursively count size
+    Returns:
+         total filesize
     """
 
     if not os.path.isdir(start_path):
@@ -1462,7 +1517,7 @@ def generateApiKey():
 def remove_article(text=""):
     """Remove the english articles from a text string"""
 
-    return re.sub(r"(?i)^(?:(?:A(?!\s+to)n?)|The)\s(\w)", r"\1", text)
+    return re.sub(r"(?i)^(?:A(?!\s+to)n?|The)\s(\w)", r"\1", text)
 
 
 def generateCookieSecret():
@@ -1500,11 +1555,13 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     """
     Checks if the target system has enough free space to copy or move a file.
 
-    :param src: Source filename
-    :param dest: Destination path (show dir in current usage)
-    :param oldfile: File to be replaced (defaults to None)
-    :param method: The post processing method
-    :return: True if there is enough space for the file, False if there isn't. Also returns True if the OS doesn't support this option
+    Parameters:
+        src: Source filename
+        dest: Destination path (show dir in current usage)
+        oldfile: File to be replaced (defaults to None)
+        method: The post-processing method
+    Returns:
+         True if there is enough space for the file, False if there isn't. Also returns True if the OS doesn't support this option
     """
 
     if not isinstance(oldfile, list):
@@ -1539,7 +1596,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         logger.debug(traceback.format_exc())
         return True
 
-    # Lets also do this for symlink and hardlink
+    # Let's also do this for symlink and hardlink
     if "link" in method and disk_free > 1024**2:
         return True
 
@@ -1563,8 +1620,9 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
 
 def disk_usage_hr(diskPath=None):
     """
-    returns the free space in human readable bytes for a given path or False if no path given
-    :param diskPath: the filesystem path being checked
+    returns the free space in human-readable bytes for a given path or False if no path given
+    Parameters:
+        diskPath: the filesystem path being checked
     """
     if diskPath and os.path.exists(diskPath):
         try:
@@ -1604,13 +1662,14 @@ def is_file_locked(checkfile, write_check=False):
     """
     Checks to see if a file is locked. Performs three checks
         1. Checks if the file even exists
-        2. Attempts to open the file for reading. This will determine if the file has a write lock.
+        2. Attempts to open the file for reading. This will determine if the file has a write-lock.
             Write locks occur when the file is being edited or copied to, e.g. a file copy destination
         3. If the readLockCheck parameter is True, attempts to rename the file. If this fails the
             file is open by some other process for reading. The file can be read, but not written to
             or deleted.
-    :param checkfile: the file being checked
-    :param write_check: when true will check if the file is locked for writing (prevents move operations)
+    Parameters:
+        checkfile: the file being checked
+        write_check: when true will check if the file is locked for writing (prevents move operations)
     """
 
     checkfile = os.path.abspath(checkfile)
@@ -1642,7 +1701,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
     session = make_session()
     tvdb_id = ""
     if indexer == "IMDB":
-        url = f"http://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid={indexer_id}"
+        url = f"https://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid={indexer_id}"
         data = getURL(url, session=session, returns="content")
         if data is None:
             return tvdb_id
@@ -1656,7 +1715,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
         return tvdb_id
     elif indexer == "ZAP2IT":
-        url = f"http://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it={indexer_id}"
+        url = f"https://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it={indexer_id}"
         data = getURL(url, session=session, returns="content")
         if data is None:
             return tvdb_id
@@ -1670,7 +1729,7 @@ def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-retur
 
         return tvdb_id
     elif indexer == "TVMAZE":
-        url = f"http://api.tvmaze.com/shows/{indexer_id}"
+        url = f"https://api.tvmaze.com/shows/{indexer_id}"
         data = getURL(url, session=session, returns="json")
         if data is None:
             return tvdb_id
@@ -1776,11 +1835,10 @@ def get_exception_class_type_hint_string() -> None:
     This is not used in code, just used for creating a type hint string for me to use above on handle_requests_exception
     """
     output = set()
-    import cloudscraper.exceptions
     import requests.exceptions
     import urllib3.exceptions
 
-    for location in (requests.exceptions, urllib3.exceptions, cloudscraper.exceptions):
+    for location in (requests.exceptions, urllib3.exceptions):
         for item_string in dir(location):
             try:
                 item = getattr(location, item_string)

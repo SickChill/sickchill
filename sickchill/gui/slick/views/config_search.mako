@@ -68,6 +68,31 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('FlareSolverr URI')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="flaresolverr_uri" value="${settings.FLARESOLVERR_URI}"
+                                            id="flaresolverr_uri"
+                                            class="form-control input-sm input350" autocapitalize="off"/>
+                                            <label for="flaresolverr_uri">${_('the URL of your flaresolverr server.  Example:  http://localhost:8191/v1')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label><b>${_('note')}:</b> ${_('this is experimental and not fully implemented.')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="button" class="btn" value="Check FlareSolverr" id="testFlareSolverr" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">

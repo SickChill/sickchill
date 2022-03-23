@@ -1,5 +1,7 @@
 from urllib.parse import urljoin
 
+from requests.structures import CaseInsensitiveDict
+
 from sickchill import logger, settings
 from sickchill.oldbeard import common, helpers
 
@@ -15,13 +17,13 @@ class Notifier(object):
 
     def get_devices(self, pushbullet_api):
         logger.debug("Testing Pushbullet authentication and retrieving the device list.")
-        headers = {"Access-Token": pushbullet_api}
+        headers = CaseInsensitiveDict({"Access-Token": pushbullet_api})
         return helpers.getURL(urljoin(self.url, "devices"), session=self.session, headers=headers, returns="text") or {}
 
     def get_channels(self, pushbullet_api):
         """Fetches the list of channels a given access key has permissions to push to"""
         logger.debug("Testing Pushbullet authentication and retrieving the device list.")
-        headers = {"Access-Token": pushbullet_api}
+        headers = CaseInsensitiveDict({"Access-Token": pushbullet_api})
         return helpers.getURL(urljoin(self.url, "channels"), session=self.session, headers=headers, returns="text") or {}
 
     def notify_snatch(self, ep_name):
@@ -69,7 +71,7 @@ class Notifier(object):
         if link:
             post_data["url"] = link
 
-        headers = {"Access-Token": pushbullet_api}
+        headers = CaseInsensitiveDict({"Access-Token": pushbullet_api})
 
         if pushbullet_device:
             post_data["device_iden"] = pushbullet_device

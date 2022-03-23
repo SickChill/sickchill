@@ -39,7 +39,7 @@ class Provider(TorrentProvider):
 
                 search_url = (self.urls["search"], self.urls["rss"])[mode == "RSS"]
                 if self.custom_url:
-                    if not validators.url(self.custom_url):
+                    if validators.url(self.custom_url) != True:
                         logger.warning("Invalid custom url: {0}".format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])

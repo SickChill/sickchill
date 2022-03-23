@@ -113,16 +113,16 @@ class Provider(TorrentProvider):
                             allAs = (torrent[1])("a")
 
                             try:
-                                notinternal = result.find("img", src="/static//common/user_upload.png")
+                                notinternal = result.find_next("img", src="/static//common/user_upload.png")
                                 if self.ranked and notinternal:
                                     logger.debug("Found a user uploaded release, Ignoring it..")
                                     continue
-                                freeleech = result.find("img", src="/static//common/browse/freeleech.png")
+                                freeleech = result.find_next("img", src="/static//common/browse/freeleech.png")
                                 if self.freeleech and not freeleech:
                                     continue
                                 title = allAs[2].string
                                 download_url = self.urls["base_url"] + allAs[0].attrs["href"]
-                                torrent_size = result.find("td", class_="nobr").find_next_sibling("td").string
+                                torrent_size = result.find_next("td", class_="nobr").find_next_sibling("td").string
                                 if torrent_size:
                                     size = convert_size(torrent_size) or -1
                                 seeders = try_int((result("td")[6]).text.replace(",", ""))

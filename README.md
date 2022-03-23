@@ -1,10 +1,9 @@
 SickChill [![Build Status](https://travis-ci.org/SickChill/SickChill.svg?branch=master)](https://travis-ci.org/SickChill/SickChill) [![Build status](https://ci.appveyor.com/api/projects/status/s8bb0iqroecnhya2/branch/master?svg=true)](https://ci.appveyor.com/project/miigotu/SickChill/branch/master) [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo) [![Donate](https://img.shields.io/badge/donations-appreciated-green.svg)](https://github.com/SickChill/SickChill/wiki/Donations)
 ====================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
-#### Please do not confuse us with SickRageTV aka Sickrage.ca, which took over the `sickrage/sickrage` repository in Oct 2018
-#### We will never mine bitcoin on your machine, charge for a "service" or to use the software.
-#### We will never store your information, especially site logins to private trackers.
-#### We believe in honesty and loyalty and privacy.
+Huge thanks to JetBrains for providing "All Products Pack" licenses free of charge for SickChill developers as part of their support of OSS.
+[https://jb.gg/OpenSourceSupport](https://jb.gg/OpenSourceSupport)
+
 
 Automatic Video Library Manager for TV Shows. It watches for new episodes of your favorite shows, and when they are posted it does its magic.
 
@@ -56,3 +55,6 @@ A full list can be found here: [Link](https://github.com/SickChill/SickChill/wik
 
 #### News and Changelog
 [news.md and CHANGES.md have moved to a separate repo, click here](https://github.com/SickChill/SickChill.github.io)
+
+
+<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm_icon.svg" width="50" height="50"></a>

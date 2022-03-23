@@ -83,6 +83,7 @@ class ConfigSearch(Config):
         syno_dsm_path=None,
         quality_allow_hevc=False,
         prefer_words=None,
+        flaresolverr_uri=None,
     ):
 
         results = []
@@ -166,6 +167,8 @@ class ConfigSearch(Config):
         settings.SYNOLOGY_DSM_USERNAME = syno_dsm_user
         settings.SYNOLOGY_DSM_PASSWORD = filters.unhide(settings.SYNOLOGY_DSM_PASSWORD, syno_dsm_pass)
         settings.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip("/\\")
+
+        settings.FLARESOLVERR_URI = config.clean_url(flaresolverr_uri)
 
         # This is a PITA, but lets merge the settings if they only set DSM up in one section to save them some time
         if settings.TORRENT_METHOD == "download_station":

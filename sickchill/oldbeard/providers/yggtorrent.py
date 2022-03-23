@@ -39,7 +39,7 @@ class Provider(TorrentProvider):
         if custom and not new_url:
             return True
 
-        if not validators.url(new_url):
+        if validators.url(new_url) != True:
             if custom:
                 logger.warning("Invalid custom url: {0}".format(self.custom_url))
             else:

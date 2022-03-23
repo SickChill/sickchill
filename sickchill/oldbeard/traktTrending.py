@@ -48,13 +48,13 @@ class traktTrending(object):
                     if settings.TRAKT_ACCESS_TOKEN != "":
                         if show["show"]["ids"]["tvdb"] not in (lshow["show"]["ids"]["tvdb"] for lshow in library_shows):
                             if not_liked_show:
-                                if show["show"]["ids"]["tvdb"] not in (show["show"]["ids"]["tvdb"] for show in not_liked_show if show["type"] == "show"):
+                                if show["show"]["ids"]["tvdb"] not in (nlshow["show"]["ids"]["tvdb"] for nlshow in not_liked_show if nlshow["type"] == "show"):
                                     trending_shows += [show]
                             else:
                                 trending_shows += [show]
                     else:
                         if not_liked_show:
-                            if show["show"]["ids"]["tvdb"] not in (show["show"]["ids"]["tvdb"] for show in not_liked_show if show["type"] == "show"):
+                            if show["show"]["ids"]["tvdb"] not in (nlshow["show"]["ids"]["tvdb"] for nlshow in not_liked_show if nlshow["type"] == "show"):
                                 trending_shows += [show]
                         else:
                             trending_shows += [show]

@@ -250,7 +250,7 @@ class Logger(object):
                 try:
                     title_error = str(cur_error.title)
                     if not title_error or title_error == "None":
-                        title_error = re.match(r"^[A-Za-z0-9\-\[\] :]+::\s(?:\[[\w]{7}\])\s*(.*)$", cur_error.message).group(1)
+                        title_error = re.match(r"^[A-Za-z0-9\-\[\] :]+::\s\[[\w]{7}\]\s*(.*)$", cur_error.message).group(1)
 
                     if len(title_error) > 1000:
                         title_error = title_error[0:1000]
