@@ -101,9 +101,7 @@ class ShowTests(unittest.TestCase):
             invalid_show_id,
         ]
 
-        assert len(indexer_id_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(indexer_id_list), len(results_list)
-        )
+        assert len(indexer_id_list) == len(results_list), f"Number of parameters ({len(indexer_id_list)}) and results ({len(results_list)}) does not match"
 
         for (index, indexer_id) in enumerate(indexer_id_list):
             assert Show._validate_indexer_id(indexer_id) == results_list[index]
@@ -127,7 +125,7 @@ class TestTVShow(TVShow):
 
 
 if __name__ == "__main__":
-    print("=====> Testing {0}".format(__file__))
+    print(f"=====> Testing {__file__}")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ShowTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

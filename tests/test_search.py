@@ -62,10 +62,9 @@ def generator(cur_data, cur_name, cur_provider):
             episode_strings = cur_provider.get_episode_search_strings(episode)
 
             fail = False
-            cur_string = ""
             for cur_string in season_strings, episode_strings:
                 if not all([isinstance(cur_string, list), isinstance(cur_string[0], dict)]):
-                    print("{0} is using a wrong string format!".format(cur_provider.name))
+                    print(f"{cur_provider.name} is using a wrong string format!")
                     print(cur_string)
                     fail = True
                     continue
@@ -77,7 +76,7 @@ def generator(cur_data, cur_name, cur_provider):
                 assert season_strings == cur_data["s_strings"]
                 assert episode_strings == cur_data["e_strings"]
             except AssertionError:
-                print("{0} is using a wrong string format!".format(cur_provider.name))
+                print(f"{cur_provider.name} is using a wrong string format!")
                 print(cur_string)
                 continue
 
@@ -98,7 +97,7 @@ def generator(cur_data, cur_name, cur_provider):
             title, url = cur_provider._get_title_and_url(items[0])
             for word in show.name.split(" "):
                 if not word.lower() in title.lower():
-                    print("Show cur_name not in title: {0}. URL: {1}".format(title, url))
+                    print(f"Show cur_name not in title: {title}. URL: {url}")
                     continue
 
             if not url:
@@ -109,7 +108,7 @@ def generator(cur_data, cur_name, cur_provider):
             size = cur_provider._get_size(items[0])
 
             if not show.quality & quality:
-                print("Quality not in common.ANY, {0!r} {1}".format(quality, size))
+                print(f"Quality not in common.ANY, {quality!r} {size}")
                 continue
 
     return do_test
@@ -124,13 +123,13 @@ if __name__ == "__main__":
     for forceSearch in (True, False):
         for name, data in TESTS.items():
             filename = name.replace(" ", "_")
-
+            tvdbid = data["tvdbid"]
             for provider in sickchill.oldbeard.providers.sortedProviderList():
                 if provider.provider_type == GenericProvider.TORRENT:
                     if forceSearch:
-                        test_name = "test_manual_{0}_{1}_{2}".format(filename, data["tvdbid"], provider.name)
+                        test_name = f"test_manual_{filename}_{tvdbid}_{provider.name}"
                     else:
-                        test_name = "test_{0}_{1}_{2}".format(filename, data["tvdbid"], provider.name)
+                        test_name = f"test_{filename}_{tvdbid}_{provider.name}"
                     test = generator(data, name, provider)
                     setattr(SearchTest, test_name, test)
 

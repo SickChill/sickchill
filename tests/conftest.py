@@ -314,9 +314,7 @@ def setup_test_processing_dir():
 
     for season in range(1, NUM_SEASONS):
         for episode in range(11, EPISODES_PER_SEASON):
-            path = os.path.join(
-                PROCESSING_DIR, "{show_name}.S0{season}E{episode}.HDTV.x264.[SickChill].mkv".format(show_name=SHOW_NAME, season=season, episode=episode)
-            )
+            path = os.path.join(PROCESSING_DIR, f"{SHOW_NAME}.S0{season}E{episode}.HDTV.x264.[SickChill].mkv")
             with open(path, "w") as ep_file:
                 ep_file.write("foo bar")
                 ep_file.flush()

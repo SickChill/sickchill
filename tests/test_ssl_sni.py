@@ -24,16 +24,16 @@ def generator(_provider):
         :return: test to run
         """
         if not _provider.url:
-            print("{0} has no url set, skipping".format(_provider.name))
+            print(f"{_provider.name} has no url set, skipping")
             return
 
         try:
             requests.head(_provider.url, verify=certifi.where(), timeout=10)
         except requests.exceptions.SSLError as error:
             if "certificate verify failed" in str(error):
-                print("Cannot verify certificate for {0}".format(_provider.name))
+                print(f"Cannot verify certificate for {_provider.name}")
             else:
-                print("SSLError on {0}: {1}".format(_provider.name, str(error)))
+                print(f"SSLError on {_provider.name}: {error}")
                 raise
         except requests.exceptions.Timeout:
             print("Provider timed out")
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     print("######################################################################")
     # Just checking all providers - we should make this error on non-existent urls.
     for provider in [p for p in providers.makeProviderList()]:
-        test_name = "test_{0}".format(provider.name)
+        test_name = f"test_{provider.name}"
         test = generator(provider)
         setattr(SniTests, test_name, test)
 

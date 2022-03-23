@@ -747,7 +747,7 @@ if __name__ == "__main__":
     print("==================")
     print("######################################################################")
     for name, test_data in TEST_CASES.items():
-        test_name = "test_{0}".format(name)
+        test_name = f"test_{name}"
         test = generator(test_data)
         setattr(HelpersTests, test_name, test)
 

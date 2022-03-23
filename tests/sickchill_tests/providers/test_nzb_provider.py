@@ -91,13 +91,10 @@ class NZBProviderTests(GenericProviderTests):
         ]
         unicode_results_list = [-1, -1, -1, -1, -1, 0, 123, -1, -123, -1, 0, 123, 12, -123, -12]
 
-        assert len(items_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(items_list), len(results_list)
-        )
-
-        assert len(unicode_items_list) == len(unicode_results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(unicode_items_list), len(unicode_results_list)
-        )
+        assert len(items_list) == len(results_list), f"Number of parameters ({len(items_list)}) and results ({len(results_list)}) does not match"
+        assert len(unicode_items_list) == len(
+            unicode_results_list
+        ), f"Number of parameters ({len(unicode_items_list)}) and results ({len(unicode_results_list)}) does not match"
 
         for (index, item) in enumerate(items_list):
             assert NZBProvider("Test Provider")._get_size(item) == results_list[index]
@@ -118,7 +115,7 @@ class NZBProviderTests(GenericProviderTests):
 
 
 if __name__ == "__main__":
-    print("=====> Testing {0}".format(__file__))
+    print(f"=====> Testing {__file__}")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(NZBProviderTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

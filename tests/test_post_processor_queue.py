@@ -61,11 +61,11 @@ class PostProcessorQueueTests(conftest.SickChillTestPostProcessorCase):
 
             print(self.queue.action.queue)
             if cleared:
-                print("cleared after {}".format(i))
+                print(f"cleared after {i}")
             for task in self.queue.action.queue:
                 print(task.last_result)
 
-            assert cleared, "The queue did not empty after {timeout} seconds".format(timeout=timeout)
+            assert cleared, f"The queue did not empty after {timeout} seconds"
 
 
 if __name__ == "__main__":

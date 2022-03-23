@@ -91,7 +91,7 @@ class BaseParser(type):
             @wraps(func)
             def magic(self, *args, **kwargs):
                 if func.__name__.split("_")[1] in disabled_provider_tests.get(self.provider.name, []):
-                    self.skipTest("Test is programmatically disabled for provider {}".format(self.provider.name))
+                    self.skipTest(f"Test is programmatically disabled for provider {self.provider.name}")
                 func(self, *args, **kwargs)
 
             return magic
@@ -202,7 +202,7 @@ generate_test_cases()
 if __name__ == "__main__":
     import inspect
 
-    print("=====> Testing %s", __file__)
+    print(f"=====> Testing {__file__}")
 
     def override_log(msg, *args, **kwargs):
         """Override the SickChill logger so we can see the debug output from providers"""

@@ -25,8 +25,8 @@ class NotifierTests(conftest.SickChillTestDBCase):
         num_shows = 3
         num_episodes_per_show = 5
         cls.mydb = db.DBConnection()
-        cls.legacy_shows = []
-        cls.shows = []
+        legacy_shows = []
+        shows = []
 
         # Per-show-notifications were originally added for email notifications only.  To add
         # this feature to other notifiers, it was necessary to alter the way text is stored in
@@ -43,7 +43,9 @@ class NotifierTests(conftest.SickChillTestDBCase):
                 episode.quality = "SDTV"
                 show.episodes.append(episode)
             show.saveToDB()
-            cls.legacy_shows.append(show)
+            legacy_shows.append(show)
+
+        cls.legacy_shows = legacy_shows
 
         for show_counter in range(200, 200 + num_shows):
             show = TVShow(1, show_counter)
@@ -55,7 +57,9 @@ class NotifierTests(conftest.SickChillTestDBCase):
                 episode.quality = "SDTV"
                 show.episodes.append(episode)
             show.saveToDB()
-            cls.shows.append(show)
+            shows.append(show)
+
+        cls.shows = shows
 
     def setUp(self):
         """

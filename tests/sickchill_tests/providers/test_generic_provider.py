@@ -287,13 +287,10 @@ class GenericProviderTests(unittest.TestCase):
         unicode_items_list = [{"link": "", "title": ""}, {"link": "http://www.google.com/&amp;foo=bar%26tr%3Dtest", "title": "Some Title"}]
         unicode_results_list = [("", ""), ("Some.Title", "http://www.google.com/&foo=bar&tr=test")]
 
-        assert len(items_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(items_list), len(results_list)
-        )
-
-        assert len(unicode_items_list) == len(unicode_results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(unicode_items_list), len(unicode_results_list)
-        )
+        assert len(items_list) == len(results_list), f"Number of parameters ({len(items_list)}) and results ({len(results_list)}) does not match"
+        assert len(unicode_items_list) == len(
+            unicode_results_list
+        ), f"Number of parameters ({len(unicode_items_list)}) and results ({len(unicode_results_list)}) does not match"
 
         for (index, item) in enumerate(items_list):
             assert GenericProvider("Test Provider")._get_title_and_url(item) == results_list[index]
@@ -316,8 +313,8 @@ class GenericProviderTests(unittest.TestCase):
         domain = "domain"
         filename = "TestFilename.nzb"
         urls = [
-            "http://{0}/{1}.torrentNO_DOWNLOAD_NAME".format(domain, filename),
-            "http://{0}/{1}.torrent".format(domain, filename),
+            f"http://{domain}/{filename}.torrentNO_DOWNLOAD_NAME",
+            f"http://{domain}/{filename}.torrent",
         ]
 
         # Test the login() check
@@ -355,7 +352,7 @@ class GenericProviderTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    print("=====> Testing {0}".format(__file__))
+    print(f"=====> Testing {__file__}")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(GenericProviderTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

@@ -146,9 +146,9 @@ if __name__ == "__main__":
                 continue
             filename = name.replace(" ", "_")
             if forceSearch:
-                test_name = "test_manual_{0}_{1}".format(filename, cur_tvdb_id)
+                test_name = f"test_manual_{filename}_{cur_tvdb_id}"
             else:
-                test_name = "test_{0}_{1}".format(filename, cur_tvdb_id)
+                test_name = f"test_{filename}_{cur_tvdb_id}"
 
             test = generator(cur_tvdb_id, name, data, forceSearch)
             setattr(SearchTest, test_name, test)

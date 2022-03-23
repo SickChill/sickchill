@@ -28,9 +28,7 @@ class ComingEpisodesTests(unittest.TestCase):
         ]
         results_list = [[], [], ["A", "B"], ["A", "B"], [], ["A", "B"], ["A", "B"]]
 
-        assert len(categories_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(categories_list), len(results_list)
-        )
+        assert len(categories_list) == len(results_list), f"Number of parameters ({len(categories_list)}) and results ({len(results_list)}) does not match"
 
         for (index, categories) in enumerate(categories_list):
             assert ComingEpisodes._get_categories(categories) == results_list[index]
@@ -42,9 +40,7 @@ class ComingEpisodesTests(unittest.TestCase):
         categories_list = [None, [], ["A", "B"], ["A", "B"]]
         results_list = [{}, {}, {"A": [], "B": []}, {"A": [], "B": []}]
 
-        assert len(categories_list) == len(results_list), "Number of parameters ({0:d}) and results ({1:d}) does not match".format(
-            len(categories_list), len(results_list)
-        )
+        assert len(categories_list) == len(results_list), f"Number of parameters ({len(categories_list)}) and results ({len(results_list)}) does not match"
 
         for (index, categories) in enumerate(categories_list):
             assert ComingEpisodes._get_categories_map(categories) == results_list[index]
@@ -82,7 +78,7 @@ class ComingEpisodesTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    print("=====> Testing {0}".format(__file__))
+    print(f"=====> Testing {__file__}")
 
     SUITE = unittest.TestLoader().loadTestsFromTestCase(ComingEpisodesTests)
     unittest.TextTestRunner(verbosity=2).run(SUITE)

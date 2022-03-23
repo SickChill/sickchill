@@ -84,7 +84,7 @@ class ConfigTestBasic(unittest.TestCase):
             elif test_url.expected_result is False:
                 assert config.clean_url(test_url.dirty) != test_url.clean
             else:
-                log.error("Test not defined for %s", test_url)
+                log.error(f"Test not defined for {test_url}")
 
     def test_min_max(self):
         """

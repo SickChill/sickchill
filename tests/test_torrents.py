@@ -14,8 +14,6 @@ class TorrentBasicTests(conftest.SickChillTestDBCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.shows = []
-
         show = TVShow(1, 121361)
         show.name = "Italian Works"
         show.episodes = []
@@ -24,7 +22,7 @@ class TorrentBasicTests(conftest.SickChillTestDBCase):
         episode.scene_season = 5
         episode.scene_episode = 10
         show.episodes.append(episode)
-        cls.shows.append(show)
+        cls.shows = [show]
 
     def test_bitcannon(self):
         """
