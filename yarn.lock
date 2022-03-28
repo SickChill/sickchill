@@ -1388,9 +1388,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.84:
-  version "1.4.95"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.95.tgz#49303dbe037c15e2e0cc851d71c4cb86119a9cd6"
-  integrity sha512-h2VAMV/hPtmAeiDkwA8c5sjS+cWt6GlQL4ERdrOUWu7cRIG5IRk9uwR9f0utP+hPJ9ZZsADTq9HpbuT46eBYAg==
+  version "1.4.96"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.96.tgz#a97438a01d5db1460343fea4a344960b09330990"
+  integrity sha512-DPNjvNGPabv6FcyjzLAN4C0psN/GgD9rSGvMTuv81SeXG/EX3mCz0wiw9N1tUEnfQXYCJi3H8M0oFPRziZh7rw==
 
 emittery@^0.10.1:
   version "0.10.1"
@@ -2473,13 +2473,13 @@ grunt-contrib-uglify-es@^3.3.0:
     uri-path "^1.0.0"
 
 grunt-contrib-uglify@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/grunt-contrib-uglify/-/grunt-contrib-uglify-5.0.1.tgz#d1eeccafdfedc27353e5f610415d18340c568c51"
-  integrity sha512-T/aXZ4WIpAtoswZqb6HROKg7uq9QbKwl+lUuOwK4eoFj3tFv9/a/oMyd3/qvetV29Pbf8P1YYda1gDwZppr60A==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/grunt-contrib-uglify/-/grunt-contrib-uglify-5.1.0.tgz#42afcca2bd858cb0f423cc1f7f95ab475f4a64e1"
+  integrity sha512-czoxpIWCwDCUy4oKUVz7Nb9aQknBPMsIq4uu4Fz5UX7UTdmU4GwBbefE6yAcgo1bT40Lhciijh8hFd4aqfb3Jg==
   dependencies:
     chalk "^2.4.1"
     maxmin "^2.1.0"
-    uglify-js "^3.13.3"
+    uglify-js "^3.15.2"
     uri-path "^1.0.0"
 
 grunt-contrib-watch@^1.0.0:
@@ -4702,9 +4702,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.855.0:
-  version "1.883.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.883.0.tgz#b8b3e34213751ac97463a33bc95942bc964b9dfb"
-  integrity sha512-nDHsgxwiHlvW+dQINqt3zsa+L7zrvxV8ma3lHL977+SowLD1kR9z9i4KJVZKKD0RteYJw9Kfy/2Sb6hEBAObFQ==
+  version "1.884.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.884.0.tgz#12fa065c97621611890fe0007ec4d0e8429583c3"
+  integrity sha512-lQtXRoi0mgTsrjzTcKNbpec+q4ai8rhls1FOcr2ZBTe7V7mKTGXZ9yk6DY2VXRKyboL8zvV3rIrzm+l85n5yIg==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
@@ -5179,7 +5179,7 @@ uglify-es@~3.3.0:
     commander "~2.13.0"
     source-map "~0.6.1"
 
-uglify-js@^3.13.3:
+uglify-js@^3.15.2:
   version "3.15.3"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.15.3.tgz#9aa82ca22419ba4c0137642ba0df800cb06e0471"
   integrity sha512-6iCVm2omGJbsu3JWac+p6kUiOpg3wFO2f8lIXjfEb8RrmLjzog1wTPMmwKB7swfzzqxj9YM+sGUM++u1qN4qJg==
