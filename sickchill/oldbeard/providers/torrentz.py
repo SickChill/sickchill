@@ -48,14 +48,14 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in {*search_strings[mode]}:
 
                 # Feed verified does not exist on this clone
                 # search_url = self.urls['verified'] if self.confirmed else self.urls['feed']
                 search_url = self.urls["feed"]
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 data = self.get_url(search_url, params={"f": search_string}, returns="text")
                 if not data:
@@ -86,9 +86,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
-                                            title, seeders, leechers
-                                        )
+                                        _(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
                                     )
                                 continue
 

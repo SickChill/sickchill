@@ -32,7 +32,8 @@ class ShowUpdater(object):
                 updated_shows = []
 
                 if last_update:
-                    logger.info("Last update: {}".format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(last_update))))
+                    update_string = f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update))}"
+                    logger.info(f"Last update: {update_string}")
 
                     current_check = update_timestamp
                     while current_check >= last_update:
@@ -70,7 +71,7 @@ class ShowUpdater(object):
                         else:
                             pi_list.append(settings.showQueueScheduler.action.refresh_show(cur_show, force))
                     except (CantUpdateShowException, CantRefreshShowException) as error:
-                        logger.info(_("Automatic update failed: {0}").format(str(error)))
+                        logger.info(_(f"Automatic update failed: {error}"))
 
                 ui.ProgressIndicators.setIndicator("dailyUpdate", ui.QueueProgressIndicator("Daily Update", pi_list))
 
@@ -85,7 +86,7 @@ class ShowUpdater(object):
 
     @staticmethod
     def request_hook(response, **kwargs):
-        logger.info("{0} URL: {1} [Status: {2}]".format(response.request.method, response.request.url, response.status_code))
+        logger.info(f"{response.request.method} URL: {response.request.url} [Status: {response.status_code}]")
 
     def __del__(self):
         pass

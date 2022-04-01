@@ -52,24 +52,24 @@ class Provider(TorrentProvider):
 
         if self.custom_url:
             if validators.url(self.custom_url) != True:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                logger.warning(_(f"Invalid custom url: {self.custom_url}"))
                 return False
 
         # Get the index, redirects to log in
         data = self.get_url(self.custom_url or self.url, returns="text")
         if not data:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         with BS4Parser(data, "html5lib") as html:
             action = html.find("form", {"action": re.compile(r".*login.*")}).get("action")
             if not action:
-                logger.warning("Could not find the login form. Try adding cookies instead")
+                logger.warning(_("Could not find the login form. Try adding cookies instead"))
                 return False
 
         response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns="text", flaresolverr=True)
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         # Invalid username and password combination
@@ -98,10 +98,10 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in search_params[mode]:
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 search_url = self.urls["search"] % (self.categories, freeleech, search_string)
@@ -109,7 +109,7 @@ class Provider(TorrentProvider):
 
                 if self.custom_url:
                     if validators.url(self.custom_url) != True:
-                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                        logger.warning(_(f"Invalid custom url: {self.custom_url}"))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
@@ -154,20 +154,18 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
-                                            title, seeders, leechers
-                                        )
+                                        _(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
                                     )
                                 continue
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                             items.append(item)
 
-                except Exception as e:
-                    logger.exception("Failed parsing provider. Error: {0!r}".format(str(e)))
+                except Exception as error:
+                    logger.exception(f"Failed parsing provider. Error: {error}")
                     logger.exception(traceback.format_exc())
 
             # For each search mode sort all the items by seeders if available

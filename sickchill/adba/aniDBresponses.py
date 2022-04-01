@@ -44,8 +44,7 @@ class Response:
         self.coderep = ()
 
     def __repr__(self):
-        tmp = "%s(%s,%s,%s) %s\n" % (self.__class__.__name__, repr(self.restag), repr(self.rescode), repr(self.resstr), repr(self.attrs))
-
+        tmp = f"{self.__class__.__name__}({self.restag},{self.rescode},{self.resstr}) {self.attrs}\n"
         m = 0
         for line in self.datalines:
             for k, v in line.items():

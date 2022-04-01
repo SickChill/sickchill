@@ -126,9 +126,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
-                                            title, seeders, leechers
-                                        )
+                                        _(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
                                     )
                                 continue
 
@@ -149,7 +147,7 @@ class Provider(TorrentProvider):
                                 "hash": info_hash,
                             }
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                             items.append(item)
                         except Exception as error:

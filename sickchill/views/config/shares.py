@@ -40,10 +40,7 @@ class ConfigShares(Config):
 
                 info = " and ".join(info)
                 logger.info(
-                    "Cannot save share #{index}. You must enter name, server and path."
-                    "{info} {copula} missing, got: [name: {name}, server:{server}, path: {path}]".format(
-                        index=index, info=info, copula=("is", "are")["and" in info], name=share.get("name"), server=share.get("server"), path=share.get("path")
-                    )
+                    f"Cannot save share #{index}. You must enter name, server and path.{info} {('is', 'are')['and' in info]} missing, got: [name: {share.get('name')}, server:{share.get('server')}, path: {share.get('path')}]"
                 )
 
         settings.WINDOWS_SHARES.clear()

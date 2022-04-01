@@ -41,9 +41,9 @@ class ProperFinder(object):
             run_in = settings.properFinderScheduler.lastRun + settings.properFinderScheduler.cycleTime - datetime.datetime.now()
             hours, remainder = divmod(run_in.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
-            run_at = ", next check in approx. " + ("{0:d}h, {1:d}m".format(hours, minutes) if hours > 0 else "{0:d}m, {1:d}s".format(minutes, seconds))
+            run_at = f", next check in approx. " + (f"{hours:d}h, {minutes:d}m" if hours > 0 else f"{minutes:d}m, {seconds:d}s")
 
-        logger.info("Completed the search for new propers{0}".format(run_at))
+        logger.info(f"Completed the search for new propers{run_at}")
 
         self.amActive = False
 
@@ -96,7 +96,7 @@ class ProperFinder(object):
             try:
                 parse_result = NameParser(False).parse(curProper.name)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.debug("{0}".format(error))
+                logger.debug(f"{error}")
                 continue
 
             if not parse_result.series_name:

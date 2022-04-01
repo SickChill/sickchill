@@ -22,9 +22,7 @@ class Notifier(object):
 
     def notify_subtitle_download(self, ep_name, lang):
         if settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._sendPushalot(
-                pushalot_authorizationtoken=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], message="{0}:{1}".format(ep_name, lang)
-            )
+            self._sendPushalot(pushalot_authorizationtoken=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], message=f"{ep_name}:{lang}")
 
     def notify_git_update(self, new_version="??"):
         update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
@@ -43,9 +41,9 @@ class Notifier(object):
 
         pushalot_authorizationtoken = pushalot_authorizationtoken or settings.PUSHALOT_AUTHORIZATIONTOKEN
 
-        logger.debug("Pushalot event: {0}".format(event))
-        logger.debug("Pushalot message: {0}".format(message))
-        logger.debug("Pushalot api: {0}".format(pushalot_authorizationtoken))
+        logger.debug(f"Pushalot event: {event}")
+        logger.debug(f"Pushalot message: {message}")
+        logger.debug(f"Pushalot api: {pushalot_authorizationtoken}")
 
         post_data = {"AuthorizationToken": pushalot_authorizationtoken, "Title": event or "", "Body": message or ""}
 
@@ -59,6 +57,6 @@ class Notifier(object):
         if success:
             logger.debug("Pushalot notifications sent.")
         else:
-            logger.error("Pushalot notification failed: {0} {1}".format(jdata.get("Status", ""), jdata.get("Description", "Unknown")))
+            logger.error(f"Pushalot notification failed: {jdata.get('Status', '')} {jdata.get('Description', 'Unknown')}")
 
         return success

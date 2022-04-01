@@ -207,7 +207,7 @@ class TVCache(object):
             try:
                 parse_result = NameParser(showObj=show_obj).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.debug("{0}".format(error))
+                logger.debug(f"{error}")
                 return None
 
             if not parse_result or not parse_result.series_name:
@@ -268,9 +268,9 @@ class TVCache(object):
                         items = item.split("|")
                         for _item in items:
                             if _item.upper() not in sql:
-                                sql += " OR name LIKE '%.{}.%'".format(_item)
+                                sql += f" OR name LIKE '%.{_item}.%'"
                     elif item.upper() not in sql:
-                        sql += " OR name LIKE '%.{}.%'".format(item)
+                        sql += f" OR name LIKE '%.{item}.%'"
 
         if date is not None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))

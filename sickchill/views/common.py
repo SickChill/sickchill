@@ -41,7 +41,7 @@ class PageTemplate(Template):
         self.context["sbHttpsEnabled"] = settings.ENABLE_HTTPS
         self.context["sbHandleReverseProxy"] = settings.HANDLE_REVERSE_PROXY
         self.context["sbDefaultPage"] = settings.DEFAULT_PAGE
-        self.context["srLogin"] = rh.get_current_user()
+        self.context["srLogin"] = rh.get_current_user
         self.context["sbStartTime"] = rh.startTime
         self.context["static_url"] = rh.static_url
         self.context["reverse_url"] = rh.reverse_url

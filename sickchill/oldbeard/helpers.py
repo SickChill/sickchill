@@ -1747,9 +1747,9 @@ def is_ip_local(ip):
     for adapter in ifaddr.get_adapters():
         for aip in adapter.ips:
             if isinstance(aip.ip, tuple):
-                network = ipaddress.IPv6Network("%s/%s" % (aip.ip[0], aip.network_prefix), strict=False)
+                network = ipaddress.IPv6Network(f"{aip.ip[0]}/{aip.network_prefix}", strict=False)
             else:
-                network = ipaddress.IPv4Network("%s/%s" % (aip.ip, aip.network_prefix), strict=False)
+                network = ipaddress.IPv4Network(f"{aip.ip}/{aip.network_prefix}", strict=False)
 
             if request_ip in network:
                 return True

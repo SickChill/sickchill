@@ -76,11 +76,11 @@ def build_name_cache(show=None):
         scene_exceptions.retrieve_exceptions()
 
     if not show:
-        # logger.info("Building internal name cache for all shows")
+        logger.database("Building internal name cache for all shows")
         for show in settings.showList:
             build_name_cache(show)
     else:
-        logger.debug("Building internal name cache for " + show.name)
+        logger.database(_(f"Building internal name cache for {show.name}"))
         clear_cache(show.indexerid)
         for season in scene_exceptions.get_all_scene_exceptions(show.indexerid).values():
             for exception in season:
@@ -90,6 +90,4 @@ def build_name_cache(show=None):
         if show.custom_name:
             name_cache[helpers.full_sanitizeSceneName(show.custom_name)] = int(show.indexerid)
 
-        logger.debug(
-            "Internal name cache for " + show.name + " set to: [ " + ", ".join([key for key, value in name_cache.items() if value == show.indexerid]) + " ]"
-        )
+        logger.database(f"Internal name cache for {show.name} set to: {[key for key, value in name_cache.items() if value == show.indexerid]}")

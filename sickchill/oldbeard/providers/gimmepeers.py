@@ -57,7 +57,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("Username or password incorrect!", response):
@@ -73,10 +73,10 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search string: {search_string}"))
 
                 self.search_params["search"] = search_string
 
@@ -127,9 +127,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
-                                            title, seeders, leechers
-                                        )
+                                        _(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
                                     )
                                 continue
 
@@ -138,12 +136,12 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                             items.append(item)
 
                 except Exception:
-                    logger.warning("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()))
+                    logger.warning(_(f"Failed parsing provider. Traceback: {traceback.format_exc()}"))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

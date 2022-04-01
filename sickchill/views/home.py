@@ -256,7 +256,7 @@ class Home(WebRoot):
         if result:
             return _("SMS sent successfully")
         else:
-            return _("Problem sending SMS: {message}".format(message=message))
+            return _(f"Problem sending SMS: {message}")
 
     def testTelegram(self):
         telegram_id = self.get_body_argument("telegram_id")
@@ -265,7 +265,7 @@ class Home(WebRoot):
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
         else:
-            return _("Error sending Telegram notification: {message}".format(message=message))
+            return _(f"Error sending Telegram notification: {message}")
 
     def testJoin(self):
         join_id = self.get_body_argument("join_id")
@@ -275,7 +275,7 @@ class Home(WebRoot):
         if result:
             return _("join notification succeeded. Check your join clients to make sure it worked")
         else:
-            return _("Error sending join notification: {message}".format(message=message))
+            return _(f"Error sending join notification: {message}")
 
     def testGrowl(self):
         host = self.get_query_argument("host")
@@ -287,9 +287,9 @@ class Home(WebRoot):
 
         pw_append = _(" with password") + ": " + password if password else ""
         if result:
-            return _("Registered and Tested growl successfully {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
+            return _(f"Registered and Tested growl successfully {unquote_plus(host)}{pw_append}")
         else:
-            return _("Registration and Testing of growl failed {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
+            return _(f"Registration and Testing of growl failed {unquote_plus(host)}{pw_append}")
 
     def testProwl(self):
 
@@ -410,10 +410,7 @@ class Home(WebRoot):
         password = filters.unhide(settings.KODI_PASSWORD, self.get_query_argument("password"))
 
         results = notifiers.kodi_notifier.test_notify(unquote_plus(host), username, password)
-        final_results = [
-            _("Test KODI notice {result} to {kodi_host}").format(kodi_host=host, result=("failed", "sent successfully")[result])
-            for host, result in results.items()
-        ]
+        final_results = [_(f"Test KODI notice {('failed', 'sent successfully')[result]} to {host}") for host, result in results.items()]
 
         return "<br>\n".join(final_results)
 
@@ -428,9 +425,9 @@ class Home(WebRoot):
         for curHost in [x.strip() for x in host.split(",")]:
             curResult = notifiers.plex_notifier.test_notify_pht(unquote_plus(curHost), username, password)
             if len(curResult.split(":")) > 2 and "OK" in curResult.split(":")[2]:
-                finalResult += _("Successful test notice sent to Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(curHost))
+                finalResult += _(f"Successful test notice sent to Plex Home Theater ... {unquote_plus(curHost)}")
             else:
-                finalResult += _("Test failed for Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(curHost))
+                finalResult += _(f"Test failed for Plex Home Theater ... {unquote_plus(curHost)}")
             finalResult += "<br>" + "\n"
 
         ui.notifications.message(_("Tested Plex Home Theater(s)") + ":", unquote_plus(host.replace(",", ", ")))
@@ -449,11 +446,11 @@ class Home(WebRoot):
 
         curResult = notifiers.plex_notifier.test_notify_pms(unquote_plus(host), username, password, plex_server_token)
         if curResult is None:
-            finalResult += _("Successful test of Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(host.replace(",", ", ")))
+            finalResult += _(f"Successful test of Plex Media Server(s) ... {unquote_plus(host.replace(',', ', '))}")
         elif curResult is False:
             finalResult += _("Test failed, No Plex Media Server host specified")
         else:
-            finalResult += _("Test failed for Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(str(curResult).replace(",", ", ")))
+            finalResult += _(f"Test failed for Plex Media Server(s) ... {unquote_plus(str(curResult).replace(',', ', '))}")
         finalResult += "<br>" + "\n"
 
         ui.notifications.message(_("Tested Plex Media Server host(s)") + ":", unquote_plus(host.replace(",", ", ")))
@@ -471,9 +468,9 @@ class Home(WebRoot):
         emby_apikey = filters.unhide(settings.EMBY_APIKEY, self.get_query_argument("emby_apikey"))
         result = notifiers.emby_notifier.test_notify(host, emby_apikey)
         if result:
-            return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
+            return _(f"Test notice sent successfully to {unquote_plus(host)}")
         else:
-            return _("Test notice failed to {emby_host}").format(emby_host=unquote_plus(host))
+            return _(f"Test notice failed to {unquote_plus(host)}")
 
     def testNMJ(self):
         host = config.clean_host(self.get_body_argument("host"))
@@ -490,9 +487,7 @@ class Home(WebRoot):
         host = config.clean_host(self.get_body_argument("host"))
         result = notifiers.nmj_notifier.notify_settings(unquote_plus(host))
         if result:
-            return '{{"message": _("Got settings from {host}"), "database": "{database}", "mount": "{mount}"}}'.format(
-                **{"host": host, "database": settings.NMJ_DATABASE, "mount": settings.NMJ_MOUNT}
-            )
+            return f'{{"message": _("Got settings from {host}"), "database": "{settings.NMJ_DATABASE}", "mount": "{settings.NMJ_MOUNT}"}}'
         else:
             # noinspection PyPep8
             return '{"message": _("Failed! Make sure your Popcorn is on and NMJ is running. (see Log & Errors -> Debug for detailed info)"), "database": "", "mount": ""}'
@@ -501,9 +496,9 @@ class Home(WebRoot):
         host = config.clean_host(self.get_body_argument("host"))
         result = notifiers.nmjv2_notifier.test_notify(unquote_plus(host))
         if result:
-            return _("Test notice sent successfully to {nmj2_host}").format(nmj2_host=unquote_plus(host))
+            return _(f"Test notice sent successfully to {unquote_plus(host)}")
         else:
-            return _("Test notice failed to {nmj2_host}").format(nmj2_host=unquote_plus(host))
+            return _(f"Test notice failed to {unquote_plus(host)}")
 
     def settingsNMJv2(self):
         host = config.clean_host(self.get_body_argument("host"))
@@ -511,14 +506,10 @@ class Home(WebRoot):
         instance = self.get_body_argument("instance")
         result = notifiers.nmjv2_notifier.notify_settings(unquote_plus(host), dbloc, instance)
         if result:
-            return '{{"message": _("NMJ Database found at: {host}"), "database": "{database}"}}'.format(**{"host": host, "database": settings.NMJv2_DATABASE})
+            return f'{{"message": _("NMJ Database found at: {host}"), "database": "{settings.NMJv2_DATABASE}"}}'
         else:
             # noinspection PyPep8
-            return (
-                '{{"message": _("Unable to find NMJ Database at location: {dbloc}. Is the right location selected and PCH running?"), "database": ""}}'.format(
-                    **{"dbloc": dbloc}
-                )
-            )
+            return f'{{"message": _("Unable to find NMJ Database at location: {dbloc}. Is the right location selected and PCH running?"), "database": ""}}'
 
     def getTraktToken(self):
         trakt_pin = self.get_body_argument("trakt_pin")
@@ -616,7 +607,7 @@ class Home(WebRoot):
         if notifiers.email_notifier.test_notify(host, port, smtp_from, use_tls, user, pwd, to):
             return _("Test email sent successfully! Check inbox.")
         else:
-            return _("ERROR: {last_error}").format(last_error=notifiers.email_notifier.last_err)
+            return _(f"ERROR: {notifiers.email_notifier.last_err}")
 
     def testPushalot(self):
         authorizationToken = self.get_body_argument("authorizationToken")
@@ -742,7 +733,7 @@ class Home(WebRoot):
         if settings.BRANCH != branch:
             settings.BRANCH = branch
             ui.notifications.message(_("Checking out branch") + ": ", branch)
-            return self.redirect("/update/?pid={}&branch={}".format(settings.PID, branch))
+            return self.redirect(f"/update/?pid={settings.PID}&branch={branch}")
         else:
             ui.notifications.message(_("Already on branch") + ": ", branch)
             return self.redirect("/" + settings.DEFAULT_PAGE + "/")
@@ -772,7 +763,7 @@ class Home(WebRoot):
         try:
             show_obj = Show.find(settings.showList, int(show))
         except (ValueError, TypeError):
-            return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
+            return self._genericMessage(_("Error"), _(f"Invalid show ID: {str(show)}"))
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
@@ -789,7 +780,7 @@ class Home(WebRoot):
         )
 
         t = PageTemplate(rh=self, filename="displayShow.mako")
-        submenu = [{"title": _("Edit"), "path": "home/editShow?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-pencil"}]
+        submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid:d}", "icon": "fa fa-pencil"}]
 
         try:
             showLoc = (show_obj.location, True)
@@ -823,32 +814,28 @@ class Home(WebRoot):
         if not settings.showQueueScheduler.action.is_being_added(show_obj):
             if not settings.showQueueScheduler.action.is_being_updated(show_obj):
                 if show_obj.paused:
-                    submenu.append({"title": _("Resume"), "path": "home/togglePause?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-play"})
+                    submenu.append({"title": _("Resume"), "path": f"home/togglePause?show={show_obj.indexerid:d}", "icon": "fa fa-play"})
                 else:
-                    submenu.append({"title": _("Pause"), "path": "home/togglePause?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-pause"})
+                    submenu.append({"title": _("Pause"), "path": f"home/togglePause?show={show_obj.indexerid:d}", "icon": "fa fa-pause"})
 
                 # noinspection PyPep8
                 submenu.append(
                     {
                         "title": _("Remove"),
-                        "path": "home/deleteShow?show={0:d}".format(show_obj.indexerid),
+                        "path": f"home/deleteShow?show={show_obj.indexerid:d}",
                         "class": "removeshow",
                         "confirm": True,
                         "icon": "fa fa-trash",
                     }
                 )
-                submenu.append(
-                    {"title": _("Re-scan files"), "path": "home/refreshShow?show={0:d}&amp;force=1".format(show_obj.indexerid), "icon": "fa fa-refresh"}
-                )
+                submenu.append({"title": _("Re-scan files"), "path": f"home/refreshShow?show={show_obj.indexerid:d}&amp;force=1", "icon": "fa fa-refresh"})
                 # noinspection PyPep8
-                submenu.append(
-                    {"title": _("Force Full Update"), "path": "home/updateShow?show={0:d}&amp;force=1".format(show_obj.indexerid), "icon": "fa fa-exchange"}
-                )
+                submenu.append({"title": _("Force Full Update"), "path": f"home/updateShow?show={show_obj.indexerid:d}&amp;force=1", "icon": "fa fa-exchange"})
                 # noinspection PyPep8
                 submenu.append(
                     {
                         "title": _("Update show in KODI"),
-                        "path": "home/updateKODI?show={0:d}".format(show_obj.indexerid),
+                        "path": f"home/updateKODI?show={show_obj.indexerid:d}",
                         "requires": self.haveKODI(),
                         "icon": "menu-icon-kodi",
                     }
@@ -857,7 +844,7 @@ class Home(WebRoot):
                 submenu.append(
                     {
                         "title": _("Update show in Emby"),
-                        "path": "home/updateEMBY?show={0:d}".format(show_obj.indexerid),
+                        "path": f"home/updateEMBY?show={show_obj.indexerid:d}",
                         "requires": self.haveEMBY(),
                         "icon": "menu-icon-emby",
                     }
@@ -868,7 +855,7 @@ class Home(WebRoot):
                         submenu.append(
                             {
                                 "title": _("Hide specials"),
-                                "path": "home/toggleDisplayShowSpecials/?show={0:d}".format(show_obj.indexerid),
+                                "path": f"home/toggleDisplayShowSpecials/?show={show_obj.indexerid:d}",
                                 "confirm": True,
                                 "icon": "fa fa-times",
                             }
@@ -878,19 +865,17 @@ class Home(WebRoot):
                         submenu.append(
                             {
                                 "title": _("Show specials"),
-                                "path": "home/toggleDisplayShowSpecials/?show={0:d}".format(show_obj.indexerid),
+                                "path": f"home/toggleDisplayShowSpecials/?show={show_obj.indexerid:d}",
                                 "confirm": True,
                                 "icon": "fa fa-check",
                             }
                         )
 
-                submenu.append({"title": _("Preview Rename"), "path": "home/testRename?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-tag"})
+                submenu.append({"title": _("Preview Rename"), "path": f"home/testRename?show={show_obj.indexerid:d}", "icon": "fa fa-tag"})
 
                 if settings.USE_SUBTITLES and show_obj.subtitles and not settings.showQueueScheduler.action.is_being_subtitled(show_obj):
                     # noinspection PyPep8
-                    submenu.append(
-                        {"title": _("Download Subtitles"), "path": "home/subtitleShow?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-language"}
-                    )
+                    submenu.append({"title": _("Download Subtitles"), "path": f"home/subtitleShow?show={show_obj.indexerid:d}", "icon": "fa fa-language"})
 
         epCounts = {
             Overview.SKIPPED: 0,
@@ -1031,14 +1016,14 @@ class Home(WebRoot):
         try:
             show_obj = Show.find(settings.showList, int(show))
         except (ValueError, TypeError):
-            errString = _("Invalid show ID") + ": {show}".format(show=str(show))
+            errString = _("Invalid show ID") + f": {str(show)}"
             if directCall:
                 return [errString]
             else:
                 return self._genericMessage(_("Error"), errString)
 
         if not show_obj:
-            errString = _("Unable to find the specified show") + ": {show}".format(show=str(show))
+            errString = _("Unable to find the specified show") + f": {str(show)}"
             if directCall:
                 return [errString]
             else:
@@ -1066,9 +1051,9 @@ class Home(WebRoot):
                     try:
                         anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name, cache_dir=Path(settings.CACHE_DIR))
                         groups = anime.get_groups()
-                    except Exception as e:
+                    except Exception as error:
                         ui.notifications.error(_("Unable to retreive Fansub Groups from AniDB."))
-                        logger.debug("Unable to retreive Fansub Groups from AniDB. Error is {0}".format(e))
+                        logger.debug(f"Unable to retreive Fansub Groups from AniDB. Error is {error}")
 
             with show_obj.lock:
                 show = show_obj
@@ -1217,8 +1202,8 @@ class Home(WebRoot):
                 show_obj.season_folders = season_folders
                 try:
                     settings.showQueueScheduler.action.refresh_show(show_obj)
-                except CantRefreshShowException as e:
-                    errors.append(_("Unable to refresh this show: {error}").format(error=e))
+                except CantRefreshShowException as error:
+                    errors.append(_(f"Unable to refresh this show: {error}"))
 
             show_obj.paused = paused
             show_obj.scene = scene
@@ -1243,24 +1228,22 @@ class Home(WebRoot):
             if old_location != location:
                 logger.debug(old_location + " != " + location)
                 if not (os.path.isdir(location) or settings.CREATE_MISSING_SHOW_DIRS or settings.ADD_SHOWS_WO_DIR):
-                    errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
+                    errors.append(_(f"New location <tt>{location}</tt> does not exist"))
                 else:
                     # change it
                     try:
                         show_obj.location = location
                         try:
                             settings.showQueueScheduler.action.refresh_show(show_obj, True)
-                        except CantRefreshShowException as e:
-                            errors.append(_("Unable to refresh this show: {error}").format(error=e))
+                        except CantRefreshShowException as error:
+                            errors.append(_(f"Unable to refresh this show: {error}"))
                             # grab updated info from TVDB
                             # show_obj.loadEpisodesFromIndexer()
                             # rescan the episodes in the new folder
                     except NoNFOException:
                         # noinspection PyPep8
                         errors.append(
-                            "The folder at <tt>{0}</tt> doesn't contain a tvshow.nfo - copy your files to that folder before you change the directory in SickChill.".format(
-                                location
-                            )
+                            f"The folder at <tt>{location}</tt> doesn't contain a tvshow.nfo - copy your files to that folder before you change the directory in SickChill."
                         )
 
             # save it to the DB
@@ -1271,8 +1254,8 @@ class Home(WebRoot):
             try:
                 settings.showQueueScheduler.action.update_show(show_obj, True)
                 time.sleep(cpu_presets[settings.CPU_PRESET])
-            except CantUpdateShowException as e:
-                errors.append(_("Unable to update show: {error}").format(error=e))
+            except CantUpdateShowException as error:
+                errors.append(_(f"Unable to update show: {error}"))
 
         import traceback
 
@@ -1295,9 +1278,10 @@ class Home(WebRoot):
             return errors
 
         if errors:
+            plural = "" if len(errors) == 1 else "s"
             ui.notifications.error(
-                _("{num_errors:d} error{plural} while saving changes:").format(num_errors=len(errors), plural="" if len(errors) == 1 else "s"),
-                "<ul>" + "\n".join(["<li>{0}</li>".format(error) for error in errors]) + "</ul>",
+                _(f"{len(errors):d} error{plural} while saving changes:"),
+                "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
             )
 
         return self.redirect("/home/displayShow?show=" + show)
@@ -1308,11 +1292,9 @@ class Home(WebRoot):
         if error:
             return self._genericMessage(_("Error"), error)
 
-        ui.notifications.message(
-            _("{show_name} has been {paused_resumed}").format(show_name=show.name, paused_resumed=(_("resumed"), _("paused"))[show.paused])
-        )
+        ui.notifications.message(_(f"{show.name} has been {(_('resumed'), _('paused'))[show.paused]}"))
 
-        return self.redirect("/home/displayShow?show={0:d}".format(show.indexerid))
+        return self.redirect(f"/home/displayShow?show={show.indexerid:d}")
 
     def deleteShow(self, show=None, full=0):
         if show:
@@ -1322,10 +1304,8 @@ class Home(WebRoot):
                 return self._genericMessage(_("Error"), error)
 
             ui.notifications.message(
-                _("{show_name} has been {deleted_trashed} {was_deleted}").format(
-                    show_name=show.name,
-                    deleted_trashed=(_("deleted"), _("trashed"))[settings.TRASH_REMOVE_SHOW],
-                    was_deleted=(_("(media untouched)"), _("(with all related media)"))[bool(full)],
+                _(
+                    f"{show.name} has been {(_('deleted'), _('trashed'))[settings.TRASH_REMOVE_SHOW]} {(_('(media untouched)'), _('(with all related media)'))[bool(full)]}"
                 )
             )
 
@@ -1365,8 +1345,8 @@ class Home(WebRoot):
         # force the update
         try:
             settings.showQueueScheduler.action.update_show(show_obj, bool(force))
-        except CantUpdateShowException as e:
-            ui.notifications.error(_("Unable to update this show."), str(e))
+        except CantUpdateShowException as error:
+            ui.notifications.error(_("Unable to update this show."), str(error))
 
         # just give it some time
         time.sleep(cpu_presets[settings.CPU_PRESET])
@@ -1405,9 +1385,9 @@ class Home(WebRoot):
             host = settings.KODI_HOST
 
         if notifiers.kodi_notifier.update_library(show_name=showName):
-            ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
+            ui.notifications.message(_(f"Library update command sent to KODI host(s)): {host}"))
         else:
-            ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
+            ui.notifications.error(_(f"Unable to contact one or more KODI host(s)): {host}"))
 
         if show_obj:
             return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
@@ -1416,9 +1396,9 @@ class Home(WebRoot):
 
     def updatePLEX(self):
         if notifiers.plex_notifier.update_library() is None:
-            ui.notifications.message(_("Library update command sent to Plex Media Server host: {plex_server}").format(plex_server=settings.PLEX_SERVER_HOST))
+            ui.notifications.message(_(f"Library update command sent to Plex Media Server host: {settings.PLEX_SERVER_HOST}"))
         else:
-            ui.notifications.error(_("Unable to contact Plex Media Server host: {plex_server}").format(plex_server=settings.PLEX_SERVER_HOST))
+            ui.notifications.error(_(f"Unable to contact Plex Media Server host: {settings.PLEX_SERVER_HOST}"))
         return self.redirect("/home/")
 
     def updateEMBY(self, show=None):
@@ -1428,9 +1408,9 @@ class Home(WebRoot):
             show_obj = Show.find(settings.showList, int(show))
 
         if notifiers.emby_notifier.update_library(show_obj):
-            ui.notifications.message(_("Library update command sent to Emby host: {emby_host}").format(emby_host=settings.EMBY_HOST))
+            ui.notifications.message(_(f"Library update command sent to Emby host: {settings.EMBY_HOST}"))
         else:
-            ui.notifications.error(_("Unable to contact Emby host: {emby_host}").format(emby_host=settings.EMBY_HOST))
+            ui.notifications.error(_(f"Unable to contact Emby host: {settings.EMBY_HOST}"))
 
         if show_obj:
             return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
@@ -1480,7 +1460,7 @@ class Home(WebRoot):
                 epInfo = cur_ep.split("x")
 
                 if not all(epInfo):
-                    logger.debug("Something went wrong when trying to setStatus, epInfo[0]: {0}, epInfo[1]: {1}".format(epInfo[0], epInfo[1]))
+                    logger.debug(f"Something went wrong when trying to setStatus, epInfo[0]: {epInfo[0]}, epInfo[1]: {epInfo[1]}")
                     continue
 
                 ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
@@ -1550,7 +1530,7 @@ class Home(WebRoot):
                 main_db_con.mass_action(sql_l)
 
         if int(status) == WANTED and not show_obj.paused:
-            msg = _("Backlog was automatically started for the following seasons of <b>{show_name}</b>").format(show_name=show_obj.name)
+            msg = _(f"Backlog was automatically started for the following seasons of <b>{show_obj.name}</b>")
             msg += ":<br><ul>"
 
             for season, segment in segments.items():
@@ -1568,7 +1548,7 @@ class Home(WebRoot):
             logger.info("Some episodes were set to wanted, but " + show_obj.name + " is paused. Not adding to Backlog until show is unpaused")
 
         if int(status) == FAILED:
-            msg = _("Retrying Search was automatically started for the following season of <b>{show_name}</b>").format(show_name=show_obj.name)
+            msg = _(f"Retrying Search was automatically started for the following season of <b>{show_obj.name}</b>")
             msg += ":<br><ul>"
 
             for season, segment in segments.items():
@@ -1605,7 +1585,7 @@ class Home(WebRoot):
 
         show_obj.getAllEpisodes(has_location=True)
         t = PageTemplate(rh=self, filename="testRename.mako")
-        submenu = [{"title": _("Edit"), "path": "home/editShow?show={0:d}".format(show_obj.indexerid), "icon": "ui-icon ui-icon-pencil"}]
+        submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid:d}", "icon": "ui-icon ui-icon-pencil"}]
 
         return t.render(submenu=submenu, show=show_obj, title=_("Preview Rename"), header=_("Preview Rename"), controller="home", action="previewRename")
 
@@ -1686,14 +1666,14 @@ class Home(WebRoot):
         for result in results:
             episodes_list = [int(ep) for ep in result["episodes"].split("|") if ep]
             if len(episodes_list) > 1:
-                result["ep_string"] = "S{:02}E{}-{}".format(result["season"], min(episodes_list), max(episodes_list))
+                result["ep_string"] = f"S{result['season']:02}E{min(episodes_list)}-{max(episodes_list)}"
             else:
                 result["ep_string"] = episode_num(result["season"], episodes_list[0])
 
         # TODO: If no cache results do a search on indexers and post back to this method.
 
         t = PageTemplate(rh=self, filename="manual_search_show_releases.mako")
-        submenu = [{"title": _("Edit"), "path": "home/editShow?show={0}".format(show), "icon": "fa fa-pencil"}]
+        submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show}", "icon": "fa fa-pencil"}]
         return t.render(
             submenu=submenu, title=_("Manual Snatch"), header=_("Manual Snatch"), controller="home", action="manual_search_show_releases", results=results
         )
@@ -1866,7 +1846,7 @@ class Home(WebRoot):
 
         if new_subtitles:
             new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
-            status = _("New subtitles downloaded: {new_subtitle_languages}").format(new_subtitle_languages=", ".join(new_languages))
+            status = _(f"New subtitles downloaded: {', '.join(new_languages)}")
         else:
             status = _("No subtitles downloaded")
 
@@ -1895,7 +1875,7 @@ class Home(WebRoot):
 
         if new_subtitles:
             new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
-            status = _("New subtitles downloaded: {new_subtitle_languages}").format(new_subtitle_languages=", ".join(new_languages))
+            status = _(f"New subtitles downloaded: {', '.join(new_languages)}")
         else:
             status = _("No subtitles downloaded")
 
@@ -1942,7 +1922,7 @@ class Home(WebRoot):
             result["success"] = False
             result["errorMessage"] = error_msg
         elif show_obj.is_anime:
-            logger.debug("setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute))
+            logger.debug(f"setAbsoluteSceneNumbering for {show} from {forAbsolute} to {sceneAbsolute}")
 
             show = int(show)
             indexer = int(indexer)
@@ -1952,7 +1932,7 @@ class Home(WebRoot):
 
             set_scene_numbering(show, indexer, absolute_number=forAbsolute, sceneAbsolute=sceneAbsolute)
         else:
-            logger.debug("setEpisodeSceneNumbering for {0} from {1}x{2} to {3}x{4}".format(show, forSeason, forEpisode, sceneSeason, sceneEpisode))
+            logger.debug(f"setEpisodeSceneNumbering for {show} from {forSeason}x{forEpisode} to {sceneSeason}x{sceneEpisode}")
 
             show = int(show)
             indexer = int(indexer)
@@ -1999,15 +1979,15 @@ class Home(WebRoot):
 
     @staticmethod
     def fetch_releasegroups(show_name):
-        logger.info("ReleaseGroups: {0}".format(show_name))
+        logger.info(f"ReleaseGroups: {show_name}")
         if helpers.set_up_anidb_connection():
             try:
                 anime = adba.Anime(settings.ADBA_CONNECTION, name=show_name, cache_dir=Path(settings.CACHE_DIR))
                 groups = anime.get_groups()
-                logger.info("ReleaseGroups: {0}".format(groups))
+                logger.info(f"ReleaseGroups: {groups}")
                 return json.dumps({"result": "success", "groups": groups})
             except AttributeError as error:
-                logger.debug("Unable to get ReleaseGroups: {0}".format(error))
+                logger.debug(f"Unable to get ReleaseGroups: {error}")
                 logger.debug(traceback.format_exc())
 
         return json.dumps({"result": "failure"})

@@ -104,7 +104,7 @@ class Client(GenericClient):
         try:
             jdata = self.response.json()
         except (ValueError, AttributeError):
-            logger.info("Could not convert response to json, check the host:port: {0!r}".format(self.response))
+            logger.info(f"Could not convert response to json, check the host:port: {self.response!r}")
             return False
 
         if not jdata.get("success"):
@@ -114,7 +114,7 @@ class Client(GenericClient):
             if not log_string:
                 logger.info(jdata)
             else:
-                logger.info("{0}".format(log_string))
+                logger.info(f"{log_string}")
 
         return jdata.get("success")
 
@@ -127,7 +127,7 @@ class Client(GenericClient):
         elif result.resultType == GenericProvider.TORRENT:
             destination = settings.TORRENT_PATH.strip()
         else:
-            raise AttributeError("Invalid result passed to client when getting destination: resultType {}".format(result.resultType))
+            raise AttributeError(f"Invalid result passed to client when getting destination: resultType {result.resultType}")
 
         return re.sub(r"^/volume\d/", "", destination).lstrip("/")
 
@@ -162,7 +162,7 @@ class Client(GenericClient):
                 self._set_destination(result, response_json["data"]["default_destination"])
                 logger.info("Destination set to %s", self._get_destination(result))
             except (ValueError, KeyError, JSONDecodeError) as error:
-                logger.debug("Get DownloadStation default destination error: {0}".format(error))
+                logger.debug(f"Get DownloadStation default destination error: {error}")
                 logger.warning("Could not get share destination from DownloadStation for {}, please set it in the settings", result.resultType)
                 raise
 
@@ -184,7 +184,7 @@ class Client(GenericClient):
         data["create_list"] = "false"
         data["destination"] = self._get_destination(result)
 
-        logger.info('Posted as url with {} destination "{}"'.format(data["api"], data["destination"]))
+        logger.info(f'Posted as url with {data["api"]} destination "{data["destination"]}"')
         self._request(method="post", data=data)
         return self._check_response(data)
 
@@ -205,7 +205,7 @@ class Client(GenericClient):
         data["create_list"] = "false"
         data["destination"] = f'"{self._get_destination(result)}"'
 
-        logger.info("Posted as file with {} destination {}".format(data["api"], data["destination"]))
+        logger.info(f"Posted as file with {data['api']} destination {data['destination']}")
         self._request(method="post", data=data, files=files)
         return self._check_response(data)
 
@@ -217,7 +217,7 @@ class Client(GenericClient):
         logger.debug(f"Calling {self.name} Client")
 
         if not (self.auth or self._get_auth()):
-            logger.warning("{0}: Authentication Failed".format(self.name))
+            logger.warning(f"{self.name}: Authentication Failed")
             return False
 
         if result.resultType == "nzb":

@@ -154,7 +154,7 @@ def change_unrar_tool(unrar_tool, unar_tool):
             try:
                 os.remove(unrar_zip)
             except OSError as e:
-                logger.info("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
+                logger.info(f"Unable to delete downloaded file {unrar_zip}: {e.strerror}. You may delete it manually")
 
             check = os.path.join(unrar_store, "unrar.exe")
             try:
@@ -195,7 +195,7 @@ def change_sickchill_background(background):
 
     background = os.path.normpath(background)
     if not os.path.exists(background):
-        logger.info("Background image does not exist: {0}".format(background))
+        logger.info(f"Background image does not exist: {background}")
         return False
 
     settings.SICKCHILL_BACKGROUND_PATH = background
@@ -216,10 +216,10 @@ def change_custom_css(new_css):
 
     new_css = os.path.normpath(new_css)
     if not os.path.isfile(new_css):
-        logger.info("Custom css file does not exist: {0}".format(new_css))
+        logger.info(f"Custom css file does not exist: {new_css}")
         return False
     if not new_css.endswith("css"):
-        logger.info("Custom css file should have the .css extension: {0}".format(new_css))
+        logger.info(f"Custom css file should have the .css extension: {new_css}")
         return False
 
     settings.CUSTOM_CSS_PATH = new_css
@@ -676,13 +676,13 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
     :rtype: int
     """
     if not isinstance(def_val, int):
-        logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="int", dt=type(def_val)))
+        logger.error(f"{cfg_name}:{item_name} default value is not the correct type. Expected {'int'}, got {type(def_val)}")
 
     if not (min_val is None or isinstance(min_val, int)):
-        logger.error("{dom}:{key} min_val value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="int", dt=type(min_val)))
+        logger.error(f"{cfg_name}:{item_name} min_val value is not the correct type. Expected {'int'}, got {type(min_val)}")
 
     if not (max_val is None or isinstance(max_val, int)):
-        logger.error("{dom}:{key} max_val value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="int", dt=type(max_val)))
+        logger.error(f"{cfg_name}:{item_name} max_val value is not the correct type. Expected {'int'}, got {type(max_val)}")
 
     try:
         if not (check_section(config, cfg_name) and check_section(config[cfg_name], item_name)):
@@ -740,19 +740,13 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
     :rtype: float
     """
     if not isinstance(def_val, float):
-        logger.error(
-            "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="float", dt=type(def_val))
-        )
+        logger.error(f"{cfg_name}:{item_name} default value is not the correct type. Expected {'float'}, got {type(def_val)}")
 
     if not (min_val is None or isinstance(min_val, float)):
-        logger.error(
-            "{dom}:{key} min_val value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="float", dt=type(min_val))
-        )
+        logger.error(f"{cfg_name}:{item_name} min_val value is not the correct type. Expected {'float'}, got {type(min_val)}")
 
     if not (max_val is None or isinstance(max_val, float)):
-        logger.error(
-            "{dom}:{key} max_val value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="float", dt=type(max_val))
-        )
+        logger.error(f"{cfg_name}:{item_name} max_val value is not the correct type. Expected {'float'}, got {type(max_val)}")
 
     try:
         if not (check_section(config, cfg_name) and check_section(config[cfg_name], item_name)):
@@ -799,9 +793,7 @@ def check_setting_str(config, cfg_name, item_name, def_val=str(""), silent=True,
     :rtype: str
     """
     if not isinstance(def_val, str):
-        logger.error(
-            "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="string", dt=type(def_val))
-        )
+        logger.error(f"{cfg_name}:{item_name} default value is not the correct type. Expected {'string'}, got {type(def_val)}")
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     encryption_version = (0, settings.ENCRYPTION_VERSION)["password" in item_name]
@@ -851,9 +843,7 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
     """
     try:
         if not isinstance(def_val, bool):
-            logger.error(
-                "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="bool", dt=type(def_val))
-            )
+            logger.error(f"{cfg_name}:{item_name} default value is not the correct type. Expected {'bool'}, got {type(def_val)}")
 
         if not (check_section(config, cfg_name) and item_name in config[cfg_name]):
             raise ValueError
@@ -912,10 +902,8 @@ class ConfigMigrator(object):
 
         if self.config_version > self.expected_config_version:
             logger.log_error_and_exit(
-                """Your config version ({0:d}) has been incremented past what this version of SickChill supports ({1:d}).
-                If you have used other forks or a newer version of SickChill, your config file may be unusable due to their modifications.""".format(
-                    self.config_version, self.expected_config_version
-                )
+                f"""Your config version ({self.config_version:d}) has been incremented past what this version of SickChill supports ({self.expected_config_version:d}).
+                If you have used other forks or a newer version of SickChill, your config file may be unusable due to their modifications."""
             )
 
         settings.CONFIG_VERSION = self.config_version

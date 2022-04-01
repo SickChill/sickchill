@@ -45,9 +45,9 @@ class Notifier(object):
         id = settings.JOIN_ID if id is None else id
         apikey = settings.JOIN_APIKEY if apikey is None else apikey
 
-        logger.debug("Join in use with device ID: {0}".format(id))
+        logger.debug(f"Join in use with device ID: {id}")
 
-        message = "{0} : {1}".format(title.encode(), msg.encode())
+        message = f"{title.encode()} : {msg.encode()}"
         params = {
             "apikey": apikey,
             "deviceId": id,
@@ -57,15 +57,15 @@ class Notifier(object):
         }
         payload = urllib.parse.urlencode(params)
         join_api = "https://joinjoaomgcd.appspot.com/_ah/api/messaging/v1/sendPush?" + payload
-        logger.debug("Join url in use : {0}".format(join_api))
+        logger.debug(f"Join url in use : {join_api}")
         success = False
         try:
             urllib.request.urlopen(join_api)
             message = "Join message sent successfully."
-            logger.debug("Join message returned : {0}".format(message))
+            logger.debug(f"Join message returned : {message}")
             success = True
         except Exception as e:
-            message = "Error while sending Join message: {0} ".format(e)
+            message = f"Error while sending Join message: {e} "
         finally:
             logger.info(message)
             return success, message
@@ -99,7 +99,7 @@ class Notifier(object):
         :param title: The title of the notification to send
         """
         if settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_join(title, "{0}: {1}".format(ep_name, lang))
+            self._notify_join(title, f"{ep_name}: {lang}")
 
     def notify_git_update(self, new_version="??"):
         """
@@ -140,6 +140,6 @@ class Notifier(object):
             logger.debug("Notification for Join not enabled, skipping this notification")
             return False, "Disabled"
 
-        logger.debug("Sending a Join message for {0}".format(message))
+        logger.debug(f"Sending a Join message for {message}")
 
         return self._send_join_msg(title, message, id, apikey)

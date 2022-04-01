@@ -16,9 +16,7 @@ from .numdict import NumDict
 setup_gettext()
 
 INSTANCE_ID = str(uuid.uuid1())
-USER_AGENT = "SickChill/{version} ({os} {architecture} {os_version}; {instance})".format(
-    version=version.__version__, os=platform.system(), architecture=platform.machine(), os_version=platform.release(), instance=INSTANCE_ID
-)
+USER_AGENT = f"SickChill/{version.__version__} ({platform.system()} {platform.machine()} {platform.release()}; {INSTANCE_ID})"
 
 cpu_presets = {"HIGH": 5, "NORMAL": 2, "LOW": 1}
 
@@ -209,7 +207,7 @@ class Quality(object):
                 stat = Quality.statusPrefixes[status]
                 qual = Quality.qualityStrings[quality]
                 comp = Quality.compositeStatus(status, quality)
-                to_return[comp] = "{0} ({1})".format(stat, qual)
+                to_return[comp] = f"{stat} ({qual})"
         return to_return
 
     @staticmethod

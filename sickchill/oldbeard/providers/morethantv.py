@@ -62,7 +62,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("Your username or password was incorrect.", response):
@@ -92,12 +92,12 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
 
             for search_string in {*search_strings[mode]}:
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 if mode == "Season":
                     searchedSeason = re.match(r".*\s(Season\s\d+|S\d+)", search_string).group(1)
@@ -170,7 +170,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                             items.append(item)
                         except Exception:

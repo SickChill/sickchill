@@ -33,7 +33,7 @@ class Notifier(object):
                     self._connections.append(kodi)
             except (URLError, RequestTimeout, KeyError, IndexError):
                 pass
-                # logger.info('Unable to connect to Kodi host as {0}, make sure the username and password is correct and that the http control is enabled'.format(host))
+                # logger.info(f'Unable to connect to Kodi host as {host}, make sure the username and password is correct and that the http control is enabled')
 
     @property
     def connections(self):
@@ -76,13 +76,13 @@ class Notifier(object):
         self.setup(hosts=hosts, username=username, password=password)
         results = dict()
         for connection in self.connections:
-            logger.debug("Sending {0} notification to '{1}' - {2}".format(dest_app, connection.host, message))
+            logger.debug(f"Sending {dest_app} notification to '{connection.host}' - {message}")
             response = connection.GUI.ShowNotification(title=title, message=message, image=settings.LOGO_URL)
             if response and response.get("result"):
                 results[connection.host] = self.success(response)
             else:
                 if settings.KODI_ALWAYS_ON or force:
-                    logger.warning("Failed to send notification to {0} for '{1}', check configuration and try again.".format(dest_app, connection.host))
+                    logger.warning(f"Failed to send notification to {dest_app} for '{connection.host}', check configuration and try again.")
                 results[connection.host] = False
 
         for host in [x.strip() for x in (hosts or settings.KODI_HOST or "").split(",") if x.strip()]:

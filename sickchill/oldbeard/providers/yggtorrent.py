@@ -41,7 +41,7 @@ class Provider(TorrentProvider):
 
         if validators.url(new_url) != True:
             if custom:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                logger.warning(_(f"Invalid custom url: {self.custom_url}"))
             else:
                 logger.debug("Url changing has failed!")
 
@@ -70,14 +70,14 @@ class Provider(TorrentProvider):
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
         if not response or response.status_code != 200:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
         else:
             # It seems we are logged, let's verify that !
             response = self.get_url(self.url, returns="response")
 
             if response.status_code != 200:
-                logger.warning("Unable to connect to provider")
+                logger.warning(_("Unable to connect to provider"))
                 return False
             if "logout" not in response.text:
                 logger.warning("Invalid username or password. Check your settings")
@@ -92,12 +92,12 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
 
             for search_string in {*search_strings[mode]}:
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
                 # search string needs to be normalized, single quotes are apparently not allowed on the site
                 # ç should also be replaced, people tend to use c instead
                 replace_chars = {"'": "", "ç": "c"}
@@ -150,9 +150,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
-                                            title, seeders, leechers
-                                        )
+                                        _(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
                                     )
                                 continue
 

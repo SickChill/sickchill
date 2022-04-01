@@ -32,7 +32,7 @@ def containsAtLeastOneWord(name, words):
     if not any(words):
         return True
 
-    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.I) for word in words}.items():
+    for word, regexp in {word: re.compile(rf"(^|[\W_]){re.escape(word)}($|[\W_])", re.I) for word in words}.items():
         if regexp.search(name):
             return word
     return False
@@ -52,12 +52,12 @@ def filter_bad_releases(name, parse=True, show=None):
         if parse:
             NameParser().parse(name)
     except InvalidNameException as error:
-        logger.debug("{0}".format(error))
+        logger.debug(f"{error}")
         return False
     except InvalidShowException:
         pass
     # except InvalidShowException as error:
-    #    logger.debug("{0}".format(error))
+    #    logger.debug(f"{error}")
     #    return False
 
     def clean_set(words):
@@ -73,7 +73,7 @@ def filter_bad_releases(name, parse=True, show=None):
 
     word = containsAtLeastOneWord(name, ignore_words)
     if word:
-        logger.info("Release: {} contains {}, ignoring it".format(name, word))
+        logger.info(f"Release: {name} contains {word}, ignoring it")
         return False
 
     # if any of the good strings aren't in the name then say no

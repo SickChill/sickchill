@@ -44,18 +44,18 @@ class GenericClient(object):
             self.last_time = time.time()
             self._get_auth()
 
-        log_string = "{0}: Requested a {1} connection to url {2}".format(self.name, method.upper(), self.url)
+        log_string = f"{self.name}: Requested a {method.upper()} connection to url {self.url}"
 
         if params:
-            log_string += "?{0}".format(urlencode(params))
+            log_string += f"?{urlencode(params)}"
 
         if data:
-            log_string += " and data: {0}{1}".format(str(data)[0:99], "..." if len(str(data)) > 100 else "")
+            log_string += f" and data: {str(data)[0:99]}{'...' if len(str(data)) > 100 else ''}"
 
         logger.debug(log_string)
 
         if not (self.auth or self._get_auth()):
-            logger.warning("{0}: Authentication Failed".format(self.name))
+            logger.warning(f"{self.name}: Authentication Failed")
             return False
 
         try:
@@ -66,7 +66,7 @@ class GenericClient(object):
             helpers.handle_requests_exception(error)
             return False
 
-        logger.debug("{0}: Response to the {1} request is {2}".format(self.name, method.upper(), self.response.text))
+        logger.debug(f"{self.name}: Response to the {method.upper()} request is {self.response.text}")
 
         return True
 
@@ -153,24 +153,24 @@ class GenericClient(object):
                 torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
             except (bencodepy.BencodeDecodeError, Exception) as error:
                 logger.exception("Unable to bdecode torrent")
-                logger.info("Error is: {0}".format(error))
-                logger.info("Torrent bencoded data: {0!r}".format(result.content))
+                logger.info(f"Error is: {error}")
+                logger.info(f"Torrent bencoded data: {result.content!r}")
                 raise
 
             try:
                 info = torrent_bdecode[b"info"]
             except Exception:
                 logger.exception("Unable to find info field in torrent")
-                logger.info("Torrent bencoded data: {0!r}".format(result.content))
+                logger.info(f"Torrent bencoded data: {result.content!r}")
                 raise
 
             try:
                 result.hash = sha1(bencodepy.encode(info)).hexdigest()
-                logger.debug("Result Hash is {0}".format(result.hash))
+                logger.debug(f"Result Hash is {result.hash}")
             except (bencodepy.BencodeDecodeError, Exception) as error:
                 logger.exception("Unable to bencode torrent info")
-                logger.info("Error is: {0}".format(error))
-                logger.info("Torrent bencoded data: {0!r}".format(result.content))
+                logger.info(f"Error is: {error}")
+                logger.info(f"Torrent bencoded data: {result.content!r}")
                 raise
 
         return result
@@ -186,7 +186,7 @@ class GenericClient(object):
         logger.debug(f"Calling {self.name} Client")
 
         if not (self.auth or self._get_auth()):
-            logger.warning("{0}: Authentication Failed".format(self.name))
+            logger.warning(f"{self.name}: Authentication Failed")
             return r_code
 
         try:
@@ -202,30 +202,30 @@ class GenericClient(object):
                 r_code = self._add_torrent_file(result)
 
             if not r_code:
-                logger.warning("{0}: Unable to send Torrent".format(self.name))
+                logger.warning(f"{self.name}: Unable to send Torrent")
                 return False
 
             if not self._set_torrent_pause(result):
-                logger.exception("{0}: Unable to set the pause for Torrent".format(self.name))
+                logger.exception(f"{self.name}: Unable to set the pause for Torrent")
 
             if not self._set_torrent_label(result):
-                logger.exception("{0}: Unable to set the label for Torrent".format(self.name))
+                logger.exception(f"{self.name}: Unable to set the label for Torrent")
 
             if not self._set_torrent_ratio(result):
-                logger.exception("{0}: Unable to set the ratio for Torrent".format(self.name))
+                logger.exception(f"{self.name}: Unable to set the ratio for Torrent")
 
             if not self._set_torrent_seed_time(result):
-                logger.exception("{0}: Unable to set the seed time for Torrent".format(self.name))
+                logger.exception(f"{self.name}: Unable to set the seed time for Torrent")
 
             if not self._set_torrent_path(result):
-                logger.exception("{0}: Unable to set the path for Torrent".format(self.name))
+                logger.exception(f"{self.name}: Unable to set the path for Torrent")
 
             if result.priority != 0 and not self._set_torrent_priority(result):
-                logger.exception("{0}: Unable to set priority for Torrent".format(self.name))
+                logger.exception(f"{self.name}: Unable to set priority for Torrent")
 
         except Exception as error:
-            logger.exception("{0}: Failed Sending Torrent".format(self.name))
-            logger.debug("{0}: Exception raised when sending torrent: {1}. Error {2}".format(self.name, result, error))
+            logger.exception(f"{self.name}: Failed Sending Torrent")
+            logger.debug(f"{self.name}: Exception raised when sending torrent: {result}. Error {error}")
             logger.debug(traceback.format_exc())
             return r_code
 
@@ -249,7 +249,7 @@ class GenericClient(object):
             if self.auth:
                 return True, "Success: Connected and Authenticated"
             else:
-                return False, "Failed to authenticate with {0}".format(self.name)
+                return False, f"Failed to authenticate with {self.name}"
         except Exception as error:
             helpers.handle_requests_exception(error)
-            return False, "{0}".format(error)
+            return False, f"{error}"

@@ -49,7 +49,7 @@ class Client(GenericClient):
             return True
 
         except Exception as error:
-            logger.warning(_("Error while sending torrent: {error}".format(error=error)))
+            logger.warning(_(f"Error while sending torrent: {error}"))
             return False
 
     def _add_torrent_file(self, result):
@@ -68,7 +68,7 @@ class Client(GenericClient):
 
         except Exception as error:
             logger.info(traceback.format_exc())
-            logger.warning(_("Error while sending torrent: {error}".format(error=error)))
+            logger.warning(_(f"Error while sending torrent: {error}"))
             return False
 
     def testAuthentication(self):
@@ -80,7 +80,7 @@ class Client(GenericClient):
             else:
                 return False, _("Error: Unable to get {self.name} Authentication, check your config!")
         except Exception as error:
-            return False, _("Error: Unable to connect to {name}: {error}".format(name=self.name, error=error))
+            return False, _(f"Error: Unable to connect to {self.name}: {error}")
 
     @staticmethod
     def _get_params(result):

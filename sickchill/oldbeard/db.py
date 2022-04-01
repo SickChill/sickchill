@@ -5,6 +5,7 @@ import threading
 import time
 import traceback
 import warnings
+from pathlib import Path
 from sqlite3 import OperationalError
 from typing import List
 
@@ -23,7 +24,7 @@ def db_full_path(filename="sickchill.db", suffix=None):
     @return: the correct location of the database file.
     """
     if suffix:
-        filename = "{0}.{1}".format(filename, suffix)
+        filename = f"{filename}.{suffix}"
     return os.path.join(settings.DATA_DIR, filename)
 
 
@@ -61,8 +62,7 @@ class DBConnection(object):
                 self._set_row_factory()
 
         except OperationalError:
-            # noinspection PyUnresolvedReferences
-            logger.warning(_("Please check your database owner/permissions: {db_filename}").format(db_filename=self.full_path))
+            logger.warning(_(f"Please check your database owner/permissions: {self.full_path}"))
         except Exception as e:
             self._error_log_helper(e, logger.ERROR, locals(), None, "DBConnection.__init__")
             raise
@@ -71,13 +71,7 @@ class DBConnection(object):
         if attempts in (0, self.MAX_ATTEMPTS):  # Only log the first try and the final failure
             prefix = ("Database", "Fatal")[severity == logger.ERROR]
             # noinspection PyUnresolvedReferences
-            logger.log(
-                severity,
-                _("{exception_severity} error executing query with {method} in database {db_location}: ").format(
-                    db_location=self.full_path, method=called_method, exception_severity=prefix
-                )
-                + str(exception),
-            )
+            logger.log(severity, _(f"{prefix} error executing query with {called_method} in database {self.full_path}: {exception}"))
 
             # Lets print out all of the arguments so we can debug this better
             logger.info(traceback.format_exc())
@@ -186,7 +180,7 @@ class DBConnection(object):
         """
 
         # noinspection PyUnresolvedReferences
-        assert hasattr(query_list, "__iter__"), _("You passed a non-iterable to mass_action: {0!r}").format(query_list)
+        assert hasattr(query_list, "__iter__"), _(f"You passed a non-iterable to mass_action: {query_list!r}")
 
         # remove None types
         query_list = [i for i in query_list if i]
@@ -202,15 +196,15 @@ class DBConnection(object):
                     for qu in query_list:
                         if len(qu) == 1:
                             # noinspection PyUnresolvedReferences
-                            logger.log(log_level, _("{filename}: {query}").format(filename=self.filename, query=qu[0]))
+                            logger.log(log_level, _(f"{self.filename}: {qu[0]}"))
                             sql_results.append(self._execute(qu[0], fetchall=fetchall))
                         elif len(qu) > 1:
                             # noinspection PyUnresolvedReferences
-                            logger.log(log_level, _("{filename}: {query} with args {args}").format(filename=self.filename, query=qu[0], args=qu[1]))
+                            logger.log(log_level, _(f"{self.filename}: {qu[0]} with args {qu[1]}"))
                             sql_results.append(self._execute(qu[0], qu[1], fetchall=fetchall))
                     self.connection.commit()
                     # noinspection PyUnresolvedReferences
-                    logger.log(log_level, _("Transaction with {count:d} of queries executed successfully").format(count=len(query_list)))
+                    logger.log(log_level, _(f"Transaction with {len(query_list):d} of queries executed successfully"))
 
                     # finished
                     break
@@ -260,7 +254,7 @@ class DBConnection(object):
                         if args is None:
                             logger.log(logger.DB, self.filename + ": " + query)
                         else:
-                            logger.log(logger.DB, "{filename}: {query} with args {args}".format(filename=self.filename, query=query, args=args))
+                            logger.log(logger.DB, f"{self.filename}: {query} with args {args}")
 
                     sql_results = self._execute(query, args, fetchall=fetchall, fetchone=fetchone)
                     self.connection.commit()
@@ -331,7 +325,7 @@ class DBConnection(object):
         """
         log_level = (logger.DB, logger.DEBUG)[log_transaction]
         for values, control in query_list:
-            logger.log(log_level, _("{filename}: {query} [{control}]").format(filename=self.filename, query=values, control=control))
+            logger.log(log_level, _(f"{self.filename}: {values} [{control}]"))
             self.upsert(table_name, values, control)
 
     def upsert(self, table_name, value_dict, key_dict):
@@ -350,12 +344,10 @@ class DBConnection(object):
         if key_dict:
 
             def make_string(my_dict, separator):
-                return separator.join(["{} = ?".format(x) for x in my_dict])
+                return separator.join([f"{x} = ?" for x in my_dict])
 
             # language=TEXT
-            query = "UPDATE [{table}] SET {pairs} WHERE {control}".format(
-                table=table_name, pairs=make_string(value_dict, ", "), control=make_string(key_dict, " AND ")
-            )
+            query = f"UPDATE [{table_name}] SET {make_string(value_dict, ', ')} WHERE {make_string(key_dict, ' AND ')}"
 
             self.action(query, list(value_dict.values()) + list(key_dict.values()))
 
@@ -367,7 +359,7 @@ class DBConnection(object):
             values = list(value_dict.values()) + list(key_dict.values())
 
             # language=TEXT
-            query = "INSERT INTO '{table}' ({columns}) VALUES ({replacements})".format(table=table_name, columns=columns, replacements=replacements)
+            query = f"INSERT INTO '{table_name}' ({columns}) VALUES ({replacements})"
 
             self.action(query, values)
 
@@ -378,7 +370,7 @@ class DBConnection(object):
         :param table_name: name of table
         :return: array of name/type info
         """
-        return {column["name"]: {"type": column["type"]} for column in self.select("PRAGMA table_info(`{0}`)".format(table_name))}
+        return {column["name"]: {"type": column["type"]} for column in self.select(f"PRAGMA table_info(`{table_name}`)")}
 
     @staticmethod
     def _dict_factory(cursor, row):
@@ -423,10 +415,12 @@ class DBConnection(object):
         :param default: Default value for column
         """
 
-        # language=TEXT
-        self.action("ALTER TABLE [{0}] ADD {1} {2}".format(table, column, col_type))
-        # language=TEXT
-        self.action("UPDATE [{0}] SET {1} = ?".format(table, column), (default,))
+        self.action(f"ALTER TABLE [{table}] ADD {column} {col_type}")
+        self.action(f"UPDATE [{table}] SET {column} = ? WHERE 1", (default,))
+
+    def import_ddl(self):
+        with (Path(__file__).with_name("databases") / self.filename).with_suffix(".ddl").open() as script:
+            self.connection.executescript(script.read())
 
 
 def sanity_check_database(connection, sanity_check):
@@ -453,7 +447,7 @@ def upgrade_database(connection, schema):
     :param connection: Existing DB Connection to use
     :param schema: New schema to upgrade to
     """
-    logger.debug("Checking database structure..." + connection.filename)
+    logger.debug(f"Checking database structure... {connection.filename}")
     _process_upgrade(connection, schema)
 
 
@@ -463,7 +457,7 @@ def pretty_name(class_name):
 
 def _process_upgrade(connection, upgrade_class):
     instance = upgrade_class(connection)
-    # logger.debug("Checking " + pretty_name(upgrade_class.__name__) + " database upgrade")
+    logger.debug("Checking " + pretty_name(upgrade_class.__name__) + " database upgrade")
     if not instance.test():
         logger.debug("Database upgrade required: " + pretty_name(upgrade_class.__name__))
         try:

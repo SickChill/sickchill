@@ -130,7 +130,7 @@ class TuSubtituloProvider(Provider):
 
     def initialize(self):
         self.session = Session()
-        self.session.headers["User-Agent"] = "Subliminal/%s" % __short_version__
+        self.session.headers["User-Agent"] = f"Subliminal/{__short_version__}"
         # self.session.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 ' \
         #                                      'Firefox/56.0 '
 
@@ -181,7 +181,7 @@ class TuSubtituloProvider(Provider):
         # attempt with year
         if not show_id and year:
             logger.debug("Getting show id with year")
-            show_id = show_ids.get("%s %d" % (series_sanitized, year))
+            show_id = show_ids.get(f"{series_sanitized} {year}")
 
         # attempt clean
         if not show_id:
@@ -217,11 +217,11 @@ class TuSubtituloProvider(Provider):
             title = sanitize(html_episode.get_text())
 
             # attempt series with year
-            if sanitize("{} {} {}x{:02d}".format(series_sanitized, year, season, episode)) in title:
+            if sanitize(f"{series_sanitized} {year} {season}x{episode:02d}") in title:
                 episode_url = "https://" + html_episode["href"][2:]
                 logger.debug("Subtitle found for %s, season: %d, episode: %d. URL: %s", series, season, episode, episode_url)
                 break
-            elif sanitize("{} {}x{:02d}".format(series_sanitized, season, episode)) in title:
+            elif sanitize(f"{series_sanitized} {season}x{episode:02d}") in title:
                 episode_url = "https://" + html_episode["href"][2:]
                 logger.debug("Subtitle found for %s, season: %d, episode: %d. URL: %s", series, season, episode, episode_url)
                 break
@@ -248,7 +248,7 @@ class TuSubtituloProvider(Provider):
         soup = ParserBeautifulSoup(r.content, ["lxml", "html.parser"])
 
         # get episode title
-        title_pattern = re.compile("Subt.+tulos de {}(.+){}x{:02d} - (.+)".format(series, season, episode).lower())
+        title_pattern = re.compile(f"Subt.+tulos de {series}(.+){season}x{episode:02d} - (.+)".lower())
         title = title_pattern.search(soup.select("#cabecera-subtitulo")[0].get_text().strip().lower()).group(2)
 
         # loop over subtitle rows

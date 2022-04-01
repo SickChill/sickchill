@@ -51,7 +51,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, timeout=30)
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("Lei non e registrato in sistema.", response):
@@ -157,7 +157,7 @@ class Provider(TorrentProvider):
 
                         item = title, download_url, size, seeders, leechers
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                         items.append(item)
 

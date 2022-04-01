@@ -30,7 +30,7 @@ class Provider(TorrentProvider):
             items = []
 
             search_string = " OR ".join(search_strings[mode])
-            logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+            logger.debug(_(f"Search String: {search_string}"))
 
             data = self.get_url(self.urls["search"], params={"q": search_string}, returns="json")
 

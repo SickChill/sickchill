@@ -43,7 +43,7 @@ class SickChillStaticFileHandler(StaticFileHandler):
         if not version_hash:
             return url
 
-        return "%s?v=%s" % (url, version_hash)
+        return f"{url}?v={version_hash}"
 
 
 class SRWebServer(threading.Thread):

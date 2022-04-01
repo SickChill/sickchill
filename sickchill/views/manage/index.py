@@ -28,7 +28,7 @@ class Manage(Home, WebRoot):
 
         main_db_con = db.DBConnection()
         cur_show_results = main_db_con.select(
-            "SELECT season, episode, name FROM tv_episodes WHERE showid = ? AND season != 0 AND status IN ({0})".format(",".join(["?"] * len(status_list))),
+            f"SELECT season, episode, name FROM tv_episodes WHERE showid = ? AND season != 0 AND status IN ({','.join(['?'] * len(status_list))})",
             [int(indexer_id)] + status_list,
         )
 
@@ -70,8 +70,7 @@ class Manage(Home, WebRoot):
 
         main_db_con = db.DBConnection()
         status_results = main_db_con.select(
-            "SELECT show_name, tv_shows.indexer_id AS indexer_id FROM tv_episodes, tv_shows WHERE tv_episodes.status IN ({0}) AND season != 0 AND "
-            "tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name".format(",".join(["?"] * len(status_list))),
+            f"SELECT show_name, tv_shows.indexer_id AS indexer_id FROM tv_episodes, tv_shows WHERE tv_episodes.status IN ({','.join(['?'] * len(status_list))}) AND season != 0 AND tv_episodes.showid = tv_shows.indexer_id ORDER BY show_name",
             status_list,
         )
 
@@ -128,7 +127,7 @@ class Manage(Home, WebRoot):
             # get a list of all the eps we want to change if they just said "all"
             if "all" in to_change[cur_indexer_id]:
                 all_eps_results = main_db_con.select(
-                    "SELECT season, episode FROM tv_episodes WHERE status IN ({0}) AND season != 0 AND showid = ?".format(",".join(["?"] * len(status_list))),
+                    f"SELECT season, episode FROM tv_episodes WHERE status IN ({','.join(['?'] * len(status_list))}) AND season != 0 AND showid = ?",
                     status_list + [cur_indexer_id],
                 )
                 all_eps = [str(x["season"]) + "x" + str(x["episode"]) for x in all_eps_results]
@@ -142,8 +141,7 @@ class Manage(Home, WebRoot):
     def showSubtitleMissed(indexer_id, whichSubs):
         main_db_con = db.DBConnection()
         cur_show_results = main_db_con.select(
-            "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? {0} AND (status LIKE '%4' OR status LIKE '%6') and "
-            "location != ''".format(("AND season != 0 ", "")[settings.SUBTITLES_INCLUDE_SPECIALS]),
+            f"SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? {('AND season != 0 ', '')[settings.SUBTITLES_INCLUDE_SPECIALS]} AND (status LIKE '%4' OR status LIKE '%6') and location != ''",
             [int(indexer_id)],
         )
         result = {}
@@ -247,9 +245,7 @@ class Manage(Home, WebRoot):
             if "all" in to_download[cur_indexer_id]:
                 main_db_con = db.DBConnection()
                 all_eps_results = main_db_con.select(
-                    "SELECT season, episode FROM tv_episodes WHERE (status LIKE '%4' OR status LIKE '%6') {0} AND showid = ? AND location != ''".format(
-                        ("AND season != 0 ", "")[settings.SUBTITLES_INCLUDE_SPECIALS]
-                    ),
+                    f"SELECT season, episode FROM tv_episodes WHERE (status LIKE '%4' OR status LIKE '%6') {('AND season != 0 ', '')[settings.SUBTITLES_INCLUDE_SPECIALS]} AND showid = ? AND location != ''",
                     [cur_indexer_id],
                 )
                 to_download[cur_indexer_id] = [str(x["season"]) + "x" + str(x["episode"]) for x in all_eps_results]
@@ -303,7 +299,7 @@ class Manage(Home, WebRoot):
                 curEpCat = curShow.getOverview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
                 if curEpCat:
 
-                    epCats["{ep}".format(ep=episode_num(curResult["season"], curResult["episode"]))] = curEpCat
+                    epCats[f"{episode_num(curResult['season'], curResult['episode'])}"] = curEpCat
                     epCounts[curEpCat] += 1
 
             showCounts[curShow.indexerid] = epCounts
@@ -570,7 +566,7 @@ class Manage(Home, WebRoot):
 
             if curErrors:
                 logger.exception("Errors: " + str(curErrors))
-                errors.append("<b>{0}:</b>\n<ul>".format(show_obj.name) + " ".join(["<li>{0}</li>".format(error) for error in curErrors]) + "</ul>")
+                errors.append(f"<b>{show_obj.name}:</b>\n<ul>" + " ".join([f"<li>{error}</li>" for error in curErrors]) + "</ul>")
 
         if errors:
             ui.notifications.error(

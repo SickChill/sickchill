@@ -176,7 +176,7 @@ class SourceUpdateManager(UpdateManagerBase):
             update_dir_contents = [x for x in sc_update_dir.iterdir() if x.is_dir()]
 
             if len(update_dir_contents) != 1:
-                logger.exception(f"Invalid update data, update failed: {str(update_dir_contents)}")
+                logger.exception(f"Invalid update data, update failed: {update_dir_contents}")
                 return False
 
             # walk temp folder and move files to main folder

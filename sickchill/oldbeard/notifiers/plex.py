@@ -115,31 +115,31 @@ class Notifier(object):
         hosts_failed = set()
 
         for cur_host in host_list:
-
-            url = "http{0}://{1}/library/sections".format(("", "s")[settings.PLEX_SERVER_HTTPS], cur_host)
+            https = ("", "s")[settings.PLEX_SERVER_HTTPS]
+            url = f"http{https}://{cur_host}/library/sections"
             try:
                 xml_response = getURL(url, headers=self.headers, session=self.session, returns="text", verify=False, allow_proxy=False)
                 if not xml_response:
-                    logger.warning("PLEX: Error while trying to contact Plex Media Server: {0}".format(cur_host))
+                    logger.warning(f"PLEX: Error while trying to contact Plex Media Server: {cur_host}")
                     hosts_failed.add(cur_host)
                     continue
 
                 media_container = ElementTree.fromstring(xml_response)
             except IOError as error:
-                logger.warning("PLEX: Error while trying to contact Plex Media Server: {0}".format(str(error)))
+                logger.warning(f"PLEX: Error while trying to contact Plex Media Server: {str(error)}")
                 hosts_failed.add(cur_host)
                 continue
             except Exception as error:
                 if "invalid token" in str(error):
                     logger.warning("PLEX: Please set TOKEN in Plex settings: ")
                 else:
-                    logger.warning("PLEX: Error while trying to contact Plex Media Server: {0}".format(str(error)))
+                    logger.warning(f"PLEX: Error while trying to contact Plex Media Server: {str(error)}")
                 hosts_failed.add(cur_host)
                 continue
 
             sections = media_container.findall(".//Directory")
             if not sections:
-                logger.debug("PLEX: Plex Media Server not running on: {0}".format(cur_host))
+                logger.debug(f"PLEX: Plex Media Server not running on: {cur_host}")
                 hosts_failed.add(cur_host)
                 continue
 
@@ -170,12 +170,12 @@ class Notifier(object):
 
         hosts_try = (hosts_match.copy(), hosts_all.copy())[not len(hosts_match)]
         for section_key, cur_host in hosts_try.items():
-
-            url = "http{0}://{1}/library/sections/{2}/refresh".format(("", "s")[settings.PLEX_SERVER_HTTPS], cur_host, section_key)
+            https = ("", "s")[settings.PLEX_SERVER_HTTPS]
+            url = f"http{https}://{cur_host}/library/sections/{section_key}/refresh"
             try:
                 getURL(url, headers=self.headers, session=self.session, returns="text", verify=False, allow_proxy=False)
             except Exception as error:
-                logger.warning("PLEX: Error updating library section for Plex Media Server: {0}".format(str(error)))
+                logger.warning(f"PLEX: Error updating library section for Plex Media Server: {str(error)}")
                 hosts_failed.add(cur_host)
 
         return (", ".join(set(hosts_failed)), None)[not len(hosts_failed)]
@@ -207,6 +207,6 @@ class Notifier(object):
 
         except Exception as error:
             self.headers.pop("X-Plex-Token", "")
-            logger.debug("PLEX: Error fetching credentials from from plex.tv for user {0}: {1}".format(username, error))
+            logger.debug(f"PLEX: Error fetching credentials from from plex.tv for user {username}: {error}")
 
         return "X-Plex-Token" in self.headers

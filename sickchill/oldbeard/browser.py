@@ -102,7 +102,7 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
                 entries.append({"name": letter_path, "path": letter_path})
 
             for name, share in settings.WINDOWS_SHARES.items():
-                entries.append({"name": name, "path": r"\\{server}\{path}".format(server=share["server"], path=share["path"])})
+                entries.append({"name": name, "path": rf"\\{share['server']}\{share['path']}"})
 
             return entries
 
@@ -119,13 +119,13 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
     try:
         file_list = getFileList(path, includeFiles, fileTypes)
     except OSError as e:
-        logger.warning("Unable to open {0}: {1} / {2}".format(path, repr(e), str(e)))
+        logger.warning(f"Unable to open {path}: {repr(e)} / {str(e)}")
         file_list = getFileList(parent_path, includeFiles, fileTypes)
 
     entries = [{"currentPath": path}]
     if path == "/":
         for name, share in settings.WINDOWS_SHARES.items():
-            entries.append({"name": name, "path": r"\\{server}\{path}".format(server=share["server"], path=share["path"])})
+            entries.append({"name": name, "path": rf"\\{share['server']}\{share['path']}"})
 
     if includeParent and parent_path != path:
         entries.append({"name": "..", "path": parent_path})

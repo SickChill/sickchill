@@ -182,13 +182,13 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in search_params[mode]:
                 if search_string == "":
                     continue
 
                 search_string = str(search_string).replace(".", " ")
-                logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                logger.debug(_(f"Search String: {search_string}"))
 
                 last_page = False
                 for page in range(0, self.max_pages):
@@ -277,9 +277,7 @@ class Provider(TorrentProvider):
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
-                                            title, seeders, leechers
-                                        )
+                                        _(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
                                     )
                                     continue
 

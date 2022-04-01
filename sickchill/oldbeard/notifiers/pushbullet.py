@@ -62,10 +62,10 @@ class Notifier(object):
         pushbullet_device = pushbullet_device or settings.PUSHBULLET_DEVICE
         pushbullet_channel = pushbullet_channel or settings.PUSHBULLET_CHANNEL
 
-        logger.debug("Pushbullet event: {0!r}".format(event))
-        logger.debug("Pushbullet message: {0!r}".format(message))
-        logger.debug("Pushbullet api: {0!r}".format(pushbullet_api))
-        logger.debug("Pushbullet devices: {0!r}".format(pushbullet_device))
+        logger.debug(f"Pushbullet event: {event!r}")
+        logger.debug(f"Pushbullet message: {message!r}")
+        logger.debug(f"Pushbullet api: {pushbullet_api!r}")
+        logger.debug(f"Pushbullet devices: {pushbullet_device!r}")
 
         post_data = {"title": event, "body": message, "type": "link" if link else "note"}
         if link:
@@ -82,7 +82,7 @@ class Notifier(object):
 
         failed = response.pop("error", {})
         if failed:
-            logger.warning("Pushbullet notification failed: {0}".format(failed.pop("message")))
+            logger.warning(f"Pushbullet notification failed: {failed.pop('message')}")
         else:
             logger.debug("Pushbullet notification sent.")
 

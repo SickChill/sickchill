@@ -56,14 +56,14 @@ class Provider(TorrentProvider):
             login_url = self.urls["login"]
             if self.custom_url:
                 if validators.url(self.custom_url) != True:
-                    logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                    logger.warning(_(f"Invalid custom url: {self.custom_url}"))
                     return False
 
                 login_url = urljoin(self.custom_url, self.urls["login"].split(self.url)[1])
 
             response = self.get_url(login_url, post_data=login_params, returns="response")
             if not response or response.status_code != 200:
-                logger.warning("Unable to connect to provider")
+                logger.warning(_("Unable to connect to provider"))
                 return False
 
             if re.search("You tried too often", response.text):
@@ -86,7 +86,7 @@ class Provider(TorrentProvider):
         download_url = self.urls["download"]
         if self.custom_url:
             if validators.url(self.custom_url) != True:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                logger.warning(_(f"Invalid custom url: {self.custom_url}"))
                 return results
 
             search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
@@ -97,11 +97,11 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in search_params[mode]:
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 get_params = {}
                 get_params.update(self.categories[mode])

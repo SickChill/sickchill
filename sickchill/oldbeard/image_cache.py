@@ -313,7 +313,7 @@ class ImageCache(object):
         if need_images[self.POSTER] or need_images[self.BANNER] or need_images[self.FANART]:
             try:
                 for cur_provider in settings.metadata_provider_dict.values():
-                    logger.debug("[{}] Checking if we can use images from {} metadata".format(show_obj.indexerid, cur_provider.name))
+                    logger.debug(f"[{show_obj.indexerid}] Checking if we can use images from {cur_provider.name} metadata")
 
                     for method in (cur_provider.get_poster_path, cur_provider.get_banner_path, cur_provider.get_fanart_path):
                         current_path = method(show_obj)
@@ -326,26 +326,22 @@ class ImageCache(object):
                                 continue
 
                             logger.debug(
-                                "[{}] Checking if {} ({}) needs cached: {}".format(
-                                    show_obj.indexerid, cur_filename, self.image_str[cur_file_type], need_images[cur_file_type]
-                                )
+                                f"[{show_obj.indexerid}] Checking if {cur_filename} ({self.image_str[cur_file_type]}) needs cached: {need_images[cur_file_type]}"
                             )
 
                             if cur_file_type in need_images and need_images[cur_file_type]:
                                 logger.debug(
-                                    "[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
-                                        show_obj.indexerid, self.image_str[cur_file_type]
-                                    )
+                                    f"[{show_obj.indexerid}] Found a {self.image_str[cur_file_type]} in the show dir that doesn't exist in the cache, caching it"
                                 )
                                 self._cache_image_from_file(cur_filename, cur_file_type, show_obj.indexerid)
                                 need_images[cur_file_type] = False
 
             except ShowDirectoryNotFoundException:
-                logger.debug("[{}] Unable to search for images in show dir because it doesn't exist".format(show_obj.indexerid))
+                logger.debug(f"[{show_obj.indexerid}] Unable to search for images in show dir because it doesn't exist")
 
         # download from indexer for missing ones
         for cur_image_type in need_images:
-            logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
+            logger.debug(f"[{show_obj.indexerid}] Seeing if we still need a {self.image_str[cur_image_type]}: {need_images[cur_image_type]}")
             if cur_image_type in need_images and need_images[cur_image_type]:
                 self._cache_image_from_indexer(show_obj, cur_image_type)
 

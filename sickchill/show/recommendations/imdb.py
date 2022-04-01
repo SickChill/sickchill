@@ -42,9 +42,7 @@ class imdbPopular(object):
             matches[6] = int(matches[6]) * factor
             matches[7] = int(matches[7]) * factor
 
-            return "{0}V1._{1}{2}_{3}{4},{5},{6},{7}_.jpg".format(
-                matches[0], matches[1], matches[2], matches[3], matches[4], matches[5], matches[6], matches[7]
-            )
+            return f"{matches[0]}V1._{matches[1]}{matches[2]}_{matches[3]}{matches[4]},{matches[5]},{matches[6]},{matches[7]}_.jpg"
         else:
             return image_url
 

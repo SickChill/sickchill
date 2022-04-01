@@ -251,7 +251,7 @@ class GenericProvider(object):
                             actual_episodes = [int(sql_results[0]["episode"])]
                             same_day_special = True
                     elif len(sql_results) != 1:
-                        logger.warning("Tried to look up the date for the episode {0} but the database didn't give proper results, skipping it".format(title))
+                        logger.warning(f"Tried to look up the date for the episode {title} but the database didn't give proper results, skipping it")
                         skip_release = True
 
                     if not skip_release and not same_day_special:
@@ -421,8 +421,8 @@ class GenericProvider(object):
                 episode_string += ("|", " ")[len(self.proper_strings) > 1]
                 episode_string += episode.airdate.strftime("%b")
             elif episode.show.anime:
-                episode_string_fallback = episode_string + "{0:02d}".format(int(episode.scene_absolute_number))
-                episode_string += "{0:03d}".format(int(episode.scene_absolute_number))
+                episode_string_fallback = episode_string + f"{int(episode.scene_absolute_number):02d}"
+                episode_string += f"{int(episode.scene_absolute_number):03d}"
             else:
                 episode_string += sickchill.oldbeard.config.naming_ep_type[2] % {
                     "seasonnumber": episode.scene_season,
@@ -450,10 +450,10 @@ class GenericProvider(object):
                 season_string += str(episode.airdate).split("-")[0]
             elif episode.show.anime:
                 # use string below if you really want to search on season with number
-                # season_string += 'Season ' + '{0:d}'.format(int(episode.scene_season))
+                # season_string += 'Season ' + f'{int(episode.scene_season):d}'
                 season_string += "Season"  # ignore season number to get all seasons in all formats
             else:
-                season_string += "S{0:02d}".format(int(episode.scene_season))
+                season_string += f"S{int(episode.scene_season):02d}"
 
             search_string["Season"].append(season_string.strip())
 
@@ -539,8 +539,8 @@ class GenericProvider(object):
             torrent_hash = result.url.split("=")[1]
             urls = [
                 (
-                    "https://t.torrage.info/download?h={torrent_hash}".format(torrent_hash=torrent_hash),
-                    "https://torrage.info/torrent.php?h={torrent_hash}".format(torrent_hash=torrent_hash),
+                    f"https://t.torrage.info/download?h={torrent_hash}",
+                    f"https://torrage.info/torrent.php?h={torrent_hash}",
                 )
             ]
 

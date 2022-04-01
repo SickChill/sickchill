@@ -12,37 +12,31 @@ class Notifier(object):
     def notify_snatch(self, ep_name):
         if settings.MATRIX_NOTIFY_SNATCH:
             show = self._parseEp(ep_name)
-            message = """<body>
+            message = f"""<body>
                         <h3>SickChill Notification - Snatched</h3>
-                        <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>
-                        <h5>Powered by SickChill.</h5></body>""".format(
-                show[0], show[1], show[2], show[3]
-            )
+                        <p>Show: <b>{show[0]}</b></p><p>Episode Number: <b>{show[1]}</b></p><p>Episode: <b>{show[2]}</b></p><p>Quality: <b>{show[3]}</b></p>
+                        <h5>Powered by SickChill.</h5></body>"""
             self._notify_matrix(message)
 
     def notify_download(self, ep_name):
         if settings.MATRIX_NOTIFY_DOWNLOAD:
             show = self._parseEp(ep_name)
-            message = """<body>
+            message = f"""<body>
                         <h3>SickChill Notification - Downloaded</h3>
-                        <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>
+                        <p>Show: <b>{show[0]}</b></p><p>Episode Number: <b>{show[1]}</b></p><p>Episode: <b>{show[2]}</b></p><p>Quality: <b>{show[3]}</b></p>
                         <h5 style="margin-top: 2.5em; padding: .7em 0;
                         color: #777; border-top: #BBB solid 1px;">
-                        Powered by SickChill.</h5></body>""".format(
-                show[0], show[1], show[2], show[3]
-            )
+                        Powered by SickChill.</h5></body>"""
             self._notify_matrix(message)
 
     def notify_subtitle_download(self, ep_name, lang):
         if settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD:
             show = self._parseEp(ep_name)
-            message = """<body>
+            message = f"""<body>
                         <h3>SickChill Notification - Subtitle Downloaded</h3>
-                        <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p></p>
-                        <p>Language: <b>{3}</b></p>
-                        <h5>Powered by SickChill.</h5></body>""".format(
-                show[0], show[1], show[2], lang
-            )
+                        <p>Show: <b>{show[0]}</b></p><p>Episode Number: <b>{show[1]}</b></p><p>Episode: <b>{show[2]}</b></p></p>
+                        <p>Language: <b>{lang}</b></p>
+                        <h5>Powered by SickChill.</h5></body>"""
             self._notify_matrix(message)
 
     def notify_git_update(self, new_version="??"):
@@ -62,9 +56,7 @@ class Notifier(object):
 
     @staticmethod
     def _send_matrix(message=None):
-        url = "https://{0}/_matrix/client/r0/rooms/{1}/send/m.room.message/{2}?access_token={3}".format(
-            settings.MATRIX_SERVER, settings.MATRIX_ROOM, time.time(), settings.MATRIX_API_TOKEN
-        )
+        url = f"https://{settings.MATRIX_SERVER}/_matrix/client/r0/rooms/{settings.MATRIX_ROOM}/send/m.room.message/{time.time()}?access_token={settings.MATRIX_API_TOKEN}"
 
         logger.info("Sending matrix message: " + message)
         logger.info("Sending matrix message to url: " + url)
@@ -82,7 +74,7 @@ class Notifier(object):
             r.raise_for_status()
 
         except Exception as e:
-            logger.exception("Error Sending Matrix message: " + str(e))
+            logger.exception(f"Error Sending Matrix message: {e}")
             return False
 
         return True
@@ -97,5 +89,5 @@ class Notifier(object):
     def _parseEp(ep_name):
         sep = " - "
         titles = ep_name.split(sep)
-        logger.debug("TITLES: {0}".format(titles))
+        logger.debug(f"TITLES: {titles}")
         return titles

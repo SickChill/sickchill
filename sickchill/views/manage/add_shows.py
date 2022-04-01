@@ -49,7 +49,7 @@ class AddShows(Home):
         # If search term ends with what looks like a year, enclose it in ()
         matches = re.match(r"^(.+ |)([12][0-9]{3})$", search_term)
         if matches:
-            search_terms.append("{0}({1})".format(matches.group(1), matches.group(2)))
+            search_terms.append(f"{matches.group(1)}({matches.group(2)})")
 
         for term in search_terms:
             # If search term begins with an article, let's also search for it without
@@ -275,6 +275,7 @@ class AddShows(Home):
             traktList = ""
 
         traktList = traktList.lower()
+        today = datetime.date.today().strftime("%Y-%m-%d")
 
         if traktList == "trending":
             page_url = "shows/trending"
@@ -291,9 +292,9 @@ class AddShows(Home):
         elif traktList == "recommended":
             page_url = "recommendations/shows"
         elif traktList == "newshow":
-            page_url = "calendars/all/shows/new/{0}/30".format(datetime.date.today().strftime("%Y-%m-%d"))
+            page_url = f"calendars/all/shows/new/{today}/30"
         elif traktList == "newseason":
-            page_url = "calendars/all/shows/premieres/{0}/30".format(datetime.date.today().strftime("%Y-%m-%d"))
+            page_url = f"calendars/all/shows/premieres/{today}/30"
         else:
             page_url = "shows/anticipated"
 
@@ -302,7 +303,7 @@ class AddShows(Home):
         try:
             trending_shows, black_list = trakt_trending.fetch_trending_shows(traktList, page_url)
         except Exception as e:
-            logger.warning("Could not get trending shows: {0}".format(str(e)))
+            logger.warning(f"Could not get trending shows: {str(e)}")
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
@@ -323,7 +324,7 @@ class AddShows(Home):
             popular_shows = imdb_popular.fetch_popular_shows()
             imdb_exception = None
         except Exception as error:
-            logger.warning("Could not get popular shows: {0}".format(str(error)))
+            logger.warning(f"Could not get popular shows: {error}")
             logger.debug(traceback.format_exc())
             popular_shows = None
             imdb_exception = error
@@ -425,10 +426,8 @@ class AddShows(Home):
         if indexer != "TVDB":
             indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not indexer_id:
-                logger.info("Unable to to find tvdb ID to add {0}".format(show_name))
-                ui.notifications.error(
-                    "Unable to add {0}".format(show_name), "Could not add {0}.  We were unable to locate the tvdb id at this time.".format(show_name)
-                )
+                logger.info(f"Unable to to find tvdb ID to add {show_name}")
+                ui.notifications.error(f"Unable to add {show_name}", f"Could not add {show_name}.  We were unable to locate the tvdb id at this time.")
                 return
 
         indexer_id = try_int(indexer_id)
@@ -582,7 +581,7 @@ class AddShows(Home):
         series_pieces = whichSeries.split("|")
         if (whichSeries and rootDir) or (whichSeries and fullShowPath and len(series_pieces) > 1):
             if len(series_pieces) < 6:
-                logger.error("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))))
+                logger.error(f"Unable to add show due to show selection. Not enough arguments: {(repr(series_pieces))}")
                 ui.notifications.error(_("Unknown error. Unable to add show due to problem with show selection."))
                 return self.redirect("/addShows/existingShows/")
 
@@ -608,9 +607,9 @@ class AddShows(Home):
             s = sickchill.indexer.series_by_id(indexerid=indexer_id, indexer=indexer, language=indexerLang)
             if settings.ADD_SHOWS_WITH_YEAR and s.firstAired:
                 try:
-                    year = "({0})".format(dateutil.parser.parse(s.firstAired).year)
+                    year = f"({dateutil.parser.parse(s.firstAired).year})"
                     if year not in folder_name:
-                        folder_name = "{0} {1}".format(s.seriesName, year)
+                        folder_name = f"{s.seriesName} {year}"
                 except (TypeError, ValueError):
                     logger.info(_("Could not append the show year folder for the show: {0}").format(folder_name))
 

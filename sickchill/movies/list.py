@@ -10,9 +10,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from tmdbsimple import movies, search
 
-from . import settings
-from .oldbeard.databases import movie
-from .oldbeard.db import db_cons, db_full_path, db_locks
+from .. import settings
+from ..oldbeard.common import SNATCHED, SNATCHED_BEST, SNATCHED_PROPER, WANTED
+from ..oldbeard.databases import movie
+from ..oldbeard.db import db_cons, db_full_path, db_locks
+from ..oldbeard.scheduler import Scheduler
+from ..providers.GenericProvider import GenericProvider
 
 logger = logging.getLogger("sickchill.movie")
 
@@ -47,6 +50,38 @@ class MovieList:
             )
         except:
             pass
+
+        self.__threads = None
+
+    @property
+    def threads(self):
+        if not self.__threads:
+            self.__threads = [
+                Scheduler(
+                    self.search_thread(),
+                    run_delay=datetime.timedelta(minutes=10),
+                    cycleTime=datetime.timedelta(hours=settings.MOVIESEARCH_FREQUENCY),
+                    threadName="MOVIESEARCHER",
+                ),
+                Scheduler(
+                    self.update_thread(),
+                    run_delay=datetime.timedelta(minutes=10),
+                    cycleTime=datetime.timedelta(minutes=settings.MOVIESEARCH_FREQUENCY),
+                    threadName="MOVIEUPDATER",
+                ),
+            ]
+        return self.__threads
+
+    @threads.setter
+    def thread_setter(self, enable: bool):
+        if enable:
+            for thread in self.threads:
+                thread.enable = True
+                thread.start()
+        else:
+            for thread in self.__threads:
+                thread.enable = False
+                thread.stop.set()
 
     def __iter__(self):
         for item in self.query.all():
@@ -105,7 +140,7 @@ class MovieList:
             logger.debug(f"Movie already existed as {existing.movie.name}")
             return existing.movie
 
-        imdb_object = self.imdb.get_movie(imdb_id)
+        imdb_object = self.imdb.get_movie(imdb_id.strip("t"))
         tmdb_id = tmdbsimple.find.Find(id=imdb_id).info(external_source="imdb_id")["movie_results"][0]["id"]
         tmdb_object = tmdbsimple.movies.Movies(id=tmdb_id).info()
 
@@ -128,7 +163,7 @@ class MovieList:
         tmdb_data = movie.IndexerData(site="tmdb", data=tmdb_object, pk=tmdb_id)
         imdb_data = movie.IndexerData(site="imdb", data=imdb_object, pk=imdb_id)
 
-        imdb_genres = self.imdb.get_title_genres(imdb_id)["genres"]
+        imdb_genres = imdb_object.get("genres")
 
         def add_imdb_genres():
             for genre in imdb_genres:
@@ -187,8 +222,31 @@ class MovieList:
             self.commit(movie_object)
             # TODO: Check if we need to break out here and stop hitting providers if we found a good result
 
-    def snatch_movie(self, result: movie.Result):
-        pass
+    def snatch_movie(self, result: movie.Result, final_status=SNATCHED):
+        if result.type == GenericProvider.TORRENT:
+            pass
+        elif result.type == GenericProvider.NZB:
+            pass
 
     def search_thread(self):
-        pass
+        results = (
+            self.session.query(movie.Movie)
+            .filter_by(
+                movie.Movie.status.__eq__(WANTED),
+                movie.Movie.start.__ge__(movie.Movie.date - movie.Movie.start),
+                movie.Movie.searched.__le__(datetime.datetime.now() - movie.Movie.interval),
+                movie.Movie.paused.__ne__(True),
+            )
+            .order_by(movie.Movie.date)
+        )
+
+        print(results.all()[0])
+
+    def update_thread(self):
+        results = (
+            self.session.query(movie.Movie)
+            .filter_by(movie.Movie.paused.__ne__(True), movie.Movie.updated.__le__(datetime.datetime.now() - datetime.timedelta(days=7)))
+            .order_by(movie.Movie.date)
+        )
+
+        print(results.all()[0])

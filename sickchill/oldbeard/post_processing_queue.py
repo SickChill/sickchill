@@ -112,17 +112,17 @@ class ProcessingQueue(generic_queue.GenericQueue):
         :param force_next: wait until the current item in the queue is finished, acquire the lock and process this task now, so we can return the result
         :return: string indicating success or failure
         """
-        replacements = dict(mode=mode.title(), info=filename or directory)
+        title = mode.title()
+        info = filename or directory
         if not directory:
-            return log_helper("{mode} post-processing attempted but directory is not set: {info}".format(**replacements), logger.WARNING)
+            return log_helper(f"{title} post-processing attempted but directory is not set: {info}", logger.WARNING)
 
         # if not os.path.isdir(directory):
-        #     return log_helper("{mode} post-processing attempted but directory doesn't exist: {info}".format(
-        #         **replacements), logger.WARNING)
+        #     return log_helper(f"{title} post-processing attempted but directory doesn't exist: {info}", logger.WARNING)
 
         if not os.path.isabs(directory):
             return log_helper(
-                "{mode} post-processing attempted but directory is relative (and probably not what you really want to process): {info}".format(**replacements),
+                f"{title} post-processing attempted but directory is relative (and probably not what you really want to process): {info}",
                 logger.WARNING,
             )
 
@@ -133,10 +133,10 @@ class ProcessingQueue(generic_queue.GenericQueue):
 
         if item:
             if self.currentItem == item:
-                return log_helper("{info} is already being processed right now, please wait until it completes before trying again".format(**replacements))
+                return log_helper(f"{info} is already being processed right now, please wait until it completes before trying again")
 
             item.set_params(directory, filename, method, force, is_priority, delete, failed, mode)
-            message = log_helper("A task for {info} was already in the processing queue, updating the settings for that task".format(**replacements))
+            message = log_helper(f"A task for {info} was already in the processing queue, updating the settings for that task")
             return message + r"<br\><span class='hidden'>Processing succeeded</span>"
         else:
             item = PostProcessorTask(directory, filename, method, force, is_priority, delete, failed, mode)
@@ -147,7 +147,7 @@ class ProcessingQueue(generic_queue.GenericQueue):
                 return message
             else:
                 super().add_item(item)
-                message = log_helper("{mode} post processing task for {info} was added to the queue".format(**replacements))
+                message = log_helper(f"{title} post processing task for {info} was added to the queue")
                 return message + r"<br\><span class='hidden'>Processing succeeded</span>"
 
 
@@ -168,7 +168,7 @@ class PostProcessorTask(generic_queue.QueueItem):
         :param mode: processing type: auto/manual
         :return: None
         """
-        super().__init__("{mode}".format(mode=mode.title()), (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
+        super().__init__(f"{mode.title()}", (MANUAL_POST_PROCESS, AUTO_POST_PROCESS)[mode == "auto"])
 
         self.directory = directory
         self.filename = filename
@@ -221,7 +221,7 @@ class PostProcessorTask(generic_queue.QueueItem):
 
         # noinspection PyBroadException
         try:
-            logger.info("Beginning {mode} post processing task: {info}".format(mode=self.mode, info=self.filename or self.directory))
+            logger.info(f"Beginning {self.mode} post processing task: {self.filename or self.directory}")
             self.last_result = process_dir(
                 process_path=self.directory,
                 release_name=self.filename,
@@ -232,7 +232,7 @@ class PostProcessorTask(generic_queue.QueueItem):
                 failed=self.failed,
                 mode=self.mode,
             )
-            logger.info("{mode} post processing task for {info} completed".format(mode=self.mode.title(), info=self.filename or self.directory))
+            logger.info(f"{self.mode.title()} post processing task for {self.filename or self.directory} completed")
 
             # give the CPU a break
             time.sleep(common.cpu_presets[settings.CPU_PRESET])

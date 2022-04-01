@@ -18,7 +18,7 @@ class BlackAndWhiteList(object):
         """
         Builds black and whitelist
         """
-        logger.debug("Building black and white list for {id}".format(id=self.show_id))
+        logger.debug(f"Building black and white list for {self.show_id}")
         self.blacklist = self._load_list("blacklist")
         self.whitelist = self._load_list("whitelist")
 
@@ -42,7 +42,7 @@ class BlackAndWhiteList(object):
         self._del_all_keywords("blacklist")
         self._add_keywords("blacklist", values)
         self.blacklist = values
-        logger.debug("Blacklist set to: {blacklist}".format(blacklist=self.blacklist))
+        logger.debug(f"Blacklist set to: {self.blacklist}")
 
     def set_white_keywords(self, values):
         """
@@ -53,7 +53,7 @@ class BlackAndWhiteList(object):
         self._del_all_keywords("whitelist")
         self._add_keywords("whitelist", values)
         self.whitelist = values
-        logger.debug("Whitelist set to: {whitelist}".format(whitelist=self.whitelist))
+        logger.debug(f"Whitelist set to: {self.whitelist}")
 
     def _del_all_keywords(self, table):
         """
@@ -80,7 +80,7 @@ class BlackAndWhiteList(object):
         for result in sql_results:
             groups.append(result["keyword"])
 
-        logger.debug("BWL: {id} loaded keywords from {table}: {groups}".format(id=self.show_id, table=table, groups=groups))
+        logger.debug(f"BWL: {self.show_id} loaded keywords from {table}: {groups}")
 
         return groups
 
@@ -109,7 +109,7 @@ class BlackAndWhiteList(object):
             else:
                 black_result = True
 
-            logger.debug("Whitelist check passed: {white}. Blacklist check passed: {black}".format(white=white_result, black=black_result))
+            logger.debug(f"Whitelist check passed: {white_result}. Blacklist check passed: {black_result}")
 
             if white_result and black_result:
                 return True

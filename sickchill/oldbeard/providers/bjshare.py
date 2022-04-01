@@ -84,7 +84,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
 
             # if looking for season, look for more pages
             if mode == "Season":
@@ -92,7 +92,7 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 # Remove season / episode from search (not supported by tracker)
                 search_str = re.sub(r"\d+$" if anime else r"[S|E]\d\d", "", search_string).strip()
@@ -102,7 +102,7 @@ class Provider(TorrentProvider):
 
                 while has_next_page and next_page <= self.max_back_pages:
                     search_params["page"] = next_page
-                    logger.debug("Page Search: {0}".format(next_page))
+                    logger.debug(f"Page Search: {next_page}")
                     next_page += 1
 
                     response = self.session.get(self.urls["search"], params=search_params)
@@ -143,7 +143,7 @@ class Provider(TorrentProvider):
 
             # ignore next page in RSS mode
             has_next_page = mode != "RSS" and html.find("a", class_="pager_next") is not None
-            logger.debug("More Pages? {0}".format(has_next_page))
+            logger.debug(f"More Pages? {has_next_page}")
 
             # Continue only if at least one Release is found
             if len(torrent_rows) < 2:
@@ -193,10 +193,7 @@ class Provider(TorrentProvider):
                     # Filter unseeded torrent
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != "RSS":
-                            logger.debug(
-                                "Discarding torrent because it doesn't meet the"
-                                " minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
-                            )
+                            logger.debug(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
                         continue
 
                     torrent_details = None
@@ -216,19 +213,13 @@ class Provider(TorrentProvider):
 
                     size = convert_size(torrent_size) or -1
 
-                    torrent_name = "{0} {1}".format(title, torrent_details.strip()).strip()
+                    torrent_name = f"{title} {torrent_details.strip()}".strip()
                     torrent_name = re.sub(r"\s+", " ", torrent_name)
 
                     items.append({"title": torrent_name, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""})
 
                     if mode != "RSS":
-                        logger.debug(
-                            _(
-                                "Found result: {title} with {seeders} seeders and {leechers} leechers".format(
-                                    title=torrent_name, seeders=seeders, leechers=leechers
-                                )
-                            )
-                        )
+                        logger.debug(_(f"Found result: {torrent_name} with {seeders} seeders and {leechers} leechers"))
 
                 except (AttributeError, TypeError, KeyError, ValueError, IndexError):
                     logger.exception("Failed parsing provider.")
@@ -257,7 +248,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("<title>Login :: BJ-Share</title>", response):

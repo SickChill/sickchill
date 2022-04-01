@@ -107,7 +107,7 @@ class ListAssociatedFiles(unittest.TestCase):
 
         # Test no associated files:
         associated_files = self.post_processor.list_associated_files("Fools Quest.avi", subfolders=True)
-        assert associated_files == sorted()
+        assert associated_files == list()
 
     def test_no_subfolders(self):
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subfolders=False)

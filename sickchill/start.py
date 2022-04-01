@@ -11,6 +11,7 @@ from tornado.locale import load_gettext_translations
 
 import sickchill
 from sickchill import logger, settings, show_updater, update_manager
+from sickchill.movies.list import MovieList
 from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickchill.oldbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickchill.oldbeard.databases import failed, main
@@ -118,12 +119,10 @@ def initialize(consoleLogging=True):
 
         # git_remote
         settings.GIT_REMOTE = check_setting_str(settings.CFG, "General", "git_remote", "origin")
-        settings.GIT_REMOTE_URL = check_setting_str(
-            settings.CFG, "General", "git_remote_url", "https://github.com/{0}/{1}.git".format(settings.GIT_ORG, settings.GIT_REPO)
-        )
+        settings.GIT_REMOTE_URL = check_setting_str(settings.CFG, "General", "git_remote_url", f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git")
 
         if "rage" in settings.GIT_REMOTE_URL.lower():
-            settings.GIT_REMOTE_URL = "https://github.com/{0}/{1}.git".format(settings.GIT_ORG, settings.GIT_REPO)
+            settings.GIT_REMOTE_URL = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git"
 
         # current commit hash
         settings.CUR_COMMIT_HASH = check_setting_str(settings.CFG, "General", "cur_commit_hash")
@@ -153,30 +152,30 @@ def initialize(consoleLogging=True):
                     try:
                         if os.path.isdir(dstDir):
                             # noinspection PyTypeChecker
-                            bakFilename = "{0}-{1}".format(path_leaf(dstDir), datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d_%H%M%S"))
+                            bakFilename = f"{path_leaf(dstDir)}-{datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S')}"
                             shutil.move(dstDir, os.path.join(os.path.dirname(dstDir), bakFilename))
 
                         shutil.move(srcDir, dstDir)
                         logger.info("Restore: restoring cache successful")
-                    except Exception as er:
-                        logger.exception("Restore: restoring cache failed: {0}".format(er))
+                    except Exception as error:
+                        logger.exception(f"Restore: restoring cache failed: {error}")
 
                 restoreCache(os.path.join(restoreDir, "cache"), settings.CACHE_DIR)
-        except Exception as e:
-            logger.exception("Restore: restoring cache failed: {0}".format(str(e)))
+        except Exception as error:
+            logger.exception(f"Restore: restoring cache failed: {error}")
         finally:
             if os.path.exists(os.path.join(settings.DATA_DIR, "restore")):
                 try:
                     shutil.rmtree(os.path.join(settings.DATA_DIR, "restore"))
-                except Exception as e:
-                    logger.exception("Restore: settings.Unable to remove the restore directory: {0}".format(str(e)))
+                except Exception as error:
+                    logger.exception(f"Restore: settings.Unable to remove the restore directory: {error}")
 
                 for cleanupDir in ["mako", "sessions", "indexers", "rss"]:
                     try:
                         shutil.rmtree(os.path.join(settings.CACHE_DIR, cleanupDir))
-                    except Exception as e:
+                    except Exception as error:
                         if cleanupDir not in ["rss", "sessions", "indexers"]:
-                            logger.info("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)))
+                            logger.info(f"Restore: Unable to remove the cache/{cleanupDir} directory: {error}")
 
         settings.IMAGE_CACHE = image_cache.ImageCache()
         settings.THEME_NAME = check_setting_str(settings.CFG, "GUI", "theme_name", "dark")
@@ -903,6 +902,9 @@ def initialize(consoleLogging=True):
             threadName="DAILYSEARCHER",
         )
 
+        if settings.DEVELOPER:
+            MovieList.threads = True
+
         update_interval = datetime.timedelta(minutes=settings.BACKLOG_FREQUENCY)
         settings.backlogSearchScheduler = searchBacklog.BacklogSearchScheduler(
             searchBacklog.BacklogSearcher(), cycleTime=update_interval, threadName="BACKLOG", run_delay=update_interval
@@ -965,7 +967,7 @@ def initialize(consoleLogging=True):
             threadName="NOTIFICATIONS",
         )
 
-        settings.__INITIALIZED__["0"] = True
+        settings.__INITIALIZED__ = True
         return True
 
 
@@ -1020,7 +1022,7 @@ def start():
 
             settings.notificationsTaskScheduler.enable = True
             settings.notificationsTaskScheduler.start()
-            settings.started["0"] = True
+            settings.started = True
 
 
 def halt():
@@ -1049,7 +1051,7 @@ def halt():
                 t.stop.set()
 
             for t in threads:
-                logger.info("Waiting for the {0} thread to exit".format(t.name))
+                logger.info(f"Waiting for the {t.name} thread to exit")
                 try:
                     t.join(10)
                 except Exception:
@@ -1063,15 +1065,15 @@ def halt():
                 except Exception:
                     pass
 
-            settings.__INITIALIZED__.clear()
-        settings.started.clear()
+            settings.__INITIALIZED__ = False
+        settings.started = False
 
 
 def sig_handler(signum=None, frame=None):
     # noinspection PyUnusedLocal
     frame_ = frame
     if not isinstance(signum, type(None)):
-        logger.info("Signal {0:d} caught, saving and exiting...".format(int(signum)))
+        logger.info(f"Signal {signum:d} caught, saving and exiting...")
         Shutdown.stop(settings.PID)
 
 
@@ -1667,7 +1669,7 @@ def launchBrowser(protocol="http", startPort=None, web_root="/"):
     if not startPort:
         startPort = settings.WEB_PORT
 
-    browserURL = "{0}://localhost:{1:d}{2}/home/".format(protocol, startPort, web_root)
+    browserURL = f"{protocol}://localhost:{startPort:d}{web_root}/home/"
 
     try:
         webbrowser.open(browserURL, 2, True)

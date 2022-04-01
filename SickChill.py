@@ -15,7 +15,7 @@ import sickchill.start
 from sickchill import logger, settings
 from sickchill.helper.common import choose_data_dir
 from sickchill.init_helpers import remove_pid_file, setup_gettext
-from sickchill.movies import MovieList
+from sickchill.movies.list import MovieList
 
 setup_gettext()
 
@@ -119,31 +119,31 @@ class SickChill(object):
             try:
                 os.makedirs(settings.DATA_DIR, 0o744)
             except os.error:
-                raise SystemExit("Unable to create data directory: {0}".format(settings.DATA_DIR))
+                raise SystemExit(f"Unable to create data directory: {settings.DATA_DIR}")
 
         # Make sure we can write to the data dir
         if not os.access(settings.DATA_DIR, os.W_OK):
-            raise SystemExit("Data directory must be writeable: {0}".format(settings.DATA_DIR))
+            raise SystemExit(f"Data directory must be writeable: {settings.DATA_DIR}")
 
         # Make sure we can write to the config file
         if not os.access(settings.CONFIG_FILE, os.W_OK):
             if os.path.isfile(settings.CONFIG_FILE):
-                raise SystemExit("Config file must be writeable: {0}".format(settings.CONFIG_FILE))
+                raise SystemExit(f"Config file must be writeable: {settings.CONFIG_FILE}")
             elif not os.access(os.path.dirname(settings.CONFIG_FILE), os.W_OK):
-                raise SystemExit("Config file root dir must be writeable: {0}".format(os.path.dirname(settings.CONFIG_FILE)))
+                raise SystemExit(f"Config file root dir must be writeable: {os.path.dirname(settings.CONFIG_FILE)}")
 
         os.chdir(settings.DATA_DIR)
 
         # Check if we need to perform a restore first
         restore_dir = os.path.join(settings.DATA_DIR, "restore")
         if os.path.exists(restore_dir):
-            success = self.restore_db(restore_dir, settings.DATA_DIR)
+            success = restore_db(restore_dir, settings.DATA_DIR)
             if self.console_logging:
-                sys.stdout.write("Restore: restoring DB and config.ini {0}!\n".format(("FAILED", "SUCCESSFUL")[success]))
+                sys.stdout.write(f"Restore: restoring DB and config.ini {('FAILED', 'SUCCESSFUL')[success]}!\n")
 
         # Load the config and publish it to the oldbeard package
         if self.console_logging and not os.path.isfile(settings.CONFIG_FILE):
-            sys.stdout.write("Unable to find {0}, all settings will be default!\n".format(settings.CONFIG_FILE))
+            sys.stdout.write(f"Unable to find {settings.CONFIG_FILE}, all settings will be default!\n")
 
         settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
 
@@ -154,9 +154,9 @@ class SickChill(object):
         settings.PID = os.getpid()
 
         # Build from the DB to start with
-        self.load_shows_from_db()
+        load_shows_from_db()
 
-        logger.info("Starting SickChill [{branch}] using '{config}'".format(branch=settings.BRANCH, config=settings.CONFIG_FILE))
+        logger.info(f"Starting SickChill [{settings.BRANCH}] using '{settings.CONFIG_FILE}'")
 
         self.clear_cache()
 
@@ -165,7 +165,7 @@ class SickChill(object):
 
         web_options = {}
         if self.forced_port:
-            logger.info("Forcing web server to port {port}".format(port=self.forced_port))
+            logger.info(f"Forcing web server to port {self.forced_port}")
             self.start_port = self.forced_port
             web_options.update(
                 {
@@ -199,60 +199,6 @@ class SickChill(object):
         while True:
             time.sleep(1)
 
-    @staticmethod
-    def load_shows_from_db():
-        """
-        Populates the showList with shows from the database
-        """
-        logger.debug("Loading initial show list")
-
-        main_db_con = db.DBConnection()
-        sql_results = main_db_con.select("SELECT indexer, indexer_id, location FROM tv_shows;")
-
-        settings.showList = []
-        for sql_show in sql_results:
-            try:
-                cur_show = TVShow(sql_show["indexer"], sql_show["indexer_id"])
-                cur_show.nextEpisode()
-                settings.showList.append(cur_show)
-            except Exception as error:
-                logger.exception("There was an error creating the show in {0}: Error {1}".format(sql_show["location"], error))
-                logger.debug(traceback.format_exc())
-
-    @staticmethod
-    def restore_db(src_dir, dst_dir):
-        """
-        Restore the Database from a backup
-
-        :param src_dir: Directory containing backup
-        :param dst_dir: Directory to restore to
-        :return:
-        """
-        try:
-            files_list = ["sickbeard.db", "sickchill.db", "config.ini", "failed.db", "cache.db"]
-            for filename in files_list:
-                src_file = os.path.join(src_dir, filename)
-                dst_file = os.path.join(dst_dir, filename)
-                bak_file = os.path.join(dst_dir, "{0}.bak-{1}".format(filename, datetime.datetime.now().strftime("%Y%m%d_%H%M%S")))
-                sickchill_db = os.path.join(dst_dir, "sickchill.db")
-                sickbeard_db = os.path.join(src_dir, "sickbeard.db")
-                if os.path.isfile(src_file):
-                    if src_file == sickbeard_db:
-                        dst_file = sickchill_db
-
-                    if os.path.isfile(dst_file):
-                        shutil.move(dst_file, bak_file)
-                    shutil.move(src_file, dst_file)
-
-            sickbeard_db = os.path.join(dst_dir, "sickbeard.db")
-            sickchill_db = os.path.join(dst_dir, "sickchill.db")
-            if os.path.isfile(sickbeard_db) and not os.path.isfile(sickchill_db):
-                shutil.move(sickbeard_db, sickchill_db)
-
-            return True
-        except Exception:
-            return False
-
     def shutdown(self, event):
         """
         Shut down SickChill
@@ -284,7 +230,7 @@ class SickChill(object):
                     popen_list += settings.MY_ARGS
                     if "--nolaunch" not in popen_list:
                         popen_list += ["--nolaunch"]
-                    logger.info("Restarting SickChill with {options}".format(options=popen_list))
+                    logger.info(f"Restarting SickChill with {popen_list}")
                     # shutdown the logger to make sure it's released the logfile BEFORE it restarts SC.
                     logger.shutdown()
                     subprocess.Popen(popen_list, cwd=os.getcwd(), universal_newlines=True)
@@ -305,7 +251,7 @@ class SickChill(object):
             def run_git(updater, cmd):
                 stdout_, stderr_, exit_status = updater._run_git(updater._git_path, cmd)
                 if not exit_status == 0:
-                    print("Failed to run command: {0} {1}".format(updater._git_path, cmd))
+                    print(f"Failed to run command: {updater._git_path} {cmd}")
                     return False
                 else:
                     return True
@@ -338,6 +284,62 @@ class SickChill(object):
 
         print("Successfully updated to latest commit. You may now run SickChill normally.")
         return True
+
+
+def restore_db(src_dir, dst_dir):
+    """
+    Restore the Database from a backup
+
+    :param src_dir: Directory containing backup
+    :param dst_dir: Directory to restore to
+    :return:
+    """
+    try:
+        files_list = ["sickbeard.db", "sickchill.db", "config.ini", "failed.db", "cache.db"]
+        for filename in files_list:
+            src_file = os.path.join(src_dir, filename)
+            dst_file = os.path.join(dst_dir, filename)
+            backup_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            bak_file = os.path.join(dst_dir, f"{filename}.bak-{backup_time}")
+            sickchill_db = os.path.join(dst_dir, "sickchill.db")
+            sickbeard_db = os.path.join(src_dir, "sickbeard.db")
+            if os.path.isfile(src_file):
+                if src_file == sickbeard_db:
+                    dst_file = sickchill_db
+
+                if os.path.isfile(dst_file):
+                    shutil.move(dst_file, bak_file)
+                shutil.move(src_file, dst_file)
+
+        sickbeard_db = os.path.join(dst_dir, "sickbeard.db")
+        sickchill_db = os.path.join(dst_dir, "sickchill.db")
+        if os.path.isfile(sickbeard_db) and not os.path.isfile(sickchill_db):
+            shutil.move(sickbeard_db, sickchill_db)
+
+        return True
+    except Exception:
+        return False
+
+
+def load_shows_from_db():
+    """
+    Populates the showList with shows from the database
+    """
+    logger.debug("Loading initial show list")
+
+    main_db_con = db.DBConnection()
+    sql_results = main_db_con.select("SELECT indexer, indexer_id, location FROM tv_shows;")
+
+    settings.showList = []
+    for sql_show in sql_results:
+        try:
+            cur_show = TVShow(sql_show["indexer"], sql_show["indexer_id"])
+            cur_show.nextEpisode()
+            settings.showList.append(cur_show)
+        except Exception as error:
+            location = sql_show["location"]
+            logger.exception(f"There was an error creating the show in {location}: Error {error}")
+            logger.debug(traceback.format_exc())
 
 
 def main():

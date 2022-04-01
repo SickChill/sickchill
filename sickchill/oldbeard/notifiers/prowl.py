@@ -112,11 +112,7 @@ class Notifier(object):
 
         title = settings.PROWL_MESSAGE_TITLE
 
-        logger.debug(
-            'PROWL: Sending notice with details: title="{0}" event="{1}", message="{2}", priority={3}, api={4}'.format(
-                title, event, message, prowl_priority, prowl_api
-            )
-        )
+        logger.debug(f'PROWL: Sending notice with details: title="{title}" event="{event}", message="{message}", priority={prowl_priority}, api={prowl_api}')
 
         http_handler = HTTPSConnection("api.prowlapp.com")
 
@@ -134,7 +130,7 @@ class Notifier(object):
             logger.info("Prowl notifications sent.")
             return True
         elif request_status == 401:
-            logger.exception("Prowl auth failed: {0}".format(response.reason))
+            logger.exception(f"Prowl auth failed: {response.reason}")
             return False
         else:
             logger.exception("Prowl notification failed.")
@@ -145,5 +141,5 @@ class Notifier(object):
         sep = " - "
         titles = ep_name.split(sep)
         titles.sort(key=len, reverse=True)
-        logger.debug("TITLES: {0}".format(titles))
+        logger.debug(f"TITLES: {titles}")
         return titles

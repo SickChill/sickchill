@@ -178,7 +178,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
                 time.sleep(common.cpu_presets[settings.CPU_PRESET])
 
             else:
-                ui.notifications.message("No downloads were found", "Couldn't find a download for <i>{0}</i>".format(self.segment.pretty_name))
+                ui.notifications.message("No downloads were found", f"Couldn't find a download for <i>{self.segment.pretty_name}</i>")
 
                 logger.info(f"Unable to find a download for: [{self.segment.pretty_name}]")
 
@@ -252,7 +252,7 @@ class MovieQueueItem(generic_queue.QueueItem):
                     # give the CPU a break
                     time.sleep(common.cpu_presets[settings.CPU_PRESET])
                 else:
-                    logger.info(_("No needed movie results found during backlog search for: [{name}]".format(name=self.movie.name)))
+                    logger.info(_(f"No needed movie results found during backlog search for: [{self.movie.name}]"))
             except Exception:
                 logger.debug(traceback.format_exc())
 

@@ -56,7 +56,7 @@ class Provider(TorrentProvider):
         # FIXME
         results = []
 
-        logger.debug("Search string: {0}".format(search_params))
+        logger.debug(_(f"Search string: {search_params}"))
 
         self._check_auth()
 

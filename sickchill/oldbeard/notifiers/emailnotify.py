@@ -41,19 +41,12 @@ class Notifier(object):
                     msg = MIMEMultipart("alternative")
                     msg.attach(
                         MIMEText(
-                            "SickChill Notification - Snatched\n"
-                            "Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n"
-                            "Powered by SickChill.".format(show[0], show[1], show[2], show[3])
+                            f"SickChill Notification - Snatched\nShow: {show[0]}\nEpisode Number: {show[1]}\nEpisode: {show[2]}\nQuality: {show[3]}\n\nPowered by SickChill."
                         )
                     )
                     msg.attach(
                         MIMEText(
-                            '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                            "<h3>SickChill Notification - Snatched</h3>"
-                            "<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>"
-                            '<h5 style="margin-top: 2.5em; padding: .7em 0; '
-                            'color: #777; border-top: #BBB solid 1px;">'
-                            "Powered by SickChill.</h5></body>".format(show[0], show[1], show[2], show[3]),
+                            f'<body style="font-family:Helvetica, Arial, sans-serif;"><h3>SickChill Notification - Snatched</h3><p>Show: <b>{show[0]}</b></p><p>Episode Number: <b>{show[1]}</b></p><p>Episode: <b>{show[2]}</b></p><p>Quality: <b>{show[3]}</b></p><h5 style="margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;">Powered by SickChill.</h5></body>',
                             "html",
                         )
                     )
@@ -74,9 +67,9 @@ class Notifier(object):
                 if self._sendmail(
                     settings.EMAIL_HOST, settings.EMAIL_PORT, settings.EMAIL_FROM, settings.EMAIL_TLS, settings.EMAIL_USER, settings.EMAIL_PASSWORD, to, msg
                 ):
-                    logger.debug('Snatch notification sent to [{0}] for "{1}"'.format(to, ep_name))
+                    logger.debug(f'Snatch notification sent to [{to}] for "{ep_name}"')
                 else:
-                    logger.warning("Snatch notification error: {0}".format(self.last_err))
+                    logger.warning(f"Snatch notification error: {self.last_err}")
 
     def notify_download(self, ep_name, title="Completed:"):
         """
@@ -95,19 +88,12 @@ class Notifier(object):
                     msg = MIMEMultipart("alternative")
                     msg.attach(
                         MIMEText(
-                            "SickChill Notification - Downloaded\n"
-                            "Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n"
-                            "Powered by SickChill.".format(show[0], show[1], show[2], show[3])
+                            f"SickChill Notification - Downloaded\nShow: {show[0]}\nEpisode Number: {show[1]}\nEpisode: {show[2]}\nQuality: {show[3]}\n\nPowered by SickChill."
                         )
                     )
                     msg.attach(
                         MIMEText(
-                            '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                            "<h3>SickChill Notification - Downloaded</h3>"
-                            "<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>"
-                            '<h5 style="margin-top: 2.5em; padding: .7em 0; '
-                            'color: #777; border-top: #BBB solid 1px;">'
-                            "Powered by SickChill.</h5></body>".format(show[0], show[1], show[2], show[3]),
+                            '<body style="font-family:Helvetica, Arial, sans-serif;"><h3>SickChill Notification - Downloaded</h3><p>Show: <b>{show[0]}</b></p><p>Episode Number: <b>{show[1]}</b></p><p>Episode: <b>{show[2]}</b></p><p>Quality: <b>{show[3]}</b></p><h5 style="margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;">Powered by SickChill.</h5></body>',
                             "html",
                         )
                     )
@@ -128,9 +114,9 @@ class Notifier(object):
                 if self._sendmail(
                     settings.EMAIL_HOST, settings.EMAIL_PORT, settings.EMAIL_FROM, settings.EMAIL_TLS, settings.EMAIL_USER, settings.EMAIL_PASSWORD, to, msg
                 ):
-                    logger.debug('Download notification sent to [{0}] for "{1}"'.format(to, ep_name))
+                    logger.debug(f'Download notification sent to [{to}] for "{ep_name}"')
                 else:
-                    logger.warning("Download notification error: {0}".format(self.last_err))
+                    logger.warning(f"Download notification error: {self.last_err}")
 
     def notify_postprocess(self, ep_name, title="Postprocessed:"):
         """
@@ -149,19 +135,12 @@ class Notifier(object):
                     msg = MIMEMultipart("alternative")
                     msg.attach(
                         MIMEText(
-                            "SickChill Notification - Postprocessed\n"
-                            "Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n"
-                            "Powered by SickChill.".format(show[0], show[1], show[2], show[3])
+                            f"SickChill Notification - Postprocessed\nShow: {show[0]}\nEpisode Number: {show[1]}\nEpisode: {show[2]}\nQuality: {show[3]}\n\nPowered by SickChill."
                         )
                     )
                     msg.attach(
                         MIMEText(
-                            '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                            "<h3>SickChill Notification - Postprocessed</h3>"
-                            "<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>"
-                            '<h5 style="margin-top: 2.5em; padding: .7em 0; '
-                            'color: #777; border-top: #BBB solid 1px;">'
-                            "Powered by SickChill.</h5></body>".format(show[0], show[1], show[2], show[3]),
+                            f'<body style="font-family:Helvetica, Arial, sans-serif;"><h3>SickChill Notification - Postprocessed</h3><p>Show: <b>{show[0]}</b></p><p>Episode Number: <b>{show[1]}</b></p><p>Episode: <b>{show[2]}</b></p><p>Quality: <b>{show[3]}</b></p><h5 style="margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;">Powered by SickChill.</h5></body>',
                             "html",
                         )
                     )
@@ -182,9 +161,9 @@ class Notifier(object):
                 if self._sendmail(
                     settings.EMAIL_HOST, settings.EMAIL_PORT, settings.EMAIL_FROM, settings.EMAIL_TLS, settings.EMAIL_USER, settings.EMAIL_PASSWORD, to, msg
                 ):
-                    logger.debug('Postprocess notification sent to [{0}] for "{1}"'.format(to, ep_name))
+                    logger.debug(f'Postprocess notification sent to [{to}] for "{ep_name}"')
                 else:
-                    logger.warning("Postprocess notification error: {0}".format(self.last_err))
+                    logger.warning(f"Postprocess notification error: {self.last_err}")
 
     def notify_subtitle_download(self, ep_name, lang, title="Downloaded subtitle:"):
         """
@@ -203,21 +182,12 @@ class Notifier(object):
                     msg = MIMEMultipart("alternative")
                     msg.attach(
                         MIMEText(
-                            "SickChill Notification - Subtitle Downloaded\n"
-                            "Show: {0}\nEpisode Number: {1}\nEpisode: {2}\n"
-                            "Language: {3}\n\n"
-                            "Powered by SickChill.".format(show[0], show[1], show[2], lang)
+                            f"SickChill Notification - Subtitle Downloaded\nShow: {show[0]}\nEpisode Number: {show[1]}\nEpisode: {show[2]}\nLanguage: {lang}\n\nPowered by SickChill."
                         )
                     )
                     msg.attach(
                         MIMEText(
-                            '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                            "<h3>SickChill Notification - Subtitle Downloaded</h3>"
-                            "<p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p></p>"
-                            "<p>Language: <b>{3}</b></p>"
-                            '<h5 style="margin-top: 2.5em; padding: .7em 0; '
-                            'color: #777; border-top: #BBB solid 1px;">'
-                            "Powered by SickChill.</h5></body>".format(show[0], show[1], show[2], lang),
+                            f'<body style="font-family:Helvetica, Arial, sans-serif;"><h3>SickChill Notification - Subtitle Downloaded</h3><p>Show: <b>{show[0]}</b></p><p>Episode Number: <b>{show[1]}</b></p><p>Episode: <b>{show[2]}</b></p></p><p>Language: <b>{lang}</b></p><h5 style="margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;">Powered by SickChill.</h5></body>',
                             "html",
                         )
                     )
@@ -236,9 +206,9 @@ class Notifier(object):
                 if self._sendmail(
                     settings.EMAIL_HOST, settings.EMAIL_PORT, settings.EMAIL_FROM, settings.EMAIL_TLS, settings.EMAIL_USER, settings.EMAIL_PASSWORD, to, msg
                 ):
-                    logger.debug('Download notification sent to [{0}] for "{1}"'.format(to, ep_name))
+                    logger.debug(f'Download notification sent to [{to}] for "{ep_name}"')
                 else:
-                    logger.warning("Download notification error: {0}".format(self.last_err))
+                    logger.warning(f"Download notification error: {self.last_err}")
 
     def notify_git_update(self, new_version="??"):
         """
@@ -252,15 +222,10 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart("alternative")
-                    msg.attach(MIMEText("SickChill Notification - Updated\n" "Commit: {}\n\n" "Powered by SickChill.".format(new_version)))
+                    msg.attach(MIMEText(f"SickChill Notification - Updated\nCommit: {new_version}\n\nPowered by SickChill."))
                     msg.attach(
                         MIMEText(
-                            '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                            "<h3>SickChill Notification - Updated</h3><br>"
-                            "<p>Commit: <b>{}</b></p><br><br>"
-                            '<footer style="margin-top: 2.5em; padding: .7em 0; '
-                            'color: #777; border-top: #BBB solid 1px;">'
-                            "Powered by SickChill.</footer></body>".format(new_version),
+                            f'<body style="font-family:Helvetica, Arial, sans-serif;"><h3>SickChill Notification - Updated</h3><br><p>Commit: <b>{new_version}</b></p><br><br><footer style="margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;">Powered by SickChill.</footer></body>',
                             "html",
                         )
                     )
@@ -271,16 +236,16 @@ class Notifier(object):
                     except Exception:
                         msg = MIMEText("SickChill updated")
 
-                msg["Subject"] = "Updated: {0}".format(new_version)
+                msg["Subject"] = f"Updated: {new_version}"
                 msg["From"] = settings.EMAIL_FROM
                 msg["To"] = ",".join(to)
                 msg["Date"] = formatdate(localtime=True)
                 if self._sendmail(
                     settings.EMAIL_HOST, settings.EMAIL_PORT, settings.EMAIL_FROM, settings.EMAIL_TLS, settings.EMAIL_USER, settings.EMAIL_PASSWORD, to, msg
                 ):
-                    logger.debug("Update notification sent to [{0}]".format(to))
+                    logger.debug(f"Update notification sent to [{to}]")
                 else:
-                    logger.warning("Update notification error: {0}".format(self.last_err))
+                    logger.warning(f"Update notification error: {self.last_err}")
 
     def notify_login(self, ipaddress=""):
         """
@@ -294,15 +259,10 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart("alternative")
-                    msg.attach(MIMEText("SickChill Notification - Remote Login\n" "New login from IP: {0}\n\n" "Powered by SickChill.".format(ipaddress)))
+                    msg.attach(MIMEText(f"SickChill Notification - Remote Login\nNew login from IP: {ipaddress}\n\n" "Powered by SickChill."))
                     msg.attach(
                         MIMEText(
-                            '<body style="font-family:Helvetica, Arial, sans-serif;">'
-                            "<h3>SickChill Notification - Remote Login</h3><br>"
-                            '<p>New login from IP: <a href="http://geomaplookup.net/?ip={0}">{0}</a>.<br><br>'
-                            '<footer style="margin-top: 2.5em; padding: .7em 0; '
-                            'color: #777; border-top: #BBB solid 1px;">'
-                            "Powered by SickChill.</footer></body>".format(ipaddress),
+                            f'<body style="font-family:Helvetica, Arial, sans-serif;"><h3>SickChill Notification - Remote Login</h3><br><p>New login from IP: <a href="http://geomaplookup.net/?ip={ipaddress}">{ipaddress}</a>.<br><br><footer style="margin-top: 2.5em; padding: .7em 0; color: #777; border-top: #BBB solid 1px;">Powered by SickChill.</footer></body>',
                             "html",
                         )
                     )
@@ -313,16 +273,16 @@ class Notifier(object):
                     except Exception:
                         msg = MIMEText("SickChill Remote Login")
 
-                msg["Subject"] = "New Login from IP: {0}".format(ipaddress)
+                msg["Subject"] = f"New Login from IP: {ipaddress}"
                 msg["From"] = settings.EMAIL_FROM
                 msg["To"] = ",".join(to)
                 msg["Date"] = formatdate(localtime=True)
                 if self._sendmail(
                     settings.EMAIL_HOST, settings.EMAIL_PORT, settings.EMAIL_FROM, settings.EMAIL_TLS, settings.EMAIL_USER, settings.EMAIL_PASSWORD, to, msg
                 ):
-                    logger.debug("Login notification sent to [{0}]".format(to))
+                    logger.debug(f"Login notification sent to [{to}]")
                 else:
-                    logger.warning("Login notification error: {0}".format(self.last_err))
+                    logger.warning(f"Login notification error: {self.last_err}")
 
     @staticmethod
     def _generate_recipients(show):
@@ -351,17 +311,17 @@ class Notifier(object):
                                     addrs.append(addr)
 
         addrs = set(addrs)
-        logger.debug("Notification recipients: {0}".format(addrs))
+        logger.debug(f"Notification recipients: {addrs}")
         return addrs
 
     def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtpDebug=False):
-        logger.debug("HOST: {0}; PORT: {1}; FROM: {2}, TLS: {3}, USER: {4}, PWD: {5}, TO: {6}".format(host, port, smtp_from, use_tls, user, pwd, to))
+        logger.debug(f"HOST: {host}; PORT: {port}; FROM: {smtp_from}, TLS: {use_tls}, USER: {user}, PWD: {pwd}, TO: {to}")
         try:
             srv = smtplib.SMTP(host, int(port))
         except Exception as e:
             logger.warning("Exception generated while sending e-mail: " + str(e))
             # logger.debug(traceback.format_exc())
-            self.last_err = "{0}".format(e)
+            self.last_err = f"{e}"
             return False
 
         if smtpDebug:
@@ -382,12 +342,12 @@ class Notifier(object):
             srv.quit()
             return True
         except Exception as e:
-            self.last_err = "{0}".format(e)
+            self.last_err = f"{e}"
             return False
 
     @staticmethod
     def _parseEp(ep_name):
         sep = " - "
         titles = ep_name.split(sep)
-        logger.debug("TITLES: {0}".format(titles))
+        logger.debug(f"TITLES: {titles}")
         return titles

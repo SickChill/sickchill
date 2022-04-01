@@ -44,7 +44,7 @@ class Provider(TorrentProvider):
             return self._check_auth()
 
         if "api-error" in parsed_json:
-            logger.debug("Incorrect authentication credentials: {0}".format(parsed_json["api-error"]))
+            logger.debug(f"Incorrect authentication credentials: {parsed_json['api-error']}")
             raise AuthException("Your authentication credentials for " + self.name + " are incorrect, check your config.")
 
         return True
@@ -63,7 +63,7 @@ class Provider(TorrentProvider):
 
         if search_params:
             params.update(search_params)
-            logger.debug("Search string: {0}".format(search_params))
+            logger.debug(_(f"Search string: {search_params}"))
 
         parsed_json = self._api_call(apikey, params)
         if not parsed_json:
@@ -101,7 +101,7 @@ class Provider(TorrentProvider):
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
-                    logger.debug("Found result: {0} ".format(title))
+                    logger.debug(f"Found result: {title} ")
                     results.append(torrent_info)
 
         # FIXME SORT RESULTS
@@ -122,7 +122,7 @@ class Provider(TorrentProvider):
             elif error == (-32002, "Call Limit Exceeded"):
                 logger.warning("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
             else:
-                logger.exception("JSON-RPC protocol error while accessing provider. Error: {0} ".format(repr(error)))
+                logger.exception(f"JSON-RPC protocol error while accessing provider. Error: {repr(error)} ")
             parsed_json = {"api-error": str(error)}
             return parsed_json
 
@@ -131,13 +131,13 @@ class Provider(TorrentProvider):
 
         except socket.error as error:
             # Note that sometimes timeouts are thrown as socket errors
-            logger.warning("Socket error while accessing provider. Error: {0} ".format(error[1]))
+            logger.warning(f"Socket error while accessing provider. Error: {error[1]} ")
 
         except Exception as error:
             errorstring = str(error)
             if errorstring.startswith("<") and errorstring.endswith(">"):
                 errorstring = errorstring[1:-1]
-            logger.warning("Unknown error while accessing provider. Error: {0} ".format(errorstring))
+            logger.warning(f"Unknown error while accessing provider. Error: {errorstring} ")
 
         return parsed_json
 
@@ -228,7 +228,7 @@ class Provider(TorrentProvider):
         else:
             # BTN uses the same format for both Anime and TV
             # Do a general name search for the episode, formatted like SXXEYY
-            search_params["name"] = "{ep}".format(ep=episode_num(ep_obj.scene_season, ep_obj.scene_episode))
+            search_params["name"] = f"{episode_num(ep_obj.scene_season, ep_obj.scene_episode)}"
 
         # search
         if ep_obj.show.indexer == 1:

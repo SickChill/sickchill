@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 
 class SickChillArgumentParser(ArgumentParser):
     def error(self, message):
-        sys.stderr.write("error: {}\n".format(message))
+        sys.stderr.write(f"error: {message}\n")
         self.print_help()
         sys.exit(2)
 
@@ -23,12 +23,11 @@ class SickChillArgumentParser(ArgumentParser):
         self.add_argument("-p", "--port", type=int, help="the port to listen on")
         self.add_argument(
             "--datadir",
-            help="full path to a folder where the database, config, cache and log files should be stored. Default: {data_dir}"
-            "{sep}".format(data_dir=self.data_dir, sep=os.sep),
+            help=f"full path to a folder where the database, config, cache and log files should be stored. Default: {self.data_dir}{os.sep}",
         )
         self.add_argument(
             "--config",
-            help="full file path to override the default configuration file. Default: {data_dir}{sep}config.ini".format(data_dir=self.data_dir, sep=os.sep),
+            help=f"full file path to override the default configuration file. Default: {self.data_dir}{os.sep}config.ini",
         )
         self.add_argument("--pidfile", help="combined with --daemon creates a pid file (full path)")
         self.add_argument("--noresize", action="store_true", help="prevent resizing of show images even if PIL is installed")

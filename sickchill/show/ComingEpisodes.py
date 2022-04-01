@@ -79,7 +79,7 @@ class ComingEpisodes(object):
             next_air_date = show_obj.nextEpisode()
             sql_l.append(
                 [
-                    "SELECT DISTINCT {0} ".format(fields_to_select) + "FROM tv_episodes e, tv_shows s "
+                    f"SELECT DISTINCT {fields_to_select} " + "FROM tv_episodes e, tv_shows s "
                     "WHERE showid = ? "
                     "AND airdate <= ? "
                     "AND airdate >= ? "

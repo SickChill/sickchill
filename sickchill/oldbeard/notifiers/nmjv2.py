@@ -43,14 +43,12 @@ class Notifier(object):
         """
         try:
 
-            url = "http://{0}:8008/file_operation?arg0=list_user_storage_file&arg1=&arg2={1}&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false".format(
-                host, instance
-            )
+            url = f"http://{host}:8008/file_operation?arg0=list_user_storage_file&arg1=&arg2={instance}&arg3=20&arg4=true&arg5=true&arg6=true&arg7=all&arg8=name_asc&arg9=false&arg10=false"
             response = requests.get(url)
             et = ElementTree.fromstring(response.text)
             time.sleep(300.0 / 1000.0)
             for node in et.iter("path"):
-                url = "http://{}:8008/metadata_database?arg0=check_database&arg1={}".format(host, node.text.replace("[=]", ""))
+                url = f"http://{host}:8008/metadata_database?arg0=check_database&arg1={node.text.replace('[=]', '')}"
                 response = requests.get(url)
                 xml_db = ElementTree.fromstring(response.text)
                 if xml_db.findtext("returnValue") == "0":
@@ -65,7 +63,7 @@ class Notifier(object):
                         return True
 
         except IOError as e:
-            logger.warning("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
+            logger.warning(f"Warning: Couldn't contact popcorn hour on host {host}: {e}")
             return False
         return False
 
@@ -83,28 +81,28 @@ class Notifier(object):
 
         # if a host is provided then attempt to open a handle to that URL
         try:
-            url = "http://{}:8008/metadata_database?arg0=update_scandir&arg1={}&arg2=&arg3=update_all".format(host, settings.NMJv2_DATABASE)
-            logger.debug("NMJ scan update command sent to host: {0}".format(host))
+            url = f"http://{host}:8008/metadata_database?arg0=update_scandir&arg1={settings.NMJv2_DATABASE}&arg2=&arg3=update_all"
+            logger.debug(f"NMJ scan update command sent to host: {host}")
             response1 = requests.get(url)
             time.sleep(300.0 / 1000.0)
 
-            url = "http://{}:8008/metadata_database?arg0=scanner_start&arg1{}&arg2=background&arg3=".format(host, settings.NMJv2_DATABASE)
-            logger.debug("Try to mount network drive via url: {0}".format(host))
+            url = f"http://{host}:8008/metadata_database?arg0=scanner_start&arg1{settings.NMJv2_DATABASE}&arg2=background&arg3="
+            logger.debug(f"Try to mount network drive via url: {host}")
             response2 = requests.get(url)
         except IOError as e:
-            logger.warning("Warning: Couldn't contact popcorn hour on host {0}: {1}".format(host, e))
+            logger.warning(f"Warning: Couldn't contact popcorn hour on host {host}: {e}")
             return False
         try:
             et = ElementTree.fromstring(response1.text)
             result1 = et.findtext("returnValue")
         except SyntaxError as e:
-            logger.exception("Unable to parse XML returned from the Popcorn Hour: update_scandir, {0}".format(e))
+            logger.exception(f"Unable to parse XML returned from the Popcorn Hour: update_scandir, {e}")
             return False
         try:
             et = ElementTree.fromstring(response2.text)
             result2 = et.findtext("returnValue")
         except SyntaxError as e:
-            logger.exception("Unable to parse XML returned from the Popcorn Hour: scanner_start, {0}".format(e))
+            logger.exception(f"Unable to parse XML returned from the Popcorn Hour: scanner_start, {e}")
             return False
 
         # if the result was a number then consider that an error
@@ -120,12 +118,12 @@ class Notifier(object):
         ]
         if int(result1) > 0:
             index = error_codes.index(result1)
-            logger.exception("Popcorn Hour returned an error: {0}".format((error_messages[index])))
+            logger.exception(f"Popcorn Hour returned an error: {(error_messages[index])}")
             return False
         else:
             if int(result2) > 0:
                 index = error_codes.index(result2)
-                logger.exception("Popcorn Hour returned an error: {0}".format((error_messages[index])))
+                logger.exception(f"Popcorn Hour returned an error: {(error_messages[index])}")
                 return False
             else:
                 logger.info("NMJv2 started background scan")

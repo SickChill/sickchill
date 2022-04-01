@@ -16,7 +16,7 @@ def getFeed(url, params=None, request_hook=None):
             elif "error" in feed.feed:
                 err_code = feed.feed["error"]["code"]
                 err_desc = feed.feed["error"]["description"]
-                logger.debug("RSS ERROR:[{0}] CODE:[{1}]".format(err_desc, err_code))
+                logger.debug(f"RSS ERROR:[{err_desc}] CODE:[{err_code}]")
         else:
             logger.debug("RSS error loading data: " + url)
 

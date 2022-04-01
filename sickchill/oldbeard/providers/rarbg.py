@@ -39,7 +39,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["api"], params=login_params, returns="json")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         self.token = response.get("token")
@@ -70,7 +70,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             if mode == "RSS":
                 search_params["sort"] = "last"
                 search_params["mode"] = "list"
@@ -94,7 +94,7 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     search_string = re.sub(r"\((\d{4})\)", r"\1", search_string).replace(" ", ".")
                     search_params["search_string"] = search_string
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 time.sleep(cpu_presets[settings.CPU_PRESET] + 2)
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")
@@ -138,7 +138,7 @@ class Provider(TorrentProvider):
                         torrent_hash = self.hash_from_magnet(download_url)
 
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                         items.append(result)

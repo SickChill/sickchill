@@ -74,9 +74,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
                     ep.status = common.SKIPPED
                 else:
                     logger.info(
-                        "New episode {0} airs today, setting to default episode status for this show: {1}".format(
-                            ep.pretty_name, common.statusStrings[ep.show.default_ep_status]
-                        )
+                        f"New episode {ep.pretty_name} airs today, setting to default episode status for this show: {common.statusStrings[ep.show.default_ep_status]}"
                     )
                     ep.status = ep.show.default_ep_status
 

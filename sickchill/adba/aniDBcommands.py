@@ -23,7 +23,7 @@ class Command(object):
         self.started: float = None
 
     def __repr__(self):
-        return "Command(%s,%s) %s\n%s\n" % (repr(self.tag), repr(self.command), repr(self.parameters), self.raw_data())
+        return f"Command({self.tag},{self.command}) {self.parameters}\n{self.raw_data()}\n"
 
     def authorize(self, mode, tag, session, callback):
         self.mode = mode
@@ -49,7 +49,7 @@ class Command(object):
         for key, value in parameters.items():
             if value is None:
                 continue
-            tmp.append("%s=%s" % (self.escape(key), self.escape(value)))
+            tmp.append(f"{self.escape(key)}={self.escape(value)}")
         return " ".join([command, "&".join(tmp)])
 
     @staticmethod

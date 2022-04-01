@@ -40,11 +40,11 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in {*search_strings[mode]}:
                 search_params["q"] = search_string
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search string: {search_string}"))
 
                 search_url = urljoin(url, "api/search")
                 parsed_json = self.get_url(search_url, params=search_params, returns="json")
@@ -82,7 +82,7 @@ class Provider(TorrentProvider):
                         size = convert_size(result.pop("size", -1)) or -1
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                         items.append(item)
                     except (AttributeError, TypeError, KeyError, ValueError):

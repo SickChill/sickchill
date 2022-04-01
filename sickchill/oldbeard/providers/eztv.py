@@ -33,7 +33,7 @@ class Provider(TorrentProvider):
         # Just doing the first page of results, because there is no search filter
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
 
             if mode != "RSS":
                 if not (self.show and self.show.imdb_id):
@@ -74,7 +74,7 @@ class Provider(TorrentProvider):
 
                     item = {"title": title, "link": link, "size": torrent_size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
                     if mode != "RSS":
-                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                        logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                     items.append(item)
                 except Exception:

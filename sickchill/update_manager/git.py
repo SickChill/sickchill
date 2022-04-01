@@ -28,7 +28,7 @@ class GitUpdateManager(UpdateManagerBase):
         return self._newest_commit_hash
 
     def get_current_version(self):
-        return self._run_git(self._git_path, "describe --abbrev=0 {0}".format(self._cur_commit_hash))[0]
+        return self._run_git(self._git_path, f"describe --abbrev=0 {self._cur_commit_hash}")[0]
 
     def get_newest_version(self):
         if self._newest_commit_hash:
@@ -105,7 +105,7 @@ class GitUpdateManager(UpdateManagerBase):
         cmd = git_path + " " + args
 
         try:
-            logger.debug("Executing {0} with your shell in {1}".format(cmd, settings.PROG_DIR))
+            logger.debug(f"Executing {cmd} with your shell in {settings.PROG_DIR}")
             p = subprocess.Popen(
                 cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, universal_newlines=True, cwd=settings.PROG_DIR
             )
@@ -115,23 +115,23 @@ class GitUpdateManager(UpdateManagerBase):
                 output = output.strip()
 
         except OSError:
-            logger.info("Command {} didn't work".format(cmd))
+            logger.info(f"Command {cmd} didn't work")
             exit_status = 1
 
         if exit_status == 0:
-            logger.debug("{} : returned successful".format(cmd))
+            logger.debug(f"{cmd} : returned successful")
 
         elif exit_status == 1:
             if "stash" in output:
                 logger.warning("Please enable 'git reset' in settings or stash your changes in local files")
             elif log_errors:
-                logger.exception("{0} returned : {1}".format(cmd, output))
+                logger.exception(f"{cmd} returned : {output}")
 
         elif log_errors:
             if exit_status in (127, 128) or "fatal:" in output:
-                logger.warning("{0} returned : ({1}) {2}".format(cmd, exit_status, output or err))
+                logger.warning(f"{cmd} returned : ({exit_status}) {output or err}")
             else:
-                logger.exception("{0} returned code {1}, treating as error : {2}".format(cmd, exit_status, output or err))
+                logger.exception(f"{cmd} returned code {exit_status}, treating as error : {output or err}")
                 exit_status = 1
 
         return output, err, exit_status
@@ -189,15 +189,15 @@ class GitUpdateManager(UpdateManagerBase):
         self._update_remote_origin()
 
         # get all new info from github
-        output, errors_, exit_status = self._run_git(self._git_path, "fetch {0} --prune".format(settings.GIT_REMOTE))
+        output, errors_, exit_status = self._run_git(self._git_path, f"fetch {settings.GIT_REMOTE} --prune")
         if exit_status != 0:
             logger.warning("Unable to contact github, can't check for update")
             return
 
         # Try both formats, but continue on fail because older git versions do not have this option
-        output, stderr_, exit_status = self._run_git(self._git_path, "branch --set-upstream-to {0}/{1}".format(settings.GIT_REMOTE, self.branch))
+        output, stderr_, exit_status = self._run_git(self._git_path, f"branch --set-upstream-to {settings.GIT_REMOTE}/{self.branch}")
         if exit_status != 0:
-            self._run_git(self._git_path, "branch -u {0}/{1}".format(settings.GIT_REMOTE, self.branch))
+            self._run_git(self._git_path, f"branch -u {settings.GIT_REMOTE}/{self.branch}")
 
         # get latest commit_hash from remote
         output, stderr_, exit_status = self._run_git(self._git_path, 'rev-parse --verify --quiet "@{upstream}"')
@@ -228,15 +228,13 @@ class GitUpdateManager(UpdateManagerBase):
                 return
 
         logger.debug(
-            "cur_commit = {0}, newest_commit = {1}, num_commits_behind = {2}, num_commits_ahead = {3}".format(
-                self._cur_commit_hash, self._newest_commit_hash, self._num_commits_behind, self._num_commits_ahead
-            )
+            f"cur_commit = {self._cur_commit_hash}, newest_commit = {self._newest_commit_hash}, num_commits_behind = {self._num_commits_behind}, num_commits_ahead = {self._num_commits_ahead}"
         )
 
     def set_newest_text(self):
         if self._num_commits_ahead:
             newest_tag = "local_branch_ahead"
-            newest_text = "Local branch is ahead of {branch}. Automatic update not possible.".format(branch=self.branch)
+            newest_text = f"Local branch is ahead of {self.branch}. Automatic update not possible."
             logger.warning(newest_text)
 
         elif self._num_commits_behind > 0:
@@ -252,9 +250,7 @@ class GitUpdateManager(UpdateManagerBase):
             s = ("", "s")[commits_behind != 1]
             update_url = self.get_update_url()
             newest_text = _(
-                'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> (you\'re {commits_behind} commit{s} behind) &mdash; <a href="{update_url}">Update Now</a>'.format(
-                    commits_behind=commits_behind, update_url=update_url, url=url, s=s
-                )
+                f'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> (you\'re {commits_behind} commit{s} behind) &mdash; <a href="{update_url}">Update Now</a>'
             )
         else:
             return
@@ -300,7 +296,7 @@ class GitUpdateManager(UpdateManagerBase):
             self._reset()
 
         if self.branch == self._find_installed_branch():
-            stdout_, stderr_, exit_status = self._run_git(self._git_path, "pull -f {0} {1}".format(settings.GIT_REMOTE, self.branch))
+            stdout_, stderr_, exit_status = self._run_git(self._git_path, f"pull -f {settings.GIT_REMOTE} {self.branch}")
         else:
             stdout_, stderr_, exit_status = self._run_git(self._git_path, "checkout -f " + self.branch)
 
@@ -336,7 +332,7 @@ class GitUpdateManager(UpdateManagerBase):
         self._update_remote_origin()
         settings.BRANCH = self._find_installed_branch()
 
-        branches, stderr_, exit_status = self._run_git(self._git_path, "ls-remote --heads {0}".format(settings.GIT_REMOTE))
+        branches, stderr_, exit_status = self._run_git(self._git_path, f"ls-remote --heads {settings.GIT_REMOTE}")
         if exit_status == 0 and branches:
             if branches:
                 return re.findall(r"refs/heads/(.*)", branches)
@@ -344,4 +340,4 @@ class GitUpdateManager(UpdateManagerBase):
 
     def _update_remote_origin(self):
         if not settings.DEVELOPER:
-            self._run_git(self._git_path, "config remote.{0}.url {1}".format(settings.GIT_REMOTE, settings.GIT_REMOTE_URL))
+            self._run_git(self._git_path, f"config remote.{settings.GIT_REMOTE}.url {settings.GIT_REMOTE_URL}")

@@ -48,7 +48,7 @@ class Provider(TorrentProvider):
 
             response = self.get_url(self.urls["login"], post_data=login_params, returns="response")
             if not response or response.status_code != 200:
-                logger.warning("Unable to connect to provider")
+                logger.warning(_("Unable to connect to provider"))
                 return False
 
             if dict_from_cookiejar(self.session.cookies).get("uid") in response.text:
@@ -64,11 +64,11 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
             for search_string in search_params[mode]:
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_(f"Search String: {search_string}"))
 
                 query = {"sec": "jax", "cata": "yes", "search": search_string}
                 query.update({"c" + str(i): 1 for i in self.categories})
@@ -129,7 +129,7 @@ class Provider(TorrentProvider):
 
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
 
                         items.append(item)
 

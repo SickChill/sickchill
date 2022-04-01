@@ -41,7 +41,7 @@ class MoviesHandler(WebRoot):
             adult=adult,
         )
 
-    def add(self):
+    def add(self, *args, **kwargs):
         movie = None
         imdb_id = self.get_body_argument("imdb", None)
         if imdb_id:
@@ -55,7 +55,7 @@ class MoviesHandler(WebRoot):
 
         return self.redirect(self.reverse_url("movies-details", "details", movie.slug))
 
-    def remove(self):
+    def remove(self, *args, **kwargs):
         pk = self.path_kwargs.get("pk")
         if pk is not None:
             if not settings.movie_list.query.get(pk):
@@ -66,7 +66,7 @@ class MoviesHandler(WebRoot):
         t = PageTemplate(rh=self, filename="movies/remove.mako")
         return t.render(title=_("Movies"), header=_("Movie Remove"), topmenu="movies", movies=settings.movie_list, controller="movies", action="remove")
 
-    def details(self):
+    def details(self, *args, **kwargs):
         movie = settings.movie_list.by_slug(self.path_kwargs.get("slug"))
         if not movie:
             return self._genericMessage(_("Error"), _("Movie not found"))

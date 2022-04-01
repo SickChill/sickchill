@@ -80,7 +80,7 @@ class UpdateManager(object):
                 ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
                 return False
         except Exception as error:
-            logger.exception("Update: Config backup failed. Error: {}".format(error))
+            logger.exception(f"Update: Config backup failed. Error: {error}")
             ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
             return False
 
@@ -142,10 +142,10 @@ class UpdateManager(object):
                 if result in message:
                     logger.log(message[result]["type"], message[result]["text"])  # unpack the result message into a log entry
                 else:
-                    logger.warning("We can't proceed with the update. Unable to check remote DB version. Error: {0}".format(result))
+                    logger.warning(f"We can't proceed with the update. Unable to check remote DB version. Error: {result}")
                 return result in ["equal"]  # add future True results to the list
             except Exception as error:
-                logger.warning("We can't proceed with the update. Unable to compare DB version. Error: {0}".format(repr(error)))
+                logger.warning(f"We can't proceed with the update. Unable to compare DB version. Error: {repr(error)}")
                 return False
 
         def postprocessor_safe():

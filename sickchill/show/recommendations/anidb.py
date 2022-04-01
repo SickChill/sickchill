@@ -24,7 +24,7 @@
 #                      rating=str(show.ratings['temporary']['rating']), votes=str(try_int(show.ratings['temporary']['count'], 0)), image_href=show.url)
 #
 #                 # Check cache or get and save image
-#                 recommended_show.cache_image("http://img7.anidb.net/pics/anime/{0}".format(show.image_path))
+#                 recommended_show.cache_image(f"http://img7.anidb.net/pics/anime/{show.image_path}")
 #
 #                 result.append(recommended_show)
 #             except Exception:

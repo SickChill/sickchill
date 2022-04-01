@@ -28,17 +28,7 @@ class TorrentRssProvider(TorrentProvider):
         self.titleTAG = titleTAG
 
     def configStr(self):
-        return "{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}".format(
-            self.name or "",
-            self.url or "",
-            self.cookies or "",
-            self.titleTAG or "",
-            int(self.enabled),
-            self.search_mode or "",
-            int(self.search_fallback),
-            int(self.enable_daily),
-            int(self.enable_backlog),
-        )
+        return f"{self.name or ''}|{self.url or ''}|{self.cookies or ''}|{self.titleTAG or ''}|{int(self.enabled)}|{self.search_mode or ''}|{int(self.search_fallback)}|{int(self.enable_daily)}|{int(self.enable_backlog)}"
 
     @staticmethod
     def providers_list(data):
@@ -102,7 +92,7 @@ class TorrentRssProvider(TorrentProvider):
                 name = values[0]
                 url = values[1]
         except ValueError:
-            logger.exception("Skipping RSS Torrent provider string: {0}, incorrect format".format(config))
+            logger.exception(f"Skipping RSS Torrent provider string: {config}, incorrect format")
             return None
 
         new_provider = TorrentRssProvider(
@@ -130,7 +120,7 @@ class TorrentRssProvider(TorrentProvider):
             # Access to a protected member of a client class
             data = self.cache._get_rss_data()["entries"]
             if not data:
-                return False, "No items found in the RSS feed {0}".format(self.url)
+                return False, f"No items found in the RSS feed {self.url}"
 
             title, url = self._get_title_and_url(data[0])
 
@@ -148,12 +138,12 @@ class TorrentRssProvider(TorrentProvider):
                     bencodepy.decode(torrent_file)
                 except (bencodepy.exceptions.BencodeDecodeError, Exception) as error:
                     self.dumpHTML(torrent_file)
-                    return False, "Torrent link is not a valid torrent file: {0}".format(error)
+                    return False, f"Torrent link is not a valid torrent file: {error}"
 
             return True, "RSS feed Parsed correctly"
 
         except Exception as error:
-            return False, "Error when trying to load RSS: {0}".format(str(error))
+            return False, f"Error when trying to load RSS: {str(error)}"
 
     @staticmethod
     def dumpHTML(data):
@@ -165,10 +155,10 @@ class TorrentRssProvider(TorrentProvider):
             fileOut.close()
             helpers.chmodAsParent(dumpName)
         except IOError as error:
-            logger.exception("Unable to save the file: {0}".format(str(error)))
+            logger.exception(f"Unable to save the file: {str(error)}")
             return False
 
-        logger.info("Saved custom_torrent html dump {0} ".format(dumpName))
+        logger.info(f"Saved custom_torrent html dump {dumpName} ")
         return True
 
 

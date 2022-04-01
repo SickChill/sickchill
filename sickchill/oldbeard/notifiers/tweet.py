@@ -65,7 +65,7 @@ class Notifier(object):
             return oauth_session.authorization_url(self.AUTHORIZATION_URL)
 
     def _get_credentials(self, key):
-        logger.info("Type of key is {}".format(type(key)))
+        logger.info(f"Type of key is {type(key)}")
         """
         Step 2 of authorization - poll server for access token.
 
@@ -83,11 +83,11 @@ class Notifier(object):
         try:
             access_token = oauth_session.fetch_access_token(self.ACCESS_TOKEN_URL, verifier=str(key))
         except Exception as err:
-            logger.exception("The request for a token with did not succeed: {}".format(err))
+            logger.exception(f"The request for a token with did not succeed: {err}")
             return False
 
-        logger.debug("Your Twitter Access Token key: {0}".format(access_token["oauth_token"]))
-        logger.debug("Access Token secret: {0}".format(access_token["oauth_token_secret"]))
+        logger.debug(f"Your Twitter Access Token key: {access_token['oauth_token']}")
+        logger.debug(f"Access Token secret: {access_token['oauth_token_secret']}")
         settings.TWITTER_USERNAME = access_token["oauth_token"]
         settings.TWITTER_PASSWORD = access_token["oauth_token_secret"]
         return True
@@ -106,11 +106,11 @@ class Notifier(object):
             access_token_secret=settings.TWITTER_PASSWORD,
         )
 
-        logger.debug("Sending tweet: {}".format(message))
+        logger.debug(f"Sending tweet: {message}")
         try:
             api.PostUpdate(message[:139])
         except Exception as e:
-            logger.exception("Error Sending Tweet: {}".format(str(e)))
+            logger.exception(f"Error Sending Tweet: {str(e)}")
             return False
 
         return True
@@ -131,11 +131,11 @@ class Notifier(object):
             access_token_secret=settings.TWITTER_PASSWORD,
         )
 
-        logger.debug("Sending DM @{0}: {1}".format(dmdest, message))
+        logger.debug(f"Sending DM @{dmdest}: {message}")
         try:
             api.PostDirectMessage(message[:139], screen_name=dmdest)
         except Exception as e:
-            logger.exception("Error Sending Tweet (DM): {}".format(str(e)))
+            logger.exception(f"Error Sending Tweet (DM): {str(e)}")
             return False
 
         return True

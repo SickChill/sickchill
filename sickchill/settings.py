@@ -10,7 +10,7 @@ from sickchill.oldbeard.numdict import NumDict
 from .init_helpers import setup_gettext, sickchill_dir
 
 if TYPE_CHECKING:
-    from .movies import MovieList
+    from .movies.list import MovieList
 
 setup_gettext()
 
@@ -46,7 +46,7 @@ dynamic_strings = (
     _("Science-Fiction"),
 )
 
-__INITIALIZED__ = {}
+__INITIALIZED__ = False
 ADBA_CONNECTION = None
 ADD_SHOWS_WITH_YEAR = False
 ADD_SHOWS_WO_DIR = False
@@ -102,6 +102,7 @@ CUSTOM_CSS = None
 CUSTOM_CSS_PATH = None
 DAEMON = None
 DAILYSEARCH_FREQUENCY = 40
+MOVIESEARCH_FREQUENCY = 2
 dailySearchScheduler = None
 DATA_DIR = ""
 DATE_PRESET = None
@@ -400,7 +401,7 @@ SLACK_WEBHOOK = None
 SOCKET_TIMEOUT = None
 SORT_ARTICLE = False
 SSL_VERIFY = True
-started = {}
+started = False
 STATUS_DEFAULT = None
 STATUS_DEFAULT_AFTER = None
 SUBSCENTER_PASS = None
@@ -561,6 +562,9 @@ WEB_USERNAME = None
 WINDOWS_SHARES = {}
 
 movie_list: "MovieList" = None
+movie_update_scheduler = None
+movie_search_scheduler = None
+movie_processor_scheduler = None
 
 
 def get_backlog_cycle_time():

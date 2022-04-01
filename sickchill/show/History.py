@@ -37,11 +37,13 @@ class History(object, metaclass=Singleton):
 
         for item in toRemove:
             query = query + " OR " if query != "" else ""
-            query = query + "(date IN ({0}) AND showid = {1} " "AND season = {2} AND episode = {3})".format(
-                ",".join(item["dates"]), item["show_id"], item["season"], item["episode"]
-            )
+            showid = item["show_id"]
+            season = item["season"]
+            episode = item["episode"]
+            dates = ",".join(["?"] * len(item["dates"]))
+            query = f"{query} (date IN ({dates}) AND showid = {showid} AND season = {season} AND episode = {episode})"
 
-        self.db.action("DELETE FROM history WHERE " + query)
+        self.db.action(f"DELETE FROM history WHERE {query}", item["dates"])
 
     def clear(self):
         """

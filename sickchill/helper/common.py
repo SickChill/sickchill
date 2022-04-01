@@ -1,4 +1,5 @@
 import re
+from collections import UserString
 from fnmatch import fnmatch
 from pathlib import Path
 
@@ -137,9 +138,25 @@ def http_code_description(http_code):
     description = HTTP_STATUS_CODES.get(try_int(http_code))
 
     if isinstance(description, list):
-        return "({0})".format(", ".join(description))
+        return f"({', '.join(description)})"
 
     return description
+
+
+class NoZfillEmpty(UserString):
+    def __init__(self, data, expected_type=str):
+        self.type = expected_type
+        self.original_data = data
+        if data is None or data is False:
+            data = ""
+        return super().__init__(data)
+
+    def __format__(self, format_spec):
+        if self.original_data in (None, "", False):
+            return self.data
+
+        if self.isnumeric() and self.type in (float, int):
+            return self.type(self.data).__format__(format_spec)
 
 
 def is_sync_file(filename):
@@ -196,7 +213,7 @@ def pretty_file_size(size, use_decimal=False, **kwargs):
     block = 1024.0 if not use_decimal else 1000.0
     for unit in units:
         if remaining_size < block:
-            return "{0:3.2f} {1}".format(remaining_size, unit)
+            return f"{remaining_size:3.2f} {unit}"
         remaining_size /= block
     return size
 
@@ -284,7 +301,7 @@ def replace_extension(filename, new_extension):
     if isinstance(filename, str) and "." in filename:
         basename = filename.rpartition(".")[0]
         if basename:
-            return "{0}.{1}".format(basename, new_extension)
+            return f"{basename}.{new_extension}"
 
     return filename
 
@@ -338,10 +355,10 @@ def episode_num(season=None, episode=None, **kwargs):
 
     if numbering == "standard":
         if season is not None and episode:
-            return "S{0:0>2}E{1:02}".format(season, episode)
+            return f"S{season:0>2}E{episode:02}"
     elif numbering == "absolute":
         if not (season and episode) and (season or episode):
-            return "{0:0>3}".format(season or episode)
+            return f"{season or episode:0>3}"
 
 
 def setup_github():
@@ -363,36 +380,34 @@ def setup_github():
             settings.gh.get_organization(settings.GIT_ORG)
     except BadCredentialsException as error:
         settings.gh = None
-        sickchill.logger.warning(_("Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}").format(error))
+        sickchill.logger.warning(_(f"Unable to setup GitHub properly with your github token. Please check your credentials. Error: {error}"))
     except TwoFactorException as error:
         settings.gh = None
-        sickchill.logger.warning(
-            _("Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}").format(error)
-        )
+        sickchill.logger.warning(_(f"Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {error}"))
     except RateLimitExceededException as error:
         settings.gh = None
         if settings.GIT_TOKEN:
             sickchill.logger.warning(
-                _("Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}").format(error)
+                _(f"Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {error}")
             )
         else:
             sickchill.logger.warning(
                 _(
-                    "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}"
-                ).format(error)
+                    f"Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {error}"
+                )
             )
     except UnknownObjectException as error:
         settings.gh = None
-        sickchill.logger.warning(_("Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}").format(error))
+        sickchill.logger.warning(_(f"Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {error}"))
     except BadUserAgentException as error:
         settings.gh = None
-        sickchill.logger.warning(_("Unable to setup GitHub properly, GitHub doesn't like the user-agent. Error: {0}").format(error))
+        sickchill.logger.warning(_(f"Unable to setup GitHub properly, GitHub doesn't like the user-agent. Error: {error}"))
     except BadAttributeException as error:
         settings.gh = None
-        sickchill.logger.error(_("Unable to setup GitHub properly, There might be an error with the library. Error: {0}").format(error))
+        sickchill.logger.error(_(f"Unable to setup GitHub properly, There might be an error with the library. Error: {error}"))
     except (GithubException, Exception) as error:
         settings.gh = None
-        sickchill.logger.error(_("Unable to setup GitHub properly. GitHub will not be available. Error: {0}").format(error))
+        sickchill.logger.error(_(f"Unable to setup GitHub properly. GitHub will not be available. Error: {error}"))
 
 
 def choose_data_dir(program_dir):

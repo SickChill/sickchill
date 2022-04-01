@@ -477,7 +477,7 @@ def xem_refresh(indexer_id, indexer, force=False):
         refresh = True
 
     if refresh or force:
-        logger.debug("Looking up XEM scene mapping for show {0} on {1}".format(indexer_id, sickchill.indexer.name(indexer)))
+        logger.debug(f"Looking up XEM scene mapping for show {indexer_id} on {sickchill.indexer.name(indexer)}")
 
         # mark refreshed
         main_db_con.upsert(
@@ -486,7 +486,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         try:
             # XEM MAP URL
-            url = "http://thexem.info/map/havemap?origin={0}".format(sickchill.indexer.slug(indexer))
+            url = f"http://thexem.info/map/havemap?origin={sickchill.indexer.slug(indexer)}"
             parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
             if (
                 not parsed_json
@@ -498,11 +498,11 @@ def xem_refresh(indexer_id, indexer, force=False):
                 return
 
             # XEM API URL
-            url = "http://thexem.info/map/all?id={0}&origin={1}&destination=scene".format(indexer_id, sickchill.indexer.slug(indexer))
+            url = f"http://thexem.info/map/all?id={indexer_id}&origin={sickchill.indexer.slug(indexer)}&destination=scene"
 
             parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
             if not parsed_json or "result" not in parsed_json or "success" not in parsed_json["result"]:
-                logger.info('No XEM data for show "{0} on {1}"'.format(indexer_id, sickchill.indexer.name(indexer)))
+                logger.info(f'No XEM data for show "{indexer_id} on {sickchill.indexer.name(indexer)}"')
                 return
 
             cl = []
@@ -552,7 +552,7 @@ def xem_refresh(indexer_id, indexer, force=False):
                 main_db_con.mass_action(cl)
 
         except Exception as e:
-            logger.warning("Exception while refreshing XEM data for show {} on {}: {}".format(indexer_id, sickchill.indexer.name(indexer), str(e)))
+            logger.warning(f"Exception while refreshing XEM data for show {indexer_id} on {sickchill.indexer.name(indexer)}: {str(e)}")
             logger.debug(traceback.format_exc())
 
 
@@ -584,7 +584,7 @@ def fix_xem_numbering(indexer_id, indexer):
     update_scene_episode = False
     update_scene_absolute_number = False
 
-    logger.debug("Fixing any XEM scene mapping issues for show {0} on {1}".format(indexer_id, sickchill.indexer.name(indexer)))
+    logger.debug(f"Fixing any XEM scene mapping issues for show {indexer_id} on {sickchill.indexer.name(indexer)}")
 
     cl = []
     for row in rows:

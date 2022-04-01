@@ -123,7 +123,7 @@ class BSPlayerProvider(Provider):
                 "User-Agent": "BSPlayer/2.x (1022.12360)",
                 "Content-Type": "text/xml; charset=utf-8",
                 "Connection": "close",
-                "SOAPAction": '"http://api.bsplayer-subtitles.com/v1.php#{func_name}"'.format(func_name=func_name),
+                "SOAPAction": f'"http://api.bsplayer-subtitles.com/v1.php#{func_name}"',
             }
         )
         data = (

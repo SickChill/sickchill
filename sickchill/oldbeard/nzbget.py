@@ -27,13 +27,11 @@ def sendNZB(nzb, proper=False):
     if nzb.show.is_anime:
         category = settings.NZBGET_CATEGORY_ANIME
 
-    url = "http{0}://{1}:{2}@{3}/xmlrpc".format(
-        "s" if settings.NZBGET_USE_HTTPS else "", settings.NZBGET_USERNAME, settings.NZBGET_PASSWORD, settings.NZBGET_HOST
-    )
+    url = f"http{'s' if settings.NZBGET_USE_HTTPS else ''}://{settings.NZBGET_USERNAME}:{settings.NZBGET_PASSWORD}@{settings.NZBGET_HOST}/xmlrpc"
 
     nzbGetRPC = xmlrpc.client.ServerProxy(url, context=make_context(settings.SSL_VERIFY))
     try:
-        if nzbGetRPC.writelog("INFO", "SickChill connected to drop off {0} any moment now.".format(nzb.name + ".nzb")):
+        if nzbGetRPC.writelog("INFO", f"SickChill connected to drop off {nzb.name + '.nzb'} any moment now."):
             logger.debug("Successfully connected to NZBget")
         else:
             logger.warning("Successfully connected to NZBget, but unable to send a message")
@@ -124,8 +122,8 @@ def sendNZB(nzb, proper=False):
             logger.debug("NZB sent to NZBget successfully")
             return True
         else:
-            logger.warning("NZBget could not add {0} to the queue".format(nzb.name + ".nzb"))
+            logger.warning(f"NZBget could not add {nzb.name + '.nzb'} to the queue")
             return False
     except Exception:
-        logger.warning("Connect Error to NZBget: could not add {0} to the queue".format(nzb.name + ".nzb"))
+        logger.warning(f"Connect Error to NZBget: could not add {nzb.name + '.nzb'} to the queue")
         return False

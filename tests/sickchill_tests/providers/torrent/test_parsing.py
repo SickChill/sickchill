@@ -69,7 +69,7 @@ class BaseParser(type):
             settings.QUALITY_ALLOW_HEVC = True
             self.provider.username = self.username
             self.provider.password = self.password
-            settings.movie_list = movies.MovieList()
+            settings.movie_list = movies.list.MovieList()
 
         @property
         def username(self):

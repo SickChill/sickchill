@@ -68,7 +68,7 @@ class traktTrending(object):
                 black_list = False
 
         except traktException as e:
-            logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
+            logger.warning(f"Could not connect to Trakt service: {str(e)}")
 
         for trending_show in trending_shows:
             # get indexer id

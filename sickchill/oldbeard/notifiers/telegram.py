@@ -45,7 +45,7 @@ class Notifier(object):
 
         :returns: True if the message succeeded, False otherwise
         """
-        logger.debug("Telegram in use with API KEY: {0}".format(api_key))
+        logger.debug(f"Telegram in use with API KEY: {api_key}")
         params = {"chat_id": id or settings.TELEGRAM_ID, "text": f"{title} : {msg}"}
         response = getURL(f"https://api.telegram.org/bot{api_key or settings.TELEGRAM_APIKEY}/sendMessage", params=params, session=self.session, returns="json")
         message = ("Telegram message sent successfully.", "Sending Telegram message failed, check the log")[response is None]
@@ -81,7 +81,7 @@ class Notifier(object):
         :param title: The title of the notification to send
         """
         if settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD:
-            self._notify_telegram(title, "{0}: {1}".format(ep_name, lang))
+            self._notify_telegram(title, f"{ep_name}: {lang}")
 
     def notify_git_update(self, new_version="??"):
         """
@@ -122,6 +122,6 @@ class Notifier(object):
             logger.debug("Notification for Telegram not enabled, skipping this notification")
             return False, "Disabled"
 
-        logger.debug("Sending a Telegram message for {0}".format(message))
+        logger.debug(f"Sending a Telegram message for {message}")
 
         return self._send_telegram_msg(title, message, id, api_key)

@@ -51,12 +51,12 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_(f"Search Mode: {mode}"))
 
             for search_string in {*search_strings[mode]}:
 
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_(f"Search string: {search_string}"))
 
                     search_params["latest"] = "false"
                     search_params["search"] = search_string
@@ -75,9 +75,7 @@ class Provider(TorrentProvider):
                         leechers = torrent["leechers"]
                         if seeders < self.minseed or leechers < self.minleech:
                             logger.info(
-                                "Discarded {0} because with {1}/{2} seeders/leechers does not meet the requirement of {3}/{4} seeders/leechers".format(
-                                    title, seeders, leechers, self.minseed, self.minleech
-                                )
+                                f"Discarded {title} because with {seeders}/{leechers} seeders/leechers does not meet the requirement of {self.minseed}/{self.minleech} seeders/leechers"
                             )
                             continue
 
@@ -88,7 +86,7 @@ class Provider(TorrentProvider):
                         size = torrent["size"]
                         size = convert_size(size, units=units) or -1
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
-                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                        logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
                         items.append(item)
 
                 if "error" in result:

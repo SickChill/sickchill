@@ -10,7 +10,7 @@ login_error = ""
 class LoginHandler(BaseHandler):
     def get(self, next_=None):
         next_ = self.get_query_argument("next", next_)
-        if self.get_current_user():
+        if self.get_current_user:
             self.redirect(next_ or "/" + settings.DEFAULT_PAGE + "/")
         else:
             t = PageTemplate(rh=self, filename="login.mako")

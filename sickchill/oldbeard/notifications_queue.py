@@ -107,9 +107,9 @@ class DiscordTask(generic_queue.QueueItem):
 
         # noinspection PyBroadException
         try:
-            logger.debug("Task for {} started".format(self.action_id))
+            logger.debug(f"Task for {self.action_id} started")
             self.last_result = self._send_discord()
-            logger.debug("Task for {} completed".format(self.action_id))
+            logger.debug(f"Task for {self.action_id} completed")
 
             # give the CPU a break
             time.sleep(common.cpu_presets[settings.CPU_PRESET])
@@ -147,7 +147,7 @@ class DiscordTask(generic_queue.QueueItem):
             if error.response.status_code != 429 or int(error.response.headers.get("X-RateLimit-Remaining")) != 0:
                 raise error
 
-            logger.info("Discord rate limiting, retrying after {} seconds".format(error.response.headers.get("X-RateLimit-Reset-After")))
+            logger.info(f"Discord rate limiting, retrying after {error.response.headers.get('X-RateLimit-Reset-After')} seconds")
             time.sleep(int(error.response.headers.get("X-RateLimit-Reset-After")) + 1)
             r = requests.post(
                 discord_webhook, data=json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, tts=discord_tts)), headers=headers

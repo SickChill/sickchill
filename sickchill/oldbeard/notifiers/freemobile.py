@@ -66,8 +66,8 @@ class Notifier(object):
                     message = "Server error. Please retry in few moment."
                     logger.exception(message)
                     return False, message
-        except Exception as e:
-            message = "Error while sending SMS: {0}".format(e)
+        except Exception as error:
+            message = f"Error while sending SMS: {error}"
             logger.exception(message)
             return False, message
 

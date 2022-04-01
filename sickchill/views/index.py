@@ -61,26 +61,24 @@ class BaseHandler(RequestHandler):
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
-            trace_info = "".join(["{0}<br>".format(line) for line in traceback.format_exception(*exc_info)])
-            request_info = "".join(["<strong>{0}</strong>: {1}<br>".format(k, self.request.__dict__[k]) for k in self.request.__dict__])
+            trace_info = "".join([f"{line}<br>" for line in traceback.format_exception(*exc_info)])
+            request_info = "".join([f"<strong>{k}</strong>: {self.request.__dict__[k]}<br>" for k in self.request.__dict__])
             error = exc_info[1]
 
             self.set_header("Content-Type", "text/html")
             return self.finish(
-                """<html>
-                                 <title>{0}</title>
+                f"""<html>
+                                 <title>{error}</title>
                                  <body>
                                     <h2>Error</h2>
-                                    <p>{1}</p>
+                                    <p>{error}</p>
                                     <h2>Traceback</h2>
-                                    <p>{2}</p>
+                                    <p>{trace_info}</p>
                                     <h2>Request Info</h2>
-                                    <p>{3}</p>
-                                    <button onclick="window.location='{4}/errorlogs/';">View Log(Errors)</button>
+                                    <p>{request_info}</p>
+                                    <button onclick="window.location='{settings.WEB_ROOT}/errorlogs/';">View Log(Errors)</button>
                                  </body>
-                               </html>""".format(
-                    error, error, trace_info, request_info, settings.WEB_ROOT
-                )
+                               </html>"""
             )
 
     def redirect(self, url, permanent=False, status=None):
@@ -106,6 +104,7 @@ class BaseHandler(RequestHandler):
         self.set_status(status)
         self.set_header("Location", urljoin(utf8(self.request.uri), utf8(url)))
 
+    @property
     def get_current_user(self):
         if isinstance(self, UI):
             return True
@@ -114,7 +113,7 @@ class BaseHandler(RequestHandler):
             # Authenticate using jwt for CF Access
             # NOTE: Setting a username and password is STILL required to protect poorly configured tunnels or firewalls
             if settings.CF_AUTH_DOMAIN and settings.CF_POLICY_AUD and has_cryptography:
-                CERTS_URL = "{}/cdn-cgi/access/certs".format(settings.CF_AUTH_DOMAIN)
+                CERTS_URL = f"{settings.CF_AUTH_DOMAIN}/cdn-cgi/access/certs"
                 if "CF_Authorization" in self.request.cookies:
                     jwk_set = helpers.getURL(CERTS_URL, returns="json")
                     for key_dict in jwk_set["keys"]:
@@ -163,7 +162,7 @@ class WebHandler(BaseHandler):
             self.finish(results)
 
         except AttributeError:
-            logger.debug('Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()))
+            logger.debug(f'Failed doing webui request "{route}": {traceback.format_exc()}')
             raise HTTPError(404)
 
     @run_on_executor
@@ -374,8 +373,8 @@ class UI(WebRoot):
         if message:
             helpers.add_site_message(message, tag=tag, level=level)
         else:
-            if settings.BRANCH and self.get_current_user() and settings.BRANCH not in ("master", "pip") and not settings.DEVELOPER:
-                message = _("You're using the {branch} branch. Please use 'master' unless specifically asked".format(branch=settings.BRANCH))
+            if settings.BRANCH and self.get_current_user and settings.BRANCH not in ("master", "pip") and not settings.DEVELOPER:
+                message = _(f"You're using the {settings.BRANCH} branch. Please use 'master' unless specifically asked")
                 helpers.add_site_message(message, tag="not_using_master_branch", level="danger")
 
         return settings.SITE_MESSAGES

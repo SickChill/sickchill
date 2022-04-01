@@ -379,11 +379,11 @@ class ApiCall(ApiHandler):
         elif arg_type == "ignore":
             pass
         else:
-            logger.exception('API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)))
+            logger.exception(f'API :: Invalid param type: "{arg_type}" can not be checked. Ignoring it.')
 
         if error:
             # this is a real ApiError !!
-            raise ApiError('param "{0}" with given value "{1}" could not be parsed into "{2}"'.format(str(name), str(value), str(arg_type)))
+            raise ApiError(f'param "{name}" with given value "{value}" could not be parsed into "{arg_type}"')
 
         return value
 
@@ -839,15 +839,15 @@ class AbstractStartScheduler(ApiCall):
     def run(self):
         error_str = "Start scheduler failed"
         if not isinstance(self.scheduler, sickchill.oldbeard.scheduler.Scheduler):
-            error_str = "{0}: {1} is not initialized as a static variable".format(error_str, self.scheduler_class_str)
+            error_str = f"{error_str}: {self.scheduler_class_str} is not initialized as a static variable"
             return _responds(RESULT_FAILURE, msg=error_str)
 
         if not self.scheduler.enable:
-            error_str = "{0}: {1} is not enabled".format(error_str, self.scheduler_class_str)
+            error_str = f"{error_str}: {self.scheduler_class_str} is not enabled"
             return _responds(RESULT_FAILURE, msg=error_str)
 
         if not hasattr(self.scheduler.action, "amActive"):
-            error_str = "{0}: {1} is not a valid action".format(error_str, self.scheduler.action)
+            error_str = f"{error_str}: {self.scheduler.action} is not a valid action"
             return _responds(RESULT_FAILURE, msg=error_str)
 
         time_remain = self.scheduler.timeLeft()
@@ -855,13 +855,11 @@ class AbstractStartScheduler(ApiCall):
         if self.scheduler.forceRun():
             cycle_time = self.scheduler.cycleTime
             next_run = datetime.datetime.now() + cycle_time
-            result_str = "Force run successful: {0} search underway. Time Remaining: {1}. " "Next Run: {2}".format(
-                self.scheduler_class_str, time_remain, next_run
-            )
+            result_str = f"Force run successful: {self.scheduler_class_str} search underway. Time Remaining: {time_remain}. Next Run: {next_run}"
             return _responds(RESULT_SUCCESS, msg=result_str)
         else:
             # Scheduler is currently active
-            error_str = "{}: {} search underway. Time remaining: {}.".format(error_str, self.scheduler_class_str, time_remain)
+            error_str = f"{error_str}: {self.scheduler_class_str} search underway. Time remaining: {time_remain}."
             return _responds(RESULT_FAILURE, msg=error_str)
 
 
@@ -1057,7 +1055,7 @@ class CMDSubtitleSearch(ApiCall):
 
         if new_subtitles:
             new_languages = [sickchill.oldbeard.subtitles.name_from_code(code) for code in new_subtitles]
-            status = "New subtitles downloaded: {0}".format(", ".join(new_languages))
+            status = f"New subtitles downloaded: {', '.join(new_languages)}"
             response = _responds(RESULT_SUCCESS, msg="New subtitles found")
         else:
             status = "No subtitles downloaded"
@@ -1326,7 +1324,7 @@ class CMDLogsClear(ApiCall):
 
             classes.WarningViewer.clear()
         else:
-            return _responds(RESULT_FAILURE, msg="Unknown log level: {0}".format(self.level))
+            return _responds(RESULT_FAILURE, msg=f"Unknown log level: {self.level}")
 
         return _responds(RESULT_SUCCESS, msg=msg)
 
@@ -1401,7 +1399,7 @@ class CMDPostProcess(ApiCall):
         if not self.return_data:
             data = ""
 
-        return _responds(RESULT_SUCCESS, data=data, msg="Started post-process for {0}".format(self.release_name or self.path))
+        return _responds(RESULT_SUCCESS, data=data, msg=f"Started post-process for {self.release_name or self.path}")
 
 
 # noinspection PyAbstractClass
@@ -1521,7 +1519,7 @@ class CMDSickChillBackup(ApiCall):
             if not os.path.isdir(self.location):
                 os.mkdir(self.location)
 
-        logger.info(_("API: sc.backup backing up to {location}").format(location=self.location))
+        logger.info(_(f"API: sc.backup backing up to {self.location}"))
         result = update_manager._backup(self.location)
         if result:
             logger.info(_("API: sc.backup successful!"))
@@ -2257,7 +2255,7 @@ class CMDShowDelete(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg="{0} has been queued to be deleted".format(show.name))
+        return _responds(RESULT_SUCCESS, msg=f"{show.name} has been queued to be deleted")
 
 
 # noinspection PyAbstractClass
@@ -2420,7 +2418,7 @@ class CMDShowPause(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg="{0} has been {1}".format(show.name, ("resumed", "paused")[show.paused]))
+        return _responds(RESULT_SUCCESS, msg=f"{show.name} has been {('resumed', 'paused')[show.paused]}")
 
 
 # noinspection PyAbstractClass
@@ -2446,7 +2444,7 @@ class CMDShowRefresh(ApiCall):
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
-        return _responds(RESULT_SUCCESS, msg="{0} has queued to be refreshed".format(show.name))
+        return _responds(RESULT_SUCCESS, msg=f"{show.name} has queued to be refreshed")
 
 
 # noinspection PyAbstractClass
@@ -2730,7 +2728,7 @@ class CMDShowUpdate(ApiCall):
             settings.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as e:
-            logger.debug("API::Unable to update show: {0}".format(e))
+            logger.debug(f"API::Unable to update show: {e}")
             return _responds(RESULT_FAILURE, msg="Unable to update " + str(show_obj.name))
 
 
