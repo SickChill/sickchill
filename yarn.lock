@@ -1390,9 +1390,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.118:
-  version "1.4.123"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.123.tgz#de88ea7fd29d7c868e63c88f129e91494bcf3266"
-  integrity sha512-0pHGE53WkYoFbsgwYcVKEpWa6jbzlvkohIEA2CUoZ9b5KC+w/zlMiQHvW/4IBcOh7YoEFqRNavgTk02TBoUTUw==
+  version "1.4.124"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.124.tgz#e9015e234d8632920dcdf5480351da9e845ed220"
+  integrity sha512-VhaE9VUYU6d2eIb+4xf83CATD+T+3bTzvxvlADkQE+c2hisiw3sZmvEDtsW704+Zky9WZGhBuQXijDVqSriQLA==
 
 emittery@^0.10.1:
   version "0.10.2"
@@ -2403,9 +2403,9 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.6, graceful-fs@^4.2.4, 
     underscore.string "~3.2.3"
 
 grunt-bower-task@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/grunt-bower-task/-/grunt-bower-task-0.6.1.tgz#645c184f207b4a2c6408d4a3f9307b0e75b2ce0c"
-  integrity sha512-F+T3rBeFzaplTV8LJuoCdryZ9nny+GBw+MEUJ8w+d3J8LXII/8EnfvDlDqdXs3awtCM2F08sMjp6sB8NGfJIYg==
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/grunt-bower-task/-/grunt-bower-task-0.6.2.tgz#dcaf659692164104c13647ff63435ff4c6e7816a"
+  integrity sha512-l8WIomFvkzqL6Wj195mOwuFmqFeJf+PibPguT3LJyZDd6GxveM/i0z5lHd3TeIoxwltgHa4lY1ymw8wf8MZsUA==
   dependencies:
     async "^2.3.0"
     bower "^1.7.9"
@@ -4691,9 +4691,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.903.0:
-  version "1.913.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.913.0.tgz#645b09af248210de4c0a503e29ade5173ad108d5"
-  integrity sha512-CtmoL99ZQBmTJnexeE8NqtBz3IxXzny1000S0z78s0/Il+ox4wRU+BGFwvG37ObTJzF7iwwizcFtZITuOU9vPA==
+  version "1.914.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.914.0.tgz#b98cc6feec4d8f44c38ec3b1a3088a84eab14e9f"
+  integrity sha512-fB9YUIhGSUb3rdvfxYKwYF/2VbXj7XvIkxS9Q2VbVcnDaE+z3yuYexxXRlVLrgTntzv9RKJ3PEQLGt/Xb2O60w==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
