@@ -953,9 +953,9 @@ clean-stack@^2.0.0:
   integrity sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==
 
 clean-stack@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/clean-stack/-/clean-stack-4.1.0.tgz#5ce5a2fd19a12aecdce8570daefddb7ac94b6b4e"
-  integrity sha512-dxXQYI7mfQVcaF12s6sjNFoZ6ZPDQuBBLp3QJ5156k9EvUFClUoZ11fo8HnLQO241DDVntHEug8MOuFO5PSfRg==
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/clean-stack/-/clean-stack-4.2.0.tgz#c464e4cde4ac789f4e0735c5d75beb49d7b30b31"
+  integrity sha512-LYv6XPxoyODi36Dp976riBtSY27VmFo+MKqEU9QCCWyTrdEPDog+RWA7xQWHi6Vbp61j5c4cdzzX1NidnwtUWg==
   dependencies:
     escape-string-regexp "5.0.0"
 
