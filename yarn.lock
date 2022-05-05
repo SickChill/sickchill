@@ -1390,9 +1390,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.118:
-  version "1.4.132"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.132.tgz#b64599eb018221e52e2e4129de103b03a413c55d"
-  integrity sha512-JYdZUw/1068NWN+SwXQ7w6Ue0bWYGihvSUNNQwurvcDV/SM7vSiGZ3NuFvFgoEiCs4kB8xs3cX2an3wB7d4TBw==
+  version "1.4.134"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.134.tgz#9baca7a018ca489d8e81a00c7cfe15161da38568"
+  integrity sha512-OdD7M2no4Mi8PopfvoOuNcwYDJ2mNFxaBfurA6okG3fLBaMcFah9S+si84FhX+FIWLKkdaiHfl4A+5ep/gOVrg==
 
 emittery@^0.10.1:
   version "0.10.2"
@@ -4691,9 +4691,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.903.0:
-  version "1.917.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.917.0.tgz#c757f1f23b009aea900aa7ba0d540b99faa16f0e"
-  integrity sha512-wr8oq3Fhr56HS9hInddp7WDtptOzvEsJNw3jqjjY5mwjJsTZD/b85QSBB1V2T9qD4aqMjmFQdj7anyGUQ4Nv+g==
+  version "1.918.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.918.0.tgz#6cd11e78ef5afff92a0af912398bc3c1746a1d93"
+  integrity sha512-oLPJ2+oosjf6E6iRFuLylQgBrDG0ieDph6nVMHVJIloGV+dpEKFpkEswcXYFMpKyCVJR8qshxhPAfakXgsSchA==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
