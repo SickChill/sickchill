@@ -123,9 +123,9 @@
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
 "@types/node@*":
-  version "17.0.34"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.34.tgz#3b0b6a50ff797280b8d000c6281d229f9c538cef"
-  integrity sha512-XImEz7XwTvDBtzlTnm8YvMqGW/ErMWBsKZ+hMTvnDIjGCKxwK5Xpc+c/oQjOauwq8M4OS11hEkpjX8rrI/eEgA==
+  version "17.0.35"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.35.tgz#635b7586086d51fb40de0a2ec9d1014a5283ba4a"
+  integrity sha512-vu1SrqBjbbZ3J6vwY17jBs8Sr/BKA+/a/WtjRG+whKg1iuLFOosq872EXS0eXWILdO36DHQQeku/ZcL6hz2fpg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -4710,9 +4710,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.926.0:
-  version "1.932.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.932.0.tgz#e833aaa3b69ff5e938ff5a0eef8d09605f2cec38"
-  integrity sha512-j2eQg5O/+nkunoY2sBxPanz6CYaoEnMD+4a6B2EF7XuG2VLxNqczsadsTvC4y56IfZC6tEGsJr+wcwF95xpnOw==
+  version "1.934.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.934.0.tgz#a0ac84b8a2c2c7cf273db6bad6092e1c22533def"
+  integrity sha512-OMNE2NDjUREcCkaeGHoSyLbrINj4nF5SO9Zx8E5lcNXgU+zxvl3ei0tjbWe0oFkNdGRrQfsodlunVDO22KkLrQ==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
