@@ -27,7 +27,7 @@ class Provider(TorrentProvider):
 
         self.urls = {
             "base_url": "https://api.broadcasthe.net",
-            "website": "http://broadcasthe.net/",
+            "website": "https://broadcasthe.net/",
         }
 
         self.url = self.urls["website"]
