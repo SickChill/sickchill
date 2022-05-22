@@ -79,6 +79,7 @@ class ConfigGeneral(Config):
         indexerDefaultLang="en",
         ep_default_deleted_status=None,
         launch_browser=None,
+        no_lgmargin=None,
         showupdate_hour=3,
         web_username=None,
         api_key=None,
@@ -142,6 +143,7 @@ class ConfigGeneral(Config):
         settings.EP_DEFAULT_DELETED_STATUS = ep_default_deleted_status
         settings.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
         settings.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
+        settings.NO_LGMARGIN = config.checkbox_to_value(no_lgmargin)
         config.change_showupdate_hour(showupdate_hour)
         config.change_version_notify(version_notify)
         settings.AUTO_UPDATE = config.checkbox_to_value(auto_update)
@@ -154,7 +156,6 @@ class ConfigGeneral(Config):
         settings.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
         settings.IGNORE_BROKEN_SYMLINKS = config.checkbox_to_value(ignore_broken_symlinks)
         config.change_update_frequency(update_frequency)
-        settings.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         settings.SORT_ARTICLE = config.checkbox_to_value(sort_article)
         settings.CPU_PRESET = cpu_preset
         settings.ANON_REDIRECT = anon_redirect

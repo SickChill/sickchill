@@ -324,7 +324,7 @@
                 % endif
             </div>
             <div class="row">
-                % if settings.NO_LGMARGIN == True:
+                % if settings.NO_LGMARGIN:
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 % else:
                     <div class="col-lg-10 col-lg-offset-1 col-md-12 col-sm-12 col-xs-12">

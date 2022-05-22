@@ -759,7 +759,7 @@ def initialize(consoleLogging=True):
         settings.POSTER_SORTDIR = check_setting_int(settings.CFG, "GUI", "poster_sortdir", 1, min_val=0, max_val=1)
         settings.DISPLAY_ALL_SEASONS = check_setting_bool(settings.CFG, "General", "display_all_seasons", True)
         settings.ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(settings.CFG, "General", "ended_shows_update_interval", 7)
-        settings.NO_LGMARGIN = check_setting_bool(settings.CFG, "GUI", "no_lgmargin")
+        settings.NO_LGMARGIN = check_setting_bool(settings.CFG, "GUI", "no_lgmargin", True)
 
         if check_section(settings.CFG, "Shares"):
             settings.WINDOWS_SHARES.update(settings.CFG["Shares"])
