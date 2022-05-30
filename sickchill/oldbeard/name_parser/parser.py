@@ -97,11 +97,13 @@ class NameParser(object):
             result = ParseResult(name)
             result.which_regex = [cur_regex_name]
             result.score = 0 - cur_regex_num
+            logger.debug(f"result {result}, {result.which_regex}; {result.score} result.score")
 
             named_groups = list(match.groupdict())
 
             if "series_name" in named_groups:
                 result.series_name = match.group("series_name")
+                logger.debug(f"result.series_name {result.series_name}")
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
                     result.score += 1
