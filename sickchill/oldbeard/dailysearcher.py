@@ -81,9 +81,9 @@ class DailySearcher(object):
                         )
                     else:
                         logger.info(
-                            _(
-                                "{prefix} setting to default episode status for this show: {status_string}"
-                            ).format(prefix=prefix, status_string=common.statusStrings[ep.show.default_ep_status])
+                            _("{prefix} setting to default episode status for this show: {status_string}").format(
+                                prefix=prefix, status_string=common.statusStrings[ep.show.default_ep_status]
+                            )
                         )
                         ep.status = ep.show.default_ep_status
 
