@@ -51,7 +51,6 @@ class NameParser(object):
         space, but handles decimal numbers in string.
         Stolen from dbr's tvnamer
         """
-
         series_name = re.sub(r"(\D)\.(?!\s)(\D)", "\\1 \\2", series_name)
         series_name = re.sub(r"(\d)\.(\d{4})", "\\1 \\2", series_name)  # if it ends in a year then don't keep the dot
         series_name = re.sub(r"(\D)\.(?!\s)", "\\1 ", series_name)
@@ -107,6 +106,9 @@ class NameParser(object):
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
                     result.score += 1
+                else:
+                    result.score += -20
+                    logger.debug(f"series name blank score {result.score}")
 
             if "series_num" in named_groups and match.group("series_num"):
                 result.score += 1
@@ -190,6 +192,7 @@ class NameParser(object):
 
         # only get matches with series_name
         # TODO: This makes tests fail when checking filenames that do not include the show name (refresh, force update, etc)
+        # fixed ?? If series name blank 'result.score += -20' so other regex have a chance
         # matches = [x for x in matches if x.series_name]
 
         if matches:
@@ -218,7 +221,6 @@ class NameParser(object):
 
             # get quality
             best_result.quality = common.Quality.nameQuality(name, best_result.show.is_anime)
-
             new_episode_numbers = []
             new_season_numbers = []
             new_absolute_numbers = []
@@ -330,6 +332,7 @@ class NameParser(object):
                     show_anime = helpers.get_show(best_result_anime.series_name)
                     if show_anime and show_anime.indexerid == show.indexerid:
                         best_result = best_result_anime
+                        best_result.show = show_anime
 
         return best_result
 
