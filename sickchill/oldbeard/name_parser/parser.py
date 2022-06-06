@@ -107,7 +107,7 @@ class NameParser(object):
                     result.series_name = self.clean_series_name(result.series_name)
                     result.score += 1
                 else:
-                    result.score += -20
+                    result.score -= 20
                     logger.debug(f"series name blank score {result.score}")
 
             if "series_num" in named_groups and match.group("series_num"):
