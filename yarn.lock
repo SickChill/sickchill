@@ -163,9 +163,9 @@
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
 
 "@types/node@*":
-  version "17.0.43"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.43.tgz#7f16898cdd791c9d64069000ad448b47b3ca8353"
-  integrity sha512-jnUpgw8fL9kP2iszfIDyBQtw5Mf4/XSqy0Loc1J9pI14ejL83XcCEvSf50Gs/4ET0I9VCCDoOfufQysj0S66xA==
+  version "18.0.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.0.0.tgz#67c7b724e1bcdd7a8821ce0d5ee184d3b4dd525a"
+  integrity sha512-cHlGmko4gWLVI27cGJntjs/Sj8th9aYwplmZFwmmgYQQvL5NUsgVJG7OddLvNfLqYS31KFN0s3qlaD9qCaxACA==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -894,9 +894,9 @@ camelcase@^6.3.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001349:
-  version "1.0.30001353"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001353.tgz#c21014dea3bd0a15f34c5cc4cf94e9e8d6dea27d"
-  integrity sha512-GqItFu1lCW4OGd4f47TVQXAGxca8K9Bz3cBb872ZskMo6FIQhiHCc7QjBL7Bb4XannbV+Gq0yHhFVxONW6C/XQ==
+  version "1.0.30001354"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001354.tgz#95c5efdb64148bb4870771749b9a619304755ce5"
+  integrity sha512-mImKeCkyGDAHNywYFA4bqnLAzTUvVkqPvhY4DV47X+Gl2c5Z8c3KNETnXp14GQt11LvxE8AwjzGxJ+rsikiOzg==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -1444,9 +1444,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.147:
-  version "1.4.155"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.155.tgz#9c7190bf5e8608c5a5e4953b1ccf0facf3d1b49d"
-  integrity sha512-niPzKBSYPG06gxLKO0c2kEmgdRMTtIbNrBlvD31Ld8Q57b/K0218U4j8u/OOt25XE1eFOn47FcmQVdx9R1qqxA==
+  version "1.4.158"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.158.tgz#abbdaaf64676bfa4bc0307522125db34424a0ada"
+  integrity sha512-gppO3/+Y6sP432HtvwvuU8S+YYYLH4PmAYvQwqUtt9HDOmEsBwQfLnK9T8+1NIKwAS1BEygIjTaATC4H5EzvxQ==
 
 emittery@^0.11.0:
   version "0.11.0"
@@ -1737,9 +1737,9 @@ eslint-plugin-import@^2.25.4, eslint-plugin-import@^2.26.0:
     tsconfig-paths "^3.14.1"
 
 eslint-plugin-n@^15.2.2:
-  version "15.2.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-15.2.2.tgz#1ea682e57871c5ce6ba04c36e71df38466b68d34"
-  integrity sha512-MLjZVAv4TiCIoXqjibNqCJjLkGHfrOY3XZ0ZBLoW0OnS3o98PUBnzB/kfp8dCz/4A4Y18jjX50PRnqI4ACFY1Q==
+  version "15.2.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-15.2.3.tgz#b8850b90a8c27d3d880521ad90dbf537ac0a9830"
+  integrity sha512-H+KC7U5R+3IWTeRnACm/4wlqLvS1Q7M6t7BGhn89qXDkZan8HTAEv3ouIONA0ifDwc2YzPFmyPzHuNLddNK4jw==
   dependencies:
     builtins "^5.0.1"
     eslint-plugin-es "^4.1.0"
@@ -4779,9 +4779,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.926.0:
-  version "1.950.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.950.0.tgz#68c223af0ce42437fce5a5aeaacdcc60f9489c98"
-  integrity sha512-279JtY6fyhxujX4yfdACDMJOOeytTqKjkpr9F3KX2iqeADFWjx/hghhmeAdS2SEYwE2bOlRWavF8CZsWiQK6EQ==
+  version "1.951.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.951.0.tgz#c4456fa68a26c91dee15c078ddcf9a9f8e18f76a"
+  integrity sha512-V9PhAWI+pB1SQa+wbzRA0/1M4Sqb124Jjlw39roF1Urk1xMLK/aYW796q4/D9xy0k293DpEyf/6hQ6xXbn9sKA==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
@@ -5533,15 +5533,15 @@ xo@^0.50.0:
   integrity sha512-yIz7mdIbUlxBYLnV3OqMTdrE+OFr0CPINkU9rxY3ZHNAIZrVckmONLujU6LkdNrEWerQTx8zzwnVrUjmj6vVCg==
   dependencies:
     "@eslint/eslintrc" "^1.3.0"
-    "@typescript-eslint/eslint-plugin" "*"
-    "@typescript-eslint/parser" "*"
+    "@typescript-eslint/eslint-plugin" "^5.27.1"
+    "@typescript-eslint/parser" "^5.27.1"
     arrify "^3.0.0"
     cosmiconfig "^7.0.1"
     define-lazy-prop "^3.0.0"
     eslint "^8.17.0"
     eslint-config-prettier "^8.5.0"
     eslint-config-xo "^0.41.0"
-    eslint-config-xo-typescript "*"
+    eslint-config-xo-typescript "^0.51.1"
     eslint-formatter-pretty "^4.1.0"
     eslint-import-resolver-webpack "^0.13.2"
     eslint-plugin-ava "^13.2.0"
