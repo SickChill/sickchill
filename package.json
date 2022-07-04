@@ -26,7 +26,7 @@
     "eslint-plugin-no-use-extend-native": "^0.5.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-unicorn": "^42.0.0",
+    "eslint-plugin-unicorn": "^43.0.0",
     "esm": "^3.2.25",
     "grunt": "^1.5.2",
     "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
