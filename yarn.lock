@@ -1448,9 +1448,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.172:
-  version "1.4.182"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.182.tgz#5d59214ebfe90b36f23e81cd226a42732cd8c677"
-  integrity sha512-OpEjTADzGoXABjqobGhpy0D2YsTncAax7IkER68ycc4adaq0dqEG9//9aenKPy7BGA90bqQdLac0dPp6uMkcSg==
+  version "1.4.184"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.184.tgz#381d4d111fc82d3376ed690dfb621e675f9078a9"
+  integrity sha512-IADi390FRdvxWfVX3hjzfTDNVHiTqVo9ar53/7em/SfhUG9YcjVhyQecY/XwmBHRKden/wFud7RWOUH7+7LFng==
 
 emittery@^0.11.0:
   version "0.11.0"
@@ -1809,9 +1809,9 @@ eslint-plugin-unicorn@^42.0.0:
     strip-indent "^3.0.0"
 
 eslint-plugin-unicorn@^43.0.0:
-  version "43.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-43.0.0.tgz#c26fdfd146036b3f7951fa0f8c9af2b81bd87096"
-  integrity sha512-Z/6HX8yry+zAjo4jHHTAbe1rfniox7qgmCReGBfTc/CVgotfScaMCc4dtSSTHlJ+7Yix5o6LPXzwwpuGGFricg==
+  version "43.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-43.0.1.tgz#71c79caa95dde626c1cd285540fbccaafc262511"
+  integrity sha512-wYvF6q0RRTKw6gzbKy5bbazWUrBEPIto2S9U6eSF+tsHgtgE+CwQ6Bww1W2Ie9TRED01QkZRN79c5aVMFgrFYw==
   dependencies:
     "@babel/helper-validator-identifier" "^7.18.6"
     ci-info "^3.3.2"
@@ -4803,9 +4803,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.926.0:
-  version "1.963.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.963.0.tgz#aa99ae77c0b51fd14aa63a9b25cf45fc5aa7e0b2"
-  integrity sha512-uPy7fTBeAEGWTb/gozUYFxBm0H1OaF0uBzodc6t5EJGy0cxzBB3m9DpEOtnZtFP+pji59+YwQlpUJyhpqoyh5g==
+  version "1.965.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.965.0.tgz#2214a7f4e865f12c5a4819db67ae0f4587b05d7d"
+  integrity sha512-ymkqOhWDqaPYrLBtKTpqdVimyFVJ8XeUxmj70WuiCUX/u6cmg3MXVkZE65LMga2TGcLPf87p7HN90u2uVRyk7A==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
