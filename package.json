@@ -26,7 +26,7 @@
     "eslint-plugin-no-use-extend-native": "^0.5.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-unicorn": "^42.0.0",
+    "eslint-plugin-unicorn": "^43.0.0",
     "esm": "^3.2.25",
     "grunt": "^1.5.2",
     "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
@@ -47,7 +47,7 @@
     "lodash": "^4.17.15",
     "snyk": "^1.926.0",
     "webpack": "^5.69.1",
-    "xo": "^0.49.0",
+    "xo": "^0.50.0",
     "yarn-minify": "^1.0.1"
   },
   "ava": {
