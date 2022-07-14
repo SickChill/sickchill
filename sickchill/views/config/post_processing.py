@@ -65,6 +65,7 @@ class ConfigPostProcessing(Config):
         naming_anime=None,
         naming_abd_pattern=None,
         naming_strip_year=None,
+        naming_no_brackets=None,
         naming_custom_sports=None,
         naming_sports_pattern=None,
         naming_custom_anime=None,
@@ -117,6 +118,7 @@ class ConfigPostProcessing(Config):
         settings.NAMING_CUSTOM_SPORTS = config.checkbox_to_value(naming_custom_sports)
         settings.NAMING_CUSTOM_ANIME = config.checkbox_to_value(naming_custom_anime)
         settings.NAMING_STRIP_YEAR = config.checkbox_to_value(naming_strip_year)
+        settings.NAMING_NO_BRACKETS = config.checkbox_to_value(naming_no_brackets)
         settings.NFO_RENAME = config.checkbox_to_value(nfo_rename)
 
         settings.METADATA_KODI = kodi_data
