@@ -2125,7 +2125,11 @@ class TVEpisode(object):
 
         def dot(name):
             # assert isinstance(name, unicode), f'{name} is not unicode'
-            return helpers.sanitizeSceneName(name)
+            # re.sub str . was any char (messy) and sanitizer wouldn't allow brackets to remain without other issues.
+            swap_chars = " -_"
+            for x in swap_chars:
+                name = name.replace(x, ".")
+            return name
 
         def us(name):
             return re.sub("[ -]", "_", name)
@@ -2172,8 +2176,8 @@ class TVEpisode(object):
 
         # remove brackets from both name sets
         if settings.NAMING_NO_BRACKETS:
-            show_name = re.sub(r"[\(\)]", "", show_name).strip()
-            show_start_year = re.sub(r"[\(\)]", "", show_start_year).strip()
+            show_name = re.sub(r"[()]", "", show_name).strip()
+            show_start_year = re.sub(r"[()]", "", show_start_year).strip()
 
         # try to get the release group
         rel_grp = {"SICKCHILL": "SICKCHILL"}
