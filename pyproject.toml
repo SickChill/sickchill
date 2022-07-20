@@ -28,7 +28,8 @@ classifiers = [
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9"
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10"
 ]
 
 packages = [
@@ -135,11 +136,11 @@ format = ["black", "isort", "flake8"]
 
 _yarn_upgrade = {cmd = "yarn upgrade", help = "update yarn dependancies"}
 _poetry_update = {shell = "poetry update", help = "update python dependancies"}
-_add_locks = {shell = "git add poetry.lock yarn.lock", help = "Add yarn and poetry lock files"}
+_add_locks = {shell = "git add pyproject.toml yarn.lock", help = "Add yarn and poetry lock files"}
 depup = ["_poetry_update", "_yarn_upgrade", "_add_locks"]
 
 update_translations = ["babel_extract", "babel_update", "crowdin_upload", "crowdin_download", "babel_compile", "po2json"]
-update_dependencies = {shell = "poetry update && yarn upgrade && git add poetry.lock yarn.lock"}
+update_dependencies = {shell = "poetry update && yarn upgrade && git add pyproject.toml yarn.lock"}
 
 test = [
     { ref = "lint" },
@@ -189,8 +190,7 @@ python = ">=3.6.2,<4"
 beautifulsoup4 = "^4.9.3"
 "bencode.py" = "^4.0.0"
 CacheControl = "^0.12.6"
-chardet = "^4.0.0"
-cloudscraper = "^1.2.56"
+chardet = ">=4,<6"
 configobj = "^5.0.6"
 feedparser = "^6.0.2"
 html5lib = "^1.1"
@@ -209,7 +209,7 @@ tmdbsimple = "^2.8.0"
 tornado = "^6.1"
 tvdbsimple = "^1.0.6"
 Unidecode = "^1.2.0"
-validators = "^0.18.2"
+validators = ">=0.18.2,<0.21.0"
 enzyme = "^0.4.1"
 python3-fanart = "^2.0.0"
 gntp = "^1.0.3"
@@ -224,7 +224,7 @@ PySocks = "^1.7.1"
 imagesize = "^1.2.0"
 Send2Trash = "^1.5.0"
 deluge-client = "^1.9.0"
-ifaddr = "^0.1.7"
+ifaddr = ">=0.1.7,<0.3.0"
 pyaes = "^1.6.1"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = ">=2021.3.18,<2023.0.0"
@@ -256,5 +256,5 @@ codecov = "^2.1.12"
 black = "^22.1"
 pytest = "^7.0.1"
 isort = "^5.10.1"
-poethepoet = "^0.12.3"
+poethepoet = "^0.13.0"
 po2json = "^0.2.2"
