@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9, "3.10"]
         experimental: [false]
         include:
           - os: windows-latest
@@ -26,13 +26,31 @@ jobs:
           - os: macos-latest
             python-version: 3.9
             experimental: true
+          - os: ubuntu-latest
+            python-version: 3.6
+            experimental: true
+          - os: ubuntu-latest
+            python-version: "3.11-dev"
+            experimental: true
+          - os: windows-latest
+            python-version: "3.11-dev"
+            experimental: true
+          - os: ubuntu-latest
+            python-version: "pypy-3.7"
+            experimental: true
+          - os: ubuntu-latest
+            python-version: "pypy-3.8"
+            experimental: true
+          - os: ubuntu-latest
+            python-version: "pypy-3.9"
+            experimental: true
       fail-fast: true
     continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     steps:
     - name: Cancel Previous Runs
       if: success() && !env.ACT
-      uses: styfle/cancel-workflow-action@0.9.1
+      uses: styfle/cancel-workflow-action@0.10.0
       with:
         access_token: ${{ github.token }}
     - name: Checkout
@@ -47,7 +65,7 @@ jobs:
       with:
         format: diff
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set up Node
@@ -98,6 +116,7 @@ jobs:
         key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
     - name: Install dependencies
       run: |
+        poetry update
         poetry install --no-interaction --no-root
         pip install poethepoet
       shell: bash
@@ -123,7 +142,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.9.1
+      uses: styfle/cancel-workflow-action@0.10.0
       with:
         access_token: ${{ github.token }}
     - name: Checkout

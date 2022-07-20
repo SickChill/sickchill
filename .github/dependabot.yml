@@ -2,21 +2,29 @@ version: 2
 updates:
 - package-ecosystem: pip
   directory: "/"
+  target-branch: develop
   schedule:
     interval: daily
-  target-branch: develop
+  allow:
+    dependency-type: all
 - package-ecosystem: github-actions
   directory: "/"
   target-branch: develop
   schedule:
     interval: daily
+  allow:
+    dependency-type: all
 - package-ecosystem: docker
   directory: "/"
   target-branch: develop
   schedule:
     interval: daily
+  allow:
+    dependency-type: all
 - package-ecosystem: npm
   directory: "/"
   target-branch: develop
   schedule:
     interval: daily
+  allow:
+    dependency-type: all
