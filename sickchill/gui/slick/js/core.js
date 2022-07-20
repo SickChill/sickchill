@@ -3109,7 +3109,7 @@ const SICKCHILL = {
                     }
 
                     return [season, exceptions].join(':');
-                }).filter(item => item);
+                }).filter(Boolean);
 
                 $('#exceptions').val(allExceptions);
 
