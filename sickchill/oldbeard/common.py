@@ -15,9 +15,6 @@ from .numdict import NumDict
 
 setup_gettext()
 
-# If some provider has an issue with functionality of SC, other than user agents, it's best to come talk to us rather than block.
-# It is no different than us going to a provider if we have questions or issues. Be a team player here.
-# This is disabled, was only added for testing, and has no config.ini or web ui setting. To enable, set SPOOF_USER_AGENT = True
 INSTANCE_ID = str(uuid.uuid1())
 USER_AGENT = "SickChill/{version} ({os} {architecture} {os_version}; {instance})".format(
     version=version.__version__, os=platform.system(), architecture=platform.machine(), os_version=platform.release(), instance=INSTANCE_ID
@@ -303,7 +300,7 @@ class Quality(object):
             elif sd_options:
                 result = Quality.SDTV
         elif ep.hevc and not settings.QUALITY_ALLOW_HEVC:
-            result = Quality.NONE
+            result = Quality.UNKNOWN
         elif ep.mpeg:
             result = Quality.RAWHDTV
         # Is it UHD?
@@ -316,7 +313,7 @@ class Quality(object):
             elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                 result = (Quality.UHD_4K_WEBDL, Quality.UHD_8K_WEBDL)[full_res]
             # HDTV
-            elif ep.tv == "hd":
+            elif ep.tv == "hd" or ep.trueHD:
                 result = (Quality.UHD_4K_TV, Quality.UHD_8K_TV)[full_res]
         elif ep.vres in {1080, 720}:
             if ep.scan == "p":
@@ -328,7 +325,7 @@ class Quality(object):
                 elif ep.itunes or ep.amazon or ep.netflix or ep.web:
                     result = (Quality.HDWEBDL, Quality.FULLHDWEBDL)[full_res]
                 # HDTV
-                elif ep.tv == "hd" or ep.hevc:
+                elif ep.tv == "hd" or ep.hevc or ep.trueHD:
                     result = (Quality.HDTV, Quality.FULLHDTV)[full_res]  # 1080 HDTV h264
                 # MPEG2 encoded
                 elif all([full_res, ep.tv == "hd", ep.mpeg]):

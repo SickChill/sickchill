@@ -66,9 +66,6 @@ class ApiHandler(RequestHandler):
 
     version = 5  # use an int since float-point is unpredictable
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def set_default_headers(self):
         self.set_header("Content-Type", "application/json")
         self.set_header("Access-Control-Allow-Origin", "*")
@@ -1112,8 +1109,14 @@ class CMDExceptions(ApiCall):
         return _responds(RESULT_SUCCESS, scene_exceptions)
 
 
+class HistoryApiCall(ApiCall):
+    def __init__(self, args, kwargs):
+        super().__init__(args, kwargs)
+        self.history = History()
+
+
 # noinspection PyAbstractClass
-class CMDHistory(ApiCall):
+class CMDHistory(HistoryApiCall):
     _help = {
         "desc": "Get the downloaded and/or snatched history",
         "optionalParameters": {
@@ -1130,7 +1133,7 @@ class CMDHistory(ApiCall):
 
     def run(self):
         """Get the downloaded and/or snatched history"""
-        data = History().get(self.limit, self.type)
+        data = self.history.get(self.limit, self.type)
         results = []
 
         for row in data:
@@ -1158,29 +1161,23 @@ class CMDHistory(ApiCall):
 
 
 # noinspection PyAbstractClass
-class CMDHistoryClear(ApiCall):
+class CMDHistoryClear(HistoryApiCall):
     _help = {"desc": "Clear the entire history"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Clear the entire history"""
-        History().clear()
+        self.history.clear()
 
         return _responds(RESULT_SUCCESS, msg="History cleared")
 
 
 # noinspection PyAbstractClass
-class CMDHistoryTrim(ApiCall):
+class CMDHistoryTrim(HistoryApiCall):
     _help = {"desc": "Trim history entries older than 30 days"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Trim history entries older than 30 days"""
-        History().trim()
+        self.history.trim()
 
         return _responds(RESULT_SUCCESS, msg="Removed history entries older than 30 days")
 
@@ -1215,9 +1212,6 @@ class CMDFailed(ApiCall):
 # noinspection PyAbstractClass
 class CMDBacklog(ApiCall):
     _help = {"desc": "Get the backlogged episodes"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Get the backlogged episodes"""
@@ -1414,9 +1408,6 @@ class CMDPostProcess(ApiCall):
 class CMDSickChill(ApiCall):
     _help = {"desc": "Get miscellaneous information about SickChill"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """dGet miscellaneous information about SickChill"""
         data = {"sc_version": settings.BRANCH, "api_version": self.version, "api_commands": sorted(function_mapper)}
@@ -1487,9 +1478,6 @@ class CMDSickChillAddRootDir(ApiCall):
 class CMDSickChillCheckVersion(ApiCall):
     _help = {"desc": "Check if a new version of SickChill is available"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         update_manager = UpdateManager()
         needs_update = update_manager.check_for_new_version()
@@ -1533,22 +1521,19 @@ class CMDSickChillBackup(ApiCall):
             if not os.path.isdir(self.location):
                 os.mkdir(self.location)
 
-        logger.info(_("API: sb.backup backing up to {location}").format(location=self.location))
+        logger.info(_("API: sc.backup backing up to {location}").format(location=self.location))
         result = update_manager._backup(self.location)
         if result:
-            logger.info(_("API: sb.backup successful!"))
+            logger.info(_("API: sc.backup successful!"))
             return _responds(RESULT_SUCCESS, msg="Backup successful")
         else:
-            logger.warning(_("API: sb.backup failed!"))
+            logger.warning(_("API: sc.backup failed!"))
             return _responds(RESULT_FAILURE, msg="Backup failed")
 
 
 # noinspection PyAbstractClass
 class CMDSickChillCheckScheduler(ApiCall):
     _help = {"desc": "Get information about the scheduler"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Get information about the scheduler"""
@@ -1620,9 +1605,6 @@ class CMDSickChillDeleteRootDir(ApiCall):
 class CMDSickChillGetDefaults(ApiCall):
     _help = {"desc": "Get SickChill's user default configuration value"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """Get SickChill's user default configuration value"""
 
@@ -1643,9 +1625,6 @@ class CMDSickChillGetDefaults(ApiCall):
 class CMDSickChillGetMessages(ApiCall):
     _help = {"desc": "Get all messages"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         messages = []
         for cur_notification in ui.notifications.get_notifications(self.rh.request.remote_ip):
@@ -1656,9 +1635,6 @@ class CMDSickChillGetMessages(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickChillGetRootDirs(ApiCall):
     _help = {"desc": "Get all root (parent) directories"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Get all root (parent) directories"""
@@ -1691,9 +1667,6 @@ class CMDSickChillPauseBacklog(ApiCall):
 class CMDSickChillPing(ApiCall):
     _help = {"desc": "Ping SickChill to check if it is running"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """Ping SickChill to check if it is running"""
         if settings.started:
@@ -1705,9 +1678,6 @@ class CMDSickChillPing(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickChillRestart(ApiCall):
     _help = {"desc": "Restart SickChill"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         """Restart SickChill"""
@@ -1813,9 +1783,6 @@ class CMDSickChillSearchTVRAGE(CMDSickChillSearchIndexers):
         },
     }
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         return _responds(RESULT_FAILURE, msg="TVRage is no more, invalid result")
 
@@ -1883,9 +1850,6 @@ class CMDSickChillSetDefaults(ApiCall):
 class CMDSickChillShutdown(ApiCall):
     _help = {"desc": "Shutdown SickChill"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """Shutdown SickChill"""
         if not Shutdown.stop(settings.PID):
@@ -1897,9 +1861,6 @@ class CMDSickChillShutdown(ApiCall):
 # noinspection PyAbstractClass
 class CMDSickChillUpdate(ApiCall):
     _help = {"desc": "Update SickChill to the latest version available"}
-
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
 
     def run(self):
         update_manager = UpdateManager()
@@ -2834,9 +2795,6 @@ class CMDShows(ApiCall):
 class CMDShowsStats(ApiCall):
     _help = {"desc": "Get the global shows and episodes statistics"}
 
-    def __init__(self, args, kwargs):
-        super().__init__(args, kwargs)
-
     def run(self):
         """Get the global shows and episodes statistics"""
         stats = Show.overall_stats()
@@ -2869,12 +2827,53 @@ function_mapper = {
     "history": CMDHistory,
     "history.clear": CMDHistoryClear,
     "history.trim": CMDHistoryTrim,
+    "postprocess": CMDPostProcess,
     "failed": CMDFailed,
     "backlog": CMDBacklog,
     "logs": CMDLogs,
     "logs.clear": CMDLogsClear,
+    "sc": CMDSickChill,
+    "sc.addrootdir": CMDSickChillAddRootDir,
+    "sc.checkversion": CMDSickChillCheckVersion,
+    "sc.backup": CMDSickChillBackup,
+    "sc.checkscheduler": CMDSickChillCheckScheduler,
+    "sc.deleterootdir": CMDSickChillDeleteRootDir,
+    "sc.getdefaults": CMDSickChillGetDefaults,
+    "sc.getmessages": CMDSickChillGetMessages,
+    "sc.getrootdirs": CMDSickChillGetRootDirs,
+    "sc.pausebacklog": CMDSickChillPauseBacklog,
+    "sc.ping": CMDSickChillPing,
+    "sc.restart": CMDSickChillRestart,
+    "sc.dailysearch": CMDDailySearch,
+    "sc.propersearch": CMDProperSearch,
+    "sc.subtitlesearch": CMDFullSubtitleSearch,
+    "sc.searchindexers": CMDSickChillSearchIndexers,
+    "sc.searchtvdb": CMDSickChillSearchTVDB,
+    "sc.searchtvrage": CMDSickChillSearchTVRAGE,
+    "sc.setdefaults": CMDSickChillSetDefaults,
+    "sc.update": CMDSickChillUpdate,
+    "sc.shutdown": CMDSickChillShutdown,
+    "show": CMDShow,
+    "show.addexisting": CMDShowAddExisting,
+    "show.addnew": CMDShowAddNew,
+    "show.cache": CMDShowCache,
+    "show.delete": CMDShowDelete,
+    "show.getquality": CMDShowGetQuality,
+    "show.getposter": CMDShowGetPoster,
+    "show.getbanner": CMDShowGetBanner,
+    "show.getnetworklogo": CMDShowGetNetworkLogo,
+    "show.getfanart": CMDShowGetFanArt,
+    "show.pause": CMDShowPause,
+    "show.refresh": CMDShowRefresh,
+    "show.seasonlist": CMDShowSeasonList,
+    "show.seasons": CMDShowSeasons,
+    "show.setquality": CMDShowSetQuality,
+    "show.stats": CMDShowStats,
+    "show.update": CMDShowUpdate,
+    "shows": CMDShows,
+    "shows.stats": CMDShowsStats,
+    # Compatibility with old 3rd party tools
     "sb": CMDSickChill,
-    "postprocess": CMDPostProcess,
     "sb.addrootdir": CMDSickChillAddRootDir,
     "sb.checkversion": CMDSickChillCheckVersion,
     "sb.backup": CMDSickChillBackup,
@@ -2895,23 +2894,4 @@ function_mapper = {
     "sb.setdefaults": CMDSickChillSetDefaults,
     "sb.update": CMDSickChillUpdate,
     "sb.shutdown": CMDSickChillShutdown,
-    "show": CMDShow,
-    "show.addexisting": CMDShowAddExisting,
-    "show.addnew": CMDShowAddNew,
-    "show.cache": CMDShowCache,
-    "show.delete": CMDShowDelete,
-    "show.getquality": CMDShowGetQuality,
-    "show.getposter": CMDShowGetPoster,
-    "show.getbanner": CMDShowGetBanner,
-    "show.getnetworklogo": CMDShowGetNetworkLogo,
-    "show.getfanart": CMDShowGetFanArt,
-    "show.pause": CMDShowPause,
-    "show.refresh": CMDShowRefresh,
-    "show.seasonlist": CMDShowSeasonList,
-    "show.seasons": CMDShowSeasons,
-    "show.setquality": CMDShowSetQuality,
-    "show.stats": CMDShowStats,
-    "show.update": CMDShowUpdate,
-    "shows": CMDShows,
-    "shows.stats": CMDShowsStats,
 }

@@ -14,7 +14,6 @@ from mako.exceptions import RichTraceback
 from tornado.concurrent import run_on_executor
 from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine
-from tornado.process import cpu_count
 from tornado.web import authenticated, HTTPError, RequestHandler
 
 import sickchill.start
@@ -40,11 +39,9 @@ class BaseHandler(RequestHandler):
     def data_received(self, chunk):
         pass
 
-    def __init__(self, *args, **kwargs):
+    def initialize(self):
+        super().initialize()
         self.startTime = time.time()
-
-        super().__init__(*args, **kwargs)
-        # self.include_host = True
 
     # def set_default_headers(self):
     #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
@@ -148,15 +145,15 @@ class BaseHandler(RequestHandler):
 
 
 class WebHandler(BaseHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.executor = ThreadPoolExecutor(cpu_count(), thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
+    def initialize(self):
+        super().initialize()
+        self.executor = ThreadPoolExecutor(thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
 
     @authenticated
     @coroutine
     def get(self, route, *args, **kwargs):
         try:
+            # logger.debug(f"Call for {route} with args [{self.request.arguments}]")
             # route -> method obj
             route = route.strip("/").replace(".", "_").replace("-", "_") or "index"
             method = getattr(self, route)
@@ -197,9 +194,6 @@ class WebHandler(BaseHandler):
 
 @Route("(.*)(/?)", name="index")
 class WebRoot(WebHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def print_traceback(self, error, *args, **kwargs):
         logger.info(f"A mako error occurred: {error}")
         t = PageTemplate(rh=self, filename="500.mako")
@@ -336,9 +330,6 @@ class WebRoot(WebHandler):
 
 @Route("/ui(/?.*)", name="ui")
 class UI(WebRoot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def locale_json(self):
 
         lang = self.get_query_argument("lang")

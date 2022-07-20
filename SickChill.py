@@ -13,13 +13,13 @@ import traceback
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.init_helpers import check_installed, remove_pid_file, setup_gettext
+from sickchill.helper.common import choose_data_dir
+from sickchill.init_helpers import remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
 
 setup_gettext()
 
 import mimetypes
-from pathlib import Path
 
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/sfont", ".otf")
@@ -32,7 +32,7 @@ mimetypes.add_type("application/font-woff", ".woff")
 from configobj import ConfigObj
 
 from sickchill.helper.argument_parser import SickChillArgumentParser
-from sickchill.oldbeard import db, failed_history, name_cache, network_timezones
+from sickchill.oldbeard import db, name_cache, network_timezones
 from sickchill.oldbeard.event_queue import Events
 from sickchill.tv import TVShow
 from sickchill.update_manager import GitUpdateManager, SourceUpdateManager
@@ -87,20 +87,12 @@ class SickChill(object):
         settings.MY_FULLNAME = os.path.normpath(os.path.abspath(__file__))
         settings.MY_NAME = os.path.basename(settings.MY_FULLNAME)
 
-        settings.DATA_DIR = os.path.dirname(settings.PROG_DIR)
-        profile_path = str(Path.home().joinpath("sickchill").absolute())
-        if check_installed():
-            settings.DATA_DIR = profile_path
-
-        if settings.DATA_DIR != profile_path:
-            checks = ["sickbeard.db", "sickchill.db", "config.ini"]
-            if not any([os.path.isfile(os.path.join(settings.DATA_DIR, check)) for check in checks]):
-                settings.DATA_DIR = profile_path
+        settings.DATA_DIR = choose_data_dir(settings.PROG_DIR)
 
         settings.MY_ARGS = sys.argv[1:]
 
         # Rename the main thread
-        threading.currentThread().name = "MAIN"
+        threading.current_thread().name = "MAIN"
 
         args = SickChillArgumentParser(settings.DATA_DIR).parse_args()
 
@@ -195,10 +187,6 @@ class SickChill(object):
 
         # Pre-populate network timezones, it isn't thread safe
         network_timezones.update_network_dict()
-
-        # sure, why not?
-        if settings.USE_FAILED_DOWNLOADS:
-            failed_history.trimHistory()
 
         # Check for metadata indexer updates for shows (sets the next aired ep!)
         # oldbeard.showUpdateScheduler.forceRun()

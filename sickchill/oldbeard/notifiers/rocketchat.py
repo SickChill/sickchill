@@ -1,6 +1,7 @@
 import json
 
 import requests
+from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings
 from sickchill.oldbeard import common
@@ -44,7 +45,7 @@ class Notifier(object):
         logger.info("Sending rocketchat message: " + message)
         logger.info("Sending rocketchat message to url: " + rocketchat_webhook)
 
-        headers = {"Content-Type": "application/json"}
+        headers = CaseInsensitiveDict({"Content-Type": "application/json"})
         try:
             r = requests.post(
                 rocketchat_webhook,

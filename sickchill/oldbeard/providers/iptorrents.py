@@ -51,11 +51,11 @@ class Provider(TorrentProvider):
         login_params = {"username": self.username, "password": self.password, "login": "submit"}
 
         if self.custom_url:
-            if not validators.url(self.custom_url):
+            if validators.url(self.custom_url) != True:
                 logger.warning("Invalid custom url: {0}".format(self.custom_url))
                 return False
 
-        # Get the index, redirects to login
+        # Get the index, redirects to log in
         data = self.get_url(self.custom_url or self.url, returns="text")
         if not data:
             logger.warning("Unable to connect to provider")
@@ -67,7 +67,7 @@ class Provider(TorrentProvider):
                 logger.warning("Could not find the login form. Try adding cookies instead")
                 return False
 
-        response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns="text")
+        response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns="text", flaresolverr=True)
         if not response:
             logger.warning("Unable to connect to provider")
             return False
@@ -108,7 +108,7 @@ class Provider(TorrentProvider):
                 search_url += ";o=seeders" if mode != "RSS" else ""
 
                 if self.custom_url:
-                    if not validators.url(self.custom_url):
+                    if validators.url(self.custom_url) != True:
                         logger.warning("Invalid custom url: {0}".format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])

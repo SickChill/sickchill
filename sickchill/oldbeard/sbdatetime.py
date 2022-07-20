@@ -92,9 +92,9 @@ class sbdatetime(datetime.datetime):
             if settings.TIMEZONE_DISPLAY == "local":
                 return dt.astimezone(sb_timezone) if self is None else self.astimezone(sb_timezone)
             else:
-                return dt if self is None else self
+                return self if self else dt
         except Exception:
-            return dt if self is None else self
+            return self if self else dt
 
     # display Time in SickChill Format
     @static_or_instance

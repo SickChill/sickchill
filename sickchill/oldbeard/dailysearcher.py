@@ -9,16 +9,16 @@ from sickchill.show.Show import Show
 from . import common, db, network_timezones
 
 
-class DailySearcher(object):  # pylint:disable=too-few-public-methods
+class DailySearcher(object):
     def __init__(self):
         self.lock = threading.Lock()
         self.amActive = False
 
-    def run(self, force=False):  # pylint:disable=too-many-branches
+    def run(self, force=False):
         """
         Runs the daily searcher, queuing selected episodes for search
 
-        :param force: Force search
+        param force: Force search
         """
         if self.amActive:
             return
@@ -54,7 +54,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
                     continue
 
             except MultipleShowObjectsException:
-                logger.info("ERROR: expected to find a single show matching " + str(sqlEp["showid"]))
+                logger.info(_("ERROR: expected to find a single show matching {show_id}").format(show_id=sqlEp["showid"]))
                 continue
 
             if show.airs and show.network:
@@ -62,23 +62,30 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
                 air_time = network_timezones.parse_date_time(sqlEp["airdate"], show.airs, show.network).astimezone(network_timezones.sb_timezone)
 
                 # filter out any episodes that haven't started airing yet,
-                # but set them to the default status while they are airing
-                # so they are snatched faster
+                # but set them to the default status while they are airing so that they are snatched faster
                 if air_time > curTime:
                     continue
 
             ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
             with ep.lock:
+                prefix = _("New episode {episode_string} airs today,").format(episode_string=ep.pretty_name)
                 if ep.season == 0:
-                    logger.info("New episode " + ep.pretty_name + " airs today, setting status to SKIPPED because is a special season")
+                    logger.info(_("{prefix} setting status to SKIPPED because is a special season").format(prefix=prefix))
                     ep.status = common.SKIPPED
                 else:
-                    logger.info(
-                        "New episode {0} airs today, setting to default episode status for this show: {1}".format(
-                            ep.pretty_name, common.statusStrings[ep.show.default_ep_status]
+                    if ep.status != common.UNAIRED:
+                        logger.debug(
+                            _(
+                                "{prefix} but it has already been snatched or downloaded, but has not been saved to the database yet. Skipping so we don't download it again!"
+                            ).format(prefix=prefix)
                         )
-                    )
-                    ep.status = ep.show.default_ep_status
+                    else:
+                        logger.info(
+                            _("{prefix} setting to default episode status for this show: {status_string}").format(
+                                prefix=prefix, status_string=common.statusStrings[ep.show.default_ep_status]
+                            )
+                        )
+                        ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())
 
@@ -86,7 +93,7 @@ class DailySearcher(object):  # pylint:disable=too-few-public-methods
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
         else:
-            logger.info("No new released episodes found ...")
+            logger.info(_("No new released episodes found ..."))
 
         # queue episode for daily search
         dailysearch_queue_item = sickchill.oldbeard.search_queue.DailySearchQueueItem()

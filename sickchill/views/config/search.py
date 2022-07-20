@@ -14,9 +14,6 @@ from . import Config
 
 @Route("/config/search(/?.*)", name="config:search")
 class ConfigSearch(Config):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @addslash
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="config_search.mako")
@@ -50,6 +47,7 @@ class ConfigSearch(Config):
         backlog_days=None,
         backlog_frequency=None,
         dailysearch_frequency=None,
+        cache_retention=None,
         nzb_method=None,
         torrent_method=None,
         usenet_retention=None,
@@ -85,6 +83,7 @@ class ConfigSearch(Config):
         syno_dsm_path=None,
         quality_allow_hevc=False,
         prefer_words=None,
+        flaresolverr_uri=None,
     ):
 
         results = []
@@ -106,6 +105,7 @@ class ConfigSearch(Config):
         settings.NZB_METHOD = nzb_method
         settings.TORRENT_METHOD = torrent_method
         settings.USENET_RETENTION = try_int(usenet_retention, 500)
+        settings.CACHE_RETENTION = try_int(cache_retention, 30)
 
         settings.IGNORE_WORDS = ignore_words if ignore_words else ""
         settings.TRACKERS_LIST = trackers_list if trackers_list else ""
@@ -167,6 +167,8 @@ class ConfigSearch(Config):
         settings.SYNOLOGY_DSM_USERNAME = syno_dsm_user
         settings.SYNOLOGY_DSM_PASSWORD = filters.unhide(settings.SYNOLOGY_DSM_PASSWORD, syno_dsm_pass)
         settings.SYNOLOGY_DSM_PATH = syno_dsm_path.rstrip("/\\")
+
+        settings.FLARESOLVERR_URI = config.clean_url(flaresolverr_uri)
 
         # This is a PITA, but lets merge the settings if they only set DSM up in one section to save them some time
         if settings.TORRENT_METHOD == "download_station":

@@ -1,6 +1,7 @@
 import json
 
 import requests
+from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings
 from sickchill.oldbeard import common
@@ -45,7 +46,7 @@ class Notifier(object):
         logger.info("Sending slack message: " + message)
         logger.info("Sending slack message  to url: " + slack_webhook)
 
-        headers = {"Content-Type": "application/json"}
+        headers = CaseInsensitiveDict({"Content-Type": "application/json"})
         try:
             r = requests.post(
                 slack_webhook,

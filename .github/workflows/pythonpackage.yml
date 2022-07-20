@@ -32,12 +32,12 @@ jobs:
     steps:
     - name: Cancel Previous Runs
       if: success() && !env.ACT
-      uses: styfle/cancel-workflow-action@0.9.1
+      uses: styfle/cancel-workflow-action@0.10.0
       with:
         access_token: ${{ github.token }}
     - name: Checkout
       if: success() && !env.ACT
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 1
         persist-credentials: false
@@ -47,18 +47,18 @@ jobs:
       with:
         format: diff
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set up Node
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: '16.x'
         cache: 'npm'
     - name: Restore pip cache
       if: success() && !env.ACT
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: $(python -m pip cache dir)
         key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/yarn.lock') }}
@@ -66,7 +66,7 @@ jobs:
           ${{ runner.os }}-pip-${{ matrix.python-version }}-
     - name: Restore npm cache
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: $(npm config get cache)
         key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
@@ -77,7 +77,7 @@ jobs:
       run: npm install -g yarn
       shell: bash
     - name: Install Poetry
-      uses: snok/install-poetry@v1.2.1
+      uses: snok/install-poetry@v1.3.1
       with:
         version: 1.1.10
         virtualenvs-path: .venv
@@ -86,16 +86,16 @@ jobs:
         installer-parallel: false
     - name: Restore poetry cache
       if: success() && !env.ACT
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: $(poetry config cache-dir)
-        key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
     - name: Restore virtualenv
       if: success() && !env.ACT
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: .venv
-        key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
     - name: Install dependencies
       run: |
         poetry install --no-interaction --no-root
@@ -123,21 +123,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.9.1
+      uses: styfle/cancel-workflow-action@0.10.0
       with:
         access_token: ${{ github.token }}
     - name: Checkout
       if: success() && !env.ACT
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 1
         persist-credentials: false
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
     - name: Cache Docker layers
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -145,20 +145,26 @@ jobs:
           ${{ runner.os }}-buildx-
     - name: Login to DockerHub
       if: github.actor == 'miigotu' && !env.ACT
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Login to GitHub Container Registry
       if: github.actor == 'miigotu' && !env.ACT
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.3.1
+      with:
+        version: 1.1.10
+        virtualenvs-create: false
+        installer-parallel: false
     - name: Docker meta
       id: meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: |
           ${{ github.repository }}
@@ -167,28 +173,25 @@ jobs:
           org.opencontainers.image.source=https://github.com/sickchill/sickchill
           org.opencontainers.image.url=https://sickchill.github.io
           org.opencontainers.image.licenses=GPL-3.0+
-    - name: Install Poetry
-      uses: snok/install-poetry@v1.2.1
-      with:
-        version: 1.1.10
-        virtualenvs-create: false
-        installer-parallel: false
-    - name: Set variables
-      id: vars
-      run: |
-        echo ::set-output name=version::$(poetry version --short)
-        echo ::set-output name=docker_name::${GITHUB_REPOSITORY,,}
+        tags: |
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=tag
+          type=ref,event=pr
+          type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
+          type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
+          type=edge,branch=develop
+          type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     - name: Build and Push
       if: github.actor == 'miigotu'
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         context: .
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
-        tags: |
-          ${{ steps.meta.outputs.tags }}
-          ${{ steps.vars.outputs.docker_name }}:${{ steps.vars.outputs.version }}
-          ghcr.io/${{ steps.vars.outputs.docker_name }}:${{ steps.vars.outputs.version }}
+        tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new

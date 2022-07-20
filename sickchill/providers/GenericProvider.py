@@ -5,6 +5,7 @@ from itertools import chain
 from os.path import join
 from random import shuffle
 
+from requests.structures import CaseInsensitiveDict
 from requests.utils import add_dict_to_cookiejar
 
 import sickchill.oldbeard
@@ -52,7 +53,7 @@ class GenericProvider(object):
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
-        self.headers = dict()
+        self.headers = CaseInsensitiveDict()
         self.proper_strings = ["PROPER|REPACK|REAL"]
         self.provider_type = None
         self.public = False

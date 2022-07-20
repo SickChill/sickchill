@@ -19,7 +19,17 @@ class CacheDBConnection(db.DBConnection):
     def __init__(self):
         super().__init__("cache.db")
         db.upgrade_database(self, cache.InitialSchema)
-        self.action("DELETE from results WHERE added < datetime('now','-30 days')")
+        # self.action("DELETE from results WHERE added < datetime('now','-30 days')")
+
+        self.trim()
+
+    def trim(self, provider: str = ""):
+        sql = f"DELETE from results WHERE added < datetime('now','-{settings.CACHE_RETENTION} days')"
+        sql_args = []
+        if provider:
+            sql += "AND provider = ?"
+            sql_args.append(provider)
+        self.action(sql, sql_args)
 
 
 class TVCache(object):
@@ -40,7 +50,7 @@ class TVCache(object):
     def _clear_cache(self):
         if self.should_clear_cache():
             cache_db_con = self._get_db()
-            cache_db_con.action("DELETE FROM results WHERE provider = ? AND added < datetime('now', '-30 days')", [self.provider_id])
+            cache_db_con.trim(self.provider_id)
 
     def _get_seeders_and_leechers(self, item):
         return self.provider._get_seeders_and_leechers(item)

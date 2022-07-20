@@ -348,12 +348,12 @@ class NewznabProvider(NZBProvider):
                             title = item.title.get_text(strip=True)
                             download_url = None
                             if item.link:
-                                if validators.url(item.link.get_text(strip=True)):
+                                if validators.url(item.link.get_text(strip=True)) == True:
                                     download_url = item.link.get_text(strip=True)
-                                elif validators.url(item.link.next.strip()):
+                                elif validators.url(item.link.next.strip()) == True:
                                     download_url = item.link.next.strip()
 
-                            if (not download_url, item.enclosure and validators.url(item.enclosure.get("url", "").strip())):
+                            if (not download_url, item.enclosure and validators.url(item.enclosure.get("url", "").strip())) == True:
                                 download_url = item.enclosure.get("url", "").strip()
 
                             if not (title and download_url):

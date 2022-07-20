@@ -3,7 +3,9 @@ import sys
 import threading
 import zlib
 from time import sleep, time
+from typing import Any, Dict
 
+from .aniDBcommands import Command
 from .aniDBerrors import AniDBBannedError, AniDBError, AniDBMustAuthError, AniDBPacketCorruptedError
 from .aniDBresponses import ResponseResolver
 
@@ -16,11 +18,13 @@ class AniDBLink(threading.Thread):
         self.target = (server, port)
         self.timeout = timeout
 
+        self.name = "ANIDB-LINK"
+
         self.myport = myport
         self.sock = None
         self.bound = self.connectSocket(myport, self.timeout)
 
-        self.cmd_queue = {None: None}
+        self.cmd_queue: Dict[Any, Command] = {None: None}
         self.resp_tagged_queue = {}
         self.resp_untagged_queue = []
         self.tags = []
@@ -64,7 +68,7 @@ class AniDBLink(threading.Thread):
         self._stop.set()
 
     def stopped(self):
-        return self._stop.isSet()
+        return self._stop.is_set()
 
     @staticmethod
     def print_log(data):
@@ -174,7 +178,7 @@ class AniDBLink(threading.Thread):
         self.cmd_queue[command.tag] = command
         self.tags.append(command.tag)
 
-    def _cmd_dequeue(self, resp):
+    def _cmd_dequeue(self, resp) -> Command:
         if not resp.restag:
             return None
         else:

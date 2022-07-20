@@ -16,9 +16,6 @@ from sickchill.views.routes import Route
 
 @Route("/manage(/?.*)", name="manage:main")
 class Manage(Home, WebRoot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def index(self, *args, **kwargs):
         t = PageTemplate(rh=self, filename="manage.mako")
         return t.render(title=_("Mass Update"), header=_("Mass Update"), topmenu="manage", controller="manage", action="index")

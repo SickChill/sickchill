@@ -11,9 +11,6 @@ from .routes import Route
 
 @Route("/browser(/?.*)", name="filebrowser")
 class WebFileBrowser(WebRoot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def index(self, path="", includeFiles=False, fileTypes=""):
 
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")

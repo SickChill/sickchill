@@ -2087,6 +2087,24 @@ const SICKCHILL = {
                     $('#test_torrent_result').html(data);
                 });
             });
+            $('#testFlareSolverr').on('click', function () {
+                const flaresolverrUri = $.trim($('#flaresolverr_uri').val());
+                if (!flaresolverrUri) {
+                    $('#testFlaresolverr-result').html(_('Please fill out the necessary fields above.'));
+                    $('#flaresolverr_uri').addClass('warning');
+                    return;
+                }
+
+                $('#flaresolverr_uri').removeClass('warning');
+                $(this).prop('disabled', true);
+                $('#testFlaresolverr-result').html(loading);
+                $.post(scRoot + '/home/testFlareSolverr', {
+                    flaresolverr_uri: flaresolverrUri, // eslint-disable-line camelcase
+                }).done(data => {
+                    $('#testFlaresolverr-result').html(data);
+                    $('#testFlareSolverr').prop('disabled', false);
+                });
+            });
         },
         subtitles() {
             $.fn.showHideServices = function () {
@@ -2291,8 +2309,11 @@ const SICKCHILL = {
                         return $(node).find('span').text().toLowerCase();
                     },
                     5(node) {
-                        const progress = $(node).find('div').attr('data-progress-sort');
-                        return progress === undefined ? Number.NEGATIVE_INFINITY : (progress.length > 0 && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                        const progress = $(node).find('div').attr('data-progress-percentage');
+                        const progressResult = progress === undefined ? Number.NEGATIVE_INFINITY : (progress.length > 0 && Number.parseFloat(progress)) || 0;
+                        const total = $(node).find('div').attr('data-progress-total');
+                        const totalTesult = total === undefined ? Number.NEGATIVE_INFINITY : (total.length > 0 && Number.parseInt(total, 10)) || 0;
+                        return [progressResult, totalTesult];
                     },
                     6(node) {
                         return $(node).data('show-size');
@@ -2373,7 +2394,22 @@ const SICKCHILL = {
             });
 
             $('.show-grid').imagesLoaded(() => {
-                const sort = getMeta('settings.POSTER_SORTBY') === 'date' ? ['status', 'date', 'name'] : getMeta('settings.POSTER_SORTBY');
+                let sort;
+                switch (getMeta('settings.POSTER_SORTBY')) {
+                    case 'progress':
+                        sort = ['progress', 'total', 'name'];
+                        break;
+                    case 'date':
+                        sort = ['date', 'status', 'name'];
+                        break;
+                    case 'status':
+                        sort = ['status', 'progress', 'name'];
+                        break;
+                    default:
+                        sort = getMeta('settings.POSTER_SORTBY');
+                        break;
+                }
+
                 $('.loading-spinner').hide();
                 $('.show-grid').show().isotope({
                     itemSelector: '.show-container',
@@ -2382,6 +2418,7 @@ const SICKCHILL = {
                     layoutMode: 'masonry',
                     masonry: {
                         isFitWidth: true,
+                        horizontalOrder: true,
                     },
                     getSortData: {
                         name(itemElement) {
@@ -2394,8 +2431,12 @@ const SICKCHILL = {
                             return (date.length > 0 && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
                         },
                         progress(itemElement) {
-                            const progress = $(itemElement).attr('data-progress-sort');
-                            return (progress.length > 0 && Number.parseFloat(progress)) || Number.NEGATIVE_INFINITY;
+                            const progress = $(itemElement).attr('data-progress');
+                            return (progress.length > 0 && Number.parseFloat(progress)) || 0;
+                        },
+                        total(itemElement) {
+                            const totalEps = $(itemElement).attr('data-progress-total');
+                            return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
                         },
                         status: '[data-status]',
                     },
@@ -2406,17 +2447,21 @@ const SICKCHILL = {
                 let posterHoverTimer = null;
                 $('.show-container').on('mouseenter', function () {
                     const poster = $(this);
-                    if (poster.find('.show-details').css('display') !== 'none') {
+                    const details = poster.find('.show-network-image');
+                    if (details[0].style.cssText !== 'width: 0px;') {
                         return;
                     }
 
                     posterHoverTimer = setTimeout(() => {
                         posterHoverTimer = null;
                         $('#posterPopup').remove();
+
                         const popup = poster.clone().attr({
                             id: 'posterPopup',
                         });
                         const origLeft = poster.offset().left;
+                        const origWidth = poster.width();
+                        const origHeight = poster.height();
                         const origTop = poster.offset().top;
                         popup.css({
                             position: 'absolute',
@@ -2428,14 +2473,19 @@ const SICKCHILL = {
 
                         popup.find('.show-details').show();
                         popup.on('mouseleave', function () {
-                            $(this).remove();
+                            $(this).animate({
+                                height: origHeight + 8,
+                                width: origWidth + 8,
+                                top: origTop,
+                                left: origLeft,
+                            });
                         });
                         popup.appendTo('body');
 
                         const height = 438;
                         const width = 250;
-                        let newTop = ((origTop + poster.height()) / 2) - (height / 2);
-                        let newLeft = ((origLeft + poster.width()) / 2) - (width / 2);
+                        let newTop = (origTop + (poster.height() / 2)) - (height / 2);
+                        let newLeft = (origLeft + (poster.width() / 2)) - (width / 2);
 
                         // Make sure the popup isn't outside the viewport
                         const margin = 5;
@@ -2478,12 +2528,82 @@ const SICKCHILL = {
             });
 
             $('#postersort').on('change', function () {
-                $('.show-grid').isotope({sortBy: $(this).val() === 'date' ? ['status', 'date', 'name'] : $(this).val()});
+                let sort;
+                switch ($(this).val()) {
+                    case 'progress':
+                        sort = ['progress', 'total', 'name'];
+                        break;
+                    case 'date':
+                        sort = ['date', 'status', 'name'];
+                        break;
+                    case 'status':
+                        sort = ['status', 'progress', 'name'];
+                        break;
+                    default:
+                        sort = getMeta('settings.POSTER_SORTBY');
+                        break;
+                }
+
+                $('.show-grid').isotope({
+                    layoutMode: 'masonry',
+                    masonry: {
+                        isFitWidth: true,
+                        horizontalOrder: true,
+                    },
+                    sortBy: sort,
+                    getSortData: {
+                        name(itemElement) {
+                            const name = $(itemElement).attr('data-name') || '';
+                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                        },
+                        network: '[data-network]',
+                        date(itemElement) {
+                            const date = $(itemElement).attr('data-date');
+                            return (date.length > 0 && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
+                        },
+                        progress(itemElement) {
+                            const progress = $(itemElement).attr('data-progress');
+                            return (progress.length > 0 && Number.parseFloat(progress)) || 0;
+                        },
+                        total(itemElement) {
+                            const totalEps = $(itemElement).attr('data-progress-total');
+                            return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
+                        },
+                        status: '[data-status]',
+                    },
+                });
                 $.post($(this).find('option:selected').data('sort'));
             });
 
             $('#postersortdirection').on('change', function () {
-                $('.show-grid').isotope({sortAscending: ($(this).val() === 'true')});
+                $('.show-grid').isotope({
+                    layoutMode: 'masonry',
+                    masonry: {
+                        isFitWidth: true,
+                        horizontalOrder: true,
+                    },
+                    sortAscending: ($(this).val() === 'true'),
+                    getSortData: {
+                        name(itemElement) {
+                            const name = $(itemElement).attr('data-name') || '';
+                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                        },
+                        network: '[data-network]',
+                        date(itemElement) {
+                            const date = $(itemElement).attr('data-date');
+                            return (date.length > 0 && Number.parseInt(date, 10)) || Number.POSITIVE_INFINITY;
+                        },
+                        progress(itemElement) {
+                            const progress = $(itemElement).attr('data-progress');
+                            return (progress.length > 0 && Number.parseFloat(progress)) || 0;
+                        },
+                        total(itemElement) {
+                            const totalEps = $(itemElement).attr('data-progress-total');
+                            return (totalEps.length > 0 && Number.parseInt(totalEps, 10)) || 0;
+                        },
+                        status: '[data-status]',
+                    },
+                });
                 $.post($(this).find('option:selected').data('sort'));
             });
 
@@ -3885,19 +4005,33 @@ const SICKCHILL = {
                     }
 
                     $('#container').isotope({
+                        layoutMode: 'masonry',
+                        masonry: {
+                            isFitWidth: true,
+                            horizontalOrder: true,
+                        },
                         sortBy: sortCriteria,
                     });
                 });
 
                 $('#showsortdirection').on('change', function () {
                     $('#container').isotope({
+                        layoutMode: 'masonry',
+                        masonry: {
+                            isFitWidth: true,
+                            horizontalOrder: true,
+                        },
                         sortAscending: (this.value === 'asc'),
                     });
                 });
 
                 $('#container').isotope({
                     sortBy: 'original-order',
-                    layoutMode: 'fitRows',
+                    layoutMode: 'masonry',
+                    masonry: {
+                        isFitWidth: true,
+                        horizontalOrder: true,
+                    },
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';

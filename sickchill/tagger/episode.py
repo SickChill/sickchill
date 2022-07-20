@@ -27,6 +27,8 @@ class EpisodeTags(object):
             "xvid": tags.xvid,
             "netflix": tags.netflix,
             "amazon": tags.amazon,
+            "hevc": tags.hevc,
+            "trueHD": tags.trueHD,
         }
 
     def _get_match_obj(self, attr, regex=None, flags=0):
@@ -169,6 +171,12 @@ class EpisodeTags(object):
         match = self._get_match_obj(attr)
         return "" if not match else (match.group(1) or match.group(2)).lower()
 
+    @property
+    def trueHD(self):
+        attr = "trueHD"
+        match = self._get_match_obj(attr)
+        return "" if not match else match.group().lower()
+
     # CODECS
     @property
     def hevc(self):
@@ -177,9 +185,12 @@ class EpisodeTags(object):
 
         :returns: an empty string if not found
         """
-        if not self.avc:
-            return ""
-        return "" if not (self.avc[-1] == "5") else self.avc
+        if self.avc:
+            return "" if not (self.avc[-1] == "5") else self.avc
+
+        attr = "hevc"
+        match = self._get_match_obj(attr)
+        return "" if not match else match.group().lower()
 
     @property
     def avc(self):
