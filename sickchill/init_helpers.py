@@ -405,6 +405,9 @@ def make_virtualenv_and_rerun(location: Path) -> None:
                     # add original arguments to this re-call
                     new_argv = [str(place)] + sys.argv
 
+                    if "VIRTUAL_ENV" not in os.environ:
+                        os.environ["VIRTUAL_ENV"] = str(location)
+
                     logger.info(f"Restarting SickChill with {new_argv}")
                     return os.execvp(new_argv[0], new_argv)
 
