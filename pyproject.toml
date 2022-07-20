@@ -25,7 +25,6 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -186,7 +185,7 @@ pybabel update
 """
 
 [tool.poetry.dependencies]
-python = ">=3.6.2,<4"
+python = ">=3.7,<4"
 beautifulsoup4 = "^4.9.3"
 "bencode.py" = "^4.0.0"
 CacheControl = "^0.12.6"
@@ -258,3 +257,4 @@ pytest = "^7.0.1"
 isort = "^5.10.1"
 poethepoet = "^0.13.0"
 po2json = "^0.2.2"
+bandit = "<=1.7.2"
