@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9, 3.10]
         experimental: [false]
         include:
           - os: windows-latest
@@ -98,6 +98,7 @@ jobs:
         key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
     - name: Install dependencies
       run: |
+        poetry upgrade
         poetry install --no-interaction --no-root
         pip install poethepoet
       shell: bash
