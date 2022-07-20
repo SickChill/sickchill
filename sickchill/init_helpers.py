@@ -29,7 +29,7 @@ def locale_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "locale"))
 
 
-IS_VIRTUALENV = hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix)
+IS_VIRTUALENV = hasattr(sys, "real_prefix") or (hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix) or os.getenv("VIRTUAL_ENV")
 
 
 def setup_gettext(language: str = None) -> None:
