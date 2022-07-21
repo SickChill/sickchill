@@ -156,6 +156,7 @@ class ConfigGeneral(Config):
         settings.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
         settings.IGNORE_BROKEN_SYMLINKS = config.checkbox_to_value(ignore_broken_symlinks)
         config.change_update_frequency(update_frequency)
+        settings.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         settings.SORT_ARTICLE = config.checkbox_to_value(sort_article)
         settings.CPU_PRESET = cpu_preset
         settings.ANON_REDIRECT = anon_redirect
