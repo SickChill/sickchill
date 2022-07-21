@@ -277,6 +277,7 @@ NMJv2_DATABASE = None
 NMJv2_DBLOC = None
 NMJv2_HOST = None
 NO_DELETE = False
+NO_LGMARGIN = False
 NO_RESIZE = False
 NO_RESTART = False
 notificationsTaskScheduler = None
