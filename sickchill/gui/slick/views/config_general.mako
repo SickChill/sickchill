@@ -91,6 +91,20 @@
                             </div>
                         </div>
 
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Large Screen Margins')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" name="no_lgmargin" id="no_lgmargin" ${('', 'checked="checked"')[bool(settings.NO_LGMARGIN)]}/>
+                                        <label for="no_lgmargin">${_('No side margins on large screens')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         ## Fix
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
