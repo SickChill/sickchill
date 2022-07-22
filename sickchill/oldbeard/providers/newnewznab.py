@@ -147,7 +147,7 @@ class NewznabProvider(NZBProvider):
             logger.warning(error_string)
             return False, return_categories, error_string
 
-        with BS4Parser(data, parsers=["lxml", "html.parser"]) as html:
+        with BS4Parser(data,  language="xml") as html:
             try:
                 self.torznab = html.find("server").get("title") == "Jackett"
             except AttributeError:
@@ -320,7 +320,7 @@ class NewznabProvider(NZBProvider):
                 if not data:
                     break
 
-                with BS4Parser(data, parsers=["lxml", "html.parser"]) as html:
+                with BS4Parser(data,  language="xml") as html:
                     if not self._check_auth_from_data(html):
                         break
 
