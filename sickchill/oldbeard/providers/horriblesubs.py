@@ -66,7 +66,7 @@ class Provider(TorrentProvider):
     @staticmethod
     def __parseRssFeed(data):
         entries = []
-        with BS4Parser(data, "html5lib") as soup:
+        with BS4Parser(data, language="xml") as soup:
             items = soup.findAll("item")
 
             for item in items:

@@ -55,7 +55,7 @@ PROVIDER_URLS = {
 
 
 max_score = {}
-Scores = namedtuple("Scores", ["res", "percent", "min", "min_percent"])
+Scores = namedtuple("Scores", "res percent min min_percent")
 
 
 def log_scores(subtitle: Union[subliminal.Episode, subliminal.Movie], video: subliminal.Video, user_score: int = None) -> Scores:
