@@ -119,6 +119,8 @@ jobs:
         poetry update
         poetry install --no-interaction --no-root
         pip install poethepoet
+      env:
+        YARL_NO_EXTENSIONS: 1
       shell: bash
     - name: Run yarn
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9

@@ -67,6 +67,8 @@ jobs:
         run: |
           pip install poethepoet
           poe depup
+        env:
+          YARL_NO_EXTENSIONS: 1
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update poetry (python) and yarn (npm) dependencies
