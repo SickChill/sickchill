@@ -2162,15 +2162,15 @@ class TVEpisode(object):
 
         # set the differnet show name variables and only 4 digit years
         show_name = self.show.name
-        show_name_no = re.sub(r"\(\d{4}\)$", "", show_name).strip()
+        show_name_no_year = re.sub(r"\(\d{4}\)$", "", show_name).strip()
         # if the start year is less than 1 character there isn't one so revert to show name (safety check)
-        if len(self.startyear) > 1:
-            show_start_year = show_name_no + ' (' + self.startyear + ')'
+        if self.startyear:
+            show_start_year = f"{show_name_no_year} ({self.startyear})"
         else:
             show_start_year = show_name
 
         if settings.NAMING_STRIP_YEAR:
-            show_name = show_name_no
+            show_name = show_name_no_year
         else:
             show_name = self.show.name
 
