@@ -186,13 +186,11 @@ pybabel update
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4"
-beautifulsoup4 = "^4.9.3"
 "bencode.py" = "^4.0.0"
 CacheControl = "^0.12.6"
 chardet = ">=4,<6"
 configobj = "^5.0.6"
 feedparser = "^6.0.2"
-html5lib = "^1.1"
 ipaddress = "^1.0.23"
 Js2Py = ">=0.70,<0.72"
 jsonrpclib-pelix = "^0.4.2"
@@ -237,6 +235,9 @@ IMDbPY = ">=2020.09.25"
 babelfish = ">=0.6.0b1"
 kodipydent-alt = "^2021.7.16"
 beekeeper-alt = "^2021.7.16"
+html5lib = {version = "^1.1", optional = true}
+lxml = {version = "^4.9.1", optional = true}
+greenlet = {version = ">=1.1.2", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]
 coveralls = "^3.3.1"

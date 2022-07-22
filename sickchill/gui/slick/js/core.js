@@ -2313,7 +2313,7 @@ const SICKCHILL = {
                         const progressResult = progress === undefined ? Number.NEGATIVE_INFINITY : (progress.length > 0 && Number.parseFloat(progress)) || 0;
                         const total = $(node).find('div').attr('data-progress-total');
                         const totalTesult = total === undefined ? Number.NEGATIVE_INFINITY : (total.length > 0 && Number.parseInt(total, 10)) || 0;
-                        return progressResult * 100000 + totalTesult;
+                        return (progressResult * 100 * 1000) + totalTesult;
                     },
                     6(node) {
                         return $(node).data('show-size');
