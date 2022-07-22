@@ -324,7 +324,11 @@ def check_and_install_pip() -> None:
 
     if not check_installed("pip"):
         logger.info("Installing pip")
-        tfd = download_to_temp_file("https://bootstrap.pypa.io/get-pip.py")
+        if sys.version_info[1:2][0] == 6:
+            tfd = download_to_temp_file(" https://bootstrap.pypa.io/pip/3.6/get-pip.py")
+        else:
+            tfd = download_to_temp_file("https://bootstrap.pypa.io/get-pip.py")
+
         result = subprocess_call([f"{sys.executable}", f"{tfd.name}"])
         if result == 0:
             logger.info("Pip installed")
