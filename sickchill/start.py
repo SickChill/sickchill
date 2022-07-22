@@ -298,6 +298,7 @@ def initialize(consoleLogging=True):
         settings.NAMING_ANIME_MULTI_EP = check_setting_int(settings.CFG, "General", "naming_anime_multi_ep", 1, min_val=1, max_val=max(MULTI_EP_STRINGS))
         settings.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
         settings.NAMING_STRIP_YEAR = check_setting_bool(settings.CFG, "General", "naming_strip_year")
+        settings.NAMING_NO_BRACKETS = check_setting_bool(settings.CFG, "General", "naming_no_brackets")
 
         settings.USE_NZBS = check_setting_bool(settings.CFG, "General", "use_nzbs", settings.USE_NZBS)
         settings.USE_TORRENTS = check_setting_bool(settings.CFG, "General", "use_torrents", settings.USE_TORRENTS)
@@ -1219,6 +1220,7 @@ def save_config():
                 "auto_update": int(settings.AUTO_UPDATE),
                 "notify_on_update": int(settings.NOTIFY_ON_UPDATE),
                 "naming_strip_year": int(settings.NAMING_STRIP_YEAR),
+                "naming_no_brackets": int(settings.NAMING_NO_BRACKETS),
                 "naming_pattern": settings.NAMING_PATTERN,
                 "naming_custom_abd": int(settings.NAMING_CUSTOM_ABD),
                 "naming_abd_pattern": settings.NAMING_ABD_PATTERN,

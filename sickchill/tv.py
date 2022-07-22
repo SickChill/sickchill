@@ -557,7 +557,6 @@ class TVShow(object):
         season_posters_result = season_banners_result = season_all_poster_result = season_all_banner_result = False
 
         for cur_provider in settings.metadata_provider_dict.values():
-
             # logger.debug(f"Running metadata routines for {cur_provider.name}")
 
             fanart_result = cur_provider.create_fanart(self) or fanart_result
@@ -1359,11 +1358,13 @@ class TVEpisode(object):
     release_group = DirtySetter("")
     # location = DirtySetter('')
     indexer = DirtySetter(1)
+    startyear = DirtySetter("")
 
     def __init__(self, show, season, episode, ep_file=""):
         self.season = season
         self.episode = episode
         self._location = ep_file
+        self.startyear = ""
 
         # setting any of the above sets the dirty flag
         self.dirty = True
@@ -1539,7 +1540,9 @@ class TVEpisode(object):
         #             ep=episode_num(season, episode)))
 
         main_db_con = db.DBConnection()
-        sql_results = main_db_con.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", [self.show.indexerid, season, episode])
+        sql = "SELECT * FROM tv_episodes JOIN tv_shows WHERE showid = indexer_id and showid = ? AND season = ? AND episode = ?"
+        sql_results = main_db_con.select(sql, [self.show.indexerid, season, episode])
+        # OLD: sql_results = main_db_con.select("SELECT * FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", [self.show.indexerid, season, episode])
 
         if len(sql_results) > 1:
             raise MultipleEpisodesInDatabaseException("Your DB has two records for the same show somehow.")
@@ -1563,6 +1566,8 @@ class TVEpisode(object):
             self.airdate = datetime.date.fromordinal(int(sql_results[0]["airdate"]))
             # logger.debug(f"1 Status changes from {self.status} to {sql_results[0]["status"]}")
             self.status = int(sql_results[0]["status"] or -1)
+            self.startyear = str(sql_results[0]["startyear"] or "")
+            logger.debug(f"Start year {self.startyear}")
 
             # don't overwrite my location
             if sql_results[0]["location"] and not self._location:
@@ -2120,7 +2125,11 @@ class TVEpisode(object):
 
         def dot(name):
             # assert isinstance(name, unicode), f'{name} is not unicode'
-            return helpers.sanitizeSceneName(name)
+            # re.sub str . was any char (messy) and sanitizer wouldn't allow brackets to remain without other issues.
+            swap_chars = " -_"
+            for x in swap_chars:
+                name = name.replace(x, ".")
+            return name
 
         def us(name):
             return re.sub("[ -]", "_", name)
@@ -2151,10 +2160,24 @@ class TVEpisode(object):
 
         epStatus_, epQual = Quality.splitCompositeStatus(self.status)
 
+        # set the differnet show name variables and only 4 digit years
+        show_name = self.show.name
+        show_name_no_year = re.sub(r"\(\d{4}\)$", "", show_name).strip()
+        # if the start year is less than 1 character there isn't one so revert to show name (safety check)
+        if self.startyear:
+            show_start_year = f"{show_name_no_year} ({self.startyear})"
+        else:
+            show_start_year = show_name
+
         if settings.NAMING_STRIP_YEAR:
-            show_name = re.sub(r"\(\d+\)$", "", self.show.name).strip()
+            show_name = show_name_no_year
         else:
             show_name = self.show.name
+
+        # remove brackets from both name sets
+        if settings.NAMING_NO_BRACKETS:
+            show_name = re.sub(r"[()]", "", show_name).strip()
+            show_start_year = re.sub(r"[()]", "", show_start_year).strip()
 
         # try to get the release group
         rel_grp = {"SICKCHILL": "SICKCHILL"}
@@ -2190,6 +2213,9 @@ class TVEpisode(object):
             "%SN": show_name,
             "%S.N": dot(show_name),
             "%S_N": us(show_name),
+            "%SNY": show_start_year,
+            "%S.N.Y": dot(show_start_year),
+            "%S_N_Y": us(show_start_year),
             "%EN": ep_name,
             "%E.N": dot(ep_name),
             "%E_N": us(ep_name),
