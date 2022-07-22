@@ -254,7 +254,7 @@ def download_subtitles(episode, force_lang=None):
         for subtitle in subtitles_list:
             scores = log_scores(subtitle, video, user_score=user_score)
             logger.debug(
-                f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores['res']}/{scores['percent']}% (min={scores['min']}/{scores['min_percent']}%)"
+                f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores.res}/{scores.percent}% (min={scores.min}/{scores.min_percent}%)"
             )
 
         found_subtitles = pool.download_best_subtitles(
