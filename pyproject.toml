@@ -188,12 +188,14 @@ pybabel update
 python = ">=3.7,<4"
 "bencode.py" = "^4.0.0"
 CacheControl = "^0.12.6"
-chardet = ">=4,<6"
 configobj = "^5.0.6"
 feedparser = "^6.0.2"
+greenlet = {version = ">=1.1.2", allow-prereleases = true}
+html5lib = {version = "^1.1", optional = true}
 ipaddress = "^1.0.23"
-Js2Py = ">=0.70,<0.72"
+Js2Py = {version = ">=0.70,<0.72", optional = true}
 jsonrpclib-pelix = "^0.4.2"
+lxml = {version = "^4.9.1", optional = true}
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
 PyGithub = "^1.54.1"
@@ -216,13 +218,10 @@ win-inet-pton = "^1.1.0"
 PyNMA = "^1.0"
 "putio.py" = "^8.7.0"
 profilehooks = "^1.12.0"
-httplib2 = ">=0.19,<0.21"
-PySocks = "^1.7.1"
 imagesize = "^1.2.0"
 Send2Trash = "^1.5.0"
 deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
-pyaes = "^1.6.1"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = ">=2021.3.18,<2023.0.0"
 packaging = ">=20.9,<22.0"
@@ -235,9 +234,6 @@ IMDbPY = ">=2020.09.25"
 babelfish = ">=0.6.0b1"
 kodipydent-alt = "^2021.7.16"
 beekeeper-alt = "^2021.7.16"
-html5lib = {version = "^1.1", optional = true}
-lxml = {version = "^4.9.1", optional = true}
-greenlet = {version = ">=1.1.2", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]
 coveralls = "^3.3.1"
@@ -259,3 +255,4 @@ isort = "^5.10.1"
 poethepoet = "^0.16.0"
 po2json = "^0.2.2"
 bandit = "<=1.7.2"
+pyaes = {version = "^1.6.1", optional = true}
