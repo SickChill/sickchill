@@ -110,6 +110,10 @@ force-exclude = '''
 '''
 
 [tool.poetry.extras]
+dev_experimental = ["pyaes"]
+alt_parsing = ["html5lib"]
+fast_parsing = ["lxml"]
+js2py = ["Js2Py"]
 
 [tool.poe.tasks]
 pytest = "pytest"

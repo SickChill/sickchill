@@ -1,9 +1,8 @@
 import datetime
+import re
 import time
 import traceback
-from urllib.parse import urljoin, urlencode
-
-import re
+from urllib.parse import urlencode, urljoin
 
 try:
     import js2py
