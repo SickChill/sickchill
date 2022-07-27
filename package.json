@@ -46,6 +46,7 @@
     "load-grunt-tasks": "^5.1.0",
     "lodash": "^4.17.15",
     "snyk": "^1.926.0",
+    "toml": "^3.0.0",
     "webpack": "^5.69.1",
     "xo": "^0.51.0",
     "yarn-minify": "^1.0.1"
