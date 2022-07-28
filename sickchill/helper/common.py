@@ -1,4 +1,10 @@
+from typing import TYPE_CHECKING
 import re
+from os import PathLike
+
+if TYPE_CHECKING:
+    from typing import AnyStr, Union
+
 from fnmatch import fnmatch
 from pathlib import Path
 
@@ -256,37 +262,31 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     return result
 
 
-def remove_extension(filename):
+def remove_extension(filename: Union[PathLike, str]):
     """
     Remove the extension of the provided ``filename``.
     The extension is only removed if it is in MEDIA_EXTENSIONS or ['nzb', 'torrent'].
     :param filename: The filename from which we want to remove the extension
     :return: The ``filename`` without its extension.
     """
-
-    if isinstance(filename, str) and "." in filename:
-        basename, dot, extension = filename.rpartition(".")
-
-        if basename and extension.lower() in ["nzb", "torrent"] + MEDIA_EXTENSIONS:
-            return basename
+    with Path(filename) as path:
+        if path.stem and path.suffix in ["nzb", "torrent"] + MEDIA_EXTENSIONS:
+            return path.with_suffix("")
 
     return filename
 
 
-def replace_extension(filename, new_extension):
+def replace_extension(filename: Union[PathLike, str], new_extension: str):
     """
     Replace the extension of the provided ``filename`` with a new extension.
     :param filename: The filename for which we want to change the extension
     :param new_extension: The new extension to apply on the ``filename``
     :return: The ``filename`` with the new extension
     """
+    with Path(filename) as path:
+        result = path.with_suffix(new_extension)
 
-    if isinstance(filename, str) and "." in filename:
-        basename = filename.rpartition(".")[0]
-        if basename:
-            return "{0}.{1}".format(basename, new_extension)
-
-    return filename
+    return result
 
 
 def sanitize_filename(filename):
