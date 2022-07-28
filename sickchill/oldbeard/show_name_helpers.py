@@ -143,8 +143,12 @@ def determine_release_name(directory=None, release_name=None):
             return release_name
 
         logger.info(_("Using release for release name."))
-        hell = release_name.rpartition(".")
-        logger.debug(f"{hell} return rpartition")
+        release_name_rpart = release_name.rpartition(".")
+        if release_name_rpart[0]:
+            release_name_rpart_return = release_name_rpart[0]
+        else:
+            release_name_rpart_return = release_name_rpart[2]
+        logger.debug(f"{release_name_rpart_return} return rpartition")
         return release_name.rpartition(".")[0]
 
     if directory is None:
