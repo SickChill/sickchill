@@ -880,6 +880,7 @@ class PostProcessor(object):
         """
 
         self._log("Processing " + self.directory + " (" + str(self.release_name) + ")")
+        logger.debug(f"DEF PROCESS self.release_name {str(self.release_name) }")
 
         if os.path.isdir(self.directory):
             self._log("File {0} seems to be a directory".format(self.directory))
