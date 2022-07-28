@@ -1567,7 +1567,6 @@ class TVEpisode(object):
             # logger.debug(f"1 Status changes from {self.status} to {sql_results[0]["status"]}")
             self.status = int(sql_results[0]["status"] or -1)
             self.startyear = str(sql_results[0]["startyear"] or "")
-            logger.debug(f"Start year {self.startyear}")
 
             # don't overwrite my location
             if sql_results[0]["location"] and not self._location:
