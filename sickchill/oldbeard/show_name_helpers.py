@@ -159,10 +159,10 @@ def determine_release_name(directory=None, release_name=None):
 
         if len(results) == 1:
             found_file = os.path.basename(results[0])
-            found_file = found_file.rpartition(".")[0]
+            found_file = found_file.rsplit(".", 1)[0]
             if filter_bad_releases(found_file):
                 logger.info("Release name (" + found_file + ") found from file (" + results[0] + ")")
-                return found_file.rpartition(".")[0]
+                return found_file.rsplit(".", 1)[0]
 
     # If that fails, we try the folder
     folder = os.path.basename(directory)
