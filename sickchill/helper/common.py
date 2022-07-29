@@ -146,6 +146,10 @@ def http_code_description(http_code):
 
 
 def get_extension(path: Union[PathLike, str] = None, lower: bool = False) -> str:
+
+    if not path:
+        return path
+
     if isinstance(path, str):
         path = Path(path)
 
@@ -323,6 +327,9 @@ def remove_extension(filename: Union[PathLike, str] = None, media_only: bool = T
     :param filename: The filename from which we want to remove the extension
     :return: The ``filename`` without its extension.
     """
+    if not filename:
+        return filename
+
     with Path(filename) as path:
         is_media = get_extension(path, lower=True) in ["nzb", "torrent"] + MEDIA_EXTENSIONS
         return type(filename)((path, path.with_suffix(""))[media_only and is_media])
@@ -335,6 +342,9 @@ def replace_extension(filename: Union[PathLike, str] = None, new_extension: str 
     :param new_extension: The new extension to apply on the ``filename``
     :return: The ``filename`` with the new extension
     """
+    if not filename:
+        return filename
+
     if new_extension and not new_extension.startswith("."):
         new_extension = f".{new_extension}"
 
