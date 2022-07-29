@@ -3,8 +3,7 @@ import binascii
 from enzyme import MKV
 from pkg_resources import DistributionNotFound, get_distribution
 
-import sickchill.helper.common
-import sickchill.oldbeard
+from sickchill.helper.common import is_media_file
 
 try:
     get_distribution("pymediainfo")
@@ -92,7 +91,7 @@ def video_screen_size(filename):
     :returns tuple: (width, height)
     """
 
-    if filename in bad_files or not sickchill.helper.common.is_media_file(filename):
+    if filename in bad_files or not is_media_file(filename):
         return None, None
 
     # Need to implement mediainfo another way, pymediainfo 2.0 causes segfaults

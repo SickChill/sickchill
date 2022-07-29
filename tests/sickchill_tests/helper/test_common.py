@@ -10,12 +10,16 @@ from sickchill.helper.common import (
     convert_size,
     episode_num,
     http_code_description,
+    is_media_file,
+    is_rar_file,
     is_sync_file,
     is_torrent_or_nzb_file,
+    MEDIA_EXTENSIONS,
     pretty_file_size,
     remove_extension,
     replace_extension,
     sanitize_filename,
+    SUBTITLE_EXTENSIONS,
     try_int,
 )
 
@@ -136,6 +140,68 @@ class CommonTests(unittest.TestCase):
         for tests in test_cases, unicode_test_cases:
             for (filename, result) in tests.items():
                 assert is_torrent_or_nzb_file(filename) == result
+
+    def test_is_rar_file(self):
+        """
+        Test is_rar_file
+        """
+        assert is_rar_file("lala.rar")
+        assert not is_rar_file("lala.zip")
+        assert not is_rar_file("lala.iso")
+        assert not is_rar_file("lala.wmv")
+        assert not is_rar_file("lala.avi")
+        assert not is_rar_file("lala.mkv")
+        assert not is_rar_file("lala.mp4")
+
+    def test_is_media_file(self):
+        """
+        Test is_media_file
+        """
+        # TODO: Add unicode tests
+        # TODO: Add MAC OS resource fork tests
+        # TODO: Add RARBG release tests
+        # RARBG release intros should be ignored
+        # MAC OS's "resource fork" files should be ignored
+        # Extras should be ignored
+        # and the file extension should be in the list of media extensions
+
+        # Test all valid media extensions
+        temp_name = "Show.Name.S01E01.HDTV.x264-SICKCHILL"
+        extension_tests = {".".join((temp_name, ext)): True for ext in MEDIA_EXTENSIONS}
+        # ...and some invalid ones
+        other_extensions = ["txt", "sfv", "srr", "rar", "nfo", "zip"]
+        extension_tests.update({".".join((temp_name, ext)): False for ext in other_extensions + SUBTITLE_EXTENSIONS})
+
+        # Samples should be ignored
+        sample_tests = {  # Samples should be ignored, valid samples will return False
+            "Show.Name.S01E01.HDTV.sample.mkv": False,  # default case
+            "Show.Name.S01E01.HDTV.sAmPle.mkv": False,  # Ignore case
+            "Show.Name.S01E01.HDTV.samples.mkv": True,  # sample should not be plural
+            "Show.Name.S01E01.HDTVsample.mkv": True,  # no separation, can't identify as sample
+            "Sample.Show.Name.S01E01.HDTV.mkv": False,  # location doesn't matter
+            "Show.Name.Sample.S01E01.HDTV.sample.mkv": False,  # location doesn't matter
+            "Show.Name.S01E01.HDTV.sample1.mkv": False,  # numbered samples are ok
+            "Show.Name.S01E01.HDTV.sample12.mkv": False,  # numbered samples are ok
+            "Show.Name.S01E01.HDTV.sampleA.mkv": True,  # samples should not be indexed alphabetically
+            "RARBG.mp4": False,
+            "rarbg.MP4": False,
+            "/TV/Sample.Show.Name.S01E01.HDTV-RARBG/RARBG.mp4": False,
+        }
+
+        edge_cases = {
+            None: False,
+            "": False,
+            0: False,
+            1: False,
+            42: False,
+            123189274981274: False,
+            12.23: False,
+            ("this", "is", "a tuple"): False,
+        }
+
+        for cur_test in extension_tests, sample_tests, edge_cases:
+            for cur_name, expected_result in cur_test.items():
+                assert is_media_file(cur_name) == expected_result, cur_name
 
     def test_pretty_file_size(self):
         """

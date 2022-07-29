@@ -8,9 +8,8 @@ from pathlib import Path
 import validators
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
-import sickchill.helper.common
 from sickchill import logger, settings
-from sickchill.helper.common import is_sync_file, is_torrent_or_nzb_file, remove_extension
+from sickchill.helper.common import is_media_file, is_rar_file, is_sync_file, is_torrent_or_nzb_file, remove_extension
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
 
 from . import common, db, failedProcessor, helpers, postProcessor
@@ -153,7 +152,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         if release_name and validators.url(release_name) == True:
             result.output += log_helper(_("Processing {0}").format(release_name), logger.INFO)
             generator_to_use = [("", [], [release_name])]
-        elif release_name and (sickchill.helper.common.is_media_file(release_name) or sickchill.helper.common.is_rar_file(release_name)):
+        elif release_name and (is_media_file(release_name) or is_rar_file(release_name)):
             result.output += log_helper(_("Processing {0}").format(release_name), logger.INFO)
             generator_to_use = [(process_path, [], [release_name])]
         else:
@@ -165,7 +164,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
             if current_directory:
                 filenames = [f for f in filenames if not is_torrent_or_nzb_file(f)]
-                rar_files = [x for x in filenames if sickchill.helper.common.is_rar_file(os.path.join(current_directory, x))]
+                rar_files = [x for x in filenames if is_rar_file(os.path.join(current_directory, x))]
                 if rar_files:
                     extracted_directories = unrar(current_directory, rar_files, force, result)
                     if extracted_directories:
@@ -179,7 +178,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             if not validate_dir(current_directory, release_name, failed, result):
                 continue
 
-            video_files = list(filter(sickchill.helper.common.is_media_file, filenames))
+            video_files = list(filter(is_media_file, filenames))
             if video_files:
                 process_media(current_directory, video_files, release_name, process_method, force, is_priority, result)
             else:
@@ -295,9 +294,9 @@ def validate_dir(process_path, release_name, failed, result):
             result.missed_files.append("{0} : Sync files found".format(os.path.join(process_path, sync_files[0])))
             continue
 
-        found_files = list(filter(sickchill.helper.common.is_media_file, filenames))
+        found_files = list(filter(is_media_file, filenames))
         if settings.UNPACK == settings.UNPACK_PROCESS_CONTENTS:
-            found_files += list(filter(sickchill.helper.common.is_rar_file, filenames))
+            found_files += list(filter(is_rar_file, filenames))
 
         if current_directory != settings.TV_DOWNLOAD_DIR and found_files:
             found_files.append(os.path.basename(current_directory))
@@ -338,7 +337,7 @@ def unrar(path, rar_files, force, result):
                     result.output += log_helper("Archive file already post-processed, extraction skipped: {0}".format(archive_path), logger.DEBUG)
                     continue
 
-                if not sickchill.helper.common.is_rar_file(archive_path):
+                if not is_rar_file(archive_path):
                     continue
 
                 result.output += log_helper("Checking if archive is valid and contains a video: {0}".format(archive_path), logger.DEBUG)
@@ -351,7 +350,7 @@ def unrar(path, rar_files, force, result):
                 rar_handle.testrar()
 
                 # If there are no video files in the rar, don't extract it
-                rar_media_files = list(filter(sickchill.helper.common.is_media_file, rar_handle.namelist()))
+                rar_media_files = list(filter(is_media_file, rar_handle.namelist()))
                 if not rar_media_files:
                     continue
 

@@ -10,7 +10,7 @@ from pathlib import Path
 import sickchill.helper.common
 import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
-from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
+from sickchill.helper.common import is_rar_file, remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
 from sickchill.show.History import History
 from sickchill.show.Show import Show
@@ -197,7 +197,7 @@ class PostProcessor(object):
                 continue
 
             # Exclude .rar files from associated list
-            if sickchill.helper.common.is_rar_file(associated_file_path):
+            if is_rar_file(associated_file_path):
                 continue
 
             # Define associated files (all, allowed and non allowed)
