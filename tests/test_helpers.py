@@ -419,7 +419,7 @@ class HelpersEncryptionTests(unittest.TestCase):
         """
         try:
             import OpenSSL
-        except ImportError:
+        except ModuleNotFoundError:
             self.skipTest("pyOpenSSL is not installed")
             return False
 

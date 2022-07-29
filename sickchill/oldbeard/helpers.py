@@ -21,6 +21,7 @@ from itertools import cycle
 from pathlib import Path
 from typing import Union
 from urllib.parse import urljoin
+from urllib.request import HTTPSHandler
 from xml.etree import ElementTree
 
 import certifi
@@ -67,17 +68,8 @@ def make_context(verify: bool):
 
 def set_opener(verify: bool):
     disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    try:
-        from urllib.request import HTTPSHandler
-    except ImportError:
-        HTTPSHandler = None
-
-    if HTTPSHandler:
-        https_handler = HTTPSHandler(context=make_context(verify), check_hostname=True)
-        opener = urllib.request.build_opener(https_handler)
-    else:
-        opener = urllib.request.build_opener()
-
+    https_handler = HTTPSHandler(context=make_context(verify), check_hostname=True)
+    opener = urllib.request.build_opener(https_handler)
     opener.addheaders = [("User-agent", sickchill.oldbeard.common.USER_AGENT)]
     urllib.request.install_opener(opener)
 
@@ -703,7 +695,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from OpenSSL import crypto
 
         from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
-    except (ImportError, ModuleNotFoundError):
+    except (ModuleNotFoundError):
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))
         return False

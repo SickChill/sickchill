@@ -1,14 +1,12 @@
 import binascii
 
 from enzyme import MKV
-from pkg_resources import DistributionNotFound, get_distribution
 
 from sickchill.helper.common import is_media_file
 
 try:
-    get_distribution("pymediainfo")
     from pymediainfo import MediaInfo as mediainfo
-except (ImportError, DistributionNotFound):
+except (ModuleNotFoundError, RuntimeError):
     mediainfo = None
 
 

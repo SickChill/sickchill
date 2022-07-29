@@ -283,7 +283,7 @@ def check_env_writable():
             from distutils.sysconfig import get_python_lib
 
             locations.append(get_python_lib())
-        except (ImportError, ModuleNotFoundError):
+        except ModuleNotFoundError:
             pass
 
         try:

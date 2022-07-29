@@ -57,7 +57,7 @@ from sickchill.show.Show import Show
 
 try:
     from send2trash import send2trash
-except ImportError:
+except ModuleNotFoundError:
 
     def send2trash(path):
         if os.path.isfile(path):

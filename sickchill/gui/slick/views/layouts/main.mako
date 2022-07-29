@@ -9,11 +9,10 @@
     from time import time
 
     # resource module is unix only
-    has_resource_module = True
     try:
         import resource
     except ImportError:
-        has_resource_module = False
+        resource = None
 %>
 <!DOCTYPE html>
 <html lang="${settings.GUI_LANG}">
@@ -378,7 +377,7 @@
                         </div>
 
                         <div>
-                            % if has_resource_module:
+                            % if resource:
                                 <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)}</span></span> |
                             % endif
                             <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - sbStartTime)}s</span></span> |
