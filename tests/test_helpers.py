@@ -67,6 +67,7 @@ import os
 import unittest
 from shutil import rmtree
 
+import sickchill.helper.common
 from sickchill import settings
 from sickchill.helper import MEDIA_EXTENSIONS, SUBTITLE_EXTENSIONS
 from sickchill.oldbeard import helpers
@@ -226,13 +227,13 @@ class HelpersZipTests(unittest.TestCase):
         """
         Test is_rar_file
         """
-        assert helpers.is_rar_file("lala.rar")
-        assert not helpers.is_rar_file("lala.zip")
-        assert not helpers.is_rar_file("lala.iso")
-        assert not helpers.is_rar_file("lala.wmv")
-        assert not helpers.is_rar_file("lala.avi")
-        assert not helpers.is_rar_file("lala.mkv")
-        assert not helpers.is_rar_file("lala.mp4")
+        assert sickchill.helper.common.is_rar_file("lala.rar")
+        assert not sickchill.helper.common.is_rar_file("lala.zip")
+        assert not sickchill.helper.common.is_rar_file("lala.iso")
+        assert not sickchill.helper.common.is_rar_file("lala.wmv")
+        assert not sickchill.helper.common.is_rar_file("lala.avi")
+        assert not sickchill.helper.common.is_rar_file("lala.mkv")
+        assert not sickchill.helper.common.is_rar_file("lala.mp4")
 
 
 class HelpersDirectoryTests(unittest.TestCase):
@@ -336,7 +337,7 @@ class HelpersFileTests(unittest.TestCase):
 
         for cur_test in extension_tests, sample_tests, edge_cases:
             for cur_name, expected_result in cur_test.items():
-                assert helpers.is_media_file(cur_name) == expected_result, cur_name
+                assert sickchill.helper.common.is_media_file(cur_name) == expected_result, cur_name
 
     @unittest.skip("Not yet implemented")
     def test_is_file_locked(self):

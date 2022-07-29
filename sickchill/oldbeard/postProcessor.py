@@ -7,6 +7,7 @@ import stat
 import subprocess
 from pathlib import Path
 
+import sickchill.helper.common
 import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
 from sickchill.helper.common import remove_extension, replace_extension, SUBTITLE_EXTENSIONS
@@ -152,15 +153,15 @@ class PostProcessor(object):
         file_path_list_to_delete = []
 
         if subfolders:
-            base_name = os.path.basename(file_path).rpartition(".")[0]
+            base_name = Path(file_path).stem
         else:
-            base_name = file_path.rpartition(".")[0]
+            base_name = remove_extension(file_path)
 
         # don't strip it all and use cwd by accident
         if not base_name:
             return []
 
-        dirname = os.path.dirname(file_path) or "."
+        dirname = Path(file_path).parent
 
         # subfolders are only checked in show folder, so names will always be exactly alike
         if subfolders:
@@ -196,7 +197,7 @@ class PostProcessor(object):
                 continue
 
             # Exclude .rar files from associated list
-            if helpers.is_rar_file(associated_file_path):
+            if sickchill.helper.common.is_rar_file(associated_file_path):
                 continue
 
             # Define associated files (all, allowed and non allowed)

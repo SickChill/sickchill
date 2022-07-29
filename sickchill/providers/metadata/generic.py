@@ -9,7 +9,7 @@ from fanart.core import Request as fanartRequest
 
 import sickchill
 from sickchill import logger, settings
-from sickchill.helper.common import replace_extension, try_int
+from sickchill.helper.common import remove_extension, replace_extension, try_int
 from sickchill.oldbeard import helpers
 
 from . import helpers as metadata_helpers
@@ -165,13 +165,7 @@ class GenericMetadata(object):
         ep_obj: a TVEpisode instance for which to create the thumbnail
         """
         if os.path.isfile(ep_obj.location):
-
-            tbn_filename = ep_obj.location.rpartition(".")
-
-            if tbn_filename[0] == "":
-                tbn_filename = ep_obj.location + "-thumb.jpg"
-            else:
-                tbn_filename = tbn_filename[0] + "-thumb.jpg"
+            tbn_filename = remove_extension(ep_obj.location) + "-thumb.jpg"
         else:
             return None
 

@@ -25,7 +25,6 @@ from xml.etree import ElementTree
 
 import certifi
 import ifaddr
-import rarfile
 import requests
 import urllib3.exceptions
 from cachecontrol import CacheControl
@@ -35,8 +34,8 @@ from urllib3 import disable_warnings
 
 import sickchill
 from sickchill import adba, logger, settings
-from sickchill.helper import episode_num, MEDIA_EXTENSIONS, pretty_file_size, SUBTITLE_EXTENSIONS
-from sickchill.helper.common import replace_extension
+from sickchill.helper import episode_num, pretty_file_size, SUBTITLE_EXTENSIONS
+from sickchill.helper.common import is_media_file, replace_extension
 from sickchill.oldbeard.common import USER_AGENT
 from sickchill.show.Show import Show
 
@@ -202,68 +201,6 @@ def remove_non_release_groups(name):
             _name = re.sub(rf"(?i){remove_string}", "", _name)
 
     return _name.strip()
-
-
-def is_media_file(filename):
-    """
-    Check if named file may contain media
-
-    Parameters:
-        filename: Filename to check
-    Returns:
-        True if this is a known media file, False if not
-    """
-
-    # ignore samples
-    try:
-        assert isinstance(filename, str), type(filename)
-        is_rar = is_rar_file(filename)
-        filename = os.path.basename(filename)
-
-        if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", filename, re.I):
-            return False
-
-        # ignore RARBG release intro
-        if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", filename, re.I):
-            return False
-
-        # ignore Kodi tvshow trailers
-        if filename == "tvshow-trailer.mp4":
-            return False
-
-        # ignore MACOS's retarded "resource fork" files
-        if filename.startswith("._"):
-            return False
-
-        filname_parts = filename.rpartition(".")
-
-        if re.search("extras?$", filname_parts[0], re.I):
-            return False
-
-        return filname_parts[-1].lower() in MEDIA_EXTENSIONS or (settings.UNPACK == settings.UNPACK_PROCESS_INTACT and is_rar)
-    except (TypeError, AssertionError) as error:  # Not a string
-        logger.debug(_(f"Invalid filename. Filename must be a string. Error: {error}"))
-        return False
-
-
-def is_rar_file(filename):
-    """
-    Check if file is a RAR file, or part of a RAR set
-
-    Parameters:
-        filename: Filename to check
-    Returns:
-         True if this is RAR/Part file, False if not
-    """
-    archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
-    ret = re.search(archive_regex, filename) is not None
-    try:
-        if ret and os.path.exists(filename) and os.path.isfile(filename):
-            ret = rarfile.is_rarfile(filename)
-    except (IOError, OSError):
-        pass
-
-    return ret
 
 
 def remove_file_failed(failed_file):

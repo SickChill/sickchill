@@ -6,6 +6,7 @@ import validators
 
 from sickchill import logger, settings
 
+from ..helper.common import remove_extension
 from . import common
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .scene_exceptions import get_scene_exceptions
@@ -142,7 +143,7 @@ def determine_release_name(directory=None, release_name=None):
             return release_name
 
         logger.info(_("Using release for release name."))
-        return release_name.rpartition(".")[0]
+        return remove_extension(release_name)
 
     if directory is None:
         return None
