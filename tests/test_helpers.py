@@ -5,7 +5,6 @@ Public Methods:
     indentXML
     remove_non_release_groups
     is_media_file
-    is_rar_file
     remove_file_failed
     makeDir
     searchIndexerForShowID

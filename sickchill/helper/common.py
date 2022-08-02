@@ -230,10 +230,7 @@ def is_rar_file(filename: Union[PathLike, str]) -> bool:
     with Path(filename) as path:
         archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
         try:
-            if not (re.search(archive_regex, path.name) and path.is_file()):
-                return False
-
-            return rarfile.is_rarfile(path)
+            return (re.search(archive_regex, path.name) != None, rarfile.is_rarfile(path))[path.is_file()]
         except (IOError, OSError):
             return False
 
