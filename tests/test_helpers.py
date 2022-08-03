@@ -4,7 +4,6 @@ Test oldbeard.helpers
 Public Methods:
     indentXML
     remove_non_release_groups
-    is_media_file
     remove_file_failed
     makeDir
     searchIndexerForShowID

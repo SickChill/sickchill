@@ -7,6 +7,7 @@ import stat
 import threading
 import time
 import traceback
+from pathlib import Path
 from sqlite3 import OperationalError
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
@@ -993,22 +994,24 @@ class TVShow(object):
                     )
                     logger.info("Deleting individual episodes. There may be some related files or folders left behind afterwards.")
                     for ep_file in episodes_locations:
-                        for show_file in glob.glob(helpers.replace_extension(glob.escape(ep_file["location"]), "*")):
-                            logger.info("Attempt to {0} related file {1}".format(action, show_file))
+                        path_ep_file = Path(ep_file["location"])
+                        for show_file in path_ep_file.parent.glob(f"{path_ep_file.stem}.*"):
+                            logger.info(f"Attempt to {action} related file {show_file}")
                             try:
                                 if settings.TRASH_REMOVE_SHOW:
                                     send2trash(show_file)
                                 else:
                                     os.remove(show_file)
                             except OSError as error:
-                                logger.warning("Unable to {0} {1}: {2}".format(action, show_file, error))
+                                logger.warning(f"Unable to {action} {show_file}: {error}")
                 else:
                     if settings.TRASH_REMOVE_SHOW:
                         send2trash(self.location)
                     else:
                         shutil.rmtree(self.location)
 
-                    logger.info("{0} show folder {1}".format(("Deleted", "Trashed")[settings.TRASH_REMOVE_SHOW], self._location))
+                    action_string = ("Deleted", "Trashed")[settings.TRASH_REMOVE_SHOW]
+                    logger.info(f"{action_string} show folder {self._location}")
 
             except ShowDirectoryNotFoundException:
                 logger.warning("Show folder does not exist, no need to {0} {1}".format(action, self._location))

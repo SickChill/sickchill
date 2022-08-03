@@ -57,7 +57,7 @@ _context = None
 def make_context(verify: bool):
     global _context
     if not _context or (_context and _context.check_hostname != verify):
-        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         context.options |= ssl.OP_NO_SSLv2
         context.verify_mode = ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
         context.check_hostname = verify

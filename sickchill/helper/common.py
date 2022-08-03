@@ -147,12 +147,7 @@ def http_code_description(http_code):
 
 def get_extension(path: Union[PathLike, str] = None, lower: bool = False) -> str:
 
-    if not path:
-        return path
-
-    if isinstance(path, str):
-        path = Path(path)
-
+    path = Path(path)
     result = path.suffix.lstrip(".")
     if lower:
         result = result.lower()
@@ -227,12 +222,17 @@ def is_rar_file(filename: Union[PathLike, str]) -> bool:
     Returns:
          True if this is RAR/Part file, False if not
     """
+    result = False
     with Path(filename) as path:
         archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
         try:
-            return (re.search(archive_regex, path.name) != None, rarfile.is_rarfile(path))[path.is_file()]
+            if path.is_file():
+                result = rarfile.is_rarfile(path)
+            else:
+                result = re.search(archive_regex, path.name) != None
         except (IOError, OSError):
-            return False
+            return result
+    return result
 
 
 def pretty_file_size(size, use_decimal=False, **kwargs):
@@ -324,10 +324,10 @@ def remove_extension(filename: Union[PathLike, str] = None, media_only: bool = T
     :param filename: The filename from which we want to remove the extension
     :return: The ``filename`` without its extension.
     """
-    if not filename:
-        return filename
-
     with Path(filename) as path:
+        if not path.name:
+            return filename
+
         is_media = get_extension(path, lower=True) in ["nzb", "torrent"] + MEDIA_EXTENSIONS
         return type(filename)((path, path.with_suffix(""))[media_only and is_media])
 
@@ -339,14 +339,18 @@ def replace_extension(filename: Union[PathLike, str] = None, new_extension: str 
     :param new_extension: The new extension to apply on the ``filename``
     :return: The ``filename`` with the new extension
     """
-    if not filename:
-        return filename
-
-    if new_extension and not new_extension.startswith("."):
-        new_extension = f".{new_extension}"
+    if not isinstance(new_extension, (PathLike, str)):
+        raise TypeError()
 
     with Path(filename) as path:
-        return type(filename)(path.with_suffix(new_extension))
+        if not path.name:
+            return filename
+        if not path.suffix:
+            return filename
+        else:
+            if new_extension and not new_extension.startswith("."):
+                new_extension = f".{new_extension}"
+            return type(filename)(path.with_suffix(new_extension))
 
 
 def sanitize_filename(filename):
