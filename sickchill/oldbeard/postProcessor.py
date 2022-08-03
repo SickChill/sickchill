@@ -1,4 +1,3 @@
-import fnmatch
 import glob
 import logging
 import os
