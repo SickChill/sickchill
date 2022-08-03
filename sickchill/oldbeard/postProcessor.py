@@ -166,24 +166,10 @@ class PostProcessor(object):
 
         # subfolders are only checked in show folder, so names will always be exactly alike
         if subfolders:
-            # just create the list of all files starting with the basename
-            file_list = recursive_glob(dirname, glob.escape(base_name) + "*")
+            file_list = list(str(found) for found in dirname.rglob(glob.escape(f"{path_file.stem}") + "*"))
         # this is called when PP, so we need to do the filename check case-insensitive
         else:
-            file_list = []
-
-            # loop through all the files in the folder, and check if they are the same name even when the cases don't match
-            for found_file in dirname.glob(f"{path_file.with_suffix('')}*"):
-                # Handles subtitles with language code
-                if (
-                    get_extension(found_file) in SUBTITLE_EXTENSIONS
-                    and found_file.with_suffix("").stem.lower() == base_name.lower()
-                    and str(found_file) not in file_list
-                ):
-                    file_list.append(str(found_file))
-                # Handles all files with same basename, including subtitles without language code
-                elif found_file.stem.lower() == base_name.lower():
-                    file_list.append(str(found_file))
+            file_list = list(str(found) for found in dirname.glob(glob.escape(f"{path_file.stem}") + "*"))
 
         for associated_file_path in file_list:
             # Exclude the video file we are post-processing
@@ -301,9 +287,9 @@ class PostProcessor(object):
         # deal with all files
         for cur_file_path in file_list:
             path_current_file = Path(cur_file_path)
-            current_extension = get_extension(path_current_file)
+            cur_extension = get_extension(path_current_file)
             # check if file have subtitles language
-            if current_extension in SUBTITLE_EXTENSIONS and "." in path_current_file.stem:
+            if cur_extension in SUBTITLE_EXTENSIONS and "." in path_current_file.stem:
                 cur_lang = get_extension(path_current_file.with_suffix(""), lower=True)
                 # pt_BR is a special case, subliminal does not handle it well
                 if cur_lang == "pt-br":

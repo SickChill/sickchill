@@ -145,7 +145,7 @@ def http_code_description(http_code):
     return description
 
 
-def get_extension(path: Union[PathLike, str] = None, lower: bool = False) -> str:
+def get_extension(path: Union[Path, PathLike, str] = None, lower: bool = False) -> str:
 
     path = Path(path)
     result = path.suffix.lstrip(".")
@@ -155,7 +155,7 @@ def get_extension(path: Union[PathLike, str] = None, lower: bool = False) -> str
     return result
 
 
-def is_sync_file(filename: Union[PathLike, str] = None) -> bool:
+def is_sync_file(filename: Union[Path, PathLike, str] = None) -> bool:
     """
     Check if the provided ``filename`` is a sync file, based on its name.
     :param filename: The filename to check
@@ -169,7 +169,7 @@ def is_sync_file(filename: Union[PathLike, str] = None) -> bool:
     )
 
 
-def is_torrent_or_nzb_file(filename: Union[PathLike, str] = None) -> bool:
+def is_torrent_or_nzb_file(filename: Union[Path, PathLike, str] = None) -> bool:
     """
     Check if the provided ``filename`` is a NZB file or a torrent file, based on its extension.
     :param filename: The filename to check
@@ -213,7 +213,7 @@ def is_media_file(filename):
         return (get_extension(path, lower=True) in MEDIA_EXTENSIONS) or (is_rar and settings.UNPACK == settings.UNPACK_PROCESS_INTACT)
 
 
-def is_rar_file(filename: Union[PathLike, str]) -> bool:
+def is_rar_file(filename: Union[Path, PathLike, str]) -> bool:
     """
     Check if file is a RAR file, or part of a RAR set
 
@@ -317,7 +317,7 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     return result
 
 
-def remove_extension(filename: Union[PathLike, str] = None, media_only: bool = True) -> Union[PathLike, str]:
+def remove_extension(filename: Union[Path, PathLike, str] = None, media_only: bool = True) -> Union[Path, PathLike, str]:
     """
     Remove the extension of the provided ``filename``.
     The extension is only removed if it is in MEDIA_EXTENSIONS or ['nzb', 'torrent'].
@@ -332,7 +332,7 @@ def remove_extension(filename: Union[PathLike, str] = None, media_only: bool = T
         return type(filename)((path, path.with_suffix(""))[media_only and is_media])
 
 
-def replace_extension(filename: Union[PathLike, str] = None, new_extension: str = None, media_only: bool = False) -> Union[PathLike, str]:
+def replace_extension(filename: Union[Path, PathLike, str] = None, new_extension: str = None, media_only: bool = False) -> Union[Path, PathLike, str]:
     """
     Replace the extension of the provided ``filename`` with a new extension.
     :param filename: The filename for which we want to change the extension
