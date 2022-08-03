@@ -1,6 +1,5 @@
-import fnmatch
-import os
 import re
+from pathlib import Path
 
 import validators
 
@@ -103,7 +102,7 @@ def allPossibleShowNames(show, season=-1):
     """
 
     showNames = get_scene_exceptions(show.indexerid, season=season)
-    if not showNames:  # if we dont have any season specific exceptions fallback to generic exceptions
+    if not showNames:  # if we don't have any season specific exceptions fallback to generic exceptions
         season = -1
         showNames = get_scene_exceptions(show.indexerid, season=season)
 
@@ -150,29 +149,24 @@ def determine_release_name(directory=None, release_name=None):
 
     # try to get the release name from nzb/nfo
     file_types = ["*.nzb", "*.nfo"]
+    path = Path(directory)
+    info_files = []
+    for file_type in file_types:
+        info_files.extend([item for item in path.glob(file_type) if item.is_file()])
 
-    for search in file_types:
-
-        reg_expr = re.compile(fnmatch.translate(search), re.I)
-        files = [filename for filename in os.listdir(directory) if os.path.isfile(os.path.join(directory, filename))]
-
-        results = [f for f in files if reg_expr.search(f)]
-
-        if len(results) == 1:
-            found_file = os.path.basename(results[0])
-            found_file = found_file.rpartition(".")[0]
-            if filter_bad_releases(found_file):
-                logger.info("Release name (" + found_file + ") found from file (" + results[0] + ")")
-                return found_file.rpartition(".")[0]
+    if len(info_files) == 1:
+        found_name = info_files[0].stem
+        if filter_bad_releases(found_name):
+            logger.info(f"Release name ({found_name}) found from file ({info_files[0]})")
+            return found_name
 
     # If that fails, we try the folder
-    folder = os.path.basename(directory)
-    if filter_bad_releases(folder):
+    if filter_bad_releases(path.name):
         # NOTE: Multiple failed downloads will change the folder name.
         # (e.g., appending #s)
         # Should we handle that?
-        logger.debug("Folder name (" + folder + ") appears to be a valid release name. Using it.")
-        return folder
+        logger.debug(f"Folder name ({path.name}) appears to be a valid release name. Using it.")
+        return path.name
 
     return None
 
