@@ -2438,7 +2438,7 @@ class TVEpisode(object):
 
         result = self.formatted_filename(anime_type=anime_type)
 
-        # if they want us to flatten it and we're allowed to flatten it then we will
+        # if they want us to flatten it, and we're allowed to flatten it then we will
         if not (self.show.season_folders or settings.NAMING_FORCE_FOLDERS):
             return result
 

@@ -10,7 +10,7 @@ from pathlib import Path
 import sickchill.helper.common
 import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
-from sickchill.helper.common import is_rar_file, remove_extension, replace_extension, SUBTITLE_EXTENSIONS
+from sickchill.helper.common import get_extension, is_rar_file, remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
 from sickchill.show.History import History
 from sickchill.show.Show import Show
@@ -161,7 +161,8 @@ class PostProcessor(object):
         if not base_name:
             return []
 
-        dirname = Path(file_path).parent
+        path_file = Path(file_path)
+        dirname = path_file.parent
 
         # subfolders are only checked in show folder, so names will always be exactly alike
         if subfolders:
@@ -172,22 +173,24 @@ class PostProcessor(object):
             file_list = []
 
             # loop through all the files in the folder, and check if they are the same name even when the cases don't match
-            for found_file in glob.glob(os.path.join(glob.escape(dirname), "*")):
-                filename, separator, file_extension = found_file.rpartition(".")
-
+            for found_file in dirname.glob(f"{path_file.with_suffix('')}*"):
                 # Handles subtitles with language code
-                if file_extension in SUBTITLE_EXTENSIONS and filename.rpartition(".")[0].lower() == base_name.lower():
-                    file_list.append(found_file)
+                if (
+                    get_extension(found_file) in SUBTITLE_EXTENSIONS
+                    and found_file.with_suffix("").stem.lower() == base_name.lower()
+                    and str(found_file) not in file_list
+                ):
+                    file_list.append(str(found_file))
                 # Handles all files with same basename, including subtitles without language code
-                elif filename.lower() == base_name.lower():
-                    file_list.append(found_file)
+                elif found_file.stem.lower() == base_name.lower():
+                    file_list.append(str(found_file))
 
         for associated_file_path in file_list:
             # Exclude the video file we are post-processing
             if os.path.abspath(associated_file_path) == os.path.abspath(file_path):
                 continue
 
-            # If this is a rename in the show folder, we don't need to check anything, just add it to the list
+            # If this is a renaming action in the show folder, we don't need to check anything, just add it to the list
             if rename:
                 file_path_list_to_allow.append(associated_file_path)
                 continue
@@ -200,9 +203,9 @@ class PostProcessor(object):
             if is_rar_file(associated_file_path):
                 continue
 
-            # Define associated files (all, allowed and non allowed)
+            # Define associated files (all, allowed, and non-allowed)
             if os.path.isfile(associated_file_path):
-                # check if allowed or not during post processing
+                # check if allowed or not during post-processing
                 if settings.MOVE_ASSOCIATED_FILES and associated_file_path.endswith(tuple(settings.ALLOWED_EXTENSIONS.split(","))):
                     file_path_list_to_allow.append(associated_file_path)
                 elif settings.DELETE_NON_ASSOCIATED_FILES:
@@ -213,7 +216,7 @@ class PostProcessor(object):
                 _("Found the following associated files for {0}: {1}").format(file_path, file_path_list_to_allow + file_path_list_to_delete), logger.DEBUG
             )
             if file_path_list_to_delete:
-                self._log(_("Deleting non allowed associated files for {0}: {1}").format(file_path, file_path_list_to_delete), logger.DEBUG)
+                self._log(_("Deleting non-allowed associated files for {0}: {1}").format(file_path, file_path_list_to_delete), logger.DEBUG)
                 # Delete all extensions the user doesn't allow
                 self._delete(file_path_list_to_delete)
             if file_path_list_to_allow:
@@ -297,11 +300,11 @@ class PostProcessor(object):
 
         # deal with all files
         for cur_file_path in file_list:
-            cur_filename, cur_extension = cur_file_path.rpartition(".")[0:3:2]
-
+            path_current_file = Path(cur_file_path)
+            current_extension = get_extension(path_current_file)
             # check if file have subtitles language
-            if cur_extension in SUBTITLE_EXTENSIONS and "." in cur_filename:
-                cur_lang = cur_filename.rpartition(".")[-1].lower()
+            if current_extension in SUBTITLE_EXTENSIONS and "." in path_current_file.stem:
+                cur_lang = get_extension(path_current_file.with_suffix(""), lower=True)
                 # pt_BR is a special case, subliminal does not handle it well
                 if cur_lang == "pt-br":
                     cur_lang = "pt-BR"
@@ -463,8 +466,9 @@ class PostProcessor(object):
         names = []
         if self.release_name:
             names.append(self.release_name)
-            if "." in self.release_name:
-                names.append(self.release_name.rpartition(".")[0])
+            no_extension = remove_extension(self.release_name)
+            if no_extension not in names:
+                names.append(no_extension)
         if self.folder_name:
             names.append(self.folder_name)
 
@@ -1080,10 +1084,10 @@ class PostProcessor(object):
 
         # figure out the base name of the resulting episode file
         if settings.RENAME_EPISODES:
-            orig_extension = self.filename.rpartition(".")[-1]
+            old_path = Path(self.filename)
+            orig_extension = old_path.suffix
             new_base_name = os.path.basename(proper_path)
-            new_filename = new_base_name + "." + orig_extension
-
+            new_filename = f"{new_base_name}.{orig_extension}"
         else:
             # if we're not renaming then there's no new base name, we'll just use the existing name
             new_base_name = None

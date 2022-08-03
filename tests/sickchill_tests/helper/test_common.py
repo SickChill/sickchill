@@ -165,7 +165,6 @@ class CommonTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             is_rar_file(42)
 
-
     def test_is_media_file(self):
         """
         Test is_media_file
