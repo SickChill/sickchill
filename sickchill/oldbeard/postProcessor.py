@@ -136,16 +136,6 @@ class PostProcessor(object):
         :return: A list containing all files which are associated to the given file
         """
 
-        def recursive_glob(treeroot, pattern):
-            results = []
-            for base, dirnames_, files in os.walk(treeroot, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS):
-                goodfiles = fnmatch.filter(files, pattern)
-                for f in goodfiles:
-                    found = os.path.join(base, f)
-                    if found != file_path:
-                        results.append(found)
-            return results
-
         if not file_path:
             return []
 
