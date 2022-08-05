@@ -105,6 +105,9 @@ class NameParser(object):
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
                     result.score += 1
+                else:
+                    # Reduce the regex score when there is no name.
+                    result.score -= 20
 
             if "series_num" in named_groups and match.group("series_num"):
                 result.score += 1
@@ -327,6 +330,7 @@ class NameParser(object):
                 if best_result_anime and best_result_anime.series_name:
                     show_anime = helpers.get_show(best_result_anime.series_name)
                     if show_anime and show_anime.indexerid == show.indexerid:
+                        best_result_anime.show = show_anime
                         best_result = best_result_anime
 
         return best_result
