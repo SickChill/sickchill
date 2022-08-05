@@ -52,12 +52,12 @@ def filter_bad_releases(name, parse=True, show=None):
         if parse:
             NameParser().parse(name)
     except InvalidNameException as error:
-        logger.debug("{0}".format(error))
+        logger.debug(f"{error}")
         return False
     except InvalidShowException:
         pass
     # except InvalidShowException as error:
-    #    logger.debug("{0}".format(error))
+    #    logger.debug(f"{error}")
     #    return False
 
     def clean_set(words):

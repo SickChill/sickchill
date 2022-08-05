@@ -80,19 +80,19 @@ class SearchResult(object):
         if self.provider is None:
             return "Invalid provider, unable to print self"
 
-        my_string = "{0} @ {1}\n".format(self.provider.name, self.url)
+        my_string = f"{self.provider.name} @ {self.url}\n"
         my_string += "Extra Info:\n"
         for extra in self.extraInfo:
-            my_string += " {0}\n".format(extra)
+            my_string += f" {extra}\n"
 
         my_string += "Episodes:\n"
         for ep in self.episodes:
-            my_string += " {0}\n".format(ep)
+            my_string += f" {ep}\n"
 
-        my_string += "Quality: {0}\n".format(Quality.qualityStrings[self.quality])
-        my_string += "Name: {0}\n".format(self.name)
-        my_string += "Size: {0}\n".format(self.size)
-        my_string += "Release Group: {0}\n".format(self.release_group)
+        my_string += f"Quality: {Quality.qualityStrings[self.quality]}\n"
+        my_string += f"Name: {self.name}\n"
+        my_string += f"Size: {self.size}\n"
+        my_string += f"Release Group: {self.release_group}\n"
 
         return my_string
 

@@ -119,11 +119,11 @@ def initialize(consoleLogging=True):
         # git_remote
         settings.GIT_REMOTE = check_setting_str(settings.CFG, "General", "git_remote", "origin")
         settings.GIT_REMOTE_URL = check_setting_str(
-            settings.CFG, "General", "git_remote_url", "https://github.com/{0}/{1}.git".format(settings.GIT_ORG, settings.GIT_REPO)
+            settings.CFG, "General", "git_remote_url", f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git"
         )
 
         if "rage" in settings.GIT_REMOTE_URL.lower():
-            settings.GIT_REMOTE_URL = "https://github.com/{0}/{1}.git".format(settings.GIT_ORG, settings.GIT_REPO)
+            settings.GIT_REMOTE_URL = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git"
 
         # current commit hash
         settings.CUR_COMMIT_HASH = check_setting_str(settings.CFG, "General", "cur_commit_hash")
@@ -159,24 +159,24 @@ def initialize(consoleLogging=True):
                         shutil.move(srcDir, dstDir)
                         logger.info("Restore: restoring cache successful")
                     except Exception as er:
-                        logger.exception("Restore: restoring cache failed: {0}".format(er))
+                        logger.exception(f"Restore: restoring cache failed: {er}")
 
                 restoreCache(os.path.join(restoreDir, "cache"), settings.CACHE_DIR)
         except Exception as e:
-            logger.exception("Restore: restoring cache failed: {0}".format(str(e)))
+            logger.exception(f"Restore: restoring cache failed: {str(e)}")
         finally:
             if os.path.exists(os.path.join(settings.DATA_DIR, "restore")):
                 try:
                     shutil.rmtree(os.path.join(settings.DATA_DIR, "restore"))
                 except Exception as e:
-                    logger.exception("Restore: settings.Unable to remove the restore directory: {0}".format(str(e)))
+                    logger.exception(f"Restore: settings.Unable to remove the restore directory: {str(e)}")
 
                 for cleanupDir in ["mako", "sessions", "indexers", "rss"]:
                     try:
                         shutil.rmtree(os.path.join(settings.CACHE_DIR, cleanupDir))
                     except Exception as e:
                         if cleanupDir not in ["rss", "sessions", "indexers"]:
-                            logger.info("Restore: Unable to remove the cache/{0} directory: {1}".format(cleanupDir, str(e)))
+                            logger.info(f"Restore: Unable to remove the cache/{cleanupDir} directory: {str(e)}")
 
         settings.IMAGE_CACHE = image_cache.ImageCache()
         settings.THEME_NAME = check_setting_str(settings.CFG, "GUI", "theme_name", "dark")
@@ -1051,7 +1051,7 @@ def halt():
                 t.stop.set()
 
             for t in threads:
-                logger.info("Waiting for the {0} thread to exit".format(t.name))
+                logger.info(f"Waiting for the {t.name} thread to exit")
                 try:
                     t.join(10)
                 except Exception:
@@ -1671,7 +1671,7 @@ def launchBrowser(protocol="http", startPort=None, web_root="/"):
     if not startPort:
         startPort = settings.WEB_PORT
 
-    browserURL = "{0}://localhost:{1:d}{2}/home/".format(protocol, startPort, web_root)
+    browserURL = f"{protocol}://localhost:{startPort:d}{web_root}/home/"
 
     try:
         webbrowser.open(browserURL, 2, True)
