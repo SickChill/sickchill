@@ -303,8 +303,8 @@ def validate_dir(process_path, release_name, failed, result):
             found_files.append(os.path.basename(current_directory))
 
         for found_file in found_files:
-            # add 'current directory + filename' as one string to list
             if current_directory != settings.TV_DOWNLOAD_DIR and found_files:
+                # add 'current directory + filename' as one string to list
                 found_files.append(f"{os.path.basename(current_directory)} {found_file}")
 
             try:
