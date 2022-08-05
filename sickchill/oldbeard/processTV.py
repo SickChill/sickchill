@@ -45,21 +45,21 @@ def delete_folder(folder, check_empty=True):
     if check_empty:
         check_files = os.listdir(folder)
         if check_files:
-            logger.info("Not deleting folder {0} found the following files: {1}".format(folder, check_files))
+            logger.info(f"Not deleting folder {folder} found the following files: {check_files}")
             return False
 
         try:
-            logger.info("Deleting folder (if it's empty): {0}".format(folder))
+            logger.info(f"Deleting folder (if it's empty): {folder}")
             os.rmdir(folder)
         except (OSError, IOError) as e:
-            logger.warning("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)))
+            logger.warning(f"Warning: unable to delete folder: {folder}: {str(e)}")
             return False
     else:
         try:
             logger.info("Deleting folder: " + folder)
             shutil.rmtree(folder)
         except (OSError, IOError) as e:
-            logger.warning("Warning: unable to delete folder: {0}: {1}".format(folder, str(e)))
+            logger.warning(f"Warning: unable to delete folder: {folder}: {str(e)}")
             return False
 
     return True
@@ -85,21 +85,21 @@ def delete_files(process_path, unwanted_files, result, force=False):
         if not os.path.isfile(cur_file_path):
             continue  # Prevent error when a notwantedfiles is an associated files
 
-        result.output += log_helper("Deleting file: {0}".format(cur_file), logger.DEBUG)
+        result.output += log_helper(f"Deleting file: {cur_file}", logger.DEBUG)
 
         # check first the read-only attribute
         file_attribute = os.stat(cur_file_path)[0]
         if not file_attribute & stat.S_IWRITE:
             # File is read-only, so make it writeable
-            result.output += log_helper("Changing ReadOnly Flag for file: {0}".format(cur_file), logger.DEBUG)
+            result.output += log_helper(f"Changing ReadOnly Flag for file: {cur_file}", logger.DEBUG)
             try:
                 os.chmod(cur_file_path, stat.S_IWRITE)
             except OSError as e:
-                result.output += log_helper("Cannot change permissions of {0}: {1}".format(cur_file_path, str(e)), logger.DEBUG)
+                result.output += log_helper(f"Cannot change permissions of {cur_file_path}: {str(e)}", logger.DEBUG)
         try:
             os.remove(cur_file_path)
         except OSError as e:
-            result.output += log_helper("Unable to delete file {0}: {1}".format(cur_file, e.strerror), logger.DEBUG)
+            result.output += log_helper(f"Unable to delete file {cur_file}: {e.strerror}", logger.DEBUG)
 
 
 def log_helper(message, level=logging.INFO):
@@ -125,14 +125,14 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         # if they passed us a real dir then assume it's the one we want
         if os.path.isdir(process_path):
             process_path = os.path.realpath(process_path)
-            result.output += log_helper("Processing in folder {0}".format(process_path), logger.DEBUG)
+            result.output += log_helper(f"Processing in folder {process_path}", logger.DEBUG)
 
         # if the client and SickChill are not on the same machine translate the directory into a network directory
         elif all(
             [settings.TV_DOWNLOAD_DIR, os.path.isdir(settings.TV_DOWNLOAD_DIR), os.path.normpath(process_path) == os.path.normpath(settings.TV_DOWNLOAD_DIR)]
         ):
             process_path = os.path.join(settings.TV_DOWNLOAD_DIR, os.path.abspath(process_path).split(os.path.sep)[-1])
-            result.output += log_helper("Trying to use folder: {0} ".format(process_path), logger.DEBUG)
+            result.output += log_helper(f"Trying to use folder: {process_path} ", logger.DEBUG)
 
         # if we didn't find a real dir then quit
         if not os.path.isdir(process_path):
@@ -150,13 +150,13 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
         if release_name and validators.url(release_name) == True:
-            result.output += log_helper(_("Processing {0}").format(release_name), logger.INFO)
+            result.output += log_helper(_(f"Processing {release_name}"), logger.INFO)
             generator_to_use = [("", [], [release_name])]
         elif release_name and (is_media_file(release_name) or is_rar_file(release_name)):
-            result.output += log_helper(_("Processing {0}").format(release_name), logger.INFO)
+            result.output += log_helper(_(f"Processing {release_name}"), logger.INFO)
             generator_to_use = [(process_path, [], [release_name])]
         else:
-            result.output += log_helper(_("Processing {0}").format(process_path), logger.INFO)
+            result.output += log_helper(_(f"Processing {process_path}"), logger.INFO)
             generator_to_use = os.walk(process_path, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS)
 
         for current_directory, directory_names, filenames in generator_to_use:
@@ -171,7 +171,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                         for extracted_directory in extracted_directories:
                             if extracted_directory.split(current_directory)[-1] not in directory_names:
                                 result.output += log_helper(
-                                    _("Adding extracted directory to the list of directories to process: {0}").format(extracted_directory), logger.DEBUG
+                                    _(f"Adding extracted directory to the list of directories to process: {extracted_directory}"), logger.DEBUG
                                 )
                                 directories_from_rars.add(extracted_directory)
 
@@ -191,12 +191,12 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             # noinspection PyTypeChecker
             unwanted_files = [x for x in filenames if x in video_files + rar_files]
             if unwanted_files:
-                result.output += log_helper(_("Found unwanted files: {0}").format(unwanted_files), logger.DEBUG)
+                result.output += log_helper(_(f"Found unwanted files: {unwanted_files}"), logger.DEBUG)
 
             delete_folder(os.path.join(current_directory, "@eaDir"), False)
             delete_files(current_directory, unwanted_files, result)
             if delete_folder(current_directory, check_empty=not delete_on):
-                result.output += log_helper(_("Deleted folder: {0}").format(current_directory), logger.DEBUG)
+                result.output += log_helper(_(f"Deleted folder: {current_directory}"), logger.DEBUG)
 
         # For processing extracted rars, only allow methods 'move' and 'copy'.
         # On different methods fall back to 'move'.
@@ -259,18 +259,18 @@ def validate_dir(process_path, release_name, failed, result):
         failed = True
     elif upper_name.startswith("_UNPACK") or upper_name.endswith("_UNPACK") or (os.sep + "_UNPACK") in upper_name or ("_UNPACK" + os.sep) in upper_name:
         result.output += log_helper(_("The directory name indicates that this release is in the process of being unpacked."), logger.DEBUG)
-        result.missed_files.append("{0} : Being unpacked".format(process_path))
+        result.missed_files.append(f"{process_path} : Being unpacked")
         return False
 
     if failed:
         process_failed(process_path, release_name, result)
-        result.missed_files.append("{0} : Failed download".format(process_path))
+        result.missed_files.append(f"{process_path} : Failed download")
         return False
 
     if settings.TV_DOWNLOAD_DIR and helpers.real_path(process_path) != helpers.real_path(settings.TV_DOWNLOAD_DIR) and helpers.is_hidden_folder(process_path):
-        result.output += log_helper("Ignoring hidden folder: {0}".format(process_path), logger.DEBUG)
+        result.output += log_helper(f"Ignoring hidden folder: {process_path}", logger.DEBUG)
         if not process_path.endswith("@eaDir"):
-            result.missed_files.append("{0} : Hidden folder".format(process_path))
+            result.missed_files.append(f"{process_path} : Hidden folder")
         return False
 
     # make sure the dir isn't inside a show dir
@@ -289,9 +289,9 @@ def validate_dir(process_path, release_name, failed, result):
     for current_directory, directory_names, filenames in os.walk(process_path, topdown=False, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS):
         sync_files = list(filter(is_sync_file, filenames))
         if sync_files and settings.POSTPONE_IF_SYNC_FILES:
-            result.output += log_helper("Found temporary sync files: {0} in path: {1}".format(sync_files, os.path.join(process_path, sync_files[0])))
-            result.output += log_helper("Skipping post processing for folder: {0}".format(process_path))
-            result.missed_files.append("{0} : Sync files found".format(os.path.join(process_path, sync_files[0])))
+            result.output += log_helper(f"Found temporary sync files: {sync_files} in path: {os.path.join(process_path, sync_files[0])}")
+            result.output += log_helper(f"Skipping post processing for folder: {process_path}")
+            result.missed_files.append(f"{os.path.join(process_path, sync_files[0])} : Sync files found")
             continue
 
         found_files = list(filter(is_media_file, filenames))
@@ -310,11 +310,11 @@ def validate_dir(process_path, release_name, failed, result):
             try:
                 NameParser().parse(found_file, cache_result=False)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.debug("Could not properly parse a show and episode from [{}]: {}".format(found_file, str(error)))
+                logger.debug(f"Could not properly parse a show and episode from [{found_file}]: {str(error)}")
             else:
                 return True
 
-    result.output += log_helper("{0} : No processable items found in folder".format(process_path), logger.DEBUG)
+    result.output += log_helper(f"{process_path} : No processable items found in folder", logger.DEBUG)
     return False
 
 
@@ -332,24 +332,24 @@ def unrar(path, rar_files, force, result):
     unpacked_dirs = []
 
     if settings.UNPACK == settings.UNPACK_PROCESS_CONTENTS and rar_files:
-        result.output += log_helper("Packed Releases detected: {0}".format(rar_files), logger.DEBUG)
+        result.output += log_helper(f"Packed Releases detected: {rar_files}", logger.DEBUG)
         for archive in rar_files:
             failure = None
             rar_handle = None
             try:
                 archive_path = os.path.join(path, archive)
                 if already_processed(path, archive, force, result):
-                    result.output += log_helper("Archive file already post-processed, extraction skipped: {0}".format(archive_path), logger.DEBUG)
+                    result.output += log_helper(f"Archive file already post-processed, extraction skipped: {archive_path}", logger.DEBUG)
                     continue
 
                 if not is_rar_file(archive_path):
                     continue
 
-                result.output += log_helper("Checking if archive is valid and contains a video: {0}".format(archive_path), logger.DEBUG)
+                result.output += log_helper(f"Checking if archive is valid and contains a video: {archive_path}", logger.DEBUG)
                 rar_handle = RarFile(archive_path)
                 if rar_handle.needs_password():
                     # TODO: Add support in settings for a list of passwords to try here with rar_handle.set_password(x)
-                    result.output += log_helper("Archive needs a password, skipping: {0}".format(archive_path))
+                    result.output += log_helper(f"Archive needs a password, skipping: {archive_path}")
                     continue
 
                 rar_handle.testrar()
@@ -367,7 +367,7 @@ def unrar(path, rar_files, force, result):
                 else:
                     unpack_base_dir = path
                     if settings.UNPACK_DIR:  # Let user know if we can't unpack there
-                        result.output += log_helper("Unpack directory cannot be verified. Using {0}".format(path), logger.DEBUG)
+                        result.output += log_helper(f"Unpack directory cannot be verified. Using {path}", logger.DEBUG)
 
                 # Fix up the list for checking if already processed
                 rar_media_files = [os.path.join(unpack_base_dir, rar_release_name, rar_media_file) for rar_media_file in rar_media_files]
@@ -376,7 +376,7 @@ def unrar(path, rar_files, force, result):
                 for rar_media_file in rar_media_files:
                     check_path, check_file = os.path.split(rar_media_file)
                     if already_processed(check_path, check_file, force, result):
-                        result.output += log_helper("Archive file already post-processed, extraction skipped: {0}".format(rar_media_file), logger.DEBUG)
+                        result.output += log_helper(f"Archive file already post-processed, extraction skipped: {rar_media_file}", logger.DEBUG)
                         skip_rar = True
                         break
 
@@ -384,7 +384,7 @@ def unrar(path, rar_files, force, result):
                     continue
 
                 rar_extract_path = os.path.join(unpack_base_dir, rar_release_name)
-                result.output += log_helper("Unpacking archive: {0}".format(archive), logger.DEBUG)
+                result.output += log_helper(f"Unpacking archive: {archive}", logger.DEBUG)
                 rar_handle.extractall(path=rar_extract_path)
                 unpacked_dirs.append(rar_extract_path)
 
@@ -412,8 +412,8 @@ def unrar(path, rar_files, force, result):
                     del rar_handle
 
             if failure:
-                result.output += log_helper("Failed to extract the archive {0}: {1}".format(archive, failure[0]), logger.WARNING)
-                result.missed_files.append("{0} : Unpacking failed: {1}".format(archive, failure[1]))
+                result.output += log_helper(f"Failed to extract the archive {archive}: {failure[0]}", logger.WARNING)
+                result.missed_files.append(f"{archive} : Unpacking failed: {failure[1]}")
                 result.result = False
                 continue
 
@@ -455,9 +455,8 @@ def already_processed(process_path, video_file, force, result):
 
     # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
     if parse_result and parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number:
-        search_sql += " AND tv_episodes.showid={0} AND tv_episodes.season={1} AND tv_episodes.episode={2}".format(
-            parse_result.show.indexerid, parse_result.season_number, parse_result.episode_numbers[0]
-        )
+        search_sql += f" AND tv_episodes.showid={parse_result.show.indexerid} AND tv_episodes.season={parse_result.season_number}" \
+                      f" AND tv_episodes.episode={parse_result.episode_numbers[0]}"
 
     search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED + common.Quality.ARCHIVED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
@@ -487,7 +486,7 @@ def process_media(process_path, video_files, release_name, process_method, force
         cur_video_file_path = os.path.join(process_path, cur_video_file)
 
         if already_processed(process_path, cur_video_file, force, result):
-            result.output += log_helper("Skipping already processed file: {0}".format(cur_video_file), logger.DEBUG)
+            result.output += log_helper(f"Skipping already processed file: {cur_video_file}", logger.DEBUG)
             continue
 
         try:
@@ -502,10 +501,10 @@ def process_media(process_path, video_files, release_name, process_method, force
             result.output += processor.log
 
         if result.result:
-            result.output += log_helper("Processing succeeded for {0}".format(cur_video_file_path))
+            result.output += log_helper(f"Processing succeeded for {cur_video_file_path}")
         else:
-            result.output += log_helper("Processing failed for {0}: {1}".format(cur_video_file_path, process_fail_message), logger.WARNING)
-            result.missed_files.append("{0} : Processing failed: {1}".format(cur_video_file_path, process_fail_message))
+            result.output += log_helper(f"Processing failed for {cur_video_file_path}: {process_fail_message}", logger.WARNING)
+            result.missed_files.append(f"{cur_video_file_path} : Processing failed: {process_fail_message}")
             result.aggresult = False
 
 
@@ -530,13 +529,13 @@ def process_failed(process_path, release_name, result):
 
     if settings.DELETE_FAILED and result.result:
         if delete_folder(process_path, check_empty=False):
-            result.output += log_helper("Deleted folder: {0}".format(process_path), logger.DEBUG)
+            result.output += log_helper(f"Deleted folder: {process_path}", logger.DEBUG)
 
     if result.result:
-        result.output += log_helper("Failed Download Processing succeeded: ({0}, {1})".format(release_name, process_path))
+        result.output += log_helper(f"Failed Download Processing succeeded: ({release_name}, {process_path})")
     else:
         result.output += log_helper(
-            "Failed Download Processing failed: ({0}, {1}): {2}".format(release_name, process_path, process_fail_message), logger.WARNING
+            f"Failed Download Processing failed: ({release_name}, {process_path}): {process_fail_message}", logger.WARNING
         )
 
 
@@ -550,7 +549,7 @@ def subtitles_enabled(video):
     try:
         parse_result = NameParser().parse(video, cache_result=True)
     except (InvalidNameException, InvalidShowException):
-        logger.warning("Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {0}".format(video))
+        logger.warning(f"Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {video}")
         return False
 
     if parse_result.show.indexerid:
@@ -558,5 +557,5 @@ def subtitles_enabled(video):
         sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
         return bool(sql_results[0]["subtitles"]) if sql_results else False
     else:
-        logger.warning("Empty indexer ID for: {0}".format(video))
+        logger.warning(f"Empty indexer ID for: {video}")
         return False
