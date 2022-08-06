@@ -83,7 +83,7 @@ class BacklogSearcher(object):
                 settings.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
 
             if not segments:
-                logger.debug("Nothing needs to be downloaded for {0}, skipping".format(curShow.name))
+                logger.debug(f"Nothing needs to be downloaded for {curShow.name}, skipping")
 
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
@@ -116,12 +116,12 @@ class BacklogSearcher(object):
     def _get_segments(show, fromDate):
         wanted = {}
         if show.paused:
-            logger.debug("Skipping backlog for {0} because the show is paused".format(show.name))
+            logger.debug(f"Skipping backlog for {show.name} because the show is paused")
             return wanted
 
         allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
 
-        logger.debug("Seeing if we need anything from {0}".format(show.name))
+        logger.debug(f"Seeing if we need anything from {show.name}")
 
         con = db.DBConnection()
         sql_results = con.select("SELECT status, season, episode FROM tv_episodes WHERE airdate > ? AND showid = ?", [fromDate.toordinal(), show.indexerid])

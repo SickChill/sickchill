@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow
     from sickchill.oldbeard.subtitles import Scores
 
-from sickchill.helper.common import try_int
+from sickchill.helper.common import remove_extension, try_int
 from sickchill.helper.exceptions import EpisodeNotFoundException
 from sickchill.oldbeard.common import FAILED, Quality, SNATCHED, SUBTITLED, WANTED
 from sickchill.oldbeard.db import DBConnection
@@ -263,7 +263,7 @@ class History(object, metaclass=Singleton):
 
         fixed = urllib.parse.unquote(release)
         if fixed.endswith((".nzb", ".torrent")):
-            fixed = fixed.rpartition(".")[0]
+            fixed = remove_extension(fixed)
 
         return re.sub(r"[\.\-\+\ ]", "_", fixed)
 

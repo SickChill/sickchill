@@ -1,8 +1,11 @@
 import re
 from fnmatch import fnmatch
+from os import PathLike
 from pathlib import Path
+from typing import Union
 
 import appdirs
+import rarfile
 from github import Github
 from github.GithubException import (
     BadAttributeException,
@@ -137,46 +140,104 @@ def http_code_description(http_code):
     description = HTTP_STATUS_CODES.get(try_int(http_code))
 
     if isinstance(description, list):
-        return "({0})".format(", ".join(description))
+        return f"({', '.join(description)})"
 
     return description
 
 
-def is_sync_file(filename):
+def get_extension(path: Union[Path, PathLike, str] = None, lower: bool = False) -> str:
+
+    path = Path(path)
+    result = path.suffix.lstrip(".")
+    if lower:
+        result = result.lower()
+
+    return result
+
+
+def is_sync_file(filename: Union[Path, PathLike, str] = None) -> bool:
     """
     Check if the provided ``filename`` is a sync file, based on its name.
     :param filename: The filename to check
     :return: ``True`` if the ``filename`` is a sync file, ``False`` otherwise
     """
-
-    if isinstance(filename, str):
-        extension = filename.rpartition(".")[2].lower()
-
-        return (
-            extension in settings.SYNC_FILES.split(",")
-            or filename.startswith(".syncthing")
-            or any(fnmatch(filename, match) for match in settings.SYNC_FILES.split(","))
-        )
-
-    return False
+    sync_extensions = settings.SYNC_FILES.split(",")
+    return (
+        filename.startswith(".syncthing")
+        or get_extension(filename, lower=True) in sync_extensions
+        or any(fnmatch(filename, match) for match in sync_extensions)
+    )
 
 
-def is_torrent_or_nzb_file(filename):
+def is_torrent_or_nzb_file(filename: Union[Path, PathLike, str] = None) -> bool:
     """
     Check if the provided ``filename`` is a NZB file or a torrent file, based on its extension.
     :param filename: The filename to check
     :return: ``True`` if the ``filename`` is a NZB file or a torrent file, ``False`` otherwise
     """
+    return get_extension(filename, lower=True) in ("nzb", "torrent")
 
-    if not isinstance(filename, str):
-        return False
 
-    return filename.rpartition(".")[2].lower() in ["nzb", "torrent"]
+def is_media_file(filename):
+    """
+    Check if named file may contain media
+
+    Parameters:
+        filename: Filename to check
+    Returns:
+        True if this is a known media file, False if not
+    """
+
+    # ignore samples
+    is_rar = is_rar_file(filename)
+
+    with Path(filename) as path:
+        if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", path.name, re.I):
+            return False
+
+        # ignore RARBG release intro
+        if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", path.name, re.I):
+            return False
+
+        # ignore Kodi tvshow trailers
+        if path.name == "tvshow-trailer.mp4":
+            return False
+
+        # ignore MACOS's retarded "resource fork" files
+        if path.name.startswith("._"):
+            return False
+
+        if re.search("extras?$", path.name, re.I):
+            return False
+
+        return (get_extension(path, lower=True) in MEDIA_EXTENSIONS) or (is_rar and settings.UNPACK == settings.UNPACK_PROCESS_INTACT)
+
+
+def is_rar_file(filename: Union[Path, PathLike, str]) -> bool:
+    """
+    Check if file is a RAR file, or part of a RAR set
+
+    Parameters:
+        filename: Filename to check
+    Returns:
+         True if this is RAR/Part file, False if not
+    """
+    result = False
+    with Path(filename) as path:
+        archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
+        try:
+            if path.is_file():
+                result = rarfile.is_rarfile(path)
+            else:
+                result = re.search(archive_regex, path.name) != None
+        except (IOError, OSError):
+            return result
+    return result
 
 
 def pretty_file_size(size, use_decimal=False, **kwargs):
     """
-    Return a human readable representation of the provided ``size``.
+    Return a human-readable representation of the provided ``size``.
 
     :param size: The size to convert
     :param use_decimal: use decimal instead of binary prefixes (e.g. kilo = 1000 instead of 1024)
@@ -256,37 +317,40 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     return result
 
 
-def remove_extension(filename):
+def remove_extension(filename: Union[Path, PathLike, str] = None, media_only: bool = True) -> Union[Path, PathLike, str]:
     """
     Remove the extension of the provided ``filename``.
     The extension is only removed if it is in MEDIA_EXTENSIONS or ['nzb', 'torrent'].
     :param filename: The filename from which we want to remove the extension
     :return: The ``filename`` without its extension.
     """
+    with Path(filename) as path:
+        if not path.name:
+            return filename
 
-    if isinstance(filename, str) and "." in filename:
-        basename, dot, extension = filename.rpartition(".")
-
-        if basename and extension.lower() in ["nzb", "torrent"] + MEDIA_EXTENSIONS:
-            return basename
-
-    return filename
+        is_media = get_extension(path, lower=True) in ["nzb", "torrent"] + MEDIA_EXTENSIONS
+        return type(filename)((path, path.with_suffix(""))[media_only and is_media])
 
 
-def replace_extension(filename, new_extension):
+def replace_extension(filename: Union[Path, PathLike, str] = None, new_extension: str = None, media_only: bool = False) -> Union[Path, PathLike, str]:
     """
     Replace the extension of the provided ``filename`` with a new extension.
     :param filename: The filename for which we want to change the extension
     :param new_extension: The new extension to apply on the ``filename``
     :return: The ``filename`` with the new extension
     """
+    if not isinstance(new_extension, (PathLike, str)):
+        raise TypeError()
 
-    if isinstance(filename, str) and "." in filename:
-        basename = filename.rpartition(".")[0]
-        if basename:
-            return "{0}.{1}".format(basename, new_extension)
-
-    return filename
+    with Path(filename) as path:
+        if not path.name:
+            return filename
+        if not path.suffix:
+            return filename
+        else:
+            if new_extension and not new_extension.startswith("."):
+                new_extension = f".{new_extension}"
+            return type(filename)(path.with_suffix(new_extension))
 
 
 def sanitize_filename(filename):
@@ -302,7 +366,7 @@ def sanitize_filename(filename):
     if isinstance(filename, str):
         filename = re.sub(r"[\\/*]", "-", filename)
         filename = re.sub(r'[:"<>|?]', "", filename)
-        filename = re.sub(r"™|-u2122", "", filename)  # Trade Mark Sign unicode: \u2122
+        filename = re.sub(r"™|-u2122", "", filename)  # Trademark Sign unicode: \u2122
         filename = filename.strip(" .")
 
         return filename
@@ -363,36 +427,33 @@ def setup_github():
             settings.gh.get_organization(settings.GIT_ORG)
     except BadCredentialsException as error:
         settings.gh = None
-        sickchill.logger.warning(_("Unable to setup GitHub properly with your github token. Please check your credentials. Error: {0}").format(error))
+        sickchill.logger.warning(_(f"Unable to setup GitHub properly with your github token. Please check your credentials. Error: {error}"))
     except TwoFactorException as error:
         settings.gh = None
         sickchill.logger.warning(
-            _("Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {0}").format(error)
+            _(f"Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {error}")
         )
     except RateLimitExceededException as error:
         settings.gh = None
         if settings.GIT_TOKEN:
             sickchill.logger.warning(
-                _("Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {0}").format(error)
+                _(f"Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {error}")
             )
         else:
-            sickchill.logger.warning(
-                _(
-                    "Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {0}"
-                ).format(error)
-            )
+            sickchill.logger.warning(_(f"Unable to setup GitHub properly, You are currently being throttled by rate "
+                                       f"limiting for too many requests - Try adding an access token. Error: {error}"))
     except UnknownObjectException as error:
         settings.gh = None
-        sickchill.logger.warning(_("Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {0}").format(error))
+        sickchill.logger.warning(_(f"Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {error}"))
     except BadUserAgentException as error:
         settings.gh = None
-        sickchill.logger.warning(_("Unable to setup GitHub properly, GitHub doesn't like the user-agent. Error: {0}").format(error))
+        sickchill.logger.warning(_(f"Unable to setup GitHub properly, GitHub doesn't like the user-agent. Error: {error}"))
     except BadAttributeException as error:
         settings.gh = None
-        sickchill.logger.error(_("Unable to setup GitHub properly, There might be an error with the library. Error: {0}").format(error))
+        sickchill.logger.error(_(f"Unable to setup GitHub properly, There might be an error with the library. Error: {error}"))
     except (GithubException, Exception) as error:
         settings.gh = None
-        sickchill.logger.error(_("Unable to setup GitHub properly. GitHub will not be available. Error: {0}").format(error))
+        sickchill.logger.error(_(f"Unable to setup GitHub properly. GitHub will not be available. Error: {error}"))
 
 
 def choose_data_dir(program_dir):

@@ -7,6 +7,7 @@ import stat
 import threading
 import time
 import traceback
+from pathlib import Path
 from sqlite3 import OperationalError
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
@@ -19,7 +20,7 @@ import sickchill
 import sickchill.oldbeard.providers
 import sickchill.oldbeard.scene_numbering
 from sickchill import logger, settings
-from sickchill.helper.common import dateTimeFormat, episode_num, remove_extension, replace_extension, sanitize_filename, try_int
+from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (
     EpisodeDeletedException,
     EpisodeNotFoundException,
@@ -57,7 +58,7 @@ from sickchill.show.Show import Show
 
 try:
     from send2trash import send2trash
-except ImportError:
+except ModuleNotFoundError:
 
     def send2trash(path):
         if os.path.isfile(path):
@@ -175,7 +176,7 @@ class TVShow(object):
 
     @property
     def network_image_url(self):
-        return "images/network/{0}.png".format(unidecode(self.network or "nonetwork").lower())
+        return f"images/network/{unidecode(self.network or 'nonetwork').lower()}.png"
 
     def show_image_url(self, which):
         return settings.IMAGE_CACHE.image_url(self.indexerid, which)
@@ -215,10 +216,10 @@ class TVShow(object):
         sql_selection += "(SELECT COUNT (*) FROM tv_episodes WHERE showid = tve.showid "
         sql_selection += "AND season = tve.season AND location != '' AND location = tve.location "
         sql_selection += "AND episode != tve.episode) AS share_location "
-        sql_selection += "FROM tv_episodes tve WHERE showid = {0} ".format(self.indexerid)
+        sql_selection += f"FROM tv_episodes tve WHERE showid = {self.indexerid} "
 
         if season is not None:
-            sql_selection += "AND season = {0} ".format(season)
+            sql_selection += f"AND season = {season} "
 
         if has_location:
             sql_selection += "AND location != '' "
@@ -450,7 +451,7 @@ class TVShow(object):
                     try:
                         curEpisode.refreshSubtitles()
                     except Exception:
-                        logger.exception("{0}: Could not refresh subtitles".format(self.indexerid))
+                        logger.exception(f"{self.indexerid}: Could not refresh subtitles")
                         logger.debug(traceback.format_exc())
 
                 sql_l.append(curEpisode.get_sql())
@@ -469,7 +470,7 @@ class TVShow(object):
             sql = "SELECT season, episode, showid, show_name FROM tv_episodes JOIN tv_shows WHERE showid = indexer_id and showid = ?"
             sql_results = main_db_con.select(sql, [self.indexerid])
         except Exception as error:
-            logger.exception("Could not load episodes from the DB. Error: {0}".format(error))
+            logger.exception(f"Could not load episodes from the DB. Error: {error}")
             return scannedEps
 
         curShowid = None
@@ -582,21 +583,21 @@ class TVShow(object):
     def makeEpFromFile(self, filepath):
 
         if not os.path.isfile(filepath):
-            logger.info("{0}: That isn't even a real file dude... {1}".format(self.indexerid, filepath))
+            logger.info(f"{self.indexerid}: That isn't even a real file dude... {filepath}")
             return None
 
-        logger.debug("{0}: Creating episode object from {1}".format(self.indexerid, filepath))
+        logger.debug(f"{self.indexerid}: Creating episode object from {filepath}")
 
         try:
             parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=("normal", "anime")[self.is_anime]).parse(filepath, True, True)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.debug("{0}: {1}".format(self.indexerid, error))
+            logger.debug(f"{self.indexerid}: {error}")
             return None
 
         episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
         if not episodes:
-            logger.info("{0}: parse_result: {1}".format(self.indexerid, parse_result))
-            logger.info("{0}: No episode number found in {1}, ignoring it".format(self.indexerid, filepath))
+            logger.info(f"{self.indexerid}: parse_result: {parse_result}")
+            logger.info(f"{self.indexerid}: No episode number found in {filepath}, ignoring it")
             return None
 
         # for now lets assume that any episode in the show dir belongs to that show
@@ -605,7 +606,7 @@ class TVShow(object):
 
         sql_l = []
         for current_ep in episodes:
-            logger.debug("{0}: {1} parsed to {2} {3}".format(self.indexerid, filepath, self.name, episode_num(season, current_ep)))
+            logger.debug(f"{self.indexerid}: {filepath} parsed to {self.name} {episode_num(season, current_ep)}")
 
             checkQualityAgain = False
             same_file = False
@@ -617,17 +618,14 @@ class TVShow(object):
                     if not curEp:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
-                    logger.exception("{0}: Unable to figure out what this file is, skipping {1}".format(self.indexerid, filepath))
+                    logger.exception(f"{self.indexerid}: Unable to figure out what this file is, skipping {filepath}")
                     continue
 
             else:
                 # if there is a new file associated with this ep then re-check the quality
                 if curEp.location and os.path.normpath(curEp.location) != os.path.normpath(filepath):
-                    logger.debug(
-                        "{0}: The old episode had a different file associated with it, re-checking the quality using the new filename {1}".format(
-                            self.indexerid, filepath
-                        )
-                    )
+                    logger.debug(f"{self.indexerid}: The old episode had a different file associated with it, "
+                                 f"re-checking the quality using the new filename {filepath}")
                     checkQualityAgain = True
 
                 with curEp.lock:
@@ -653,17 +651,14 @@ class TVShow(object):
             # if they replace a file on me I'll make some attempt at re-checking the quality unless I know it's the same file
             if checkQualityAgain and not same_file:
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
-                logger.debug(
-                    "{0}: Since this file has been renamed, I checked {1} and found quality {2}".format(
-                        self.indexerid, filepath, Quality.qualityStrings[newQuality]
-                    )
-                )
+                logger.debug(f"{self.indexerid}: Since this file has been renamed, I checked {filepath} and found "
+                             f"quality {Quality.qualityStrings[newQuality]}")
 
                 with curEp.lock:
                     curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
 
             # check for status/quality changes as long as it's a new file
-            elif not same_file and sickchill.oldbeard.helpers.is_media_file(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
+            elif not same_file and is_media_file(filepath) and curEp.status not in Quality.DOWNLOADED + Quality.ARCHIVED + [IGNORED]:
                 oldStatus, oldQuality = Quality.splitCompositeStatus(curEp.status)
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
 
@@ -671,20 +666,14 @@ class TVShow(object):
 
                 # if it was snatched and now exists then set the status correctly
                 if oldStatus == SNATCHED and oldQuality <= newQuality:
-                    logger.debug(
-                        "{0}: This ep used to be snatched with quality {1} but a file exists with quality {2} so I'm setting the status to DOWNLOADED".format(
-                            self.indexerid, Quality.qualityStrings[oldQuality], Quality.qualityStrings[newQuality]
-                        )
-                    )
+                    logger.debug(f"{self.indexerid}: This ep used to be snatched with quality {Quality.qualityStrings[oldQuality]} but a "
+                                 f"file exists with quality {Quality.qualityStrings[newQuality]} so I'm setting the status to DOWNLOADED")
                     newStatus = DOWNLOADED
 
                 # if it was snatched proper and we found a higher quality one then allow the status change
                 elif oldStatus == SNATCHED_PROPER and oldQuality < newQuality:
-                    logger.debug(
-                        "{0}: This ep used to be snatched proper with quality {1} but a file exists with quality {2} so I'm setting the status to DOWNLOADED".format(
-                            self.indexerid, Quality.qualityStrings[oldQuality], Quality.qualityStrings[newQuality]
-                        )
-                    )
+                    logger.debug(f"{self.indexerid}: This ep used to be snatched proper with quality {Quality.qualityStrings[oldQuality]} "
+                                 f"but a file exists with quality {Quality.qualityStrings[newQuality]} so I'm setting the status to DOWNLOADED")
                     newStatus = DOWNLOADED
 
                 elif oldStatus not in (SNATCHED, SNATCHED_PROPER):
@@ -692,11 +681,8 @@ class TVShow(object):
 
                 if newStatus is not None:
                     with curEp.lock:
-                        logger.debug(
-                            "{0}: We have an associated file, so setting the status from {1} to DOWNLOADED/{2}".format(
-                                self.indexerid, curEp.status, Quality.statusFromName(filepath, anime=self.is_anime)
-                            )
-                        )
+                        logger.debug(f"{self.indexerid}: We have an associated file, so setting the status from {curEp.status} "
+                                     f"to DOWNLOADED/{Quality.statusFromName(filepath, anime=self.is_anime)}")
                         curEp.status = Quality.compositeStatus(newStatus, newQuality)
 
             with curEp.lock:
@@ -803,7 +789,7 @@ class TVShow(object):
 
         myShow = sickchill.indexer.series(self)
         if not myShow or not getattr(myShow, "seriesName"):
-            raise AttributeError("Found {0}, but attribute 'seriesName' was empty.".format(self.indexerid))
+            raise AttributeError(f"Found {self.indexerid}, but attribute 'seriesName' was empty.")
 
         self.name = myShow.seriesName.strip()
         self.classification = getattr(myShow, "classification", "Scripted")
@@ -958,7 +944,7 @@ class TVShow(object):
         # clear the cache
         image_cache_dir = os.path.join(settings.CACHE_DIR, "images")
         for cache_file in glob.glob(os.path.join(glob.escape(image_cache_dir), f"{self.indexerid}.*")):
-            logger.info("Attempt to {0} cache file {1}".format(action, cache_file))
+            logger.info(f"Attempt to {action} cache file {cache_file}")
             try:
                 if settings.TRASH_REMOVE_SHOW:
                     send2trash(cache_file)
@@ -966,21 +952,21 @@ class TVShow(object):
                     os.remove(cache_file)
 
             except OSError as error:
-                logger.warning("Unable to {0} {1}: {2}".format(action, cache_file, error))
+                logger.warning(f"Unable to {action} {cache_file}: {error}")
 
         # remove entire show folder
         if full:
             try:
-                logger.info("Attempt to {0} show folder {1}".format(action, self._location))
+                logger.info(f"Attempt to {action} show folder {self._location}")
                 # check first the read-only attribute
                 file_attribute = os.stat(self.location)[0]
                 if not file_attribute & stat.S_IWRITE:
                     # File is read-only, so make it writeable
-                    logger.debug("Attempting to make writeable the read only folder {0}".format(self._location))
+                    logger.debug(f"Attempting to make writeable the read only folder {self._location}")
                     try:
                         os.chmod(self.location, stat.S_IWRITE)
                     except Exception as error:
-                        logger.warning("Unable to change permissions of {0}: {1}".format(self._location, error))
+                        logger.warning(f"Unable to change permissions of {self._location}: {error}")
 
                 shows_in_folder = main_db_con.select(
                     "SELECT location from tv_shows WHERE location LIKE ? AND indexer_id != ?", ["{}%".format(self.location), self.indexerid]
@@ -993,27 +979,29 @@ class TVShow(object):
                     )
                     logger.info("Deleting individual episodes. There may be some related files or folders left behind afterwards.")
                     for ep_file in episodes_locations:
-                        for show_file in glob.glob(helpers.replace_extension(glob.escape(ep_file["location"]), "*")):
-                            logger.info("Attempt to {0} related file {1}".format(action, show_file))
+                        path_ep_file = Path(ep_file["location"])
+                        for show_file in path_ep_file.parent.glob(f"{path_ep_file.stem}.*"):
+                            logger.info(f"Attempt to {action} related file {show_file}")
                             try:
                                 if settings.TRASH_REMOVE_SHOW:
                                     send2trash(show_file)
                                 else:
                                     os.remove(show_file)
                             except OSError as error:
-                                logger.warning("Unable to {0} {1}: {2}".format(action, show_file, error))
+                                logger.warning(f"Unable to {action} {show_file}: {error}")
                 else:
                     if settings.TRASH_REMOVE_SHOW:
                         send2trash(self.location)
                     else:
                         shutil.rmtree(self.location)
 
-                    logger.info("{0} show folder {1}".format(("Deleted", "Trashed")[settings.TRASH_REMOVE_SHOW], self._location))
+                    action_string = ("Deleted", "Trashed")[settings.TRASH_REMOVE_SHOW]
+                    logger.info(f"{action_string} show folder {self._location}")
 
             except ShowDirectoryNotFoundException:
-                logger.warning("Show folder does not exist, no need to {0} {1}".format(action, self._location))
+                logger.warning(f"Show folder does not exist, no need to {action} {self._location}")
             except OSError as error:
-                logger.warning("Unable to {0} {1}: {2}".format(action, self._location, error))
+                logger.warning(f"Unable to {action} {self._location}: {error}")
 
         if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST:
             logger.debug(f"Removing show: indexerid {self.indexerid}, Title {self.name} from Watchlist")
@@ -1100,19 +1088,19 @@ class TVShow(object):
             logger.debug(f"{self.indexerid}: Show dir doesn't exist, can't download subtitles")
             return
 
-        logger.debug("{0}: Downloading subtitles".format(self.indexerid))
+        logger.debug(f"{self.indexerid}: Downloading subtitles")
 
         try:
             episodes = self.getAllEpisodes(has_location=True)
             if not episodes:
-                logger.debug("{0}: No episodes to download subtitles for {1}".format(self.indexerid, self.name))
+                logger.debug(f"{self.indexerid}: No episodes to download subtitles for {self.name}")
                 return
 
             for episode in episodes:
                 episode.download_subtitles(force=force)
 
         except Exception:
-            logger.debug("{0}: Error occurred when downloading subtitles for {1}".format(self.indexerid, self.name))
+            logger.debug(f"{self.indexerid}: Error occurred when downloading subtitles for {self.name}")
             logger.exception(traceback.format_exc())
 
     def saveToDB(self, forceSave=False):
@@ -1195,11 +1183,8 @@ class TVShow(object):
 
         # if the quality isn't one we want under any circumstances then just say no
         allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
-        logger.debug(
-            "Any,Best = [ {0} ] [ {1} ] Found = [ {2} ]".format(
-                self.qualitiesToString(allowed_qualities), self.qualitiesToString(preferred_qualities), self.qualitiesToString([quality])
-            )
-        )
+        logger.debug(f"Any,Best = [ {self.qualitiesToString(allowed_qualities)} ] [ {self.qualitiesToString(preferred_qualities)} ]"
+                     f" Found = [ {self.qualitiesToString([quality])} ]")
 
         if quality not in allowed_qualities + preferred_qualities or quality is UNKNOWN:
             logger.debug(
@@ -1325,7 +1310,7 @@ class TVShow(object):
             else:
                 return Overview.GOOD
         else:
-            logger.exception("Could not parse episode status into a valid overview status: {0}".format(epStatus))
+            logger.exception(f"Could not parse episode status into a valid overview status: {epStatus}")
 
     def __getstate__(self):
         d = dict(self.__dict__)
@@ -1704,7 +1689,7 @@ class TVEpisode(object):
 
         # don't update show status if show dir is missing, unless it's missing on purpose
         if not os.path.isdir(self.show._location) and not settings.CREATE_MISSING_SHOW_DIRS and not settings.ADD_SHOWS_WO_DIR:
-            logger.info("The show dir {0} is missing, not bothering to change the episode statuses since it'd probably be invalid".format(self.show._location))
+            logger.info(f"The show dir {self.show._location} is missing, not bothering to change the episode statuses since it'd probably be invalid")
             return
 
         if self.location:
@@ -1716,17 +1701,17 @@ class TVEpisode(object):
 
         if not os.path.isfile(self.location):
             if self.airdate >= datetime.date.today() or self.airdate <= datetime.date.min:
-                logger.debug("{0}: Episode airs in the future or has no airdate, marking it {1}".format(self.show.indexerid, statusStrings[UNAIRED]))
+                logger.debug(f"{self.show.indexerid}: Episode airs in the future or has no airdate, marking it {statusStrings[UNAIRED]}")
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
                 # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
-                logger.debug("Episode has already aired, marking it {0}".format(statusStrings[self.show.default_ep_status]))
+                logger.debug(f"Episode has already aired, marking it {statusStrings[self.show.default_ep_status]}")
                 self.status = self.show.default_ep_status if self.season > 0 else SKIPPED  # auto-skip specials
             else:
-                logger.debug("Not touching status [ {0} ] It could be skipped/ignored/snatched/archived".format(statusStrings[self.status]))
+                logger.debug(f"Not touching status [ {statusStrings[self.status]} ] It could be skipped/ignored/snatched/archived")
 
         # if we have a media file then it's downloaded
-        elif sickchill.oldbeard.helpers.is_media_file(self.location):
+        elif is_media_file(self.location):
             # leave propers alone, you have to either post-process them or manually change them back
             if self.status not in Quality.SNATCHED_PROPER + Quality.DOWNLOADED + Quality.SNATCHED + Quality.ARCHIVED:
                 logger.debug(f"5 Status changes from {self.status} to {Quality.statusFromName(self.location)}")
@@ -1749,7 +1734,7 @@ class TVEpisode(object):
 
         if self.location != "":
 
-            if self.status == UNKNOWN and sickchill.oldbeard.helpers.is_media_file(self.location):
+            if self.status == UNKNOWN and is_media_file(self.location):
                 logger.debug(f"7 Status changes from {self.status} to {Quality.statusFromName(self.location, anime=self.show.is_anime)}")
                 self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)
 
@@ -1999,7 +1984,7 @@ class TVEpisode(object):
                     ],
                 ]
         except Exception as error:
-            logger.exception("Error while updating database: {0}".format(error))
+            logger.exception(f"Error while updating database: {error}")
 
     def saveToDB(self, forceSave=False):
         """
@@ -2148,7 +2133,7 @@ class TVEpisode(object):
                 # guess_result = guessit.guessit(name, dict(single_value=True))
                 parse_result = NameParser(name, showObj=show, naming_pattern=True).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.debug("Unable to get parse release_group: {0}".format(error))
+                logger.debug(f"Unable to get parse release_group: {error}")
                 return ""
 
             if not parse_result.release_group:
@@ -2435,7 +2420,7 @@ class TVEpisode(object):
 
         result = self.formatted_filename(anime_type=anime_type)
 
-        # if they want us to flatten it and we're allowed to flatten it then we will
+        # if they want us to flatten it, and we're allowed to flatten it then we will
         if not (self.show.season_folders or settings.NAMING_FORCE_FOLDERS):
             return result
 
@@ -2597,32 +2582,22 @@ class TVEpisode(object):
 
             if filemtime != airdatetime:
                 airdatetime = airdatetime.timetuple()
-                logger.debug(
-                    "{0}: About to modify date of '{1}' to show air date {2}".format(
-                        self.show.indexerid, self.location, time.strftime("%b %d,%Y (%H:%M)", airdatetime)
-                    )
-                )
+                logger.debug(f"{self.show.indexerid}: About to modify date of '{self.location}' to show air date "
+                             f"{time.strftime('%b %d,%Y (%H:%M)', airdatetime)}")
                 try:
                     if helpers.touchFile(self.location, time.mktime(airdatetime)):
-                        logger.info(
-                            "{0}: Changed modify date of '{1}' to show air date {2}".format(
-                                self.show.indexerid, os.path.basename(self.location), time.strftime("%b %d,%Y (%H:%M)", airdatetime)
-                            )
-                        )
+                        logger.info(f"{self.show.indexerid}: Changed modify date of '{os.path.basename(self.location)}' to "
+                                    f"show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}")
                     else:
-                        logger.warning(
-                            "{0}: Unable to modify date of '{1}' to show air date {2}".format(
-                                self.show.indexerid, os.path.basename(self.location), time.strftime("%b %d,%Y (%H:%M)", airdatetime)
-                            )
-                        )
+                        logger.warning(f"{self.show.indexerid}: Unable to modify date of '{os.path.basename(self.location)}' "
+                                       f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}")
+
                 except Exception:
-                    logger.warning(
-                        "{0}: Failed to modify date of '{1}' to show air date {2}".format(
-                            self.show.indexerid, os.path.basename(self.location), time.strftime("%b %d,%Y (%H:%M)", airdatetime)
-                        )
-                    )
+                    logger.warning(f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}' "
+                                   f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}")
+
         except Exception:
-            logger.warning("{0}: Failed to modify date of '{1}'".format(self.show.indexerid, os.path.basename(self.location)))
+            logger.warning(f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}'")
 
     def cleanup_download_properties(self):
         """

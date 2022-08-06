@@ -6,7 +6,7 @@ from urllib.parse import urlencode, urljoin
 
 try:
     import js2py
-except RuntimeError:
+except (ModuleNotFoundError, RuntimeError):
     js2py = None
 
 from sickchill import logger

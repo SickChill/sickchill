@@ -13,13 +13,12 @@ from guessit import guessit
 
 import sickchill.oldbeard.helpers
 from sickchill import logger, settings
-from sickchill.helper.common import dateTimeFormat, episode_num
+from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file
 from sickchill.show.History import History
 from sickchill.show.Show import Show
 
 from . import db
 from .common import Quality
-from .helpers import is_media_file
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')

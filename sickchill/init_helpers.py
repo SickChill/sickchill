@@ -7,6 +7,9 @@ import site
 import subprocess
 import sys
 import tempfile
+from importlib import import_module
+from importlib.abc import Loader, MetaPathFinder
+from importlib.machinery import ModuleSpec
 from pathlib import Path
 from typing import List, Union
 from urllib.request import urlopen
@@ -19,6 +22,37 @@ sickchill_module = Path(__file__).parent.resolve()
 pyproject_path = sickchill_module.parent / "pyproject.toml"
 # locale_dir = sickchill_dir / "locale"
 pid_file: Path = None
+
+
+class DependencyInjectorLoader(Loader):
+    def create_module(self, spec):
+        sys.meta_path = [x for x in sys.meta_path[1:] if x is not METAPATHFINDER]
+        module = None
+        try:
+            module = import_module(spec.name)
+        except ModuleNotFoundError:
+            if not spec.name.startswith("importlib.metadata"):
+                poetry_install()
+                module = import_module(spec.name)
+        finally:
+            sys.meta_path = [METAPATHFINDER] + [x for x in sys.meta_path if x is not METAPATHFINDER]
+        return module
+
+    def exec_module(self, module):
+        pass
+
+
+class SCDependencyInstaller(MetaPathFinder):
+    LOADER = DependencyInjectorLoader()
+
+    def find_spec(self, fullname, path, target=None):
+        return ModuleSpec(fullname, self.LOADER)
+
+
+METAPATHFINDER = SCDependencyInstaller()
+
+if not hasattr(sys, "frozen") and not os.environ.get("SC_NO_INSTALL_DEPENDS", None):
+    sys.meta_path.insert(0, METAPATHFINDER)
 
 
 def sickchill_dir():
@@ -139,7 +173,7 @@ def check_installed(name: str = __package__) -> bool:
             from importlib_metadata import Distribution, PackageNotFoundError  # noqa
         except ImportError:
             # Should not get here EVER, but just in case lets just try checking pip freeze instead
-            result, output = subprocess.getstatusoutput([f"{sys.executable} -m pip freeze"])
+            result, output = subprocess.getstatusoutput([f"{sys.executable} -m pip freeze --disable-pip-version-check"])
             if result != 0:  # Not Ok
                 return False
             is_installed = name in [requirement.split("==")[0] for requirement in output.splitlines()]
@@ -169,7 +203,7 @@ def check_req_installed():
     if syno_wheelhouse.is_dir():
         # List installed packages in the freeze format then clean and drop case.
         logger.debug("Synology bypass existing packages: Folder wheelhouse exists")
-        result_ins, output_ins = subprocess.getstatusoutput([f"{sys.executable} -m pip list --format freeze"])
+        result_ins, output_ins = subprocess.getstatusoutput([f"{sys.executable} -m pip list --format freeze --disable-pip-version-check"])
         output_ins = output_ins.strip().splitlines()
         output_ins = [s.casefold() for s in output_ins]
 
@@ -177,13 +211,10 @@ def check_req_installed():
         py38pkg = ["importlib-metadata==", "typing-extensions==", "zipp==3.6.0"]
         output_ins.extend(py38pkg)
         # make the list of packages that need updating by blanking existing ones.
-        output_upd = [x for x in output]
-        for a in output_ins:
-            for b in range(len(output_upd)):
-                if output_upd[b].startswith(a):
-                    output_upd[b] = ""
+        output_upd = [x for x in output if re.sub(r";.*$", "", x) not in output_ins]
+
         # clean the list up for pip install and send to output.
-        output = [x for x in output_upd if x]
+        output = output_upd
 
     return result, output
 
@@ -283,7 +314,7 @@ def check_env_writable():
             from distutils.sysconfig import get_python_lib
 
             locations.append(get_python_lib())
-        except (ImportError, ModuleNotFoundError):
+        except ModuleNotFoundError:
             pass
 
         try:

@@ -4,18 +4,24 @@ Test sickchill.common
 
 import glob
 import unittest
+from os import PathLike
+from pathlib import Path
 
 from sickchill import settings
 from sickchill.helper.common import (
     convert_size,
     episode_num,
     http_code_description,
+    is_media_file,
+    is_rar_file,
     is_sync_file,
     is_torrent_or_nzb_file,
+    MEDIA_EXTENSIONS,
     pretty_file_size,
     remove_extension,
     replace_extension,
     sanitize_filename,
+    SUBTITLE_EXTENSIONS,
     try_int,
 )
 
@@ -73,10 +79,10 @@ class CommonTests(unittest.TestCase):
             ".syncthingfilename": True,
             ".syncthing.filename": True,
             ".syncthing-filename": True,
-            ".!sync": True,
+            ".!sync": False,
             "file.!sync": True,
             "file.!sync.ext": False,
-            ".lftp-pget-status": True,
+            ".lftp-pget-status": False,
             "file.lftp-pget-status": True,
             "file.lftp-pget-status.ext": False,
             ".part": False,
@@ -90,10 +96,10 @@ class CommonTests(unittest.TestCase):
             ".syncthingfilename": True,
             ".syncthing.filename": True,
             ".syncthing-filename": True,
-            ".!sync": True,
+            ".!sync": False,
             "file.!sync": True,
             "file.!sync.ext": False,
-            ".lftp-pget-status": True,
+            ".lftp-pget-status": False,
             "file.lftp-pget-status": True,
             "file.lftp-pget-status.ext": False,
             ".part": False,
@@ -103,7 +109,10 @@ class CommonTests(unittest.TestCase):
 
         for tests in test_cases, unicode_test_cases:
             for (filename, result) in tests.items():
-                assert is_sync_file(filename) == result
+                if isinstance(filename, (PathLike, str)):
+                    assert is_sync_file(filename) == result, (filename, result)
+                else:
+                    self.assertRaises(TypeError, msg=(filename, result))
 
     def test_is_torrent_or_nzb_file(self):
         """
@@ -114,10 +123,10 @@ class CommonTests(unittest.TestCase):
             42: False,
             "": False,
             "filename": False,
-            ".nzb": True,
+            ".nzb": False,
             "file.nzb": True,
             "file.nzb.part": False,
-            ".torrent": True,
+            ".torrent": False,
             "file.torrent": True,
             "file.torrent.part": False,
         }
@@ -125,17 +134,96 @@ class CommonTests(unittest.TestCase):
         unicode_test_cases = {
             "": False,
             "filename": False,
-            ".nzb": True,
+            ".nzb": False,
             "file.nzb": True,
             "file.nzb.part": False,
-            ".torrent": True,
+            ".torrent": False,
             "file.torrent": True,
             "file.torrent.part": False,
         }
 
         for tests in test_cases, unicode_test_cases:
             for (filename, result) in tests.items():
-                assert is_torrent_or_nzb_file(filename) == result
+                if isinstance(filename, (PathLike, str)):
+                    assert is_torrent_or_nzb_file(filename) == result, (filename, result)
+                else:
+                    self.assertRaises(TypeError, msg=(filename, result))
+
+    def test_is_rar_file(self):
+        """
+        Test is_rar_file
+        """
+        assert is_rar_file("lala.rar")
+        assert not is_rar_file("lala.zip")
+        assert not is_rar_file("lala.iso")
+        assert not is_rar_file("lala.wmv")
+        assert not is_rar_file("lala.avi")
+        assert not is_rar_file("lala.mkv")
+        assert not is_rar_file("lala.mp4")
+        with self.assertRaises(TypeError):
+            is_rar_file(None)
+        with self.assertRaises(TypeError):
+            is_rar_file(42)
+
+    def test_is_media_file(self):
+        """
+        Test is_media_file
+        """
+        # TODO: Add unicode tests
+        # TODO: Add MAC OS resource fork tests
+        # TODO: Add RARBG release tests
+        # RARBG release intros should be ignored
+        # MAC OS's "resource fork" files should be ignored
+        # Extras should be ignored
+        # and the file extension should be in the list of media extensions
+
+        # Test all valid media extensions
+        temp_name = "Show.Name.S01E01.HDTV.x264-SICKCHILL"
+        extension_tests = {".".join((temp_name, ext)): True for ext in MEDIA_EXTENSIONS}
+        # ...and some invalid ones
+        other_extensions = ["txt", "sfv", "srr", "rar", "nfo", "zip"]
+        extension_tests.update({".".join((temp_name, ext)): False for ext in other_extensions + SUBTITLE_EXTENSIONS})
+
+        # Test using Path
+        path_name = "Show.Name.S01E02.HDTV.x264-SICKCHILL"
+        path_tests = {Path(".".join((path_name, ext))): True for ext in MEDIA_EXTENSIONS}
+        path_tests.update({Path(".".join((path_name, ext))): False for ext in other_extensions + SUBTITLE_EXTENSIONS})
+
+        # Samples should be ignored
+        sample_tests = {  # Samples should be ignored, valid samples will return False
+            "Show.Name.S01E01.HDTV.sample.mkv": False,  # default case
+            "Show.Name.S01E01.HDTV.sAmPle.mkv": False,  # Ignore case
+            "Show.Name.S01E01.HDTV.samples.mkv": True,  # sample should not be plural
+            "Show.Name.S01E01.HDTVsample.mkv": True,  # no separation, can't identify as sample
+            "Sample.Show.Name.S01E01.HDTV.mkv": False,  # location doesn't matter
+            "Show.Name.Sample.S01E01.HDTV.sample.mkv": False,  # location doesn't matter
+            "Show.Name.S01E01.HDTV.sample1.mkv": False,  # numbered samples are ok
+            "Show.Name.S01E01.HDTV.sample12.mkv": False,  # numbered samples are ok
+            "Show.Name.S01E01.HDTV.sampleA.mkv": True,  # samples should not be indexed alphabetically
+            "RARBG.mp4": False,
+            "rarbg.MP4": False,
+            "/TV/Sample.Show.Name.S01E01.HDTV-RARBG/RARBG.mp4": False,
+            Path("/TV/Sample.Show.Name.S01E01.HDTV-RARBG/RARBG.mp4"): False,
+        }
+
+        edge_cases = {
+            None: False,
+            "": False,
+            0: False,
+            1: False,
+            42: False,
+            123189274981274: False,
+            12.23: False,
+            ("this", "is", "a tuple"): False,
+        }
+
+        for cur_test in extension_tests, sample_tests, edge_cases:
+            for cur_name, expected_result in cur_test.items():
+                if isinstance(cur_name, (PathLike, str)):
+                    assert is_media_file(cur_name) == expected_result, cur_name
+                else:
+                    with self.assertRaises(TypeError, msg=cur_name):
+                        is_media_file(cur_name)
 
     def test_pretty_file_size(self):
         """
@@ -212,8 +300,12 @@ class CommonTests(unittest.TestCase):
             "file.name.avi": "file.name",
         }
         for tests in test_cases, unicode_test_cases:
-            for (extension, result) in tests.items():
-                assert remove_extension(extension) == result
+            for (name, result) in tests.items():
+                if isinstance(name, (PathLike, str)):
+                    assert remove_extension(name) == result, (name, result)
+                else:
+                    with self.assertRaises((TypeError, ValueError), msg=(name, result)):
+                        remove_extension(name)
 
     def test_replace_extension(self):
         """
@@ -236,10 +328,10 @@ class CommonTests(unittest.TestCase):
             (".bashrc", ""): ".bashrc",
             (".bashrc", "avi"): ".bashrc",
             ("file.mkv", None): "file.None",
-            ("file.mkv", ""): "file.",
+            ("file.mkv", ""): "file",
             ("file.mkv", "avi"): "file.avi",
             ("file.name.mkv", None): "file.name.None",
-            ("file.name.mkv", ""): "file.name.",
+            ("file.name.mkv", ""): "file.name",
             ("file.name.mkv", "avi"): "file.name.avi",
         }
 
@@ -271,25 +363,29 @@ class CommonTests(unittest.TestCase):
             (".bashrc", ""): ".bashrc",
             (".bashrc", "avi"): ".bashrc",
             (".bashrc", "avi"): ".bashrc",
-            ("file.mkv", ""): "file.",
+            ("file.mkv", ""): "file",
             ("file.mkv", "avi"): "file.avi",
             ("file.mkv", None): "file.None",
-            ("file.mkv", ""): "file.",
-            ("file.mkv", ""): "file.",
+            ("file.mkv", ""): "file",
+            ("file.mkv", ""): "file",
             ("file.mkv", "avi"): "file.avi",
             ("file.mkv", "avi"): "file.avi",
-            ("file.name.mkv", ""): "file.name.",
+            ("file.name.mkv", ""): "file.name",
             ("file.name.mkv", "avi"): "file.name.avi",
             ("file.name.mkv", None): "file.name.None",
-            ("file.name.mkv", ""): "file.name.",
-            ("file.name.mkv", ""): "file.name.",
+            ("file.name.mkv", ""): "file.name",
+            ("file.name.mkv", ""): "file.name",
             ("file.name.mkv", "avi"): "file.name.avi",
             ("file.name.mkv", "avi"): "file.name.avi",
         }
 
         for tests in test_cases, unicode_test_cases:
             for ((filename, extension), result) in tests.items():
-                assert replace_extension(filename, extension) == result
+                if isinstance(filename, (PathLike, str)) and isinstance(extension, (PathLike, str)):
+                    assert replace_extension(filename, extension) == result, repr(((filename, extension), result))
+                else:
+                    with self.assertRaises(TypeError, msg=repr(((filename, extension), result))):
+                        replace_extension(filename, extension)
 
     def test_sanitize_filename(self):
         """
