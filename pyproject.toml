@@ -268,5 +268,5 @@ types-python-slugify = {version = "^6.1.0", optional = true}
 types-requests = {version = "^2.28.6", optional = true}
 types-chardet = {version = "^5.0.3", optional = true}
 types-pytz = {version = "^2022.1.2", optional = true}
-types-setuptools = {version = "^63.2.2", optional = true}
+types-setuptools = {version = "^64.0.0", optional = true}
 types-six = {version = "^1.16.18", optional = true}
