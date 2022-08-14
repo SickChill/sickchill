@@ -199,7 +199,7 @@ class History(object, metaclass=Singleton):
         """
         if settings.SUBTITLES_HISTORY:
             logger.debug(
-                f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores['res']}/{scores['percent']}% (min={scores['min']}/{scores['min_percent']})"
+                f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores.res}/{scores.percent}% (min={scores.min}/{scores.min_percent})"
             )
             status, quality = Quality.splitCompositeStatus(status)
             # TODO: Split action and quality in database to simplify EVERYTHING.
