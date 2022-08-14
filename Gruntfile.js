@@ -516,7 +516,7 @@ module.exports = function(grunt) {
     grunt.registerTask('_get_next_version', '(internal) do not run', function(skip_post) {
         const date_object = new Date();
         const year = date_object.getFullYear();
-        const day = date_object.getDay();
+        const day = date_object.getDate();
         const month = date_object.getMonth();
         const hours = date_object.getUTCHours();
         const minutes = date_object.getUTCMinutes();
