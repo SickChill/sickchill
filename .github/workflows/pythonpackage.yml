@@ -97,7 +97,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
-        version: 1.1.10
+        version: 1.1.14
         virtualenvs-path: .venv
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -119,6 +119,8 @@ jobs:
         poetry update
         poetry install --no-interaction --no-root
         pip install poethepoet
+      env:
+        YARL_NO_EXTENSIONS: 1
       shell: bash
     - name: Run yarn
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
@@ -178,7 +180,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
-        version: 1.1.10
+        version: 1.1.14
         virtualenvs-create: false
         installer-parallel: false
     - name: Docker meta

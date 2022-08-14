@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow
     from sickchill.oldbeard.subtitles import Scores
 
-from sickchill.helper.common import try_int
+from sickchill.helper.common import remove_extension, try_int
 from sickchill.helper.exceptions import EpisodeNotFoundException
 from sickchill.oldbeard.common import FAILED, Quality, SNATCHED, SUBTITLED, WANTED
 from sickchill.oldbeard.db import DBConnection
@@ -199,11 +199,11 @@ class History(object, metaclass=Singleton):
         """
         if settings.SUBTITLES_HISTORY:
             logger.debug(
-                f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores['res']}/{scores['percent']}% (min={scores['min']}/{scores['min_percent']})"
+                f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores.res}/{scores.percent}% (min={scores.min}/{scores.min_percent})"
             )
             status, quality = Quality.splitCompositeStatus(status)
             # TODO: Split action and quality in database to simplify EVERYTHING.
-            # self._logHistoryItem(Quality.compositeStatus(SUBTITLED, scores["percent"]), show, season, episode, quality, subtitle.language.opensubtitles, subtitle.provider_name)
+            # self._logHistoryItem(Quality.compositeStatus(SUBTITLED, scores.percent), show, season, episode, quality, subtitle.language.opensubtitles, subtitle.provider_name)
             self._logHistoryItem(
                 Quality.compositeStatus(SUBTITLED, quality), show, season, episode, quality, subtitle.language.opensubtitles, subtitle.provider_name
             )
@@ -263,7 +263,7 @@ class History(object, metaclass=Singleton):
 
         fixed = urllib.parse.unquote(release)
         if fixed.endswith((".nzb", ".torrent")):
-            fixed = fixed.rpartition(".")[0]
+            fixed = remove_extension(fixed)
 
         return re.sub(r"[\.\-\+\ ]", "_", fixed)
 

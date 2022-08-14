@@ -103,7 +103,7 @@ class ListAssociatedFiles(unittest.TestCase):
         associated_files = sorted(filename.lstrip("./") for filename in associated_files)
         out_list = sorted(filename for filename in self.file_list[1:] if "Non-Associated" not in filename)
 
-        assert out_list == associated_files
+        assert associated_files == out_list
 
         # Test no associated files:
         associated_files = self.post_processor.list_associated_files("Fools Quest.avi", subfolders=True)
@@ -114,7 +114,7 @@ class ListAssociatedFiles(unittest.TestCase):
         associated_files = sorted(filename.lstrip("./") for filename in associated_files)
         out_list = sorted(filename for filename in self.file_list[1:] if "associated_files" not in filename and "Non-Associated" not in filename)
 
-        assert out_list == associated_files
+        assert associated_files == out_list
 
     def test_subtitles_only(self):
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=True)
@@ -122,7 +122,7 @@ class ListAssociatedFiles(unittest.TestCase):
         associated_files = sorted(filename.lstrip("./") for filename in associated_files)
         out_list = sorted(filename for filename in self.file_list if filename.endswith(".srt") and "Non-Associated" not in filename)
 
-        assert out_list == associated_files
+        assert associated_files == out_list
 
     def test_subtitles_only_no_subfolders(self):
         associated_files = self.post_processor.list_associated_files(self.file_list[0], subtitles_only=True, subfolders=False)
@@ -131,7 +131,7 @@ class ListAssociatedFiles(unittest.TestCase):
             filename for filename in self.file_list if filename.endswith(".srt") and "associated_files" not in filename and "Non-Associated" not in filename
         )
 
-        assert out_list == associated_files
+        assert associated_files == out_list
 
 
 if __name__ == "__main__":

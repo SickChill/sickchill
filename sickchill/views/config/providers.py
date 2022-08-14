@@ -7,7 +7,7 @@ import sickchill.start
 from sickchill import settings
 from sickchill.helper import try_int
 from sickchill.oldbeard import config, filters, ui
-from sickchill.oldbeard.providers import newznab, rsstorrent
+from sickchill.oldbeard.providers import newnewznab as newznab, rsstorrent
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route

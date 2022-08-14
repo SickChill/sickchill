@@ -55,7 +55,7 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
         logger.info("Error connecting to sab, no data returned")
         return False
 
-    logger.debug("Result text from SAB: {0}".format(jdata))
+    logger.debug(f"Result text from SAB: {jdata}")
 
     result, error_ = _checkSabResponse(jdata)
     return result

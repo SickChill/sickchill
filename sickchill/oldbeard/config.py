@@ -154,7 +154,7 @@ def change_unrar_tool(unrar_tool, unar_tool):
             try:
                 os.remove(unrar_zip)
             except OSError as e:
-                logger.info("Unable to delete downloaded file {0}: {1}. You may delete it manually".format(unrar_zip, e.strerror))
+                logger.info(f"Unable to delete downloaded file {unrar_zip}: {e.strerror}. You may delete it manually")
 
             check = os.path.join(unrar_store, "unrar.exe")
             try:
@@ -195,7 +195,7 @@ def change_sickchill_background(background):
 
     background = os.path.normpath(background)
     if not os.path.exists(background):
-        logger.info("Background image does not exist: {0}".format(background))
+        logger.info(f"Background image does not exist: {background}")
         return False
 
     settings.SICKCHILL_BACKGROUND_PATH = background
@@ -216,10 +216,10 @@ def change_custom_css(new_css):
 
     new_css = os.path.normpath(new_css)
     if not os.path.isfile(new_css):
-        logger.info("Custom css file does not exist: {0}".format(new_css))
+        logger.info(f"Custom css file does not exist: {new_css}")
         return False
     if not new_css.endswith("css"):
-        logger.info("Custom css file should have the .css extension: {0}".format(new_css))
+        logger.info(f"Custom css file should have the .css extension: {new_css}")
         return False
 
     settings.CUSTOM_CSS_PATH = new_css

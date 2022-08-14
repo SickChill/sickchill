@@ -44,7 +44,7 @@ class FailedProcessor(object):
         try:
             parsed = NameParser(False).parse(release_name)
         except (InvalidNameException, InvalidShowException) as error:
-            self._log("{0}".format(error), logger.DEBUG)
+            self._log(f"{error}", logger.DEBUG)
             raise FailedPostProcessingFailedException()
 
         self._log("name_parser info: ", logger.DEBUG)

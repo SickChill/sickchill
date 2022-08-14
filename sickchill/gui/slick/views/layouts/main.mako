@@ -9,11 +9,10 @@
     from time import time
 
     # resource module is unix only
-    has_resource_module = True
     try:
         import resource
     except ImportError:
-        has_resource_module = False
+        resource = None
 %>
 <!DOCTYPE html>
 <html lang="${settings.GUI_LANG}">
@@ -324,7 +323,11 @@
                 % endif
             </div>
             <div class="row">
-                <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
+                % if settings.NO_LGMARGIN:
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                % else:
+                    <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
+                % endif
                     <%block name="content" />
                 </div>
             </div>
@@ -374,7 +377,7 @@
                         </div>
 
                         <div>
-                            % if has_resource_module:
+                            % if resource:
                                 <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)}</span></span> |
                             % endif
                             <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - sbStartTime)}s</span></span> |

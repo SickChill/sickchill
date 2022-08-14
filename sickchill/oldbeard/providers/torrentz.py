@@ -67,7 +67,7 @@ class Provider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, "html5lib") as parser:
+                    with BS4Parser(data, language="xml") as parser:
                         for item in parser("item"):
                             if item.category and "tv" not in item.category.get_text(strip=True).lower():
                                 continue

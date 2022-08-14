@@ -160,7 +160,7 @@ def get_scene_exception_by_name_multiple(show_name):
 
         if show_name.lower() in (cur_exception_name.lower(), sickchill.oldbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace(".", " ")):
 
-            logger.debug("Scene exception lookup got indexer id {0}, using that".format(cur_indexer_id))
+            logger.debug(f"Scene exception lookup got indexer id {cur_indexer_id}, using that")
 
             out.append((cur_indexer_id, int(cur_exception["season"])))
 
@@ -245,7 +245,7 @@ def _sickchill_exceptions_fetcher():
 
     if do_refresh:
         loc = "https://sickchill.github.io/scene_exceptions/scene_exceptions.json"
-        logger.info("Checking for scene exception updates from {0}".format(loc))
+        logger.info(f"Checking for scene exception updates from {loc}")
 
         session = helpers.make_session()
         proxy = settings.PROXY_SETTING
@@ -262,7 +262,7 @@ def _sickchill_exceptions_fetcher():
 
         if not jdata:
             # When jdata is None, trouble connecting to github, or reading file failed
-            logger.debug("Check scene exceptions update failed. Unable to update from {0}".format(loc))
+            logger.debug(f"Check scene exceptions update failed. Unable to update from {loc}")
         else:
             for indexer, instance in sickchill.indexer:
                 try:
@@ -309,13 +309,13 @@ def _xem_exceptions_fetcher():
 
     if should_refresh("xem"):
         for indexer, instance in sickchill.indexer:
-            logger.info("Checking for XEM scene exception updates for {0}".format(instance.name))
+            logger.info(f"Checking for XEM scene exception updates for {instance.name}")
 
-            url = "http://thexem.info/map/allNames?origin={0}&seasonNumbers=1".format(instance.slug)
+            url = f"http://thexem.info/map/allNames?origin={instance.slug}&seasonNumbers=1"
 
             parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns="json")
             if not parsed_json:
-                logger.debug("Check scene exceptions update failed for {0}, Unable to get URL: {1}".format("theTVDB", url))
+                logger.debug(f'Check scene exceptions update failed for "theTVDB", Unable to get URL: {url}')
                 continue
 
             if parsed_json["result"] == "failure":
@@ -326,8 +326,8 @@ def _xem_exceptions_fetcher():
                     try:
                         xem_exception_dict[int(indexerid)] = names
                     except Exception as error:
-                        logger.warning("XEM: Rejected entry: indexerid:{0}; names:{1}".format(indexerid, names))
-                        logger.debug("XEM: Rejected entry error message:{0}".format(error))
+                        logger.warning(f"XEM: Rejected entry: indexerid:{indexerid}; names:{names}")
+                        logger.debug(f"XEM: Rejected entry error message:{error}")
 
         set_last_refresh("xem")
 
