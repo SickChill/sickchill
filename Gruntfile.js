@@ -284,18 +284,19 @@ module.exports = function(grunt) {
                     if (!stdout.length) {
                         grunt.fatal('No changes to commit.', 0);
                     }
-                    if (stdout.match(/Bumping version from \d{4}\.\d{2}\.\d{2}(\.\d*)?/)) {
-                        const next_version = grunt.config('next_version');
-                        const file = 'sickchill/version.py';
-                        grunt.log.ok('Updating ' + file + ' to ' + next_version);
-
-                        if (!grunt.file.exists(file)) {
-                            grunt.log.error('Could not find ' + file + ', cannot proceed');
-                        }
-
-                        grunt.file.delete(file);
-                        grunt.file.write(file, '__version__ = "' + next_version + '"');
+                    if (!stdout.match(/Bumping version from \d{4}\.\d{2}\.\d{2}(\.\d*)?/)) {
+                        grunt.fatal('Did the version update in pyproject.toml?')
                     }
+                    const next_version = grunt.config('next_version');
+                    const file = 'sickchill/version.py';
+                    grunt.log.ok('Updating ' + file + ' to ' + next_version);
+
+                    if (!grunt.file.exists(file)) {
+                        grunt.log.error('Could not find ' + file + ', cannot proceed');
+                    }
+
+                    grunt.file.delete(file);
+                    grunt.file.write(file, '__version__ = "' + next_version + '"');
                 }
             },
 
