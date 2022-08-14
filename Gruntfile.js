@@ -283,7 +283,7 @@ module.exports = function(grunt) {
                     if (!stdout.length) {
                         grunt.fatal('No changes to commit.', 0);
                     }
-                    if (!stdout.match(/Bumping version from \d{4}\.\d{2}\.\d{2}(\.\d*)?/)) {
+                    if (!stdout.match(/Bumping version from \d{4}\.\d{1,2}\.\d{1,2}(\.\d*)?/)) {
                         grunt.fatal('Did the version update in pyproject.toml?')
                     }
                     const next_version = grunt.config('next_version');
