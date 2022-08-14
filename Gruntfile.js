@@ -278,7 +278,6 @@ module.exports = function(grunt) {
                 cmd: function () {
                     return 'poetry version ' + grunt.config('next_version');
                 },
-                stdout: false,
                 callback: function(err, stdout) {
                     stdout = stdout.trim();
                     if (!stdout.length) {
