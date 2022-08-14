@@ -5,7 +5,7 @@ from subliminal.providers import ParserBeautifulSoup
 
 
 class BS4Parser(object):
-    def __init__(self, markup, parsers, language="html", **kwargs):
+    def __init__(self, markup, parsers=None, language="html", **kwargs):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             if isinstance(parsers, str):
@@ -15,6 +15,9 @@ class BS4Parser(object):
                 extra_parsers = ["lxml", "html5lib", "html.parser"]
             elif language == "xml":
                 extra_parsers = ["lxml-xml", "html.parser"]
+
+            if parsers == None:
+              parsers = extra_parsers
 
             try:
                 self.soup = ParserBeautifulSoup(markup, parsers, **kwargs)
