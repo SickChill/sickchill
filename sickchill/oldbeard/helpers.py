@@ -898,7 +898,9 @@ def get_show(name, tryIndexers=False):
 
         # try indexers
         if not showObj and tryIndexers:
-            showObj = Show.find(settings.showList, sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1].id)
+            result = sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1]
+            if result:
+                showObj = Show.find(settings.showList, result.id)
 
         # try scene exceptions
         if not showObj:

@@ -15,7 +15,7 @@ from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 class NewznabProvider(NZBProvider):
     """
-    Generic provider for built in and custom providers who expose a newznab
+    Generic provider for built-in and custom providers who expose a newznab
     compatible api.
     Tested with: newznab, nzedb, spotweb, torznab
     """
