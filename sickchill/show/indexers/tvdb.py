@@ -107,6 +107,9 @@ class TVDB(Indexer):
         if isinstance(name, bytes):
             name = name.decode()
 
+        if not name:
+            return result
+
         if re.match(r"^t?t?\d{7,8}$", name) or re.match(r"^\d{6}$", name):
             try:
                 if re.match(r"^t?t?\d{7,8}$", name):
