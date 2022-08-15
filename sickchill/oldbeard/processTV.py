@@ -455,8 +455,10 @@ def already_processed(process_path, video_file, force, result):
 
     # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
     if parse_result and parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number:
-        search_sql += f" AND tv_episodes.showid={parse_result.show.indexerid} AND tv_episodes.season={parse_result.season_number}" \
-                      f" AND tv_episodes.episode={parse_result.episode_numbers[0]}"
+        search_sql += (
+            f" AND tv_episodes.showid={parse_result.show.indexerid} AND tv_episodes.season={parse_result.season_number}"
+            f" AND tv_episodes.episode={parse_result.episode_numbers[0]}"
+        )
 
     search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED + common.Quality.ARCHIVED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
@@ -534,9 +536,7 @@ def process_failed(process_path, release_name, result):
     if result.result:
         result.output += log_helper(f"Failed Download Processing succeeded: ({release_name}, {process_path})")
     else:
-        result.output += log_helper(
-            f"Failed Download Processing failed: ({release_name}, {process_path}): {process_fail_message}", logger.WARNING
-        )
+        result.output += log_helper(f"Failed Download Processing failed: ({release_name}, {process_path}): {process_fail_message}", logger.WARNING)
 
 
 def subtitles_enabled(video):

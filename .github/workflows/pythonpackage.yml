@@ -60,7 +60,7 @@ jobs:
         fetch-depth: 1
         persist-credentials: false
     - name: Lint shell scripts
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9 && !env.ACT
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == "3.10" && !env.ACT
       uses: ludeeus/action-shellcheck@master
       with:
         format: diff
@@ -69,7 +69,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set up Node
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == "3.10"
       uses: actions/setup-node@v3
       with:
         node-version: '16.x'
@@ -83,7 +83,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.python-version }}-
     - name: Restore npm cache
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == "3.10"
       uses: actions/cache@v3
       with:
         path: $(npm config get cache)
@@ -91,7 +91,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
     - name: Install yarn
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == "3.10"
       run: npm install -g yarn
       shell: bash
     - name: Install Poetry
@@ -123,15 +123,15 @@ jobs:
         YARL_NO_EXTENSIONS: 1
       shell: bash
     - name: Run yarn
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == "3.10"
       run: poe yarn
       shell: bash
     - name: Lint Python
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == "3.10"
       run: poe lint
       shell: bash
     - name: Lint and test Javascript
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == "3.10"
       run: poe yarn test
       shell: bash
     - name: Test Python

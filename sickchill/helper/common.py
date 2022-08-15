@@ -430,9 +430,7 @@ def setup_github():
         sickchill.logger.warning(_(f"Unable to setup GitHub properly with your github token. Please check your credentials. Error: {error}"))
     except TwoFactorException as error:
         settings.gh = None
-        sickchill.logger.warning(
-            _(f"Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {error}")
-        )
+        sickchill.logger.warning(_(f"Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {error}"))
     except RateLimitExceededException as error:
         settings.gh = None
         if settings.GIT_TOKEN:
@@ -440,8 +438,12 @@ def setup_github():
                 _(f"Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {error}")
             )
         else:
-            sickchill.logger.warning(_(f"Unable to setup GitHub properly, You are currently being throttled by rate "
-                                       f"limiting for too many requests - Try adding an access token. Error: {error}"))
+            sickchill.logger.warning(
+                _(
+                    f"Unable to setup GitHub properly, You are currently being throttled by rate "
+                    f"limiting for too many requests - Try adding an access token. Error: {error}"
+                )
+            )
     except UnknownObjectException as error:
         settings.gh = None
         sickchill.logger.warning(_(f"Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {error}"))

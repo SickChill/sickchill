@@ -85,12 +85,14 @@ class ShowQueue(generic_queue.GenericQueue):
             raise CantUpdateShowException(f"{show.name} is still being added, wait until it is finished before you update.")
 
         if self.is_being_updated(show):
-            raise CantUpdateShowException(f"{show.name} is already being updated by Post-processor or manually started, "
-                                          f"can't update again until it's done.")
+            raise CantUpdateShowException(
+                f"{show.name} is already being updated by Post-processor or manually started, " f"can't update again until it's done."
+            )
 
         if self.is_in_update_queue(show):
-            raise CantUpdateShowException(f"{show.name} is in process of being updated by Post-processor or manually "
-                                          f"started, can't update again until it's done.")
+            raise CantUpdateShowException(
+                f"{show.name} is in process of being updated by Post-processor or manually " f"started, can't update again until it's done."
+            )
 
         queue_item_obj = QueueItemUpdate(show, force=force)
         self.add_item(queue_item_obj)
@@ -387,8 +389,10 @@ class QueueItemAdd(ShowQueueItem):
             # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
             if getattr(s, "seriesName", None) is None:
                 # noinspection PyPep8
-                error_string = _(f"Show in {self.showDir} has no name on {sickchill.indexer.name(self.indexer)}, probably "
-                                 f"searched with the wrong language. Delete .nfo and add manually in the correct language.")
+                error_string = _(
+                    f"Show in {self.showDir} has no name on {sickchill.indexer.name(self.indexer)}, probably "
+                    f"searched with the wrong language. Delete .nfo and add manually in the correct language."
+                )
 
                 logger.warning(error_string)
                 ui.notifications.error(_("Unable to add show"), error_string)
@@ -396,8 +400,10 @@ class QueueItemAdd(ShowQueueItem):
                 self._finish_early()
                 return
         except Exception as error:
-            error_string = f"Unable to look up the show in {self.showDir} on {sickchill.indexer.name(self.indexer)} " \
-                           f"using ID {self.indexer_id}, not using the NFO. Delete .nfo and try adding manually again."
+            error_string = (
+                f"Unable to look up the show in {self.showDir} on {sickchill.indexer.name(self.indexer)} "
+                f"using ID {self.indexer_id}, not using the NFO. Delete .nfo and try adding manually again."
+            )
 
             logger.exception(f"{error_string}: {error}")
             ui.notifications.error(_("Unable to add show"), error_string)
