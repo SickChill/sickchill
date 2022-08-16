@@ -52,7 +52,7 @@ class Provider(TorrentProvider):
                         logger.info("Expected xml but got something else, is your mirror failing?")
                         continue
 
-                    data = BeautifulSoup(data, language="xml")
+                    data = BeautifulSoup(data, "xml")
 
                     entries = data("item")
                     if not entries:
