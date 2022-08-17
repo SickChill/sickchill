@@ -298,14 +298,10 @@ def validate_dir(process_path, release_name, failed, result):
         if settings.UNPACK == settings.UNPACK_PROCESS_CONTENTS:
             found_files += list(filter(is_rar_file, filenames))
 
-        # add directories if within main download location
-        if current_directory != settings.TV_DOWNLOAD_DIR and found_files:
-            found_files.append(os.path.basename(current_directory))
-
         for found_file in found_files:
             if current_directory != settings.TV_DOWNLOAD_DIR and found_files:
-                # add 'current directory + filename' as one string to list
-                found_files.append(f"{os.path.basename(current_directory)} {found_file}")
+                # pass 'current directory/filename' as one string to NameParser
+                found_file = f"{os.path.basename(current_directory)}/{found_file}"
 
             try:
                 NameParser().parse(found_file, cache_result=False)
