@@ -311,7 +311,6 @@ def validate_dir(process_path, release_name, failed, result):
                 NameParser().parse(found_file, cache_result=False)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.debug(f"Could not properly parse a show and episode from [{found_file}]: {str(error)}")
-                found_files.remove(found_file)
             else:
                 return True
 
