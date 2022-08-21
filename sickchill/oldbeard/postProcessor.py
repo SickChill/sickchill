@@ -1058,7 +1058,7 @@ class PostProcessor(object):
             old_path = Path(self.filename)
             orig_extension = old_path.suffix
             new_base_name = os.path.basename(proper_path)
-            new_filename = f"{new_base_name}.{orig_extension}"
+            new_filename = f"{new_base_name}{orig_extension}"
         else:
             # if we're not renaming then there's no new base name, we'll just use the existing name
             new_base_name = None
