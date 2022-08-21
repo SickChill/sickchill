@@ -121,7 +121,7 @@ class NewznabProvider(NZBProvider):
         elm = data.find("tv-search")
         self.use_tv_search = elm and elm.get("available") == "yes"
         if self.use_tv_search:
-            self.cap_tv_search = elm.get("supportedparams", "tvdbid,season,ep")
+            self.cap_tv_search = elm.get("supportedParams", "tvdbid,season,ep")
 
         self._caps = any([self.cap_tv_search])
 
