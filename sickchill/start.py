@@ -118,9 +118,7 @@ def initialize(consoleLogging=True):
 
         # git_remote
         settings.GIT_REMOTE = check_setting_str(settings.CFG, "General", "git_remote", "origin")
-        settings.GIT_REMOTE_URL = check_setting_str(
-            settings.CFG, "General", "git_remote_url", f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git"
-        )
+        settings.GIT_REMOTE_URL = check_setting_str(settings.CFG, "General", "git_remote_url", f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git")
 
         if "rage" in settings.GIT_REMOTE_URL.lower():
             settings.GIT_REMOTE_URL = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git"

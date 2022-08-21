@@ -17,7 +17,7 @@ class BS4Parser(object):
                 extra_parsers = ["lxml-xml", "html.parser"]
 
             if parsers == None:
-              parsers = extra_parsers
+                parsers = extra_parsers
 
             try:
                 self.soup = ParserBeautifulSoup(markup, parsers, **kwargs)

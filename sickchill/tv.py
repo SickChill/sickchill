@@ -624,8 +624,10 @@ class TVShow(object):
             else:
                 # if there is a new file associated with this ep then re-check the quality
                 if curEp.location and os.path.normpath(curEp.location) != os.path.normpath(filepath):
-                    logger.debug(f"{self.indexerid}: The old episode had a different file associated with it, "
-                                 f"re-checking the quality using the new filename {filepath}")
+                    logger.debug(
+                        f"{self.indexerid}: The old episode had a different file associated with it, "
+                        f"re-checking the quality using the new filename {filepath}"
+                    )
                     checkQualityAgain = True
 
                 with curEp.lock:
@@ -651,8 +653,9 @@ class TVShow(object):
             # if they replace a file on me I'll make some attempt at re-checking the quality unless I know it's the same file
             if checkQualityAgain and not same_file:
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
-                logger.debug(f"{self.indexerid}: Since this file has been renamed, I checked {filepath} and found "
-                             f"quality {Quality.qualityStrings[newQuality]}")
+                logger.debug(
+                    f"{self.indexerid}: Since this file has been renamed, I checked {filepath} and found " f"quality {Quality.qualityStrings[newQuality]}"
+                )
 
                 with curEp.lock:
                     curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
@@ -666,14 +669,18 @@ class TVShow(object):
 
                 # if it was snatched and now exists then set the status correctly
                 if oldStatus == SNATCHED and oldQuality <= newQuality:
-                    logger.debug(f"{self.indexerid}: This ep used to be snatched with quality {Quality.qualityStrings[oldQuality]} but a "
-                                 f"file exists with quality {Quality.qualityStrings[newQuality]} so I'm setting the status to DOWNLOADED")
+                    logger.debug(
+                        f"{self.indexerid}: This ep used to be snatched with quality {Quality.qualityStrings[oldQuality]} but a "
+                        f"file exists with quality {Quality.qualityStrings[newQuality]} so I'm setting the status to DOWNLOADED"
+                    )
                     newStatus = DOWNLOADED
 
                 # if it was snatched proper and we found a higher quality one then allow the status change
                 elif oldStatus == SNATCHED_PROPER and oldQuality < newQuality:
-                    logger.debug(f"{self.indexerid}: This ep used to be snatched proper with quality {Quality.qualityStrings[oldQuality]} "
-                                 f"but a file exists with quality {Quality.qualityStrings[newQuality]} so I'm setting the status to DOWNLOADED")
+                    logger.debug(
+                        f"{self.indexerid}: This ep used to be snatched proper with quality {Quality.qualityStrings[oldQuality]} "
+                        f"but a file exists with quality {Quality.qualityStrings[newQuality]} so I'm setting the status to DOWNLOADED"
+                    )
                     newStatus = DOWNLOADED
 
                 elif oldStatus not in (SNATCHED, SNATCHED_PROPER):
@@ -681,8 +688,10 @@ class TVShow(object):
 
                 if newStatus is not None:
                     with curEp.lock:
-                        logger.debug(f"{self.indexerid}: We have an associated file, so setting the status from {curEp.status} "
-                                     f"to DOWNLOADED/{Quality.statusFromName(filepath, anime=self.is_anime)}")
+                        logger.debug(
+                            f"{self.indexerid}: We have an associated file, so setting the status from {curEp.status} "
+                            f"to DOWNLOADED/{Quality.statusFromName(filepath, anime=self.is_anime)}"
+                        )
                         curEp.status = Quality.compositeStatus(newStatus, newQuality)
 
             with curEp.lock:
@@ -1183,8 +1192,10 @@ class TVShow(object):
 
         # if the quality isn't one we want under any circumstances then just say no
         allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
-        logger.debug(f"Any,Best = [ {self.qualitiesToString(allowed_qualities)} ] [ {self.qualitiesToString(preferred_qualities)} ]"
-                     f" Found = [ {self.qualitiesToString([quality])} ]")
+        logger.debug(
+            f"Any,Best = [ {self.qualitiesToString(allowed_qualities)} ] [ {self.qualitiesToString(preferred_qualities)} ]"
+            f" Found = [ {self.qualitiesToString([quality])} ]"
+        )
 
         if quality not in allowed_qualities + preferred_qualities or quality is UNKNOWN:
             logger.debug(
@@ -2582,19 +2593,26 @@ class TVEpisode(object):
 
             if filemtime != airdatetime:
                 airdatetime = airdatetime.timetuple()
-                logger.debug(f"{self.show.indexerid}: About to modify date of '{self.location}' to show air date "
-                             f"{time.strftime('%b %d,%Y (%H:%M)', airdatetime)}")
+                logger.debug(
+                    f"{self.show.indexerid}: About to modify date of '{self.location}' to show air date " f"{time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
+                )
                 try:
                     if helpers.touchFile(self.location, time.mktime(airdatetime)):
-                        logger.info(f"{self.show.indexerid}: Changed modify date of '{os.path.basename(self.location)}' to "
-                                    f"show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}")
+                        logger.info(
+                            f"{self.show.indexerid}: Changed modify date of '{os.path.basename(self.location)}' to "
+                            f"show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
+                        )
                     else:
-                        logger.warning(f"{self.show.indexerid}: Unable to modify date of '{os.path.basename(self.location)}' "
-                                       f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}")
+                        logger.warning(
+                            f"{self.show.indexerid}: Unable to modify date of '{os.path.basename(self.location)}' "
+                            f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
+                        )
 
                 except Exception:
-                    logger.warning(f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}' "
-                                   f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}")
+                    logger.warning(
+                        f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}' "
+                        f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
+                    )
 
         except Exception:
             logger.warning(f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}'")
