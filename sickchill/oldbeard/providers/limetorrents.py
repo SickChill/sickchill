@@ -52,7 +52,12 @@ class Provider(TorrentProvider):
                         continue
 
                     with BS4Parser(data, language="xml") as parser:
-                        for item in parser("item"):
+                        elements = parser("item")
+                        if not elements:
+                            logger.info("Returned xml contained no results")
+                            continue
+
+                        for item in elements:
                             try:
                                 title = item.title.text
                                 download_url = item.enclosure["url"]
@@ -98,9 +103,6 @@ class Provider(TorrentProvider):
                                 logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
 
                             items.append(item)
-                        else:
-                            logger.info("Returned xml contained no results")
-                            continue
 
                 except (AttributeError, TypeError, KeyError, ValueError):
                     logger.exception("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()))
