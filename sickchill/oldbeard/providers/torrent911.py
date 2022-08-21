@@ -11,12 +11,12 @@ from urllib.parse import urljoin
 class Provider(TorrentProvider):
     def __init__(self):
 
-        super().__init__("Cpasbien")
+        super().__init__("Torrent911")
 
         self.public = True
         self.minseed = 0
         self.minleech = 0
-        self._original_url = "https://www.cpasbien.ch"
+        self._original_url = "https://www.torrent911.cc"
         self._custom_url = None
         self._used_url = None
         self._recheck_url = True
@@ -31,10 +31,10 @@ class Provider(TorrentProvider):
             return ""
         data = self.get_url(inner_url, returns="text")
         # js
-        mapt = {"torrent": r"redirect", "magnet": r"redir"}
-        regex = r".*?function\s+" + mapt[_type] + r"\(\).+?= '([^']+)'"
+        map = { "torrent": r"redirect", "magnet": r"redir" }
+        regex = r".*?function\s+" + map[_type] + r"\(\).+?= '([^']+)'"
         # href
-        res = {"torrent": "", "magnet": ""}
+        res = { "torrent": "", "magnet": "" }
         with BS4Parser(data, "html5lib") as html:
             # for manual testing:
             # data = open('test.html', 'r').read()
@@ -88,13 +88,13 @@ class Provider(TorrentProvider):
         results = []
         for mode in search_strings:
             items = []
-            logger.debug(_(f"Search Mode: {mode}"))
+            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
             for search_string in {*search_strings[mode]}:
                 if mode == "Season":
                     search_string = re.sub(r"(.*)S[0-9]", r"\1Saison ", search_string)
 
                 if mode != "RSS":
-                    logger.debug(_(f"Search String: {search_string}"))
+                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
 
                     search_url = self.url + "/recherche/" + search_string
                 else:
@@ -115,7 +115,7 @@ class Provider(TorrentProvider):
                         continue
                     for result in torrent_rows:
                         try:
-                            title = result.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
+                            title = result.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-Torrent911")
                             title = re.sub(r" Saison", " Season", title, flags=re.I)
                             tmp = result.find("a")["href"]
                             download_url = urljoin(self.url, self._retrieve_dllink_from_url(urljoin(self.url, tmp)))
