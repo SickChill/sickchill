@@ -187,9 +187,7 @@ class PostProcessor(object):
                     file_path_list_to_delete.append(associated_file_path)
 
         if file_path_list_to_allow or file_path_list_to_delete:
-            self._log(
-                _(f"Found the following associated files for {file_path}: {file_path_list_to_allow + file_path_list_to_delete}"), logger.DEBUG
-            )
+            self._log(_(f"Found the following associated files for {file_path}: {file_path_list_to_allow + file_path_list_to_delete}"), logger.DEBUG)
             if file_path_list_to_delete:
                 self._log(_(f"Deleting non-allowed associated files for {file_path}: {file_path_list_to_delete}"), logger.DEBUG)
                 # Delete all extensions the user doesn't allow
@@ -473,8 +471,10 @@ class PostProcessor(object):
             to_return = (show, season, [], quality, version)
 
             qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
-            self._log(_(f"Found result in history for {show.name if show else 'UNDEFINED'} - Season: {season} - "
-                        f"Quality: {qual_str} - Version: {version}"), logger.DEBUG)
+            self._log(
+                _(f"Found result in history for {show.name if show else 'UNDEFINED'} - Season: {season} - " f"Quality: {qual_str} - Version: {version}"),
+                logger.DEBUG,
+            )
 
             return to_return
 
@@ -1058,7 +1058,7 @@ class PostProcessor(object):
             old_path = Path(self.filename)
             orig_extension = old_path.suffix
             new_base_name = os.path.basename(proper_path)
-            new_filename = f"{new_base_name}.{orig_extension}"
+            new_filename = f"{new_base_name}{orig_extension}"
         else:
             # if we're not renaming then there's no new base name, we'll just use the existing name
             new_base_name = None
