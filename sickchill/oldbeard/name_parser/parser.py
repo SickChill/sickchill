@@ -105,9 +105,6 @@ class NameParser(object):
                 if result.series_name:
                     result.series_name = self.clean_series_name(result.series_name)
                     result.score += 1
-                else:
-                    # Reduce the regex score when there is no name.
-                    result.score -= 20
 
             if "series_num" in named_groups and match.group("series_num"):
                 result.score += 1
