@@ -105,7 +105,7 @@ class Provider(TorrentProvider):
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    torrent_rows = html.find("table", {"class": "table-hover"})
+                    torrent_table = html.find("table", {"class": "table-hover"})
                     if torrent_table:
                         torrent_rows = torrent_table.findAll("tr")
                     else:
