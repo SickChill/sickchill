@@ -113,24 +113,27 @@ class Provider(TorrentProvider):
 
                     if not torrent_rows:
                         continue
-                    for result in torrent_rows:
+
+                    # Skip column headers
+                    for result in torrent_rows[1:]:
                         try:
-                            title = result.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-Torrent911")
+                            cells = result("td")
+                            title = cells[0].find("a").get_text(strip=True).replace("HDTV", "HDTV x264-Torrent911")
                             title = re.sub(r" Saison", " Season", title, flags=re.I)
-                            tmp = result.find("a")["href"]
+                            tmp = cells[0].find("a")["href"]
                             download_url = urljoin(self.url, self._retrieve_dllink_from_url(urljoin(self.url, tmp)))
                             if not all([title, download_url]):
                                 continue
 
-                            seeders = try_int(result.find_all("td")[2].get_text(strip=True))
-                            leechers = try_int(result.find_all("td")[3].get_text(strip=True))
+                            seeders = try_int(cells[2].get_text(strip=True))
+                            leechers = try_int(cells[3].get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(f"Discarding torrent because it doesn't meet the minimum seeders or "
                                                  f"leechers: {title} (S:{seeders} L:{leechers})")
                                 continue
 
-                            torrent_size = result.find_all("td")[1].get_text(strip=True)
+                            torrent_size = cells[1].get_text(strip=True)
 
                             units = ["o", "Ko", "Mo", "Go", "To", "Po"]
                             size = convert_size(torrent_size, units=units) or -1
