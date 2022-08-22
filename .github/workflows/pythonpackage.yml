@@ -119,8 +119,6 @@ jobs:
         poetry update
         poetry install --no-interaction --no-root
         pip install poethepoet
-      env:
-        YARL_NO_EXTENSIONS: 1
       shell: bash
     - name: Run yarn
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
@@ -139,6 +137,8 @@ jobs:
         poe pytest
         poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
       shell: bash
+      env:
+         SC_NO_INSTALL_DEPENDS: 1
   Deploy:
     needs: [Test]
     runs-on: ubuntu-latest
