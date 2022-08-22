@@ -25,6 +25,8 @@ pid_file: Path = None
 
 
 class DependencyInjectorLoader(Loader):
+    poetry_ran = False
+
     def create_module(self, spec):
         sys.meta_path = [x for x in sys.meta_path[1:] if x is not METAPATHFINDER]
         module = None
@@ -32,8 +34,10 @@ class DependencyInjectorLoader(Loader):
             module = import_module(spec.name)
         except ModuleNotFoundError:
             if not spec.name.startswith("importlib.metadata"):
-                poetry_install()
-                module = import_module(spec.name)
+                if not DependencyInjectorLoader.poetry_ran:
+                    poetry_install()
+                    DependencyInjectorLoader.poetry_ran = True
+                    module = import_module(spec.name)
         finally:
             sys.meta_path = [METAPATHFINDER] + [x for x in sys.meta_path if x is not METAPATHFINDER]
         return module
