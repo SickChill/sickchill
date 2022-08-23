@@ -124,7 +124,7 @@ class Provider(TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                            seeders = try_int(result.find(class_="seed_ok").get_text(strip=True))
+                            seeders = try_int(result.find(class_="up").get_text(strip=True))
                             leechers = try_int(result.find(class_="down").get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
