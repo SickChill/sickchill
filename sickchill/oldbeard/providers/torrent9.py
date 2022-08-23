@@ -126,8 +126,9 @@ class Provider(TorrentProvider):
                             leechers = try_int(result.find_all("td")[3].get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.debug(f"Discarding torrent because it doesn't meet the minimum seeders or "
-                                                 f"leechers: {title} (S:{seeders} L:{leechers})")
+                                    logger.debug(
+                                        f"Discarding torrent because it doesn't meet the minimum seeders or " f"leechers: {title} (S:{seeders} L:{leechers})"
+                                    )
                                 continue
 
                             torrent_size = result.find_all("td")[1].get_text(strip=True)

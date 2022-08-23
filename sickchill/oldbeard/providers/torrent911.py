@@ -1,4 +1,6 @@
 import re
+from urllib.parse import urljoin
+
 import validators
 
 from sickchill import logger
@@ -6,7 +8,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from urllib.parse import urljoin
+
 
 class Provider(TorrentProvider):
     def __init__(self):
@@ -31,10 +33,10 @@ class Provider(TorrentProvider):
             return ""
         data = self.get_url(inner_url, returns="text")
         # js
-        map = { "torrent": r"redirect", "magnet": r"redir" }
+        map = {"torrent": r"redirect", "magnet": r"redir"}
         regex = r".*?function\s+" + map[_type] + r"\(\).+?= '([^']+)'"
         # href
-        res = { "torrent": "", "magnet": "" }
+        res = {"torrent": "", "magnet": ""}
         with BS4Parser(data, "html5lib") as html:
             # for manual testing:
             # data = open('test.html', 'r').read()
@@ -126,8 +128,9 @@ class Provider(TorrentProvider):
                             leechers = try_int(result.find_all("td")[3].get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
-                                    logger.debug(f"Discarding torrent because it doesn't meet the minimum seeders or "
-                                                 f"leechers: {title} (S:{seeders} L:{leechers})")
+                                    logger.debug(
+                                        f"Discarding torrent because it doesn't meet the minimum seeders or " f"leechers: {title} (S:{seeders} L:{leechers})"
+                                    )
                                 continue
 
                             torrent_size = result.find_all("td")[1].get_text(strip=True)
