@@ -324,7 +324,7 @@ class NewznabProvider(NZBProvider):
             logger.debug("Search Mode: {0}".format(mode))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                     if "tvdbid" not in search_params:
                         search_params["q"] = search_string

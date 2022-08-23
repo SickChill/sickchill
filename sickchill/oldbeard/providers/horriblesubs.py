@@ -32,7 +32,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
                 if mode == "RSS":
@@ -85,7 +85,7 @@ class Provider(TorrentProvider):
 
         search_params = {"method": "search", "value": search_string}
 
-        logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+        logger.debug(_("Search String: {search_string}").format(search_string=search_string))
         target_url = self.urls["search"]
 
         data = self.get_url(target_url, params=search_params, returns="text")

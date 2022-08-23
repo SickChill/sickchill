@@ -27,38 +27,29 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self)
         self.ability_status = self.PROVIDER_BACKLOG
 
-    def _retrieve_dllink_from_url(self, inner_url, _type="torrent"):
-        # for instance, no magnet
-        if _type != "torrent":
-            return ""
-        data = self.get_url(inner_url, returns="text")
-        # js
-        mapt = {"torrent": r"redirect", "magnet": r"redir"}
-        regex = r".*?function\s+" + mapt[_type] + r"\(\).+?= '([^']+)'"
-        # href
-        res = {"torrent": "", "magnet": ""}
+    def _retrieve_dllink_from_url(self, inner_url):
+        data = self.get_url(urljoin(self.url, inner_url), returns="text")
+        regex = r".*?function\s+redirect\(\).+?= '([^']+)'"
         with BS4Parser(data, "html5lib") as html:
-            # for manual testing:
-            # data = open('test.html', 'r').read()
-            # html = BeautifulSoup(data, "html5lib")
-            # try js
             scripts = html.head.findAll("script")
             if len(scripts):
                 script = scripts[-1].string
                 matches = re.match(regex, script, re.S)
                 if matches:
-                    return matches[1]
+                    return urljoin(self.url, matches[1])
+
             # try href
             download_btns = html.findAll("div", {"class": "btn-download"})
             for btn in download_btns:
-                link = btn.find("a")["href"]
+                link = btn.find("a").get("href")
                 if link.startswith("javascript"):
                     return ""
                 if link.startswith("magnet"):
-                    res["magnet"] = link
+                    continue
                 else:
-                    res["torrent"] = link
-        return res[_type]
+                    return urljoin(self.url, link)
+
+        return ""
 
     def _get_custom_url(self):
         return self._custom_url
@@ -90,13 +81,13 @@ class Provider(TorrentProvider):
         results = []
         for mode in search_strings:
             items = []
-            logger.debug(_(f"Search Mode: {mode}"))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
                 if mode == "Season":
                     search_string = re.sub(r"(.*)S[0-9]", r"\1Saison ", search_string)
 
                 if mode != "RSS":
-                    logger.debug(_(f"Search String: {search_string}"))
+                    logger.debug(_("Search String: {search_string}"))
 
                     search_url = self.url + "/recherche/" + search_string
                 else:
@@ -107,43 +98,33 @@ class Provider(TorrentProvider):
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    torrent_table = html.find("table", {"class": "table-corps"})
-                    if torrent_table:
-                        torrent_rows = torrent_table.findAll("tr")
-                    else:
-                        torrent_rows = None
-
-                    if not torrent_rows:
-                        continue
-                    for result in torrent_rows:
+                    for result in html.select("table.table-corps tr"):
                         try:
-                            title = result.find(class_="titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
+                            title = result.select_one(".titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
                             title = re.sub(r" Saison", " Season", title, flags=re.I)
-                            tmp = result.find("a")["href"]
-                            download_url = urljoin(self.url, self._retrieve_dllink_from_url(urljoin(self.url, tmp)))
+                            download_url = self._retrieve_dllink_from_url(result.select_one("tr td a").get("href"))
                             if not all([title, download_url]):
+                                logger.debug(_("Could not find title and download url for result"))
                                 continue
 
-                            seeders = try_int(result.find(class_="up").get_text(strip=True))
-                            leechers = try_int(result.find(class_="down").get_text(strip=True))
+                            seeders = try_int(result.select_one(".up").get_text(strip=True))
+                            leechers = try_int(result.select_one(".down").get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        f"Discarding torrent because it doesn't meet the minimum seeders or " f"leechers: {title} (S:{seeders} L:{leechers})"
+                                        f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})"
                                     )
                                 continue
 
-                            torrent_size = result.find(class_="poid").get_text(strip=True)
-
-                            units = ["o", "Ko", "Mo", "Go", "To", "Po"]
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(result.select_one(".poid").get_text(strip=True), -1) or -1
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
                                 logger.debug(f"Found result: {title} with {seeders} seeders and {leechers} leechers")
 
                             items.append(item)
-                        except Exception:
+                        except Exception as error:
+                            logger.debug(f"Error parsing results {error}")
                             continue
 
             # For each search mode sort all the items by seeders if available

@@ -653,9 +653,7 @@ class TVShow(object):
             # if they replace a file on me I'll make some attempt at re-checking the quality unless I know it's the same file
             if checkQualityAgain and not same_file:
                 newQuality = Quality.nameQuality(filepath, self.is_anime)
-                logger.debug(
-                    f"{self.indexerid}: Since this file has been renamed, I checked {filepath} and found " f"quality {Quality.qualityStrings[newQuality]}"
-                )
+                logger.debug(f"{self.indexerid}: Since this file has been renamed, I checked {filepath} and found quality {Quality.qualityStrings[newQuality]}")
 
                 with curEp.lock:
                     curEp.status = Quality.compositeStatus(DOWNLOADED, newQuality)
@@ -2594,7 +2592,7 @@ class TVEpisode(object):
             if filemtime != airdatetime:
                 airdatetime = airdatetime.timetuple()
                 logger.debug(
-                    f"{self.show.indexerid}: About to modify date of '{self.location}' to show air date " f"{time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
+                    f"{self.show.indexerid}: About to modify date of '{self.location}' to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
                 )
                 try:
                     if helpers.touchFile(self.location, time.mktime(airdatetime)):

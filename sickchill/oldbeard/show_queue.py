@@ -85,13 +85,11 @@ class ShowQueue(generic_queue.GenericQueue):
             raise CantUpdateShowException(f"{show.name} is still being added, wait until it is finished before you update.")
 
         if self.is_being_updated(show):
-            raise CantUpdateShowException(
-                f"{show.name} is already being updated by Post-processor or manually started, " f"can't update again until it's done."
-            )
+            raise CantUpdateShowException(f"{show.name} is already being updated by Post-processor or manually started, can't update again until it's done.")
 
         if self.is_in_update_queue(show):
             raise CantUpdateShowException(
-                f"{show.name} is in process of being updated by Post-processor or manually " f"started, can't update again until it's done."
+                f"{show.name} is in process of being updated by Post-processor or manually started, can't update again until it's done."
             )
 
         queue_item_obj = QueueItemUpdate(show, force=force)

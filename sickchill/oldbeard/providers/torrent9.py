@@ -18,7 +18,7 @@ class Provider(TorrentProvider):
         self.public = True
         self.minseed = 0
         self.minleech = 0
-        self._original_url = "https://www.torrent9.re"
+        self._original_url = "https://ww1.torrent9.re"
         self._custom_url = None
         self._used_url = None
         self._recheck_url = True
@@ -26,35 +26,29 @@ class Provider(TorrentProvider):
         self.proper_strings = ["PROPER", "REPACK"]
         self.cache = tvcache.TVCache(self)
 
-    def _retrieve_dllink_from_url(self, inner_url, _type="torrent"):
-        data = self.get_url(inner_url, returns="text")
-        # js
-        map = {"torrent": r"redirect", "magnet": r"redir"}
-        regex = r".*?function\s+" + map[_type] + r"\(\).+?= '([^']+)'"
-        # href
-        res = {"torrent": "", "magnet": ""}
+    def _retrieve_dllink_from_url(self, inner_url):
+        data = self.get_url(urljoin(self.url, inner_url), returns="text")
+        regex = r".*?function\s+redirect\(\).+?= '([^']+)'"
         with BS4Parser(data, "html5lib") as html:
-            # for manual testing:
-            # data = open('test.html', 'r').read()
-            # html = BeautifulSoup(data, "html5lib")
-            # try js
             scripts = html.head.findAll("script")
             if len(scripts):
                 script = scripts[-1].string
                 matches = re.match(regex, script, re.S)
                 if matches:
-                    return matches[1]
+                    return urljoin(self.url, matches[1])
+
             # try href
-            download_btns = html.findAll("div", {"class": "download-btn"})
+            download_btns = html.findAll("div", {"class": "btn-download"})
             for btn in download_btns:
-                link = btn.find("a")["href"]
+                link = btn.find("a").get("href")
                 if link.startswith("javascript"):
                     return ""
                 if link.startswith("magnet"):
-                    res["magnet"] = link
+                    continue
                 else:
-                    res["torrent"] = link
-        return res[_type]
+                    return urljoin(self.url, link)
+
+        return ""
 
     def _get_custom_url(self):
         return self._custom_url
@@ -86,13 +80,13 @@ class Provider(TorrentProvider):
         results = []
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
                 if mode == "Season":
                     search_string = re.sub(r"(.*)S[0-9]", r"\1Saison ", search_string)
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                     search_url = self.url
                     post_data = {"torrentSearch": search_string}
@@ -105,43 +99,35 @@ class Provider(TorrentProvider):
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    torrent_table = html.find("div", {"class": "table-responsive"})
-                    if torrent_table:
-                        torrent_rows = torrent_table.findAll("tr")
-                    else:
-                        torrent_rows = None
-
-                    if not torrent_rows:
-                        continue
-                    for result in torrent_rows:
+                    for result in html.select("div.table-responsive tr"):
                         try:
-                            title = result.find("a").get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
+
+                            link = result.select_one("a")
+                            title = link.get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
                             title = re.sub(r" Saison", " Season", title, flags=re.I)
-                            tmp = result.find("a")["href"]
-                            download_url = urljoin(self.url, self._retrieve_dllink_from_url(urljoin(self.url, tmp)))
+                            download_url = self._retrieve_dllink_from_url(link.get("href"))
                             if not all([title, download_url]):
+                                logger.debug(_("Could not find title and download url for result"))
                                 continue
 
-                            seeders = try_int(result.find_all("td")[2].get_text(strip=True))
-                            leechers = try_int(result.find_all("td")[3].get_text(strip=True))
+                            seeders = try_int(result.find(attrs={"src": re.compile(r".*.up\.jpg")}).parent.get_text(strip=True))
+                            leechers = try_int(result.find(attrs={"src": re.compile(r".*.down\.jpg")}).parent.get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        f"Discarding torrent because it doesn't meet the minimum seeders or " f"leechers: {title} (S:{seeders} L:{leechers})"
+                                        f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})"
                                     )
                                 continue
 
-                            torrent_size = result.find_all("td")[1].get_text(strip=True)
-
-                            units = ["o", "Ko", "Mo", "Go", "To", "Po"]
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(result.find("td", text=re.compile(r"[\d0-9]* [KMG]B")).get_text(strip=True), -1) or -1
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
                                 logger.debug(f"Found result: {title} with {seeders} seeders and {leechers} leechers")
 
                             items.append(item)
-                        except Exception:
+                        except Exception as error:
+                            logger.debug(f"Error parsing results {error}")
                             continue
 
             # For each search mode sort all the items by seeders if available

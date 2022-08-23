@@ -472,7 +472,7 @@ class PostProcessor(object):
 
             qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
             self._log(
-                _(f"Found result in history for {show.name if show else 'UNDEFINED'} - Season: {season} - " f"Quality: {qual_str} - Version: {version}"),
+                _(f"Found result in history for {show.name if show else 'UNDEFINED'} - Season: {season} - Quality: {qual_str} - Version: {version}"),
                 logger.DEBUG,
             )
 
