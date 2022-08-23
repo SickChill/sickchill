@@ -107,7 +107,7 @@ class Provider(TorrentProvider):
                     continue
 
                 with BS4Parser(data, "html5lib") as html:
-                    torrent_table = html.find("table", {"class": "table-hover"})
+                    torrent_table = html.find("table", {"class": "table-corps"})
                     if torrent_table:
                         torrent_rows = torrent_table.findAll("tr")
                     else:
@@ -124,8 +124,8 @@ class Provider(TorrentProvider):
                             if not all([title, download_url]):
                                 continue
 
-                            seeders = try_int(result.find_all("td")[2].get_text(strip=True))
-                            leechers = try_int(result.find_all("td")[3].get_text(strip=True))
+                            seeders = try_int(result.find(class_="seed_ok").get_text(strip=True))
+                            leechers = try_int(result.find(class_="down").get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
@@ -133,7 +133,7 @@ class Provider(TorrentProvider):
                                     )
                                 continue
 
-                            torrent_size = result.find_all("td")[1].get_text(strip=True)
+                            torrent_size = result.find(class_="poid").get_text(strip=True)
 
                             units = ["o", "Ko", "Mo", "Go", "To", "Po"]
                             size = convert_size(torrent_size, units=units) or -1
