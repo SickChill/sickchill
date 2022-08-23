@@ -9,7 +9,8 @@ authors = [
 ]
 
 maintainers = [
-    "Dustyn Gibson <miigotu@gmail.com>"
+    "Dustyn Gibson <miigotu@gmail.com>",
+    "BKSteve <stephen.rieger@gmail.com>"
 ]
 
 readme = 'README.md'  # Markdown files are supported
