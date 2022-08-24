@@ -7,6 +7,7 @@ from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
+from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -32,13 +33,13 @@ class Provider(TorrentProvider):
         with BS4Parser(data, "html5lib") as html:
             scripts = html.head.findAll("script")
             if len(scripts):
-                script = scripts[-1].string
+                script = scripts[-1].get("src")
                 matches = re.match(regex, script, re.S)
                 if matches:
                     return urljoin(self.url, matches[1])
 
             # try href
-            download_btns = html.findAll("div", {"class": "btn-download"})
+            download_btns = html.findAll("div", {"class": "download-btn"})
             for btn in download_btns:
                 link = btn.find("a").get("href")
                 if link.startswith("javascript"):
@@ -82,9 +83,6 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
-                if mode == "Season":
-                    search_string = re.sub(r"(.*)S[0-9]", r"\1Saison ", search_string)
-
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
@@ -135,3 +133,21 @@ class Provider(TorrentProvider):
             results += items
 
         return results
+
+    def get_season_search_strings(self, episode):
+        search_string = {"Season": []}
+        for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
+            season = int(episode.scene_season)
+            if episode.show.air_by_date or episode.show.sports:
+                year = str(episode.airdate).split('-')[0]
+                season_string = f"{show_name} {year}"
+            elif episode.show.anime:
+                # use string below if you really want to search on season with number
+                # season_string = f"{show_name} Saison {season:0d}"
+                season_string = f"{show_name} Saison" # ignore season number to get all seasons in all formats
+            else:
+                season_string = f"{show_name} Saison {season:0d}"
+
+            search_string["Season"].append(season_string)
+
+        return [search_string]
