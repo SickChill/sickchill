@@ -136,16 +136,18 @@ class Provider(TorrentProvider):
         search_string = {"Season": []}
 
         for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
-            season_string = show_name + " "
 
+            season = int(episode.scene_season)
             if episode.show.air_by_date or episode.show.sports:
-                season_string += str(episode.airdate).split("-")[0]
+                year = str(episode.airdate).split('-')[0]
+                season_string = f"{show_name} {year}"
             elif episode.show.anime:
                 # use string below if you really want to search on season with number
-                # season_string += 'Season ' + '{0:d}'.format(int(episode.scene_season))
-                season_string += "Saison" # ignore season number to get all seasons in all formats
+                # season_string = f"{show_name} Saison {season:0d}"
+                season_string = f"{show_name} Saison" # ignore season number to get all seasons in all formats
             else:
-                season_string += "Saison {0:0d}".format(int(episode.scene_season))
-                search_string["Season"].append(season_string.strip())
+                season_string = f"{show_name} Saison {season:0d}"
+
+            search_string["Season"].append(season_string)
 
         return [search_string]
