@@ -134,9 +134,7 @@ class Provider(TorrentProvider):
 
     def get_season_search_strings(self, episode):
         search_string = {"Season": []}
-
         for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
-
             season = int(episode.scene_season)
             if episode.show.air_by_date or episode.show.sports:
                 year = str(episode.airdate).split('-')[0]
