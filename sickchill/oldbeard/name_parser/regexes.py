@@ -137,6 +137,7 @@ normal_regexes = [
         r"""
      (?P<release_group>.+?)(?<!WEB)-(?P<series_name>\w*)(?<!\d)[\. ]?   # tpz-abc
      (?!26[45])                                                            # don't count x264
+     (?<!TORRENT)                                                       # ignore Torrent### providers
      (?P<season_num>\d{1,2})                                            # 1
      (?P<ep_num>\d{2})$                                                 # 02
      """,
