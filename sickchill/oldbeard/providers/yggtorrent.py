@@ -118,7 +118,7 @@ class Provider(TorrentProvider):
                         logger.debug("Refreshing cookies")
                         self.login()
 
-                    with BS4Parser(data, "html5lib") as html:
+                    with BS4Parser(data) as html:
                         torrent_table = html.find(class_="table")
                         torrent_rows = torrent_table("tr") if torrent_table else []
 

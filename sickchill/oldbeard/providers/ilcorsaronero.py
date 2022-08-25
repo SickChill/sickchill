@@ -204,7 +204,7 @@ class Provider(TorrentProvider):
                         continue
 
                     try:
-                        with BS4Parser(data, "html5lib") as html:
+                        with BS4Parser(data) as html:
                             table_header = html.find("tr", class_="bordo")
                             torrent_table = table_header.find_parent("table") if table_header else None
                             if not torrent_table:

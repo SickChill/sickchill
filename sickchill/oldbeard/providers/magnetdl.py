@@ -51,7 +51,7 @@ class Provider(TorrentProvider):
                     logger.debug("URL did not return results/data, if the results are on the site maybe try a custom url, or a different one")
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     torrent_table = html.find("table", class_="download")
                     torrent_body = torrent_table.find("tbody") if torrent_table else []
                     # noinspection PyCallingNonCallable

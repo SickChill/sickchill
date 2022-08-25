@@ -54,7 +54,7 @@ class Provider(TorrentProvider):
                     logger.debug("Data returned from provider does not contain any torrents")
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     labels = [label.get_text(strip=True) for label in html("th")]
                     for item in html("tr", attrs={"data-size": True}):
                         try:

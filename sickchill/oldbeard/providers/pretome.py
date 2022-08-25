@@ -82,7 +82,7 @@ class Provider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, "html5lib") as html:
+                    with BS4Parser(data) as html:
                         # Continue only if one Release is found
                         empty = html.find("h2", text="No .torrents fit this filter criteria")
                         if empty:

@@ -87,7 +87,7 @@ class Provider(TorrentProvider):
                     # This will recurse a few times until all of the mirrors are exhausted if none of them work.
                     return self.search(search_strings, age, ep_obj)
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     labels = [cell.get_text() for cell in html.find(class_="firstr")("th")]
                     logger.info("Found {} results".format(len(html("tr", **self.rows_selector))))
                     for result in html("tr", **self.rows_selector):
@@ -145,7 +145,7 @@ class Provider(TorrentProvider):
     def find_domain(self):
         data = self.get_url("https://ww1.kickass.help/")
         if data:
-            with BS4Parser(data, "html5lib") as html:
+            with BS4Parser(data) as html:
                 mirrors = html(class_="domainLink")
                 if mirrors:
                     self.mirrors = []

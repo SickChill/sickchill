@@ -109,7 +109,7 @@ class Provider(TorrentProvider):
                     logger.debug("No data returned from provider")
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     torrent_table = html.find("table", class_="torrent_table")
                     torrent_rows = torrent_table("tr") if torrent_table else []
 

@@ -61,7 +61,7 @@ class Provider(TorrentProvider):
             logger.warning("Unable to connect to provider")
             return False
 
-        with BS4Parser(data, "html5lib") as html:
+        with BS4Parser(data) as html:
             action = html.find("form", {"action": re.compile(r".*login.*")}).get("action")
             if not action:
                 logger.warning("Could not find the login form. Try adding cookies instead")
@@ -119,7 +119,7 @@ class Provider(TorrentProvider):
 
                 try:
                     data = re.sub(r"(?im)<button.+?</button>", "", data, 0)
-                    with BS4Parser(data, "html5lib") as html:
+                    with BS4Parser(data) as html:
                         if not html:
                             logger.debug("No data returned from provider")
                             continue

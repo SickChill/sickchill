@@ -88,7 +88,7 @@ class Provider(TorrentProvider):
                     logger.debug("No data returned from provider")
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     torrent_rows = html.find_all("div", class_="torrentrow")
 
                     # Continue only if at least one Release is found

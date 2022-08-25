@@ -91,7 +91,7 @@ class Provider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, "html5lib") as html:
+                    with BS4Parser(data) as html:
                         torrent_table = html.find("table", {"id": "torrent_table"})
                         if not torrent_table:
                             logger.debug("Data returned from {0} does not contain any torrents".format(self.name))

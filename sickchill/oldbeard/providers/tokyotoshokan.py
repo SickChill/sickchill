@@ -44,7 +44,7 @@ class Provider(TorrentProvider):
                 if not data:
                     continue
 
-                with BS4Parser(data, "html5lib") as soup:
+                with BS4Parser(data) as soup:
                     torrent_table = soup.find("table", class_="listing")
                     torrent_rows = torrent_table("tr") if torrent_table else []
 

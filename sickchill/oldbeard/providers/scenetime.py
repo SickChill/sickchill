@@ -78,10 +78,10 @@ class Provider(TorrentProvider):
                 if not data:
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     torrent_table = html.find(id="torrenttable")
                     if torrent_table:
-                        torrent_rows = torrent_table.findAll("tr")
+                        torrent_rows = torrent_table.find_all("tr")
                     else:
                         torrent_rows = []
 

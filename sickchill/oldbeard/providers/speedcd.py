@@ -125,7 +125,7 @@ class Provider(TorrentProvider):
                 if not data:
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     torrent_table = html.find("div", class_="boxContent")
                     torrent_table = torrent_table.find("table") if torrent_table else []
                     # noinspection PyCallingNonCallable
