@@ -117,8 +117,8 @@ jobs:
     - name: Install windows dependencies for python 3.11-dev
       if: success() && startsWith(runner.os, 'Windows') && matrix.python-version == '3.11-dev'
       run: |
-        curl -o $RUNNER_TEMP/lxml‑4.9.0‑cp311‑cp311‑win_amd64.whl https://download.lfd.uci.edu/pythonlibs/archived/lxml-4.9.0-cp311-cp311-win_amd64.whl
-        poetry run pip install $RUNNER_TEMP/lxml‑4.9.0‑cp311‑cp311‑win_amd64.whl
+        curl -o $RUNNER_TEMP/lxml-4.9.0-cp311-cp311-win_amd64.whl https://download.lfd.uci.edu/pythonlibs/archived/lxml-4.9.0-cp311-cp311-win_amd64.whl
+        poetry run pip install $RUNNER_TEMP/lxml-4.9.0-cp311-cp311-win_amd64.whl
     - name: Install dependencies
       run: |
         poetry lock --no-update
