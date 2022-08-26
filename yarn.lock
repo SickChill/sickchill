@@ -5534,21 +5534,21 @@ xmlchars@^2.1.1:
   resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-2.2.0.tgz#060fe1bcb7f9c76fe2a17db86a9bc3ab894210cb"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
 
-xo@^0.52.1:
-  version "0.52.1"
-  resolved "https://registry.yarnpkg.com/xo/-/xo-0.52.1.tgz#4073a0e0721b5ff50edd68730d06bd7fe7866f72"
-  integrity sha512-H+oVDIsL/m3GnfLQRsP0yRlNu9T19wseGbqrus4c2T7UD0j5QC4VaGzRelqgNmJP5T6Vq7Lt3r9vimzMQb/k8g==
+xo@^0.52.2:
+  version "0.52.2"
+  resolved "https://registry.yarnpkg.com/xo/-/xo-0.52.2.tgz#493e2116bf577647a1696a8f4ca586688c4e98a1"
+  integrity sha512-FTvJb6P6w1h3tu5jy3firRyLSqvJSHeffajpZ05RP4Xe0OUJkQzcwwOEF9/VUHC7lTBPnOrewEGJzQo8Mujx3Q==
   dependencies:
     "@eslint/eslintrc" "^1.3.0"
-    "@typescript-eslint/eslint-plugin" "^5.35.1"
-    "@typescript-eslint/parser" "^5.35.1"
+    "@typescript-eslint/eslint-plugin" "*"
+    "@typescript-eslint/parser" "*"
     arrify "^3.0.0"
     cosmiconfig "^7.0.1"
     define-lazy-prop "^3.0.0"
     eslint "^8.22.0"
     eslint-config-prettier "^8.5.0"
     eslint-config-xo "^0.42.0"
-    eslint-config-xo-typescript "^0.53.0"
+    eslint-config-xo-typescript "*"
     eslint-formatter-pretty "^4.1.0"
     eslint-import-resolver-webpack "^0.13.2"
     eslint-plugin-ava "^13.2.0"
