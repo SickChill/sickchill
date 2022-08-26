@@ -387,4 +387,5 @@ class NewznabProvider(NZBProvider):
     def _check_link(self, link):
         return urlparse(link).netloc == urlparse(self.url).netloc or validators.url(link) == True
 
+
 Provider = NewznabProvider
