@@ -68,7 +68,7 @@ def make_context(verify: bool):
 
 def set_opener(verify: bool):
     disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    https_handler = HTTPSHandler(context=make_context(verify), check_hostname=True)
+    https_handler = HTTPSHandler(context=make_context(verify), check_hostname=verify)
     opener = urllib.request.build_opener(https_handler)
     opener.addheaders = [("User-agent", sickchill.oldbeard.common.USER_AGENT)]
     urllib.request.install_opener(opener)

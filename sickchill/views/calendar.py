@@ -1,6 +1,5 @@
 import datetime
 
-from dateutil import tz
 from tornado.web import authenticated
 
 from sickchill import logger, settings
@@ -58,10 +57,8 @@ class CalendarHandler(BaseHandler):
                 (past_date, future_date, int(show["indexer_id"])),
             )
 
-            utc = tz.gettz("GMT")
-
             for episode in episode_list:
-                air_date_time = network_timezones.parse_date_time(episode["airdate"], show["airs"], show["network"]).astimezone(utc)
+                air_date_time = network_timezones.parse_date_time(episode["airdate"], show["airs"], show["network"]).astimezone(datetime.timezone.utc)
                 air_date_time_end = air_date_time + datetime.timedelta(minutes=try_int(show["runtime"], 60))
 
                 # Create event for episode

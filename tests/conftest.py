@@ -351,23 +351,6 @@ def teardown_test_show_dir():
         shutil.rmtree(SHOW_DIR)
 
 
-@pytest.fixture(scope="module")
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join(os.path.dirname(request.module.__file__), "cassettes")
-
-
-@pytest.fixture()
-def vcr_cassette_name(request):
-    """Name of the VCR cassette"""
-    return request.cls.provider.get_id() + ".yaml"
-
-
-@pytest.fixture(scope="module")
-def vcr_config():
-    return {"record_mode": ["new"]}
-
-
 def patch_open(open_func, files):
     def open_patched(path, mode="r", buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
         if "w" in mode and not os.path.isfile(path):
