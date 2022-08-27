@@ -281,7 +281,7 @@
                                                 </tr>
                                             % endif
                                             <tr>
-                                                <td class="showLegend">${_('Subtitles SR Metadata')}: </td>
+                                                <td class="showLegend">${_('Subtitles SC Metadata')}: </td>
                                                 <td><span class="displayshow-icon-${("disable", "enable")[bool(show.subtitles_sr_metadata)]}" title=${("N", "Y")[bool(show.subtitles_sr_metadata)]}></span></td>
                                             </tr>
                                             <tr>

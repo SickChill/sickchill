@@ -2182,11 +2182,11 @@ msgid "No Restart"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:916
-msgid "only shutdown when restarting SR"
+msgid "only shutdown when restarting SC"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:921
-msgid "only select this when you have external software restarting SR automatically when it stops (like FireDaemon)"
+msgid "only select this when you have external software restarting SC automatically when it stops (like FireDaemon)"
 msgstr ""
 
 #: gui/slick/views/config_general.mako:929
@@ -5457,7 +5457,7 @@ msgid "Subtitles"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:274
-msgid "Subtitles SR Metadata"
+msgid "Subtitles SC Metadata"
 msgstr ""
 
 #: gui/slick/views/displayShow.mako:278 gui/slick/views/inc_addShowOptions.mako:67
@@ -5653,7 +5653,7 @@ msgid "search for subtitles"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:130 gui/slick/views/inc_addShowOptions.mako:27
-msgid "Use SR Metadata"
+msgid "Use SC Metadata"
 msgstr ""
 
 #: gui/slick/views/editShow.mako:134

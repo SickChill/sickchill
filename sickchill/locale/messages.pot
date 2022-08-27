@@ -5853,7 +5853,7 @@ msgid "Subtitles Plugin"
 msgstr ""
 
 #: sickchill/gui/slick/views/displayShow.mako:284
-msgid "Subtitles SR Metadata"
+msgid "Subtitles SC Metadata"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_subtitles.mako:31
@@ -6909,7 +6909,7 @@ msgstr ""
 
 #: sickchill/gui/slick/views/editShow.mako:154
 #: sickchill/gui/slick/views/inc_addShowOptions.mako:27
-msgid "Use SR Metadata"
+msgid "Use SC Metadata"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:559
@@ -8069,7 +8069,7 @@ msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:922
 msgid ""
-"only select this when you have external software restarting SR automatically "
+"only select this when you have external software restarting SC automatically "
 "when it stops (like FireDaemon)"
 msgstr ""
 
@@ -8078,7 +8078,7 @@ msgid "only send library updates to the first active host?"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:917
-msgid "only shutdown when restarting SR"
+msgid "only shutdown when restarting SC"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_postProcessing.mako:393

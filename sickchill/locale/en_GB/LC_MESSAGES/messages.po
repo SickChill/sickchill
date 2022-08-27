@@ -310,7 +310,7 @@ msgstr "Subtitle Download Finished"
 
 #: sickchill/oldbeard/common.py:54
 msgid "SickChill Updated"
-msgstr "SickRage Updated"
+msgstr "SickChill Updated"
 
 #: sickchill/oldbeard/common.py:55
 msgid "SickChill Updated To Commit#: "
@@ -318,7 +318,7 @@ msgstr "SickChill Updated to Commit#: "
 
 #: sickchill/oldbeard/common.py:56
 msgid "SickChill new login"
-msgstr "SickRage new login"
+msgstr "SickChill new login"
 
 #: sickchill/oldbeard/common.py:57
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
