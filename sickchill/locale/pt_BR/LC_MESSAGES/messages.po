@@ -394,7 +394,7 @@ msgstr "{exception_severity} erro ao executar consulta com {method} no banco de 
 
 #: sickchill/oldbeard/db.py:82
 msgid "If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"
-msgstr "Se isso aconteceu no cache.bd, você pode parar o SickChill seguramente e excluir o arquivo cache.db sem perder nenhum dado"
+msgstr "Se isso aconteceu no cache.bd, você pode parar o SickRage seguramente e excluir o arquivo cache.db sem perder nenhum dado"
 
 #: sickchill/oldbeard/db.py:85
 msgid "Here is the arguments that were passed to this function (This is what the developers need to know): {local_variables}"
@@ -1433,7 +1433,7 @@ msgstr ""
 
 #: sickchill/update_manager/runner.py:48
 msgid "New update found for SickChill, starting auto-updater"
-msgstr "Nova atualização do Sikchill encontrada, iniciando a atualização automática"
+msgstr "Nova atualização do SikRage encontrada, iniciando a atualização automática"
 
 #: sickchill/update_manager/runner.py:52
 msgid "Update was successful"
