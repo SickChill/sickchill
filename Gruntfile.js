@@ -535,6 +535,7 @@ module.exports = function(grunt) {
         }
 
         if (next_version === last_version) {
+            grunt.fatal('Let\'s only release once a day, or semver is broken. We can fix this when we do away with grunt')
             next_version += '.' + hours + minutes + seconds
         }
 
