@@ -89,7 +89,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
                 logger.debug("Search String: {0} for mode {1}".format(search_strings[mode], mode))
@@ -101,7 +101,7 @@ class Provider(TorrentProvider):
                 if not data:
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     torrent_table = html.find(class_="ttable_headinner")
                     torrent_rows = torrent_table("tr") if torrent_table else []
 

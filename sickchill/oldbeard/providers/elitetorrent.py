@@ -43,7 +43,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             # Only search if user conditions are true
             if self.onlyspasearch and lang_info != "es" and mode != "RSS":
@@ -63,7 +63,7 @@ class Provider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, "html5lib") as html:
+                    with BS4Parser(data) as html:
                         torrent_table = html.find("table", class_="fichas-listado")
                         torrent_rows = torrent_table("tr") if torrent_table else []
 

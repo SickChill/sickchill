@@ -1,7 +1,7 @@
 import os
 import re
 import time
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import validators
 
@@ -309,7 +309,7 @@ class NewznabProvider(NZBProvider):
             logger.debug("Search Mode: {0}".format(mode))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                     if "tvdbid" not in search_params:
                         search_params["q"] = search_string
@@ -334,12 +334,12 @@ class NewznabProvider(NZBProvider):
                             title = item.title.get_text(strip=True)
                             download_url = None
                             if item.link:
-                                if validators.url(item.link.get_text(strip=True)) == True:
+                                if self.check_link(item.link.get_text(strip=True)):
                                     download_url = item.link.get_text(strip=True)
-                                elif validators.url(item.link.next.strip()) == True:
+                                elif self._check_link(item.link.next.strip()):
                                     download_url = item.link.next.strip()
 
-                            if (not download_url, item.enclosure and validators.url(item.enclosure.get("url", "").strip())) == True:
+                            if not download_url and item.enclosure and self._check_link(item.enclosure.get("url", "").strip()):
                                 download_url = item.enclosure.get("url", "").strip()
 
                             if not (title and download_url):
@@ -383,6 +383,9 @@ class NewznabProvider(NZBProvider):
         Returns int size or -1
         """
         return try_int(item.get("size", -1), -1)
+
+    def _check_link(self, link):
+        return urlparse(link).netloc == urlparse(self.url).netloc or validators.url(link) == True
 
 
 Provider = NewznabProvider

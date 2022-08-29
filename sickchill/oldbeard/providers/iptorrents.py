@@ -61,7 +61,7 @@ class Provider(TorrentProvider):
             logger.warning("Unable to connect to provider")
             return False
 
-        with BS4Parser(data, "html5lib") as html:
+        with BS4Parser(data) as html:
             action = html.find("form", {"action": re.compile(r".*login.*")}).get("action")
             if not action:
                 logger.warning("Could not find the login form. Try adding cookies instead")
@@ -98,10 +98,10 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in search_params[mode]:
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 # URL with 50 tv-show results, or max 150 if adjusted in IPTorrents profile
                 search_url = self.urls["search"] % (self.categories, freeleech, search_string)
@@ -119,7 +119,7 @@ class Provider(TorrentProvider):
 
                 try:
                     data = re.sub(r"(?im)<button.+?</button>", "", data, 0)
-                    with BS4Parser(data, "html5lib") as html:
+                    with BS4Parser(data) as html:
                         if not html:
                             logger.debug("No data returned from provider")
                             continue

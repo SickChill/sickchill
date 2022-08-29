@@ -84,7 +84,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             # if looking for season, look for more pages
             if mode == "Season":
@@ -92,7 +92,7 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 # Remove season / episode from search (not supported by tracker)
                 search_str = re.sub(r"\d+$" if anime else r"[S|E]\d\d", "", search_string).strip()
@@ -137,7 +137,7 @@ class Provider(TorrentProvider):
             return ret
 
         items = []
-        with BS4Parser(data, "html5lib") as html:
+        with BS4Parser(data) as html:
             torrent_table = html.find("table", id="torrent_table")
             torrent_rows = torrent_table("tr") if torrent_table else []
 

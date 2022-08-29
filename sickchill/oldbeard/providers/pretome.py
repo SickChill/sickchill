@@ -69,11 +69,11 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in search_params[mode]:
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 search_url = self.urls["search"] % (quote(search_string), self.categories)
 
@@ -82,7 +82,7 @@ class Provider(TorrentProvider):
                     continue
 
                 try:
-                    with BS4Parser(data, "html5lib") as html:
+                    with BS4Parser(data) as html:
                         # Continue only if one Release is found
                         empty = html.find("h2", text="No .torrents fit this filter criteria")
                         if empty:

@@ -292,7 +292,7 @@ class NameParser(object):
             new_season_numbers = list(set(new_season_numbers))  # remove duplicates
             if len(new_season_numbers) > 1:
                 raise InvalidNameException(
-                    f"Scene numbering results episodes from seasons {new_season_numbers}, " f"(i.e. more than one) and sickchill does not support this. Sorry."
+                    f"Scene numbering results episodes from seasons {new_season_numbers}, (i.e. more than one) and sickchill does not support this. Sorry."
                 )
 
             # I guess it's possible that we'd have duplicate episodes too, so lets

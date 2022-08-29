@@ -33,11 +33,11 @@ class Provider(TorrentProvider):
         results = []
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 try:
                     search_url = (self.urls["rss"], self.urls["search"] + search_string + "/")[mode != "RSS"]
@@ -51,7 +51,7 @@ class Provider(TorrentProvider):
                         logger.info("Expected xml but got something else, is your mirror failing?")
                         continue
 
-                    with BS4Parser(data, language="xml") as parser:
+                    with BS4Parser(data) as parser:
                         elements = parser("item")
                         if not elements:
                             logger.info("Returned xml contained no results")
