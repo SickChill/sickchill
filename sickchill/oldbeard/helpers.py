@@ -60,8 +60,8 @@ def make_context(verify: bool):
         context = ssl.create_default_context(cafile=certifi.where())
         context.options &= ~ssl.OP_NO_SSLv3
         # context.options |= ssl.OP_NO_SSLv2
-        context.verify_mode = (ssl.CERT_NONE, ssl.CERT_REQUIRED)[bool(verify)]
         context.check_hostname = verify or None
+        context.verify_mode = (ssl.CERT_NONE, ssl.CERT_REQUIRED)[bool(verify)]
         _context = context
     return _context
 
