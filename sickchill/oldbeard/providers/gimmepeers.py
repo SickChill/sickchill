@@ -73,7 +73,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format(search_string))
@@ -96,7 +96,7 @@ class Provider(TorrentProvider):
                         continue
 
                 try:
-                    with BS4Parser(data, "html.parser") as html:
+                    with BS4Parser(data) as html:
                         torrent_table = html.find("table", class_="browsetable")
                         torrent_rows = torrent_table("tr") if torrent_table else []
 

@@ -8,7 +8,7 @@ from sickchill.providers.torrent.FrenchProvider import FrenchTorrentProvider
 
 class Provider(FrenchTorrentProvider):
     def __init__(self):
-        super().__init__("Torrent9", "https://ww1.torrent9.re")
+        super().__init__("Torrent911", "https://www.torrent911.cc")
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
@@ -19,30 +19,27 @@ class Provider(FrenchTorrentProvider):
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
-                    search_url = self.url
-                    post_data = {"torrentSearch": search_string}
+                    search_url = self.url + "/recherche/" + search_string
                 else:
-                    search_url = self.url + "/torrents/series"
-                    post_data = None
+                    search_url = self.url + "/torrents/series/date/desc"
 
-                data = self.get_url(search_url, post_data, returns="text")
+                data = self.get_url(search_url, returns="text")
                 if not data:
                     continue
 
                 with BS4Parser(data) as html:
-                    for result in html.select("div.table-responsive tr"):
+                    # Skip column headers
+                    for result in html.select("table.table-hover tr")[1:]:
                         try:
-
-                            link = result.select_one("a")
-                            title = link.get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
+                            title = result.select_one(".maxi").get_text(strip=True).replace("HDTV", "HDTV x264-Torrent911")
                             title = re.sub(r" Saison", " Season", title, flags=re.I)
-                            download_url = self._retrieve_dllink_from_url(link.get("href"))
+                            download_url = self._retrieve_dllink_from_url(result.select_one("a").get("href"))
                             if not all([title, download_url]):
                                 logger.debug(_("Could not find title and download url for result"))
                                 continue
 
-                            seeders = try_int(result.find(attrs={"src": re.compile(r".*.up\.jpg")}).parent.get_text(strip=True))
-                            leechers = try_int(result.find(attrs={"src": re.compile(r".*.down\.jpg")}).parent.get_text(strip=True))
+                            seeders = try_int(result.find(attrs={"src": re.compile(r".*.uploader\.png")}).parent.get_text(strip=True))
+                            leechers = try_int(result.find(attrs={"src": re.compile(r".*.downloader\.png")}).parent.get_text(strip=True))
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(

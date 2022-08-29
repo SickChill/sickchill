@@ -92,12 +92,12 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
                 # search string needs to be normalized, single quotes are apparently not allowed on the site
                 # ç should also be replaced, people tend to use c instead
                 replace_chars = {"'": "", "ç": "c"}
@@ -118,7 +118,7 @@ class Provider(TorrentProvider):
                         logger.debug("Refreshing cookies")
                         self.login()
 
-                    with BS4Parser(data, "html5lib") as html:
+                    with BS4Parser(data) as html:
                         torrent_table = html.find(class_="table")
                         torrent_rows = torrent_table("tr") if torrent_table else []
 

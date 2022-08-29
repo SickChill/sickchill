@@ -101,7 +101,7 @@ class Provider(TorrentProvider):
                 # data = urllib.unquote(data[index:]).replace('\t', '')
                 data = data[index:]
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     if not html:
                         logger.debug("No html data parsed from provider")
                         continue

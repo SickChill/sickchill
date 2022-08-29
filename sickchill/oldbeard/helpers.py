@@ -57,18 +57,18 @@ _context = None
 def make_context(verify: bool):
     global _context
     if not _context or (_context and _context.check_hostname != verify):
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        context.options |= ssl.OP_NO_SSLv2
-        context.verify_mode = ssl.CERT_REQUIRED if verify else ssl.CERT_NONE
-        context.check_hostname = verify
-        context.load_verify_locations(certifi.where(), None)
+        context = ssl.create_default_context(cafile=certifi.where())
+        context.options &= ~ssl.OP_NO_SSLv3
+        # context.options |= ssl.OP_NO_SSLv2
+        context.verify_mode = (ssl.CERT_NONE, ssl.CERT_REQUIRED)[bool(verify)]
+        context.check_hostname = verify or None
         _context = context
     return _context
 
 
 def set_opener(verify: bool):
     disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    https_handler = HTTPSHandler(context=make_context(verify), check_hostname=verify)
+    https_handler = HTTPSHandler(context=make_context(verify))
     opener = urllib.request.build_opener(https_handler)
     opener.addheaders = [("User-agent", sickchill.oldbeard.common.USER_AGENT)]
     urllib.request.install_opener(opener)

@@ -61,7 +61,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
 
@@ -69,7 +69,7 @@ class Provider(TorrentProvider):
                     search_string = re.sub(r"(.*)S0?", r"\1Series ", search_string)
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 search_params["keywords"] = search_string
                 data = self.get_url(self.urls["search"], post_data=search_params, returns="text")
@@ -77,7 +77,7 @@ class Provider(TorrentProvider):
                     logger.debug(_("No data returned from provider"))
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     torrent_table = html.find(id="sortabletable")
                     torrent_rows = torrent_table("tr") if torrent_table else []
 

@@ -30,10 +30,10 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 search_params = {
                     "terms": search_string,
@@ -44,7 +44,7 @@ class Provider(TorrentProvider):
                 if not data:
                     continue
 
-                with BS4Parser(data, "html5lib") as soup:
+                with BS4Parser(data) as soup:
                     torrent_table = soup.find("table", class_="listing")
                     torrent_rows = torrent_table("tr") if torrent_table else []
 
