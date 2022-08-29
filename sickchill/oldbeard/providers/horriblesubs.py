@@ -32,7 +32,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
                 if mode == "RSS":
@@ -67,7 +67,7 @@ class Provider(TorrentProvider):
     def __parseRssFeed(data):
         entries = []
         with BS4Parser(data, language="xml") as soup:
-            items = soup.findAll("item")
+            items = soup.find_all("item")
 
             for item in items:
                 title = item.find("title").text
@@ -85,7 +85,7 @@ class Provider(TorrentProvider):
 
         search_params = {"method": "search", "value": search_string}
 
-        logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+        logger.debug(_("Search String: {search_string}").format(search_string=search_string))
         target_url = self.urls["search"]
 
         data = self.get_url(target_url, params=search_params, returns="text")
@@ -98,7 +98,7 @@ class Provider(TorrentProvider):
 
     def __parseSearchResult(self, data, target_url):
         results = []
-        with BS4Parser(data, "html5lib") as soup:
+        with BS4Parser(data) as soup:
             lists = soup.find_all("ul")
 
             list_items = []
@@ -137,7 +137,7 @@ class Provider(TorrentProvider):
             logger.debug("Could not fetch url: {0}".format(target_url))
             return None
 
-        with BS4Parser(data, "html5lib") as soup:
+        with BS4Parser(data) as soup:
             show_id = re.sub(r"[^0-9]", "", soup(text=re.compile("hs_showid"))[0])
             logger.debug("show id: {0}".format(show_id))
 
@@ -150,8 +150,8 @@ class Provider(TorrentProvider):
         if not data:
             return entries
 
-        with BS4Parser(data, "html5lib") as soup:
-            for div in soup.findAll("div", attrs={"class": "rls-link"}):
+        with BS4Parser(data) as soup:
+            for div in soup.find_all("div", attrs={"class": "rls-link"}):
                 quality = div.find("span", attrs={"class": "rls-link-label"}).get_text(strip=True)
 
                 link = div.find("span", class_="hs-torrent-link")

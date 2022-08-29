@@ -64,11 +64,11 @@ class Provider(TorrentProvider):
 
         for mode in search_params:
             items = []
-            logger.debug(_("Search Mode: {mode}".format(mode=mode)))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in search_params[mode]:
 
                 if mode != "RSS":
-                    logger.debug(_("Search String: {search_string}".format(search_string=search_string)))
+                    logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 query = {"sec": "jax", "cata": "yes", "search": search_string}
                 query.update({"c" + str(i): 1 for i in self.categories})
@@ -78,10 +78,10 @@ class Provider(TorrentProvider):
                 if not data:
                     continue
 
-                with BS4Parser(data, "html5lib") as html:
+                with BS4Parser(data) as html:
                     torrent_table = html.find(id="torrenttable")
                     if torrent_table:
-                        torrent_rows = torrent_table.findAll("tr")
+                        torrent_rows = torrent_table.find_all("tr")
                     else:
                         torrent_rows = []
 
