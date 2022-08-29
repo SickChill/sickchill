@@ -722,8 +722,8 @@ def create_https_certificates(ssl_cert, ssl_key):
     # noinspection PyBroadException
     try:
         # Module has no member
-        open(ssl_key, "wb").write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        open(ssl_cert, "wb").write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        Path(ssl_key).write_bytes(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
+        Path(ssl_cert).write_bytes(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
         logger.info(traceback.format_exc())
         logger.warning(_(f"There was a problem creating the SSL key and certificate. Error: {error}"))

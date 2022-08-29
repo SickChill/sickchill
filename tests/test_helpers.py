@@ -441,16 +441,16 @@ class HelpersEncryptionTests(unittest.TestCase):
         try:
             with open(cert_path, "rb") as f:
                 cert = OpenSSL.crypto.load_certificate(FILETYPE_PEM, f.read())
-        except Exception:
+        except Exception as error:
             removeTestFiles()
-            self.fail("Unable to load certificate")
+            self.fail(f"Unable to load certificate: {error}")
 
         try:
             with open(pkey_path, "rb") as f:
                 pkey = OpenSSL.crypto.load_privatekey(FILETYPE_PEM, f.read())
-        except Exception:
+        except Exception as error:
             removeTestFiles()
-            self.fail("Unable to load private key")
+            self.fail(f"Unable to load private key: {error}")
 
         context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
         context.use_privatekey(pkey)
