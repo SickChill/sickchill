@@ -51,7 +51,7 @@ class Provider(TorrentProvider):
                         logger.info("Expected xml but got something else, is your mirror failing?")
                         continue
 
-                    with BS4Parser(data, language="xml") as parser:
+                    with BS4Parser(data) as parser:
                         elements = parser("item")
                         if not elements:
                             logger.info("Returned xml contained no results")
