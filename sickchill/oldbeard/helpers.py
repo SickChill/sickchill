@@ -60,8 +60,8 @@ def make_context(verify: bool):
         context = ssl.create_default_context(cafile=certifi.where())
         context.options &= ~ssl.OP_NO_SSLv3
         # context.options |= ssl.OP_NO_SSLv2
-        context.verify_mode = (ssl.CERT_NONE, ssl.CERT_REQUIRED)[bool(verify)]
         context.check_hostname = verify or None
+        context.verify_mode = (ssl.CERT_NONE, ssl.CERT_REQUIRED)[bool(verify)]
         _context = context
     return _context
 
@@ -722,8 +722,8 @@ def create_https_certificates(ssl_cert, ssl_key):
     # noinspection PyBroadException
     try:
         # Module has no member
-        open(ssl_key, "wb").write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        open(ssl_cert, "wb").write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        Path(ssl_key).write_bytes(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
+        Path(ssl_cert).write_bytes(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
         logger.info(traceback.format_exc())
         logger.warning(_(f"There was a problem creating the SSL key and certificate. Error: {error}"))

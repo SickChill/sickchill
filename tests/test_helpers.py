@@ -62,7 +62,9 @@ Private Methods:
 """
 
 import os
+import ssl
 import unittest
+from pathlib import Path
 from shutil import rmtree
 
 from sickchill import settings
@@ -421,49 +423,40 @@ class HelpersEncryptionTests(unittest.TestCase):
             self.skipTest("pyOpenSSL is not installed")
             return False
 
-        base_path = os.path.dirname(__file__)
-        cert_path = os.path.abspath(os.path.join(base_path, "base.crt"))
-        pkey_path = os.path.abspath(os.path.join(base_path, "base.key"))
+        base_path = Path(__file__).parent.absolute()
+        cert_path = base_path / "base.crt"
+        pkey_path = base_path / "base.key"
 
         def removeTestFiles():
-            try:
-                os.remove(cert_path)
-                os.remove(pkey_path)
-            except OSError:
-                pass
+            for test_file in [cert_path, pkey_path]:
+                try:
+                    test_file.unlink()
+                except (FileNotFoundError, ValueError):
+                    pass
 
         removeTestFiles()  # always remove existing
+
         assert helpers.create_https_certificates(cert_path, pkey_path)
-        assert os.path.isfile(cert_path)
-        assert os.path.isfile(pkey_path)
 
-        FILETYPE_PEM = OpenSSL.crypto.FILETYPE_PEM
-        try:
-            with open(cert_path, "rb") as f:
-                cert = OpenSSL.crypto.load_certificate(FILETYPE_PEM, f.read())
-        except Exception:
-            removeTestFiles()
-            self.fail("Unable to load certificate")
+        assert cert_path.is_file()
+        assert cert_path.stat().st_size > 0, "Generated cert is empty"
+
+        assert pkey_path.is_file()
+        assert pkey_path.stat().st_size > 0, "Generated pkey is empty"
 
         try:
-            with open(pkey_path, "rb") as f:
-                pkey = OpenSSL.crypto.load_privatekey(FILETYPE_PEM, f.read())
-        except Exception:
+            ctx = helpers.make_context(False)
+            assert ctx
+        except Exception as error:
             removeTestFiles()
-            self.fail("Unable to load private key")
+            self.fail(f"Error creating ssl context: {error}")
 
-        context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
-        context.use_privatekey(pkey)
-        context.use_certificate(cert)
-        failed = False
         try:
-            context.check_privatekey()
-        except OpenSSL.SSL.Error:
-            failed = True
-        finally:
+            ctx.load_cert_chain(str(cert_path), str(pkey_path))
+            ctx.cert_store_stats()
+        except ssl.SSLError as error:
             removeTestFiles()
-
-        assert not failed, "private key does not match certificate"
+            self.fail(f"Unable to load certificate chain: {error}")
 
     @unittest.skip("Not yet implemented")
     def test_encrypt(self):

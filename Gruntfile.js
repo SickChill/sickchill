@@ -437,9 +437,7 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_tags': {
-                cmd: 'git for-each-ref --sort=refname ' +
-                        '--format="%(refname:short)|||%(objectname)|||%(contents)\xB6\xB6\xB6" ' +
-                        'refs/tags/20[0-9][0-9].[0-9][0-9].[0-9][0-9]* refs/tags/v202[0-1].[0-9][0-9].[0-9][0-9]*',
+                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\xB6\xB6\xB6" refs/tags/20[0-9][0-9].[0-9][0-9].[0-9][0-9]*',
                 stdout: false,
                 callback: function(err, stdout) {
                     if (!stdout) {
@@ -535,6 +533,7 @@ module.exports = function(grunt) {
         }
 
         if (next_version === last_version) {
+            grunt.fatal('Let\'s only release once a day, or semver is broken. We can fix this when we do away with grunt')
             next_version += '.' + hours + minutes + seconds
         }
 
