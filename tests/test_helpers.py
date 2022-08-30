@@ -423,7 +423,7 @@ class HelpersEncryptionTests(unittest.TestCase):
             self.skipTest("pyOpenSSL is not installed")
             return False
 
-        base_path = Path(__file__).parent
+        base_path = Path(__file__).parent.absolute()
         cert_path = base_path / "base.crt"
         pkey_path = base_path / "base.key"
 
@@ -452,7 +452,7 @@ class HelpersEncryptionTests(unittest.TestCase):
             self.fail(f"Error creating ssl context: {error}")
 
         try:
-            ctx.load_cert_chain(cert_path, pkey_path)
+            ctx.load_cert_chain(str(cert_path), str(pkey_path))
             ctx.cert_store_stats()
         except ssl.SSLError as error:
             removeTestFiles()
