@@ -428,8 +428,8 @@ class HelpersEncryptionTests(unittest.TestCase):
         pkey_path = base_path / "base.key"
 
         def removeTestFiles():
-            cert_path.unlink(True)
-            pkey_path.unlink(True)
+            cert_path.unlink(missing_ok=True)
+            pkey_path.unlink(missing_ok=True)
 
         removeTestFiles()  # always remove existing
 
