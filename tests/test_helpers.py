@@ -450,7 +450,7 @@ class HelpersEncryptionTests(unittest.TestCase):
 
         try:
             ctx.load_cert_chain(cert_path, pkey_path)
-            ctx.ctx.cert_store_stats()
+            ctx.cert_store_stats()
         except ssl.SSLError as error:
             removeTestFiles()
             self.fail(f"Unable to load certificate chain: {error}")
