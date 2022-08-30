@@ -428,8 +428,11 @@ class HelpersEncryptionTests(unittest.TestCase):
         pkey_path = base_path / "base.key"
 
         def removeTestFiles():
-            cert_path.unlink(missing_ok=True)
-            pkey_path.unlink(missing_ok=True)
+            for test_file in [cert_path, pkey_path]:
+                try:
+                    test_file.unlink()
+                except (FileNotFoundError, ValueError):
+                    pass
 
         removeTestFiles()  # always remove existing
 
