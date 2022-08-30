@@ -522,6 +522,16 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Definite/Indefinite articles to remove for sorting')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="text" name="grammar_articles" id="grammar_articles" value="${settings.GRAMMAR_ARTICLES}" class="form-control input-sm input100" autocapitalize="off" />
+                                <label for="grammar_articles">${_('List of words to treat as articles, separated by the pipe character. Default: "the|a|an"')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Missed episodes range')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">

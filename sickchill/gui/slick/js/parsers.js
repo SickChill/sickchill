@@ -8,7 +8,8 @@ $.tablesorter.addParser({
             return s.replace(_('Loading...'), '000');
         }
 
-        return latinize(metaToBool('settings.SORT_ARTICLE') ? (s || '') : (s || '').replace(/^(the|a|an)\s/i, '').normalize('NFC'));
+        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+        return latinize(metaToBool('settings.SORT_ARTICLE') ? (s || '') : (s || '').replace(regex, '').normalize('NFC'));
     },
     type: 'text',
 });
