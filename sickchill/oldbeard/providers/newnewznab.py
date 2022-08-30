@@ -334,7 +334,7 @@ class NewznabProvider(NZBProvider):
                             title = item.title.get_text(strip=True)
                             download_url = None
                             if item.link:
-                                if self.check_link(item.link.get_text(strip=True)):
+                                if self._check_link(item.link.get_text(strip=True)):
                                     download_url = item.link.get_text(strip=True)
                                 elif self._check_link(item.link.next.strip()):
                                     download_url = item.link.next.strip()
