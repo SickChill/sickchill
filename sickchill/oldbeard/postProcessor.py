@@ -5,11 +5,18 @@ import re
 import stat
 import subprocess
 from pathlib import Path
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from processTV import ParseResult
+    from sickchill.tv import TVShow
+
+from guessit import guessit
 
 import sickchill.helper.common
 import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
-from sickchill.helper.common import get_extension, is_rar_file, remove_extension, replace_extension, SUBTITLE_EXTENSIONS
+from sickchill.helper.common import episode_num, get_extension, is_rar_file, remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
 from sickchill.show.History import History
 from sickchill.show.Show import Show
@@ -506,11 +513,11 @@ class PostProcessor(object):
 
         else:
             logger.debug("Parse result not sufficient (all following have to be set). will not save release name")
-            logger.debug("Parse result(series_name): " + str(parse_result.series_name))
-            logger.debug("Parse result(season_number): " + str(parse_result.season_number))
-            logger.debug("Parse result(episode_numbers): " + str(parse_result.episode_numbers))
-            logger.debug(" or Parse result(air_date): " + str(parse_result.air_date))
-            logger.debug("Parse result(release_group): " + str(parse_result.release_group))
+            logger.debug(f"Parse result(series_name): {parse_result.series_name}")
+            logger.debug(f"Parse result(season_number): {parse_result.season_number}")
+            logger.debug(f"Parse result(episode_numbers): {parse_result.episode_numbers}")
+            logger.debug(f" or Parse result(air_date): {parse_result.air_date}")
+            logger.debug(f"Parse result(release_group): {parse_result.release_group}")
 
     def _analyze_name(self, name):
         """
@@ -527,15 +534,12 @@ class PostProcessor(object):
         if not name:
             return to_return
 
-        logger.debug("Analyzing name " + name)
+        logger.debug(f"Analyzing name {name}")
 
         name = helpers.remove_non_release_groups(remove_extension(name))
 
-        # parse the name to break it into show name, season, and episode
-        try:
-            parse_result = NameParser(tryIndexers=True).parse(name)
-        except (InvalidNameException, InvalidShowException) as error:
-            logger.debug(f"{error}")
+        parse_result = guessit_findit(name)
+        if not parse_result:
             return to_return
 
         # show object
@@ -584,8 +588,8 @@ class PostProcessor(object):
             self._log(_("Adding the file to the anidb mylist"), logger.DEBUG)
             try:
                 self.anidbEpisode.add_to_mylist(status=1)  # status = 1 sets the status of the file to "internal HDD"
-            except Exception as e:
-                self._log("exception msg: " + str(e))
+            except Exception as error:
+                self._log(f"exception msg: {error}")
 
     def _find_info(self):
         """
@@ -609,7 +613,7 @@ class PostProcessor(object):
             # try to analyze the file + dir names together
             lambda: self._analyze_name(self.directory),
             # try to analyze the dir + file name together as one name
-            lambda: self._analyze_name(self.folder_name + " " + self.filename),
+            lambda: self._analyze_name(f"{self.folder_name} {self.filename}"),
         ]
 
         # attempt every possible method to get our info
@@ -668,7 +672,7 @@ class PostProcessor(object):
                         season = int(sql_result[0]["season"])
                         episodes = [int(sql_result[0]["episode"])]
                     else:
-                        self._log("Unable to find episode with date " + str(episodes[0]) + " for show " + str(show.indexerid) + ", skipping", logger.DEBUG)
+                        self._log(f"Unable to find episode with date {episodes[0]} for show {show.indexerid}, skipping", logger.DEBUG)
                         # we don't want to leave dates in the episode list if we couldn't convert them to real episode numbers
                         episodes = []
                         continue
@@ -702,15 +706,15 @@ class PostProcessor(object):
 
         root_ep = None
         for cur_episode in episodes:
-            self._log("Retrieving episode object for " + str(season) + "x" + str(cur_episode), logger.DEBUG)
+            self._log(f"Retrieving episode object for {episode_num(season, cur_episode)}", logger.DEBUG)
 
             # now that we've figured out which episode this file is just load it manually
             try:
                 curEp = show.getEpisode(season, cur_episode)
                 if not curEp:
                     raise EpisodeNotFoundException()
-            except EpisodeNotFoundException as e:
-                self._log(_("Unable to create episode: ") + str(e), logger.DEBUG)
+            except EpisodeNotFoundException as error:
+                self._log(_("Unable to create episode: {error}").format(error=error), logger.DEBUG)
                 raise EpisodePostProcessingFailedException()
 
             # associate all the episodes together under a single root episode
@@ -749,25 +753,25 @@ class PostProcessor(object):
                 continue
 
             ep_quality = common.Quality.nameQuality(cur_name, ep_obj.show.is_anime)
-            self._log("Looking up quality for name " + cur_name + ", got " + common.Quality.qualityStrings[ep_quality], logger.DEBUG)
+            self._log(f"Looking up quality for name {cur_name}, got {common.Quality.qualityStrings[ep_quality]}", logger.DEBUG)
 
             # if we find a good one then use it
             if ep_quality != common.Quality.UNKNOWN:
-                logger.debug(cur_name + " looks like it has quality " + common.Quality.qualityStrings[ep_quality] + ", using that")
+                logger.debug(f"{cur_name} looks like it has quality {common.Quality.qualityStrings[ep_quality]}, using that")
                 return ep_quality
 
         # Try getting quality from the episode (snatched) status
         if ep_obj.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
             ep_status_, ep_quality = common.Quality.splitCompositeStatus(ep_obj.status)
             if ep_quality != common.Quality.UNKNOWN:
-                self._log("The old status had a quality in it, using that: " + common.Quality.qualityStrings[ep_quality], logger.DEBUG)
+                self._log(f"The old status had a quality in it, using that: {common.Quality.qualityStrings[ep_quality]}", logger.DEBUG)
                 return ep_quality
 
         # Try guessing quality from the file name
         ep_quality = common.Quality.nameQuality(self.directory)
-        self._log("Guessing quality for name " + self.filename + ", got " + common.Quality.qualityStrings[ep_quality], logger.DEBUG)
+        self._log(f"Guessing quality for name {self.filename}, got {common.Quality.qualityStrings[ep_quality]}", logger.DEBUG)
         if ep_quality != common.Quality.UNKNOWN:
-            logger.debug(self.filename + " looks like it has quality " + common.Quality.qualityStrings[ep_quality] + ", using that")
+            logger.debug(f"{self.filename} looks like it has quality {common.Quality.qualityStrings[ep_quality]}, using that")
             return ep_quality
 
         return ep_quality
@@ -800,8 +804,8 @@ class PostProcessor(object):
 
                 self._log(_(f"Script result: {str(out or err).strip()}"), logger.DEBUG)
 
-            except Exception as e:
-                self._log(f"Unable to run extra_script: {str(e)}")
+            except Exception as error:
+                self._log(f"Unable to run extra_script: {error}")
 
     def _is_priority(self, ep_obj, new_ep_quality):
         """
@@ -855,7 +859,7 @@ class PostProcessor(object):
         :return: True on success, False on failure
         """
 
-        self._log("Processing " + self.directory + " (" + str(self.release_name) + ")")
+        self._log(f"Processing {self.directory} ({self.release_name})")
 
         if os.path.isdir(self.directory):
             self._log(f"File {self.directory} seems to be a directory")
@@ -1158,3 +1162,23 @@ class PostProcessor(object):
             logger.info(_("Some notifications could not be sent. Finishing postProcessing..."))
 
         return True
+
+
+def guessit_findit(name: str) -> Union["ParseResult", None]:
+    logger.debug(f"Trying a new way to verify if we can parse this file")
+    title = guessit(name, {"type": "episode"}).get("title")
+    if title:
+        show: "TVShow" = helpers.get_show(title, False)
+        if show:
+            try:
+                np = NameParser(showObj=show).parse(name, cache_result=False)
+                return np
+            except (InvalidNameException, InvalidShowException) as error:
+                logger.debug(f"Sorry, guessit failed to parse the file name for {show}: {name} (Error: {error} ... continuing with the old way")
+    try:
+        np = NameParser().parse(name, cache_result=False)
+        return np
+    except (InvalidNameException, InvalidShowException) as error:
+        logger.debug(f"Could not properly parse a show and episode from [{name}]: {str(error)}")
+
+    return None

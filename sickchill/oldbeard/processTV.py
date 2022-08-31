@@ -4,6 +4,7 @@ import shutil
 import stat
 import traceback
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import validators
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
@@ -14,6 +15,10 @@ from sickchill.helper.exceptions import EpisodePostProcessingFailedException, Fa
 
 from . import common, db, failedProcessor, helpers, postProcessor
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+
+if TYPE_CHECKING:
+    from sickchill.oldbeard.name_parser.parser import ParseResult
+    from sickchill.tv import TVShow
 
 
 class ProcessResult(object):
@@ -303,11 +308,7 @@ def validate_dir(process_path, release_name, failed, result):
                 # pass 'current directory/filename' as one string to NameParser
                 found_file = f"{os.path.basename(current_directory)}/{found_file}"
 
-            try:
-                NameParser().parse(found_file, cache_result=False)
-            except (InvalidNameException, InvalidShowException) as error:
-                logger.debug(f"Could not properly parse a show and episode from [{found_file}]: {str(error)}")
-            else:
+            if postProcessor.guessit_findit(found_file):
                 return True
 
     result.output += log_helper(f"{process_path} : No processable items found in folder", logger.DEBUG)
@@ -438,23 +439,20 @@ def already_processed(process_path, video_file, force, result):
 
     # Needed if we have downloaded the same episode @ different quality
     # But we need to make sure we check the history of the episode we're going to PP, and not others
-    try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
-        parse_result = NameParser(process_path, tryIndexers=True).parse(process_path)
-    except (
-        InvalidNameException,
-        InvalidShowException,
-    ):  # ignore the exception, because we kind of expected it, but create parse_result anyway, so we can perform a check on it.
-        parse_result = False
+    # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
+    parse_result: "ParseResult" = postProcessor.guessit_findit(process_path)
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
 
     # If we find a showid, a season number, and one or more episode numbers than we need to use those in the query
-    if parse_result and parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number:
-        search_sql += (
-            f" AND tv_episodes.showid={parse_result.show.indexerid} AND tv_episodes.season={parse_result.season_number}"
-            f" AND tv_episodes.episode={parse_result.episode_numbers[0]}"
-        )
+    if parse_result:
+        if parse_result.show.indexerid:
+            search_sql += f" AND tv_episodes.showid={parse_result.show.indexerid}"
+        if parse_result.season_number is not None and parse_result.episode_numbers:
+            search_sql += f" AND tv_episodes.season={parse_result.season_number} AND tv_episodes.episode={parse_result.episode_numbers[0]}"
+        elif parse_result.ab_episode_numbers:
+            search_sql += f" AND tv_episodes.showid={parse_result.show.indexerid} AND tv_episodes.absolute_number={parse_result.ab_episode_numbers[0]}"
 
     search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED + common.Quality.ARCHIVED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
@@ -533,25 +531,3 @@ def process_failed(process_path, release_name, result):
         result.output += log_helper(f"Failed Download Processing succeeded: ({release_name}, {process_path})")
     else:
         result.output += log_helper(f"Failed Download Processing failed: ({release_name}, {process_path}): {process_fail_message}", logger.WARNING)
-
-
-def subtitles_enabled(video):
-    """
-    Parse video filename to a show to check if it has subtitle enabled
-
-    param video: video filename to be parsed
-    """
-
-    try:
-        parse_result = NameParser().parse(video, cache_result=True)
-    except (InvalidNameException, InvalidShowException):
-        logger.warning(f"Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {video}")
-        return False
-
-    if parse_result.show.indexerid:
-        main_db_con = db.DBConnection()
-        sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
-        return bool(sql_results[0]["subtitles"]) if sql_results else False
-    else:
-        logger.warning(f"Empty indexer ID for: {video}")
-        return False

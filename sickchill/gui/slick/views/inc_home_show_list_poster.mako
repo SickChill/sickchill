@@ -66,6 +66,8 @@
                 if curShow.paused:
                     display_status = _(display_status) + ' ' + _('Paused')
 
+                cur_airs_next = None
+                cur_airs_prev = None
                 if curShow.indexerid in show_stat:
                     cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
                     cur_airs_prev = show_stat[curShow.indexerid]['ep_airs_prev']
