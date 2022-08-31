@@ -24,7 +24,7 @@ libmediainfo0v5 libmediainfo-dev mediainfo unrar curl build-essential && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade --prefer-binary pip wheel setuptools && \
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile minimal -y
 
 RUN . $HOME/.cargo/env && export POETRY_INSTALLER_PARALLEL=false && pip install sickchill
 

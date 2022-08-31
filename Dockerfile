@@ -28,7 +28,7 @@ libmediainfo0v5 libmediainfo-dev mediainfo unrar curl build-essential && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade --prefer-binary poetry pip wheel setuptools && \
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile minimal -y
 
 COPY . /app/sickchill
 
