@@ -902,9 +902,9 @@ camelcase@^6.3.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001370:
-  version "1.0.30001385"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001385.tgz#51d5feeb60b831a5b4c7177f419732060418535c"
-  integrity sha512-MpiCqJGhBkHgpyimE9GWmZTnyHyEEM35u115bD3QBrXpjvL/JgcP8cUhKJshfmg4OtEHFenifcK5sZayEw5tvQ==
+  version "1.0.30001387"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001387.tgz#90d2b9bdfcc3ab9a5b9addee00a25ef86c9e2e1e"
+  integrity sha512-fKDH0F1KOJvR+mWSOvhj8lVRr/Q/mc5u5nabU2vi1/sgvlSqEsE8dOq0Hy/BqVbDkCYQPRRHB1WRjW6PGB/7PA==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -1452,9 +1452,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.202:
-  version "1.4.237"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.237.tgz#c695c5fedc3bb48f04ba1b39470c5aef2aaafd84"
-  integrity sha512-vxVyGJcsgArNOVUJcXm+7iY3PJAfmSapEszQD1HbyPLl0qoCmNQ1o/EX3RI7Et5/88In9oLxX3SGF8J3orkUgA==
+  version "1.4.239"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.239.tgz#5b04acb39c16b897a508980d1be95ba5f0201771"
+  integrity sha512-XbhfzxPIFzMjJm17T7yUGZEyYh5XuUjrA/FQ7JUy2bEd4qQ7MvFTaKpZ6zXZog1cfVttESo2Lx0ctnf7eQOaAQ==
 
 emittery@^0.11.0:
   version "0.11.0"
@@ -4779,9 +4779,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.993.0:
-  version "1.993.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.993.0.tgz#9c3c4741f8f478be5df6747106469a3f2e812662"
-  integrity sha512-+uzow9NlGjDCADDhFyftXKJuUZ6agKg+9jP0IYe/wPiBel3dqF9baoKj93wxZSlKEjHLDDAeSgZESwZbvdq1kw==
+  version "1.995.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.995.0.tgz#b807e853d06a85aa172509ce76f4118b890598c5"
+  integrity sha512-rd0iWW8jr/e6lQ2ncnXbfAXPnBdjQP95dFCdltQf3HwjCTE6vTgH0iiKTlglfR33VrNJJVrjsV527qrlMIiZXQ==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
@@ -5536,9 +5536,9 @@ xmlchars@^2.1.1:
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
 
 xo@^0.52.2:
-  version "0.52.2"
-  resolved "https://registry.yarnpkg.com/xo/-/xo-0.52.2.tgz#493e2116bf577647a1696a8f4ca586688c4e98a1"
-  integrity sha512-FTvJb6P6w1h3tu5jy3firRyLSqvJSHeffajpZ05RP4Xe0OUJkQzcwwOEF9/VUHC7lTBPnOrewEGJzQo8Mujx3Q==
+  version "0.52.3"
+  resolved "https://registry.yarnpkg.com/xo/-/xo-0.52.3.tgz#524de05f1bf83f211045a5f6fe547da914a20a16"
+  integrity sha512-liCEteZ5z+QRyh3XzsYWQyxedBHBvx8CDlNvvi+BJz74L0E5/ID2v7JtoX3bD541AlMuOy4e/iWif6hhNGBFNw==
   dependencies:
     "@eslint/eslintrc" "^1.3.0"
     "@typescript-eslint/eslint-plugin" "^5.35.1"
