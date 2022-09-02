@@ -2,8 +2,15 @@ import argparse
 import gettext
 import logging
 import os
+import subprocess
 import sys
 from pathlib import Path
+from typing import Union
+
+try:
+    from importlib.metadata import Distribution, PackageNotFoundError  # noqa
+except ImportError:
+    from importlib_metadata import Distribution, PackageNotFoundError  # noqa
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
@@ -120,14 +127,34 @@ def remove_pid_file():
         pass
 
 
-def check_installed() -> bool:
-    try:
-        from importlib.metadata import Distribution, PackageNotFoundError  # noqa
-    except ImportError:
-        from importlib_metadata import Distribution, PackageNotFoundError  # noqa
+_distribution = None
+_version = None
 
-    try:
-        Distribution.from_name(__package__)
-    except PackageNotFoundError:
-        return False
-    return True
+def get_distribution() -> Union[Distribution, None]:
+    global _distribution
+    if _distribution is None:
+        try:
+            _distribution = Distribution.from_name(__package__)
+        except PackageNotFoundError:
+            return None
+    return _distribution
+
+def check_installed() -> bool:
+    return get_distribution() is not None
+
+def get_current_version():
+    global _version
+    if _version is None:
+
+        distribution = get_distribution()
+        if distribution:
+            return distribution.version
+
+        result = subprocess.run(['poetry', 'version', '-s'])
+        if result.returncode == 0:
+            _version = result.stdout
+
+    return _version
+
+
+

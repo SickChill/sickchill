@@ -5,9 +5,9 @@ import uuid
 from functools import reduce
 from os import path
 
-from sickchill import settings, version
+from sickchill import settings
 from sickchill.helper import video_screen_size
-from sickchill.init_helpers import setup_gettext
+from sickchill.init_helpers import setup_gettext, get_current_version
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
 
@@ -17,7 +17,7 @@ setup_gettext()
 
 INSTANCE_ID = str(uuid.uuid1())
 USER_AGENT = "SickChill/{version} ({os} {architecture} {os_version}; {instance})".format(
-    version=version.__version__, os=platform.system(), architecture=platform.machine(), os_version=platform.release(), instance=INSTANCE_ID
+    version=get_current_version(), os=platform.system(), architecture=platform.machine(), os_version=platform.release(), instance=INSTANCE_ID
 )
 
 cpu_presets = {"HIGH": 5, "NORMAL": 2, "LOW": 1}

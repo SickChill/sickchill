@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -5,7 +6,8 @@ from typing import List, Union
 
 from packaging import version as packaging_version
 
-from sickchill import logger, settings, version
+from sickchill import logger, settings
+from sickchill.init_helpers import get_current_version
 from sickchill.oldbeard import helpers, notifiers
 
 from .abstract import UpdateManagerBase
@@ -13,16 +15,22 @@ from .abstract import UpdateManagerBase
 
 class PipUpdateManager(UpdateManagerBase):
     def __init__(self):
+        self.version_text = get_current_version()
+        self.newest_version_text = get_current_version()
+
         self._newest_version: Union[packaging_version.LegacyVersion, packaging_version.Version] = None
         self.session = helpers.make_session()
         self.branch = "pip"
 
-    def get_current_version(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
-        return packaging_version.parse(version.__version__)
+    def get_current_version(self) -> str:
+        return packaging_version.parse(self.version_text)
 
     def get_clean_version(self, use_version: packaging_version.Version = None):
+        if not use_version:
+            return self.version_text
+
         _version = use_version or self.get_current_version()
-        result = f"v{_version.major:04d}.{_version.minor:02d}.{_version.micro:02}"
+        result = f"{_version.major:04d}.{_version.minor:02d}.{_version.micro:02}"
         if _version.is_postrelease:
             result += f"-{_version.post}"
 
