@@ -140,7 +140,7 @@ class ShowQueue(generic_queue.GenericQueue):
         season_folders=None,
         lang=None,
         subtitles=None,
-        subtitles_sr_metadata=None,
+        subtitles_sc_metadata=None,
         anime=None,
         scene=None,
         paused=None,
@@ -165,7 +165,7 @@ class ShowQueue(generic_queue.GenericQueue):
             season_folders,
             lang,
             subtitles,
-            subtitles_sr_metadata,
+            subtitles_sc_metadata,
             anime,
             scene,
             paused,
@@ -261,7 +261,7 @@ class QueueItemAdd(ShowQueueItem):
         season_folders,
         lang,
         subtitles,
-        subtitles_sr_metadata,
+        subtitles_sc_metadata,
         anime,
         scene,
         paused,
@@ -281,7 +281,7 @@ class QueueItemAdd(ShowQueueItem):
         self.season_folders = season_folders
         self.lang = lang
         self.subtitles = subtitles
-        self.subtitles_sr_metadata = subtitles_sr_metadata
+        self.subtitles_sc_metadata = subtitles_sc_metadata
         self.anime = anime
         self.scene = scene
         self.paused = paused
@@ -435,7 +435,7 @@ class QueueItemAdd(ShowQueueItem):
             # set up initial values
             self.show.location = self.showDir
             self.show.subtitles = self.subtitles if self.subtitles is not None else settings.SUBTITLES_DEFAULT
-            self.show.subtitles_sr_metadata = self.subtitles_sr_metadata
+            self.show.subtitles_sc_metadata = self.subtitles_sc_metadata
             self.show.quality = self.quality if self.quality else settings.QUALITY_DEFAULT
             self.show.season_folders = self.season_folders if self.season_folders is not None else settings.SEASON_FOLDERS_DEFAULT
             self.show.anime = self.anime if self.anime is not None else settings.ANIME_DEFAULT
