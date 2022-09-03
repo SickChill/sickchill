@@ -1041,7 +1041,7 @@ class PostProcessor(object):
         if releaseName:
             self.history.logSuccess(releaseName)
         else:
-            self._log(_("Couldn't find release in snatch history"), logger.WARNING)
+            self._log(_("Warning: Couldn't find release in snatch history"), logger.INFO)
 
         # find the destination folder
         try:
