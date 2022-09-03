@@ -8,10 +8,10 @@ normal_regexes = [
         # Show Name - S01E02 - S01E03 - S01E04 - Ep Name
         r"""
      ^(?P<series_name>.+?)[. _-]+                # Show_Name and separator
-     [sS](?P<season_num>\d+)[. _-]*                 # S01 and optional separator
-     [eE](?P<ep_num>\d+)                            # E02 and separator
-     ([. _-]+[sS](?P=season_num)[. _-]*             # S01 and optional separator
-     [eE](?P<extra_ep_num>\d+))+                    # E03/etc and separator
+     s(?P<season_num>\d+)[. _-]*                 # S01 and optional separator
+     e(?P<ep_num>\d+)                            # E02 and separator
+     ([. _-]+s(?P=season_num)[. _-]*             # S01 and optional separator
+     e(?P<extra_ep_num>\d+))+                    # E03/etc and separator
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
@@ -42,8 +42,8 @@ normal_regexes = [
         # Show.Name.S01.E02.E03
         r"""
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
-     \(?[sS](?P<season_num>\d+)[. _-]*              # S01 and optional separator
-     [eE](?P<ep_num>\d+)\)?                         # E02 and separator
+     \(?s(?P<season_num>\d+)[. _-]*              # S01 and optional separator
+     e(?P<ep_num>\d+)\)?                         # E02 and separator
      (([. _-]*e|-)                               # linking e/- char
      (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*   # additional E03/etc
      ([. _,-]+((?P<extra_info>.+?)                 # Source_Quality_Etc-
@@ -126,9 +126,9 @@ normal_regexes = [
         # flhd-supernaturals07e02-1080p
         r"""
      (?P<release_group>.+?)(?<!WEB)-(?P<series_name>\w*)(?<!\d)[\. ]?   # aaf-sn
-     (?!26[45])                                                         # don't count x264, x265
+     (?!26[45])                                                            # don't count x264, x265
      s(?P<season_num>\d{1,2})                                           # s03
-     e(?P<ep_num>\d{2})(?:(rp|-(1080p|720p)))?$                         # e09
+     e(?P<ep_num>\d{2})(?:(rp|-(1080p|720p)))?$                             # e09
      """,
     ),
     (
@@ -382,8 +382,8 @@ anime_regexes = [
         # Show Name - S01E02-03
         r"""
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
-     (\()?[sS](?P<season_num>\d+)[. _-]*         # S01 and optional separator
-     [eE](?P<ep_num>\d+)(\))?                    # E02 and separator
+     (\()?s(?P<season_num>\d+)[. _-]*            # S01 and optional separator
+     e(?P<ep_num>\d+)(\))?                       # E02 and separator
      (([. _-]*e|-)                               # linking e/- char
      (?P<extra_ep_num>(?!(1080|720|480)[pi])\d+)(\))?)*   # additional E03/etc
      ([. _-]+((?P<extra_info>.+?))?              # Source_Quality_Etc-
