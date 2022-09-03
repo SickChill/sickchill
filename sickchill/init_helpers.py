@@ -130,6 +130,7 @@ def remove_pid_file():
 _distribution = None
 _version = None
 
+
 def get_distribution() -> Union[Distribution, None]:
     global _distribution
     if _distribution is None:
@@ -139,8 +140,10 @@ def get_distribution() -> Union[Distribution, None]:
             return None
     return _distribution
 
+
 def check_installed() -> bool:
     return get_distribution() is not None
+
 
 def get_current_version():
     global _version
@@ -150,11 +153,8 @@ def get_current_version():
         if distribution:
             return distribution.version
 
-        result = subprocess.run(['poetry', 'version', '-s'])
+        result = subprocess.run(["poetry", "version", "-s"])
         if result.returncode == 0:
             _version = result.stdout
 
     return _version
-
-
-

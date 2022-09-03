@@ -7,7 +7,7 @@ from os import path
 
 from sickchill import settings
 from sickchill.helper import video_screen_size
-from sickchill.init_helpers import setup_gettext, get_current_version
+from sickchill.init_helpers import get_current_version, setup_gettext
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
 
