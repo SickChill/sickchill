@@ -40,7 +40,10 @@ packages = [
 [tool.poetry.scripts]
 SickChill = "SickChill:main"
 
-[tool.poetry.group.dev.dependencies]
+# The way poetry reads dependency groups from pyproject.toml changed between 1.1.4 and 1.2.0
+# Going to try the old tag with 1.2.0 until more people have peotry 1.2.0+ installed.
+#[tool.poetry.group.dev.dependencies]
+[tool.poetry.dev-dependencies]
 black = "^22.8.0"
 coveralls = "^3.3.1"
 mock = "^4.0.3"
