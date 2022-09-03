@@ -3,6 +3,7 @@ import validators
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
+from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -52,36 +53,38 @@ class Provider(TorrentProvider):
                     search_params["q"] = search_string
 
                 results = []
-                data = self.cache.get_rss_feed(self.custom_url or self.url, params=search_params)["entries"]
+                data = self.get_url(self.custom_url or self.url, params=search_params)
                 if not data:
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug("No data was returned from the provider")
                     continue
 
-                for curItem in data:
-                    try:
-                        title = curItem["title"]
-                        download_url = curItem["link"]
-                        if not all([title, download_url]):
+                with BS4Parser(data, language="xml") as html:
+                    for item in html.find_all("item"):
+                        try:
+                            title = item.title.get_text(strip=True)
+                            download_url = item.link.get_text(strip=True)
+                            if not all([title, download_url]):
+                                continue
+
+                            size = try_int(convert_size(item.size.get_text(), units=["BYTES", "KIB", "MIB", "GIB", "TIB", "PIB"]), -1) or -1
+                            info_hash = item.infoHash.get_text(strip=True)
+                            seeders = item.seeders.get_text(strip=True)
+                            leechers = item.leechers.get_text(strip=True)
+
+                            if seeders < self.minseed or leechers < self.minleech:
+                                if mode != "RSS":
+                                    logger.debug(
+                                        f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})"
+                                    )
+                                continue
+
+                            result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
+                            if mode != "RSS":
+                                logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
+
+                            items.append(result)
+                        except Exception:
                             continue
-
-                        seeders = try_int(curItem["nyaa_seeders"])
-                        leechers = try_int(curItem["nyaa_leechers"])
-                        torrent_size = curItem["nyaa_size"]
-                        info_hash = curItem["nyaa_infohash"]
-
-                        if seeders < self.minseed or leechers < self.minleech:
-                            if mode != "RSS" or 1:
-                                logger.debug(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
-                            continue
-
-                        size = convert_size(torrent_size, units=["BYTES", "KIB", "MIB", "GIB", "TIB", "PIB"]) or -1
-                        result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
-                        if mode != "RSS" or 1:
-                            logger.debug(_(f"Found result: {title} with {seeders} seeders and {leechers} leechers"))
-
-                        items.append(result)
-                    except Exception:
-                        continue
 
             # For each search mode sort all the items by seeders
             items.sort(key=lambda d: d.get("seeders", 0), reverse=True)
