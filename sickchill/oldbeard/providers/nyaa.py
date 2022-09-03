@@ -68,8 +68,8 @@ class Provider(TorrentProvider):
 
                             size = try_int(convert_size(item.size.get_text(), units=["BYTES", "KIB", "MIB", "GIB", "TIB", "PIB"]), -1) or -1
                             info_hash = item.infoHash.get_text(strip=True)
-                            seeders = item.seeders.get_text(strip=True)
-                            leechers = item.leechers.get_text(strip=True)
+                            seeders = try_int(item.seeders.get_text(strip=True))
+                            leechers = try_int(item.leechers.get_text(strip=True))
 
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
