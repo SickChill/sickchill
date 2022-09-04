@@ -14,7 +14,7 @@ from sickchill import logger, settings, show_updater, update_manager
 from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickchill.oldbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickchill.oldbeard.databases import failed, main
-from sickchill.oldbeard.providers.newnewznab import NewznabProvider
+from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 
 from .helper import setup_github
