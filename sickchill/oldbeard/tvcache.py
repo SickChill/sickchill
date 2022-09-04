@@ -1,18 +1,129 @@
 import datetime
 import itertools
+import re
 import time
 import traceback
+from urllib.parse import urlparse
+
+import validators
 
 from sickchill import logger, settings
+from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
+from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.show.Show import Show
 
 from . import db, show_name_helpers
 from .databases import cache
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from .rssfeeds import getFeed
 
 provider_cache_db = {}
+
+
+class RSSTorrentMixin:
+
+    # {'title': 'Danger.in.the.House.2022.720p.WEB.h264-BAE', 'title_detail': {'type': 'text/plain', 'language': None, 'base': '', 'value': 'Danger.in.the.House.2022.720p.WEB.h264-BAE'}, 'id': 'https://example.com/details/random-guid', 'guidislink': True, 'link': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450', 'links': [{'rel': 'alternate', 'type': 'text/html', 'href': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450'}, {'length': '1962145316', 'type': 'application/x-nzb', 'href': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450', 'rel': 'enclosure'}], 'comments': 'https://example.com/details/random-guid#comments', 'published': 'Tue, 30 Aug 2022 01:30:51 +0200', 'published_parsed': time.struct_time(tm_year=2022, tm_mon=8, tm_mday=29, tm_hour=23, tm_min=30, tm_sec=51, tm_wday=0, tm_yday=241, tm_isdst=0), 'summary': 'Danger.in.the.House.2022.720p.WEB.h264-BAE', 'summary_detail': {'type': 'text/html', 'language': None, 'base': '', 'value': 'Danger.in.the.House.2022.720p.WEB.h264-BAE'}, 'newznab_attr': {'name': 'size', 'value': '1962145316'}}
+    #   <item>
+    #    <title>Danger.in.the.House.2022.720p.WEB.h264-BAE</title>
+    #    <guid isPermaLink="true">https://example.com/details/random-guid</guid>
+    #    <link>https://example.com/getnzb?id=random-guid.nzb&amp;r=1260abc930e0cebbbfc687a42a7c1450</link>
+    #    <comments>https://example.com/details/random-guid#comments</comments>
+    #    <pubDate>Tue, 30 Aug 2022 01:30:51 +0200</pubDate>
+    #    <description>Danger.in.the.House.2022.720p.WEB.h264-BAE</description>
+    #    <enclosure url="https://example.com/getnzb?id=random-guid.nzb&amp;r=1260abc930e0cebbbfc687a42a7c1450" length="1962145316" type="application/x-nzb"/>
+    #    <newznab:attr name="category" value="5010"/>
+    #    <newznab:attr name="size" value="1962145316"/>
+    #   </item>
+
+    @classmethod
+    def check_link(cls, link, url):
+        return urlparse(link).netloc == urlparse(url).netloc or validators.url(link) == True
+
+    @classmethod
+    def parse_feed_item(cls, item, url, torznab=False, size_units=None):
+        title = item.title.get_text(strip=True)
+        download_url = None
+        if item.link:
+            if cls.check_link(item.link.get_text(strip=True), url):
+                download_url = item.link.get_text(strip=True)
+            elif cls.check_link(item.link.next.strip(), url):
+                download_url = item.link.next.strip()
+
+        if not download_url and item.enclosure and cls.check_link(item.enclosure.get("url", "").strip(), url):
+            download_url = item.enclosure.get("url", "").strip()
+
+        if not (title and download_url):
+            return
+
+        seeders = leechers = None
+
+        regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
+        info_hash = item.infoHash or item.guid
+        if info_hash:
+            match = re.match(regex, info_hash.get_text(strip=True))
+            if match:
+                info_hash = match.group("guid")
+            else:
+                info_hash = info_hash.get_text(strip=True)
+
+        if item.size and item.seeders and item.leechers:
+            torznab = True
+            item_size = item.size.get_text(strip=True) or -1
+            seeders = try_int(item.seeders.get_text(strip=True))
+            leechers = try_int(item.leechers.get_text(strip=True))
+            logger.debug(item_size)
+        else:
+            if "gingadaddy" in url:
+                size_regex = re.search(r"\d*.?\d* [KMGT]B", str(item.description))
+                item_size = size_regex.group() if size_regex else -1
+            else:
+                item_size = item.size.get_text(strip=True) if item.size else -1
+
+            for attr in item.find_all(["newznab:attr", "torznab:attr"]):
+                item_size = attr["value"] if attr["name"] == "size" else item_size
+                seeders = try_int(attr["value"]) if attr["name"] == "seeders" else seeders
+                leechers = try_int(attr["value"]) if attr["name"] == "peers" else leechers
+
+        if not item_size or (torznab and (seeders is None or leechers is None)):
+            return
+
+        size = convert_size(item_size, units=size_units) or -1
+
+        return {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
+
+    @classmethod
+    def check_torznab(cls, soup) -> bool:
+        try:
+            torznab = soup.find("seeders") or soup.find("server").get("title") == "Jackett"
+        except AttributeError:
+            try:
+                torznab = "xmlns:torznab" in soup.rss.attrs
+            except AttributeError:
+                torznab = False
+        return torznab
+
+    @classmethod
+    def getFeed(cls, url, params=None, request_hook=None, size_units=None):
+        items = []
+        try:
+            data = request_hook(url, params=params, returns="text", timeout=30)
+            if not data:
+                raise Exception
+
+            with BS4Parser(data, language="xml") as feed:
+                for item in feed("item"):
+                    try:
+                        result = cls.parse_feed_item(item, url, cls.check_torznab(feed), size_units=size_units)
+                        if result:
+                            items.append(result)
+                    except Exception as error:
+                        logger.debug(f"Error parsing: {error}")
+                        logger.debug(traceback.format_exc())
+                        continue
+        except Exception as error:
+            logger.debug(f"RSS error: {error}")
+
+        return {"entries": items}
 
 
 class CacheDBConnection(db.DBConnection):
@@ -32,7 +143,7 @@ class CacheDBConnection(db.DBConnection):
         self.action(sql, sql_args)
 
 
-class TVCache(object):
+class TVCache(RSSTorrentMixin):
     def __init__(self, provider, **kwargs):
         self.provider = provider
         self.provider_id = self.provider.get_id()
@@ -99,7 +210,7 @@ class TVCache(object):
 
     def get_rss_feed(self, url, params=None):
         if self.provider.login():
-            return getFeed(url, params=params, request_hook=self.provider.get_url)
+            return self.getFeed(url, params=params, request_hook=self.provider.get_url, size_units=self.provider.size_units)
         return {"entries": []}
 
     @staticmethod

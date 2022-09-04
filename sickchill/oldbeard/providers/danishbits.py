@@ -46,9 +46,6 @@ class Provider(TorrentProvider):
             "latest": "true",
         }
 
-        # Units
-        units = ["B", "KB", "MB", "GB", "TB", "PB"]
-
         for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
@@ -86,7 +83,7 @@ class Provider(TorrentProvider):
                             continue
 
                         size = torrent["size"]
-                        size = convert_size(size, units=units) or -1
+                        size = convert_size(size) or -1
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
                         items.append(item)

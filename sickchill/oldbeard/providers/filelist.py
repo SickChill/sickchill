@@ -62,17 +62,6 @@ class Provider(TorrentProvider):
         # Search Params
         search_params = {"search": "", "cat": 0}
 
-        # Units
-        units = ["B", "KB", "MB", "GB", "TB", "PB"]
-
-        def process_column_header(td):
-            result = ""
-            if td.a and td.a.img:
-                result = td.a.img.get("title", td.a.get_text(strip=True))
-            if not result:
-                result = td.get_text(strip=True)
-            return result
-
         for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
@@ -142,7 +131,7 @@ class Provider(TorrentProvider):
                                 continue
 
                             torrent_size = cells[labels.index("Size")].find("span").get_text(strip=True)
-                            size = convert_size(torrent_size, units=units, sep="") or -1
+                            size = convert_size(torrent_size, sep="") or -1
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": None}
                             if mode != "RSS":

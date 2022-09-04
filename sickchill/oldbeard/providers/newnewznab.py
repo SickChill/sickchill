@@ -1,19 +1,16 @@
 import os
-import re
 import time
-from urllib.parse import urljoin, urlparse
-
-import validators
+from urllib.parse import urljoin
 
 from sickchill import logger, settings
-from sickchill.helper.common import convert_size, try_int
+from sickchill.helper.common import try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.oldbeard.common import cpu_presets
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
-class NewznabProvider(NZBProvider):
+class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
     """
     Generic provider for built-in and custom providers who expose a newznab
     compatible api.
@@ -148,14 +145,6 @@ class NewznabProvider(NZBProvider):
             return False, return_categories, error_string
 
         with BS4Parser(data, language="xml") as html:
-            try:
-                self.torznab = html.find("server").get("title") == "Jackett"
-            except AttributeError:
-                try:
-                    self.torznab = "xmlns:torznab" in html.rss.attrs
-                except AttributeError:
-                    self.torznab = False
-
             if not html.find("categories"):
                 error_string = "Error parsing caps xml for [{0}]".format(self.name)
                 logger.debug(error_string)
@@ -324,45 +313,13 @@ class NewznabProvider(NZBProvider):
                     if not self._check_auth_from_data(html):
                         break
 
-                    # try:
-                    #     self.torznab = 'xmlns:torznab' in html.rss.attrs
-                    # except AttributeError:
-                    #     self.torznab = False
+                    self.torznab = self.check_torznab(html)
 
                     for item in html("item"):
                         try:
-                            title = item.title.get_text(strip=True)
-                            download_url = None
-                            if item.link:
-                                if self._check_link(item.link.get_text(strip=True)):
-                                    download_url = item.link.get_text(strip=True)
-                                elif self._check_link(item.link.next.strip()):
-                                    download_url = item.link.next.strip()
-
-                            if not download_url and item.enclosure and self._check_link(item.enclosure.get("url", "").strip()):
-                                download_url = item.enclosure.get("url", "").strip()
-
-                            if not (title and download_url):
-                                continue
-
-                            seeders = leechers = None
-                            if "gingadaddy" in self.url:
-                                size_regex = re.search(r"\d*.?\d* [KMGT]B", str(item.description))
-                                item_size = size_regex.group() if size_regex else -1
-                            else:
-                                item_size = item.size.get_text(strip=True) if item.size else -1
-                                for attr in item.find_all(["newznab:attr", "torznab:attr"]):
-                                    item_size = attr["value"] if attr["name"] == "size" else item_size
-                                    seeders = try_int(attr["value"]) if attr["name"] == "seeders" else seeders
-                                    leechers = try_int(attr["value"]) if attr["name"] == "peers" else leechers
-
-                            if not item_size or (self.torznab and (seeders is None or leechers is None)):
-                                continue
-
-                            size = convert_size(item_size) or -1
-
-                            result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers}
-                            items.append(result)
+                            result = self.parse_feed_item(item, self.url, self.torznab)
+                            if result:
+                                items.append(result)
                         except Exception:
                             continue
 
@@ -383,9 +340,6 @@ class NewznabProvider(NZBProvider):
         Returns int size or -1
         """
         return try_int(item.get("size", -1), -1)
-
-    def _check_link(self, link):
-        return urlparse(link).netloc == urlparse(self.url).netloc or validators.url(link) == True
 
 
 Provider = NewznabProvider

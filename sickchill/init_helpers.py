@@ -153,8 +153,8 @@ def get_current_version():
         if distribution:
             return distribution.version
 
-        result = subprocess.run(["poetry", "version", "-s"])
+        result = subprocess.run(["poetry", "version", "-s"], capture_output=True, text=True)
         if result.returncode == 0:
-            _version = result.stdout
+            _version = result.stdout.strip()
 
     return _version
