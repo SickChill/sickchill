@@ -150,6 +150,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 logger.debug(error_string)
                 return False, return_categories, error_string
 
+            self.torznab = self.check_torznab(html)
             self.caps = html.find("searching")
             if just_caps:
                 return True, return_categories, "Just checking caps!"
@@ -307,6 +308,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 data = self.get_url(urljoin(self.url, "api"), params=search_params, returns="text")
 
                 if not data:
+                    logger.debug("No data was returned from the provider")
                     break
 
                 with BS4Parser(data, language="xml") as html:
@@ -317,7 +319,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
                     for item in html("item"):
                         try:
-                            result = self.parse_feed_item(item, self.url, self.torznab)
+                            result = self.parse_feed_item(item, self.url)
                             if result:
                                 items.append(result)
                         except Exception:

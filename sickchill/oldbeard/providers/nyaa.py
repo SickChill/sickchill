@@ -63,7 +63,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
                 with BS4Parser(data, language="xml") as html:
                     for item in html.find_all("item"):
                         try:
-                            result = self.parse_feed_item(item, self.url, True, size_units=self.size_units)
+                            result = self.parse_feed_item(item, self.url, size_units=self.size_units)
                             if result:
                                 if result["seeders"] < self.minseed or result["leechers"] < self.minleech:
                                     if mode != "RSS":

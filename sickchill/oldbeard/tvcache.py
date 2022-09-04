@@ -37,25 +37,30 @@ class RSSTorrentMixin:
 
     @classmethod
     def check_link(cls, link, url):
-        return urlparse(link).netloc == urlparse(url).netloc or validators.url(link) == True
+        return urlparse(link).netloc == urlparse(url).netloc or validators.url(link) == True or link.startswith("magnet")
 
     @classmethod
-    def parse_feed_item(cls, item, url, torznab=False, size_units=None):
+    def parse_feed_item(cls, item, url, size_units=None):
         title = item.title.get_text(strip=True)
+        found_urls = set()
         download_url = None
         if item.link:
-            if cls.check_link(item.link.get_text(strip=True), url):
-                download_url = item.link.get_text(strip=True)
-            elif cls.check_link(item.link.next.strip(), url):
-                download_url = item.link.next.strip()
+            found_urls.add(item.link.get_text(strip=True))
+            if item.link.next.strip():
+                found_urls.add(item.link.next.strip())
+        if item.enclosure and item.enclosure.get("url", "").strip():
+            found_urls.add(item.enclosure.get("url", "").strip())
 
-        if not download_url and item.enclosure and cls.check_link(item.enclosure.get("url", "").strip(), url):
-            download_url = item.enclosure.get("url", "").strip()
+        for found_url in found_urls:
+            if cls.check_link(found_url, url):
+                download_url = found_url
 
         if not (title and download_url):
+            logger.debug(f"Skipping result {title}, {found_urls}")
+            logger.debug(f"{item}")
             return
 
-        seeders = leechers = None
+        seeders = leechers = item_size = None
 
         regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
         info_hash = item.infoHash or item.guid
@@ -66,26 +71,40 @@ class RSSTorrentMixin:
             else:
                 info_hash = info_hash.get_text(strip=True)
 
-        if item.size and item.seeders and item.leechers:
-            torznab = True
-            item_size = item.size.get_text(strip=True) or -1
+        if item.seeders:
             seeders = try_int(item.seeders.get_text(strip=True))
+        if item.peers:
+            leechers = try_int(item.peers.get_text(strip=True))
+        elif item.leechers:
             leechers = try_int(item.leechers.get_text(strip=True))
-            logger.debug(item_size)
-        else:
-            if "gingadaddy" in url:
-                size_regex = re.search(r"\d*.?\d* [KMGT]B", str(item.description))
-                item_size = size_regex.group() if size_regex else -1
-            else:
-                item_size = item.size.get_text(strip=True) if item.size else -1
 
-            for attr in item.find_all(["newznab:attr", "torznab:attr"]):
-                item_size = attr["value"] if attr["name"] == "size" else item_size
-                seeders = try_int(attr["value"]) if attr["name"] == "seeders" else seeders
-                leechers = try_int(attr["value"]) if attr["name"] == "peers" else leechers
+        for attr in item.find_all(["newznab:attr", "torznab:attr"]):
+            item_size = attr["value"] if attr["name"] == "size" else item_size
+            seeders = try_int(attr["value"]) if attr["name"] == "seeders" else seeders
+            leechers = try_int(attr["value"]) if attr["name"] == "peers" else leechers
+            info_hash = attr["value"] if attr["name"] == "infoHash" else info_hash
+            # download_url = attr["value"] if attr["name"] == "magneturl" else download_url
+            # genre = attr["value"] if attr["name"] == "genre" else genre
+
+            # Multiple values possible for category
+            # category = attr["value"] if attr["name"] == "category" else category
+
+        if item.size:
+            item_size = item.size.get_text(strip=True) or -1
+        elif "gingadaddy" in url:
+            size_regex = re.search(r"\d*.?\d* [KMGT]B", str(item.description))
+            item_size = size_regex.group() if size_regex else -1
+
+        torznab = any([item.seeders, item.leechers, item.peers, download_url.endswith("torrent"), download_url.startswith("magnet")])
 
         if not item_size or (torznab and (seeders is None or leechers is None)):
+            logger.debug(f"Did not find size|seeders|leechers: {item_size}, {seeders}, {leechers}")
+            logger.debug(f"{item}")
             return
+
+        if torznab and seeders == 0:
+            # TODO: Implement minseed/minleech for torznab/jackett
+            logger.debug(f"Skipping torznab result {title} because there are no seeders.")
 
         size = convert_size(item_size, units=size_units) or -1
 
@@ -113,7 +132,7 @@ class RSSTorrentMixin:
             with BS4Parser(data, language="xml") as feed:
                 for item in feed("item"):
                     try:
-                        result = cls.parse_feed_item(item, url, cls.check_torznab(feed), size_units=size_units)
+                        result = cls.parse_feed_item(item, url, size_units=size_units)
                         if result:
                             items.append(result)
                     except Exception as error:
