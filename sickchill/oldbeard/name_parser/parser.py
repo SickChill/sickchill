@@ -582,7 +582,7 @@ class ParseResult(object):
 
         to_return += f" [ABD: {self.is_air_by_date}] [ANIME: {self.is_anime}] [whichReg: {self.which_regex}] Score: {self.score}"
 
-        return to_return
+        return re.sub(r"[ ]+", " ", to_return)
 
     @property
     def is_air_by_date(self):

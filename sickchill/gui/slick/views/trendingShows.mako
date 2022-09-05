@@ -5,6 +5,7 @@
 %>
 <%block name="metas">
     <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
+    <meta data-var="settings.GRAMMAR_ARTICLES" data-content="${settings.GRAMMAR_ARTICLES}">
 </%block>
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/trendingShows.js')}"></script>

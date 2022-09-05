@@ -84,9 +84,6 @@ class Provider(TorrentProvider):
             "lang": "0",  # Langugage - 0: off 1: English 2: French ....
         }
 
-        # Units
-        units = ["B", "KB", "MB", "GB", "TB", "PB"]
-
         for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
@@ -141,7 +138,7 @@ class Provider(TorrentProvider):
 
                             size_index = labels.index("Size") if "Size" in labels else labels.index("Taille")
                             torrent_size = cells[size_index].get_text()
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(torrent_size) or -1
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":

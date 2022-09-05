@@ -61,6 +61,7 @@
         <meta data-var="settings.POSTER_SORTDIR" data-content="${settings.POSTER_SORTDIR}">
         <meta data-var="settings.ROOT_DIRS" data-content="${settings.ROOT_DIRS}">
         <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
+        <meta data-var="settings.GRAMMAR_ARTICLES" data-content="${settings.GRAMMAR_ARTICLES}">
         <meta data-var="settings.TIME_PRESET" data-content="${settings.TIME_PRESET}">
         <meta data-var="settings.TRIM_ZERO" data-content="${settings.TRIM_ZERO}">
         <meta data-var="settings.SICKCHILL_BACKGROUND" data-content="${settings.SICKCHILL_BACKGROUND}">

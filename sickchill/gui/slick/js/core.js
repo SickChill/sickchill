@@ -3,7 +3,7 @@ function getMeta(pyVar) {
 }
 
 const scRoot = getMeta('scRoot');
-const srDefaultPage = getMeta('srDefaultPage');
+const scDefaultPage = getMeta('scDefaultPage');
 const themeSpinner = getMeta('themeSpinner');
 const anonURL = getMeta('anonURL');
 const topImageHtml = '<img src="' + scRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />'; // eslint-disable-line no-unused-vars
@@ -2423,7 +2423,8 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
                         date(itemElement) {
@@ -2554,7 +2555,8 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
                         date(itemElement) {
@@ -2586,7 +2588,8 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
                         date(itemElement) {
@@ -3228,7 +3231,7 @@ const SICKCHILL = {
                                 $.post(scRoot + '/home/is-alive/', () => { // eslint-disable-line max-nested-callbacks
                                     clearInterval(checkIsAlive);
                                     setTimeout(() => { // eslint-disable-line max-nested-callbacks
-                                        window.location = scRoot + '/' + srDefaultPage + '/';
+                                        window.location = scRoot + '/' + scDefaultPage + '/';
                                     }, 3000);
                                 }, 'jsonp');
                             }, 1000);
@@ -4035,7 +4038,8 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase();
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase();
                         },
                         rating: '[data-rating] parseInt',
                         votes: '[data-votes] parseInt',

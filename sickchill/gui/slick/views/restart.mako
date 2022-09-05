@@ -1,6 +1,6 @@
 <%inherit file="/layouts/main.mako"/>
 <%block name="metas">
-    <meta data-var="srDefaultPage" data-content="${sbDefaultPage}">
+    <meta data-var="scDefaultPage" data-content="${sbDefaultPage}">
 </%block>
 
 <%block name="css">

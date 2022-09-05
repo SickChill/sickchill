@@ -93,6 +93,7 @@ class ConfigGeneral(Config):
         https_key=None,
         handle_reverse_proxy=None,
         sort_article=None,
+        grammar_articles=None,
         auto_update=None,
         notify_on_update=None,
         proxy_setting=None,
@@ -158,6 +159,7 @@ class ConfigGeneral(Config):
         config.change_update_frequency(update_frequency)
         settings.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
         settings.SORT_ARTICLE = config.checkbox_to_value(sort_article)
+        settings.GRAMMAR_ARTICLES = grammar_articles
         settings.CPU_PRESET = cpu_preset
         settings.ANON_REDIRECT = anon_redirect
         settings.PROXY_SETTING = proxy_setting

@@ -14,7 +14,7 @@ from sickchill import logger, settings, show_updater, update_manager
 from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickchill.oldbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
 from sickchill.oldbeard.databases import failed, main
-from sickchill.oldbeard.providers.newnewznab import NewznabProvider
+from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 
 from .helper import setup_github
@@ -250,6 +250,7 @@ def initialize(consoleLogging=True):
         settings.IGNORE_BROKEN_SYMLINKS = check_setting_bool(settings.CFG, "General", "ignore_broken_symlinks")
 
         settings.SORT_ARTICLE = check_setting_bool(settings.CFG, "General", "sort_article")
+        settings.GRAMMAR_ARTICLES = check_setting_str(settings.CFG, "Localization", "articles", settings.GRAMMAR_ARTICLES)
 
         settings.API_KEY = check_setting_str(settings.CFG, "General", "api_key", censor_log=True)
 
@@ -1236,6 +1237,7 @@ def save_config():
                 "trash_rotate_logs": int(settings.TRASH_ROTATE_LOGS),
                 "ignore_broken_symlinks": int(settings.IGNORE_BROKEN_SYMLINKS),
                 "sort_article": int(settings.SORT_ARTICLE),
+                "grammar_articles": settings.GRAMMAR_ARTICLES,
                 "proxy_setting": settings.PROXY_SETTING,
                 "proxy_indexers": int(settings.PROXY_INDEXERS),
                 "use_listview": int(settings.USE_LISTVIEW),

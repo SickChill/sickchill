@@ -76,9 +76,6 @@ class Provider(TorrentProvider):
             "filter_cat[7]": 1,
         }
 
-        # Units
-        units = ["B", "KB", "MB", "GB", "TB", "PB"]
-
         def process_column_header(td):
             result = ""
             if td.a and td.a.img:
@@ -139,7 +136,7 @@ class Provider(TorrentProvider):
                                 continue
 
                             torrent_size = cells[labels.index("Size")].get_text(strip=True)
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(torrent_size) or -1
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":

@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import bencodepy
-from feedparser import FeedParserDict
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
@@ -78,7 +77,7 @@ class TorrentProvider(GenericProvider):
         return settings.TORRENT_DIR
 
     def _get_title_and_url(self, item):
-        if isinstance(item, (dict, FeedParserDict)):
+        if isinstance(item, dict):
             download_url = item.get("url", "")
             title = item.get("title", "")
 

@@ -24,6 +24,8 @@ class Provider(TorrentProvider):
         self.minseed = 0
         self.minleech = 0
 
+        self.size_units = ["O", "Ko", "Mo", "Go", "To", "Po"]
+
         # URLs
         self.url = "https://abn.lol"
         self.urls = {
@@ -69,9 +71,6 @@ class Provider(TorrentProvider):
             "SortOrder": "desc",
             "SortOn": "Created",
         }
-
-        # Units
-        units = ["O", "Ko", "Mo", "Go", "To", "Po"]
 
         for mode in search_strings:
             items = []
@@ -126,7 +125,7 @@ class Provider(TorrentProvider):
 
                             size_index = labels.index("Size") if "Size" in labels else labels.index("Taille")
                             torrent_size = cells[size_index].get_text()
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(torrent_size, units=self.size_units) or -1
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":

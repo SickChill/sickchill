@@ -91,9 +91,6 @@ class Provider(TorrentProvider):
             search_params.append("freeleech")
         search_params.append("deep")
 
-        # Units
-        units = ["B", "KB", "MB", "GB", "TB", "PB"]
-
         def process_column_header(td):
             result = ""
             img = td.find("img")
@@ -167,7 +164,7 @@ class Provider(TorrentProvider):
                                 continue
 
                             torrent_size = cells[label_index("Size") - 1].get_text()
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(torrent_size) or -1
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":

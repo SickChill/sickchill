@@ -271,7 +271,7 @@ class TVShow(object):
                 season = int(sql_results[0]["season"])
                 logger.debug("Found episode by absolute number {absolute} which is {ep}".format(absolute=absolute_number, ep=episode_num(season, episode)))
             elif len(sql_results) > 1:
-                logger.exception("Multiple entries for absolute number: {absolute} in show: {name} found ".format(absolute=absolute_number, name=self.name))
+                logger.error("Multiple entries for absolute number: {absolute} in show: {name} found ".format(absolute=absolute_number, name=self.name))
 
                 return None
             else:
@@ -423,7 +423,7 @@ class TVShow(object):
             try:
                 curEpisode = self.makeEpFromFile(media_file)
             except (ShowNotFoundException, EpisodeNotFoundException) as error:
-                logger.exception("Episode {filename} returned an exception: {ex}".format(filename=os.path.basename(media_file), ex=str(error)))
+                logger.error("Episode {filename} returned an exception: {ex}".format(filename=os.path.basename(media_file), ex=str(error)))
                 continue
             except EpisodeDeletedException:
                 logger.debug("The episode deleted itself when I tried making an object for it")
@@ -451,7 +451,7 @@ class TVShow(object):
                     try:
                         curEpisode.refreshSubtitles()
                     except Exception:
-                        logger.exception(f"{self.indexerid}: Could not refresh subtitles")
+                        logger.error(f"{self.indexerid}: Could not refresh subtitles")
                         logger.debug(traceback.format_exc())
 
                 sql_l.append(curEpisode.get_sql())
@@ -470,7 +470,7 @@ class TVShow(object):
             sql = "SELECT season, episode, showid, show_name FROM tv_episodes JOIN tv_shows WHERE showid = indexer_id and showid = ?"
             sql_results = main_db_con.select(sql, [self.indexerid])
         except Exception as error:
-            logger.exception(f"Could not load episodes from the DB. Error: {error}")
+            logger.error(f"Could not load episodes from the DB. Error: {error}")
             return scannedEps
 
         curShowid = None
@@ -514,7 +514,7 @@ class TVShow(object):
 
         scannedEps = {}
 
-        sql_l = []
+        # sql_l = []
         for series_episode in self.idxr.episodes(self):
             if series_episode["airedSeason"] not in scannedEps:
                 scannedEps[series_episode["airedSeason"]] = {}
@@ -535,16 +535,17 @@ class TVShow(object):
                 try:
                     with show_episode.lock:
                         show_episode.loadFromIndexer(*season_episode)
-                        sql_l.append(show_episode.get_sql())
+                        show_episode.saveToDB()
+                        # sql_l.append(show_episode.get_sql())
                 except EpisodeDeletedException:
                     logger.info("The episode was deleted, skipping the rest of the load")
                     continue
 
             scannedEps[series_episode["airedSeason"]][series_episode["airedEpisodeNumber"]] = True
 
-        if sql_l:
-            main_db_con = db.DBConnection()
-            main_db_con.mass_action(sql_l)
+        # if sql_l:
+        #     main_db_con = db.DBConnection()
+        #     main_db_con.mass_action(sql_l)
 
         # Done updating save last update date
         self.last_update_indexer = datetime.datetime.now().toordinal()
@@ -618,7 +619,7 @@ class TVShow(object):
                     if not curEp:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
-                    logger.exception(f"{self.indexerid}: Unable to figure out what this file is, skipping {filepath}")
+                    logger.error(f"{self.indexerid}: Unable to figure out what this file is, skipping {filepath}")
                     continue
 
             else:
@@ -1108,7 +1109,7 @@ class TVShow(object):
 
         except Exception:
             logger.debug(f"{self.indexerid}: Error occurred when downloading subtitles for {self.name}")
-            logger.exception(traceback.format_exc())
+            logger.error(traceback.format_exc())
 
     def saveToDB(self, forceSave=False):
 
@@ -1319,7 +1320,7 @@ class TVShow(object):
             else:
                 return Overview.GOOD
         else:
-            logger.exception(f"Could not parse episode status into a valid overview status: {epStatus}")
+            logger.error(f"Could not parse episode status into a valid overview status: {epStatus}")
 
     def __getstate__(self):
         d = dict(self.__dict__)
@@ -1513,9 +1514,7 @@ class TVEpisode(object):
                 try:
                     self.loadFromNFO(self.location)
                 except NoNFOException:
-                    logger.exception(
-                        "{id}: There was an error loading the NFO for episode {ep}".format(id=self.show.indexerid, ep=episode_num(season, episode))
-                    )
+                    logger.error(f"{self.show.indexerid}: There was an error loading the NFO for episode {episode_num(season, episode)}")
 
                 # if we tried loading it from NFO and didn't find the NFO, try the Indexers
                 if not self.hasnfo:
@@ -1613,7 +1612,7 @@ class TVEpisode(object):
                 logger.debug("{} timed out but we have enough info from other sources, allowing the error".format(self.indexer_name))
                 return
             else:
-                logger.exception("{} timed out, unable to create the episode".format(self.indexer_name))
+                logger.error("{} timed out, unable to create the episode".format(self.indexer_name))
                 return False
 
         if not myEp.get("episodeName"):
@@ -1676,12 +1675,7 @@ class TVEpisode(object):
             self.airdate = datetime.date(rawAirdate[0], rawAirdate[1], rawAirdate[2])
         except (ValueError, IndexError, TypeError):
             # Changed this to error because it should NEVER happen now
-            logger.info(
-                "Malformed air date of {aired} retrieved from {indexer} for ({show} - {ep})".format(
-                    aired=first_aired, indexer=self.indexer_name, show=self.show.name, ep=episode_num(season, episode)
-                ),
-                logger.ERROR,
-            )
+            logger.error(f"Malformed air date of {first_aired} retrieved from {self.indexer_name} for ({self.show.name} - {episode_num(season, episode)})")
             # if I'm incomplete on the indexer but I once was complete then just delete myself from the DB for now
             if self.indexerid != -1:
                 self.deleteEpisode()
@@ -1691,7 +1685,7 @@ class TVEpisode(object):
             self.indexerid = myEp.get("id")
 
         if not self.indexerid:
-            logger.exception("Failed to retrieve ID from {indexer}".format(indexer=self.indexer_name))
+            logger.error("Failed to retrieve ID from {indexer}".format(indexer=self.indexer_name))
             if self.indexerid != -1:
                 self.deleteEpisode()
             return False
@@ -1754,11 +1748,11 @@ class TVEpisode(object):
                 try:
                     showXML = ElementTree.ElementTree(file=nfoFile)
                 except (SyntaxError, ValueError) as error:
-                    logger.exception(f"Error loading the NFO, backing up the NFO and skipping for now: {error}")
+                    logger.error(f"Error loading the NFO, backing up the NFO and skipping for now: {error}")
                     try:
                         os.rename(nfoFile, f"{nfoFile}.old")
                     except Exception as error:
-                        logger.exception(f"Failed to rename your episode's NFO file - you need to delete it or fix it: {error}")
+                        logger.error(f"Failed to rename your episode's NFO file - you need to delete it or fix it: {error}")
                     raise NoNFOException("Error in NFO format")
 
                 for epDetails in showXML.iter("episodedetails"):
@@ -1993,7 +1987,7 @@ class TVEpisode(object):
                     ],
                 ]
         except Exception as error:
-            logger.exception(f"Error while updating database: {error}")
+            logger.error(f"Error while updating database: {error}")
 
     def saveToDB(self, forceSave=False):
         """
@@ -2539,13 +2533,13 @@ class TVEpisode(object):
 
             cur_result = helpers.rename_ep_file(cur_related_file, proper_related_path, absolute_current_path_no_ext_length + len(subfolder))
             if not cur_result:
-                logger.exception(f"{self.indexerid}: Unable to rename file {cur_related_file}")
+                logger.error(f"{self.indexerid}: Unable to rename file {cur_related_file}")
 
         for cur_related_sub in related_subs:
             absolute_proper_subs_path = os.path.join(settings.SUBTITLES_DIR, self.formatted_filename())
             cur_result = helpers.rename_ep_file(cur_related_sub, absolute_proper_subs_path, absolute_current_path_no_ext_length)
             if not cur_result:
-                logger.exception(f"{self.indexerid}: Unable to rename file {cur_related_sub}")
+                logger.error(f"{self.indexerid}: Unable to rename file {cur_related_sub}")
 
         # save the ep
         with self.lock:

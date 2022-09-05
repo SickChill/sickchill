@@ -1,21 +1,18 @@
 import os
-import re
 import time
 from urllib.parse import urljoin
 
-import validators
-
 from sickchill import logger, settings
-from sickchill.helper.common import convert_size, try_int
+from sickchill.helper.common import try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.oldbeard.common import cpu_presets
 from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 
-class NewznabProvider(NZBProvider):
+class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
     """
-    Generic provider for built in and custom providers who expose a newznab
+    Generic provider for built-in and custom providers who expose a newznab
     compatible api.
     Tested with: newznab, nzedb, spotweb, torznab
     """
@@ -53,25 +50,7 @@ class NewznabProvider(NZBProvider):
         """
         Generates a '|' delimited string of instance attributes, for saving to config.ini
         """
-        return (
-            self.name
-            + "|"
-            + self.url
-            + "|"
-            + self.key
-            + "|"
-            + self.catIDs
-            + "|"
-            + str(int(self.enabled))
-            + "|"
-            + self.search_mode
-            + "|"
-            + str(int(self.search_fallback))
-            + "|"
-            + str(int(self.enable_daily))
-            + "|"
-            + str(int(self.enable_backlog))
-        )
+        return f"{self.name}|{self.url}|{self.key}|{self.catIDs}|{self.enabled:d}|{self.search_mode}|{self.search_fallback:d}|{self.enable_daily:d}|{self.enable_backlog:d}"
 
     @staticmethod
     def providers_list(data):
@@ -139,7 +118,7 @@ class NewznabProvider(NZBProvider):
         elm = data.find("tv-search")
         self.use_tv_search = elm and elm.get("available") == "yes"
         if self.use_tv_search:
-            self.cap_tv_search = elm.get("supportedparams", "tvdbid,season,ep")
+            self.cap_tv_search = elm.get("supportedParams", "tvdbid,season,ep")
 
         self._caps = any([self.cap_tv_search])
 
@@ -165,17 +144,13 @@ class NewznabProvider(NZBProvider):
             logger.warning(error_string)
             return False, return_categories, error_string
 
-        with BS4Parser(data) as html:
-            try:
-                self.torznab = html.find("server").get("title") == "Jackett"
-            except AttributeError:
-                self.torznab = False
-
+        with BS4Parser(data, language="xml") as html:
             if not html.find("categories"):
                 error_string = "Error parsing caps xml for [{0}]".format(self.name)
                 logger.debug(error_string)
                 return False, return_categories, error_string
 
+            self.torznab = self.check_torznab(html)
             self.caps = html.find("searching")
             if just_caps:
                 return True, return_categories, "Just checking caps!"
@@ -331,52 +306,22 @@ class NewznabProvider(NZBProvider):
 
                 time.sleep(cpu_presets[settings.CPU_PRESET])
                 data = self.get_url(urljoin(self.url, "api"), params=search_params, returns="text")
+
                 if not data:
+                    logger.debug("No data was returned from the provider")
                     break
 
-                with BS4Parser(data) as html:
+                with BS4Parser(data, language="xml") as html:
                     if not self._check_auth_from_data(html):
                         break
 
-                    # try:
-                    #     self.torznab = 'xmlns:torznab' in html.rss.attrs
-                    # except AttributeError:
-                    #     self.torznab = False
+                    self.torznab = self.check_torznab(html)
 
                     for item in html("item"):
                         try:
-                            title = item.title.get_text(strip=True)
-                            download_url = None
-                            if item.link:
-                                if validators.url(item.link.get_text(strip=True)) == True:
-                                    download_url = item.link.get_text(strip=True)
-                                elif validators.url(item.link.next.strip()) == True:
-                                    download_url = item.link.next.strip()
-
-                            if (not download_url, item.enclosure and validators.url(item.enclosure.get("url", "").strip())) == True:
-                                download_url = item.enclosure.get("url", "").strip()
-
-                            if not (title and download_url):
-                                continue
-
-                            seeders = leechers = None
-                            if "gingadaddy" in self.url:
-                                size_regex = re.search(r"\d*.?\d* [KMGT]B", str(item.description))
-                                item_size = size_regex.group() if size_regex else -1
-                            else:
-                                item_size = item.size.get_text(strip=True) if item.size else -1
-                                for attr in item.find_all(["newznab:attr", "torznab:attr"]):
-                                    item_size = attr["value"] if attr["name"] == "size" else item_size
-                                    seeders = try_int(attr["value"]) if attr["name"] == "seeders" else seeders
-                                    leechers = try_int(attr["value"]) if attr["name"] == "peers" else leechers
-
-                            if not item_size or (self.torznab and (seeders is None or leechers is None)):
-                                continue
-
-                            size = convert_size(item_size) or -1
-
-                            result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers}
-                            items.append(result)
+                            result = self.parse_feed_item(item, self.url)
+                            if result:
+                                items.append(result)
                         except Exception:
                             continue
 
