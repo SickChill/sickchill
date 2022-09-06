@@ -599,14 +599,14 @@ def refine_video(video, episode):
         try:
             if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
                 setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
-            elif episode.show.subtitles_sc_metadata and get_attr_value(episode, metadata_mapping[name]):
+            elif episode.show.subtitles_sr_metadata and get_attr_value(episode, metadata_mapping[name]):
                 setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
         except AttributeError:
             logger.debug("Unable to set {}.{} from episode.{} attribute".format(type(video), name, metadata_mapping[name]))
 
     # Set quality from metadata
     status, quality = Quality.splitCompositeStatus(episode.status)
-    if not video.source or episode.show.subtitles_sc_metadata:
+    if not video.source or episode.show.subtitles_sr_metadata:
         if quality & Quality.ANYHDTV:
             video.source = Quality.combinedQualityStrings.get(Quality.ANYHDTV)
         elif quality & Quality.ANYWEBDL:
@@ -614,7 +614,7 @@ def refine_video(video, episode):
         elif quality & Quality.ANYBLURAY:
             video.source = Quality.combinedQualityStrings.get(Quality.ANYBLURAY)
 
-    if not video.resolution or episode.show.subtitles_sc_metadata:
+    if not video.resolution or episode.show.subtitles_sr_metadata:
         if quality & (Quality.HDTV | Quality.HDWEBDL | Quality.HDBLURAY):
             video.resolution = "720p"
         elif quality & Quality.RAWHDTV:
