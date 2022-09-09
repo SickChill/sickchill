@@ -742,7 +742,7 @@ class Home(WebRoot):
         if settings.BRANCH != branch:
             settings.BRANCH = branch
             ui.notifications.message(_("Checking out branch") + ": ", branch)
-            return self.redirect("/{}/update/?pid={}&branch={}".format(settings.DEFAULT_PAGE, settings.PID, branch))
+            return self.redirect(f"/home/update/?pid={settings.PID}&branch={branch}")
         else:
             ui.notifications.message(_("Already on branch") + ": ", branch)
             return self.redirect("/" + settings.DEFAULT_PAGE + "/")
