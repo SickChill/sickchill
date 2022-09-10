@@ -986,9 +986,9 @@ chunkd@^2.0.1:
   integrity sha512-7d58XsFmOq0j6el67Ug9mHf9ELUXsQXYJBkyxhH/k+6Ke0qXRnv0kbemx+Twc6fRJ07C49lcbdgm9FL1Ei/6SQ==
 
 ci-info@^3.3.0, ci-info@^3.3.1, ci-info@^3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-3.3.2.tgz#6d2967ffa407466481c6c90b6e16b3098f080128"
-  integrity sha512-xmDt/QIAdeZ9+nfdPsaBCpMvHNLFiLdjj59qjqn+6iPe6YmHGQ35sBnQ8uslRBXFmXkiZQOJRjvQeoGppoTjjg==
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-3.4.0.tgz#b28484fd436cbc267900364f096c9dc185efb251"
+  integrity sha512-t5QdPT5jq3o262DOQ8zA6E1tlH2upmUc4Hlvrbx1pGYJuiiHl7O7rvVNI+l8HTVhd/q3Qc9vqimkNk5yiXsAug==
 
 ci-parallel-vars@^1.0.1:
   version "1.0.1"
@@ -1452,9 +1452,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 electron-to-chromium@^1.4.202:
-  version "1.4.246"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.246.tgz#802132d1bbd3ff32ce82fcd6a6ed6ab59b4366dc"
-  integrity sha512-/wFCHUE+Hocqr/LlVGsuKLIw4P2lBWwFIDcNMDpJGzyIysQV4aycpoOitAs32FT94EHKnNqDR/CVZJFbXEufJA==
+  version "1.4.247"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.247.tgz#cc93859bc5fc521f611656e65ce17eae26a0fd3d"
+  integrity sha512-FLs6R4FQE+1JHM0hh3sfdxnYjKvJpHZyhQDjc2qFq/xFvmmRt/TATNToZhrcGUFzpF2XjeiuozrA8lI0PZmYYw==
 
 emittery@^0.11.0:
   version "0.11.0"
@@ -2057,9 +2057,9 @@ fast-diff@^1.1.2, fast-diff@^1.2.0:
   integrity sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==
 
 fast-glob@^3.2.11, fast-glob@^3.2.9:
-  version "3.2.11"
-  resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.2.11.tgz#a1172ad95ceb8a16e20caa5c5e56480e5129c1d9"
-  integrity sha512-xrO3+1bxSo3ZVHAnqzyuewYT6aMFHRAd4Kcs92MAonjwQZLsK9d0SF1IyQ3k5PoirxTW0Oe/RqFgMQ6TcNE5Ew==
+  version "3.2.12"
+  resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.2.12.tgz#7f39ec99c2e6ab030337142da9e0c18f37afae80"
+  integrity sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==
   dependencies:
     "@nodelib/fs.stat" "^2.0.2"
     "@nodelib/fs.walk" "^1.2.3"
@@ -4779,9 +4779,9 @@ slice-ansi@^5.0.0:
     is-fullwidth-code-point "^4.0.0"
 
 snyk@^1.998.0:
-  version "1.1000.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1000.0.tgz#285dedcf19e2e6a628a27541041c22bc199e8e1d"
-  integrity sha512-KD6P13zUs0m2PaFTI4umkz8MbXljnEaKLqSuMjbnEbE2YSeWn1bf8PV/0C0N+SoaniyL5jXcey9uZtBHjZwsgw==
+  version "1.1001.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1001.0.tgz#c19b9448812a56f5e4b79e73e45f7fa7533a0087"
+  integrity sha512-EDa5VZ4c0i//hhvRPZmUl64bsfSstcdK9jiXi10WI1E4A0JMoWnE5kydcw7UVebQGr1GwqbZ7UgbQ0lz25EIHA==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
