@@ -532,6 +532,26 @@ def change_process_automatically(process_automatically):
 
     return True
 
+def change_log_dir(log_dir):
+    """
+    Change logs directory
+
+    :param log_dir: New logs directory
+    :return: True on success, False on failure
+    """
+    if log_dir == "":
+        settings.LOG_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
+        return True
+
+    if os.path.normpath(settings.LOG_DIR) != os.path.normpath(log_dir):
+        if helpers.makeDir(os.path.normpath(log_dir)) and os.access(os.path.normpath(log_dir), os.W_OK):
+            settings.LOG_DIR = os.path.normpath(log_dir)
+            logger.info(_("Changed logs folder to {directory} sickchill must be restarted for changes de take effect").format(directory=log_dir))
+
+        else:
+            return False
+
+    return True
 
 def check_section(cfg, sec):
     """Check if INI section exists, if not create it"""

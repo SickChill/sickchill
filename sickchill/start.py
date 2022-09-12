@@ -92,7 +92,7 @@ def initialize(consoleLogging=True):
         if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
             settings.DEFAULT_PAGE = "home"
 
-        settings.LOG_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
+        settings.LOG_DIR = check_setting_str(settings.CFG, "General", "log_dir", os.path.normpath(os.path.join(settings.DATA_DIR, "Logs")))
         settings.LOG_NR = check_setting_int(settings.CFG, "General", "log_nr", 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         settings.LOG_SIZE = check_setting_float(settings.CFG, "General", "log_size", 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
@@ -100,8 +100,8 @@ def initialize(consoleLogging=True):
             settings.LOG_SIZE = 10.0
         fileLogging = True
 
-        if not helpers.makeDir(settings.LOG_DIR):
-            sys.stderr.write("!!! No log folder, logging to screen only!\n")
+        if not helpers.makeDir(settings.LOG_DIR) or not os.access(settings.LOG_DIR, os.W_OK):
+            sys.stderr.write("!!! No log folder or log folder not writable, logging to console only!\n")
             fileLogging = False
 
         # init logging
@@ -1135,6 +1135,7 @@ def save_config():
                 "encryption_secret": settings.ENCRYPTION_SECRET,
                 "log_nr": int(settings.LOG_NR),
                 "log_size": float(settings.LOG_SIZE),
+                "log_dir": settings.LOG_DIR,
                 "socket_timeout": settings.SOCKET_TIMEOUT,
                 "web_port": settings.WEB_PORT,
                 "web_host": settings.WEB_HOST,
