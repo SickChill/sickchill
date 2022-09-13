@@ -353,7 +353,7 @@
                                     <div class="col-md-12">
                                         <select id="gui_language" name="gui_language" class="form-control input-sm input250">
                                             <option value="" ${('', 'selected="selected"')[settings.GUI_LANG == ""]}>${_('System Language')}</option>
-                                            % for lang in [language for language in os.listdir(sickchill.init_helpers.locale_dir()) if '_' in language]:
+                                            % for lang in [language for language in os.listdir(sickchill.init_helpers.locale_dir) if '_' in language]:
                                                 <option value="${lang}" ${('', 'selected="selected"')[settings.GUI_LANG == lang]}>${lang_name(lang)}</option>
                                             % endfor
                                         </select>
@@ -517,6 +517,16 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="sort_article" id="sort_article" ${('', 'checked="checked"')[bool(settings.SORT_ARTICLE)]}/>
                                 <label for="sort_article">${_('include articles ("The", "A", "An") when sorting show lists')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Definite/Indefinite articles to remove for sorting')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="text" name="grammar_articles" id="grammar_articles" value="${settings.GRAMMAR_ARTICLES}" class="form-control input-sm input100" autocapitalize="off" />
+                                <label for="grammar_articles">${_('List of words to treat as articles, separated by the pipe character. Default: "the|a|an"')}</label>
                             </div>
                         </div>
 
@@ -1110,49 +1120,6 @@
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
 
                     <fieldset class="component-group-list">
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('GitHub remote for branch')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="text" name="git_remote" id="git_remote" value="${settings.GIT_REMOTE}" class="form-control input-sm input300" autocapitalize="off" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="git_remote">${_('access repo configured remotes (save then refresh browser)')}</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="git_remote"><b>${_('default')}:</b>&nbsp;${_('origin')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Branch version')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <select id="branchVersion" class="form-control form-control-inline input-sm pull-left" title="Branch Version"></select>
-                                        <input class="btn btn-inline" style="margin-left: 6px;" type="button" id="branchCheckout" value="Checkout Branch" disabled>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <% loading_spinner = static_url('images/loading16' + ('', '-dark')[settings.THEME_NAME == 'dark'] + '.gif') %>
-                                        <div class="clear-left"><label id="branchVersionLabel"><img src="${loading_spinner}" height="16" width="16" /> Loading...</label></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('GitHub username')}</label>
@@ -1203,35 +1170,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Git executable path')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="text" id="git_path" name="git_path" value="${settings.GIT_PATH}" class="form-control input-sm input300" autocapitalize="off" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="git_path">${_('only needed if OS is unable to locate git from env')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row" hidden>
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Git reset')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="git_reset" id="git_reset" ${('', 'checked="checked"')[bool(settings.GIT_RESET)]}/>
-                                <label for="git_reset">${_('removes untracked files and performs a hard reset on git branch automatically to help resolve update issues')}</label>
-                            </div>
-                        </div>
-
                         <div class="row">
                             <div class="col-md-12">
                                 <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />

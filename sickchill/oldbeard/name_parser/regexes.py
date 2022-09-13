@@ -1,4 +1,4 @@
-# all regexes are case insensitive
+# all regexes are case-insensitive
 
 
 normal_regexes = [

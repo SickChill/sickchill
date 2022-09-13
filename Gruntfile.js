@@ -71,7 +71,7 @@ module.exports = function(grunt) {
 
         // Start merging and releasing
         'exec:git:merge:develop --strategy-option theirs', // Merge develop into master
-        'exec:bump_version', // Update version.py
+        'exec:bump_version', // Update version in pyproject.toml
         'exec:commit_changed_files:yes', // Commit the new changed version
         'exec:git_list_changes', // List changes from since last tag
         'exec:git_tag_next_version', // Create new release tag
@@ -286,16 +286,6 @@ module.exports = function(grunt) {
                     if (!stdout.match(/Bumping version from \d{4}\.\d{1,2}\.\d{1,2}(\.\d*)?/)) {
                         grunt.fatal('Did the version update in pyproject.toml?')
                     }
-                    const next_version = grunt.config('next_version');
-                    const file = 'sickchill/version.py';
-                    grunt.log.ok('Updating ' + file + ' to ' + next_version);
-
-                    if (!grunt.file.exists(file)) {
-                        grunt.log.error('Could not find ' + file + ', cannot proceed');
-                    }
-
-                    grunt.file.delete(file);
-                    grunt.file.write(file, '__version__ = "' + next_version + '"');
                 }
             },
 
@@ -320,7 +310,7 @@ module.exports = function(grunt) {
             'commit_changed_files': { // Choose what to commit.
                 cmd: function(ci) {
                     grunt.config('stop_no_changes', Boolean(ci));
-                    return 'git status -s -- pyproject.toml sickchill/version.py sickchill/locale/ sickchill/gui/';
+                    return 'git status -s -- pyproject.toml sickchill/locale/ sickchill/gui/';
                 },
                 stdout: false,
                 callback: function(err, stdout) {
@@ -341,7 +331,6 @@ module.exports = function(grunt) {
                             grunt.fatal('Tried to commit a version change without updating the version in both places!')
                         }
                         commitMsg.push('Release version ' + grunt.config('next_version'));
-                        commitPaths.push('sickchill/version.py');
                         commitPaths.push('pyproject.toml');
                     }
                     if (stdout.match(/sickchill\/gui\/.*(vendor|core)\.min\.(js|css)$/gm)) {

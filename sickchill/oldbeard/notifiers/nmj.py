@@ -73,7 +73,7 @@ class Notifier(object):
             self._notifyNMJ()
 
     @staticmethod
-    def notify_git_update(new_version):
+    def notify_update(new_version):
         return False
         # Not implemented, no reason to start scanner.
 

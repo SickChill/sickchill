@@ -56,9 +56,6 @@ class Provider(TorrentProvider):
         # Search Params
         search_params = {"do": "search", "search_type": "t_name", "category": 0, "include_dead_torrents": "no", "submit": "search"}
 
-        # Units
-        units = ["B", "KB", "MB", "GB", "TB", "PB"]
-
         for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
@@ -124,7 +121,7 @@ class Provider(TorrentProvider):
                             title = re.sub(r"\s+", r" ", title)
 
                             torrent_size = torrent("td")[labels.index("Size")].get_text(strip=True)
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(torrent_size) or -1
 
                             if mode != "RSS":
                                 logger.debug(

@@ -5,9 +5,9 @@ import uuid
 from functools import reduce
 from os import path
 
-from sickchill import settings, version
+from sickchill import settings
 from sickchill.helper import video_screen_size
-from sickchill.init_helpers import setup_gettext
+from sickchill.init_helpers import get_current_version, setup_gettext
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
 
@@ -17,7 +17,7 @@ setup_gettext()
 
 INSTANCE_ID = str(uuid.uuid1())
 USER_AGENT = "SickChill/{version} ({os} {architecture} {os_version}; {instance})".format(
-    version=version.__version__, os=platform.system(), architecture=platform.machine(), os_version=platform.release(), instance=INSTANCE_ID
+    version=get_current_version(), os=platform.system(), architecture=platform.machine(), os_version=platform.release(), instance=INSTANCE_ID
 )
 
 cpu_presets = {"HIGH": 5, "NORMAL": 2, "LOW": 1}
@@ -30,8 +30,8 @@ SEASON_RESULT = -2
 NOTIFY_SNATCH = 1
 NOTIFY_DOWNLOAD = 2
 NOTIFY_SUBTITLE_DOWNLOAD = 3
-NOTIFY_GIT_UPDATE = 4
-NOTIFY_GIT_UPDATE_TEXT = 5
+NOTIFY_UPDATE = 4
+NOTIFY_UPDATE_TEXT = 5
 NOTIFY_LOGIN = 6
 NOTIFY_LOGIN_TEXT = 7
 NOTIFY_POSTPROCESS = 8
@@ -41,8 +41,8 @@ notifyStrings = NumDict(
         NOTIFY_SNATCH: _("Started Download"),
         NOTIFY_DOWNLOAD: _("Finished Download"),
         NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
-        NOTIFY_GIT_UPDATE: _("SickChill Updated"),
-        NOTIFY_GIT_UPDATE_TEXT: _("SickChill Updated To Commit#: "),
+        NOTIFY_UPDATE: _("SickChill Updated"),
+        NOTIFY_UPDATE_TEXT: _("SickChill Updated To Version: "),
         NOTIFY_LOGIN: _("SickChill new login"),
         NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}"),
         NOTIFY_POSTPROCESS: _("Finished Post Processing"),

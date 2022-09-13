@@ -48,7 +48,7 @@ class Events(threading.Thread):
             self.stop.clear()
         except Exception as e:
             logger.exception("Exception generated in thread " + self.name + ": " + str(e))
-            logger.debug(repr(traceback.format_exc()))
+            logger.debug(traceback.format_exc())
 
     # System Events
     class SystemEvent(Event):

@@ -14,6 +14,7 @@ from github.GithubException import RateLimitExceededException, TwoFactorExceptio
 
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
+from sickchill.init_helpers import get_current_version
 from sickchill.oldbeard import classes
 
 # log levels
@@ -214,12 +215,12 @@ class Logger(object):
 
             update_manager = UpdateManager()
             update_manager.check_for_new_version()
-            commits_behind = update_manager.get_num_commits_behind()
+            need_update = update_manager.need_update()
         except Exception:
             submitter_result = "Could not check if your SickChill is updated, unable to submit issue ticket to GitHub!"
             return submitter_result, issue_id
 
-        if commits_behind is None or commits_behind > 0:
+        if need_update:
             submitter_result = "Please update SickChill, unable to submit issue ticket to GitHub with an outdated version!"
             return submitter_result, issue_id
 
@@ -288,8 +289,7 @@ class Logger(object):
                     f"Python Version: **{sys.version[:120]}**".replace("\n", ""),
                     f"Operating System: **{platform.platform()}**",
                     f"Locale: {locale_name}",
-                    f"Branch: **{settings.BRANCH}**",
-                    f"Commit: SickChill/SickChill@{settings.CUR_COMMIT_HASH}",
+                    f"Version: **{get_current_version()}**",
                     log_link,
                     "### ERROR",
                     "```",

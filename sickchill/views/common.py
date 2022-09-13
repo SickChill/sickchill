@@ -19,7 +19,7 @@ def get_lookup():
         TemplateLookup(
             directories=[os.path.join(settings.PROG_DIR, "gui/" + settings.GUI_NAME + "/views/")],
             module_directory=os.path.join(settings.CACHE_DIR, "mako"),
-            strict_undefined=settings.BRANCH and settings.BRANCH != "master",
+            strict_undefined=settings.DEVELOPER or settings.DEBUG,
             #  format_exceptions=True,
             filesystem_checks=True,
         ),
@@ -91,7 +91,7 @@ class PageTemplate(Template):
             context["backtrace"] = RichTraceback(error=error)
             lookup = TemplateLookup(
                 directories=[os.path.join(settings.PROG_DIR, "gui/" + settings.GUI_NAME + "/views/")],
-                strict_undefined=settings.BRANCH and settings.BRANCH != "master",
+                strict_undefined=settings.DEVELOPER or settings.DEBUG,
                 format_exceptions=True,
             )
             return lookup.get_template("500.mako").render_unicode(*args, **context)

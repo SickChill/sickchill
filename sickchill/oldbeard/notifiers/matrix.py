@@ -45,10 +45,10 @@ class Notifier(object):
             )
             self._notify_matrix(message)
 
-    def notify_git_update(self, new_version="??"):
+    def notify_update(self, new_version="??"):
         if settings.USE_MATRIX:
-            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_UPDATE]
             self._notify_matrix(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):

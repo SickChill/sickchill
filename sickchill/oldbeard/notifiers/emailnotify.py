@@ -240,10 +240,10 @@ class Notifier(object):
                 else:
                     logger.warning("Download notification error: {0}".format(self.last_err))
 
-    def notify_git_update(self, new_version="??"):
+    def notify_update(self, new_version="??"):
         """
         Send a notification that SickChill was updated
-        new_version: The commit SickChill was updated to
+        new_version: The version SickChill was updated to
         """
         if settings.USE_EMAIL:
             to = self._generate_recipients(None)
@@ -252,12 +252,12 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart("alternative")
-                    msg.attach(MIMEText("SickChill Notification - Updated\n" "Commit: {}\n\n" "Powered by SickChill.".format(new_version)))
+                    msg.attach(MIMEText("SickChill Notification - Updated\n" "Version: {}\n\n" "Powered by SickChill.".format(new_version)))
                     msg.attach(
                         MIMEText(
                             '<body style="font-family:Helvetica, Arial, sans-serif;">'
                             "<h3>SickChill Notification - Updated</h3><br>"
-                            "<p>Commit: <b>{}</b></p><br><br>"
+                            "<p>Version: <b>{}</b></p><br><br>"
                             '<footer style="margin-top: 2.5em; padding: .7em 0; '
                             'color: #777; border-top: #BBB solid 1px;">'
                             "Powered by SickChill.</footer></body>".format(new_version),

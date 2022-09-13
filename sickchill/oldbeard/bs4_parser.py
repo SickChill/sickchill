@@ -16,7 +16,7 @@ class BS4Parser(object):
             elif language == "xml":
                 extra_parsers = ["lxml-xml", "html.parser"]
 
-            if parsers == None:
+            if parsers is None:
                 parsers = extra_parsers
 
             try:

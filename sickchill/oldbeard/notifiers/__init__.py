@@ -108,11 +108,11 @@ def notify_snatch(ep_name):
         n.notify_snatch(ep_name)
 
 
-def notify_git_update(new_version=""):
+def notify_update(new_version=""):
     if settings.NOTIFY_ON_UPDATE:
         for n in notifiers:
-            if hasattr(n, "notify_git_update"):
-                n.notify_git_update(new_version)
+            if hasattr(n, "notify_update"):
+                n.notify_update(new_version)
             else:
                 print(n.__module__)
 

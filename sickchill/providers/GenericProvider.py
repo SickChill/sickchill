@@ -75,6 +75,8 @@ class GenericProvider(object):
 
         self.ability_status = self.PROVIDER_OK
 
+        self.size_units = ["B", "KB", "MB", "GB", "TB", "PB"]
+
         shuffle(self.bt_cache_urls)
 
     def download_result(self, result):

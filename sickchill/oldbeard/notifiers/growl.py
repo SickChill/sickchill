@@ -23,9 +23,9 @@ class Notifier(object):
         if settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._sendGrowl(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version="??"):
-        update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-        title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+    def notify_update(self, new_version="??"):
+        update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
+        title = common.notifyStrings[common.NOTIFY_UPDATE]
         self._sendGrowl(title, update_text + new_version)
 
     def notify_login(self, ipaddress=""):
@@ -152,7 +152,7 @@ class Notifier(object):
         register.add_notification("Test", True)
         register.add_notification(common.notifyStrings[common.NOTIFY_SNATCH], True)
         register.add_notification(common.notifyStrings[common.NOTIFY_DOWNLOAD], True)
-        register.add_notification(common.notifyStrings[common.NOTIFY_GIT_UPDATE], True)
+        register.add_notification(common.notifyStrings[common.NOTIFY_UPDATE], True)
 
         if opts["password"]:
             register.set_password(opts["password"])

@@ -26,29 +26,12 @@
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                     <div class="row">
                         <div class="col-md-12">
-                            % if settings.BRANCH == 'pip':
-                                ${_('Install')}:
-                                <a href="${anon_url('https://pypi.org/project/sickchill/')}">
-                                    pip
-                                </a>
-                            % else:
-                                ${_('Branch')}:
-                                <a href="${anon_url('https://github.com/SickChill/SickChill/tree/%s' % settings.BRANCH)}">
-                                    ${settings.BRANCH}
-                                </a>
-                            % endif
-                        </div>
-                    </div>
-                    % if settings.BRANCH != 'pip':
-                    <div class="row">
-                        <div class="col-md-12">
-                            ${_('Commit')}:
-                            <a href="${anon_url('https://github.com/SickChill/SickChill/commit/%s' % settings.CUR_COMMIT_HASH)}">
-                                ${settings.CUR_COMMIT_HASH}
+                            ${_('Install')}:
+                            <a href="${anon_url('https://pypi.org/project/sickchill/')}">
+                                pip
                             </a>
                         </div>
                     </div>
-                    % endif
                     % if sc_version:
                         <div class="row">
                             <div class="col-md-12">

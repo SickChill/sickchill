@@ -18,7 +18,7 @@ from tornado.web import authenticated, HTTPError, RequestHandler
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.init_helpers import locale_dir
+from sickchill.init_helpers import check_installed, locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
@@ -334,7 +334,7 @@ class UI(WebRoot):
 
         lang = self.get_query_argument("lang")
         """ Get /locale/{lang_code}/LC_MESSAGES/messages.json """
-        locale_file = os.path.normpath(f"{locale_dir()}/{lang}/LC_MESSAGES/messages.json")
+        locale_file = os.path.normpath(f"{locale_dir}/{lang}/LC_MESSAGES/messages.json")
 
         if os.path.isfile(locale_file):
             self.set_header("Content-Type", "application/json")
@@ -374,9 +374,9 @@ class UI(WebRoot):
         if message:
             helpers.add_site_message(message, tag=tag, level=level)
         else:
-            if settings.BRANCH and self.get_current_user() and settings.BRANCH not in ("master", "pip") and not settings.DEVELOPER:
-                message = _("You're using the {branch} branch. Please use 'master' unless specifically asked".format(branch=settings.BRANCH))
-                helpers.add_site_message(message, tag="not_using_master_branch", level="danger")
+            if self.get_current_user() and not (check_installed() or settings.DEVELOPER):
+                message = _("SickChill no longer is supported unless installed with pip or poetry. Source and git installs are for experienced users only")
+                helpers.add_site_message(message, tag="not_installed", level="danger")
 
         return settings.SITE_MESSAGES
 

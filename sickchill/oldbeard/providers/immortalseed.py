@@ -82,9 +82,6 @@ class Provider(TorrentProvider):
         # Search Params
         search_params = {"do": "search", "include_dead_torrents": "no", "search_type": "t_name", "category": 0, "keywords": ""}
 
-        # Units
-        units = ["B", "KB", "MB", "GB", "TB", "PB"]
-
         def process_column_header(td):
             td_title = ""
             if td.img:
@@ -143,7 +140,7 @@ class Provider(TorrentProvider):
                                 continue
 
                             torrent_size = cells[labels.index("Size")].get_text(strip=True)
-                            size = convert_size(torrent_size, units=units) or -1
+                            size = convert_size(torrent_size) or -1
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":

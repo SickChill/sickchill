@@ -3,7 +3,7 @@ function getMeta(pyVar) {
 }
 
 const scRoot = getMeta('scRoot');
-const srDefaultPage = getMeta('srDefaultPage');
+const scDefaultPage = getMeta('scDefaultPage');
 const themeSpinner = getMeta('themeSpinner');
 const anonURL = getMeta('anonURL');
 const topImageHtml = '<img src="' + scRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />'; // eslint-disable-line no-unused-vars
@@ -377,27 +377,6 @@ const SICKCHILL = {
                 });
             });
 
-            $('#branchCheckout').on('click', () => {
-                const url = scRoot + '/home/branchCheckout?branch=' + $('#branchVersion').val();
-                const checkDBversion = scRoot + '/home/compare_db_version';
-                $.getJSON(checkDBversion, data => {
-                    if (data.status === 'success') {
-                        if (data.message === 'downgrade') {
-                            notifyModal('Can\'t switch branch as this will result in a database downgrade.');
-                        } else {
-                            let doUpgrade = true;
-                            if (data.message === 'upgrade') {
-                                doUpgrade = confirm('Changing branch will upgrade your database.\nYou won\'t be able to downgrade afterward.\nDo you want to continue?'); // eslint-disable-line no-alert
-                            }
-
-                            if (doUpgrade) {
-                                window.location.href = url;
-                            }
-                        }
-                    }
-                });
-            });
-
             $('#git_token').on('click', $('#git_token').select());
 
             $('#create_access_token').on('click', () => {
@@ -417,28 +396,6 @@ const SICKCHILL = {
             // $('#log_dir').fileBrowser({title: _('Select log file folder location')});
             $('#sickchill_background_path').fileBrowser({title: _('Select Background Image'), key: 'sickchill_background_path', includeFiles: 1, fileTypes: ['images']});
             $('#custom_css_path').fileBrowser({title: _('Select CSS file'), key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
-
-            // List remote branches available for checkout
-            const branchVersion = $('#branchVersion');
-            const branchVersionLabel = $('#branchVersionLabel');
-            const branchCheckout = $('#branchCheckout');
-            $.getJSON(scRoot + '/home/fetchRemoteBranches', branches => {
-                if (branches.length > 0) {
-                    const baseOptionElement = $('<option></option>');
-                    let optionElement = null;
-                    for (const element of branches) {
-                        optionElement = baseOptionElement.clone().text(element.name).attr('value', element.name);
-                        optionElement.prop('selected', Boolean(element.current));
-                        optionElement.appendTo(branchVersion);
-                    }
-
-                    branchCheckout.prop('disabled', false);
-                    branchVersionLabel.html(_('select branch to use (restart required)'));
-                } else {
-                    branchCheckout.prop('disabled', true);
-                    branchVersionLabel.html(_('error: No branches found.')).css({color: '#FF0000'});
-                }
-            });
         },
         backupRestore() {
             $('#Backup').on('click', () => {
@@ -2423,7 +2380,8 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
                         date(itemElement) {
@@ -2554,7 +2512,8 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
                         date(itemElement) {
@@ -2586,7 +2545,8 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase().normalize('NFC'));
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
                         date(itemElement) {
@@ -3228,7 +3188,7 @@ const SICKCHILL = {
                                 $.post(scRoot + '/home/is-alive/', () => { // eslint-disable-line max-nested-callbacks
                                     clearInterval(checkIsAlive);
                                     setTimeout(() => { // eslint-disable-line max-nested-callbacks
-                                        window.location = scRoot + '/' + srDefaultPage + '/';
+                                        window.location = scRoot + '/' + scDefaultPage + '/';
                                     }, 3000);
                                 }, 'jsonp');
                             }, 1000);
@@ -4035,7 +3995,8 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^((?:the|a|an)\s)/i, '')).toLowerCase();
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase();
                         },
                         rating: '[data-rating] parseInt',
                         votes: '[data-votes] parseInt',

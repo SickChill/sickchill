@@ -4,6 +4,7 @@
     from urllib.parse import urljoin
     from sickchill.oldbeard.filters import hide
     from sickchill.helper.common import pretty_file_size
+    from sickchill.init_helpers import get_current_version
     from sickchill.show.Show import Show
     from sickchill import settings, logger
     from time import time
@@ -61,6 +62,7 @@
         <meta data-var="settings.POSTER_SORTDIR" data-content="${settings.POSTER_SORTDIR}">
         <meta data-var="settings.ROOT_DIRS" data-content="${settings.ROOT_DIRS}">
         <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
+        <meta data-var="settings.GRAMMAR_ARTICLES" data-content="${settings.GRAMMAR_ARTICLES}">
         <meta data-var="settings.TIME_PRESET" data-content="${settings.TIME_PRESET}">
         <meta data-var="settings.TRIM_ZERO" data-content="${settings.TRIM_ZERO}">
         <meta data-var="settings.SICKCHILL_BACKGROUND" data-content="${settings.SICKCHILL_BACKGROUND}">
@@ -382,7 +384,7 @@
                             % endif
                             <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - sbStartTime)}s</span></span> |
                             <span class="footer-item">Mako: <span class="footerhighlight">${"{:.4f}".format(time() - makoStartTime)}s</span></span> |
-                            <span class="footer-item">${_('Branch')}: <span class="footerhighlight">${settings.BRANCH}</span></span> |
+                            <span class="footer-item">${_('Version')}: <span class="footerhighlight">${get_current_version()}</span></span> |
                             <span class="footer-item">${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(settings.DATE_PRESET+" "+settings.TIME_PRESET)}</span></span>
                         </div>
                     </div>

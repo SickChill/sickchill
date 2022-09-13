@@ -17,7 +17,7 @@ class NZBProvider(GenericProvider):
 
     def _get_result(self, episodes):
         result = NZBSearchResult(episodes)
-        if self.torznab or result.url.startswith("magnet"):
+        if self.torznab or result.url.startswith("magnet") or result.url.endswith("torrent"):
             result.resultType = GenericProvider.TORRENT
 
         return result

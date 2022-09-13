@@ -16,6 +16,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
+from sickchill.init_helpers import get_current_version
 from sickchill.oldbeard import classes, db, helpers, network_timezones, sbdatetime, search_queue, ui
 from sickchill.oldbeard.common import (
     ARCHIVED,
@@ -1410,7 +1411,7 @@ class CMDSickChill(ApiCall):
 
     def run(self):
         """dGet miscellaneous information about SickChill"""
-        data = {"sc_version": settings.BRANCH, "api_version": self.version, "api_commands": sorted(function_mapper)}
+        data = {"sc_version": get_current_version(), "api_version": self.version, "api_commands": sorted(function_mapper)}
         return _responds(RESULT_SUCCESS, data)
 
 
@@ -1484,16 +1485,12 @@ class CMDSickChillCheckVersion(ApiCall):
 
         data = {
             "current_version": {
-                "branch": update_manager.branch,
-                "commit": update_manager.get_current_commit_hash(),
                 "version": update_manager.get_current_version(),
             },
             "latest_version": {
-                "branch": update_manager.branch,
-                "commit": update_manager.get_newest_commit_hash(),
                 "version": update_manager.get_newest_version(),
             },
-            "commits_offset": update_manager.get_num_commits_behind(),
+            "version_delta": update_manager.get_version_delta(),
             "needs_update": needs_update,
         }
 

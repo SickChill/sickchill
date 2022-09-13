@@ -12,7 +12,8 @@ $(document).ready(() => {
             getSortData: {
                 name(itemElement) {
                     const name = $(itemElement).attr('data-name') || '';
-                    return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(/^(the|a|an)\s/i, '')).toLowerCase();
+                    const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                    return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
                 votes: '[data-votes] parseInt',

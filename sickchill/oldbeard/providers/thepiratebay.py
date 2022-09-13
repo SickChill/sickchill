@@ -72,7 +72,7 @@ class Provider(TorrentProvider):
                 context.execute(data)
                 return context.print_trackers()
             else:
-                matcher = re.compile("'\&\+?tr='\+encodeURIComponent\('((?:udp|tcp|http|https)://[^']+)'\)", re.IGNORECASE | re.MULTILINE)
+                matcher = re.compile(r"'&\+?tr='\+encodeURIComponent\('((?:udp|tcp|http|https)://[^']+)'\)", re.IGNORECASE | re.MULTILINE)
                 trackers_list = matcher.findall(data)
                 if trackers_list:
                     joined = "&".join(urlencode({"tr": tracker}) for tracker in trackers_list)

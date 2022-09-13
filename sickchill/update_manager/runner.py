@@ -6,12 +6,10 @@ import time
 
 from sickchill import logger, settings
 from sickchill.helper.exceptions import UpdaterException
-from sickchill.init_helpers import check_installed
+from sickchill.init_helpers import check_installed, git_folder, pyproject_file
 from sickchill.oldbeard import db, helpers, ui
 
-from .git import GitUpdateManager
 from .pip import PipUpdateManager
-from .source import SourceUpdateManager
 
 
 class UpdateManager(object):
@@ -23,14 +21,14 @@ class UpdateManager(object):
         self.updater = None
         self.install_type = None
         self.amActive = False
-        if settings.gh:
-            self.install_type = self.find_install_type()
-            if self.install_type == "git":
-                self.updater = GitUpdateManager()
-            elif self.install_type == "source":
-                self.updater = SourceUpdateManager()
-            elif self.install_type == "pip":
-                self.updater = PipUpdateManager()
+
+        self.install_type = self.find_install_type()
+        if self.install_type == "git":
+            self.updater = None
+        elif self.install_type == "source":
+            self.updater = None
+        elif self.install_type == "pip":
+            self.updater = PipUpdateManager()
 
         self.session = helpers.make_session()
 
@@ -39,9 +37,6 @@ class UpdateManager(object):
         self.amActive = True
 
         if self.updater:
-            # set current branch version
-            settings.BRANCH = self.branch
-
             if self.check_for_new_version(force):
                 if settings.AUTO_UPDATE:
                     logger.info("New update found for SickChill, starting auto-updater ...")
@@ -178,13 +173,7 @@ class UpdateManager(object):
     def compare_db_version(self):
         try:
             self.need_update()
-            newest_version = self.get_newest_commit_hash()
-            if isinstance(newest_version, str):
-                if len(newest_version) != 40:
-                    raise UpdaterException(f"Commit hash wrong length: {len(newest_version)} hash: {newest_version}")
-            else:
-                newest_version = f"v{newest_version.major}.{newest_version.minor:02d}.{newest_version.micro:02d}-{newest_version.post}"
-
+            newest_version = self.get_newest_version()
             response = helpers.getURL(
                 f"https://raw.githubusercontent.com/{settings.GIT_ORG}/{settings.GIT_REPO}/{newest_version}/sickchill/oldbeard/databases/main.py",
                 session=self.session,
@@ -224,12 +213,12 @@ class UpdateManager(object):
             'source': running from source without git
         """
 
-        if os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), ".git")):
+        if git_folder.is_dir():
             install_type = "git"
+        elif pyproject_file.is_file():
+            install_type = "source"
         elif check_installed():
             install_type = "pip"
-        else:
-            install_type = "source"
 
         return install_type
 
@@ -241,6 +230,10 @@ class UpdateManager(object):
 
         force: if true the VERSION_NOTIFY setting will be ignored and a check will be forced
         """
+
+        if self.install_type != "pip":
+            logger.info("We no longer support updating from source, please use git or pip")
+            return False
 
         if not self.updater or (not settings.VERSION_NOTIFY and not settings.AUTO_UPDATE and not force):
             logger.info("Version checking is disabled, not checking for the newest version")
@@ -303,23 +296,8 @@ class UpdateManager(object):
         return news
 
     def update(self):
-        self.branch = settings.BRANCH
         if self.need_update():
             return self.updater.update()
-
-    def list_remote_branches(self):
-        if self.updater:
-            return self.updater.list_remote_branches()
-
-    @property
-    def branch(self):
-        if self.updater:
-            return self.updater.branch
-
-    @branch.setter
-    def branch(self, branch):
-        if self.updater:
-            self.updater.branch = branch
 
     def need_update(self):
         if self.updater:
@@ -329,14 +307,6 @@ class UpdateManager(object):
         if self.updater:
             return self._run_backup
 
-    def get_current_commit_hash(self):
-        if self.updater:
-            return self.updater.get_current_commit_hash()
-
-    def get_newest_commit_hash(self):
-        if self.updater:
-            return self.updater.get_newest_commit_hash()
-
     def get_newest_version(self):
         if self.updater:
             return self.updater.get_newest_version()
@@ -345,9 +315,9 @@ class UpdateManager(object):
         if self.updater:
             return self.updater.get_current_version()
 
-    def get_num_commits_behind(self):
+    def get_version_delta(self):
         if self.updater:
-            return self.updater.get_num_commits_behind()
+            return self.updater.get_version_delta()
 
     def set_newest_text(self):
         if self.updater:

@@ -4,6 +4,7 @@ import shutil
 import stat
 import traceback
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import validators
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
@@ -14,6 +15,10 @@ from sickchill.helper.exceptions import EpisodePostProcessingFailedException, Fa
 
 from . import common, db, failedProcessor, helpers, postProcessor
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+
+if TYPE_CHECKING:
+    from sickchill.oldbeard.name_parser.parser import ParseResult
+    from sickchill.tv import TVShow
 
 
 class ProcessResult(object):
@@ -28,9 +33,9 @@ def delete_folder(folder, check_empty=True):
     """
     Removes a folder from the filesystem
 
-    :param folder: Path to folder to remove
-    :param check_empty: Boolean, check if the folder is empty before removing it, defaults to True
-    :return: True on success, False on failure
+    param folder: Path to folder to remove
+    param check_empty: Boolean, check if the folder is empty before removing it, defaults to True
+    return: True on success, False on failure
     """
 
     # check if it's a folder
@@ -41,7 +46,7 @@ def delete_folder(folder, check_empty=True):
     if settings.TV_DOWNLOAD_DIR and helpers.real_path(folder) == helpers.real_path(settings.TV_DOWNLOAD_DIR):
         return False
 
-    # check if it's empty folder when wanted checked
+    # check if it's empty folder when wanted to be checked
     if check_empty:
         check_files = os.listdir(folder)
         if check_files:
@@ -69,10 +74,10 @@ def delete_files(process_path, unwanted_files, result, force=False):
     """
     Remove files from filesystem
 
-    :param process_path: path to process
-    :param unwanted_files: files we do not want
-    :param result: Processor results
-    :param force: Boolean, force deletion, defaults to false
+    param process_path: path to process
+    param unwanted_files: files we do not want
+    param result: Processor results
+    param force: Boolean, force deletion, defaults to false
     """
     if not result.result and force:
         result.output += log_helper("Forcing deletion of files, even though last result was not success", logger.DEBUG)
@@ -111,14 +116,14 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
     """
     Scans through the files in process_path and processes whatever media files it finds
 
-    :param process_path: The folder name to look in
-    :param release_name: The NZB/Torrent name which resulted in this folder being downloaded
-    :param process_method: processing method, copy/move/symlink/link
-    :param force: True to process previously processed files
-    :param is_priority: whether to replace the file even if it exists at higher quality
-    :param delete_on: delete files and folders after they are processed (always happens with move and auto combination)
-    :param failed: Boolean for whether or not the download failed
-    :param mode: Type of postprocessing auto or manual
+    param process_path: The folder name to look in
+    param release_name: The NZB/Torrent name which resulted in this folder being downloaded
+    param process_method: processing method, copy/move/symlink/link
+    param force: True to process previously processed files
+    param is_priority: whether to replace the file even if it exists at higher quality
+    param delete_on: delete files and folders after they are processed (always happens with move and auto combination)
+    param failed: Boolean for whether the download failed
+    param mode: Type of postprocessing auto or manual
     """
     result = ProcessResult()
     try:
@@ -237,11 +242,11 @@ def validate_dir(process_path, release_name, failed, result):
     """
     Check if directory is valid for processing
 
-    :param process_path: Directory to check
-    :param release_name: Original NZB/Torrent name
-    :param failed: Previously failed objects
-    :param result: Previous results
-    :return: True if dir is valid for processing, False if not
+    param process_path: Directory to check
+    param release_name: Original NZB/Torrent name
+    param failed: Previously failed objects
+    param result: Previous results
+    returns True if dir is valid for processing, False if not
     """
 
     result.output += log_helper("Processing folder " + process_path, logger.DEBUG)
@@ -303,11 +308,7 @@ def validate_dir(process_path, release_name, failed, result):
                 # pass 'current directory/filename' as one string to NameParser
                 found_file = f"{os.path.basename(current_directory)}/{found_file}"
 
-            try:
-                NameParser().parse(found_file, cache_result=False)
-            except (InvalidNameException, InvalidShowException) as error:
-                logger.debug(f"Could not properly parse a show and episode from [{found_file}]: {str(error)}")
-            else:
+            if postProcessor.guessit_findit(found_file):
                 return True
 
     result.output += log_helper(f"{process_path} : No processable items found in folder", logger.DEBUG)
@@ -318,11 +319,11 @@ def unrar(path, rar_files, force, result):
     """
     Extracts RAR files
 
-    :param path: Path to look for files in
-    :param rar_files: Names of RAR files
-    :param force: process currently processing items
-    :param result: Previous results
-    :return: List of unpacked file names
+    param path: Path to look for files in
+    param rar_files: Names of RAR files
+    param force: process currently processing items
+    param result: Previous results
+    returns List of unpacked file names
     """
 
     unpacked_dirs = []
@@ -358,7 +359,7 @@ def unrar(path, rar_files, force, result):
                 rar_release_name = Path(archive).stem
 
                 # Choose the directory we'll unpack to:
-                if settings.UNPACK_DIR and os.path.isdir(settings.UNPACK_DIR):  # verify the unpack dir exists
+                if settings.UNPACK_DIR and os.path.isdir(settings.UNPACK_DIR):  # verify that the unpacked dir exists
                     unpack_base_dir = settings.UNPACK_DIR
                 else:
                     unpack_base_dir = path
@@ -420,10 +421,10 @@ def already_processed(process_path, video_file, force, result):
     """
     Check if we already post processed a file
 
-    :param process_path: Directory a file resides in
-    :param video_file: File name
-    :param force: Force checking when already checking (currently unused)
-    :param result: True if file is already postprocessed, False if not
+    param process_path: Directory a file resides in
+    param video_file: File name
+    param force: Force checking when already checking (currently unused)
+    param result: True if file is already postprocessed, False if not
     :return:
     """
     if force:
@@ -438,23 +439,20 @@ def already_processed(process_path, video_file, force, result):
 
     # Needed if we have downloaded the same episode @ different quality
     # But we need to make sure we check the history of the episode we're going to PP, and not others
-    try:  # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
-        parse_result = NameParser(process_path, tryIndexers=True).parse(process_path)
-    except (
-        InvalidNameException,
-        InvalidShowException,
-    ):  # ignore the exception, because we kind of expected it, but create parse_result anyway so we can perform a check on it.
-        parse_result = False
+    # if it fails to find any info (because we're doing an unparsable folder (like the TV root dir) it will throw an exception, which we want to ignore
+    parse_result: "ParseResult" = postProcessor.guessit_findit(process_path)
 
     search_sql = "SELECT tv_episodes.indexerid, history.resource FROM tv_episodes INNER JOIN history ON history.showid=tv_episodes.showid"  # This part is always the same
     search_sql += " WHERE history.season=tv_episodes.season AND history.episode=tv_episodes.episode"
 
-    # If we find a showid, a season number, and one or more episode numbers then we need to use those in the query
-    if parse_result and parse_result.show.indexerid and parse_result.episode_numbers and parse_result.season_number:
-        search_sql += (
-            f" AND tv_episodes.showid={parse_result.show.indexerid} AND tv_episodes.season={parse_result.season_number}"
-            f" AND tv_episodes.episode={parse_result.episode_numbers[0]}"
-        )
+    # If we find a showid, a season number, and one or more episode numbers than we need to use those in the query
+    if parse_result:
+        if parse_result.show.indexerid:
+            search_sql += f" AND tv_episodes.showid={parse_result.show.indexerid}"
+        if parse_result.season_number is not None and parse_result.episode_numbers:
+            search_sql += f" AND tv_episodes.season={parse_result.season_number} AND tv_episodes.episode={parse_result.episode_numbers[0]}"
+        elif parse_result.ab_episode_numbers:
+            search_sql += f" AND tv_episodes.showid={parse_result.show.indexerid} AND tv_episodes.absolute_number={parse_result.ab_episode_numbers[0]}"
 
     search_sql += " AND tv_episodes.status IN (" + ",".join([str(x) for x in common.Quality.DOWNLOADED + common.Quality.ARCHIVED]) + ")"
     search_sql += " AND history.resource LIKE ? LIMIT 1"
@@ -470,13 +468,13 @@ def process_media(process_path, video_files, release_name, process_method, force
     """
     Postprocess mediafiles
 
-    :param process_path: Path to process in
-    :param video_files: Filenames to look for and postprocess
-    :param release_name: Name of NZB/Torrent file related
-    :param process_method: auto/manual
-    :param force: Postprocess currently postprocessing file
-    :param is_priority: Boolean, is this a priority download
-    :param result: Previous results
+    param process_path: Path to process in
+    param video_files: Filenames to look for and postprocess
+    param release_name: Name of NZB/Torrent file related
+    param process_method: auto/manual
+    param force: Postprocess currently postprocessing file
+    param is_priority: Boolean, is this a priority download
+    param result: Previous results
     """
 
     processor = None
@@ -533,25 +531,3 @@ def process_failed(process_path, release_name, result):
         result.output += log_helper(f"Failed Download Processing succeeded: ({release_name}, {process_path})")
     else:
         result.output += log_helper(f"Failed Download Processing failed: ({release_name}, {process_path}): {process_fail_message}", logger.WARNING)
-
-
-def subtitles_enabled(video):
-    """
-    Parse video filename to a show to check if it has subtitle enabled
-
-    :param video: video filename to be parsed
-    """
-
-    try:
-        parse_result = NameParser().parse(video, cache_result=True)
-    except (InvalidNameException, InvalidShowException):
-        logger.warning(f"Not enough information to parse filename into a valid show. Consider add scene exceptions or improve naming for: {video}")
-        return False
-
-    if parse_result.show.indexerid:
-        main_db_con = db.DBConnection()
-        sql_results = main_db_con.select("SELECT subtitles FROM tv_shows WHERE indexer_id = ? LIMIT 1", [parse_result.show.indexerid])
-        return bool(sql_results[0]["subtitles"]) if sql_results else False
-    else:
-        logger.warning(f"Empty indexer ID for: {video}")
-        return False
