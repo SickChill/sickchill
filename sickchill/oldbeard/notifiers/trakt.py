@@ -17,7 +17,7 @@ class Notifier(object):
     def notify_subtitle_download(self, ep_name, lang):
         pass
 
-    def notify_git_update(self, new_version):
+    def notify_update(self, new_version):
         pass
 
     def notify_login(self, ipaddress=""):

@@ -14,7 +14,7 @@ import traceback
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.helper.common import choose_data_dir
-from sickchill.init_helpers import remove_pid_file, setup_gettext
+from sickchill.init_helpers import check_installed, get_current_version, remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
 
 setup_gettext()
@@ -35,7 +35,7 @@ from sickchill.helper.argument_parser import SickChillArgumentParser
 from sickchill.oldbeard import db, name_cache, network_timezones
 from sickchill.oldbeard.event_queue import Events
 from sickchill.tv import TVShow
-from sickchill.update_manager import GitUpdateManager, SourceUpdateManager
+from sickchill.update_manager import PipUpdateManager
 from sickchill.views.server_settings import SRWebServer
 
 # http://bugs.python.org/issue7980#msg221094
@@ -156,7 +156,7 @@ class SickChill(object):
         # Build from the DB to start with
         self.load_shows_from_db()
 
-        logger.info("Starting SickChill [{branch}] using '{config}'".format(branch=settings.BRANCH, config=settings.CONFIG_FILE))
+        logger.info("Starting SickChill [{version}] using '{config}'".format(version=get_current_version(), config=settings.CONFIG_FILE))
 
         self.clear_cache()
 
@@ -291,7 +291,7 @@ class SickChill(object):
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()
-        os._exit(0)
+        os._exit(0)  # noqa
 
     @staticmethod
     def force_update():
@@ -300,43 +300,18 @@ class SickChill(object):
 
         :return: True if successful, False otherwise
         """
+        if not check_installed():
+            print(
+                "Sickchill updater no longer works with git or source installs, as they are intended for developers only. If you are a developer, you know how to update..."
+            )
+            return False
 
-        def update_with_git():
-            def run_git(updater, cmd):
-                stdout_, stderr_, exit_status = updater._run_git(updater._git_path, cmd)
-                if not exit_status == 0:
-                    print("Failed to run command: {0} {1}".format(updater._git_path, cmd))
-                    return False
-                else:
-                    return True
-
-            updater = GitUpdateManager()
-            if not run_git(updater, "config remote.origin.url https://github.com/SickChill/SickChill.git"):
-                return False
-            if not run_git(updater, "fetch origin --prune"):
-                return False
-            if not run_git(updater, "checkout master"):
-                return False
-            if not run_git(updater, "reset --hard origin/master"):
-                return False
-
-            return True
-
-        if os.path.isdir(os.path.join(os.path.dirname(settings.PROG_DIR), ".git")):  # update with git
-            print("Forcing SickChill to update using git...")
-            result = update_with_git()
-            if result:
-                print("Successfully updated to latest commit. You may now run SickChill normally.")
-                return True
-            else:
-                print("Error while trying to force an update using git.")
-
-        print("Forcing SickChill to update using source...")
-        if not SourceUpdateManager().update():
+        print("Forcing SickChill to update using pip...")
+        if not PipUpdateManager().update():
             print("Failed to force an update.")
             return False
 
-        print("Successfully updated to latest commit. You may now run SickChill normally.")
+        print("Successfully updated to the latest pip release. You may now run SickChill normally.")
         return True
 
 

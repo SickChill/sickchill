@@ -704,9 +704,6 @@ class Home(WebRoot):
 
         updater = UpdateManager()
         if updater.backup():
-            if branch:
-                settings.BRANCH = branch
-
             if updater.update():
                 # do a hard restart
                 settings.events.put(settings.events.SystemEvent.RESTART)
@@ -719,51 +716,22 @@ class Home(WebRoot):
             return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
     @staticmethod
-    def fetchRemoteBranches():
-        response = []
-        try:
-            gh_branches = settings.versionCheckScheduler.action.list_remote_branches()
-        except GithubException:
-            gh_branches = None
-
-        if gh_branches:
-            for cur_branch in gh_branches:
-                branch_obj = {"name": cur_branch}
-                if cur_branch == settings.BRANCH:
-                    branch_obj["current"] = True
-
-                if cur_branch == "master" or (settings.GIT_TOKEN and (settings.DEVELOPER == 1 or cur_branch == "develop")):
-                    response.append(branch_obj)
-
-        return json.dumps(response)
-
-    def branchCheckout(self):
-        branch = self.get_query_argument("branch")
-        if settings.BRANCH != branch:
-            settings.BRANCH = branch
-            ui.notifications.message(_("Checking out branch") + ": ", branch)
-            return self.redirect("/update/?pid={}&branch={}".format(settings.PID, branch))
-        else:
-            ui.notifications.message(_("Already on branch") + ": ", branch)
-            return self.redirect("/" + settings.DEFAULT_PAGE + "/")
-
-    @staticmethod
     def compare_db_version():
 
         update_manager = UpdateManager()
         db_status = update_manager.compare_db_version()
 
         if db_status == "upgrade":
-            logger.debug("Checkout branch has a new DB version - Upgrade")
+            logger.debug("New version has a new DB version - Upgrade")
             return json.dumps({"status": "success", "message": "upgrade"})
         elif db_status == "equal":
-            logger.debug("Checkout branch has the same DB version - Equal")
+            logger.debug("New version has the same DB version - Equal")
             return json.dumps({"status": "success", "message": "equal"})
         elif db_status == "downgrade":
-            logger.debug("Checkout branch has an old DB version - Downgrade")
+            logger.debug("New version has an old DB version - Downgrade")
             return json.dumps({"status": "success", "message": "downgrade"})
         else:
-            logger.exception("Checkout branch couldn't compare DB version.")
+            logger.exception("Couldn't compare DB version.")
             return json.dumps({"status": "error", "message": "General exception"})
 
     def displayShow(self):

@@ -30,8 +30,8 @@ SEASON_RESULT = -2
 NOTIFY_SNATCH = 1
 NOTIFY_DOWNLOAD = 2
 NOTIFY_SUBTITLE_DOWNLOAD = 3
-NOTIFY_GIT_UPDATE = 4
-NOTIFY_GIT_UPDATE_TEXT = 5
+NOTIFY_UPDATE = 4
+NOTIFY_UPDATE_TEXT = 5
 NOTIFY_LOGIN = 6
 NOTIFY_LOGIN_TEXT = 7
 NOTIFY_POSTPROCESS = 8
@@ -41,8 +41,8 @@ notifyStrings = NumDict(
         NOTIFY_SNATCH: _("Started Download"),
         NOTIFY_DOWNLOAD: _("Finished Download"),
         NOTIFY_SUBTITLE_DOWNLOAD: _("Subtitle Download Finished"),
-        NOTIFY_GIT_UPDATE: _("SickChill Updated"),
-        NOTIFY_GIT_UPDATE_TEXT: _("SickChill Updated To Commit#: "),
+        NOTIFY_UPDATE: _("SickChill Updated"),
+        NOTIFY_UPDATE_TEXT: _("SickChill Updated To Version: "),
         NOTIFY_LOGIN: _("SickChill new login"),
         NOTIFY_LOGIN_TEXT: _("New login from IP: {0}. http://geomaplookup.net/?ip={0}"),
         NOTIFY_POSTPROCESS: _("Finished Post Processing"),
