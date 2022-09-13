@@ -40,11 +40,11 @@ class Notifier(object):
                 pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " : " + ep_name + " : " + lang, message=ep_name + ": " + lang
             )
 
-    def notify_git_update(self, new_version="??"):
+    def notify_update(self, new_version="??"):
         self._sendPushbullet(
             pushbullet_api=None,
-            event=common.notifyStrings[common.NOTIFY_GIT_UPDATE],
-            message=common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT] + new_version,
+            event=common.notifyStrings[common.NOTIFY_UPDATE],
+            message=common.notifyStrings[common.NOTIFY_UPDATE_TEXT] + new_version,
             # link=link
         )
 

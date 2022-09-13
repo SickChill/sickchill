@@ -110,31 +110,12 @@ def initialize(consoleLogging=True):
         # Initializes oldbeard.gh
         setup_github()
 
-        # git reset on update
-        settings.GIT_RESET = check_setting_bool(settings.CFG, "General", "git_reset", True)
-
-        # current git branch
-        settings.BRANCH = check_setting_str(settings.CFG, "General", "branch")
-
-        # git_remote
-        settings.GIT_REMOTE = check_setting_str(settings.CFG, "General", "git_remote", "origin")
-        settings.GIT_REMOTE_URL = check_setting_str(settings.CFG, "General", "git_remote_url", f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git")
-
-        if "rage" in settings.GIT_REMOTE_URL.lower():
-            settings.GIT_REMOTE_URL = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}.git"
-
-        # current commit hash
-        settings.CUR_COMMIT_HASH = check_setting_str(settings.CFG, "General", "cur_commit_hash")
-
-        # current commit branch
-        settings.CUR_COMMIT_BRANCH = check_setting_str(settings.CFG, "General", "cur_commit_branch")
-
         settings.GUI_NAME = check_setting_str(settings.CFG, "GUI", "gui_name", "slick")
         settings.GUI_LANG = check_setting_str(settings.CFG, "GUI", "language")
 
         setup_gettext(settings.GUI_LANG)
 
-        load_gettext_translations(locale_dir(), "messages")
+        load_gettext_translations(locale_dir, "messages")
 
         settings.CACHE_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "cache"))
 
@@ -707,8 +688,6 @@ def initialize(consoleLogging=True):
 
         settings.BACKLOG_MISSING_ONLY = check_setting_bool(settings.CFG, "General", "backlog_missing_only")
 
-        settings.GIT_PATH = check_setting_str(settings.CFG, "General", "git_path")
-
         settings.IGNORE_WORDS = check_setting_str(settings.CFG, "General", "ignore_words", settings.IGNORE_WORDS)
         settings.TRACKERS_LIST = check_setting_str(settings.CFG, "General", "trackers_list", settings.TRACKERS_LIST)
         settings.REQUIRE_WORDS = check_setting_str(settings.CFG, "General", "require_words", settings.REQUIRE_WORDS)
@@ -1151,12 +1130,6 @@ def save_config():
             "General": {
                 "git_username": settings.GIT_USERNAME,
                 "git_token_password": helpers.encrypt(settings.GIT_TOKEN, settings.ENCRYPTION_VERSION),
-                "git_reset": int(settings.GIT_RESET),
-                "branch": settings.BRANCH,
-                "git_remote": settings.GIT_REMOTE,
-                "git_remote_url": settings.GIT_REMOTE_URL,
-                "cur_commit_hash": settings.CUR_COMMIT_HASH,
-                "cur_commit_branch": settings.CUR_COMMIT_BRANCH,
                 "config_version": settings.CONFIG_VERSION,
                 "encryption_version": int(settings.ENCRYPTION_VERSION),
                 "encryption_secret": settings.ENCRYPTION_SECRET,
@@ -1275,7 +1248,6 @@ def save_config():
                 "add_shows_with_year": int(settings.ADD_SHOWS_WITH_YEAR),
                 "use_free_space_check": int(settings.USE_FREE_SPACE_CHECK),
                 "extra_scripts": "|".join(settings.EXTRA_SCRIPTS),
-                "git_path": settings.GIT_PATH,
                 "ignore_words": settings.IGNORE_WORDS,
                 "trackers_list": settings.TRACKERS_LIST,
                 "require_words": settings.REQUIRE_WORDS,

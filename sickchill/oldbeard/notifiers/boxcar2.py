@@ -53,9 +53,9 @@ class Notifier(object):
         if settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyBoxcar2(title, ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version="??"):
-        update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-        title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+    def notify_update(self, new_version="??"):
+        update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
+        title = common.notifyStrings[common.NOTIFY_UPDATE]
         self._notifyBoxcar2(title, update_text + new_version)
 
     def notify_login(self, ipaddress=""):

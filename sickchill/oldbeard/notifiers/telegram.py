@@ -4,12 +4,12 @@
 from sickchill import logger, settings
 from sickchill.oldbeard.common import (
     NOTIFY_DOWNLOAD,
-    NOTIFY_GIT_UPDATE,
-    NOTIFY_GIT_UPDATE_TEXT,
     NOTIFY_LOGIN,
     NOTIFY_LOGIN_TEXT,
     NOTIFY_SNATCH,
     NOTIFY_SUBTITLE_DOWNLOAD,
+    NOTIFY_UPDATE,
+    NOTIFY_UPDATE_TEXT,
     notifyStrings,
 )
 from sickchill.oldbeard.helpers import getURL, make_session
@@ -83,15 +83,15 @@ class Notifier(object):
         if settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify_telegram(title, "{0}: {1}".format(ep_name, lang))
 
-    def notify_git_update(self, new_version="??"):
+    def notify_update(self, new_version="??"):
         """
         Sends a Telegram notification for git updates
 
         :param new_version: The new version available from git
         """
         if settings.USE_TELEGRAM:
-            update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
-            title = notifyStrings[NOTIFY_GIT_UPDATE]
+            update_text = notifyStrings[NOTIFY_UPDATE_TEXT]
+            title = notifyStrings[NOTIFY_UPDATE]
             self._notify_telegram(title, update_text + new_version)
 
     def notify_login(self, ipaddress=""):

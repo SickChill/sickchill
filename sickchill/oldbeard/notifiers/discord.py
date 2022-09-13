@@ -15,10 +15,10 @@ class Notifier(object):
         if settings.DISCORD_NOTIFY_SUBTITLEDOWNLOAD:
             self._notify_discord(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD] + " " + ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version="??"):
+    def notify_update(self, new_version="??"):
         if settings.USE_DISCORD:
-            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_UPDATE]
             self._notify_discord(title + " - " + update_text + new_version)
 
     def notify_login(self, ipaddress=""):

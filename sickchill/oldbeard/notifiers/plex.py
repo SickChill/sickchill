@@ -67,10 +67,10 @@ class Notifier(object):
         if settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notify_pht(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
-    def notify_git_update(self, new_version="??"):
+    def notify_update(self, new_version="??"):
         if settings.NOTIFY_ON_UPDATE:
-            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_UPDATE]
             if update_text and title and new_version:
                 self._notify_pht(update_text + new_version, title)
 

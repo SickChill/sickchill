@@ -99,8 +99,6 @@ class ConfigGeneral(Config):
         proxy_setting=None,
         proxy_indexers=None,
         anon_redirect=None,
-        git_path=None,
-        git_remote=None,
         calendar_unprotected=None,
         calendar_icons=None,
         debug=None,
@@ -123,7 +121,6 @@ class ConfigGeneral(Config):
         sickchill_background_path=None,
         custom_css=None,
         custom_css_path=None,
-        git_reset=None,
         git_username=None,
         git_token=None,
         display_all_seasons=None,
@@ -175,11 +172,6 @@ class ConfigGeneral(Config):
             settings.GIT_TOKEN = tmp_git_token
             setup_github()
 
-        # oldbeard.GIT_RESET = config.checkbox_to_value(git_reset)
-        # Force GIT_RESET
-        settings.GIT_RESET = 1
-        settings.GIT_PATH = git_path
-        settings.GIT_REMOTE = git_remote
         settings.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
         settings.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
         settings.NO_RESTART = config.checkbox_to_value(no_restart)

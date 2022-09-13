@@ -4,6 +4,7 @@
     from urllib.parse import urljoin
     from sickchill.oldbeard.filters import hide
     from sickchill.helper.common import pretty_file_size
+    from sickchill.init_helpers import get_current_version
     from sickchill.show.Show import Show
     from sickchill import settings, logger
     from time import time
@@ -383,7 +384,7 @@
                             % endif
                             <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - sbStartTime)}s</span></span> |
                             <span class="footer-item">Mako: <span class="footerhighlight">${"{:.4f}".format(time() - makoStartTime)}s</span></span> |
-                            <span class="footer-item">${_('Branch')}: <span class="footerhighlight">${settings.BRANCH}</span></span> |
+                            <span class="footer-item">${_('Version')}: <span class="footerhighlight">${get_current_version()}</span></span> |
                             <span class="footer-item">${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(settings.DATE_PRESET+" "+settings.TIME_PRESET)}</span></span>
                         </div>
                     </div>

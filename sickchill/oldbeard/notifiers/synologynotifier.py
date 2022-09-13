@@ -18,10 +18,10 @@ class Notifier(object):
         if settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._send_synologyNotifier(ep_name + ": " + lang, common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD])
 
-    def notify_git_update(self, new_version="??"):
+    def notify_update(self, new_version="??"):
         if settings.USE_SYNOLOGYNOTIFIER:
-            update_text = common.notifyStrings[common.NOTIFY_GIT_UPDATE_TEXT]
-            title = common.notifyStrings[common.NOTIFY_GIT_UPDATE]
+            update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
+            title = common.notifyStrings[common.NOTIFY_UPDATE]
             self._send_synologyNotifier(update_text + new_version, title)
 
     def notify_login(self, ipaddress=""):

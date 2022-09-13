@@ -2,8 +2,7 @@ import os
 
 from tornado.web import addslash
 
-from sickchill import settings
-from sickchill.update_manager import UpdateManager
+from sickchill.init_helpers import get_current_version
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 from sickchill.views.routes import Route
@@ -50,16 +49,6 @@ class Config(WebRoot):
         except Exception:
             ssl_version = "Unknown"
 
-        sc_version = ""
-        if settings.VERSION_NOTIFY or settings.BRANCH == "pip":
-            updater = UpdateManager()
-            if updater:
-                if settings.BRANCH == "pip":
-                    sc_version = updater.updater.get_clean_version()
-                else:
-                    updater.need_update()
-                    sc_version = updater.get_current_version()
-
         return t.render(
             submenu=self.ConfigMenu(),
             title=_("SickChill Configuration"),
@@ -68,5 +57,5 @@ class Config(WebRoot):
             sc_user=sc_user,
             sc_locale=sc_locale,
             ssl_version=ssl_version,
-            sc_version=sc_version,
+            sc_version=get_current_version(),
         )

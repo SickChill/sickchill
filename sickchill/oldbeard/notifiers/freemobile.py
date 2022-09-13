@@ -6,12 +6,12 @@ import urllib.request
 from sickchill import logger, settings
 from sickchill.oldbeard.common import (
     NOTIFY_DOWNLOAD,
-    NOTIFY_GIT_UPDATE,
-    NOTIFY_GIT_UPDATE_TEXT,
     NOTIFY_LOGIN,
     NOTIFY_LOGIN_TEXT,
     NOTIFY_SNATCH,
     NOTIFY_SUBTITLE_DOWNLOAD,
+    NOTIFY_UPDATE,
+    NOTIFY_UPDATE_TEXT,
     notifyStrings,
 )
 
@@ -87,10 +87,10 @@ class Notifier(object):
         if settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD:
             self._notifyFreeMobile(title, ep_name + ": " + lang)
 
-    def notify_git_update(self, new_version="??"):
+    def notify_update(self, new_version="??"):
         if settings.USE_FREEMOBILE:
-            update_text = notifyStrings[NOTIFY_GIT_UPDATE_TEXT]
-            title = notifyStrings[NOTIFY_GIT_UPDATE]
+            update_text = notifyStrings[NOTIFY_UPDATE_TEXT]
+            title = notifyStrings[NOTIFY_UPDATE]
             self._notifyFreeMobile(title, update_text + new_version)
 
     def notify_login(self, ipaddress=""):

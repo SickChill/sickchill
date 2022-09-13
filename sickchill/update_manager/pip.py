@@ -7,7 +7,7 @@ from typing import List, Union
 from packaging import version as packaging_version
 
 from sickchill import logger, settings
-from sickchill.init_helpers import get_current_version
+from sickchill.init_helpers import get_current_version, sickchill_dir
 from sickchill.oldbeard import helpers, notifiers
 
 from .abstract import UpdateManagerBase
@@ -20,7 +20,6 @@ class PipUpdateManager(UpdateManagerBase):
 
         self._newest_version: Union[packaging_version.LegacyVersion, packaging_version.Version] = None
         self.session = helpers.make_session()
-        self.branch = "pip"
 
     def get_current_version(self) -> str:
         return packaging_version.parse(self.version_text)
@@ -36,31 +35,22 @@ class PipUpdateManager(UpdateManagerBase):
 
         return result
 
-    def get_current_commit_hash(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
-        return self.get_current_version()
-
     def get_newest_version(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
         self._newest_version = packaging_version.parse(self.session.get("https://pypi.org/pypi/sickchill/json").json()["info"]["version"])
         return self._newest_version
 
-    def get_newest_commit_hash(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
-        return self._newest_version
-
-    def get_num_commits_behind(self):
+    def get_version_delta(self):
         if not self.need_update():
             return 0
 
         newest, current = self._newest_version, self.get_current_version()
         return f"Major: {newest.major - current.major}, Minor: {newest.minor - current.minor}, Micro: {newest.micro - current.micro}"
 
-    def list_remote_branches(self):
-        return ["pip"]
-
     def set_newest_text(self):
         if self.need_update():
-            if self.get_newest_commit_hash():
+            if self.get_newest_version():
                 current = self.get_clean_version()
-                newest = self.get_clean_version(self.get_newest_commit_hash())
+                newest = self.get_clean_version(self.get_newest_version())
                 url = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/compare/{current}...{newest}"
             else:
                 url = f"https://github.com/{settings.GIT_ORG}/{settings.GIT_REPO}/commits/"
@@ -83,15 +73,10 @@ class PipUpdateManager(UpdateManagerBase):
         if not self.pip_install("sickchill"):
             return False
 
-        settings.CUR_COMMIT_HASH = self._newest_version
-        notifiers.notify_git_update(f"{settings.CUR_COMMIT_HASH or ''}")
+        notifiers.notify_update(f"{self._newest_version}")
         return True
 
     def pip_install(self, packages: Union[List[str], str]) -> bool:
-
-        sickchill_module = Path(__file__).parent.resolve()
-        pyproject_path = sickchill_module.parent / "pyproject.toml"
-
         def subprocess_call(cmd_list):
             try:
                 process = subprocess.Popen(
@@ -142,7 +127,7 @@ class PipUpdateManager(UpdateManagerBase):
         elif os_id in ("raspian", "osmc"):
             cmd.append(f"--extra-index-url=https://www.piwheels.org/simple")
 
-        syno_wheelhouse = pyproject_path.parent.with_name("wheelhouse")
+        syno_wheelhouse = sickchill_dir.with_name("wheelhouse")
         if syno_wheelhouse.is_dir():
             logger.debug(f"Found wheelhouse dir at {syno_wheelhouse}")
             cmd.append(f"-f{syno_wheelhouse}")

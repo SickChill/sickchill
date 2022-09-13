@@ -2,7 +2,7 @@ import argparse
 import gettext
 import logging
 import os
-import subprocess
+import re
 import sys
 from pathlib import Path
 from typing import Union
@@ -20,19 +20,17 @@ logger.addHandler(logging.StreamHandler())
 pid_file: Path = None
 
 
-def sickchill_dir():
-    return os.path.abspath(os.path.dirname(__file__))
-
-
-def locale_dir():
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "locale"))
+sickchill_dir = Path(__file__).parent
+locale_dir = sickchill_dir / "locale"
+pyproject_file = sickchill_dir.parent / "pyproject.toml"
+git_folder = sickchill_dir.parent / ".git"
 
 
 def setup_gettext(language: str = None) -> None:
     languages = [language] if language else None
     if not [key for key in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG") if os.environ.get(key)]:
         os.environ["LC_MESSAGES"] = "en_US.UTF-8"
-    gt = gettext.translation("messages", locale_dir(), languages=languages, fallback=True)
+    gt = gettext.translation("messages", locale_dir, languages=languages, fallback=True)
     gt.install(names=["ngettext"])
 
 
@@ -69,7 +67,7 @@ def maybe_daemonize():
     try:
         pid = os.fork()  # @UndefinedVariable - only available in UNIX
         if pid != 0:
-            os._exit(0)
+            os._exit(0)  # noqa
     except OSError as error:
         raise SystemExit(f"fork #1 failed: {error.errno}: {error.strerror}\n")
 
@@ -86,7 +84,7 @@ def maybe_daemonize():
     try:
         pid = os.fork()
         if pid != 0:
-            os._exit(0)
+            os._exit(0)  # noqa
     except OSError as error:
         raise SystemExit(f"fork #2 failed: {error.errno}: {error.strerror}\n")
 
@@ -127,34 +125,33 @@ def remove_pid_file():
         pass
 
 
-_distribution = None
-_version = None
-
-
 def get_distribution() -> Union[Distribution, None]:
-    global _distribution
-    if _distribution is None:
-        try:
-            _distribution = Distribution.from_name(__package__)
-        except PackageNotFoundError:
-            return None
-    return _distribution
+    try:
+        distribution = Distribution.from_name(__package__)
+    except PackageNotFoundError:
+        return None
+
+    return distribution
 
 
 def check_installed() -> bool:
+    if pyproject_file.is_file() or git_folder.is_dir():
+        return False
+
     return get_distribution() is not None
 
 
-def get_current_version():
-    global _version
-    if _version is None:
+def get_current_version() -> str:
+    fallback_version = "0.0.0"
+    version_regex = re.compile(r'\s*version\s*=\s*["\']([.0-9a-z-+]+)["\']\s*$')
+    if pyproject_file.is_file():
+        for line in pyproject_file.open():
+            match = version_regex.match(line)
+            if match:
+                return match.group(1)
+        return fallback_version
 
-        distribution = get_distribution()
-        if distribution:
-            return distribution.version
-
-        result = subprocess.run(["poetry", "version", "-s"], capture_output=True, text=True)
-        if result.returncode == 0:
-            _version = result.stdout.strip()
-
-    return _version
+    try:
+        return get_distribution().version
+    except PackageNotFoundError:
+        return fallback_version
