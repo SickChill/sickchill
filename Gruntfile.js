@@ -322,14 +322,9 @@ module.exports = function(grunt) {
                     let commitMsg = [];
                     let commitPaths = [];
 
-                    let version_py = stdout.match(/sickchill\/version\.py/gm)
-                    let pyproject = stdout.match(/pyproject.toml/gm)
-                    let isRelease = version_py || pyproject;
+                    let isRelease = stdout.match(/pyproject.toml/gm)
 
                     if (isRelease) {
-                        if (!(version_py && pyproject)) {
-                            grunt.fatal('Tried to commit a version change without updating the version in both places!')
-                        }
                         commitMsg.push('Release version ' + grunt.config('next_version'));
                         commitPaths.push('pyproject.toml');
                     }
