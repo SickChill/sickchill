@@ -765,22 +765,22 @@ def backupVersionedFile(old_file, version):
     new_file = old_file.with_suffix(f"{old_file.suffix}.v{version}")
     while not os.path.isfile(new_file):
         if not os.path.isfile(old_file):
-            logger.debug(_("Not creating backup, {old_file} doesn't exist").format(old_file))
+            logger.debug(_("Not creating backup, {old_file} doesn't exist").format(old_file=old_file))
             break
 
         try:
-            logger.debug(_("Trying to back up {old_file} to {new_file}").format(old_file, new_file))
+            logger.debug(_("Trying to back up {old_file} to {new_file}").format(old_file=old_file, new_file=new_file))
             shutil.copy(old_file, new_file)
             logger.debug(_("Backup done"))
             break
         except Exception as error:
-            logger.warning(_("There was a problem while trying to back up {old_file} to {new_file}. Error: {error}").format(old_file, new_file, error))
+            logger.warning(_("There was a problem while trying to back up {old_file} to {new_file}. Error: {error}").format(old_file=old_file, new_file=new_file, error=error))
             numTries += 1
             time.sleep(1)
             logger.debug(_("Trying again."))
 
         if numTries >= 10:
-            logger.exception(_("Unable to back up {old_file} to {new_file} please do it manually.").format(old_file, new_file))
+            logger.exception(_("Unable to back up {old_file} to {new_file} please do it manually.").format(old_file=old_file, new_file=new_file))
             return False
 
     return True
