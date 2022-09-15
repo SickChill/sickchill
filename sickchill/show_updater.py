@@ -42,7 +42,7 @@ class ShowUpdater(object):
                             TvdbData.series()
                             updated_shows.extend([d["id"] for d in TvdbData.series])
                         except Exception as error:
-                            logger.info(str(error))
+                            logger.info(error)
 
                         current_check -= self.seven_days - 1
                 else:
@@ -70,7 +70,7 @@ class ShowUpdater(object):
                         else:
                             pi_list.append(settings.showQueueScheduler.action.refresh_show(cur_show, force))
                     except (CantUpdateShowException, CantRefreshShowException) as error:
-                        logger.info(_(f"Automatic update failed: {str(error)}"))
+                        logger.info(_("Automatic update failed: {error}").format(error=error))
 
                 ui.ProgressIndicators.setIndicator("dailyUpdate", ui.QueueProgressIndicator("Daily Update", pi_list))
 
@@ -79,7 +79,7 @@ class ShowUpdater(object):
                 else:
                     cache_db_con.action("INSERT INTO lastUpdate (time, provider) VALUES (?, ?)", [str(update_timestamp), provider.name])
         except Exception as error:
-            logger.exception(str(error))
+            logger.exception(error)
 
         self.amActive = False
 

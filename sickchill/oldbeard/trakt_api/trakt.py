@@ -88,10 +88,10 @@ class TraktAPI:
                 # This is pretty much a fatal error if there is no status_code
                 # It means there basically was no response at all
                 else:
-                    logger.debug(_(f"Could not connect to Trakt. Error: {error}"))
+                    logger.debug(_("Could not connect to Trakt. Error: {error}").format(error=error))
             elif code == 502:
                 # Retry the request, cloudflare had a proxying issue
-                logger.debug(_(f"Retrying trakt api request: {path}"))
+                logger.debug(_("Retrying trakt api request: {path}").format(path=path))
                 return self.traktRequest(path, data, headers, url, method)
             elif code == 401:
                 if self.traktToken(refresh=True, count=count):
@@ -102,9 +102,9 @@ class TraktAPI:
                 # http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.debug(_("Trakt may have some issues and it's unavailable. Try again later please"))
             elif code == 404:
-                logger.debug(_(f"Trakt error (404) the resource does not exist: {url}{path}"))
+                logger.debug(_("Trakt error (404) the resource does not exist: {url}{path}").format(url=url, path=path))
             else:
-                logger.exception(_(f"Could not connect to Trakt. Code error: {code}"))
+                logger.exception(_("Could not connect to Trakt. Code error: {code}").format(code=code))
             return {}
 
         # check and confirm trakt call did not fail

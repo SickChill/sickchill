@@ -276,10 +276,10 @@ class GenericProvider(object):
                     break
 
             if skip_release:
-                logger.debug(_(f"Ignoring result {title}."))
+                logger.debug(_("Ignoring result {title}.").format(title=title))
                 continue
 
-            logger.debug(_(f"Found result {title} at {url}."))
+            logger.debug(_("Found result {title} at {url}.").format(title=title, url=url))
 
             episode_object = []
             for current_episode in actual_episodes:

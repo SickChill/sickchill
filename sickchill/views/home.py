@@ -535,14 +535,14 @@ class Home(WebRoot):
 
     def testFlareSolverr(self):
         uri = self.get_body_argument("flaresolverr_uri")
-        logger.debug(_(f"Checking flaresolverr uri: {uri}"))
+        logger.debug(_("Checking flaresolverr uri: {uri}").format(uri=uri))
         try:
             requests.head(uri)
             result = _("Successfully connected to flaresolverr, this is experimental!")
         except (requests.ConnectionError, requests.RequestException):
             result = _("Failed to connect to flaresolverr")
 
-        logger.debug(_(f"Flaresolverr result: {result}"))
+        logger.debug(_("Flaresolverr result: {result}").format(result=result))
         return result
 
     @staticmethod
@@ -1689,7 +1689,7 @@ class Home(WebRoot):
             result = json.dumps({"result": "failure", "message": _("Result not found in the cache")})
 
         if isinstance(result, str):
-            sickchill.logger.info(_(f"Could not snatch manually selected result: {result}"))
+            sickchill.logger.info(_("Could not snatch manually selected result: {result}").format(result=result))
         elif isinstance(result, sickchill.oldbeard.classes.SearchResult):
             sickchill.oldbeard.search.snatchEpisode(result, SNATCHED_BEST)
 

@@ -79,10 +79,14 @@ class DBConnection(object):
                 + str(exception),
             )
 
-            # Lets print out all of the arguments so we can debug this better
+            # Let's print out all the arguments, so we can debug this better
             logger.info(traceback.format_exc())
             logger.info(_("If this happened in cache.db, you can safely stop SickChill, and delete the cache.db file without losing any data"))
-            logger.info(_(f"Here are the arguments that were passed to this function (This is what the developers need to know): {local_variables}"))
+            logger.info(
+                _("Here are the arguments that were passed to this function (This is what the developers need to know): {local_variables}").format(
+                    local_variables=local_variables
+                )
+            )
 
     @staticmethod
     def _is_locked_or_denied(exception):

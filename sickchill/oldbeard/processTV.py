@@ -155,13 +155,13 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
         if release_name and validators.url(release_name) == True:
-            result.output += log_helper(_(f"Processing {release_name}"), logger.INFO)
+            result.output += log_helper(_("Processing {release_name}").format(release_name=release_name))
             generator_to_use = [("", [], [release_name])]
         elif release_name and (is_media_file(release_name) or is_rar_file(release_name)):
-            result.output += log_helper(_(f"Processing {release_name}"), logger.INFO)
+            result.output += log_helper(_("Processing {release_name}").format(release_name=release_name))
             generator_to_use = [(process_path, [], [release_name])]
         else:
-            result.output += log_helper(_(f"Processing {process_path}"), logger.INFO)
+            result.output += log_helper(_("Processing {process_path}").format(process_path=process_path))
             generator_to_use = os.walk(process_path, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS)
 
         for current_directory, directory_names, filenames in generator_to_use:
@@ -176,7 +176,10 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                         for extracted_directory in extracted_directories:
                             if extracted_directory.split(current_directory)[-1] not in directory_names:
                                 result.output += log_helper(
-                                    _(f"Adding extracted directory to the list of directories to process: {extracted_directory}"), logger.DEBUG
+                                    _("Adding extracted directory to the list of directories to process: {extracted_directory}").format(
+                                        extracted_directory=extracted_directory
+                                    ),
+                                    logger.DEBUG,
                                 )
                                 directories_from_rars.add(extracted_directory)
 
@@ -196,12 +199,12 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             # noinspection PyTypeChecker
             unwanted_files = [x for x in filenames if x in video_files + rar_files]
             if unwanted_files:
-                result.output += log_helper(_(f"Found unwanted files: {unwanted_files}"), logger.DEBUG)
+                result.output += log_helper(_("Found unwanted files: {unwanted_files}").format(unwanted_files=unwanted_files), logger.DEBUG)
 
             delete_folder(os.path.join(current_directory, "@eaDir"), False)
             delete_files(current_directory, unwanted_files, result)
             if delete_folder(current_directory, check_empty=not delete_on):
-                result.output += log_helper(_(f"Deleted folder: {current_directory}"), logger.DEBUG)
+                result.output += log_helper(_("Deleted folder: {current_directory}").format(current_directory=current_directory), logger.DEBUG)
 
         # For processing extracted rars, only allow methods 'move' and 'copy'.
         # On different methods fall back to 'move'.

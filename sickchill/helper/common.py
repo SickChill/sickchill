@@ -427,35 +427,42 @@ def setup_github():
             settings.gh.get_organization(settings.GIT_ORG)
     except BadCredentialsException as error:
         settings.gh = None
-        sickchill.logger.warning(_(f"Unable to setup GitHub properly with your github token. Please check your credentials. Error: {error}"))
+        sickchill.logger.warning(
+            _("Unable to set up GitHub properly with your github token. Please check your credentials. Error: {error}").format(error=error)
+        )
     except TwoFactorException as error:
         settings.gh = None
-        sickchill.logger.warning(_(f"Unable to setup GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {error}"))
+        sickchill.logger.warning(
+            _("Unable to set up GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {error}").format(error=error)
+        )
     except RateLimitExceededException as error:
         settings.gh = None
         if settings.GIT_TOKEN:
             sickchill.logger.warning(
-                _(f"Unable to setup GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {error}")
+                _("Unable to set up GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {error}").format(
+                    error=error
+                )
             )
         else:
             sickchill.logger.warning(
                 _(
-                    f"Unable to setup GitHub properly, You are currently being throttled by rate "
-                    f"limiting for too many requests - Try adding an access token. Error: {error}"
-                )
+                    "Unable to set up GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {error}"
+                ).format(error=error)
             )
     except UnknownObjectException as error:
         settings.gh = None
-        sickchill.logger.warning(_(f"Unable to setup GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {error}"))
+        sickchill.logger.warning(
+            _("Unable to set up GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {error}").format(error=error)
+        )
     except BadUserAgentException as error:
         settings.gh = None
-        sickchill.logger.warning(_(f"Unable to setup GitHub properly, GitHub doesn't like the user-agent. Error: {error}"))
+        sickchill.logger.warning(_("Unable to set up GitHub properly, GitHub doesn't like the user-agent. Error: {error}").format(error=error))
     except BadAttributeException as error:
         settings.gh = None
-        sickchill.logger.error(_(f"Unable to setup GitHub properly, There might be an error with the library. Error: {error}"))
+        sickchill.logger.error(_("Unable to set up GitHub properly, There might be an error with the library. Error: {error}").format(error=error))
     except (GithubException, Exception) as error:
         settings.gh = None
-        sickchill.logger.error(_(f"Unable to setup GitHub properly. GitHub will not be available. Error: {error}"))
+        sickchill.logger.error(_("Unable to set up GitHub properly. GitHub will not be available. Error: {error}").format(error=error))
 
 
 def choose_data_dir(program_dir):

@@ -316,12 +316,16 @@ def hardlinkFile(srcFile, destFile):
             except (OSError, IOError) as error:
                 logger.log(
                     _(
-                        f"The destination file already exists and we were unable to remove it, so hard linking might fail. Trying anyway. Location: {destFile}. Error: {error}"
-                    )
+                        "The destination file already exists, and we were unable to remove it, so hard linking might fail. Trying anyway. Location: {destFile}. Error: {error}"
+                    ).format(destFile=destFile, error=error),
                 )
         os.link(srcFile, destFile)
     except Exception as error:
-        logger.warning(_(f"There was a problem creating a hardlink of {srcFile} at {destFile}. Copying instead. Error: {error}"))
+        logger.warning(
+            _("There was a problem creating a hardlink of {srcFile} at {destFile}. Copying instead. Error: {error}").format(
+                srcFile=srcFile, destFile=destFile, error=error
+            )
+        )
         copyFile(srcFile, destFile)
 
     fixSetGroupID(destFile)
@@ -341,7 +345,11 @@ def moveAndSymlinkFile(srcFile, destFile):
         moveFile(srcFile, destFile)
         os.symlink(destFile, srcFile)
     except Exception as error:
-        logger.warning(_(f"There was a problem creating a symlink of {srcFile} at {destFile}. Copying instead. Error: {error}"))
+        logger.warning(
+            _("There was a problem creating a symlink of {srcFile} at {destFile}. Copying instead. Error: {error}").format(
+                srcFile=srcFile, destFile=destFile, error=error
+            )
+        )
         copyFile(srcFile, destFile)
 
 
@@ -351,16 +359,16 @@ def make_dirs(path):
     parents
     """
 
-    logger.debug(_(f"Checking if the path {path} already exists"))
+    logger.debug(_("Checking if the path {path} already exists").format(path=path))
 
     if not os.path.isdir(path):
         # Windows, create all missing folders
         if platform.system() == "Windows":
             try:
-                logger.debug(_(f"Folder {path} didn't exist, creating it"))
+                logger.debug(_("Folder {path} didn't exist, creating it").format(path=path))
                 os.makedirs(path)
             except (OSError, IOError) as error:
-                logger.exception(_(f"There was a problem creating {path}. Error: {error}"))
+                logger.exception(_("There was a problem creating {path}. Error: {error}").format(path=path, error=error))
                 return False
 
         # not Windows, create all missing folders and set permissions
@@ -377,14 +385,14 @@ def make_dirs(path):
                     continue
 
                 try:
-                    logger.debug(_(f"Folder {sofar} didn't exist, creating it"))
+                    logger.debug(_("Folder {sofar} didn't exist, creating it").format(sofar=sofar))
                     os.mkdir(sofar)
                     # use normpath to remove end separator, otherwise checks permissions against itself
                     chmodAsParent(os.path.normpath(sofar))
                     # do the library update for synoindex
                     sickchill.oldbeard.notifiers.synoindex_notifier.addFolder(sofar)
                 except (OSError, IOError) as error:
-                    logger.exception(_(f"There was a problem creating {sofar}. Error: {error}"))
+                    logger.exception(_("There was a problem creating {sofar}. Error: {error}").format(sofar=sofar, error=error))
                     return False
 
     return True
@@ -426,10 +434,10 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
     # move the file
     try:
-        logger.info(_(f"Renaming file from {cur_path} to {new_path}"))
+        logger.info(_("Renaming file from {cur_path} to {new_path}").format(cur_path, new_path))
         shutil.move(cur_path, new_path)
     except (OSError, IOError) as error:
-        logger.exception(_(f"There was a problem renaming {cur_path} to {new_path}. Error: {error}"))
+        logger.exception(_("There was a problem renaming {cur_path} to {new_path}. Error: {error}").format(cur_path, new_path, error))
         return False
 
     # clean up any old folders that are empty
@@ -450,7 +458,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     # treat check_empty_dir as empty when it only contains these items
     ignore_items = []
 
-    logger.info(_(f"Trying to clean any empty folders under {check_empty_dir}"))
+    logger.info(_("Trying to clean any empty folders under {check_empty_dir}").format(check_empty_dir))
 
     # as long as the folder exists and doesn't contain any files, delete it
     while os.path.isdir(check_empty_dir) and check_empty_dir != keep_dir:
@@ -459,13 +467,13 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
         if not check_files or (len(check_files) <= len(ignore_items) and all(check_file in ignore_items for check_file in check_files)):
             # directory is empty or contains only ignore_items
             try:
-                logger.info(_(f"Deleting empty folder: {check_empty_dir}"))
+                logger.info(_("Deleting empty folder: {check_empty_dir}").format(check_empty_dir))
                 # need shutil.rmtree when ignore_items is really implemented
                 os.rmdir(check_empty_dir)
                 # do the library update for synoindex
                 sickchill.oldbeard.notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as error:
-                logger.warning(_(f"There was a problem trying to delete {check_empty_dir}. Error: {error}"))
+                logger.warning(_("There was a problem trying to delete {check_empty_dir}. Error: {error}").format(check_empty_dir, error))
                 break
             check_empty_dir = os.path.dirname(check_empty_dir)
         else:
@@ -504,7 +512,7 @@ def chmodAsParent(childPath):
     parentPath = os.path.dirname(childPath)
 
     if not parentPath:
-        logger.debug(_(f"No parent path provided in {childPath} unable to get permissions from it"))
+        logger.debug(_("No parent path provided in {childPath} unable to get permissions from it").format(childPath))
         return
 
     childPath = os.path.join(parentPath, os.path.basename(childPath))
@@ -527,13 +535,17 @@ def chmodAsParent(childPath):
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
     if user_id not in (childPath_owner, 0):
-        logger.debug(_(f"Not running as root or owner of {childPath}, not trying to set permissions"))
+        logger.debug(_("Not running as root or owner of {childPath}, not trying to set permissions").format(childPath))
         return
 
     try:
         os.chmod(childPath, childMode)
     except OSError as error:
-        logger.debug(_(f"There was a problem setting permissions of {childPath} to {childMode:o}, parent directory has {parentMode:o}. Error: {error}"))
+        logger.debug(
+            _("There was a problem setting permissions of {childPath} to {childMode:o}, parent directory has {parentMode:o}. Error: {error}").format(
+                childPath, childMode, parentMode, error
+            )
+        )
 
 
 def fixSetGroupID(childPath):
@@ -567,20 +579,20 @@ def fixSetGroupID(childPath):
             user_id = os.geteuid()
 
             if user_id not in (childPath_owner, 0):
-                logger.debug(_(f"Not running as root or owner of {childPath}, not trying to set the set-group-ID"))
+                logger.debug(_("Not running as root or owner of {childPath}, not trying to set the set-group-ID").format(childPath))
                 return
 
             try:
                 os.chown(childPath, -1, parentGID)
-                logger.debug(_(f"Respecting the set-group-ID bit on the parent directory of {childPath}"))
+                logger.debug(_("Respecting the set-group-ID bit on the parent directory of {childPath}").format(childPath))
             except (OSError, PermissionError) as error:
                 logger.debug(
                     _(
-                        f"There was a problem respecting the set-group-ID bit on the parent directory of {childPath} (setting group ID {parentGID}). Error: {error}"
-                    )
+                        "There was a problem respecting the set-group-ID bit on the parent directory of {childPath} (setting group ID {parentGID}). Error: {error}"
+                    ).format(childPath, parentGID, error)
                 )
     except Exception as error:
-        logger.debug(_(f"There was a problem setting set-group-id on the parent directory of {childPath}. Error: {error}"))
+        logger.debug(_("There was a problem setting set-group-id on the parent directory of {childPath}. Error: {error}").format(childPath, error))
 
 
 def is_anime_in_show_list():
@@ -624,9 +636,9 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
         season_episode = episode_num(season, episode)
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0]["absolute_number"])
-            logger.debug(_(f"Found absolute number {absolute_number} for show {show.name} {season_episode}"))
+            logger.debug(_("Found absolute number {absolute_number} for show {show.name} {season_episode}").format(absolute_number, show.name, season_episode))
         else:
-            logger.debug(_(f"No entries found for the absolute number of {show.name} {season_episode}"))
+            logger.debug(_("No entries found for the absolute number of {show.name} {season_episode}").format(show.name, season_episode))
 
     return absolute_number
 
@@ -653,7 +665,7 @@ def sanitizeSceneName(name, anime=False):
     Takes a show name and returns the "scenified" version of it.
     Parameters:
         name: The name to sanitize
-        anime: Some show have a ' in their name(Kuroko's Basketball) and is needed for search.
+        anime: Some show have a single quote in their name(Kuroko's Basketball) and is needed for search.
     Returns:
          A string containing the scene version of the show name given.
     """
@@ -726,11 +738,11 @@ def create_https_certificates(ssl_cert, ssl_key):
         Path(ssl_cert).write_bytes(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
         logger.info(traceback.format_exc())
-        logger.warning(_(f"There was a problem creating the SSL key and certificate. Error: {error}"))
+        logger.warning(_("There was a problem creating the SSL key and certificate. Error: {error}").format(error))
         return False
 
-    logger.info(_(f"Created https key: {ssl_key}"))
-    logger.info(_(f"Created https cert: {ssl_cert}"))
+    logger.info(_("Created https key: {ssl_key}").format(ssl_key))
+    logger.info(_("Created https cert: {ssl_cert}").format(ssl_cert))
     return True
 
 
@@ -753,22 +765,22 @@ def backupVersionedFile(old_file, version):
     new_file = old_file.with_suffix(f"{old_file.suffix}.v{version}")
     while not os.path.isfile(new_file):
         if not os.path.isfile(old_file):
-            logger.debug(_(f"Not creating backup, {old_file} doesn't exist"))
+            logger.debug(_("Not creating backup, {old_file} doesn't exist").format(old_file))
             break
 
         try:
-            logger.debug(_(f"Trying to back up {old_file} to {new_file}"))
+            logger.debug(_("Trying to back up {old_file} to {new_file}").format(old_file, new_file))
             shutil.copy(old_file, new_file)
             logger.debug(_("Backup done"))
             break
         except Exception as error:
-            logger.warning(_(f"There was a problem while trying to back up {old_file} to {new_file}. Error: {error}"))
+            logger.warning(_("There was a problem while trying to back up {old_file} to {new_file}. Error: {error}").format(old_file, new_file, error))
             numTries += 1
             time.sleep(1)
             logger.debug(_("Trying again."))
 
         if numTries >= 10:
-            logger.exception(_(f"Unable to back up {old_file} to {new_file} please do it manually."))
+            logger.exception(_("Unable to back up {old_file} to {new_file} please do it manually.").format(old_file, new_file))
             return False
 
     return True
@@ -915,7 +927,7 @@ def get_show(name, tryIndexers=False):
         if showObj and not fromCache:
             sickchill.oldbeard.name_cache.add_name(name, showObj.indexerid)
     except Exception as error:
-        logger.debug(_(f"There was a problem when attempting to find {name} in SickChill. Error: {error}"))
+        logger.debug(_("There was a problem when attempting to find {name} in SickChill. Error: {error}").format(name, error))
         logger.debug(traceback.format_exc())
 
     return showObj
@@ -987,12 +999,12 @@ def set_up_anidb_connection():
     if not settings.ADBA_CONNECTION:
 
         def anidb_logger(msg):
-            return logger.debug(_(f"{msg}"))
+            return logger.debug(_("{msg}").format(msg))
 
         try:
             settings.ADBA_CONNECTION = adba.Connection(keep_alive=True, log=anidb_logger)
         except Exception as error:
-            logger.warning(_(f"There was a problem attempting to connect to anidb. Error: {error}"))
+            logger.warning(_("There was a problem attempting to connect to anidb. Error: {error}").format(error))
             return False
 
     try:
@@ -1001,7 +1013,7 @@ def set_up_anidb_connection():
         else:
             return True
     except Exception as error:
-        logger.warning(_(f"There was a problem attempting to authenticate with anidb. Error: {error}"))
+        logger.warning(_("There was a problem attempting to authenticate with anidb. Error: {error}").format(error))
         return False
 
     return settings.ADBA_CONNECTION.authed()
@@ -1023,7 +1035,7 @@ def makeZip(fileList, archive):
         a.close()
         return True
     except Exception as error:
-        logger.exception(_(f"There was a problem creating the zip file. Error: {error}"))
+        logger.exception(_("There was a problem creating the zip file. Error: {error}").format(error))
         return False
 
 
@@ -1056,7 +1068,7 @@ def extractZip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as error:
-        logger.exception(_(f"There was a problem extracting the zip file {archive}. Error: {error}"))
+        logger.exception(_("There was a problem extracting the zip file {archive}. Error: {error}").format(archive, error))
         return False
 
 
@@ -1079,7 +1091,7 @@ def backup_config_zip(fileList, archive, arcname=None):
         a.close()
         return True
     except Exception as error:
-        logger.warning(_(f"There was a problem creating the zip file. Error: {error}"))
+        logger.warning(_("There was a problem creating the zip file. Error: {error}").format(error))
         return False
 
 
@@ -1114,7 +1126,7 @@ def restore_config_zip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as error:
-        logger.exception(_(f"There was a problem extracting zip file {archive}. Error: {error}"))
+        logger.exception(_("There was a problem extracting zip file {archive}. Error: {error}").format(archive, error))
         shutil.rmtree(targetDir)
         return False
 
@@ -1141,7 +1153,7 @@ def make_indexer_session():
     session = make_session()
     session.verify = (False, certifi.where())[settings.SSL_VERIFY]
     if settings.PROXY_SETTING and settings.PROXY_INDEXERS:
-        logger.debug(_(f"Using global proxy for indexers: {settings.PROXY_SETTING}"))
+        logger.debug(_("Using global proxy for indexers: {settings.PROXY_SETTING}").format(settings.PROXY_SETTING))
         session.proxies = {"http": settings.PROXY_SETTING, "https": settings.PROXY_SETTING}
     return session
 
@@ -1157,7 +1169,7 @@ def request_defaults(kwargs):
 
     # request session proxies
     if kwargs.pop("allow_proxy", True) and settings.PROXY_SETTING:
-        logger.debug(_(f"Using global proxy: {settings.PROXY_SETTING}"))
+        logger.debug(_("Using global proxy: {settings.PROXY_SETTING}").format(settings.PROXY_SETTING))
         proxies = {"http": settings.PROXY_SETTING, "https": settings.PROXY_SETTING}
     else:
         proxies = None
@@ -1237,7 +1249,7 @@ def getURL(
     try:
         return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
     except ValueError:
-        logger.debug(_(f"Requested a json response but response was not json, check the url: {url}"))
+        logger.debug(_("Requested a json response but response was not json, check the url: {url}").format(url))
         return None
 
 
@@ -1278,7 +1290,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
                 chmodAsParent(filename)
             except Exception as error:
-                logger.warning(_(f"There was a problem downloading, setting permissions, or writing to {filename}. Error: {error}"))
+                logger.warning(_("There was a problem downloading, setting permissions, or writing to {filename}. Error: {error}").format(filename, error))
 
     except Exception as error:
         # noinspection PyTypeChecker
@@ -1371,10 +1383,16 @@ def handle_requests_exception(
         raise requests_exception
     except requests.exceptions.SSLError as error:
         if ssl.OPENSSL_VERSION_INFO < (1, 0, 1, 5):
-            logger.info(_(f"SSL Error requesting url: '{error.request.url}' You have {ssl.OPENSSL_VERSION}, try upgrading OpenSSL to 1.0.1e+. Error: {error}"))
+            logger.info(
+                _("SSL Error requesting url: '{error.request.url}' You have {ssl.OPENSSL_VERSION}, try upgrading OpenSSL to 1.0.1e+. Error: {error}").format(
+                    error=error, ssl=ssl
+                )
+            )
         if settings.SSL_VERIFY:
             logger.info(
-                _(f"SSL Error requesting url: '{error.request.url}' Try disabling Cert Verification on the advanced tab of /config/general. Error: {error}")
+                _(
+                    "SSL Error requesting url: '{error.request.url}' Try disabling Cert Verification on the advanced tab of /config/general. Error: {error}"
+                ).format(error=error)
             )
         logger.debug(default.format(error, classname(error)))
         logger.debug(traceback.format_exc())
@@ -1397,10 +1415,10 @@ def handle_requests_exception(
         level = get_level(error)
         logger.log(level, default.format(error, classname(error)))
         if hasattr(requests_exception, "request") and requests_exception.request:
-            logger.info(_(f"url is {requests_exception.request.url}"))
-            logger.info(_(f"headers are {requests_exception.request.headers}"))
-            logger.info(_(f"params are {requests_exception.request.params}"))
-            logger.info(_(f"post_data is {requests_exception.request.data}"))
+            logger.info(_("url is {requests_exception.request.url}").format(requests_exception=requests_exception))
+            logger.info(_("headers are {requests_exception.request.headers}").format(requests_exception=requests_exception))
+            logger.info(_("params are {requests_exception.request.params}").format(requests_exception=requests_exception))
+            logger.info(_("post_data is {requests_exception.request.data}").format(requests_exception=requests_exception))
         if level == logger.WARNING:
             logger.debug(traceback.format_exc())
     except Exception as error:
@@ -1427,12 +1445,12 @@ def get_size(start_path="."):
             fp = os.path.join(dirpath, f)
             if os.path.islink(fp) and not os.path.isfile(fp):
                 log = logger.debug if settings.IGNORE_BROKEN_SYMLINKS else logger.warning
-                log(_(f"Unable to get size for file {fp} because the link to the file is not valid"))
+                log(_("Unable to get size for file {fp} because the link to the file is not valid").format(fp=fp))
                 continue
             try:
                 total_size += os.path.getsize(fp)
             except OSError as error:
-                logger.exception(_(f"Unable to get size for file {fp}. Error: {error}"))
+                logger.exception(_("Unable to get size for file {fp}. Error: {error}").format(fp=fp, error=error))
                 logger.debug(traceback.format_exc())
     return total_size
 
@@ -1501,12 +1519,14 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     logger.debug(_("Trying to determine free space on the destination drive"))
 
     if not os.path.isfile(src):
-        logger.warning(_(f"A path to a file is required for the source. {src} is not a file."))
+        logger.warning(_("A path to a file is required for the source. {src} is not a file.").format(src=src))
         return True
 
     if not (os.path.isdir(dest) or (settings.CREATE_MISSING_SHOW_DIRS and os.path.isdir(os.path.dirname(dest)))):
         logger.warning(
-            _(f"A path is required for the destination. Check that the root dir and show locations are correct for {oldfile[0].name} (I got '{dest}')")
+            _("A path is required for the destination. Check that the root dir and show locations are correct for {old_file_name} (I got '{dest}')").format(
+                old_file_name=oldfile[0].name, dest=dest
+            )
         )
         return False
 
@@ -1523,7 +1543,7 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
         disk_free = disk_usage(dest)
     except Exception as error:
         logger.warning(_("Unable to determine free space, so I will assume there is enough."))
-        logger.debug(_(f"Error: {error}"))
+        logger.debug(_("Error: {error}").format(error=error))
         logger.debug(traceback.format_exc())
         return True
 
@@ -1543,8 +1563,8 @@ def verify_freespace(src, dest, oldfile=None, method="copy"):
     else:
         logger.warning(
             _(
-                f"Not enough free space: Needed: {needed_space} bytes ( {pretty_file_size(needed_space)} ), found: {disk_free} bytes ( {pretty_file_size(disk_free)} )"
-            )
+                "Not enough free space: Needed: {needed_space} bytes ( {pretty_file_size(needed_space)} ), found: {disk_free} bytes ( {pretty_file_size(disk_free)} )"
+            ).format(needed_space=needed_space, disk_free=disk_free)
         )
         return False
 
@@ -1560,7 +1580,7 @@ def disk_usage_hr(diskPath=None):
             free = disk_usage(diskPath)
         except Exception as error:
             logger.warning(_("Unable to determine free space"))
-            logger.debug(_(f"Error: {error}"))
+            logger.debug(_("Error: {error}").format(error=error))
             logger.debug(traceback.format_exc())
         else:
             return pretty_file_size(free)

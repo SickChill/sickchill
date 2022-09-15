@@ -532,6 +532,7 @@ def change_process_automatically(process_automatically):
 
     return True
 
+
 def change_log_dir(log_dir):
     """
     Change logs directory
@@ -552,6 +553,7 @@ def change_log_dir(log_dir):
             return False
 
     return True
+
 
 def check_section(cfg, sec):
     """Check if INI section exists, if not create it"""

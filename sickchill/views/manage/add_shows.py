@@ -62,11 +62,15 @@ class AddShows(Home):
 
         # Query Indexers for each search term and build the list of results
         for i, j in sickchill.indexer if not int(indexer) else [(int(indexer), None)]:
-            logger.debug(_(f"Searching for Show with search term(s): {search_terms} on Indexer: {sickchill.indexer[i].name} (exact: {exact})"))
+            logger.debug(
+                _("Searching for Show with search term(s): {search_terms} on Indexer: {indexer_name} (exact: {exact})").format(
+                    search_terms=search_terms, indexer_name=j.name, exact=exact
+                )
+            )
             for term in search_terms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = sickchill.indexer[i].search(term, language=lang, exact=exact)
+                    indexerResults = j.search(term, language=lang, exact=exact)
                 except Exception:
                     logger.exception(traceback.format_exc())
                     continue
@@ -81,7 +85,7 @@ class AddShows(Home):
                     (
                         sickchill.indexer.name(i),
                         i,
-                        sickchill.indexer[i].show_url,
+                        j.show_url,
                         show["id"],
                         show["seriesName"],
                         show["firstAired"],
