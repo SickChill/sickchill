@@ -150,7 +150,7 @@ class ConfigGeneral(Config):
         settings.LOG_NR = log_nr
         settings.LOG_SIZE = float(log_size)
         if not config.change_log_dir(log_dir):
-            results += [_("Unable to create directory {log_dir} or it is not writable, log directory not changed.").format(log_dir=os.path.normpath(log_dir))]
+            results += [_("Unable to create directory {log_dir} or it is not writable, log directory not changed.").format(log_dir=log_dir)]
         settings.WEB_LOG = config.checkbox_to_value(web_log)
 
         settings.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)

@@ -4,6 +4,7 @@ import re
 import shutil
 import socket
 import sys
+from pathlib import Path
 
 import rarfile
 from configobj import ConfigObj
@@ -92,7 +93,7 @@ def initialize(consoleLogging=True):
         if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
             settings.DEFAULT_PAGE = "home"
 
-        settings.LOG_DIR = check_setting_str(settings.CFG, "General", "log_dir", os.path.normpath(os.path.join(settings.DATA_DIR, "Logs")))
+        settings.LOG_DIR = check_setting_str(settings.CFG, "General", "log_dir", Path(settings.DATA_DIR).joinpath("Logs").resolve())
         settings.LOG_NR = check_setting_int(settings.CFG, "General", "log_nr", 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         settings.LOG_SIZE = check_setting_float(settings.CFG, "General", "log_size", 10.0, min_val=0.5)  # Default to max 10MB per logfile
 

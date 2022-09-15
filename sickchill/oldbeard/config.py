@@ -2,6 +2,7 @@ import datetime
 import os.path
 import platform
 import re
+from pathlib import Path
 from urllib import parse
 
 import rarfile
@@ -541,13 +542,14 @@ def change_log_dir(log_dir):
     :return: True on success, False on failure
     """
     if log_dir == "":
-        settings.LOG_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
+        settings.LOG_DIR = Path(settings.DATA_DIR).joinpath("Logs").resolve()
         return True
 
-    if os.path.normpath(settings.LOG_DIR) != os.path.normpath(log_dir):
-        if helpers.makeDir(os.path.normpath(log_dir)) and os.access(os.path.normpath(log_dir), os.W_OK):
-            settings.LOG_DIR = os.path.normpath(log_dir)
-            logger.info(_("Changed logs folder to {directory} sickchill must be restarted for changes de take effect").format(directory=log_dir))
+    log_dir_path = Path(log_dir).resolve()
+    if Path(settings.LOG_DIR).resolve() != log_dir_path:
+        if helpers.makeDir(log_dir_path) and os.access(log_dir_path, os.W_OK):
+            settings.LOG_DIR = log_dir_path
+            logger.info(_("Changed logs folder to {directory} sickchill must be restarted for changes de take effect").format(directory=log_dir_path))
 
         else:
             return False
