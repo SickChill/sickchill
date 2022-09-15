@@ -73,10 +73,15 @@ class RSSTorrentMixin:
 
         if item.seeders:
             seeders = try_int(item.seeders.get_text(strip=True))
+        else:
+            seeders = 0
+
         if item.peers:
             leechers = try_int(item.peers.get_text(strip=True))
         elif item.leechers:
             leechers = try_int(item.leechers.get_text(strip=True))
+        else:
+            leechers = 0
 
         for attr in item.find_all(["newznab:attr", "torznab:attr"]):
             item_size = attr["value"] if attr["name"] == "size" else item_size
