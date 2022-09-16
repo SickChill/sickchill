@@ -219,12 +219,12 @@ def makeDir(path):
     Returns:
          True if success, False if failure
     """
-    pathObj = Path(path).resolve()
-    if not pathObj.is_dir():
+
+    if not os.path.isdir(path):
         try:
-            pathObj.mkdir(parents=True, exist_ok=True)
+            os.makedirs(path)
             # do the library update for synoindex
-            sickchill.oldbeard.notifiers.synoindex_notifier.addFolder(pathObj)
+            sickchill.oldbeard.notifiers.synoindex_notifier.addFolder(path)
         except OSError:
             return False
     return True
