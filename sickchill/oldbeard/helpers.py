@@ -434,10 +434,10 @@ def rename_ep_file(cur_path, new_path, old_path_length=0):
 
     # move the file
     try:
-        logger.info(_("Renaming file from {cur_path} to {new_path}").format(cur_path, new_path))
+        logger.info(_("Renaming file from {cur_path} to {new_path}").format(cur_path=cur_path, new_path=new_path))
         shutil.move(cur_path, new_path)
     except (OSError, IOError) as error:
-        logger.exception(_("There was a problem renaming {cur_path} to {new_path}. Error: {error}").format(cur_path, new_path, error))
+        logger.exception(_("There was a problem renaming {cur_path} to {new_path}. Error: {error}").format(cur_path=cur_path, new_path=new_path, error=error))
         return False
 
     # clean up any old folders that are empty
@@ -458,7 +458,7 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
     # treat check_empty_dir as empty when it only contains these items
     ignore_items = []
 
-    logger.info(_("Trying to clean any empty folders under {check_empty_dir}").format(check_empty_dir))
+    logger.info(_("Trying to clean any empty folders under {check_empty_dir}").format(check_empty_dir=check_empty_dir))
 
     # as long as the folder exists and doesn't contain any files, delete it
     while os.path.isdir(check_empty_dir) and check_empty_dir != keep_dir:
@@ -467,13 +467,13 @@ def delete_empty_folders(check_empty_dir, keep_dir=None):
         if not check_files or (len(check_files) <= len(ignore_items) and all(check_file in ignore_items for check_file in check_files)):
             # directory is empty or contains only ignore_items
             try:
-                logger.info(_("Deleting empty folder: {check_empty_dir}").format(check_empty_dir))
+                logger.info(_("Deleting empty folder: {check_empty_dir}").format(check_empty_dir=check_empty_dir))
                 # need shutil.rmtree when ignore_items is really implemented
                 os.rmdir(check_empty_dir)
                 # do the library update for synoindex
                 sickchill.oldbeard.notifiers.synoindex_notifier.deleteFolder(check_empty_dir)
             except OSError as error:
-                logger.warning(_("There was a problem trying to delete {check_empty_dir}. Error: {error}").format(check_empty_dir, error))
+                logger.warning(_("There was a problem trying to delete {check_empty_dir}. Error: {error}").format(check_empty_dir=check_empty_dir, error=error))
                 break
             check_empty_dir = os.path.dirname(check_empty_dir)
         else:
@@ -512,7 +512,7 @@ def chmodAsParent(childPath):
     parentPath = os.path.dirname(childPath)
 
     if not parentPath:
-        logger.debug(_("No parent path provided in {childPath} unable to get permissions from it").format(childPath))
+        logger.debug(_("No parent path provided in {childPath} unable to get permissions from it").format(childPath=childPath))
         return
 
     childPath = os.path.join(parentPath, os.path.basename(childPath))
@@ -535,15 +535,15 @@ def chmodAsParent(childPath):
     user_id = os.geteuid()  # @UndefinedVariable - only available on UNIX
 
     if user_id not in (childPath_owner, 0):
-        logger.debug(_("Not running as root or owner of {childPath}, not trying to set permissions").format(childPath))
+        logger.debug(_("Not running as root or owner of {childPath}, not trying to set permissions").format(childPath=childPath))
         return
 
     try:
         os.chmod(childPath, childMode)
     except OSError as error:
         logger.debug(
-            _("There was a problem setting permissions of {childPath} to {childMode:o}, parent directory has {parentMode:o}. Error: {error}").format(
-                childPath, childMode, parentMode, error
+            _("There was a problem setting permissions of {childPath} to {childMode}, parent directory has {parentMode}. Error: {error}").format(
+                childPath=childPath, childMode=childMode:o, parentMode=parentMode:o, error=error
             )
         )
 
@@ -579,20 +579,20 @@ def fixSetGroupID(childPath):
             user_id = os.geteuid()
 
             if user_id not in (childPath_owner, 0):
-                logger.debug(_("Not running as root or owner of {childPath}, not trying to set the set-group-ID").format(childPath))
+                logger.debug(_("Not running as root or owner of {childPath}, not trying to set the set-group-ID").format(childPath=childPath))
                 return
 
             try:
                 os.chown(childPath, -1, parentGID)
-                logger.debug(_("Respecting the set-group-ID bit on the parent directory of {childPath}").format(childPath))
+                logger.debug(_("Respecting the set-group-ID bit on the parent directory of {childPath}").format(childPath=childPath))
             except (OSError, PermissionError) as error:
                 logger.debug(
                     _(
                         "There was a problem respecting the set-group-ID bit on the parent directory of {childPath} (setting group ID {parentGID}). Error: {error}"
-                    ).format(childPath, parentGID, error)
+                    ).format(childPath=childPath, parentGID=parentGID, error=error)
                 )
     except Exception as error:
-        logger.debug(_("There was a problem setting set-group-id on the parent directory of {childPath}. Error: {error}").format(childPath, error))
+        logger.debug(_("There was a problem setting set-group-id on the parent directory of {childPath}. Error: {error}").format(childPath=childPath, error=error))
 
 
 def is_anime_in_show_list():
@@ -636,9 +636,9 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
         season_episode = episode_num(season, episode)
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0]["absolute_number"])
-            logger.debug(_("Found absolute number {absolute_number} for show {show.name} {season_episode}").format(absolute_number, show.name, season_episode))
+            logger.debug(_("Found absolute number {absolute_number} for show {show_name} {season_episode}").format(absolute_number=absolute_number, show_name=show.name, season_episode=season_episode))
         else:
-            logger.debug(_("No entries found for the absolute number of {show.name} {season_episode}").format(show.name, season_episode))
+            logger.debug(_("No entries found for the absolute number of {show_name} {season_episode}").format(show_name=show.name, season_episode=season_episode))
 
     return absolute_number
 
@@ -738,11 +738,11 @@ def create_https_certificates(ssl_cert, ssl_key):
         Path(ssl_cert).write_bytes(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except Exception as error:
         logger.info(traceback.format_exc())
-        logger.warning(_("There was a problem creating the SSL key and certificate. Error: {error}").format(error))
+        logger.warning(_("There was a problem creating the SSL key and certificate. Error: {error}").format(error=error))
         return False
 
-    logger.info(_("Created https key: {ssl_key}").format(ssl_key))
-    logger.info(_("Created https cert: {ssl_cert}").format(ssl_cert))
+    logger.info(_("Created https key: {ssl_key}").format(ssl_key=ssl_key))
+    logger.info(_("Created https cert: {ssl_cert}").format(ssl_cert=ssl_cert))
     return True
 
 
@@ -927,7 +927,7 @@ def get_show(name, tryIndexers=False):
         if showObj and not fromCache:
             sickchill.oldbeard.name_cache.add_name(name, showObj.indexerid)
     except Exception as error:
-        logger.debug(_("There was a problem when attempting to find {name} in SickChill. Error: {error}").format(name, error))
+        logger.debug(_("There was a problem when attempting to find {name} in SickChill. Error: {error}").format(name=name, error=error))
         logger.debug(traceback.format_exc())
 
     return showObj
@@ -1013,7 +1013,7 @@ def set_up_anidb_connection():
         else:
             return True
     except Exception as error:
-        logger.warning(_("There was a problem attempting to authenticate with anidb. Error: {error}").format(error))
+        logger.warning(_("There was a problem attempting to authenticate with anidb. Error: {error}").format(error=error))
         return False
 
     return settings.ADBA_CONNECTION.authed()
@@ -1035,7 +1035,7 @@ def makeZip(fileList, archive):
         a.close()
         return True
     except Exception as error:
-        logger.exception(_("There was a problem creating the zip file. Error: {error}").format(error))
+        logger.exception(_("There was a problem creating the zip file. Error: {error}").format(error=error))
         return False
 
 
@@ -1068,7 +1068,7 @@ def extractZip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as error:
-        logger.exception(_("There was a problem extracting the zip file {archive}. Error: {error}").format(archive, error))
+        logger.exception(_("There was a problem extracting the zip file {archive}. Error: {error}").format(archive=archive, error=error))
         return False
 
 
@@ -1091,7 +1091,7 @@ def backup_config_zip(fileList, archive, arcname=None):
         a.close()
         return True
     except Exception as error:
-        logger.warning(_("There was a problem creating the zip file. Error: {error}").format(error))
+        logger.warning(_("There was a problem creating the zip file. Error: {error}").format(error=error))
         return False
 
 
@@ -1126,7 +1126,7 @@ def restore_config_zip(archive, targetDir):
         zip_file.close()
         return True
     except Exception as error:
-        logger.exception(_("There was a problem extracting zip file {archive}. Error: {error}").format(archive, error))
+        logger.exception(_("There was a problem extracting zip file {archive}. Error: {error}").format(archive=archive, error=error))
         shutil.rmtree(targetDir)
         return False
 
@@ -1153,7 +1153,7 @@ def make_indexer_session():
     session = make_session()
     session.verify = (False, certifi.where())[settings.SSL_VERIFY]
     if settings.PROXY_SETTING and settings.PROXY_INDEXERS:
-        logger.debug(_("Using global proxy for indexers: {settings.PROXY_SETTING}").format(settings.PROXY_SETTING))
+        logger.debug(_("Using global proxy for indexers: {proxy_settings}").format(proxy_settings=settings.PROXY_SETTING))
         session.proxies = {"http": settings.PROXY_SETTING, "https": settings.PROXY_SETTING}
     return session
 
@@ -1249,7 +1249,7 @@ def getURL(
     try:
         return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
     except ValueError:
-        logger.debug(_("Requested a json response but response was not json, check the url: {url}").format(url))
+        logger.debug(_("Requested a json response but response was not json, check the url: {url}").format(url=url))
         return None
 
 
@@ -1290,7 +1290,7 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
                 chmodAsParent(filename)
             except Exception as error:
-                logger.warning(_("There was a problem downloading, setting permissions, or writing to {filename}. Error: {error}").format(filename, error))
+                logger.warning(_("There was a problem downloading, setting permissions, or writing to {filename}. Error: {error}").format(filename=filename, error=error))
 
     except Exception as error:
         # noinspection PyTypeChecker
