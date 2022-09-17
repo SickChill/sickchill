@@ -961,12 +961,12 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="no_restart" id="no_restart" ${('', 'checked="checked"')[bool(settings.NO_RESTART)]}/>
-                                        <label for="no_restart">${_('only shutdown when restarting SR')}</label>
+                                        <label for="no_restart">${_('only shutdown when restarting SC')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('only select this when you have external software restarting SR automatically when it stops (like FireDaemon)')}</label>
+                                        <label>${_('only select this when you have external software restarting SC automatically when it stops (like FireDaemon)')}</label>
                                     </div>
                                 </div>
                             </div>

@@ -151,7 +151,7 @@
                                 <div id="content_subtitles">
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                            <span class="component-title">${_('Use SR Metadata')}</span>
+                                            <span class="component-title">${_('Use SC Metadata')}</span>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" id="subtitles_sr_metadata" name="subtitles_sr_metadata" ${('', 'checked="checked"')[show.subtitles_sr_metadata == 1 ]} />

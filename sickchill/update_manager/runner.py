@@ -14,7 +14,7 @@ from .pip import PipUpdateManager
 
 class UpdateManager(object):
     """
-    Version check class meant to run as a thread object with the sr scheduler.
+    Version check class meant to run as a thread object with the sc scheduler.
     """
 
     def __init__(self):
@@ -205,7 +205,7 @@ class UpdateManager(object):
     @staticmethod
     def find_install_type():
         """
-        Determines how this copy of sr was installed.
+        Determines how this copy of sc was installed.
 
         returns: type of installation. Possible values are:
             'win': any compiled windows build
