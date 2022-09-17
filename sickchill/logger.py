@@ -251,7 +251,7 @@ class Logger(object):
                 try:
                     title_error = str(cur_error.title)
                     if not title_error or title_error == "None":
-                        title_error = re.match(r"^[A-Za-z0-9\-\[\] :]+::\s\[[\w]{7}\]\s*(.*)$", cur_error.message).group(1)
+                        title_error = re.match(r"^[A-Za-z0-9\-\[\] :]+::\s\[\w{7}\]\s*(.*)$", cur_error.message).group(1)
 
                     if len(title_error) > 1000:
                         title_error = title_error[0:1000]
@@ -349,10 +349,10 @@ class Logger(object):
                     # clear error from error list
                     classes.ErrorViewer.errors.remove(cur_error)
         except RateLimitExceededException:
-            submitter_result = "Your Github user has exceeded its API rate limit, please try again later"
+            submitter_result = "Your GitHub user has exceeded its API rate limit, please try again later"
             issue_id = None
         except TwoFactorException:
-            submitter_result = "Your Github account requires Two-Factor Authentication, " "please change your auth method in the config"
+            submitter_result = "Your GitHub account requires Two-Factor Authentication, " "please change your auth method in the config"
             issue_id = None
         except Exception:
             self.logger.log(ERROR, traceback.format_exc())
