@@ -542,7 +542,7 @@ def chmodAsParent(childPath):
         os.chmod(childPath, childMode)
     except OSError as error:
         logger.debug(
-            _("There was a problem setting permissions of {childPath} to {childMode}, parent directory has {parentMode}. Error: {error}").format(
+            _("There was a problem setting permissions of {childPath} to {childMode:o}, parent directory has {parentMode:o}. Error: {error}").format(
                 childPath=childPath, childMode=childMode, parentMode=parentMode, error=error
             )
         )
