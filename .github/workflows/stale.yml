@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: '30 1 * * *'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
 jobs:
   stale:
     runs-on: ubuntu-latest

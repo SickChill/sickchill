@@ -11,7 +11,6 @@ from pathlib import Path
 from urllib.parse import unquote_plus
 
 import requests
-from github.GithubException import GithubException
 from tornado.escape import xhtml_unescape
 
 import sickchill.oldbeard

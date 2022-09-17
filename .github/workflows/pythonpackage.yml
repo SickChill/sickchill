@@ -12,6 +12,10 @@ on:
     branches:
       - develop
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
 jobs:
   Test:
     strategy:
@@ -25,9 +29,6 @@ jobs:
             experimental: true
           - os: macos-latest
             python-version: 3.9
-            experimental: true
-          - os: ubuntu-latest
-            python-version: 3.6
             experimental: true
           - os: ubuntu-latest
             python-version: "3.11-dev"
