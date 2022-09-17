@@ -31,9 +31,6 @@ jobs:
             python-version: 3.9
             experimental: true
           - os: ubuntu-latest
-            python-version: 3.6
-            experimental: true
-          - os: ubuntu-latest
             python-version: "3.11-dev"
             experimental: true
           - os: ubuntu-latest
