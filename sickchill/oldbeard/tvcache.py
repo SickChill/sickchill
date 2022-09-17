@@ -60,7 +60,7 @@ class RSSTorrentMixin:
             logger.debug(f"{item}")
             return
 
-        seeders = leechers = item_size = None
+        item_size = None
 
         regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
         info_hash = item.infoHash or item.guid
@@ -111,7 +111,10 @@ class RSSTorrentMixin:
             # TODO: Implement minseed/minleech for torznab/jackett
             logger.debug(f"Skipping torznab result {title} because there are no seeders.")
 
-        size = convert_size(item_size, units=size_units) or -1
+        if size_units:
+            size = convert_size(item_size, units=size_units) or -1
+        else:
+            size = convert_size(item_size) or -1
 
         return {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
 
