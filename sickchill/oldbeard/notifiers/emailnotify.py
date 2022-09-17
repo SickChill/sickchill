@@ -358,10 +358,10 @@ class Notifier(object):
         logger.debug("HOST: {0}; PORT: {1}; FROM: {2}, TLS: {3}, USER: {4}, PWD: {5}, TO: {6}".format(host, port, smtp_from, use_tls, user, pwd, to))
         try:
             srv = smtplib.SMTP(host, int(port))
-        except Exception as e:
-            logger.warning("Exception generated while sending e-mail: " + str(e))
+        except Exception as error:
+            logger.warning(f"Exception generated while sending e-mail: {error}")
             # logger.debug(traceback.format_exc())
-            self.last_err = "{0}".format(e)
+            self.last_err = f"{error}"
             return False
 
         if smtpDebug:
@@ -381,8 +381,8 @@ class Notifier(object):
             srv.sendmail(smtp_from, to, msg.as_string())
             srv.quit()
             return True
-        except Exception as e:
-            self.last_err = "{0}".format(e)
+        except Exception as error:
+            self.last_err = f"{error}"
             return False
 
     @staticmethod

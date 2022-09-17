@@ -116,8 +116,8 @@ class Notifier(object):
                         return self._send_growl(opts, message)
                     else:
                         return False
-            except Exception as e:
-                logger.warning("GROWL: Unable to send growl to " + opts["host"] + ":" + str(opts["port"]) + " - " + str(e))
+            except Exception as error:
+                logger.warning(f"GROWL: Unable to send growl to {opts['host']}:{opts['port']} - {error}")
                 return False
 
     def _sendRegistration(self, host=None, password=None, name="SickChill Notification"):
@@ -159,6 +159,6 @@ class Notifier(object):
 
         try:
             return self._send(opts["host"], opts["port"], register.encode(), opts["debug"])
-        except Exception as e:
-            logger.warning("GROWL: Unable to send growl to " + opts["host"] + ":" + str(opts["port"]) + " - " + str(e))
+        except Exception as error:
+            logger.warning(f"GROWL: Unable to send growl to {opts['host']}:{opts['port']} - {error}")
             return False

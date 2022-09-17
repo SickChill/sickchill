@@ -80,8 +80,8 @@ class Provider(TorrentProvider):
                 try:
                     data = self.get_url(search_url, returns="text")
                     time.sleep(cpu_presets[settings.CPU_PRESET])
-                except Exception as e:
-                    logger.warning("Unable to fetch data. Error: {0}".format(repr(e)))
+                except Exception as error:
+                    logger.warning(f"Unable to fetch data. Error: {error}")
 
                 if not data:
                     continue

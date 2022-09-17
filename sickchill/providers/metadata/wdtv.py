@@ -133,10 +133,10 @@ class WDTVMetadata(generic.GenericMetadata):
                 break
 
         if not season_dir:
-            logger.debug("Unable to find a season dir for season " + str(season))
+            logger.debug(f"Unable to find a season dir for season {season}")
             return None
 
-        logger.debug("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season))
+        logger.debug(f"Using {season_dir}/folder.jpg as season dir for season {season}")
 
         return os.path.join(show_obj.location, season_dir, "folder.jpg")
 

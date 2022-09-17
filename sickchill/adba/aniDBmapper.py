@@ -205,9 +205,9 @@ class AniDBMapper:
     def checkMapping(self, verbos=False):
 
         print("------")
-        print("File F: " + str(self.checkMapFileF(verbos)))
+        print(f"File F: {self.checkMapFileF(verbos)}")
         print("------")
-        print("File A: " + str(self.checkMapFileA(verbos)))
+        print(f"File A: {self.checkMapFileA(verbos)}")
 
     def checkMapFileF(self, verbos=False):
         return self._checkMapGeneral(self.getFileMapF, self.getFileBitsF, self.getFileCodesF, verbos=verbos)
@@ -227,6 +227,6 @@ class AniDBMapper:
             print(mask_re)
             print(bits)
             print(bits_re)
-            print("bits are:" + str((bits_re == bits)))
-            print("map is :" + str((sorted(mask_re) == sorted(mask))))
+            print(f"bits are: {bits_re == bits}")
+            print(f"map is: {sorted(mask_re) == sorted(mask)}")
         return (bits_re == bits) and sorted(mask_re) == sorted(mask)

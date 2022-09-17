@@ -109,7 +109,7 @@ class GenericMetadata(object):
     def _check_exists(location):
         if location:
             result = os.path.isfile(location)
-            logger.debug("Checking if " + location + " exists: " + str(result))
+            logger.debug(f"Checking if {location} exists: {result}")
             return result
         return False
 
@@ -185,9 +185,9 @@ class GenericMetadata(object):
         if season == 0:
             season_poster_filename = "season-specials"
         else:
-            season_poster_filename = "season" + str(season).zfill(2)
+            season_poster_filename = f"season{season:02d}"
 
-        return os.path.join(show_obj.location, season_poster_filename + "-poster.jpg")
+        return os.path.join(show_obj.location, f"{season_poster_filename}-poster.jpg")
 
     @staticmethod
     def get_season_banner_path(show_obj, season):
@@ -203,9 +203,9 @@ class GenericMetadata(object):
         if season == 0:
             season_banner_filename = "season-specials"
         else:
-            season_banner_filename = "season" + str(season).zfill(2)
+            season_banner_filename = f"season{season:02d}"
 
-        return os.path.join(show_obj.location, season_banner_filename + "-banner.jpg")
+        return os.path.join(show_obj.location, f"{season_banner_filename}-banner.jpg")
 
     def get_season_all_poster_path(self, show_obj):
         return os.path.join(show_obj.location, self.season_all_poster_name)
@@ -260,8 +260,8 @@ class GenericMetadata(object):
                 helpers.chmodAsParent(nfo_file_path)
 
                 return True
-            except IOError as e:
-                logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
+            except IOError as error:
+                logger.error(f"Unable to write file to {nfo_file_path} - are you sure the folder is writable? {error}")
 
     def create_episode_metadata(self, ep_obj):
         if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
@@ -315,9 +315,9 @@ class GenericMetadata(object):
 
                 return True
             except IOError as error:
-                logger.warning("Unable to write file to {} - are you sure the folder is writable? {}".format(nfo_file_path, str(error)))
+                logger.warning(f"Unable to write file to {nfo_file_path} - are you sure the folder is writable? {error}")
             except ElementTree.ParseError as error:
-                logger.warning("Error parsing existing nfo file at {} - {}".format(nfo_file_path, str(error)))
+                logger.warning(f"Error parsing existing nfo file at {nfo_file_path} - {error}")
 
     def create_fanart(self, show_obj):
         if self.fanart and show_obj and not self._has_fanart(show_obj):
@@ -410,8 +410,8 @@ class GenericMetadata(object):
             data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
-        except IOError as e:
-            logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
+        except IOError as error:
+            logger.error(f"Unable to write file to {nfo_file_path} - are you sure the folder is writable? {error}")
             return False
 
         return True
@@ -457,8 +457,8 @@ class GenericMetadata(object):
             data.write(nfo_file, encoding="UTF-8")
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
-        except IOError as e:
-            logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
+        except IOError as error:
+            logger.error(f"Unable to write file to {nfo_file_path} - are you sure the folder is writable? {error}")
             return False
 
         return True
@@ -702,8 +702,8 @@ class GenericMetadata(object):
             outFile.write(image_data)
             outFile.close()
             helpers.chmodAsParent(image_path)
-        except IOError as e:
-            logger.error("Unable to write image to " + image_path + " - are you sure the show folder is writable? " + str(e))
+        except IOError as error:
+            logger.error(f"Unable to write file to {image_path} - are you sure the folder is writable? {error}")
             return False
 
         return True
@@ -785,8 +785,8 @@ class GenericMetadata(object):
                 if str(indexer_id) in epg_url and "tvdb" in epg_url:
                     return indexer_id, show_xml.findtext("title"), sickchill.indexer.TVDB
 
-        except Exception as e:
-            logger.warning(_("There was an error parsing your existing metadata file: '{0}' error: {1}").format(metadata_path, str(e)))
+        except Exception as error:
+            logger.warning(_("There was an error parsing your existing metadata file: '{path}' error: {error}").format(path=metadata_path, error=error))
             return empty_return
 
         return indexer_id, name, indexer

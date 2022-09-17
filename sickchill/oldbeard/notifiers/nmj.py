@@ -102,14 +102,14 @@ class Notifier(object):
                 req = urllib.request.Request(mount)
                 logger.debug("Try to mount network drive via url: {0}".format(mount))
                 handle = urllib.request.urlopen(req)
-            except IOError as e:
-                if hasattr(e, "reason"):
-                    logger.warning("NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason))
-                elif hasattr(e, "code"):
-                    logger.warning("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code))
+            except IOError as error:
+                if hasattr(error, "reason"):
+                    logger.warning(f"NMJ: Could not contact Popcorn Hour on host {host}: {error.reason}")
+                elif hasattr(error, "code"):
+                    logger.warning(f"NMJ: Problem with Popcorn Hour on host {host}: {error.code}")
                 return False
-            except Exception as e:
-                logger.exception("NMJ: Unknown exception: " + str(e))
+            except Exception as error:
+                logger.exception(f"NMJ: Unknown exception: {error}")
                 return False
 
         # build up the request URL and parameters
@@ -124,27 +124,27 @@ class Notifier(object):
             logger.debug("Sending NMJ scan update command via url: {0}".format(updateUrl))
             handle = urllib.request.urlopen(req)
             response = handle.read()
-        except IOError as e:
-            if hasattr(e, "reason"):
-                logger.warning("NMJ: Could not contact Popcorn Hour on host {0}: {1}".format(host, e.reason))
-            elif hasattr(e, "code"):
-                logger.warning("NMJ: Problem with Popcorn Hour on host {0}: {1}".format(host, e.code))
+        except IOError as error:
+            if hasattr(error, "reason"):
+                logger.warning(f"NMJ: Could not contact Popcorn Hour on host {error}: {error.reason}")
+            elif hasattr(error, "code"):
+                logger.warning(f"NMJ: Problem with Popcorn Hour on host {error}: {error.code}")
             return False
-        except Exception as e:
-            logger.exception("NMJ: Unknown exception: " + str(e))
+        except Exception as error:
+            logger.exception(f"NMJ: Unknown exception: {error}")
             return False
 
         # try to parse the resulting XML
         try:
             et = ElementTree.fromstring(response)
             result = et.findtext("returnValue")
-        except SyntaxError as e:
-            logger.exception("Unable to parse XML returned from the Popcorn Hour: {0}".format(e))
+        except SyntaxError as error:
+            logger.exception(f"Unable to parse XML returned from the Popcorn Hour: {error}")
             return False
 
-        # if the result was a number then consider that an error
+        # if the result was a number consider that an error
         if int(result) > 0:
-            logger.exception("Popcorn Hour returned an error code: {0}".format(result))
+            logger.exception(f"Popcorn Hour returned an error code: {result}")
             return False
         else:
             logger.info("NMJ started background scan")

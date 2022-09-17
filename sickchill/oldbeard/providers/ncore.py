@@ -68,7 +68,8 @@ class Provider(TorrentProvider):
 
                 try:
                     parsed_json = json.loads(data)
-                except ValueError as e:
+                except ValueError as error:
+                    logger.debug(f"Could not parse json from provider: {error}")
                     continue
 
                 if not isinstance(parsed_json, dict):

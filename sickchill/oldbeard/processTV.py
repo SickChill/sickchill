@@ -56,15 +56,15 @@ def delete_folder(folder, check_empty=True):
         try:
             logger.info(f"Deleting folder (if it's empty): {folder}")
             os.rmdir(folder)
-        except (OSError, IOError) as e:
-            logger.warning(f"Warning: unable to delete folder: {folder}: {str(e)}")
+        except (OSError, IOError) as error:
+            logger.warning(f"Warning: unable to delete folder: {folder}: {error}")
             return False
     else:
         try:
             logger.info("Deleting folder: " + folder)
             shutil.rmtree(folder)
-        except (OSError, IOError) as e:
-            logger.warning(f"Warning: unable to delete folder: {folder}: {str(e)}")
+        except (OSError, IOError) as error:
+            logger.warning(f"Warning: unable to delete folder: {folder}: {error}")
             return False
 
     return True
@@ -99,12 +99,12 @@ def delete_files(process_path, unwanted_files, result, force=False):
             result.output += log_helper(f"Changing ReadOnly Flag for file: {cur_file}", logger.DEBUG)
             try:
                 os.chmod(cur_file_path, stat.S_IWRITE)
-            except OSError as e:
-                result.output += log_helper(f"Cannot change permissions of {cur_file_path}: {str(e)}", logger.DEBUG)
+            except OSError as error:
+                result.output += log_helper(f"Cannot change permissions of {cur_file_path}: {error}", logger.DEBUG)
         try:
             os.remove(cur_file_path)
-        except OSError as e:
-            result.output += log_helper(f"Unable to delete file {cur_file}: {e.strerror}", logger.DEBUG)
+        except OSError as error:
+            result.output += log_helper(f"Unable to delete file {cur_file}: {error}", logger.DEBUG)
 
 
 def log_helper(message, level=logging.INFO):
@@ -405,8 +405,8 @@ def unrar(path, rar_files, force, result):
                 failure = ("Invalid Rar Archive", "Unpacking Failed with an Invalid Rar Archive Error")
             except NeedFirstVolume:
                 continue
-            except (Exception, Error) as e:
-                failure = (str(e), "Unpacking failed")
+            except (Exception, Error) as error:
+                failure = (error, "Unpacking failed")
             finally:
                 if rar_handle:
                     del rar_handle
@@ -492,9 +492,9 @@ def process_media(process_path, video_files, release_name, process_method, force
             processor = postProcessor.PostProcessor(cur_video_file_path, release_name, process_method, is_priority)
             result.result = processor.process()
             process_fail_message = ""
-        except EpisodePostProcessingFailedException as e:
+        except EpisodePostProcessingFailedException as error:
             result.result = False
-            process_fail_message = str(e)
+            process_fail_message = error
 
         if processor:
             result.output += processor.log
@@ -519,9 +519,9 @@ def process_failed(process_path, release_name, result):
         processor = failedProcessor.FailedProcessor(process_path, release_name)
         result.result = processor.process()
         process_fail_message = ""
-    except FailedPostProcessingFailedException as e:
+    except FailedPostProcessingFailedException as error:
         result.result = False
-        process_fail_message = str(e)
+        process_fail_message = error
 
     if processor:
         result.output += processor.log

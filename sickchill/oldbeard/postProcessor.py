@@ -202,13 +202,20 @@ class PostProcessor(object):
             )
             if file_path_list_to_delete:
                 self._log(
-                    _("Deleting non-allowed associated files for {file_path}: {file_path_list_to_delete}").format(file_path=file_path, file_path_list_to_delete=file_path_list_to_delete),
+                    _("Deleting non-allowed associated files for {file_path}: {file_path_list_to_delete}").format(
+                        file_path=file_path, file_path_list_to_delete=file_path_list_to_delete
+                    ),
                     logger.DEBUG,
                 )
                 # Delete all extensions the user doesn't allow
                 self._delete(file_path_list_to_delete)
             if file_path_list_to_allow:
-                self._log(_("Allowing associated files for {file_path}: {file_path_list_to_allow}").format(file_path=file_path, file_path_list_to_allow=file_path_list_to_allow), logger.DEBUG)
+                self._log(
+                    _("Allowing associated files for {file_path}: {file_path_list_to_allow}").format(
+                        file_path=file_path, file_path_list_to_allow=file_path_list_to_allow
+                    ),
+                    logger.DEBUG,
+                )
         else:
             self._log(_("No associated files for {file_path} were found during this pass").format(file_path=file_path), logger.DEBUG)
 
@@ -343,7 +350,12 @@ class PostProcessor(object):
                 helpers.moveFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
-                self._log(_("Unable to move file from {cur_file_path} to {new_file_path}: {error}").format(cur_file_path=cur_file_path, new_file_path=new_file_path, error=error), logger.ERROR)
+                self._log(
+                    _("Unable to move file from {cur_file_path} to {new_file_path}: {error}").format(
+                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
+                    ),
+                    logger.ERROR,
+                )
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_move, subtitles=subtitles)
@@ -365,7 +377,12 @@ class PostProcessor(object):
                 helpers.copyFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
-                self._log(_("Unable to copy file from {cur_file_path} to {new_file_path}: {error}").format(cur_file_path=cur_file_path, new_file_path=new_file_path, error=error), logger.ERROR)
+                self._log(
+                    _("Unable to copy file from {cur_file_path} to {new_file_path}: {error}").format(
+                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
+                    ),
+                    logger.ERROR,
+                )
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy, subtitles=subtitles)
@@ -382,12 +399,19 @@ class PostProcessor(object):
 
         def _int_hard_link(cur_file_path, new_file_path):
 
-            self._log(_("Hard linking file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG)
+            self._log(
+                _("Hard linking file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG
+            )
             try:
                 helpers.hardlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
-                self._log(_("Unable to link file from {cur_file_path} to {new_file_path}: {error}").format(cur_file_path=cur_file_path, new_file_path=new_file_path, error=error), logger.ERROR)
+                self._log(
+                    _("Unable to link file from {cur_file_path} to {new_file_path}: {error}").format(
+                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
+                    ),
+                    logger.ERROR,
+                )
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_hard_link, subtitles=subtitles)
@@ -404,12 +428,22 @@ class PostProcessor(object):
 
         def _int_move_and_sym_link(cur_file_path, new_file_path):
 
-            self._log(_("Moving then symbolically linking file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG)
+            self._log(
+                _("Moving then symbolically linking file from {cur_file_path} to {new_file_path}").format(
+                    cur_file_path=cur_file_path, new_file_path=new_file_path
+                ),
+                logger.DEBUG,
+            )
             try:
                 helpers.moveAndSymlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
-                self._log(_("Unable to link file from {cur_file_path} to {new_file_path}: {error}").format(cur_file_path=cur_file_path, new_file_path=new_file_path, error=error), logger.ERROR)
+                self._log(
+                    _("Unable to link file from {cur_file_path} to {new_file_path}: {error}").format(
+                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
+                    ),
+                    logger.ERROR,
+                )
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_move_and_sym_link, subtitles=subtitles)
@@ -426,12 +460,22 @@ class PostProcessor(object):
 
         def _int_sym_link(cur_file_path, new_file_path):
 
-            self._log(_("Creating then symbolically linking file from {new_file_path} to {cur_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG)
+            self._log(
+                _("Creating then symbolically linking file from {new_file_path} to {cur_file_path}").format(
+                    cur_file_path=cur_file_path, new_file_path=new_file_path
+                ),
+                logger.DEBUG,
+            )
             try:
                 os.symlink(cur_file_path, new_file_path)
                 helpers.chmodAsParent(cur_file_path)
             except (IOError, OSError) as error:
-                self._log(_("Unable to link file {cur_file_path} to {new_file_path}: {error}").format(cur_file_path=cur_file_path, new_file_path=new_file_path, error=error), logger.ERROR)
+                self._log(
+                    _("Unable to link file {cur_file_path} to {new_file_path}: {error}").format(
+                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
+                    ),
+                    logger.ERROR,
+                )
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_sym_link, subtitles=subtitles)
@@ -1195,6 +1239,6 @@ def guessit_findit(name: str) -> Union["ParseResult", None]:
         np = NameParser().parse(name, cache_result=False)
         return np
     except (InvalidNameException, InvalidShowException) as error:
-        logger.debug(f"Could not properly parse a show and episode from [{name}]: {str(error)}")
+        logger.debug(f"Could not properly parse a show and episode from [{name}]: {error}")
 
     return None

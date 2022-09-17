@@ -153,7 +153,7 @@ class TorrentRssProvider(TorrentProvider):
             return True, "RSS feed Parsed correctly"
 
         except Exception as error:
-            return False, "Error when trying to load RSS: {0}".format(str(error))
+            return False, f"Error when trying to load RSS: {error}"
 
     @staticmethod
     def dumpHTML(data):
@@ -165,10 +165,10 @@ class TorrentRssProvider(TorrentProvider):
             fileOut.close()
             helpers.chmodAsParent(dumpName)
         except IOError as error:
-            logger.exception("Unable to save the file: {0}".format(str(error)))
+            logger.exception(f"Unable to save the file: {error}")
             return False
 
-        logger.info("Saved custom_torrent html dump {0} ".format(dumpName))
+        logger.info(f"Saved custom_torrent html dump {dumpName}")
         return True
 
 

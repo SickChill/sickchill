@@ -42,7 +42,7 @@ class BacklogSearcher(object):
             return None
 
     def am_running(self):
-        logger.debug("amWaiting: " + str(self.amWaiting) + ", amActive: " + str(self.amActive))
+        logger.debug(f"amWaiting: {self.amWaiting}, amActive: {self.amActive}")
         return (not self.amWaiting) and self.amActive
 
     def searchBacklog(self, which_shows=None):
@@ -65,7 +65,7 @@ class BacklogSearcher(object):
         fromDate = datetime.date.min
 
         if not (which_shows or curDate - self._lastBacklog >= self.cycleTime):
-            logger.info("Running limited backlog on missed episodes " + str(settings.BACKLOG_DAYS) + " day(s) and older only")
+            logger.info(f"Running limited backlog on missed episodes {settings.BACKLOG_DAYS} day(s) and older only")
             fromDate = datetime.date.today() - datetime.timedelta(days=settings.BACKLOG_DAYS)
 
         # go through non air-by-date shows and see if they need any episodes
@@ -77,7 +77,7 @@ class BacklogSearcher(object):
             segments = self._get_segments(curShow, fromDate)
 
             for season, segment in segments.items():
-                self.currentSearchInfo = {"title": curShow.name + " Season " + str(season)}
+                self.currentSearchInfo = {"title": f"{curShow.name} Season {season}"}
 
                 backlog_queue_item = search_queue.BacklogQueueItem(curShow, segment)
                 settings.searchQueueScheduler.action.add_item(backlog_queue_item)  # @UndefinedVariable
@@ -155,7 +155,7 @@ class BacklogSearcher(object):
     @staticmethod
     def _set_lastBacklog(when):
 
-        logger.debug("Setting the last backlog in the DB to " + str(when))
+        logger.debug(f"Setting the last backlog in the DB to {when}")
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_backlog FROM info")

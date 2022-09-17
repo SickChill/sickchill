@@ -80,15 +80,15 @@ class Notifier(object):
 
         try:
             urlopen(request)
-        except requests.exceptions.RequestException as e:
-            if hasattr(e, "reason"):
-                logger.exception("pyTivo notification: Error, failed to reach a server - " + e.reason)
+        except requests.exceptions.RequestException as error:
+            if hasattr(error, "reason"):
+                logger.exception(f"pyTivo notification: Error, failed to reach a server - {error.reason}")
                 return False
-            elif hasattr(e, "code"):
-                logger.exception("pyTivo notification: Error, the server couldn't fulfill the request - " + e.code)
+            elif hasattr(error, "code"):
+                logger.exception(f"pyTivo notification: Error, the server couldn't fulfill the request - {error.code}")
             return False
-        except Exception as e:
-            logger.exception("PYTIVO: Unknown exception: " + str(e))
+        except Exception as error:
+            logger.exception(f"PYTIVO: Unknown exception: {error}")
             return False
         else:
             logger.info("pyTivo notification: Successfully requested transfer of file")

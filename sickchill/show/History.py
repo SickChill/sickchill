@@ -113,9 +113,10 @@ class History(object, metaclass=Singleton):
 
         # TODO: Check if native way works with our dates
         # self.db.action("DELETE FROM history WHERE date < datetime('now', '-30 days')")
-        self.db.action("DELETE FROM history WHERE date < ?", [(datetime.today() - timedelta(days=30)).strftime(self.date_format)])
+        back_thirty_days = (datetime.today() - timedelta(days=30)).strftime(self.date_format)
+        self.db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
         if settings.USE_FAILED_DOWNLOADS:
-            self.failed_db.action("DELETE FROM history WHERE date < " + str((datetime.today() - timedelta(days=30)).strftime(self.date_format)))
+            self.failed_db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
 
     def _logHistoryItem(self, action: int, showid: int, season: int, episode: int, quality: int, resource: str, provider, version=-1):
         """

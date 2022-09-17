@@ -592,7 +592,9 @@ def fixSetGroupID(childPath):
                     ).format(childPath=childPath, parentGID=parentGID, error=error)
                 )
     except Exception as error:
-        logger.debug(_("There was a problem setting set-group-id on the parent directory of {childPath}. Error: {error}").format(childPath=childPath, error=error))
+        logger.debug(
+            _("There was a problem setting set-group-id on the parent directory of {childPath}. Error: {error}").format(childPath=childPath, error=error)
+        )
 
 
 def is_anime_in_show_list():
@@ -636,9 +638,15 @@ def get_absolute_number_from_season_and_episode(show, season, episode):
         season_episode = episode_num(season, episode)
         if len(sql_results) == 1:
             absolute_number = int(sql_results[0]["absolute_number"])
-            logger.debug(_("Found absolute number {absolute_number} for show {show_name} {season_episode}").format(absolute_number=absolute_number, show_name=show.name, season_episode=season_episode))
+            logger.debug(
+                _("Found absolute number {absolute_number} for show {show_name} {season_episode}").format(
+                    absolute_number=absolute_number, show_name=show.name, season_episode=season_episode
+                )
+            )
         else:
-            logger.debug(_("No entries found for the absolute number of {show_name} {season_episode}").format(show_name=show.name, season_episode=season_episode))
+            logger.debug(
+                _("No entries found for the absolute number of {show_name} {season_episode}").format(show_name=show.name, season_episode=season_episode)
+            )
 
     return absolute_number
 
@@ -774,7 +782,11 @@ def backupVersionedFile(old_file, version):
             logger.debug(_("Backup done"))
             break
         except Exception as error:
-            logger.warning(_("There was a problem while trying to back up {old_file} to {new_file}. Error: {error}").format(old_file=old_file, new_file=new_file, error=error))
+            logger.warning(
+                _("There was a problem while trying to back up {old_file} to {new_file}. Error: {error}").format(
+                    old_file=old_file, new_file=new_file, error=error
+                )
+            )
             numTries += 1
             time.sleep(1)
             logger.debug(_("Trying again."))
@@ -1290,7 +1302,9 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
 
                 chmodAsParent(filename)
             except Exception as error:
-                logger.warning(_("There was a problem downloading, setting permissions, or writing to {filename}. Error: {error}").format(filename=filename, error=error))
+                logger.warning(
+                    _("There was a problem downloading, setting permissions, or writing to {filename}. Error: {error}").format(filename=filename, error=error)
+                )
 
     except Exception as error:
         # noinspection PyTypeChecker

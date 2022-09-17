@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickchill VERSION\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2022-09-14 20:21-0400\n"
+"POT-Creation-Date: 2022-09-17 04:36-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -247,13 +247,13 @@ msgid ""
 " there were significant ui changes."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1527
+#: sickchill/oldbeard/helpers.py:1541
 msgid ""
 "A path is required for the destination. Check that the root dir and show "
 "locations are correct for {old_file_name} (I got '{dest}')"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1522
+#: sickchill/oldbeard/helpers.py:1536
 msgid "A path to a file is required for the source. {src} is not a file."
 msgstr ""
 
@@ -405,8 +405,8 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
-#: sickchill/oldbeard/tvcache.py:366
-msgid "Added RSS item: [{}] to cache: {}"
+#: sickchill/oldbeard/tvcache.py:371
+msgid "Added RSS item: [{name}] to cache: {provider}"
 msgstr ""
 
 #: sickchill/oldbeard/processTV.py:179
@@ -415,15 +415,15 @@ msgid ""
 "{extracted_directory}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:599
+#: sickchill/oldbeard/postProcessor.py:643
 msgid "Adding the file to the anidb mylist"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:679
+#: sickchill/views/manage/add_shows.py:683
 msgid "Adding the specified show into {show_dir}"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:518
+#: sickchill/views/manage/add_shows.py:522
 msgid "Adding the specified show {show_name}"
 msgstr ""
 
@@ -535,7 +535,7 @@ msgstr ""
 msgid "Allowed values"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:211
+#: sickchill/oldbeard/postProcessor.py:214
 msgid "Allowing associated files for {file_path}: {file_path_list_to_allow}"
 msgstr ""
 
@@ -659,7 +659,7 @@ msgstr ""
 msgid "Automatic update failed: {error}"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:757
+#: sickchill/views/manage/add_shows.py:761
 msgid "Automatically added {num_shows} from their existing metadata files"
 msgstr ""
 
@@ -716,11 +716,11 @@ msgstr ""
 msgid "Backlog search started"
 msgstr ""
 
-#: sickchill/views/home.py:1534
+#: sickchill/views/home.py:1533
 msgid "Backlog started"
 msgstr ""
 
-#: sickchill/views/home.py:1521
+#: sickchill/views/home.py:1520
 msgid ""
 "Backlog was automatically started for the following seasons of "
 "<b>{show_name}</b>"
@@ -741,7 +741,7 @@ msgstr ""
 msgid "Backup &amp; Restore"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:774
+#: sickchill/oldbeard/helpers.py:782
 msgid "Backup done"
 msgstr ""
 
@@ -841,7 +841,7 @@ msgstr ""
 msgid "Can't load the metadata file from {0}, it doesn't exist"
 msgstr ""
 
-#: sickchill/views/home.py:1572 sickchill/views/home.py:1591
+#: sickchill/views/home.py:1571 sickchill/views/home.py:1590
 msgid "Can't rename episodes when the show dir is missing."
 msgstr ""
 
@@ -854,11 +854,11 @@ msgstr ""
 msgid "Cancel Rename"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:254
+#: sickchill/oldbeard/postProcessor.py:261
 msgid "Cannot change permissions of {cur_file}"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:254
+#: sickchill/oldbeard/db.py:253
 msgid "Cannot fetch all and only one at the same time!"
 msgstr ""
 
@@ -1217,7 +1217,7 @@ msgstr ""
 msgid "Continuing"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:353
+#: sickchill/oldbeard/db.py:352
 msgid "Control dict to upsert cannot have values of None!"
 msgstr ""
 
@@ -1230,7 +1230,7 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:363
+#: sickchill/oldbeard/postProcessor.py:375
 msgid "Copying file from {cur_file_path} to {new_file_path}"
 msgstr ""
 
@@ -1238,11 +1238,11 @@ msgstr ""
 msgid "Cosmic"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:615
+#: sickchill/views/manage/add_shows.py:619
 msgid "Could not append the show year folder for the show: {0}"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:372
+#: sickchill/oldbeard/show_queue.py:374
 msgid "Could not append the show year folder for the show: {show_dir}"
 msgstr ""
 
@@ -1254,11 +1254,11 @@ msgstr ""
 msgid "Could not connect to Trakt. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:664
+#: sickchill/oldbeard/postProcessor.py:708
 msgid "Could not convert to a valid airdate: {airdate_value}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1138
+#: sickchill/oldbeard/postProcessor.py:1182
 msgid "Could not create/update meta files. Continuing with postProcessing..."
 msgstr ""
 
@@ -1272,8 +1272,8 @@ msgstr ""
 msgid "Could not find title and download url for result"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:360
-msgid "Could not get favorite shows: {0}"
+#: sickchill/views/manage/add_shows.py:364
+msgid "Could not get favorite shows: {error}"
 msgstr ""
 
 #: sickchill/views/changelog.py:19
@@ -1284,7 +1284,7 @@ msgstr ""
 msgid "Could not load news from the repo. [Click here for news.md])({news_url})"
 msgstr ""
 
-#: sickchill/views/home.py:1692
+#: sickchill/views/home.py:1691
 msgid "Could not snatch manually selected result: {result}"
 msgstr ""
 
@@ -1300,15 +1300,15 @@ msgstr ""
 msgid "Create webhook under channel settings."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:745
+#: sickchill/oldbeard/helpers.py:753
 msgid "Created https cert: {ssl_cert}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:744
+#: sickchill/oldbeard/helpers.py:752
 msgid "Created https key: {ssl_key}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:429
+#: sickchill/oldbeard/postProcessor.py:464
 msgid ""
 "Creating then symbolically linking file from {new_file_path} to "
 "{cur_file_path}"
@@ -1517,7 +1517,7 @@ msgstr ""
 msgid "Delete unwanted subtitles"
 msgstr ""
 
-#: sickchill/oldbeard/processTV.py:204
+#: sickchill/oldbeard/processTV.py:207
 msgid "Deleted folder: {current_directory}"
 msgstr ""
 
@@ -1533,11 +1533,11 @@ msgstr ""
 msgid "Deleting empty folder: {check_empty_dir}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:245
+#: sickchill/oldbeard/postProcessor.py:252
 msgid "Deleting file {cur_file}"
 msgstr ""
 
-#: sickchill/tv.py:1862
+#: sickchill/tv.py:1863
 msgid "Deleting myself from the database"
 msgstr ""
 
@@ -1551,7 +1551,7 @@ msgstr ""
 msgid "Deleting orphan episode with episode_id: {current_episode_id}"
 msgstr ""
 
-#: sickchill/tv.py:1854
+#: sickchill/tv.py:1855
 msgid "Deleting {show} {ep} from the DB"
 msgstr ""
 
@@ -1569,7 +1569,7 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1071
+#: sickchill/oldbeard/postProcessor.py:1115
 msgid "Destination folder for this episode: "
 msgstr ""
 
@@ -1680,7 +1680,7 @@ msgstr ""
 msgid "Don't forget to save your new pushbullet settings."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:699
+#: sickchill/oldbeard/postProcessor.py:743
 msgid ""
 "Don't have a season number, but this show appears to only have 1 season, "
 "setting season number to 1..."
@@ -1793,7 +1793,7 @@ msgstr ""
 #: sickchill/gui/slick/views/inc_rootDirs.mako:31
 #: sickchill/gui/slick/views/manage.mako:38
 #: sickchill/gui/slick/views/manage_massEdit.mako:62 sickchill/views/home.py:760
-#: sickchill/views/home.py:1576 sickchill/views/home.py:1664
+#: sickchill/views/home.py:1575 sickchill/views/home.py:1663
 msgid "Edit"
 msgstr ""
 
@@ -2014,9 +2014,9 @@ msgstr ""
 #: sickchill/views/home.py:1416 sickchill/views/home.py:1422
 #: sickchill/views/home.py:1425 sickchill/views/home.py:1432
 #: sickchill/views/home.py:1435 sickchill/views/home.py:1457
-#: sickchill/views/home.py:1562 sickchill/views/home.py:1567
-#: sickchill/views/home.py:1572 sickchill/views/home.py:1582
-#: sickchill/views/home.py:1586 sickchill/views/home.py:1591
+#: sickchill/views/home.py:1561 sickchill/views/home.py:1566
+#: sickchill/views/home.py:1571 sickchill/views/home.py:1581
+#: sickchill/views/home.py:1585 sickchill/views/home.py:1590
 #: sickchill/views/imageSelector.py:23 sickchill/views/imageSelector.py:27
 #: sickchill/views/imageSelector.py:49 sickchill/views/movies.py:62
 #: sickchill/views/movies.py:72
@@ -2082,7 +2082,7 @@ msgstr ""
 msgid "Error: Unable to get {self.name} Authentication, check your config!"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1546 sickchill/oldbeard/helpers.py:1583
+#: sickchill/oldbeard/helpers.py:1560 sickchill/oldbeard/helpers.py:1597
 msgid "Error: {error}"
 msgstr ""
 
@@ -2103,7 +2103,7 @@ msgstr ""
 msgid "Executable"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:394
+#: sickchill/views/manage/add_shows.py:398
 msgid "Existing Show"
 msgstr ""
 
@@ -2146,7 +2146,7 @@ msgid "Failed authentication while getting api key"
 msgstr ""
 
 #: sickchill/oldbeard/failedProcessor.py:31
-msgid "Failed download detected:"
+msgid "Failed download detected: ({release_name}, {directory})"
 msgstr ""
 
 #: sickchill/views/home.py:543
@@ -2173,7 +2173,7 @@ msgstr ""
 msgid "Fantasy"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:364 sickchill/views/manage/add_shows.py:365
+#: sickchill/views/manage/add_shows.py:368 sickchill/views/manage/add_shows.py:369
 msgid "Favorite Shows"
 msgstr ""
 
@@ -2191,37 +2191,37 @@ msgstr ""
 msgid "File Name"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:943
+#: sickchill/oldbeard/postProcessor.py:987
 msgid ""
 "File exists and new file quality is not in a preferred quality list, marking "
 "it unsafe to replace"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:966
+#: sickchill/oldbeard/postProcessor.py:1010
 msgid ""
 "File has season {episode_season}, while the indexer is on season "
 "{newest_season_num}. Try forcing a full update on the show and process this "
 "file again. The file may be incorrectly labeled or fake, aborting."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1095
+#: sickchill/oldbeard/postProcessor.py:1139
 msgid "File is locked for reading"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1099
-#: sickchill/oldbeard/postProcessor.py:1105
+#: sickchill/oldbeard/postProcessor.py:1143
+#: sickchill/oldbeard/postProcessor.py:1149
 msgid "File is locked for reading/writing"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:881
+#: sickchill/oldbeard/postProcessor.py:925
 msgid "File {directory} doesn't exist, did unrar fail?"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:886
+#: sickchill/oldbeard/postProcessor.py:930
 msgid "File {directory} is ignored type, skipping"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:877
+#: sickchill/oldbeard/postProcessor.py:921
 msgid "File {directory} seems to be a directory"
 msgstr ""
 
@@ -2253,7 +2253,7 @@ msgstr ""
 msgid "Filter Show Name"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:95
+#: sickchill/views/manage/add_shows.py:99
 msgid "Filtering and sorting out excess results because exact match was checked"
 msgstr ""
 
@@ -2313,7 +2313,7 @@ msgstr ""
 msgid "Folder {path} didn't exist, creating it"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:622
+#: sickchill/views/manage/add_shows.py:626
 msgid "Folder {show_dir} exists already"
 msgstr ""
 
@@ -2399,15 +2399,15 @@ msgstr ""
 msgid "Format Settings"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:639
-msgid "Found absolute number {absolute_number} for show {show.name} {season_episode}"
+#: sickchill/oldbeard/helpers.py:642
+msgid "Found absolute number {absolute_number} for show {show_name} {season_episode}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1027
+#: sickchill/oldbeard/postProcessor.py:1071
 msgid "Found release name "
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:491
+#: sickchill/oldbeard/postProcessor.py:535
 msgid ""
 "Found result in history for {result_name} - Season: {season} - Quality: "
 "{qual_str} - Version: {version}"
@@ -2443,7 +2443,7 @@ msgstr ""
 msgid "Found the following associated files for {file_path}: {allow_and_delete}"
 msgstr ""
 
-#: sickchill/oldbeard/processTV.py:199
+#: sickchill/oldbeard/processTV.py:202
 msgid "Found unwanted files: {unwanted_files}"
 msgstr ""
 
@@ -2504,7 +2504,7 @@ msgstr ""
 msgid "Generate Token"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1460
+#: sickchill/oldbeard/helpers.py:1474
 msgid "Generating New API key"
 msgstr ""
 
@@ -2601,7 +2601,7 @@ msgstr ""
 msgid "Hard Link"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:385
+#: sickchill/oldbeard/postProcessor.py:403
 msgid "Hard linking file from {cur_file_path} to {new_file_path}"
 msgstr ""
 
@@ -2617,7 +2617,7 @@ msgstr ""
 msgid "Help &amp; Info"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:86
+#: sickchill/oldbeard/db.py:85
 msgid ""
 "Here are the arguments that were passed to this function (This is what the "
 "developers need to know): {local_variables}"
@@ -2728,7 +2728,7 @@ msgstr ""
 msgid "If episode is proper/repack add 'proper' to name."
 msgstr ""
 
-#: sickchill/oldbeard/db.py:84
+#: sickchill/oldbeard/db.py:83
 msgid ""
 "If this happened in cache.db, you can safely stop SickChill, and delete the "
 "cache.db file without losing any data"
@@ -2872,7 +2872,7 @@ msgstr ""
 msgid "Invalid status"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:920
+#: sickchill/oldbeard/postProcessor.py:964
 msgid "Is ep a priority download: "
 msgstr ""
 
@@ -3165,7 +3165,7 @@ msgstr ""
 msgid "Manual Search"
 msgstr ""
 
-#: sickchill/views/home.py:1666
+#: sickchill/views/home.py:1665
 msgid "Manual Snatch"
 msgstr ""
 
@@ -3316,7 +3316,7 @@ msgid ""
 "fixing..."
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:577
+#: sickchill/views/manage/add_shows.py:581
 msgid ""
 "Missing params, no Indexer ID or folder: {show_to_add} and "
 "{root_dir}/{show_path}"
@@ -3340,7 +3340,7 @@ msgstr ""
 msgid "Most Anticipated"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:250 sickchill/views/manage/add_shows.py:264
+#: sickchill/views/manage/add_shows.py:254 sickchill/views/manage/add_shows.py:268
 msgid "Most Anticipated Shows"
 msgstr ""
 
@@ -3348,7 +3348,7 @@ msgstr ""
 msgid "Most Collected"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:252
+#: sickchill/views/manage/add_shows.py:256
 msgid "Most Collected Shows"
 msgstr ""
 
@@ -3356,7 +3356,7 @@ msgstr ""
 msgid "Most Played"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:256
+#: sickchill/views/manage/add_shows.py:260
 msgid "Most Played Shows"
 msgstr ""
 
@@ -3364,7 +3364,7 @@ msgstr ""
 msgid "Most Watched"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:254
+#: sickchill/views/manage/add_shows.py:258
 msgid "Most Watched Shows"
 msgstr ""
 
@@ -3402,11 +3402,11 @@ msgstr ""
 msgid "Movies"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:341
+#: sickchill/oldbeard/postProcessor.py:348
 msgid "Moving file from {cur_file_path} to {new_file_path}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:407
+#: sickchill/oldbeard/postProcessor.py:432
 msgid "Moving then symbolically linking file from {cur_file_path} to {new_file_path}"
 msgstr ""
 
@@ -3437,7 +3437,7 @@ msgstr ""
 msgid "Musical"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:275
+#: sickchill/oldbeard/postProcessor.py:282
 msgid "Must provide an action for the combined file operation"
 msgstr ""
 
@@ -3541,12 +3541,12 @@ msgstr ""
 msgid "New Location"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:228 sickchill/views/manage/add_shows.py:229
+#: sickchill/views/manage/add_shows.py:232 sickchill/views/manage/add_shows.py:233
 msgid "New Show"
 msgstr ""
 
 #: sickchill/gui/slick/views/addShows_trendingShows.mako:60
-#: sickchill/views/manage/add_shows.py:260
+#: sickchill/views/manage/add_shows.py:264
 msgid "New Shows"
 msgstr ""
 
@@ -3554,7 +3554,7 @@ msgstr ""
 msgid "New episode {episode_string} airs today,"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:939
+#: sickchill/oldbeard/postProcessor.py:983
 msgid "New file is a proper/repack, marking it safe to replace"
 msgstr ""
 
@@ -3566,7 +3566,7 @@ msgstr ""
 msgid "New login from IP: {0}. http://geomaplookup.net/?ip={0}"
 msgstr ""
 
-#: sickchill/views/home.py:1837 sickchill/views/home.py:1866
+#: sickchill/views/home.py:1836 sickchill/views/home.py:1865
 msgid "New subtitles downloaded: {new_subtitle_languages}"
 msgstr ""
 
@@ -3654,7 +3654,7 @@ msgstr ""
 msgid "No Restart"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:213
+#: sickchill/oldbeard/postProcessor.py:220
 msgid "No associated files for {file_path} were found during this pass"
 msgstr ""
 
@@ -3670,8 +3670,8 @@ msgstr ""
 msgid "No data returned from provider"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:641
-msgid "No entries found for the absolute number of {show.name} {season_episode}"
+#: sickchill/oldbeard/helpers.py:648
+msgid "No entries found for the absolute number of {show_name} {season_episode}"
 msgstr ""
 
 #: sickchill/gui/slick/views/addShows_favoriteShows.mako:76
@@ -3681,7 +3681,7 @@ msgid ""
 "feel this is an error"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:108
+#: sickchill/views/manage/add_shows.py:112
 msgid "No folders selected."
 msgstr ""
 
@@ -3701,7 +3701,7 @@ msgstr ""
 msgid "No parent path provided in {childPath} unable to get permissions from it"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:489
+#: sickchill/views/manage/add_shows.py:493
 msgid "No root directories setup, please go back and add one."
 msgstr ""
 
@@ -3717,7 +3717,7 @@ msgstr ""
 msgid "No side margins on large screens"
 msgstr ""
 
-#: sickchill/views/home.py:1839 sickchill/views/home.py:1868
+#: sickchill/views/home.py:1838 sickchill/views/home.py:1867
 msgid "No subtitles downloaded"
 msgstr ""
 
@@ -3747,22 +3747,22 @@ msgstr ""
 msgid "Normal (default). High is lower and Low is higher CPU use"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:768
+#: sickchill/oldbeard/helpers.py:776
 msgid "Not creating backup, {old_file} doesn't exist"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:982
+#: sickchill/oldbeard/postProcessor.py:1026
 msgid "Not enough disk space to continue processing, exiting"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1565
+#: sickchill/oldbeard/helpers.py:1579
 msgid ""
 "Not enough free space: Needed: {needed_space} bytes ( "
 "{pretty_file_size(needed_space)} ), found: {disk_free} bytes ( "
 "{pretty_file_size(disk_free)} )"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:901
+#: sickchill/oldbeard/postProcessor.py:945
 msgid ""
 "Not enough information to determine what episode this is. Quitting post-"
 "processing"
@@ -4103,8 +4103,8 @@ msgstr ""
 msgid "Popular"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:248 sickchill/views/manage/add_shows.py:332
-#: sickchill/views/manage/add_shows.py:333
+#: sickchill/views/manage/add_shows.py:252 sickchill/views/manage/add_shows.py:336
+#: sickchill/views/manage/add_shows.py:337
 msgid "Popular Shows"
 msgstr ""
 
@@ -4213,7 +4213,7 @@ msgstr ""
 msgid "Prev Show"
 msgstr ""
 
-#: sickchill/views/home.py:855 sickchill/views/home.py:1578
+#: sickchill/views/home.py:855 sickchill/views/home.py:1577
 msgid "Preview Rename"
 msgstr ""
 
@@ -4238,13 +4238,13 @@ msgstr ""
 msgid "Process Method to be used"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1539
+#: sickchill/oldbeard/helpers.py:1553
 msgid ""
 "Process method is 'move' and src and destination are on the same device, "
 "skipping free space check"
 msgstr ""
 
-#: sickchill/oldbeard/processTV.py:229
+#: sickchill/oldbeard/processTV.py:232
 msgid "Processing Failed"
 msgstr ""
 
@@ -4252,7 +4252,7 @@ msgstr ""
 msgid "Processing Method"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:874
+#: sickchill/oldbeard/postProcessor.py:918
 msgid "Processing {directory} ({release_name})"
 msgstr ""
 
@@ -4464,7 +4464,7 @@ msgstr ""
 msgid "Quality"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:916
+#: sickchill/oldbeard/postProcessor.py:960
 msgid "Quality of the episode we're processing: {new_quality_string}"
 msgstr ""
 
@@ -4509,7 +4509,7 @@ msgstr ""
 msgid "Re-scan files"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:250
+#: sickchill/oldbeard/postProcessor.py:257
 msgid "Read only mode on file {cur_file} Will try to make it writeable"
 msgstr ""
 
@@ -4525,7 +4525,7 @@ msgstr ""
 msgid "Recommended"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:258
+#: sickchill/views/manage/add_shows.py:262
 msgid "Recommended Shows"
 msgstr ""
 
@@ -4625,7 +4625,7 @@ msgstr ""
 msgid "Removed history entries older than 30 days"
 msgstr ""
 
-#: sickchill/tv.py:1858
+#: sickchill/tv.py:1859
 msgid "Removing myself from my show's list"
 msgstr ""
 
@@ -4666,11 +4666,11 @@ msgstr ""
 msgid "Request Authorization"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1377
+#: sickchill/oldbeard/helpers.py:1391
 msgid "Request failed: {0} ({1})"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1252
+#: sickchill/oldbeard/helpers.py:1264
 msgid "Requested a json response but response was not json, check the url: {url}"
 msgstr ""
 
@@ -4720,11 +4720,11 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
-#: sickchill/views/home.py:1689
+#: sickchill/views/home.py:1688
 msgid "Result not found in the cache"
 msgstr ""
 
-#: sickchill/views/home.py:1687
+#: sickchill/views/home.py:1686
 msgid "Result provider not found, cannot determine type"
 msgstr ""
 
@@ -4736,11 +4736,11 @@ msgstr ""
 msgid "Resume updating the log on this page."
 msgstr ""
 
-#: sickchill/views/home.py:1552
+#: sickchill/views/home.py:1551
 msgid "Retry Search started"
 msgstr ""
 
-#: sickchill/views/home.py:1539
+#: sickchill/views/home.py:1538
 msgid ""
 "Retrying Search was automatically started for the following season of "
 "<b>{show_name}</b>"
@@ -4810,7 +4810,7 @@ msgstr ""
 msgid "SABnzbd username"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:850
+#: sickchill/oldbeard/postProcessor.py:894
 msgid ""
 "SC snatched this episode and it is a proper of equal or higher quality so I'm"
 " marking it as priority"
@@ -4840,13 +4840,13 @@ msgstr ""
 msgid "SMTP user"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1393
+#: sickchill/oldbeard/helpers.py:1407
 msgid ""
 "SSL Error requesting url: '{error.request.url}' Try disabling Cert "
 "Verification on the advanced tab of /config/general. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1387
+#: sickchill/oldbeard/helpers.py:1401
 msgid ""
 "SSL Error requesting url: '{error.request.url}' You have "
 "{ssl.OPENSSL_VERSION}, try upgrading OpenSSL to 1.0.1e+. Error: {error}"
@@ -4966,7 +4966,7 @@ msgstr ""
 msgid "Script result: {0}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:817
+#: sickchill/oldbeard/postProcessor.py:861
 msgid "Script result: {out}"
 msgstr ""
 
@@ -5140,7 +5140,7 @@ msgstr ""
 msgid "Search torrents"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:65
+#: sickchill/views/manage/add_shows.py:66
 msgid ""
 "Searching for Show with search term(s): {search_terms} on Indexer: "
 "{indexer_name} (exact: {exact})"
@@ -5152,8 +5152,8 @@ msgstr ""
 
 #: sickchill/gui/slick/views/displayShow.mako:75
 #: sickchill/gui/slick/views/displayShow.mako:80
-#: sickchill/gui/slick/views/displayShow.mako:422 sickchill/views/home.py:1528
-#: sickchill/views/home.py:1546
+#: sickchill/gui/slick/views/displayShow.mako:422 sickchill/views/home.py:1527
+#: sickchill/views/home.py:1545
 msgid "Season"
 msgstr ""
 
@@ -5173,7 +5173,7 @@ msgid "Season Number"
 msgstr ""
 
 #: sickchill/gui/slick/views/addShows_trendingShows.mako:61
-#: sickchill/views/manage/add_shows.py:262
+#: sickchill/views/manage/add_shows.py:266
 msgid "Season Premieres"
 msgstr ""
 
@@ -5349,7 +5349,7 @@ msgstr ""
 msgid "Set user and password for each provider"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:446
+#: sickchill/oldbeard/show_queue.py:448
 msgid "Setting all episodes to the specified default status: {default_status}"
 msgstr ""
 
@@ -5439,7 +5439,7 @@ msgstr ""
 msgid "Show Updater"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:518 sickchill/views/manage/add_shows.py:679
+#: sickchill/views/manage/add_shows.py:522 sickchill/views/manage/add_shows.py:683
 msgid "Show added"
 msgstr ""
 
@@ -5447,7 +5447,7 @@ msgstr ""
 msgid "Show all seasons"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1007
+#: sickchill/oldbeard/postProcessor.py:1051
 msgid "Show directory doesn't exist, creating it"
 msgstr ""
 
@@ -5459,7 +5459,7 @@ msgstr ""
 msgid "Show id"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:390
+#: sickchill/oldbeard/show_queue.py:392
 msgid ""
 "Show in {showDir} has no name on {indexer}, probably searched with the wrong "
 "language. Delete .nfo and add manually in the correct language."
@@ -5472,7 +5472,7 @@ msgid "Show name"
 msgstr ""
 
 #: sickchill/views/home.py:746 sickchill/views/home.py:1430
-#: sickchill/views/home.py:1567 sickchill/views/home.py:1586
+#: sickchill/views/home.py:1566 sickchill/views/home.py:1585
 #: sickchill/views/imageSelector.py:27
 msgid "Show not in show list"
 msgstr ""
@@ -5490,7 +5490,7 @@ msgstr ""
 msgid "Show root directories"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:480
+#: sickchill/oldbeard/show_queue.py:482
 msgid "Show skipped"
 msgstr ""
 
@@ -5546,7 +5546,7 @@ msgstr ""
 msgid "Shows"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:757
+#: sickchill/views/manage/add_shows.py:761
 msgid "Shows Added"
 msgstr ""
 
@@ -5652,7 +5652,7 @@ msgstr ""
 msgid "Skipped"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:377
+#: sickchill/oldbeard/show_queue.py:379
 msgid "Skipping initial creation of {showDir} due to config.ini setting"
 msgstr ""
 
@@ -5688,11 +5688,11 @@ msgstr ""
 msgid "Small Poster"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:910
+#: sickchill/oldbeard/postProcessor.py:954
 msgid "Snatch history had a quality in it, using that: "
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:924
+#: sickchill/oldbeard/postProcessor.py:968
 msgid "Snatch history had a version in it, using that: v"
 msgstr ""
 
@@ -5723,19 +5723,19 @@ msgstr ""
 msgid "Social"
 msgstr ""
 
-#: sickchill/oldbeard/processTV.py:231
+#: sickchill/oldbeard/processTV.py:234
 msgid "Some items were not processed."
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:759
+#: sickchill/oldbeard/show_queue.py:761
 msgid "Some notifications could not be sent. Continuing removal of {}..."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1169
+#: sickchill/oldbeard/postProcessor.py:1213
 msgid "Some notifications could not be sent. Continuing with postProcessing..."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1178
+#: sickchill/oldbeard/postProcessor.py:1222
 msgid "Some notifications could not be sent. Finishing postProcessing..."
 msgstr ""
 
@@ -5989,7 +5989,7 @@ msgstr ""
 msgid "Successfully connected to flaresolverr, this is experimental!"
 msgstr ""
 
-#: sickchill/oldbeard/processTV.py:229
+#: sickchill/oldbeard/processTV.py:232
 msgid "Successfully processed"
 msgstr ""
 
@@ -6191,17 +6191,17 @@ msgid ""
 " linking might fail. Trying anyway. Location: {destFile}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/processTV.py:255
+#: sickchill/oldbeard/processTV.py:258
 msgid "The directory name indicates it failed to extract."
 msgstr ""
 
-#: sickchill/oldbeard/processTV.py:263
+#: sickchill/oldbeard/processTV.py:266
 msgid ""
 "The directory name indicates that it was previously rejected for being "
 "undersized."
 msgstr ""
 
-#: sickchill/oldbeard/processTV.py:266
+#: sickchill/oldbeard/processTV.py:269
 msgid ""
 "The directory name indicates that this release is in the process of being "
 "unpacked."
@@ -6229,11 +6229,11 @@ msgstr ""
 msgid "The information on this page is in the process of being updated."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:754
+#: sickchill/oldbeard/postProcessor.py:798
 msgid "The old status had a quality in it, using that: "
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:478
+#: sickchill/oldbeard/show_queue.py:480
 msgid "The show in {showDir} is already in your show list, skipping"
 msgstr ""
 
@@ -6263,11 +6263,11 @@ msgstr ""
 msgid "There is no existing file so there's no worries about replacing it"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1016
+#: sickchill/oldbeard/helpers.py:1028
 msgid "There was a problem attempting to authenticate with anidb. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1007
+#: sickchill/oldbeard/helpers.py:1019
 msgid "There was a problem attempting to connect to anidb. Error: {error}"
 msgstr ""
 
@@ -6283,11 +6283,11 @@ msgid ""
 "instead. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:741
+#: sickchill/oldbeard/helpers.py:749
 msgid "There was a problem creating the SSL key and certificate. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1038 sickchill/oldbeard/helpers.py:1094
+#: sickchill/oldbeard/helpers.py:1050 sickchill/oldbeard/helpers.py:1106
 msgid "There was a problem creating the zip file. Error: {error}"
 msgstr ""
 
@@ -6299,17 +6299,17 @@ msgstr ""
 msgid "There was a problem creating {sofar}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1293
+#: sickchill/oldbeard/helpers.py:1306
 msgid ""
 "There was a problem downloading, setting permissions, or writing to "
 "{filename}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1071
+#: sickchill/oldbeard/helpers.py:1083
 msgid "There was a problem extracting the zip file {archive}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1129
+#: sickchill/oldbeard/helpers.py:1141
 msgid "There was a problem extracting zip file {archive}. Error: {error}"
 msgstr ""
 
@@ -6329,7 +6329,7 @@ msgid ""
 "parent directory has {parentMode:o}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:595
+#: sickchill/oldbeard/helpers.py:596
 msgid ""
 "There was a problem setting set-group-id on the parent directory of "
 "{childPath}. Error: {error}"
@@ -6339,13 +6339,13 @@ msgstr ""
 msgid "There was a problem trying to delete {check_empty_dir}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:930
+#: sickchill/oldbeard/helpers.py:942
 msgid ""
 "There was a problem when attempting to find {name} in SickChill. Error: "
 "{error}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:777
+#: sickchill/oldbeard/helpers.py:786
 msgid ""
 "There was a problem while trying to back up {old_file} to {new_file}. Error: "
 "{error}"
@@ -6358,14 +6358,16 @@ msgid ""
 msgstr ""
 
 #: sickchill/providers/metadata/generic.py:789
-msgid "There was an error parsing your existing metadata file: '{0}' error: {1}"
+msgid ""
+"There was an error parsing your existing metadata file: '{path}' error: "
+"{error}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:239
+#: sickchill/oldbeard/postProcessor.py:246
 msgid "There were no files associated with {file_path}, not deleting anything"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:286
+#: sickchill/oldbeard/postProcessor.py:293
 msgid "There were no files associated with {file_path}, not moving anything"
 msgstr ""
 
@@ -6381,7 +6383,7 @@ msgstr ""
 msgid "This can be blank or the year for the movie"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:976
+#: sickchill/oldbeard/postProcessor.py:1020
 msgid ""
 "This download is marked a priority download so I'm going to replace an "
 "existing file if I find one"
@@ -6439,19 +6441,19 @@ msgstr ""
 msgid "This show is queued to be refreshed."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:898
+#: sickchill/oldbeard/postProcessor.py:942
 msgid ""
 "This show isn't in your list, you need to add it to SC before post-processing"
 " an episode"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:862
+#: sickchill/oldbeard/postProcessor.py:906
 msgid ""
 "This was manually downloaded but it appears to be a proper so I'm marking it "
 "as priority"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:857
+#: sickchill/oldbeard/postProcessor.py:901
 msgid ""
 "This was manually downloaded but it appears to be better quality than what we"
 " have so I'm marking it as priority"
@@ -6603,7 +6605,7 @@ msgstr ""
 msgid "Trakt may have some issues and it's unavailable. Try again later please"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:217
+#: sickchill/oldbeard/db.py:216
 msgid "Transaction with {count:d} of queries executed successfully"
 msgstr ""
 
@@ -6615,7 +6617,7 @@ msgstr ""
 msgid "Trending"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:246
+#: sickchill/views/manage/add_shows.py:250
 msgid "Trending Shows"
 msgstr ""
 
@@ -6635,11 +6637,11 @@ msgstr ""
 msgid "True"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:780
+#: sickchill/oldbeard/helpers.py:792
 msgid "Trying again."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:772
+#: sickchill/oldbeard/helpers.py:780
 msgid "Trying to back up {old_file} to {new_file}"
 msgstr ""
 
@@ -6647,7 +6649,7 @@ msgstr ""
 msgid "Trying to clean any empty folders under {check_empty_dir}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1519
+#: sickchill/oldbeard/helpers.py:1533
 msgid "Trying to determine free space on the destination drive"
 msgstr ""
 
@@ -6726,14 +6728,14 @@ msgstr ""
 msgid "URL where the shows can be downloaded."
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:352 sickchill/oldbeard/show_queue.py:396
-#: sickchill/oldbeard/show_queue.py:407 sickchill/oldbeard/show_queue.py:472
-#: sickchill/views/manage/add_shows.py:495 sickchill/views/manage/add_shows.py:622
-#: sickchill/views/manage/add_shows.py:632
+#: sickchill/oldbeard/show_queue.py:354 sickchill/oldbeard/show_queue.py:398
+#: sickchill/oldbeard/show_queue.py:409 sickchill/oldbeard/show_queue.py:474
+#: sickchill/views/manage/add_shows.py:499 sickchill/views/manage/add_shows.py:626
+#: sickchill/views/manage/add_shows.py:636
 msgid "Unable to add show"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:783
+#: sickchill/oldbeard/helpers.py:795
 msgid "Unable to back up {old_file} to {new_file} please do it manually."
 msgstr ""
 
@@ -6753,7 +6755,7 @@ msgstr ""
 msgid "Unable to contact one or more KODI host(s)): {kodi_hosts}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:368
+#: sickchill/oldbeard/postProcessor.py:381
 msgid "Unable to copy file from {cur_file_path} to {new_file_path}: {error}"
 msgstr ""
 
@@ -6771,43 +6773,43 @@ msgid ""
 " changed."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:729
+#: sickchill/oldbeard/postProcessor.py:773
 msgid "Unable to create episode: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:320
+#: sickchill/oldbeard/postProcessor.py:327
 msgid "Unable to create subtitles folder {subs_new_path}"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:381
+#: sickchill/oldbeard/show_queue.py:383
 msgid "Unable to create the folder {showDir}, can't add the show"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:632
+#: sickchill/views/manage/add_shows.py:636
 msgid "Unable to create the folder {show_dir}, can't add the show"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1015
+#: sickchill/oldbeard/postProcessor.py:1059
 msgid "Unable to create the show directory: "
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:733
+#: sickchill/oldbeard/show_queue.py:735
 msgid "Unable to delete show from Trakt: {show_name}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:999
+#: sickchill/oldbeard/postProcessor.py:1043
 msgid "Unable to delete the existing files"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1582
+#: sickchill/oldbeard/helpers.py:1596
 msgid "Unable to determine free space"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1545
+#: sickchill/oldbeard/helpers.py:1559
 msgid "Unable to determine free space, so I will assume there is enough."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:985
+#: sickchill/oldbeard/postProcessor.py:1029
 msgid "Unable to determine needed file space as the source file is locked for access"
 msgstr ""
 
@@ -6824,36 +6826,36 @@ msgstr ""
 msgid "Unable to force an update on scene numbering of the show."
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:361
+#: sickchill/oldbeard/show_queue.py:363
 msgid "Unable to get a show {showDir}, can't add the show"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1448
+#: sickchill/oldbeard/helpers.py:1462
 msgid "Unable to get size for file {fp} because the link to the file is not valid"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1453
+#: sickchill/oldbeard/helpers.py:1467
 msgid "Unable to get size for file {fp}. Error: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:390 sickchill/oldbeard/postProcessor.py:412
+#: sickchill/oldbeard/postProcessor.py:410 sickchill/oldbeard/postProcessor.py:442
 msgid "Unable to link file from {cur_file_path} to {new_file_path}: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:434
+#: sickchill/oldbeard/postProcessor.py:474
 msgid "Unable to link file {cur_file_path} to {new_file_path}: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:346
+#: sickchill/oldbeard/postProcessor.py:354
 msgid "Unable to move file from {cur_file_path} to {new_file_path}: {error}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1111
-#: sickchill/oldbeard/postProcessor.py:1113
+#: sickchill/oldbeard/postProcessor.py:1155
+#: sickchill/oldbeard/postProcessor.py:1157
 msgid "Unable to move the files to their new home"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1069
+#: sickchill/oldbeard/postProcessor.py:1113
 msgid "Unable to post-process an episode if the show dir doesn't exist, quitting"
 msgstr ""
 
@@ -6953,11 +6955,11 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: sickchill/views/manage/add_shows.py:586
+#: sickchill/views/manage/add_shows.py:590
 msgid "Unknown error. Unable to add show due to problem with show selection."
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1110
+#: sickchill/oldbeard/postProcessor.py:1154
 msgid "Unknown process method: "
 msgstr ""
 
@@ -7050,7 +7052,7 @@ msgstr ""
 msgid "Updates"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:992
+#: sickchill/oldbeard/helpers.py:1004
 msgid "Usage of anidb disabled. Skiping"
 msgstr ""
 
@@ -7181,15 +7183,15 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1156
-msgid "Using global proxy for indexers: {settings.PROXY_SETTING}"
+#: sickchill/oldbeard/helpers.py:1168
+msgid "Using global proxy for indexers: {proxy_settings}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1172
+#: sickchill/oldbeard/helpers.py:1184
 msgid "Using global proxy: {settings.PROXY_SETTING}"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1031
+#: sickchill/oldbeard/postProcessor.py:1075
 msgid "Using original release name "
 msgstr ""
 
@@ -7305,7 +7307,7 @@ msgstr ""
 msgid "War"
 msgstr ""
 
-#: sickchill/oldbeard/postProcessor.py:1060
+#: sickchill/oldbeard/postProcessor.py:1104
 msgid "Warning: Couldn't find release in snatch history"
 msgstr ""
 
@@ -7412,15 +7414,15 @@ msgstr ""
 msgid "You must provide a recipient email address!"
 msgstr ""
 
-#: sickchill/views/home.py:1562 sickchill/views/imageSelector.py:23
+#: sickchill/views/home.py:1561 sickchill/views/imageSelector.py:23
 msgid "You must specify a show"
 msgstr ""
 
-#: sickchill/views/home.py:1411 sickchill/views/home.py:1582
+#: sickchill/views/home.py:1411 sickchill/views/home.py:1581
 msgid "You must specify a show and at least one episode"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:193
+#: sickchill/oldbeard/db.py:192
 msgid "You passed a non-iterable to mass_action: {0!r}"
 msgstr ""
 
@@ -7540,7 +7542,7 @@ msgid ""
 "startup and at the frequency set below*"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:996
+#: sickchill/oldbeard/helpers.py:1008
 msgid "anidb username and/or password are not set. Aborting anidb lookup."
 msgstr ""
 
@@ -7690,7 +7692,7 @@ msgstr ""
 msgid "daily searches and backlog searches"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:96
+#: sickchill/oldbeard/db.py:95
 msgid "database is locked"
 msgstr ""
 
@@ -7899,7 +7901,7 @@ msgstr ""
 msgid "group episodes by season folder (uncheck to store in a single folder)"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1419
+#: sickchill/oldbeard/helpers.py:1433
 msgid "headers are {requests_exception.request.headers}"
 msgstr ""
 
@@ -8252,7 +8254,7 @@ msgstr ""
 msgid "otherwise Growl <b>requires</b> a password to be used."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1420
+#: sickchill/oldbeard/helpers.py:1434
 msgid "params are {requests_exception.request.params}"
 msgstr ""
 
@@ -8309,7 +8311,7 @@ msgstr ""
 msgid "port number used to connect to your SMTP host."
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1421
+#: sickchill/oldbeard/helpers.py:1435
 msgid "post_data is {requests_exception.request.data}"
 msgstr ""
 
@@ -8339,7 +8341,7 @@ msgstr ""
 msgid "pyTivo share name"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:712
+#: sickchill/oldbeard/helpers.py:720
 msgid "pyopenssl module missing, please install for https access"
 msgstr ""
 
@@ -8915,7 +8917,7 @@ msgstr ""
 msgid "trashed"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:95
+#: sickchill/oldbeard/db.py:94
 msgid "unable to open database file"
 msgstr ""
 
@@ -8927,7 +8929,7 @@ msgstr ""
 msgid "update Plex Media Server library when a download finishes"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1418
+#: sickchill/oldbeard/helpers.py:1432
 msgid "url is {requests_exception.request.url}"
 msgstr ""
 
@@ -9112,22 +9114,22 @@ msgstr ""
 #: sickchill/oldbeard/db.py:76
 msgid ""
 "{exception_severity} error executing query with {method} in database "
-"{db_location}: "
+"{db_location}: {exception}"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:209
+#: sickchill/oldbeard/db.py:208
 msgid "{filename}: {query}"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:338
+#: sickchill/oldbeard/db.py:337
 msgid "{filename}: {query} [{control}]"
 msgstr ""
 
-#: sickchill/oldbeard/db.py:213
+#: sickchill/oldbeard/db.py:212
 msgid "{filename}: {query} with args {args}"
 msgstr ""
 
-#: sickchill/oldbeard/helpers.py:1002
+#: sickchill/oldbeard/helpers.py:1014
 msgid "{msg}"
 msgstr ""
 
@@ -9149,7 +9151,7 @@ msgstr ""
 msgid "{prefix} setting to default episode status for this show: {status_string}"
 msgstr ""
 
-#: sickchill/tv.py:513
+#: sickchill/tv.py:514
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
 msgstr ""
 

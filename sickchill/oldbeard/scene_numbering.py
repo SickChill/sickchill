@@ -551,8 +551,8 @@ def xem_refresh(indexer_id, indexer, force=False):
                 main_db_con = db.DBConnection()
                 main_db_con.mass_action(cl)
 
-        except Exception as e:
-            logger.warning("Exception while refreshing XEM data for show {} on {}: {}".format(indexer_id, sickchill.indexer.name(indexer), str(e)))
+        except Exception as error:
+            logger.warning(f"Exception while refreshing XEM data for show {indexer_id} on {sickchill.indexer.name(indexer)}: {error}")
             logger.debug(traceback.format_exc())
 
 

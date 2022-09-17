@@ -42,11 +42,11 @@ def sendNZB(nzb, proper=False):
         logger.warning("Please check your NZBget host and port (if it is running). NZBget is not responding to this combination")
         return False
 
-    except xmlrpc.client.ProtocolError as e:
-        if e.errmsg == "Unauthorized":
+    except xmlrpc.client.ProtocolError as error:
+        if error.errmsg == "Unauthorized":
             logger.warning("NZBget username or password is incorrect.")
         else:
-            logger.exception("Protocol Error: " + e.errmsg)
+            logger.exception(f"Protocol Error: {error}")
         return False
 
     dupekey = ""
@@ -55,10 +55,10 @@ def sendNZB(nzb, proper=False):
     for curEp in nzb.episodes:
         if dupekey == "":
             if curEp.show.indexer == 1:
-                dupekey = "SickChill-" + str(curEp.show.indexerid)
+                dupekey = f"SickChill-{curEp.show.indexerid}"
             elif curEp.show.indexer == 2:
-                dupekey = "SickChill-tvr" + str(curEp.show.indexerid)
-        dupekey += "-" + str(curEp.season) + "." + str(curEp.episode)
+                dupekey = f"SickChill-tvr{curEp.show.indexerid}"
+        dupekey += f"-{curEp.season:02d}{curEp.episode:02d}"
         if datetime.date.today() - curEp.airdate <= datetime.timedelta(days=7):
             addToTop = True
             nzbgetprio = settings.NZBGET_PRIORITY

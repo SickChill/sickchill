@@ -423,7 +423,8 @@ class TVShow(object):
             try:
                 curEpisode = self.makeEpFromFile(media_file)
             except (ShowNotFoundException, EpisodeNotFoundException) as error:
-                logger.error("Episode {filename} returned an exception: {ex}".format(filename=os.path.basename(media_file), ex=str(error)))
+                media_file_name = os.path.basename(media_file)
+                logger.error(f"Episode {media_file_name} returned an exception: {error}")
                 continue
             except EpisodeDeletedException:
                 logger.debug("The episode deleted itself when I tried making an object for it")

@@ -126,20 +126,20 @@ class Notifier(object):
 
                 media_container = ElementTree.fromstring(xml_response)
             except IOError as error:
-                logger.warning("PLEX: Error while trying to contact Plex Media Server: {0}".format(str(error)))
+                logger.warning(f"PLEX: Error while trying to contact Plex Media Server: {error}")
                 hosts_failed.add(cur_host)
                 continue
             except Exception as error:
-                if "invalid token" in str(error):
+                if "invalid token" in f"{error}":
                     logger.warning("PLEX: Please set TOKEN in Plex settings: ")
                 else:
-                    logger.warning("PLEX: Error while trying to contact Plex Media Server: {0}".format(str(error)))
+                    logger.warning(f"PLEX: Error while trying to contact Plex Media Server: {error}")
                 hosts_failed.add(cur_host)
                 continue
 
             sections = media_container.findall(".//Directory")
             if not sections:
-                logger.debug("PLEX: Plex Media Server not running on: {0}".format(cur_host))
+                logger.debug(f"PLEX: Plex Media Server not running on: {cur_host}")
                 hosts_failed.add(cur_host)
                 continue
 
@@ -175,7 +175,7 @@ class Notifier(object):
             try:
                 getURL(url, headers=self.headers, session=self.session, returns="text", verify=False, allow_proxy=False)
             except Exception as error:
-                logger.warning("PLEX: Error updating library section for Plex Media Server: {0}".format(str(error)))
+                logger.warning(f"PLEX: Error updating library section for Plex Media Server: {error}")
                 hosts_failed.add(cur_host)
 
         return (", ".join(set(hosts_failed)), None)[not len(hosts_failed)]

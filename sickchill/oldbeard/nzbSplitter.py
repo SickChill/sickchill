@@ -97,7 +97,7 @@ def save_nzb(nzb_name, nzb_string):
             nzb_fh.write(nzb_string)
 
     except EnvironmentError as error:
-        logger.exception("Unable to save NZB: " + str(error))
+        logger.exception(f"Unable to save NZB: {error}")
 
 
 def strip_xmlns(element, xmlns):

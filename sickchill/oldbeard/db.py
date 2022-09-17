@@ -63,8 +63,8 @@ class DBConnection(object):
         except OperationalError:
             # noinspection PyUnresolvedReferences
             logger.warning(_("Please check your database owner/permissions: {db_filename}").format(db_filename=self.full_path))
-        except Exception as e:
-            self._error_log_helper(e, logger.ERROR, locals(), None, "DBConnection.__init__")
+        except Exception as error:
+            self._error_log_helper(error, logger.ERROR, locals(), None, "DBConnection.__init__")
             raise
 
     def _error_log_helper(self, exception, severity, local_variables, attempts, called_method):
@@ -73,10 +73,9 @@ class DBConnection(object):
             # noinspection PyUnresolvedReferences
             logger.log(
                 severity,
-                _("{exception_severity} error executing query with {method} in database {db_location}: ").format(
-                    db_location=self.full_path, method=called_method, exception_severity=prefix
-                )
-                + str(exception),
+                _("{exception_severity} error executing query with {method} in database {db_location}: {exception}").format(
+                    db_location=self.full_path, method=called_method, exception_severity=prefix, exception=exception
+                ),
             )
 
             # Let's print out all the arguments, so we can debug this better
@@ -218,20 +217,20 @@ class DBConnection(object):
 
                     # finished
                     break
-                except (sqlite3.OperationalError, sqlite3.DatabaseError) as e:
+                except (sqlite3.OperationalError, sqlite3.DatabaseError) as error:
                     sql_results = []  # Reset results because of rollback
                     if self.connection:
                         self.connection.rollback()
-                    severity = (logger.ERROR, logger.WARNING)[self._is_locked_or_denied(e) and attempt < self.MAX_ATTEMPTS]
-                    self._error_log_helper(e, severity, locals(), attempt, "db.mass_action")
+                    severity = (logger.ERROR, logger.WARNING)[self._is_locked_or_denied(error) and attempt < self.MAX_ATTEMPTS]
+                    self._error_log_helper(error, severity, locals(), attempt, "db.mass_action")
                     if severity == logger.ERROR:
                         raise
                     time.sleep(1)
-                except Exception as e:
+                except Exception as error:
                     sql_results = []
                     if self.connection:
                         self.connection.rollback()
-                    self._error_log_helper(e, logger.ERROR, locals(), attempt, "db.mass_action")
+                    self._error_log_helper(error, logger.ERROR, locals(), attempt, "db.mass_action")
                     raise
 
                 attempt += 1
@@ -271,21 +270,21 @@ class DBConnection(object):
 
                     # get out of the connection attempt loop since we were successful
                     break
-                except (sqlite3.OperationalError, sqlite3.DatabaseError) as e:
+                except (sqlite3.OperationalError, sqlite3.DatabaseError) as error:
                     sql_results = []  # Reset results because of rollback
                     if self.connection:
                         self.connection.rollback()
 
-                    severity = (logger.ERROR, logger.WARNING)[self._is_locked_or_denied(e) and attempt < self.MAX_ATTEMPTS]
-                    self._error_log_helper(e, severity, locals(), attempt, "db.action")
+                    severity = (logger.ERROR, logger.WARNING)[self._is_locked_or_denied(error) and attempt < self.MAX_ATTEMPTS]
+                    self._error_log_helper(error, severity, locals(), attempt, "db.action")
                     if severity == logger.ERROR:
                         raise
                     time.sleep(1)
-                except Exception as e:
+                except Exception as error:
                     sql_results = []
                     if self.connection:
                         self.connection.rollback()
-                    self._error_log_helper(e, logger.ERROR, locals(), attempt, "db.action")
+                    self._error_log_helper(error, logger.ERROR, locals(), attempt, "db.action")
                     raise
 
                 attempt += 1
@@ -472,13 +471,13 @@ def _process_upgrade(connection, upgrade_class):
         logger.debug("Database upgrade required: " + pretty_name(upgrade_class.__name__))
         try:
             instance.execute()
-        except Exception as e:
-            logger.exception("Error in " + str(upgrade_class.__name__) + ": " + str(e))
+        except Exception as error:
+            logger.exception(f"Error in {upgrade_class.__name__}: {error}")
             raise
 
-        logger.debug(upgrade_class.__name__ + " upgrade completed")
+        logger.debug(f"{upgrade_class.__name__} upgrade completed")
     # else:
-    #     logger.debug(upgrade_class.__name__ + " upgrade not required")
+    #     logger.debug(f"{upgrade_class.__name__} upgrade not required")
 
     for upgradeSubClass in upgrade_class.__subclasses__():
         _process_upgrade(connection, upgradeSubClass)

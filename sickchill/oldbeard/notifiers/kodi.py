@@ -140,16 +140,16 @@ class Notifier(object):
                         logger.debug("Exact show name not matched in KODI TV show list")
 
                     if not path:
-                        logger.warning("No valid path found for " + show_name + " with ID: " + str(tvshowid) + " on " + connection.host)
+                        logger.warning(f"No valid path found for {show_name} with ID: {tvshowid} on {connection.host}")
 
                     if path and tvshowid != -1:
-                        logger.debug("KODI Updating " + show_name + " with ID: " + str(tvshowid) + " at " + path + " on " + connection.host)
+                        logger.debug(f"KODI Updating {show_name} with ID: {tvshowid} at {path} on {connection.host}")
                         response = connection.VideoLibrary.Scan(directory=path)
                         if not self.success(response):
-                            logger.warning("Update of show directory failed on " + show_name + " on " + connection.host + " at " + path)
+                            logger.warning(f"Update of show directory failed on {show_name} on {connection.host} at {path}")
                         else:
                             if settings.KODI_UPDATE_ONLYFIRST:
-                                logger.debug("Successfully updated '" + connection.host + "', stopped sending update library commands.")
+                                logger.debug(f"Successfully updated '{connection.host}', stopped sending update library commands.")
                                 return True
 
                             result += 1

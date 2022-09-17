@@ -65,7 +65,7 @@ def getFileList(path, includeFiles, fileTypes):
         else:
             dir_list.append(item_to_add)
 
-    # Sort folders first, alphabetically, case insensitive
+    # Sort folders first, alphabetically, case-insensitive
     dir_list.sort(key=lambda mbr: mbr.get("name").lower())
     file_list.sort(key=lambda mbr: mbr.get("name").lower())
     return dir_list + file_list
@@ -118,8 +118,8 @@ def foldersAtPath(path, includeParent=False, includeFiles=False, fileTypes=None)
 
     try:
         file_list = getFileList(path, includeFiles, fileTypes)
-    except OSError as e:
-        logger.warning(f"Unable to open {path}: {repr(e)} / {str(e)}")
+    except OSError as error:
+        logger.warning(f"Unable to open {path}: {error}")
         file_list = getFileList(parent_path, includeFiles, fileTypes)
 
     entries = [{"currentPath": path}]

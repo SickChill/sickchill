@@ -1,9 +1,13 @@
 from datetime import date
+from typing import TYPE_CHECKING, Union
 
 from sickchill import settings
 from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, MultipleShowObjectsException
 from sickchill.oldbeard.common import Quality, SKIPPED, WANTED
 from sickchill.oldbeard.db import DBConnection
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVShow
 
 
 class Show(object):
@@ -35,7 +39,7 @@ class Show(object):
         return None, show
 
     @staticmethod
-    def find(shows, indexer_id):
+    def find(shows, indexer_id) -> Union["TVShow", None]:
         """
         Find a show by its indexer id in the provided list of shows
         :param shows: The list of shows to search in
@@ -68,7 +72,7 @@ class Show(object):
         raise MultipleShowObjectsException()
 
     @staticmethod
-    def find_name(shows, name):
+    def find_name(shows, name) -> Union["TVShow", None]:
         """
         Find a show by its indexer id in the provided list of shows
         :param shows: The list of shows to search in

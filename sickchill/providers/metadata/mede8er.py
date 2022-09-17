@@ -327,8 +327,8 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             data.write(nfo_file, encoding="utf-8", xml_declaration=True)
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
-        except IOError as e:
-            logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
+        except IOError as error:
+            logger.error(f"Unable to write file to {nfo_file_path} - are you sure the folder is writable? {error}")
             return False
 
         return True
@@ -371,8 +371,8 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             data.write(nfo_file, encoding="utf-8", xml_declaration=True)
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
-        except IOError as e:
-            logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
+        except IOError as error:
+            logger.error(f"Unable to write file to {nfo_file_path} - are you sure the folder is writable? {error}")
             return False
 
         return True

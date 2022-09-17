@@ -141,21 +141,21 @@ def initialize(consoleLogging=True):
                         logger.exception(f"Restore: restoring cache failed: {er}")
 
                 restoreCache(os.path.join(restoreDir, "cache"), settings.CACHE_DIR)
-        except Exception as e:
-            logger.exception(f"Restore: restoring cache failed: {str(e)}")
+        except Exception as error:
+            logger.exception(f"Restore: restoring cache failed: {error}")
         finally:
             if os.path.exists(os.path.join(settings.DATA_DIR, "restore")):
                 try:
                     shutil.rmtree(os.path.join(settings.DATA_DIR, "restore"))
-                except Exception as e:
-                    logger.exception(f"Restore: settings.Unable to remove the restore directory: {str(e)}")
+                except Exception as error:
+                    logger.exception(f"Restore: settings.Unable to remove the restore directory: {error}")
 
                 for cleanupDir in ["mako", "sessions", "indexers", "rss"]:
                     try:
                         shutil.rmtree(os.path.join(settings.CACHE_DIR, cleanupDir))
-                    except Exception as e:
+                    except Exception as error:
                         if cleanupDir not in ["rss", "sessions", "indexers"]:
-                            logger.info(f"Restore: Unable to remove the cache/{cleanupDir} directory: {str(e)}")
+                            logger.info(f"Restore: Unable to remove the cache/{cleanupDir} directory: {error}")
 
         settings.IMAGE_CACHE = image_cache.ImageCache()
         settings.THEME_NAME = check_setting_str(settings.CFG, "GUI", "theme_name", "dark")

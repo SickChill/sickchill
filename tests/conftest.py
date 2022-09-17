@@ -46,7 +46,7 @@ TEST_FAILED_DB_NAME = "failed.db"
 SHOW_NAME = "show name"
 SEASON = 4
 EPISODE = 2
-FILENAME = "show name - s0" + str(SEASON) + "e0" + str(EPISODE) + ".mkv"
+FILENAME = f"show name - s0{SEASON}e0{EPISODE}.mkv"
 FILE_DIR = os.path.join(TEST_DIR, SHOW_NAME)
 FILE_PATH = os.path.join(FILE_DIR, FILENAME)
 SHOW_DIR = os.path.join(TEST_DIR, SHOW_NAME + " final")
@@ -283,9 +283,9 @@ def teardown_test_db():
     #    if os.path.exists(filename):
     #        try:
     #            os.remove(filename)
-    #        except Exception as e:
-    #            print('ERROR: Failed to remove ' + filename)
-    #            print(Exception(e))
+    #        except Exception as error:
+    #            print(f'ERROR: Failed to remove {filename}')
+    #            print(Exception(error))
 
 
 def setup_test_episode_file():

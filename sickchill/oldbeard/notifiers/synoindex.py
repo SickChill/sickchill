@@ -30,14 +30,14 @@ class Notifier(object):
     def moveObject(old_path, new_path):
         if settings.USE_SYNOINDEX:
             synoindex_cmd = ["/usr/syno/bin/synoindex", "-N", os.path.abspath(new_path), os.path.abspath(old_path)]
-            logger.debug("Executing command " + str(synoindex_cmd))
-            logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
+            logger.debug(f"Executing command {synoindex_cmd}")
+            logger.debug(f"Absolute path to command: {os.path.abspath(synoindex_cmd[0])}")
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, universal_newlines=True)
                 out, err = p.communicate()
                 logger.debug(_("Script result: {0}").format(str(out or err).strip()))
-            except OSError as e:
-                logger.exception("Unable to run synoindex: " + str(e))
+            except OSError as error:
+                logger.exception(f"Unable to run synoindex: {error}")
 
     def deleteFolder(self, cur_path):
         self.makeObject("-D", cur_path)
@@ -55,11 +55,11 @@ class Notifier(object):
     def makeObject(cmd_arg, cur_path):
         if settings.USE_SYNOINDEX:
             synoindex_cmd = ["/usr/syno/bin/synoindex", cmd_arg, os.path.abspath(cur_path)]
-            logger.debug("Executing command " + str(synoindex_cmd))
+            logger.debug(f"Executing command {synoindex_cmd}")
             logger.debug("Absolute path to command: " + os.path.abspath(synoindex_cmd[0]))
             try:
                 p = subprocess.Popen(synoindex_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, universal_newlines=True)
                 out, err = p.communicate()
                 logger.debug(_("Script result: {0}").format(str(out or err).strip()))
-            except OSError as e:
-                logger.exception("Unable to run synoindex: " + str(e))
+            except OSError as error:
+                logger.exception(f"Unable to run synoindex: {error}")

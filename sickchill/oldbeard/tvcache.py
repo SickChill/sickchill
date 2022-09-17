@@ -226,10 +226,10 @@ class TVCache(RSSTorrentMixin):
                     cache_db_con = self._get_db()
                     cache_db_con.mass_upsert("results", cl)
 
-        except AuthException as e:
-            logger.warning("Authentication error: " + str(e))
-        except Exception as e:
-            logger.debug("Error while searching " + self.provider.name + ", skipping: " + repr(e))
+        except AuthException as error:
+            logger.warning(f"Authentication error: {error}")
+        except Exception as error:
+            logger.debug(f"Error while searching {self.provider.name}, skipping: {error}")
             logger.debug(traceback.format_exc())
 
     def get_rss_feed(self, url, params=None):
@@ -342,7 +342,7 @@ class TVCache(RSSTorrentMixin):
             try:
                 parse_result = NameParser(showObj=show_obj).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
-                logger.debug("{0}".format(error))
+                logger.debug(f"{error}")
                 return None
 
             if not parse_result or not parse_result.series_name:
@@ -368,7 +368,7 @@ class TVCache(RSSTorrentMixin):
             # get version
             version = parse_result.version
 
-            logger.debug(_("Added RSS item: [{}] to cache: {}").format(name, self.provider_id))
+            logger.debug(_("Added RSS item: [{name}] to cache: {provider}").format(name=name, provider=self.provider_id))
             return (
                 {
                     "provider": self.provider_id,

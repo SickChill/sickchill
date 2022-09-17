@@ -64,8 +64,8 @@ class Notifier(object):
             message = "Join message sent successfully."
             logger.debug("Join message returned : {0}".format(message))
             success = True
-        except Exception as e:
-            message = "Error while sending Join message: {0} ".format(e)
+        except Exception as error:
+            message = f"Error while sending Join message: {error}"
         finally:
             logger.info(message)
             return success, message

@@ -59,17 +59,17 @@ class ProperFinder(object):
         original_thread_name = threading.current_thread().name
         providers = [x for x in oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active]
         for curProvider in providers:
-            threading.current_thread().name = original_thread_name + " :: [" + curProvider.name + "]"
+            threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
 
-            logger.info("Searching for any new PROPER releases from " + curProvider.name)
+            logger.info(f"Searching for any new PROPER releases from {curProvider.name}")
 
             try:
                 curPropers = curProvider.find_propers(search_date)
-            except AuthException as e:
-                logger.warning("Authentication error: " + str(e))
+            except AuthException as error:
+                logger.warning(f"Authentication error: {error}")
                 continue
-            except Exception as e:
-                logger.exception("Exception while searching propers in " + curProvider.name + ", skipping: " + str(e))
+            except Exception as error:
+                logger.exception(f"Exception while searching propers in {curProvider.name}, skipping: {error}")
                 logger.debug(traceback.format_exc())
                 continue
 

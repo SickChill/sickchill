@@ -102,7 +102,7 @@ class Connection(threading.Thread):
 
     @staticmethod
     def print_log(data):
-        print((strftime("%Y-%m-%d %H:%M:%S", localtime(time())) + ": " + str(data)))
+        print(f"{strftime('%Y-%m-%d %H:%M:%S', localtime())} {data}")
 
     def print_log_dummy(self, data):
         pass
@@ -143,7 +143,7 @@ class Connection(threading.Thread):
                 if callback:
                     callback(resp)
 
-            self.log("handling(" + str(self.counter) + "-" + str(self.link.delay) + ") command " + str(command.command))
+            self.log(f"handling({self.counter}-{self.link.delay}) command {command.command}")
 
             # make live request
             command.authorize(self.mode, self.link.new_tag(), self.link.session, callback_wrapper)

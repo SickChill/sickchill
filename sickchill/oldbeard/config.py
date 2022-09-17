@@ -153,8 +153,8 @@ def change_unrar_tool(unrar_tool, unar_tool):
         ):
             try:
                 os.remove(unrar_zip)
-            except OSError as e:
-                logger.info(f"Unable to delete downloaded file {unrar_zip}: {e.strerror}. You may delete it manually")
+            except OSError as error:
+                logger.info(f"Unable to delete downloaded file {unrar_zip}: {error}. You may delete it manually")
 
             check = os.path.join(unrar_store, "unrar.exe")
             try:
@@ -589,25 +589,18 @@ def clean_host(host, default_port=None):
     """
 
     host = host.strip()
-
     if host:
-
         match_host_port = re.search(r"(?:http.*://)?(?P<host>[^:/]+).?(?P<port>[0-9]*).*", host)
 
         cleaned_host = match_host_port.group("host")
         cleaned_port = match_host_port.group("port")
-
         if cleaned_host:
-
             if cleaned_port:
                 host = cleaned_host + ":" + cleaned_port
-
             elif default_port:
-                host = cleaned_host + ":" + str(default_port)
-
+                host = f"{cleaned_host}:{default_port}"
             else:
                 host = cleaned_host
-
         else:
             host = ""
 
@@ -733,7 +726,8 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
         config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.debug(item_name + " -> " + str(my_val))
+
+        logger.debug(f"{item_name} -> {my_val}")
 
     return my_val
 
@@ -795,7 +789,7 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
         config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.debug(item_name + " -> " + str(my_val))
+        logger.debug(f"{item_name} -> {my_val}")
 
     return my_val
 
@@ -895,7 +889,7 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
         config[cfg_name][item_name] = my_val
 
     if not silent:
-        logger.debug(item_name + " -> " + str(my_val))
+        logger.debug(f"{item_name} -> {my_val}")
 
     return my_val
 
@@ -957,8 +951,8 @@ class ConfigMigrator(object):
                 logger.info("Proceeding with upgrade")
 
             # do the migration, expect a method named _migrate_v<num>
-            logger.info("Migrating config up to version " + str(next_version) + migration_name)
-            getattr(self, "_migrate_v" + str(next_version))()
+            logger.info(f"Migrating cofig up to version {next_version}{migration_name}")
+            getattr(self, f"_migrate_v{next_version}")()
             self.config_version = next_version
 
             # save new config after migration
@@ -1009,10 +1003,10 @@ class ConfigMigrator(object):
         # if no shows had it on then don't flatten any shows and don't put season folders in the config
         else:
 
-            logger.info("No shows were using season folders before so I'm disabling flattening on all shows")
+            logger.info("No shows were using season folders before, so I'm disabling flattening on all shows")
 
             # don't flatten any shows at all
-            main_db_con.action("UPDATE tv_shows SET flatten_folders = 0")
+            main_db_con.action("UPDATE tv_shows SET flatten_folders = 0 WHERE 1")
 
         settings.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
 
