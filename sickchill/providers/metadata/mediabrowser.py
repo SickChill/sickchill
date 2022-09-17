@@ -88,7 +88,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), "metadata")
             xml_file_path = os.path.join(metadata_dir_name, xml_filename)
         else:
-            logger.debug("Episode location doesn't exist: " + str(ep_obj.location))
+            logger.debug(f"Episode location doesn't exist: {ep_obj.location}")
             return ""
 
         return xml_file_path
@@ -144,10 +144,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 break
 
         if not season_dir:
-            logger.debug("Unable to find a season dir for season " + str(season))
+            logger.debug(f"Unable to find a season dir for season {season}")
             return None
 
-        logger.debug("Using " + str(season_dir) + "/folder.jpg as season dir for season " + str(season))
+        logger.debug(f"Using {season_dir}/folder.jpg as season dir for season {season}")
 
         return os.path.join(show_obj.location, season_dir, "folder.jpg")
 
@@ -184,10 +184,10 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 break
 
         if not season_dir:
-            logger.debug("Unable to find a season dir for season " + str(season))
+            logger.debug(f"Unable to find a season dir for season {season}")
             return None
 
-        logger.debug("Using " + str(season_dir) + "/banner.jpg as season dir for season " + str(season))
+        logger.debug(f"Using {season_dir}/banner.jpg as season dir for season {season}")
 
         return os.path.join(show_obj.location, season_dir, "banner.jpg")
 

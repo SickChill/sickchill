@@ -24,12 +24,12 @@ class Notifier(object):
         try:
             response = requests.get(url, params=params, headers=self._make_headers(emby_apikey))
             if response:
-                logger.debug(_(f"EMBY: HTTP response: {response.content}"))
+                logger.debug(_("EMBY: HTTP response: {content}").format(content=response.content))
             response.raise_for_status()
 
             return True
         except RequestException as error:
-            logger.warning(_(f"EMBY: Warning: Could not contact Emby at {url} {error}"))
+            logger.warning(_("EMBY: Warning: Could not contact Emby at {url} {error}").format(url=url, error=error))
             return False
 
     ##############################################################################
@@ -63,10 +63,10 @@ class Notifier(object):
             try:
                 response = requests.post(url, params=params, headers=self._make_headers())
                 response.raise_for_status()
-                logger.debug(_(f"EMBY: HTTP status: {response.status_code}, response: {response.content}"))
+                logger.debug(_("EMBY: HTTP status: {status_code}, response: {content}").format(status_code=response.status_code, content=response.content))
                 return True
 
             except requests.exceptions.RequestException as error:
-                logger.warning(_(f"EMBY: Warning: Could not contact Emby at {url} {error}"))
+                logger.warning(_("EMBY: Warning: Could not contact Emby at {url} {error}").format(url=url, error=error))
 
                 return False

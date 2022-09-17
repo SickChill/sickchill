@@ -416,7 +416,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
         log_files.append(Wrapper.instance.log_file)
 
         for i in range(1, int(settings.LOG_NR)):
-            name = Wrapper.instance.log_file + "." + str(i)
+            name = f"{Wrapper.instance.log_file}.{i}"
             if not os.path.isfile(name):
                 break
             log_files.append(name)

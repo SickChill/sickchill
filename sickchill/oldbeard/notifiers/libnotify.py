@@ -54,17 +54,17 @@ class Notifier(object):
         if dbus:
             try:
                 bus = dbus.SessionBus()
-            except dbus.DBusException as e:
+            except dbus.DBusException as error:
                 return ("<p>Error: unable to connect to D-Bus session bus: <code>{}</code>." "<p>Are you running SickChill in a desktop session?").format(
-                    html.escape(e)
+                    html.escape(error)
                 )
             try:
                 bus.get_object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
-            except dbus.DBusException as e:
+            except dbus.DBusException as error:
                 return (
                     "<p>Error: there doesn't seem to be a notification daemon available: <code>{}</code> "
                     "<p>Try installing notification-daemon or notify-osd."
-                ).format(html.escape(e))
+                ).format(html.escape(error))
 
         return "<p>Error: Unable to send notification."
 

@@ -212,7 +212,6 @@ pybabel init
 
 babel_update = """
 pybabel update
---mapping-file=.github/babel-mapping.cfg
 --output-dir=sickchill/locale
 --input-file=sickchill/locale/messages.pot
 --ignore-obsolete

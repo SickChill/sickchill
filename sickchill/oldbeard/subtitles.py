@@ -106,7 +106,7 @@ class SubtitleProviderPool(object):
 
 def sorted_service_list():
     new_list = []
-    lmgtfy = "http://lmgtfy.com/?q=%s"
+    lmgtfy = "https://lmgtfy.com/?q=%s"
 
     current_index = 0
     for current_service in settings.SUBTITLES_SERVICES_LIST:
@@ -190,11 +190,7 @@ def download_subtitles(episode, force_lang=None):
     existing_subtitles = episode.subtitles
 
     if not needs_subtitles(existing_subtitles, force_lang):
-        logger.debug(
-            "Episode already has all needed subtitles, skipping {0} {1}".format(
-                episode.show.name, episode_num(episode.season, episode.episode) or episode_num(episode.season, episode.episode, numbering="absolute")
-            )
-        )
+        logger.debug(f"Episode already has all needed subtitles, skipping {episode.pretty_name}")
         return existing_subtitles, None
 
     if not force_lang:
@@ -203,11 +199,7 @@ def download_subtitles(episode, force_lang=None):
         languages = {from_code(force_lang)}
 
     if not languages:
-        logger.debug(
-            "No subtitles needed for {0} {1}".format(
-                episode.show.name, episode_num(episode.season, episode.episode) or episode_num(episode.season, episode.episode, numbering="absolute")
-            )
-        )
+        logger.debug("No subtitles needed for {episode.pretty_name}, skipping")
         return existing_subtitles, None
 
     subtitles_path = get_subtitles_path(episode.location)
@@ -225,11 +217,7 @@ def download_subtitles(episode, force_lang=None):
 
     video = get_video(video_path, subtitles_path=subtitles_path, episode=episode)
     if not video:
-        logger.debug(
-            "Exception caught in subliminal.scan_video for {0} {1}".format(
-                episode.show.name, episode_num(episode.season, episode.episode) or episode_num(episode.season, episode.episode, numbering="absolute")
-            )
-        )
+        logger.debug(f"Exception caught in subliminal.scan_video for {episode.pretty_name}")
         return existing_subtitles, None
 
     providers = enabled_service_list()
@@ -240,14 +228,10 @@ def download_subtitles(episode, force_lang=None):
 
         for provider in providers:
             if provider in pool.discarded_providers:
-                logger.debug("Could not search in {0} provider. Discarding for now".format(provider))
+                logger.debug(f"Could not search in {provider} provider. Discarding for now")
 
         if not subtitles_list:
-            logger.debug(
-                "No subtitles found for {0} {1}".format(
-                    episode.show.name, episode_num(episode.season, episode.episode) or episode_num(episode.season, episode.episode, numbering="absolute")
-                )
-            )
+            logger.debug(f"No subtitles found for {episode.pretty_name}")
             return existing_subtitles, None
 
         for subtitle in subtitles_list:
@@ -267,13 +251,13 @@ def download_subtitles(episode, force_lang=None):
 
         subliminal.save_subtitles(video, found_subtitles, directory=subtitles_path, single=not settings.SUBTITLES_MULTI, encoding="utf8")
     except IOError as error:
-        if "No space left on device" in str(error):
+        if "No space left on device" in f"{error}":
             logger.warning("Not enough space on the drive to save subtitles")
         else:
             logger.warning(traceback.format_exc())
         return existing_subtitles, None
     except Exception:
-        logger.info("Error occurred when downloading subtitles for: {0}".format(video_path))
+        logger.info(f"Error occurred when downloading subtitles for: {video_path}")
         logger.exception(traceback.format_exc())
         return existing_subtitles, None
 
@@ -311,11 +295,7 @@ def refresh_subtitles(episode):
         return episode.subtitles, None
     current_subtitles = get_subtitles(video)
     if episode.subtitles == current_subtitles:
-        logger.debug(
-            "No changed subtitles for {0} {1}".format(
-                episode.show.name, episode_num(episode.season, episode.episode) or episode_num(episode.season, episode.episode, numbering="absolute")
-            )
-        )
+        logger.debug(f"No changed subtitles for {episode.pretty_name}")
         return episode.subtitles, None
     else:
         return current_subtitles, True
@@ -342,7 +322,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
         subliminal.refine(video, embedded_subtitles=embedded_subtitles)
     except Exception as error:
         logger.info(traceback.format_exc())
-        logger.debug("Exception: {0}".format(error))
+        logger.debug(f"Exception: {error}")
         return None
 
     return video
@@ -355,7 +335,7 @@ def get_subtitles_path(video_path):
         new_subtitles_path = os.path.join(os.path.dirname(video_path), settings.SUBTITLES_DIR)
         dir_exists = sickchill.oldbeard.helpers.makeDir(new_subtitles_path)
         if not dir_exists:
-            logger.exception("Unable to create subtitles folder {0}".format(new_subtitles_path))
+            logger.exception(f"Unable to create subtitles folder {new_subtitles_path}")
         else:
             sickchill.oldbeard.helpers.chmodAsParent(new_subtitles_path)
     else:
@@ -401,7 +381,7 @@ class SubtitlesFinder(object):
             days = td.days
             hours = td.seconds // 60**2
             minutes = (td.seconds // 60) % 60
-            ret = ("", "{0} days, ".format(days))[days > 0] + ("", "{0} hours, ".format(hours))[hours > 0] + ("", "{0} minutes".format(minutes))[minutes > 0]
+            ret = ("", f"{days} days, ")[days > 0] + ("", f"{hours} hours, ")[hours > 0] + ("", f"{minutes} minutes")[minutes > 0]
             if days == 1:
                 ret = ret.replace("days", "day")
             if hours == 1:
@@ -427,22 +407,18 @@ class SubtitlesFinder(object):
             return
 
         for ep_to_sub in sql_results:
+            ep_show_name = ep_to_sub["show_name"]
+            ep_season = ep_to_sub["season"]
+            ep_episode = ep_to_sub["episode"]
+            ep_string = episode_num(ep_season, ep_episode) or episode_num(ep_season, ep_episode, numbering="absolute")
+            ep_show_id = ep_to_sub["showid"]
+
             if not os.path.isfile(ep_to_sub["location"]):
-                logger.debug(
-                    "Episode file does not exist, cannot download subtitles for {0} {1}".format(
-                        ep_to_sub["show_name"],
-                        episode_num(ep_to_sub["season"], ep_to_sub["episode"]) or episode_num(ep_to_sub["season"], ep_to_sub["episode"], numbering="absolute"),
-                    )
-                )
+                logger.debug(f"Episode file does not exist, cannot download subtitles for {ep_show_name} {ep_string}")
                 continue
 
             if not needs_subtitles(ep_to_sub["subtitles"]):
-                logger.debug(
-                    "Episode already has all needed subtitles, skipping {0} {1}".format(
-                        ep_to_sub["show_name"],
-                        episode_num(ep_to_sub["season"], ep_to_sub["episode"]) or episode_num(ep_to_sub["season"], ep_to_sub["episode"], numbering="absolute"),
-                    )
-                )
+                logger.debug(f"Episode already has all needed subtitles, skipping {ep_show_name} {ep_string}")
                 continue
 
             try:
@@ -460,70 +436,33 @@ class SubtitlesFinder(object):
                     # After 10 days, search every 7 days, after 30 days search once a month
                     # Will always try an episode regardless of age at least 2 times
                     if lastsearched + delay_time > now and int(ep_to_sub["searchcount"]) > 2 and days:
-                        logger.debug(
-                            "Subtitle search for {0} {1} delayed for {2}".format(
-                                ep_to_sub["show_name"],
-                                episode_num(ep_to_sub["season"], ep_to_sub["episode"])
-                                or episode_num(ep_to_sub["season"], ep_to_sub["episode"], numbering="absolute"),
-                                dhm(lastsearched + delay_time - now),
-                            )
-                        )
+                        delta = dhm(lastsearched + delay_time - now)
+                        logger.debug(f"Subtitle search for {ep_show_name} {ep_string} delayed for {delta}")
                         continue
 
-                logger.info(
-                    "Searching for missing subtitles of {0} {1}".format(
-                        ep_to_sub["show_name"],
-                        episode_num(ep_to_sub["season"], ep_to_sub["episode"]) or episode_num(ep_to_sub["season"], ep_to_sub["episode"], numbering="absolute"),
-                    )
-                )
+                logger.info(f"Searching for missing subtitles of {ep_show_name} {ep_string}")
 
                 show_object = Show.find(settings.showList, int(ep_to_sub["showid"]))
                 if not show_object:
-                    logger.debug("Show with ID {0} not found in the database".format(ep_to_sub["showid"]))
+                    logger.debug(f"Show with ID {ep_show_id} not found in the database")
                     continue
 
-                episode_object = show_object.getEpisode(ep_to_sub["season"], ep_to_sub["episode"])
+                episode_object = show_object.getEpisode(ep_season, ep_episode)
                 if isinstance(episode_object, str):
-                    logger.debug(
-                        "{0} {1} not found in the database".format(
-                            ep_to_sub["show_name"],
-                            episode_num(ep_to_sub["season"], ep_to_sub["episode"])
-                            or episode_num(ep_to_sub["season"], ep_to_sub["episode"], numbering="absolute"),
-                        )
-                    )
+                    logger.debug(f"{ep_show_name} {ep_string} not found in the database")
                     continue
 
                 try:
                     new_subtitles = episode_object.download_subtitles()
                 except Exception as error:
-                    logger.error(
-                        "Unable to find subtitles for {0} {1}. Error: {2}".format(
-                            ep_to_sub["show_name"],
-                            episode_num(ep_to_sub["season"], ep_to_sub["episode"])
-                            or episode_num(ep_to_sub["season"], ep_to_sub["episode"], numbering="absolute"),
-                            str(error),
-                        )
-                    )
+                    logger.error(f"Unable to find subtitles for {ep_show_name} {ep_string}. Error: {error}")
                     continue
 
                 if new_subtitles:
-                    logger.info(
-                        "Downloaded {0} subtitles for {1} {2}".format(
-                            ", ".join(new_subtitles),
-                            ep_to_sub["show_name"],
-                            episode_num(ep_to_sub["season"], ep_to_sub["episode"])
-                            or episode_num(ep_to_sub["season"], ep_to_sub["episode"], numbering="absolute"),
-                        )
-                    )
+                    logger.info(f"Downloaded {new_subtitles} subtitles for {ep_show_name} {ep_string}")
 
             except Exception as error:
-                logger.error(
-                    "Error while searching subtitles for {0} {1}. Error: {2}".format(
-                        ep_to_sub["show_name"],
-                        episode_num(ep_to_sub["season"], ep_to_sub["episode"]) or episode_num(ep_to_sub["season"], ep_to_sub["episode"], numbering="absolute"),
-                        str(error),
-                    )
-                )
+                logger.error(f"Error while searching subtitles for {ep_show_name} {ep_string}. Error: {error}")
                 continue
 
         logger.info("Finished checking for missed subtitles")
@@ -534,7 +473,7 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
     for script_name in settings.SUBTITLES_EXTRA_SCRIPTS:
         script_cmd = [piece for piece in re.split("( |\\\".*?\\\"|'.*?')", script_name) if piece.strip()]
         script_cmd[0] = os.path.abspath(script_cmd[0])
-        logger.debug("Absolute path to script: {0}".format(script_cmd[0]))
+        logger.debug(f"Absolute path to script: {script_cmd[0]}")
 
         subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
 
@@ -550,17 +489,18 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
         ]
 
         # use subprocess to run the command and capture output
-        logger.info("Executing command: {0}".format(inner_cmd))
+        logger.info(f"Executing command: {inner_cmd}")
         try:
             process = subprocess.Popen(
                 inner_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=settings.DATA_DIR, universal_newlines=True
             )
 
             stdout, stderr = process.communicate()
-            logger.debug("Script result: {0}".format(str(stdout or stderr).strip()))
+            result = (stdout or stderr).strip()
+            logger.debug(f"Script result: {result}")
 
         except Exception as error:
-            logger.info("Unable to run subs_extra_script: {0}".format(str(error)))
+            logger.info(f"Unable to run subs_extra_script: {error}")
 
 
 def refine_video(video, episode):

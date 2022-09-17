@@ -81,8 +81,8 @@ class Notifier(object):
             r = requests.put(url, data=json.dumps(jsonMessage), headers=headers)
             r.raise_for_status()
 
-        except Exception as e:
-            logger.exception("Error Sending Matrix message: " + str(e))
+        except Exception as error:
+            logger.exception(f"Error Sending Matrix message: {error}")
             return False
 
         return True

@@ -166,8 +166,8 @@ class Provider(TorrentProvider):
 
                             items.append(item)
 
-                except Exception as e:
-                    logger.exception("Failed parsing provider. Error: {0!r}".format(str(e)))
+                except Exception as error:
+                    logger.exception(f"Failed parsing provider. Error: {error}")
                     logger.exception(traceback.format_exc())
 
             # For each search mode sort all the items by seeders if available

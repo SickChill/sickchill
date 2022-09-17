@@ -53,8 +53,8 @@ class Notifier(object):
                 headers=headers,
             )
             r.raise_for_status()
-        except Exception as e:
-            logger.exception("Error Sending RocketChat message: " + str(e))
+        except Exception as error:
+            logger.exception(f"Error Sending RocketChat message: {error}")
             return False
 
         return True

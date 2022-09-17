@@ -54,8 +54,8 @@ class Notifier(object):
                 headers=headers,
             )
             r.raise_for_status()
-        except Exception as e:
-            logger.exception("Error Sending Slack message: " + str(e))
+        except Exception as error:
+            logger.exception(f"Error Sending Slack message: {error}")
             return False
 
         return True

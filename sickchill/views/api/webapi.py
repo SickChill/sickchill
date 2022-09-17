@@ -104,10 +104,10 @@ class ApiHandler(RequestHandler):
 
         try:
             out_dict = _call_dispatcher(args, kwargs)
-        except Exception as e:  # real internal error oohhh nooo :(
+        except Exception as error:  # real internal error oohhh nooo :(
             logger.info(traceback.format_exc())
-            logger.exception("API :: " + str(e))
-            error_data = {"error_msg": str(e), "args": args, "kwargs": kwargs}
+            logger.exception(f"API :: {error}")
+            error_data = {"error_msg": f"{error}", "args": args, "kwargs": kwargs}
             out_dict = _responds(RESULT_FATAL, error_data, "SickChill encountered an internal error! Please report to the Devs")
 
         if "outputType" in out_dict:
@@ -132,9 +132,9 @@ class ApiHandler(RequestHandler):
             callback = self.get_query_argument("callback", None) or self.get_query_argument("jsonp", None)
             if callback:
                 out = callback + "(" + out + ");"  # wrap with JSONP call if requested
-        except Exception as e:  # if we fail to generate the output fake an error
+        except Exception as error:  # if we fail to generate the output fake an error
             logger.debug(f"API :: {traceback.format_exc()}")
-            out = f'{{"result": "{result_type_map[RESULT_ERROR]}", "message": "error while composing output: {e}"}}'
+            out = f'{{"result": "{result_type_map[RESULT_ERROR]}", "message": "error while composing output: {error}"}}'
         return out
 
     def call_dispatcher(self, args, kwargs):  # pylint:disable=too-many-branches
@@ -143,8 +143,8 @@ class ApiHandler(RequestHandler):
         or calls the TVDBShorthandWrapper when the first args element is a number
         or returns an error that there is no such cmd
         """
-        logger.debug("API :: all args: '" + str(args) + "'")
-        logger.debug("API :: all kwargs: '" + str(kwargs) + "'")
+        logger.debug(f"API :: all args: '{args}'")
+        logger.debug(f"API :: all kwargs: '{kwargs}'")
 
         commands = None
         if args:
@@ -163,7 +163,7 @@ class ApiHandler(RequestHandler):
                 else:
                     cmd_index = None
 
-                logger.debug("API :: " + cmd + ": cur_kwargs " + str(cur_kwargs))
+                logger.debug(f"API :: {cmd}: cur_kwargs {cur_kwargs}")
                 if not (
                     cmd in ("show.getbanner", "show.getfanart", "show.getnetworklogo", "show.getposter") and multi_commands
                 ):  # skip these cmd while chaining
@@ -178,12 +178,12 @@ class ApiHandler(RequestHandler):
                             to_call.rh = self
                             cur_out_dict = to_call.run()
                         else:
-                            cur_out_dict = _responds(RESULT_ERROR, "No such cmd: '" + cmd + "'")
+                            cur_out_dict = _responds(RESULT_ERROR, f"No such cmd: '{cmd}'")
                     except ApiError as error:  # Api errors that we raised, they are harmless
                         logger.info(traceback.format_exc())
-                        cur_out_dict = _responds(RESULT_ERROR, msg=str(error))
+                        cur_out_dict = _responds(RESULT_ERROR, msg=f"{error}")
                 else:  # if someone chained one of the forbidden commands they will get an error for this one cmd
-                    cur_out_dict = _responds(RESULT_ERROR, msg="The cmd '" + cmd + "' is not supported while chaining")
+                    cur_out_dict = _responds(RESULT_ERROR, msg=f"The cmd '{cmd}' is not supported while chaining")
 
                 if multi_commands:
                     # note: if duplicate commands are issued and one has an index defined it will override
@@ -406,7 +406,7 @@ class ApiCall(ApiHandler):
 
             if error:
                 # this is kinda a ApiError but raising an error is the only way of quitting here
-                raise ApiError("param: '" + str(name) + "' with given value: '" + str(value) + "' is out of allowed range '" + str(allowed_values) + "'")
+                raise ApiError(f"param: '{name}' with given value: '{value}' is out of allowed range '{allowed_values}'")
 
 
 # noinspection PyAbstractClass
@@ -1009,7 +1009,7 @@ class CMDEpisodeSetStatus(ApiCall):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 settings.searchQueueScheduler.action.add_item(cur_backlog_queue_item)  # @UndefinedVariable
 
-                logger.info("API :: Starting backlog for " + show_obj.name + " season " + str(season) + " because some episodes were set to WANTED")
+                logger.info(f"API :: Starting backlog for {show_obj.name} season {season} because some episodes were set to WANTED")
 
             extra_msg = " Backlog started"
 
@@ -1736,11 +1736,11 @@ class CMDSickChillSearchIndexers(ApiCall):
         elif self.indexerid:
             indexer, result = sickchill.indexer.search_indexers_for_series_id(indexerid=self.indexerid, language=self.lang)
             if not indexer:
-                logger.warning("API :: Unable to find show with id " + str(self.indexerid))
+                logger.warning(f"API :: Unable to find show with id {self.indexerid}")
                 return _responds(RESULT_SUCCESS, {"results": [], "langid": lang_id})
 
             if not result.seriesName:
-                logger.debug("API :: Found show with indexerid: " + str(self.indexerid) + ", however it contained no show name")
+                logger.debug(f"API :: Found show with indexerid: {self.indexerid}, however it contained no show name")
                 return _responds(RESULT_FAILURE, msg="Show contains no name, invalid result")
 
             results = [{indexer_ids[indexer]: result.id, "name": str(result.seriesName), "first_aired": result.firstAired, "indexer": indexer}]
@@ -2726,9 +2726,9 @@ class CMDShowUpdate(ApiCall):
         try:
             settings.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
-        except CantUpdateShowException as e:
-            logger.debug("API::Unable to update show: {0}".format(e))
-            return _responds(RESULT_FAILURE, msg="Unable to update " + str(show_obj.name))
+        except CantUpdateShowException as error:
+            logger.debug("API::Unable to update show: {0}".format(error))
+            return _responds(RESULT_FAILURE, msg=f"Unable to update {show_obj.name}")
 
 
 # noinspection PyAbstractClass

@@ -444,8 +444,8 @@ class NumDictTest(unittest.TestCase):
         num_dict_e = NumDictE()
         try:
             num_dict_e[42]
-        except RuntimeError as err:
-            assert err.args == (42,)
+        except RuntimeError as error:
+            assert error.args == (42,)
         else:
             self.fail("num_dict_e[42] didn't raise RuntimeError")
 
@@ -462,8 +462,8 @@ class NumDictTest(unittest.TestCase):
         num_dict_f = NumDictF()
         try:
             num_dict_f[42]
-        except KeyError as err:
-            assert err.args == (42,)
+        except KeyError as error:
+            assert error.args == (42,)
         else:
             self.fail("num_dict_f[42] didn't raise KeyError")
 
@@ -477,8 +477,8 @@ class NumDictTest(unittest.TestCase):
         num_dict_g = NumDictG()
         try:
             num_dict_g[42]
-        except KeyError as err:
-            assert err.args == (42,)
+        except KeyError as error:
+            assert error.args == (42,)
         else:
             self.fail("num_dict_g[42] didn't raise KeyError")
 

@@ -569,7 +569,7 @@ class Manage(Home, WebRoot):
             )
 
             if curErrors:
-                logger.exception("Errors: " + str(curErrors))
+                logger.exception(f"Errors: {curErrors}")
                 errors.append("<b>{0}:</b>\n<ul>".format(show_obj.name) + " ".join(["<li>{0}</li>".format(error) for error in curErrors]) + "</ul>")
 
         if errors:
@@ -618,16 +618,16 @@ class Manage(Home, WebRoot):
                 try:
                     settings.showQueueScheduler.action.update_show(show_obj, True)
                     updates.append(show_obj.name)
-                except CantUpdateShowException as e:
-                    errors.append(_("Unable to update show: {exception_format}").format(exception_format=e))
+                except CantUpdateShowException as error:
+                    errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
 
             # don't bother refreshing shows that were updated anyway
             if curShowID in toRefresh and curShowID not in toUpdate:
                 try:
                     settings.showQueueScheduler.action.refresh_show(show_obj, force=True)
                     refreshes.append(show_obj.name)
-                except CantRefreshShowException as e:
-                    errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_obj.name, exception_format=e))
+                except CantRefreshShowException as error:
+                    errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_obj.name, exception_format=error))
 
             if curShowID in toRename:
                 settings.showQueueScheduler.action.rename_show_episodes(show_obj)

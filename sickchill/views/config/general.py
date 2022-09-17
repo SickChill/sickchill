@@ -127,6 +127,7 @@ class ConfigGeneral(Config):
         gui_language=None,
         ignore_broken_symlinks=None,
         ended_shows_update_interval=None,
+        log_dir=None,
     ):
 
         results = []
@@ -148,6 +149,8 @@ class ConfigGeneral(Config):
         settings.NOTIFY_ON_UPDATE = config.checkbox_to_value(notify_on_update)
         settings.LOG_NR = log_nr
         settings.LOG_SIZE = float(log_size)
+        if not config.change_log_dir(log_dir):
+            results += [_("Unable to create directory {log_dir} or it is not writable, log directory not changed.").format(log_dir=os.path.normpath(log_dir))]
         settings.WEB_LOG = config.checkbox_to_value(web_log)
 
         settings.TRASH_REMOVE_SHOW = config.checkbox_to_value(trash_remove_show)

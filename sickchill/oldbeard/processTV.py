@@ -56,15 +56,15 @@ def delete_folder(folder, check_empty=True):
         try:
             logger.info(f"Deleting folder (if it's empty): {folder}")
             os.rmdir(folder)
-        except (OSError, IOError) as e:
-            logger.warning(f"Warning: unable to delete folder: {folder}: {str(e)}")
+        except (OSError, IOError) as error:
+            logger.warning(f"Warning: unable to delete folder: {folder}: {error}")
             return False
     else:
         try:
             logger.info("Deleting folder: " + folder)
             shutil.rmtree(folder)
-        except (OSError, IOError) as e:
-            logger.warning(f"Warning: unable to delete folder: {folder}: {str(e)}")
+        except (OSError, IOError) as error:
+            logger.warning(f"Warning: unable to delete folder: {folder}: {error}")
             return False
 
     return True
@@ -99,12 +99,12 @@ def delete_files(process_path, unwanted_files, result, force=False):
             result.output += log_helper(f"Changing ReadOnly Flag for file: {cur_file}", logger.DEBUG)
             try:
                 os.chmod(cur_file_path, stat.S_IWRITE)
-            except OSError as e:
-                result.output += log_helper(f"Cannot change permissions of {cur_file_path}: {str(e)}", logger.DEBUG)
+            except OSError as error:
+                result.output += log_helper(f"Cannot change permissions of {cur_file_path}: {error}", logger.DEBUG)
         try:
             os.remove(cur_file_path)
-        except OSError as e:
-            result.output += log_helper(f"Unable to delete file {cur_file}: {e.strerror}", logger.DEBUG)
+        except OSError as error:
+            result.output += log_helper(f"Unable to delete file {cur_file}: {error}", logger.DEBUG)
 
 
 def log_helper(message, level=logging.INFO):
@@ -155,13 +155,13 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
         if release_name and validators.url(release_name) == True:
-            result.output += log_helper(_(f"Processing {release_name}"), logger.INFO)
+            result.output += log_helper(_("Processing {release_name}").format(release_name=release_name))
             generator_to_use = [("", [], [release_name])]
         elif release_name and (is_media_file(release_name) or is_rar_file(release_name)):
-            result.output += log_helper(_(f"Processing {release_name}"), logger.INFO)
+            result.output += log_helper(_("Processing {release_name}").format(release_name=release_name))
             generator_to_use = [(process_path, [], [release_name])]
         else:
-            result.output += log_helper(_(f"Processing {process_path}"), logger.INFO)
+            result.output += log_helper(_("Processing {process_path}").format(process_path=process_path))
             generator_to_use = os.walk(process_path, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS)
 
         for current_directory, directory_names, filenames in generator_to_use:
@@ -176,7 +176,10 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
                         for extracted_directory in extracted_directories:
                             if extracted_directory.split(current_directory)[-1] not in directory_names:
                                 result.output += log_helper(
-                                    _(f"Adding extracted directory to the list of directories to process: {extracted_directory}"), logger.DEBUG
+                                    _("Adding extracted directory to the list of directories to process: {extracted_directory}").format(
+                                        extracted_directory=extracted_directory
+                                    ),
+                                    logger.DEBUG,
                                 )
                                 directories_from_rars.add(extracted_directory)
 
@@ -196,12 +199,12 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
             # noinspection PyTypeChecker
             unwanted_files = [x for x in filenames if x in video_files + rar_files]
             if unwanted_files:
-                result.output += log_helper(_(f"Found unwanted files: {unwanted_files}"), logger.DEBUG)
+                result.output += log_helper(_("Found unwanted files: {unwanted_files}").format(unwanted_files=unwanted_files), logger.DEBUG)
 
             delete_folder(os.path.join(current_directory, "@eaDir"), False)
             delete_files(current_directory, unwanted_files, result)
             if delete_folder(current_directory, check_empty=not delete_on):
-                result.output += log_helper(_(f"Deleted folder: {current_directory}"), logger.DEBUG)
+                result.output += log_helper(_("Deleted folder: {current_directory}").format(current_directory=current_directory), logger.DEBUG)
 
         # For processing extracted rars, only allow methods 'move' and 'copy'.
         # On different methods fall back to 'move'.
@@ -402,8 +405,8 @@ def unrar(path, rar_files, force, result):
                 failure = ("Invalid Rar Archive", "Unpacking Failed with an Invalid Rar Archive Error")
             except NeedFirstVolume:
                 continue
-            except (Exception, Error) as e:
-                failure = (str(e), "Unpacking failed")
+            except (Exception, Error) as error:
+                failure = (error, "Unpacking failed")
             finally:
                 if rar_handle:
                     del rar_handle
@@ -489,9 +492,9 @@ def process_media(process_path, video_files, release_name, process_method, force
             processor = postProcessor.PostProcessor(cur_video_file_path, release_name, process_method, is_priority)
             result.result = processor.process()
             process_fail_message = ""
-        except EpisodePostProcessingFailedException as e:
+        except EpisodePostProcessingFailedException as error:
             result.result = False
-            process_fail_message = str(e)
+            process_fail_message = error
 
         if processor:
             result.output += processor.log
@@ -516,9 +519,9 @@ def process_failed(process_path, release_name, result):
         processor = failedProcessor.FailedProcessor(process_path, release_name)
         result.result = processor.process()
         process_fail_message = ""
-    except FailedPostProcessingFailedException as e:
+    except FailedPostProcessingFailedException as error:
         result.result = False
-        process_fail_message = str(e)
+        process_fail_message = error
 
     if processor:
         result.output += processor.log

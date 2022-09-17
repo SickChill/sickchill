@@ -58,8 +58,8 @@ class PipUpdateManager(UpdateManagerBase):
             newest_tag = "newer_version_available"
             update_url = self.get_update_url()
             newest_text = _(
-                f'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> &mdash; <a href="{update_url}">Update Now</a>'
-            )
+                'There is a <a href="{url}" onclick="window.open(this.href); return false;">newer version available</a> &mdash; <a href="{update_url}">Update Now</a>'
+            ).format(url=url, update_url=update_url)
 
         else:
             return

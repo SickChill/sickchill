@@ -122,8 +122,8 @@ class Provider(TorrentProvider):
             elif error == (-32002, "Call Limit Exceeded"):
                 logger.warning("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
             else:
-                logger.exception("JSON-RPC protocol error while accessing provider. Error: {0} ".format(repr(error)))
-            parsed_json = {"api-error": str(error)}
+                logger.exception(f"JSON-RPC protocol error while accessing provider. Error: {error} ")
+            parsed_json = {"api-error": f"{error}"}
             return parsed_json
 
         except socket.timeout:
@@ -131,13 +131,13 @@ class Provider(TorrentProvider):
 
         except socket.error as error:
             # Note that sometimes timeouts are thrown as socket errors
-            logger.warning("Socket error while accessing provider. Error: {0} ".format(error[1]))
+            logger.warning(f"Socket error while accessing provider. Error: {error}")
 
         except Exception as error:
-            errorstring = str(error)
+            errorstring = f"{error}"
             if errorstring.startswith("<") and errorstring.endswith(">"):
                 errorstring = errorstring[1:-1]
-            logger.warning("Unknown error while accessing provider. Error: {0} ".format(errorstring))
+            logger.warning(f"Unknown error while accessing provider. Error: {errorstring}")
 
         return parsed_json
 

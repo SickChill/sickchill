@@ -105,8 +105,8 @@ class TorrentProvider(GenericProvider):
     def _verify_download(self, filename):
         try:
             bencodepy.bread(filename)
-        except bencodepy.BencodeDecodeError as e:
-            logger.debug("Failed to validate torrent file: {0}".format(str(e)))
+        except bencodepy.BencodeDecodeError as error:
+            logger.debug(f"Failed to validate torrent file: {error}")
             logger.debug("Result is not a valid torrent file")
             return False
         return True

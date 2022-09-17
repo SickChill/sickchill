@@ -159,7 +159,7 @@ class Home(WebRoot):
         sql_statement += " ORDER BY airdate ASC LIMIT 1) AS ep_airs_next,"
 
         sql_statement += " (SELECT airdate FROM tv_episodes WHERE showid=tv_eps.showid AND airdate > 1"
-        sql_statement += (" AND season > 0", "")[settings.DISPLAY_SHOW_SPECIALS] + " AND status <> " + str(UNAIRED)
+        sql_statement += (" AND season > 0", "")[settings.DISPLAY_SHOW_SPECIALS] + f" AND status <> {UNAIRED}"
         sql_statement += " ORDER BY airdate DESC LIMIT 1) AS ep_airs_prev,"
 
         # @TODO: Store each show_size in tv_shows. also change in displayShow.mako:250, where we use helpers.get_size()
@@ -327,7 +327,7 @@ class Home(WebRoot):
         key = self.get_query_argument("key")
         # noinspection PyProtectedMember
         result = notifiers.twitter_notifier._get_credentials(key)
-        logger.info("result: " + str(result))
+        logger.info(f"result: {result}")
         if result:
             return _("Key verification successful")
         else:
@@ -534,14 +534,14 @@ class Home(WebRoot):
 
     def testFlareSolverr(self):
         uri = self.get_body_argument("flaresolverr_uri")
-        logger.debug(_(f"Checking flaresolverr uri: {uri}"))
+        logger.debug(_("Checking flaresolverr uri: {uri}").format(uri=uri))
         try:
             requests.head(uri)
             result = _("Successfully connected to flaresolverr, this is experimental!")
         except (requests.ConnectionError, requests.RequestException):
             result = _("Failed to connect to flaresolverr")
 
-        logger.debug(_(f"Flaresolverr result: {result}"))
+        logger.debug(_("Flaresolverr result: {result}").format(result=result))
         return result
 
     @staticmethod
@@ -1033,9 +1033,9 @@ class Home(WebRoot):
                     try:
                         anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name, cache_dir=Path(settings.CACHE_DIR))
                         groups = anime.get_groups()
-                    except Exception as e:
+                    except Exception as error:
                         ui.notifications.error(_("Unable to retreive Fansub Groups from AniDB."))
-                        logger.debug("Unable to retreive Fansub Groups from AniDB. Error is {0}".format(e))
+                        logger.debug(f"Unable to retreive Fansub Groups from AniDB. Error is {error}")
 
             with show_obj.lock:
                 show = show_obj
@@ -1184,8 +1184,8 @@ class Home(WebRoot):
                 show_obj.season_folders = season_folders
                 try:
                     settings.showQueueScheduler.action.refresh_show(show_obj)
-                except CantRefreshShowException as e:
-                    errors.append(_("Unable to refresh this show: {error}").format(error=e))
+                except CantRefreshShowException as error:
+                    errors.append(_("Unable to refresh this show: {error}").format(error=error))
 
             show_obj.paused = paused
             show_obj.scene = scene
@@ -1217,8 +1217,8 @@ class Home(WebRoot):
                         show_obj.location = location
                         try:
                             settings.showQueueScheduler.action.refresh_show(show_obj, True)
-                        except CantRefreshShowException as e:
-                            errors.append(_("Unable to refresh this show: {error}").format(error=e))
+                        except CantRefreshShowException as error:
+                            errors.append(_("Unable to refresh this show: {error}").format(error=error))
                             # grab updated info from TVDB
                             # show_obj.loadEpisodesFromIndexer()
                             # rescan the episodes in the new folder
@@ -1238,8 +1238,8 @@ class Home(WebRoot):
             try:
                 settings.showQueueScheduler.action.update_show(show_obj, True)
                 time.sleep(cpu_presets[settings.CPU_PRESET])
-            except CantUpdateShowException as e:
-                errors.append(_("Unable to update show: {error}").format(error=e))
+            except CantUpdateShowException as error:
+                errors.append(_("Unable to update show: {error}").format(error=error))
 
         import traceback
 
@@ -1317,7 +1317,7 @@ class Home(WebRoot):
 
         time.sleep(cpu_presets[settings.CPU_PRESET])
 
-        return self.redirect("/home/displayShow?show=" + str(show.indexerid))
+        return self.redirect(f"/home/displayShow?show={show.indexerid}")
 
     def updateShow(self, show=None, force=0):
 
@@ -1332,13 +1332,13 @@ class Home(WebRoot):
         # force the update
         try:
             settings.showQueueScheduler.action.update_show(show_obj, bool(force))
-        except CantUpdateShowException as e:
-            ui.notifications.error(_("Unable to update this show."), str(e))
+        except CantUpdateShowException as error:
+            ui.notifications.error(_("Unable to update this show."), f"{error}")
 
         # just give it some time
         time.sleep(cpu_presets[settings.CPU_PRESET])
 
-        return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
+        return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
     def subtitleShow(self, show=None, force=0):
 
@@ -1355,7 +1355,7 @@ class Home(WebRoot):
 
         time.sleep(cpu_presets[settings.CPU_PRESET])
 
-        return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
+        return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
     def updateKODI(self, show=None):
         showName = None
@@ -1377,7 +1377,7 @@ class Home(WebRoot):
             ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
 
         if show_obj:
-            return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
+            return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
         else:
             return self.redirect("/home/")
 
@@ -1400,7 +1400,7 @@ class Home(WebRoot):
             ui.notifications.error(_("Unable to contact Emby host: {emby_host}").format(emby_host=settings.EMBY_HOST))
 
         if show_obj:
-            return self.redirect("/home/displayShow?show=" + str(show_obj.indexerid))
+            return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
         else:
             return self.redirect("/home/")
 
@@ -1502,11 +1502,10 @@ class Home(WebRoot):
                 if data["seasons"]:
                     upd = ""
                     if int(status) in [WANTED, FAILED]:
-                        logger.debug("Add episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " to Watchlist")
+                        logger.debug(f"Add episodes, showid: indexerid {show_obj.indexerid}, Title {show_obj.name} to Watchlist")
                         upd = "add"
                     elif int(status) in [IGNORED, SKIPPED] + Quality.DOWNLOADED + Quality.ARCHIVED:
-                        # noinspection PyPep8
-                        logger.debug("Remove episodes, showid: indexerid " + str(show_obj.indexerid) + ", Title " + str(show_obj.name) + " from Watchlist")
+                        logger.debug(f"Remove episodes, showid: indexerid {show_obj.indexerid}, Title {show_obj.name} from Watchlist")
                         upd = "remove"
 
                     if upd:
@@ -1524,8 +1523,8 @@ class Home(WebRoot):
                 cur_backlog_queue_item = search_queue.BacklogQueueItem(show_obj, segment)
                 settings.searchQueueScheduler.action.add_item(cur_backlog_queue_item)
 
-                msg += "<li>" + _("Season") + " " + str(season) + "</li>"
-                logger.info("Sending backlog for " + show_obj.name + " season " + str(season) + " because some eps were set to wanted")
+                msg += "<li>" + _("Season") + f" {season}</li>"
+                logger.info(f"Sending backlog for {show_obj.name} season {season} because some eps were set to wanted")
 
             msg += "</ul>"
 
@@ -1542,8 +1541,8 @@ class Home(WebRoot):
                 cur_failed_queue_item = search_queue.FailedQueueItem(show_obj, segment)
                 settings.searchQueueScheduler.action.add_item(cur_failed_queue_item)
 
-                msg += "<li>" + _("Season") + " " + str(season) + "</li>"
-                logger.info("Retrying Search for " + show_obj.name + " season " + str(season) + " because some eps were set to failed")
+                msg += "<li>" + _("Season") + f" {season}</li>"
+                logger.info(f"Retrying Search for {show_obj.name} season {season} because some eps were set to failed")
 
             msg += "</ul>"
 
@@ -1688,7 +1687,7 @@ class Home(WebRoot):
             result = json.dumps({"result": "failure", "message": _("Result not found in the cache")})
 
         if isinstance(result, str):
-            sickchill.logger.info(_(f"Could not snatch manually selected result: {result}"))
+            sickchill.logger.info(_("Could not snatch manually selected result: {result}").format(result=result))
         elif isinstance(result, sickchill.oldbeard.classes.SearchResult):
             sickchill.oldbeard.search.snatchEpisode(result, SNATCHED_BEST)
 
@@ -1722,7 +1721,7 @@ class Home(WebRoot):
             show_obj = Show.find(settings.showList, int(search_thread.show.indexerid))
 
             if not show_obj:
-                logger.warning("No Show Object found for show with indexerID: " + str(search_thread.show.indexerid))
+                logger.warning(f"No Show Object found for show with indexerID: {search_thread.show.indexerid}")
                 return results
 
             # noinspection PyProtectedMember

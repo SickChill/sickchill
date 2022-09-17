@@ -239,7 +239,7 @@ class Provider(TorrentProvider):
         try:
             parse_result = NameParser(tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
-            logger.debug("{0}".format(error))
+            logger.debug(f"{error}")
             return False
 
         main_db_con = db.DBConnection()

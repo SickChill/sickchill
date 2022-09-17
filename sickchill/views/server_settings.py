@@ -202,7 +202,7 @@ class SRWebServer(threading.Thread):
             protocol = "http"
             ssl_options = None
 
-        logger.info("Starting SickChill on " + protocol + "://" + str(self.options["host"]) + ":" + str(self.options["port"]) + "/")
+        logger.info(f"Starting SickChill on {protocol}://{self.options['host']}:{self.options['port']}/")
 
         try:
             self.server = self.app.listen(

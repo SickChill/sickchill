@@ -252,4 +252,4 @@ class GenericClient(object):
                 return False, "Failed to authenticate with {0}".format(self.name)
         except Exception as error:
             helpers.handle_requests_exception(error)
-            return False, "{0}".format(error)
+            return False, f"{error}"

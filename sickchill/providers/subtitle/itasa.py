@@ -317,7 +317,7 @@ class ItaSAProvider(Provider):
 
         # Look for year
         params = {"apikey": self.apikey}
-        r = self.session.get(self.server_url + "shows/" + str(show_id), params=params, timeout=30)
+        r = self.session.get(self.server_url + f"{self.server_url}shows/{show_id}", params=params, timeout=30)
         r.raise_for_status()
         root = ElementTree.fromstring(r.content)
 

@@ -48,26 +48,26 @@ class Notifier(object):
         # send the request to Free Mobile
         try:
             urllib.request.urlopen(req)
-        except IOError as e:
-            if hasattr(e, "code"):
-                if e.code == 400:
+        except IOError as error:
+            if hasattr(error, "code"):
+                if error.code == 400:
                     message = "Missing parameter(s)."
                     logger.exception(message)
                     return False, message
-                if e.code == 402:
+                if error.code == 402:
                     message = "Too much SMS sent in a short time."
                     logger.exception(message)
                     return False, message
-                if e.code == 403:
+                if error.code == 403:
                     message = "API service isn't enabled in your account or ID / API key is incorrect."
                     logger.exception(message)
                     return False, message
-                if e.code == 500:
+                if error.code == 500:
                     message = "Server error. Please retry in few moment."
                     logger.exception(message)
                     return False, message
-        except Exception as e:
-            message = "Error while sending SMS: {0}".format(e)
+        except Exception as error:
+            message = f"Error while sending SMS: {error}"
             logger.exception(message)
             return False, message
 

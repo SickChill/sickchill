@@ -154,7 +154,7 @@ class DiscordTask(generic_queue.QueueItem):
             )
             r.raise_for_status()
         except Exception as error:
-            logger.exception("Error Sending Discord message: " + str(error))
+            logger.exception(f"Error Sending Discord message: {error}")
 
             return False
 

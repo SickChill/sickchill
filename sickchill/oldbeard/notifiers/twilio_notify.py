@@ -65,10 +65,10 @@ class Notifier(object):
                 to=settings.TWILIO_TO_NUMBER,
                 from_=self.number.phone_number,
             )
-        except TwilioException as e:
-            logger.exception("Twilio notification failed:" + str(e))
+        except TwilioException as error:
+            logger.exception(f"Twilio notification failed: {error}")
 
             if allow_raise:
-                raise e
+                raise error
 
         return True

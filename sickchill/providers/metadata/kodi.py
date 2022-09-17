@@ -216,7 +216,7 @@ class KODIMetadata(generic.GenericMetadata):
                 logger.debug("Not generating nfo because the ep has no airdate")
                 return None
 
-            logger.debug("Creating metadata for episode " + str(ep_obj.season) + "x" + str(ep_obj.episode))
+            logger.debug(f"Creating metadata for episode {ep_obj.season}x{ep_obj.episode}")
 
             if len(eps_to_write) > 1:
                 episode = ElementTree.SubElement(rootNode, "episodedetails")

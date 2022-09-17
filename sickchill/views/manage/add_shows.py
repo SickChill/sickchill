@@ -62,11 +62,15 @@ class AddShows(Home):
 
         # Query Indexers for each search term and build the list of results
         for i, j in sickchill.indexer if not int(indexer) else [(int(indexer), None)]:
-            logger.debug(_(f"Searching for Show with search term(s): {search_terms} on Indexer: {sickchill.indexer[i].name} (exact: {exact})"))
+            logger.debug(
+                _("Searching for Show with search term(s): {search_terms} on Indexer: {indexer_name} (exact: {exact})").format(
+                    search_terms=search_terms, indexer_name=j.name, exact=exact
+                )
+            )
             for term in search_terms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = sickchill.indexer[i].search(term, language=lang, exact=exact)
+                    indexerResults = j.search(term, language=lang, exact=exact)
                 except Exception:
                     logger.exception(traceback.format_exc())
                     continue
@@ -81,7 +85,7 @@ class AddShows(Home):
                     (
                         sickchill.indexer.name(i),
                         i,
-                        sickchill.indexer[i].show_url,
+                        j.show_url,
                         show["id"],
                         show["seriesName"],
                         show["firstAired"],
@@ -301,8 +305,8 @@ class AddShows(Home):
         black_list = False
         try:
             trending_shows, black_list = trakt_trending.fetch_trending_shows(traktList, page_url)
-        except Exception as e:
-            logger.warning("Could not get trending shows: {0}".format(str(e)))
+        except Exception as error:
+            logger.warning(f"Could not get trending shows: {error}")
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
@@ -323,7 +327,7 @@ class AddShows(Home):
             popular_shows = imdb_popular.fetch_popular_shows()
             imdb_exception = None
         except Exception as error:
-            logger.warning("Could not get popular shows: {0}".format(str(error)))
+            logger.warning(f"Could not get popular shows: {error}")
             logger.debug(traceback.format_exc())
             popular_shows = None
             imdb_exception = error
@@ -344,7 +348,7 @@ class AddShows(Home):
         Fetches data from IMDB to show a list of popular shows.
         """
         t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
-        e = None
+        error = None
 
         if self.get_body_argument("submit", None):
             tvdb_user = self.get_body_argument("tvdb_user")
@@ -355,16 +359,16 @@ class AddShows(Home):
 
         try:
             favorite_shows = favorites.fetch_indexer_favorites()
-        except Exception as e:
+        except Exception as error:
             logger.exception(traceback.format_exc())
-            logger.warning(_("Could not get favorite shows: {0}").format(str(e)))
+            logger.warning(_("Could not get favorite shows: {error}").format(error=error))
             favorite_shows = None
 
         return t.render(
             title=_("Favorite Shows"),
             header=_("Favorite Shows"),
             favorite_shows=favorite_shows,
-            favorites_exception=e,
+            favorites_exception=error,
             topmenu="home",
             controller="addShows",
             action="popularShows",

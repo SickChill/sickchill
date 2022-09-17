@@ -21,8 +21,8 @@ class Client(GenericClient, DelugeBase):
 
         try:
             self.response = self.session.post(self.url, data=post_data, verify=settings.TORRENT_VERIFY_CERT)
-        except Exception as e:
-            logger.info(e)
+        except Exception as error:
+            logger.info(error)
             return None
 
         self.auth = self.response.json()["result"]

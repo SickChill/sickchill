@@ -92,7 +92,7 @@ def initialize(consoleLogging=True):
         if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
             settings.DEFAULT_PAGE = "home"
 
-        settings.LOG_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
+        settings.LOG_DIR = check_setting_str(settings.CFG, "General", "log_dir", os.path.normpath(os.path.join(settings.DATA_DIR, "Logs")))
         settings.LOG_NR = check_setting_int(settings.CFG, "General", "log_nr", 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         settings.LOG_SIZE = check_setting_float(settings.CFG, "General", "log_size", 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
@@ -100,8 +100,8 @@ def initialize(consoleLogging=True):
             settings.LOG_SIZE = 10.0
         fileLogging = True
 
-        if not helpers.makeDir(settings.LOG_DIR):
-            sys.stderr.write("!!! No log folder, logging to screen only!\n")
+        if not helpers.makeDir(settings.LOG_DIR) or not os.access(settings.LOG_DIR, os.W_OK):
+            sys.stderr.write("!!! No log folder or log folder not writable, logging to console only!\n")
             fileLogging = False
 
         # init logging
@@ -141,21 +141,21 @@ def initialize(consoleLogging=True):
                         logger.exception(f"Restore: restoring cache failed: {er}")
 
                 restoreCache(os.path.join(restoreDir, "cache"), settings.CACHE_DIR)
-        except Exception as e:
-            logger.exception(f"Restore: restoring cache failed: {str(e)}")
+        except Exception as error:
+            logger.exception(f"Restore: restoring cache failed: {error}")
         finally:
             if os.path.exists(os.path.join(settings.DATA_DIR, "restore")):
                 try:
                     shutil.rmtree(os.path.join(settings.DATA_DIR, "restore"))
-                except Exception as e:
-                    logger.exception(f"Restore: settings.Unable to remove the restore directory: {str(e)}")
+                except Exception as error:
+                    logger.exception(f"Restore: settings.Unable to remove the restore directory: {error}")
 
                 for cleanupDir in ["mako", "sessions", "indexers", "rss"]:
                     try:
                         shutil.rmtree(os.path.join(settings.CACHE_DIR, cleanupDir))
-                    except Exception as e:
+                    except Exception as error:
                         if cleanupDir not in ["rss", "sessions", "indexers"]:
-                            logger.info(f"Restore: Unable to remove the cache/{cleanupDir} directory: {str(e)}")
+                            logger.info(f"Restore: Unable to remove the cache/{cleanupDir} directory: {error}")
 
         settings.IMAGE_CACHE = image_cache.ImageCache()
         settings.THEME_NAME = check_setting_str(settings.CFG, "GUI", "theme_name", "dark")
@@ -1135,6 +1135,7 @@ def save_config():
                 "encryption_secret": settings.ENCRYPTION_SECRET,
                 "log_nr": int(settings.LOG_NR),
                 "log_size": float(settings.LOG_SIZE),
+                "log_dir": settings.LOG_DIR,
                 "socket_timeout": settings.SOCKET_TIMEOUT,
                 "web_port": settings.WEB_PORT,
                 "web_host": settings.WEB_HOST,

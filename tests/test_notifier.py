@@ -35,11 +35,11 @@ class NotifierTests(conftest.SickChillTestDBCase):
         # the new method.
         for show_counter in range(100, 100 + num_legacy_shows):
             show = TVShow(1, show_counter)
-            show.name = "Show " + str(show_counter)
+            show.name = f"Show {show_counter}"
             show.episodes = []
             for episode_counter in range(0, num_episodes_per_show):
                 episode = TVEpisode(show, conftest.SEASON, episode_counter)
-                episode.name = "Episode " + str(episode_counter + 1)
+                episode.name = f"Episode {episode_counter + 1}"
                 episode.quality = "SDTV"
                 show.episodes.append(episode)
             show.saveToDB()
@@ -47,11 +47,11 @@ class NotifierTests(conftest.SickChillTestDBCase):
 
         for show_counter in range(200, 200 + num_shows):
             show = TVShow(1, show_counter)
-            show.name = "Show " + str(show_counter)
+            show.name = f"Show {show_counter}"
             show.episodes = []
             for episode_counter in range(0, num_episodes_per_show):
                 episode = TVEpisode(show, conftest.SEASON, episode_counter)
-                episode.name = "Episode " + str(episode_counter + 1)
+                episode.name = f"Episode {episode_counter + 1}"
                 episode.quality = "SDTV"
                 show.episodes.append(episode)
             show.saveToDB()

@@ -112,7 +112,7 @@ class TIVOMetadata(generic.GenericMetadata):
             metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), ".meta")
             metadata_file_path = os.path.join(metadata_dir_name, metadata_filename)
         else:
-            logger.debug("Episode location doesn't exist: " + str(ep_obj.location))
+            logger.debug(f"Episode location doesn't exist: {ep_obj.location}")
             return ""
         return metadata_file_path
 
@@ -169,7 +169,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # This seems to disappear once the video is transferred to TiVo.
 
             # NOTE: May not be correct format, missing season, but based on description from wiki leaving as is.
-            data += "episodeNumber : " + str(curEpToWrite.episode) + "\n"
+            data += f"episodeNumber : {curEpToWrite.episode}\n"
 
             # Must be entered as true or false. If true, the year from originalAirDate will be shown in parentheses
             # after the episode's title and before the description on the Program screen.
@@ -200,7 +200,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # capitalized and never changes). This is the original air date of the episode.
             # NOTE: Hard coded the time to T00:00:00Z as we really don't know when during the day the first run happened.
             if curEpToWrite.airdate != datetime.date.min:
-                data += "originalAirDate : " + str(curEpToWrite.airdate) + "T00:00:00Z\n"
+                data += f"originalAirDate : {curEpToWrite.airdate}T00:00:00Z\n"
 
             # This shows up at the beginning of the description on the Program screen and on the Details screen.
             for actor in ep_obj.idxr.actors(myShow):
@@ -216,18 +216,18 @@ class TIVOMetadata(generic.GenericMetadata):
                 # convert 10 to 4 star rating. 4 * rating / 10
                 # only whole numbers or half numbers work. multiply by 2, round, divide by 2.0
                 rating = round(8 * rating / 10) / 2.0
-                data += "starRating : " + str(rating) + "\n"
+                data += f"starRating : {rating}\n"
 
             # This is shown on both the Program screen and the Details screen.
             # It uses the standard TV rating system of: TV-Y7, TV-Y, TV-G, TV-PG, TV-14, TV-MA and TV-NR.
             if getattr(myShow, "rating", None):
-                data += "tvRating : " + str(str(myShow.rating)) + "\n"
+                data += f"tvRating : {myShow.rating}\n"
 
             # This field can be repeated as many times as necessary or omitted completely.
             if ep_obj.show.genre:
                 for genre in ep_obj.show.genre:
                     if genre:
-                        data += "vProgramGenre : " + str(genre) + "\n"
+                        data += f"vProgramGenre : {genre}\n"
 
                         # NOTE: The following are metadata keywords are not used
                         # displayMajorNumber
@@ -272,8 +272,8 @@ class TIVOMetadata(generic.GenericMetadata):
             data.write(nfo_file_path)
             helpers.chmodAsParent(nfo_file_path)
 
-        except EnvironmentError as e:
-            logger.error("Unable to write file to " + nfo_file_path + " - are you sure the folder is writable? " + str(e))
+        except EnvironmentError as error:
+            logger.error(f"Unable to write file to {nfo_file_path} - are you sure the folder is writable? {error}")
             return False
 
         return True

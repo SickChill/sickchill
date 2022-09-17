@@ -346,7 +346,9 @@ class QueueItemAdd(ShowQueueItem):
         try:
             s = sickchill.indexer.series_by_id(indexerid=self.indexer_id, indexer=self.indexer, language=self.lang)
             if not s:
-                error_string = _(f"Could not find show with id:{self.indexer_id} on {sickchill.indexer.name(self.indexer)}, skipping")
+                error_string = _("Could not find show with id:{indexer_id} on {indexer}, skipping").format(
+                    indexer_id=self.indexer_id, indexer=sickchill.indexer.name(self.indexer)
+                )
 
                 logger.info(error_string)
                 ui.notifications.error(_("Unable to add show"), error_string)
@@ -358,7 +360,7 @@ class QueueItemAdd(ShowQueueItem):
             # Indexers provided series name
             if self.root_dir and not self.showDir:
                 if not s.seriesName:
-                    logger.info(_(f"Unable to get a show {self.showDir}, can't add the show"))
+                    logger.info(_("Unable to get a show {showDir}, can't add the show").format(showDir=self.showDir))
                     self._finish_early()
                     return
 
@@ -369,16 +371,16 @@ class QueueItemAdd(ShowQueueItem):
                         if year not in show_dir:
                             show_dir = f"{s.seriesName} {year}"
                     except (TypeError, ValueError):
-                        logger.info(_(f"Could not append the show year folder for the show: {show_dir}"))
+                        logger.info(_("Could not append the show year folder for the show: {show_dir}").format(show_dir=show_dir))
 
                 self.showDir = os.path.join(self.root_dir, sanitize_filename(show_dir))
 
                 if settings.ADD_SHOWS_WO_DIR:
-                    logger.info(_(f"Skipping initial creation of {self.showDir} due to config.ini setting"))
+                    logger.info(_("Skipping initial creation of {showDir} due to config.ini setting").format(showDir=self.showDir))
                 else:
                     dir_exists = makeDir(self.showDir)
                     if not dir_exists:
-                        logger.info(_(f"Unable to create the folder {self.showDir}, can't add the show"))
+                        logger.info(_("Unable to create the folder {showDir}, can't add the show").format(showDir=self.showDir))
                         self._finish_early()
                         return
 
@@ -388,9 +390,9 @@ class QueueItemAdd(ShowQueueItem):
             if getattr(s, "seriesName", None) is None:
                 # noinspection PyPep8
                 error_string = _(
-                    f"Show in {self.showDir} has no name on {sickchill.indexer.name(self.indexer)}, probably "
-                    f"searched with the wrong language. Delete .nfo and add manually in the correct language."
-                )
+                    "Show in {showDir} has no name on {indexer}, probably "
+                    "searched with the wrong language. Delete .nfo and add manually in the correct language."
+                ).format(showDir=self.showDir, indexer=sickchill.indexer.name(self.indexer))
 
                 logger.warning(error_string)
                 ui.notifications.error(_("Unable to add show"), error_string)
@@ -443,7 +445,7 @@ class QueueItemAdd(ShowQueueItem):
             self.show.paused = self.paused if self.paused is not None else False
 
             # set up default new/missing episode status
-            logger.info(_(f"Setting all episodes to the specified default status: {self.show.default_ep_status}"))
+            logger.info(_("Setting all episodes to the specified default status: {default_status}").format(default_status=self.default_status))
             self.show.default_ep_status = self.default_status
 
             if self.show.anime:
@@ -475,7 +477,7 @@ class QueueItemAdd(ShowQueueItem):
             return
 
         except MultipleShowObjectsException:
-            error_string = _(f"The show in {self.showDir} is already in your show list, skipping")
+            error_string = _("The show in {showDir} is already in your show list, skipping").format(showDir=self.showDir)
             logger.warning(error_string)
             ui.notifications.error(_("Show skipped"), error_string)
 
@@ -730,7 +732,7 @@ class QueueItemRemove(ShowQueueItem):
             try:
                 settings.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
             except Exception as error:
-                logger.warning(_(f"Unable to delete show from Trakt: {self.show.name}. Error: {error}"))
+                logger.warning(_("Unable to delete show from Trakt: {show_name}. Error: {error}").format(show_name=self.show.name, error=error))
 
         # If any notification fails, don't stop removal
         try:

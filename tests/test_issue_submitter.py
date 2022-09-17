@@ -22,7 +22,7 @@ class IssueSubmitterBasicTests(unittest.TestCase):
             with pytest.raises(Exception):
                 raise Exception("FAKE EXCEPTION")
         except Exception as error:
-            logger.exception("FAKE ERROR: " + str(error))
+            logger.exception(f"FAKE ERROR: {error}")
             logger.submit_errors()
             with pytest.raises(Exception):
                 raise

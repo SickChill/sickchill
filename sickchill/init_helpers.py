@@ -69,7 +69,7 @@ def maybe_daemonize():
         if pid != 0:
             os._exit(0)  # noqa
     except OSError as error:
-        raise SystemExit(f"fork #1 failed: {error.errno}: {error.strerror}\n")
+        raise SystemExit(f"fork #1 failed: {error}\n")
 
     os.setsid()  # @UndefinedVariable - only available in UNIX
 
@@ -86,7 +86,7 @@ def maybe_daemonize():
         if pid != 0:
             os._exit(0)  # noqa
     except OSError as error:
-        raise SystemExit(f"fork #2 failed: {error.errno}: {error.strerror}\n")
+        raise SystemExit(f"fork #2 failed: {error}\n")
 
     # Write pid
     if pid_file:
@@ -96,7 +96,7 @@ def maybe_daemonize():
         try:
             pid_file.write_text(f"{pid}\n")
         except EnvironmentError as error:
-            raise SystemExit(f"Unable to write PID file: {pid_file} Error {error.errno}: {error.strerror}")
+            raise SystemExit(f"Unable to write PID file: {pid_file} Error {error}")
 
     # Redirect all output
     sys.stdout.flush()

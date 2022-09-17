@@ -357,7 +357,7 @@ class UI(WebRoot):
         notifications = ui.notifications.get_notifications(self.request.remote_ip)
         messages = {}
         for index, cur_notification in enumerate(notifications, 1):
-            messages["notification-" + str(index)] = {
+            messages[f"notification-{index}"] = {
                 "hash": hash(cur_notification),
                 "title": cur_notification.title,
                 "message": cur_notification.message,

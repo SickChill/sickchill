@@ -142,8 +142,8 @@ class Provider(TorrentProvider):
 
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                         items.append(result)
-                    except Exception as e:
-                        logger.info(e)
+                    except Exception as error:
+                        logger.info(error)
 
                     continue
 

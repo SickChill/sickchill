@@ -82,8 +82,8 @@ class Notifier(object):
 
         try:
             access_token = oauth_session.fetch_access_token(self.ACCESS_TOKEN_URL, verifier=str(key))
-        except Exception as err:
-            logger.exception("The request for a token with did not succeed: {}".format(err))
+        except Exception as error:
+            logger.exception(f"The request for a token with did not succeed: {error}")
             return False
 
         logger.debug("Your Twitter Access Token key: {0}".format(access_token["oauth_token"]))
@@ -109,8 +109,8 @@ class Notifier(object):
         logger.debug("Sending tweet: {}".format(message))
         try:
             api.PostUpdate(message[:139])
-        except Exception as e:
-            logger.exception("Error Sending Tweet: {}".format(str(e)))
+        except Exception as error:
+            logger.exception(f"Error Sending Tweet: {error}")
             return False
 
         return True
@@ -134,8 +134,8 @@ class Notifier(object):
         logger.debug("Sending DM @{0}: {1}".format(dmdest, message))
         try:
             api.PostDirectMessage(message[:139], screen_name=dmdest)
-        except Exception as e:
-            logger.exception("Error Sending Tweet (DM): {}".format(str(e)))
+        except Exception as error:
+            logger.exception(f"Error Sending Tweet (DM): {error}")
             return False
 
         return True

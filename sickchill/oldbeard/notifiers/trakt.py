@@ -61,8 +61,8 @@ class Notifier(object):
                 # update library
                 trakt_api.traktRequest("sync/collection", data, method="POST")
 
-            except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
+            except (traktException, traktAuthException, traktServerBusy) as error:
+                logger.warning(f"Could not connect to Trakt service: {error}")
 
     @staticmethod
     def update_watchlist(show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
@@ -127,8 +127,8 @@ class Notifier(object):
 
                 trakt_api.traktRequest(trakt_url, data, method="POST")
 
-            except (traktException, traktAuthException, traktServerBusy) as e:
-                logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
+            except (traktException, traktAuthException, traktServerBusy) as error:
+                logger.warning(f"Could not connect to Trakt service: {error}")
                 return False
 
         return True
@@ -193,6 +193,6 @@ class Notifier(object):
                     return "Trakt blacklist doesn't exists"
             else:
                 return "Test notice sent successfully to Trakt"
-        except (traktException, traktAuthException, traktServerBusy) as e:
-            logger.warning("Could not connect to Trakt service: {0}".format(str(e)))
-            return "Test notice failed to Trakt: {0}".format(str(e))
+        except (traktException, traktAuthException, traktServerBusy) as error:
+            logger.warning(f"Could not connect to Trakt service: {error}")
+            return f"Test notice failed to Trakt: {error}"
