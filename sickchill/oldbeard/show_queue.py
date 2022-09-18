@@ -484,7 +484,7 @@ class QueueItemAdd(ShowQueueItem):
             self._finish_early()
             return
 
-        self.show.load_imdb_imfo()
+        self.show.load_imdb_info()
 
         try:
             self.show.saveToDB()
@@ -661,7 +661,7 @@ class QueueItemUpdate(ShowQueueItem):
             self.finish()
             return
 
-        self.show.load_imdb_imfo()
+        self.show.load_imdb_info()
 
         # have to save show before reading episodes from db
         try:
