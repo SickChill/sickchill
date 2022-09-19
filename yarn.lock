@@ -902,9 +902,9 @@ camelcase@^6.3.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001400:
-  version "1.0.30001402"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001402.tgz#aa29e1f47f5055b0d0c07696a67b8b08023d14c8"
-  integrity sha512-Mx4MlhXO5NwuvXGgVb+hg65HZ+bhUYsz8QtDGDo2QmaJS2GBX47Xfi2koL86lc8K+l+htXeTEB/Aeqvezoo6Ew==
+  version "1.0.30001405"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001405.tgz#c7b5ee5ce559ab110f3f98cdba346fd1729f36e1"
+  integrity sha512-lbm+F6HaYFGfjejrTlgB6IZQSZjpA1qcrjGsuvecatP93emI66a41hmQJIW+KNMhcuusgQW0R0E9qvP+Hq7eLg==
 
 caseless@~0.12.0:
   version "0.12.0"
