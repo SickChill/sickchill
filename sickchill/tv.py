@@ -20,15 +20,7 @@ import sickchill
 import sickchill.oldbeard.providers
 import sickchill.oldbeard.scene_numbering
 from sickchill import logger, settings
-from sickchill.helper.common import (
-    dateTimeFormat,
-    episode_num,
-    is_media_file,
-    remove_extension,
-    replace_extension,
-    sanitize_filename,
-    try_int
-)
+from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (
     EpisodeDeletedException,
     EpisodeNotFoundException,
