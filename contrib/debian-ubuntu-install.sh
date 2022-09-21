@@ -77,13 +77,17 @@ if [[ ! "$(getent passwd sickchill)" ]]; then
 fi
 
 if [[ ${SUDO_USER} != "root" ]]; then
-  username=$(whiptail --title 'Add user to group group?' --inputbox "Do you want to add a user to the sickchill group?" --ok-button "Add" --cancel-button "Skip" 8 128 3>&1 1>&2 2>&3)
-  if [[ ${#username} -gt 0 ]]; then
-    echo "Adding $username to the sickchill group"
-    if ! sudo usermod -a -G sickchill "$username"; then
-      whiptail --title "Failed to add user to group" --msgbox "Failed to add $username to the sickchill group" 8 128
-      exit 1
-    fi
+  username=${SUDO_USER}
+else
+  username=
+fi
+
+username=$(whiptail --title 'Add user to group group?' --inputbox "Do you want to add a user to the sickchill group?" --ok-button "Add" --cancel-button "Skip" 8 128 "${username}" 3>&1 1>&2 2>&3)
+if [[ ${#username} -gt 0 ]]; then
+  echo "Adding $username to the sickchill group"
+  if ! sudo usermod -a -G sickchill "$username"; then
+    whiptail --title "Failed to add user to group" --msgbox "Failed to add $username to the sickchill group" 8 128
+    exit 1
   fi
 fi
 
