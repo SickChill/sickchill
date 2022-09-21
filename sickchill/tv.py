@@ -328,7 +328,7 @@ class TVShow(object):
 
         last_update_indexer = datetime.date.fromordinal(self.last_update_indexer)
 
-        # Check for 450 days
+        # Check between 30 and 450 days
         if (update_date - last_airdate) < datetime.timedelta(days=450) and (update_date - last_update_indexer) > datetime.timedelta(days=30):
             return True
 
