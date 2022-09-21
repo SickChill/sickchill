@@ -32,7 +32,7 @@ internal_ip=$(ip r g 8.8.8.8 | awk 'NR==1{print $7};')
 apt-get -qq install whiptail -y
 
 function check_packages {
-  packages=$(dpkg -l unrar openssl libssl-dev python3.9 2>&1 | grep "no packages" | awk '{ print $6 }' | tr '\n' ' ')
+  packages=$(dpkg -l unrar openssl libssl-dev python3 2>&1 | grep "dpkg-query" | awk '{ print $NF }' | tr '\n' ' ')
 }
 
 # Check to see what SickChill Dependencies are missing
