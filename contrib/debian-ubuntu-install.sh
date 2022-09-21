@@ -62,8 +62,7 @@ fi
 # Check to see if sickchill exists; If not make user/group
 if [[ ! "$(getent group sickchill)" ]]; then
   echo "Adding SickChill Group"
-  addgroup --system sickchill
-  if [[ $? != 0 ]]; then
+  if ! addgroup --system sickchill; then
     whiptail --title "Failed to create sickchill user" --msgbox "Failed to create sickchill user" 8 128
     exit 1
   fi
@@ -71,8 +70,7 @@ fi
 
 if [[ ! "$(getent passwd sickchill)" ]]; then
   echo "Adding SickChill User"
-  adduser --disabled-password --system --home /var/lib/sickchill --gecos "SickChill" --ingroup sickchill sickchill
-  if [[ $? != 0 ]]; then
+  if ! adduser --disabled-password --system --home /var/lib/sickchill --gecos "SickChill" --ingroup sickchill sickchill; then
     whiptail --title "Failed to disable password for sickchill user" --msgbox "Failed to disable password for sickchill user" 8 128
     exit 1
   fi
@@ -81,21 +79,19 @@ fi
 if [[ ${SUDO_USER} != "root" ]]; then
   username=$(whiptail --title 'Add user to group group?' --inputbox "Do you want to add a user to the sickchill group?" --ok-button "Add" --cancel-button "Skip" 8 128 3>&1 1>&2 2>&3)
   if [[ ${#username} -gt 0 ]]; then
-    echo "Adding ${username} to the sickchill group"
-    sudo usermod -a -G sickchill ${username}
-    if [[ $? != 0 ]]; then
-      whiptail --title "Failed to add user to group" --msgbox "Failed to add ${username} to the sickchill group" 8 128
+    echo "Adding $username to the sickchill group"
+    if ! sudo usermod -a -G sickchill "$username"; then
+      whiptail --title "Failed to add user to group" --msgbox "Failed to add $username to the sickchill group" 8 128
       exit 1
     fi
   fi
 fi
 
 if [[ -d ${LOCATION} ]]; then
-  whiptail --title 'Rename?' --yesno "${LOCATION} already exists, do you want to rename it? If not, we will exit and you can fix the issues and re-run this script" 8 140
-  if [[ $? == 0 ]]; then
+  if whiptail --title 'Rename?' --yesno "${LOCATION} already exists, do you want to rename it? If not, we will exit and you can fix the issues and re-run this script" 8 140;
+  then
     echo "Renaming old SickChill Folder to ${LOCATION}.old"
-    mv ${LOCATION} ${LOCATION}.old
-    if [[ $? != 0 ]]; then
+    if ! mv ${LOCATION} ${LOCATION}.old; then
       whiptail --title "Failed to rename ${LOCATION}" --msgbox "Failed to rename ${LOCATION} to ${LOCATION}.old" 8 128
       exit 1
     fi
@@ -107,62 +103,60 @@ fi
 
 if [[ ! -d ${LOCATION} ]]; then
   echo "Creating SickChill Folder"
-  mkdir -p ${LOCATION}
-  if [[ $? != 0 ]]; then
+  if ! mkdir -p ${LOCATION}; then
     whiptail --title "Failed to create ${LOCATION}" --msgbox "Failed to create ${LOCATION}" 8 128
     exit 1
   fi
-  chown -R sickchill:sickchill ${LOCATION}
-  if [[ $? != 0 ]]; then
+  if ! chown -R sickchill:sickchill ${LOCATION}; then
     whiptail --title "Failed to change ownership of ${LOCATION}" --msgbox "Failed to change ownership of ${LOCATION}" 8 128
     exit 1
   fi
 fi
 
 echo "Creating virtual environment"
-sudo -u sickchill -g sickchill python3 -m venv ${LOCATION}
-if [[ $? != 0 ]]; then
+if ! sudo -u sickchill -g sickchill python3 -m venv ${LOCATION}; then
   whiptail --title "Failed to create virtual environment" --msgbox "Failed to create virtual environment" 8 128
   exit 1
 fi
 
-OS_NAME=$(cat /etc/os-release | grep -oP "(?:^ID=)(.*)" | sed 's|ID=||')
+OS_NAME=$(grep -oP "(?:^ID=)(.*)" < /etc/os-release | sed 's|ID=||')
 echo "Checking if we should add an index for your platform OS: ${OS_NAME}"
+INDEXES=()
+
 case "$OS_NAME" in
     ubuntu)
-            EXTRA_INDEX=" --find-links=https://wheel-index.linuxserver.io/ubuntu/";;
+            INDEXES+=("--find-links=https://wheel-index.linuxserver.io/ubuntu/");;
     alpine)
-            EXTRA_INDEX=" --find-links=https://wheel-index.linuxserver.io/alpine/ --extra-index-url=https://alpine-wheels.github.io/index";;
+            INDEXES+=("--find-links=https://wheel-index.linuxserver.io/alpine/")
+            INDEXES+=("--extra-index-url=https://alpine-wheels.github.io/index");;
     raspbian|osmc)
-            EXTRA_INDEX=" --extra-index-url=https://www.piwheels.org/simple";;
+            INDEXES+=("--extra-index-url=https://www.piwheels.org/simple");;
         *)
             echo "No extra indexes needed that we know of";;
 esac
 
-
-echo "Installing SickChill"
-sudo -u sickchill -g sickchill ${LOCATION}/bin/pip install -U pip setuptools wheel ${EXTRA_INDEX}
-if [[ $? != 0 ]]; then
+WHEELS=("pip" "setuptools" "wheel")
+echo "Installing" "${WHEELS[@]}"
+if ! sudo -u sickchill -g sickchill ${LOCATION}/bin/pip install -U "${WHEELS[@]}" "${INDEXES[@]}"; then
   whiptail --title "Failed to update pip" --msgbox "Failed to update pip" 8 128
   exit 1
 fi
 
-sudo -u sickchill -g sickchill ${LOCATION}/bin/pip install -U sickchill ${EXTRA_INDEX}
-if [[ $? != 0 ]]; then
+WHEELS=("sickchill")
+echo "Installing SickChill"
+if ! sudo -u sickchill -g sickchill ${LOCATION}/bin/pip install -U "${WHEELS[@]}" "${INDEXES[@]}"; then
   whiptail --title "Failed to install SickChill" --msgbox "Failed to install SickChill" 8 128
   exit 1
 fi
 
 function download_service_file() {
-  curl https://raw.githubusercontent.com/SickChill/SickChill/master/contrib/runscripts/${1} > ${2}
   export SERVICE_FILE=${2}
-  if [[ $? != 0 ]]; then
+  if ! curl https://raw.githubusercontent.com/SickChill/SickChill/master/contrib/runscripts/"$1" > "$2"; then
     whiptail --title "Failed to download ${1}" --msgbox "Failed to download ${1}" 8 128
     exit 1
   fi
 
-  chown root:root ${2} && chmod ${3} ${2}
-  if [[ $? != 0 ]]; then
+  if ! chown root:root "$2" && chmod "$3" "$2"; then
     whiptail --title "Failed to set permissions on ${2}" --msgbox "Failed to set permissions on ${2}" 8 128
     exit 1
   fi
@@ -186,7 +180,7 @@ else
   update-rc.d sickchill defaults && service sickchill start
 fi
 
-SERVICE_RESULE=$?
+SERVICE_RESULT=$?
 
 echo "If you run sickchill as the sickchill user like this:"
 echo ">> sudo -u sickchill -g sickchill PATH= /opt/sickchill/bin/SickChill"
