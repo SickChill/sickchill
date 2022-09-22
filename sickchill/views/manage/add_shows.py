@@ -61,31 +61,34 @@ class AddShows(Home):
         final_results = []
 
         # Query Indexers for each search term and build the list of results
-        for i, j in sickchill.indexer if not int(indexer) else [(int(indexer), None)]:
+        for index, indexer_object in sickchill.indexer:
+            if int(indexer) and int(indexer) != index:
+                continue
+
             logger.debug(
                 _("Searching for Show with search term(s): {search_terms} on Indexer: {indexer_name} (exact: {exact})").format(
-                    search_terms=search_terms, indexer_name=j.name, exact=exact
+                    search_terms=search_terms, indexer_name=indexer_object.name, exact=exact
                 )
             )
             for term in search_terms:
                 # noinspection PyBroadException
                 try:
-                    indexerResults = j.search(term, language=lang, exact=exact)
+                    indexer_results = indexer_object.search(term, language=lang, exact=exact)
                 except Exception:
-                    logger.exception(traceback.format_exc())
+                    logger.debug(traceback.format_exc())
                     continue
 
                 # add search results
-                results.setdefault(i, []).extend(indexerResults)
+                results.setdefault(index, []).extend(indexer_results)
 
-        for i, shows in results.items():
+        for index, shows in results.items():
             # noinspection PyUnresolvedReferences
             final_results.extend(
                 {
                     (
-                        sickchill.indexer.name(i),
-                        i,
-                        j.show_url,
+                        sickchill.indexer.name(index),
+                        index,
+                        indexer_object.show_url,
                         show["id"],
                         show["seriesName"],
                         show["firstAired"],
