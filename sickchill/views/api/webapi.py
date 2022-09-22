@@ -631,12 +631,6 @@ class ApiError(Exception):
     """
 
 
-class IntParseError(Exception):
-    """
-    A value could not be parsed into an int, but should be parse-able to an int
-    """
-
-
 # -------------------------------------------------------------------------------------#
 
 

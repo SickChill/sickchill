@@ -55,7 +55,7 @@ Group=sickchill
 
 Type=forking
 GuessMainPID=no
-ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --daemon --nolaunch --datadir=/opt/sickchill
+ExecStart=/opt/sickchill/bin/SickChill -q --daemon --nolaunch
 
 [Install]
 WantedBy=multi-user.target
