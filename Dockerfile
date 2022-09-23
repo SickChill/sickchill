@@ -42,9 +42,10 @@ RUN chmod -R 777 /app/sickchill $HOME/.cache
 
 RUN . $HOME/.cargo/env && poetry install --no-interaction --no-ansi
 
-RUN rm -rf /app
-
 RUN poetry env info
+
+RUN rm -rf /app
+WORKDIR /
 
 CMD poetry run SickChill --nolaunch --datadir=/data --port 8081
 EXPOSE 8081
