@@ -43,8 +43,6 @@ RUN chmod -R 777 /app/sickchill $HOME/.cache
 
 RUN . $HOME/.cargo/env && poetry install --no-interaction --no-ansi
 
-RUN poetry env info
-
 RUN rm -rf /app
 WORKDIR /
 
