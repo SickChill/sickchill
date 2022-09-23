@@ -6,3 +6,4 @@ sickchill.egg-info
 /.eggs/
 /dist/
 .venv
+.git

@@ -1,12 +1,17 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
 ENV PIP_FIND_LINKS=https://wheel-index.linuxserver.io/ubuntu/
+
 ENV POETRY_INSTALLER_PARALLEL=false
 ENV POETRY_VIRTUALENVS_CREATE=true
-ENV POETRY_VIRTUALENVS_IN_PROJECT=true
+ENV POETRY_VIRTUALENVS_IN_PROJECT=false
+ENV POETRY_VIRTIALENVS_PATH=$HOME/.venv
+ENV POETRY_CACHE_DIR=$HOME/.cache/pypoetry
+ENV POETRY_HOME=$HOME/.poetry
+ENV PATH=$POETRY_HOME/bin:$POETRY_VIRTIALENVS_PATH/local/bin:$PATH
 
 # docker run -dit --user 1000:1000 --name sickchill --restart=always \
 # -v ShowPath:/ShowPath \
@@ -35,9 +40,13 @@ COPY . /app/sickchill
 # Have to chmod again
 RUN chmod -R 777 /app/sickchill $HOME/.cache
 
-RUN . $HOME/.cargo/env && poetry install --no-root --no-interaction --no-ansi
+RUN . $HOME/.cargo/env && poetry install --no-interaction --no-ansi
 
-CMD poetry run python3 /app/sickchill/SickChill.py --nolaunch --datadir=/data --port 8081
+RUN rm -rf /app
+
+RUN poetry env info
+
+CMD poetry run SickChill --nolaunch --datadir=/data --port 8081
 EXPOSE 8081
 
 HEALTHCHECK --interval=5m --timeout=3s \
