@@ -1,0 +1,9 @@
+FROM --platform=$BUILDPLATFORM sickchill/sickchill AS base
+RUN \
+ . $HOME/.cargo/env && pip download sickchill --dest /wheels &&\
+ find /wheels -type f -name "*none-any.whl" -delete &&\
+ find /wheels -type f -name "*.gz" -delete
+
+FROM scratch AS export-stage
+COPY --from=base /wheels /
+

@@ -208,7 +208,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
+        platforms: linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/arm/v7,linux/arm/v6
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
@@ -221,3 +221,80 @@ jobs:
       if: always()
       run: |
         if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache; fi
+    - name: Snag wheels
+      if: github.actor == 'miigotu'
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: contrib/docker/Dockerfile.wheels
+        platforms: linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/arm64,linux/riscv64,linux/ppc64le,linux/s390x,linux/386,linux/mips64le,linux/mips64,linux/arm/v7,linux/arm/v6
+        push: false
+        outputs: type=local,dest=/tmp/wheels
+        target: export-stage
+        cache-from: type=local,src=/tmp/.buildx-cache
+    - name: List wheels directory
+      run: |
+        ls -R /tmp/wheels
+    - name: Upload linux/386 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: 386
+        path: /tmp/wheels/linux_386
+    - name: Upload linux/amd64 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: amd64
+        path: /tmp/wheels/linux_amd64
+    - name: Upload linux/amd64/v2 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: amd64v2
+        path: /tmp/wheels/linux_amd64_v2
+    - name: Upload linux/amd64/v3 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: amd64v3
+        path: /tmp/wheels/linux_amd64_v3
+    - name: Upload linux/arm64 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: arm64
+        path: /tmp/wheels/linux_arm64
+    - name: Upload linux/arm/v6 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: armv6
+        path: /tmp/wheels/linux_arm_v6
+    - name: Upload linux/arm/v7 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: armv7
+        path: /tmp/wheels/linux_arm_v7
+    - name: Upload linux/mips64 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: mips64
+        path: /tmp/wheels/linux_mips64
+    - name: Upload linux/mips64le wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: mips64le
+        path: /tmp/wheels/linux_mips64le
+    - name: Upload linux/ppc64le wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: ppc64le
+        path: /tmp/wheels/linux_ppc64le
+    - name: Upload linux/riscv64 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: riscv64
+        path: /tmp/wheels/linux_riscv64
+    - name: Upload linux/s390x wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: s390x
+        path: /tmp/wheels/linux_s390x
+    - name:
+      run: |
+        if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache-new; fi
