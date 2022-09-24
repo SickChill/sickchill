@@ -1,35 +1,49 @@
-FROM --platform=$BUILDPLATFORM python:3.9-slim
+FROM --platform=$TARGETPLATFORM python:3.9-slim as base
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
 ENV PYTHONIOENCODING="UTF-8"
+ENV PYTHONBUFFERED 1
+
+ENV VIRTUALENVS_PATH=$HOME/.venv
+
 ENV PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
 ENV PIP_FIND_LINKS=https://wheel-index.linuxserver.io/ubuntu/
 
+ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
+
 # docker run -dit --user 1000:1000 --name sickchill --restart=always \
-# -v ShowPath:/ShowPath \
-# -v DownloadPath:/DownloadPath \
+# -v mount_point:/mount_point \
 # -v /docker/sickchill/data:/data \
-# -v /docker/sickchill/cache/gui:/app/sickchill/sickchill/gui/slick/cache \
 # -v /etc/localtime:/etc/localtime:ro
 # -p 8080:8081 sickchill/sickchill
 
-VOLUME /data /downloads /tv
-RUN mkdir -p /var/run/sickchill
+# TODO: Add a user and drop privileges, preferablty from --user argument
+
+RUN mkdir -m 777 -p /sickchill $HOME/.cache
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
-RUN apt-get update -qq && apt-get install -yq git gosu libxml2 libxml2-dev \
-libxslt1.1 libxslt1-dev libffi7 libffi-dev libssl1.1 libssl-dev python3-dev \
-libmediainfo0v5 libmediainfo-dev mediainfo unrar curl build-essential && \
+RUN apt-get update -qq && apt-get install -yq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade --prefer-binary pip wheel setuptools && \
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+FROM base as builder
+RUN apt-get update -qq && apt-get install -yq build-essential cargo rustc libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev && \
+apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
-RUN . $HOME/.cargo/env && pip install sickchill
+RUN python3 -m venv $VIRTUALENVS_PATH
+RUN pip3 install --upgrade --prefer-binary pip wheel setuptools
+RUN pip3 install --upgrade --prefer-binary sickchill
+
+from base as sickchill-final
+
+COPY --from=builder $VIRTUALENVS_PATH $VIRTUALENVS_PATH
+
+ENV PATH=$VIRTUALENVS_PATH/bin:$VIRTUALENVS_PATH/local/bin:$PATH
+WORKDIR $VIRTUALENVS_PATH/local/bin
+
+VOLUME /data /downloads /tv
 
 CMD SickChill --nolaunch --datadir=/data --port 8081
-
 EXPOSE 8081
 
 HEALTHCHECK --interval=5m --timeout=3s \
