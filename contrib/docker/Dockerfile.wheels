@@ -1,6 +1,6 @@
-FROM --platform=$BUILDPLATFORM sickchill/sickchill AS base
+FROM --platform=$TARGETPLATFORM sickchill/sickchill:docker_multistage_build AS base
 RUN \
- . $HOME/.cargo/env && pip download sickchill --dest /wheels &&\
+ pip download sickchill --dest /wheels &&\
  find /wheels -type f -name "*none-any.whl" -delete &&\
  find /wheels -type f -name "*.gz" -delete
 
