@@ -1,4 +1,3 @@
-
 FROM --platform=$TARGETPLATFORM python:3.10-slim as base
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
