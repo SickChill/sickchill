@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM --platform=$BUILDPLATFORM python:3.10-slim
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
