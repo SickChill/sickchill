@@ -24,7 +24,7 @@ ENV POETRY_HOME=$HOME/.poetry
 RUN mkdir -m 777 -p /sickchill $HOME/.cache
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
-RUN apt-get update -qq && apt-get install -yq libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5  mediainfo unrar && \
+RUN apt-get update -qq && apt-get install -yq libxml2 libxslt1.1 libffi7 libffi8 libssl1.1 libmediainfo0v5  mediainfo unrar && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
 FROM base as builder 
