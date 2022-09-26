@@ -1181,7 +1181,7 @@ def request_defaults(kwargs):
 
     # request session proxies
     if kwargs.pop("allow_proxy", True) and settings.PROXY_SETTING:
-        logger.debug(_("Using global proxy: {settings.PROXY_SETTING}").format(settings.PROXY_SETTING))
+        logger.debug(_("Using global proxy: {proxy}").format(proxy=settings.PROXY_SETTING))
         proxies = {"http": settings.PROXY_SETTING, "https": settings.PROXY_SETTING}
     else:
         proxies = None
