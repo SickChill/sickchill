@@ -10,7 +10,7 @@ if [[ $UID -ne 0 ]]; then
 fi
 
 # Check for distro; continue if debian/ubuntu || exit
-if [[ $(cat /etc/issue) =~ Debian ]]; then
+if [[ $(cat /etc/issue && cat /etc/os-release) =~ [Dd]ebian ]]; then
   distro=debian
 elif [[ $(cat /etc/issue) =~ Ubuntu ]]; then
   distro=ubuntu
