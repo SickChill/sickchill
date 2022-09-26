@@ -1,49 +1,61 @@
-FROM --platform=$BUILDPLATFORM python:3.10-slim
+FROM --platform=$TARGETPLATFORM python:3.9-slim as base
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
+
+ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONIOENCODING="UTF-8"
-ENV PIP_FIND_LINKS=https://wheel-index.linuxserver.io/ubuntu/
+ENV PYTHONBUFFERED 1
+
+#ENV PIP_EXTRA_INDEX_URL=https://www.piwheels.org/simple
+#ENV PIP_FIND_LINKS=https://wheel-index.linuxserver.io/ubuntu/
 
 ENV POETRY_INSTALLER_PARALLEL=false
 ENV POETRY_VIRTUALENVS_CREATE=true
 ENV POETRY_VIRTUALENVS_IN_PROJECT=false
-ENV POETRY_VIRTIALENVS_PATH=$HOME/.venv
+ENV POETRY_VIRTUALENVS_PATH=$HOME/.venv
 ENV POETRY_CACHE_DIR=$HOME/.cache/pypoetry
 ENV POETRY_HOME=$HOME/.poetry
-ENV PATH=$POETRY_HOME/bin:$POETRY_VIRTIALENVS_PATH/local/bin:$PATH
+
+#ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
+ENV SODIUM_INSTALL=system
 
 # docker run -dit --user 1000:1000 --name sickchill --restart=always \
-# -v ShowPath:/ShowPath \
-# -v DownloadPath:/DownloadPath \
+# -v mount_point:/mount_point \
 # -v /docker/sickchill/data:/data \
-# -v /docker/sickchill/cache/gui:/app/sickchill/sickchill/gui/slick/cache \
 # -v /etc/localtime:/etc/localtime:ro
 # -p 8080:8081 sickchill/sickchill
 
-VOLUME /data /downloads /tv
-RUN mkdir -p /app/sickchill /var/run/sickchill $HOME/.cache/pip
-RUN chmod -R 777 /app/sickchill $HOME/.cache
-WORKDIR /app/sickchill
+# TODO: Add a user and drop privileges, preferablty from --user argument
+
+RUN mkdir -m 777 -p /sickchill $HOME/.cache
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
-RUN apt-get update -qq && apt-get install -yq git gosu libxml2 libxml2-dev \
-libxslt1.1 libxslt1-dev libffi7 libffi-dev libssl1.1 libssl-dev python3-dev \
-libmediainfo0v5 libmediainfo-dev mediainfo unrar curl build-essential && \
+RUN apt-get update -qq && apt-get install -yq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar && \
+apt-get purge python3-cffi python3-cryptography python3-nacl python3-pycparser python3-cffi-backend -yq && apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
+
+RUN ulimit -n 8192
+
+FROM base as builder
+RUN apt-get update -qq && apt-get install -yq build-essential cargo rustc libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --upgrade --prefer-binary poetry pip wheel setuptools && \
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+RUN pip3 install --upgrade --prefer-binary poetry pip wheel setuptools
 
-COPY . /app/sickchill
+WORKDIR /sickchill
+COPY . /sickchill/
 
-# Have to chmod again
-RUN chmod -R 777 /app/sickchill $HOME/.cache
+RUN poetry run python3 -m pip  install --upgrade cffi pynacl greenlet pyopenssl cryptography --force-reinstall
+RUN poetry install --no-interaction --no-ansi --without dev --with speedups --with root --without experimental --without types
 
-RUN . $HOME/.cargo/env && poetry install --no-interaction --no-ansi
+from base as sickchill-final
 
-RUN rm -rf /app
-WORKDIR /
+COPY --from=builder $POETRY_VIRTUALENVS_PATH $POETRY_VIRTUALENVS_PATH
+
+ENV PATH=$POETRY_VIRTUALENVS_PATH/bin:$POETRY_VIRTUALENVS_PATH/local/bin:$PATH
+WORKDIR $POETRY_VIRTUALENVS_PATH/local/bin
+
+VOLUME /data /downloads /tv
 
 CMD SickChill --nolaunch --datadir=/data --port 8081
 EXPOSE 8081
