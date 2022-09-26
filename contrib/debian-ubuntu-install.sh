@@ -10,10 +10,10 @@ if [[ $UID -ne 0 ]]; then
 fi
 
 # Check for distro; continue if debian/ubuntu || exit
-if [[ $(cat /etc/issue && cat /etc/os-release) =~ [Dd]ebian ]]; then
-  distro=debian
-elif [[ $(cat /etc/issue) =~ Ubuntu ]]; then
+if [[ $(cat /etc/issue) =~ Ubuntu ]]; then
   distro=ubuntu
+elif [[ $(cat /etc/issue && cat /etc/os-release) =~ [Dd]ebian ]]; then
+  distro=debian
 else
   echo "This script will only work on Debian and Ubuntu Distros, but you are using $(cat /etc/issue)"
   exit 1
