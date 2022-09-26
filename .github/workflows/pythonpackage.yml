@@ -115,7 +115,7 @@ jobs:
     - name: Install dependencies
       run: |
         poetry lock --no-update
-        poetry install --no-interaction --no-root
+        poetry install --no-interaction --no-root --with dev --with test
         pip install poethepoet
       shell: bash
     - name: Run yarn
