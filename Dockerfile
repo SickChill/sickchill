@@ -12,8 +12,8 @@ ENV PYTHONBUFFERED 1
 
 ENV POETRY_INSTALLER_PARALLEL=false
 ENV POETRY_VIRTUALENVS_CREATE=true
-ENV POETRY_VIRTUALENVS_IN_PROJECT=false
-ENV POETRY_VIRTUALENVS_PATH=$HOME/.venv
+ENV POETRY_VIRTUALENVS_IN_PROJECT=true
+ENV POETRY_VIRTUALENVS_PATH=/sickchill/.venv
 ENV POETRY_CACHE_DIR=$HOME/.cache/pypoetry
 ENV POETRY_HOME=$HOME/.poetry
 
@@ -43,15 +43,17 @@ RUN pip3 install --upgrade --prefer-binary poetry pip wheel setuptools
 WORKDIR /sickchill
 COPY . /sickchill/
 
-RUN poetry run python3 -m pip  install --upgrade cffi pynacl greenlet pyopenssl cryptography --force-reinstall
+RUN poetry run python3 -m pip install --upgrade cffi pynacl greenlet pyopenssl cryptography --force-reinstall
 RUN poetry install --no-interaction --no-ansi --without dev --with speedups --with root --without experimental --without types
 
 from base as sickchill-final
 
 COPY --from=builder $POETRY_VIRTUALENVS_PATH $POETRY_VIRTUALENVS_PATH
+COPY --from=builder /sickchill/sickchill /sickchill/sickchill
+COPY --from=builder /sickchill/SickChill.py /sickchill/SickChill.py
 
-ENV PATH=$POETRY_VIRTUALENVS_PATH/bin:$POETRY_VIRTUALENVS_PATH/local/bin:$PATH
-WORKDIR $POETRY_VIRTUALENVS_PATH/local/bin
+ENV PATH=$POETRY_VIRTUALENVS_PATH/bin:$PATH
+WORKDIR $POETRY_VIRTUALENVS_PATH/bin
 
 VOLUME /data /downloads /tv
 

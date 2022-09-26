@@ -32,15 +32,15 @@ RUN apt-get update -qq && apt-get install -yq build-essential cargo rustc libxml
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m venv $VIRTUALENVS_PATH
-RUN pip3 install --upgrade --prefer-binary pip wheel setuptools
-RUN pip3 install --upgrade --prefer-binary sickchill[speedups]
+RUN . $VIRTUALENVS_PATH/bin/activate && pip3 install --upgrade --prefer-binary pip wheel setuptools
+RUN . $VIRTUALENVS_PATH/bin/activate && pip3 install --upgrade --prefer-binary sickchill[speedups]
 
 from base as sickchill-final
 
 COPY --from=builder $VIRTUALENVS_PATH $VIRTUALENVS_PATH
 
-ENV PATH=$VIRTUALENVS_PATH/bin:$VIRTUALENVS_PATH/local/bin:$PATH
-WORKDIR $VIRTUALENVS_PATH/local/bin
+ENV PATH=$VIRTUALENVS_PATH/bin:$PATH
+WORKDIR $VIRTUALENVS_PATH/bin
 
 VOLUME /data /downloads /tv
 
