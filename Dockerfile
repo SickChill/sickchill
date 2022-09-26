@@ -34,8 +34,6 @@ RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -qq && apt-get install -yq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar && \
 apt-get purge python3-cffi python3-cryptography python3-nacl python3-pycparser python3-cffi-backend -yq && apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
-RUN ulimit -n 8192
-
 FROM base as builder
 RUN apt-get update -qq && apt-get install -yq build-essential cargo rustc libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
