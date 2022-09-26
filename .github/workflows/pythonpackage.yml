@@ -135,8 +135,6 @@ jobs:
         poe pytest
         poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
       shell: bash
-      env:
-         SC_NO_INSTALL_DEPENDS: 1
   Deploy:
     needs: [Test]
     runs-on: ubuntu-latest
@@ -208,7 +206,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
+        platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
@@ -227,7 +225,7 @@ jobs:
       with:
         context: .
         file: contrib/docker/Dockerfile.wheels
-        platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
+        platforms: linux/amd64,linux/arm64
         push: false
         outputs: type=local,dest=/tmp/wheels
         target: export-stage
@@ -235,6 +233,7 @@ jobs:
         build-args: BASE_TAG=${{ github.ref_name }}
         ulmit: 8192
     - name: List wheels directory
+      if: github.actor == 'miigotu'
       run: |
         ls -R /tmp/wheels
     - name: Upload linux/amd64 wheels
