@@ -214,6 +214,7 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
+        ulimit: 8192
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
@@ -221,3 +222,42 @@ jobs:
       if: always()
       run: |
         if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache; fi
+    - name: Snag wheels
+      if: github.actor == 'miigotu'
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: contrib/docker/Dockerfile.wheels
+        platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
+        push: false
+        outputs: type=local,dest=/tmp/wheels
+        target: export-stage
+        cache-from: type=local,src=/tmp/.buildx-cache
+        build-args: BASE_TAG=${{ github.ref_name }}
+        ulmit: 8192
+    - name: List wheels directory
+      run: |
+        ls -R /tmp/wheels
+    - name: Upload linux/amd64 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: amd64
+        path: /tmp/wheels/linux_amd64
+    - name: Upload linux/arm64 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: arm64
+        path: /tmp/wheels/linux_arm64
+    - name: Upload linux/arm/v6 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: armv6
+        path: /tmp/wheels/linux_arm_v6
+    - name: Upload linux/arm/v7 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: armv7
+        path: /tmp/wheels/linux_arm_v7
+    - name:
+      run: |
+        if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache-new; fi
