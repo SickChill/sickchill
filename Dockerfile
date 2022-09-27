@@ -35,7 +35,7 @@ RUN apt-get update -qq && apt-get install -yq curl libxml2 libxslt1.1 libffi7 li
     apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
 FROM base as builder
-RUN apt-get update -qq && apt-get install -yq build-essential cargo rustc libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev xargs && \
+RUN apt-get update -qq && apt-get install -yq build-essential cargo rustc libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev findutils && \
 apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 
 # Always just create our own virtualenv to prevent issues, try using system-site-packages for apt installed packages
