@@ -32,14 +32,14 @@ RUN mkdir -m 777 -p /sickchill $POETRY_CACHE_DIR
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -qq;\
- apt-get install -yq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar python3-cffi python3-cryptography python3-nacl python3-pycparser python3-cffi-backend python3-lxml python3-html5lib;\
- apt-get clean -yqq;\
+ apt-get install -yq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar python3-cffi python3-cryptography python3-nacl python3-pycparser python3-cffi-backend python3-lxml python3-html5lib &&\
+ apt-get clean -yqq &&\
  rm -rf /var/lib/apt/lists/*
 
 FROM base as builder
-RUN apt-get update -qq;\
- apt-get install -yq build-essential cargo rustc libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev findutils;\
- apt-get clean -yqq;\
+RUN apt-get update -qq &&\
+ apt-get install -yq build-essential cargo rustc libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev findutils &&\
+ apt-get clean -yqq &&\
  rm -rf /var/lib/apt/lists/*
 
 # Always just create our own virtualenv to prevent issues, try using system-site-packages for apt installed packages
@@ -58,19 +58,19 @@ COPY . /sickchill/
 RUN if [ -z $SOURCE ]; then\
   pip install --upgrade --prefer-binary sickchill[speedups] --extra-index-url https://www.piwheels.org/simple --find-links https://wheel-index.linuxserver.io/ubuntu/;\
 else\
-  pip install --upgrade --prefer-binary poetry; poetry build --no-interaction --no-ansi; V=$(poetry version --short);\
+  pip install --upgrade --prefer-binary poetry && poetry build --no-interaction --no-ansi && V=$(poetry version --short) &&\
   pip install --upgrade --prefer-binary "dist/sickchill-${V}-py3-none-any.whl[speedups]" --extra-index-url https://www.piwheels.org/simple --find-links https://wheel-index.linuxserver.io/ubuntu/;\
 fi
 
 RUN mkdir -m 777 /sickchill-wheels;\
- ls $PIP_WHEELS/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/;\
- ls $POETRY_WHEELS/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/;\
- pip download sickchill --dest /sickchill-wheels;\
- rm -rf /sickchill-wheels/*none-any.whl;\
+ ls $PIP_WHEELS/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/ &&\
+ ls $POETRY_WHEELS/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/ &&\
+ pip download sickchill --dest /sickchill-wheels &&\
+ rm -rf /sickchill-wheels/*none-any.whl &&\
  rm -rf /sickchill-wheels/*.gz;
 
 RUN if [ -z $SOURCE ]; then\
-  rm -rf /sickchill-wheels/sickchill*.whl;\
+  rm -rf /sickchill-wheels/sickchill*.whl &&\
   cp dist/sickchill*.whl /sickchill-wheels/;\
 fi
 
