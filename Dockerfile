@@ -41,9 +41,11 @@ apt-get clean -yqq && rm -rf /var/lib/apt/lists/*
 # Always just create our own virtualenv to prevent issues, try using system-site-packages for apt installed packages
 RUN python3 -m venv $POETRY_VIRTUALENVS_PATH --system-site-packages --upgrade --upgrade-deps # upgrade-deps requires python3.9+
 
-ENV PATH=$POETRY_VIRTUALENVS_PATH/local/bin:$POETRY_VIRTUALENVS_PATH/bin
+ENV PATH=$POETRY_VIRTUALENVS_PATH/local/bin:$POETRY_VIRTUALENVS_PATH/bin:$PATH
+
 ENV PIP_WHEELS="$(pip cache dir)/wheels"
 ENV POETRY_WHEELS="$(poetry config cache-dir)/artifacts"
+
 WORKDIR /sickchill
 COPY . /sickchill/
 
