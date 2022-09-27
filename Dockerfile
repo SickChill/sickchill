@@ -48,7 +48,7 @@ WORKDIR /sickchill
 COPY . /sickchill/
 
 RUN if [ -z $SOURCE ]; then \
-      pip install --upgrade --prefer-binary sickchill[speedups] --extra-index-url https://www.piwheels.org/simple --find-links https://wheel-index.linuxserver.io/ubuntu/; && \
+      pip install --upgrade --prefer-binary sickchill[speedups] --extra-index-url https://www.piwheels.org/simple --find-links https://wheel-index.linuxserver.io/ubuntu/; \
     else  \
       pip install --upgrade --prefer-binary poetry; poetry build --no-interaction --no-ansi; V=$(poetry version --short) && \
       pip install --upgrade --prefer-binary dist/sickchill-${V}-py3-none-any-wheel[speedups] --extra-index-url https://www.piwheels.org/simple --find-links https://wheel-index.linuxserver.io/ubuntu/; \
