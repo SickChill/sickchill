@@ -45,7 +45,7 @@ if [[ ${packages} ]]; then
     while read -r; do
       i=$(( i + 1 ))
       echo ${i}
-    done < <(apt-get update && apt install ${packages} -y)
+    done < <(apt-get update && apt-get install ${packages} -y)
   } | whiptail --title "Progress" --gauge "Installing $packages" 8 80 0
 fi
 
