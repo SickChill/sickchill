@@ -196,6 +196,8 @@ jobs:
           type=ref,event=branch
           type=ref,event=tag
           type=ref,event=pr
+          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.run_id }},event=push
+          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.sha }},event=push
           type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
           type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
           type=edge,branch=develop
@@ -206,56 +208,62 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
+        # disable 32 bit arm builds for now, just get a working image out. 
+        # platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        target: sickchill-final
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
+        build-args: SOURCE=1
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
-    - name: Move cache
+    - name: Move cache to prevent docker cache leak 
       if: always()
       run: |
-        if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache; fi
+        if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache /tmp/.buildx-cache-wheels && mv /tmp/.buildx-cache-new /tmp/.buildx-cache && cp -R /tmp/.buildx-cache /tmp/.buildx-cache-wheels; fi
     - name: Snag wheels
       if: github.actor == 'miigotu'
       uses: docker/build-push-action@v3
       with:
         context: .
-        file: contrib/docker/Dockerfile.wheels
+        file: Dockerfile
+        # disable 32 bit arm builds for now, just get a working image out. 
+        # platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
         platforms: linux/amd64,linux/arm64
         push: false
-        outputs: type=local,dest=/tmp/wheels
-        target: export-stage
-        cache-from: type=local,src=/tmp/.buildx-cache
-        build-args: BASE_TAG=${{ github.ref_name }}
-        ulmit: 8192
+        outputs: type=local,dest=/tmp/sickchill-wheels
+        target: sickchill-wheels
+        cache-from: type=local,src=/tmp/.buildx-cache-wheels
+        cache-to: type=local,dest=/tmp/.buildx-cache-wheels-new
+        build-args: SOURCE=1
     - name: List wheels directory
       if: github.actor == 'miigotu'
       run: |
-        ls -R /tmp/wheels
+        ls -R /tmp/sickchill-wheels
     - name: Upload linux/amd64 wheels
       uses: actions/upload-artifact@v3
       with:
         name: amd64
-        path: /tmp/wheels/linux_amd64
+        path: /tmp/sickchill-wheels/linux_amd64
     - name: Upload linux/arm64 wheels
       uses: actions/upload-artifact@v3
       with:
         name: arm64
-        path: /tmp/wheels/linux_arm64
-    - name: Upload linux/arm/v6 wheels
-      uses: actions/upload-artifact@v3
-      with:
-        name: armv6
-        path: /tmp/wheels/linux_arm_v6
-    - name: Upload linux/arm/v7 wheels
-      uses: actions/upload-artifact@v3
-      with:
-        name: armv7
-        path: /tmp/wheels/linux_arm_v7
-    - name:
+        path: /tmp/sickchill-wheels/linux_arm64
+#    - name: Upload linux/arm/v6 wheels
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: armv6
+#        path: /tmp/sickchill-wheels/linux_arm_v6
+#    - name: Upload linux/arm/v7 wheels
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: armv7
+#        path: /tmp/sickchill-wheels/lnux_arm_v7
+    - name: Move wheels docker cache to prevent cache leak
       run: |
-        if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache-new; fi
+        if [ -e /tmp/.buildx-cache-wheels-new ]; then rm -rf /tmp/.buildx-cache-wheels && mv /tmp/.buildx-cache-wheels-new /tmp/.buildx-cache-wheels; fi
