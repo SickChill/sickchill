@@ -17,8 +17,10 @@ ENV POETRY_VIRTUALENVS_PATH="$HOME/.venv"
 ENV POETRY_CACHE_DIR="$HOME/.cache/pypoetry"
 ENV POETRY_HOME="$HOME/.poetry"
 
-#ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
-ENV SODIUM_INSTALL=system
+PATH=$POETRY_VIRTUALENVS_PATH/local/bin:$POETRY_VIRTUALENVS_PATH/bin:$PATH
+
+# ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
+# ENV SODIUM_INSTALL=system
 
 # docker run -dit --user 1000:1000 --name sickchill --restart=always \
 # -v mount_point:/mount_point \
@@ -47,11 +49,6 @@ RUN python3 -m venv $POETRY_VIRTUALENVS_PATH --system-site-packages --upgrade --
 
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
-ENV PATH=$POETRY_VIRTUALENVS_PATH/local/bin:$POETRY_VIRTUALENVS_PATH/bin:$PATH
-
-ENV PIP_WHEELS="$(pip cache dir)/wheels"
-ENV POETRY_WHEELS="$(poetry config cache-dir)/artifacts"
-
 WORKDIR /sickchill
 COPY . /sickchill/
 
@@ -63,8 +60,8 @@ else\
 fi
 
 RUN mkdir -m 777 /sickchill-wheels;\
- ls $PIP_WHEELS/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/ &&\
- ls $POETRY_WHEELS/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/ &&\
+ ls $(pip cache dir)/wheels/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/ &&\
+ ls $(poetry config cache-dir)/artifacts/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/ &&\
  pip download sickchill --dest /sickchill-wheels &&\
  rm -rf /sickchill-wheels/*none-any.whl &&\
  rm -rf /sickchill-wheels/*.gz;
