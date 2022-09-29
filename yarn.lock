@@ -192,7 +192,7 @@
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
-"@typescript-eslint/eslint-plugin@*":
+"@typescript-eslint/eslint-plugin@^5.35.1":
   version "5.38.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.38.1.tgz#9f05d42fa8fb9f62304cc2f5c2805e03c01c2620"
   integrity sha512-ky7EFzPhqz3XlhS7vPOoMDaQnQMn+9o5ICR9CPr/6bw8HrFkzhMSxuA3gRfiJVvs7geYrSeawGJjZoZQKCOglQ==
@@ -206,7 +206,7 @@
     semver "^7.3.7"
     tsutils "^3.21.0"
 
-"@typescript-eslint/parser@*":
+"@typescript-eslint/parser@^5.35.1":
   version "5.38.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.38.1.tgz#c577f429f2c32071b92dff4af4f5fbbbd2414bd0"
   integrity sha512-LDqxZBVFFQnQRz9rUZJhLmox+Ep5kdUmLatLQnCRR6523YV+XhRjfYzStQ4MheFA8kMAfUlclHSbu+RKdRwQKw==
@@ -1628,7 +1628,7 @@ eslint-config-prettier@^8.5.0:
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
 
-eslint-config-xo-typescript@*:
+eslint-config-xo-typescript@^0.53.0:
   version "0.53.0"
   resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.53.0.tgz#702be21ea0dfcb124903c5f723d023b1fdeb0da2"
   integrity sha512-IJ1n70egMPTou/41HoGGFbLf/2WCsVW5lSUxOSklrR8T1221fMRPVJxIVZ3evr8R+N5wR6uzg/0uzSymwWA5Bg==
@@ -4787,10 +4787,10 @@ slice-ansi@^5.0.0:
     ansi-styles "^6.0.0"
     is-fullwidth-code-point "^4.0.0"
 
-snyk@^1.1011.0:
-  version "1.1014.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1014.0.tgz#2a8c5a1520cc576a58651e7fe4e19df1c730ceb0"
-  integrity sha512-yyeGbIbZTHuBhKjyBs7Kb8CehT/aOorpXB5BNr8y9utZwQ+1Mu3+MNyweRPY67/3qMTOUCHnUxLBrcE5rXCkpA==
+snyk@^1.1015.0:
+  version "1.1015.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1015.0.tgz#3a04394682541113150fe8f12c20e79b4ac69d13"
+  integrity sha512-Tub9OYcNGQPvYpq12UaN5QVKPjvFY4j7jw27Wg+QV+6I2Ic6yoG8bjqCwyOOUYmM05dWIpsHHsiLU/BZMsNzcg==
 
 sort-keys-length@^1.0.0:
   version "1.0.1"
