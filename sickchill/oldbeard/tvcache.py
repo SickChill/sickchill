@@ -60,7 +60,7 @@ class RSSTorrentMixin:
             logger.debug(f"{item}")
             return
 
-        item_size = None
+        item_size = -1
 
         regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
         info_hash = item.infoHash or item.guid
