@@ -321,7 +321,7 @@ class NameParser(object):
     def check_anime_preferred(self, best_result, matches):
         show = self.showObj or best_result.show
         if (best_result.show and best_result.show.is_anime and not self.showObj) or (self.showObj and self.showObj.is_anime):
-            anime_matches = [x for x in matches if x.is_anime]
+            anime_matches = [x for x in matches if "anime" in x.which_regex[0]]
             if anime_matches:
                 best_result_anime = max(sorted(anime_matches, reverse=True, key=attrgetter("which_regex")), key=attrgetter("score"))
                 if best_result_anime and best_result_anime.series_name:
