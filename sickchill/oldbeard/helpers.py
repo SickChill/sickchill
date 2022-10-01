@@ -1011,12 +1011,12 @@ def set_up_anidb_connection():
     if not settings.ADBA_CONNECTION:
 
         def anidb_logger(msg):
-            return logger.debug(_("{msg}").format(msg))
+            return logger.debug(_("{msg}").format(msg=msg))
 
         try:
             settings.ADBA_CONNECTION = adba.Connection(keep_alive=True, log=anidb_logger)
         except Exception as error:
-            logger.warning(_("There was a problem attempting to connect to anidb. Error: {error}").format(error))
+            logger.warning(_("There was a problem attempting to connect to anidb. Error: {error}").format(error=error))
             return False
 
     try:
