@@ -210,7 +210,7 @@ jobs:
         context: .
         # disable 32 bit arm builds for now, just get a working image out. 
         # platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
-        platforms: linux/amd64,linux/arm64
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
