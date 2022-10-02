@@ -67,7 +67,7 @@ RUN --mount=type=tmpfs,target=$CARGO_HOME if [ -z $SOURCE ]; then\
 else\
   pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
   poetry build --no-interaction --no-ansi && V=$(poetry version --short) \
-  pip install --upgrade "dist/sickchill-${V}-py3-none-any.whl[speedups]";\
+  pip install --upgrade --find-links=./dist sickchill[speedups]; \
 fi
 
 RUN mkdir -m 777 /sickchill-wheels;\
