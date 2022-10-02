@@ -110,6 +110,7 @@ jobs:
       run: |
         curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
         poetry run python get-pip.py
+        rm get-pip.py
     - name: Install dependencies
       run: |
         poetry lock --no-update
