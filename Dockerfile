@@ -1,3 +1,9 @@
+# docker run -dit --user 1000:1000 --name sickchill --restart=always \
+# -v mount_point:/mount_point \
+# -v /docker/sickchill/data:/data \
+# -v /etc/localtime:/etc/localtime:ro
+# -p 8080:8081 sickchill/sickchill
+
 FROM --platform=$TARGETPLATFORM python:3.9-slim as base
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
@@ -5,9 +11,11 @@ LABEL maintainer="miigotu@gmail.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONIOENCODING="UTF-8"
-ENV PYTHONBUFFERED 1
+#ENV PYTHONBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 ARG SOURCE
+ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 ARG HOME=${HOME:-/}
 
 ENV POETRY_INSTALLER_PARALLEL=false
@@ -22,11 +30,9 @@ ENV PATH=$POETRY_VIRTUALENVS_PATH/local/bin:$POETRY_VIRTUALENVS_PATH/bin:$PATH
 # ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 # ENV SODIUM_INSTALL=system
 
-# docker run -dit --user 1000:1000 --name sickchill --restart=always \
-# -v mount_point:/mount_point \
-# -v /docker/sickchill/data:/data \
-# -v /etc/localtime:/etc/localtime:ro
-# -p 8080:8081 sickchill/sickchill
+ENV PIP_DISABLE_PIP_VERSION_CHECK=on
+ENV PIP_DEFAULT_TIMEOUT=100
+ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 
 # TODO: Add a user and drop privileges, preferablty from --user argument
 

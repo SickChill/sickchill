@@ -239,7 +239,8 @@ jobs:
         target: sickchill-wheels
         cache-from: type=local,src=/tmp/.buildx-cache-wheels
         cache-to: type=local,dest=/tmp/.buildx-cache-wheels-new
-        build-args: SOURCE=1
+        build-args: |
+          SOURCE=1
     - name: List wheels directory
       if: github.actor == 'miigotu'
       run: |
