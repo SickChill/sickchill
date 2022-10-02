@@ -50,8 +50,10 @@ jobs:
           - os: ubuntu-22.04
             python-version: "pypy-3.9"
             experimental: true
-      fail-fast: true
-    continue-on-error: ${{ matrix.experimental }}
+      fail-fast: false
+#      fail-fast: true
+    continue-on-error: true
+#    continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     steps:
     - name: Cancel Previous Runs
