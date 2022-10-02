@@ -44,6 +44,11 @@ RUN apt-get update -qq &&\
  apt-get clean -yqq &&\
  rm -rf /var/lib/apt/lists/*
 
+ENV CARGO_HOME="/root/.cargo"
+ENV PATH="$CARGO_HOME/bin:$PATH"
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
 # Always just create our own virtualenv to prevent issues, try using system-site-packages for apt installed packages
 RUN python3 -m venv $POETRY_VIRTUALENVS_PATH --system-site-packages --upgrade --upgrade-deps # upgrade-deps requires python3.9+
 
@@ -51,7 +56,7 @@ WORKDIR /sickchill
 COPY . /sickchill/
 
 # https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
-RUN --mount=type=tmpfs,target=/root/.cargo if [ -z $SOURCE ]; then\
+RUN --mount=type=tmpfs,target=$CARGO_HOME if [ -z $SOURCE ]; then\
   pip install --upgrade --prefer-binary sickchill[speedups] --extra-index-url https://www.piwheels.org/simple --find-links https://wheel-index.linuxserver.io/ubuntu/;\
 else\
   pip install --upgrade --prefer-binary poetry && poetry build --no-interaction --no-ansi && V=$(poetry version --short) &&\
