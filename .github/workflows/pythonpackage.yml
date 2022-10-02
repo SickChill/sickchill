@@ -16,11 +16,15 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
 
+env:
+  DOCKER_BUILDKIT: '1'
+  TARGET_PLATFORMS: "linux/386,linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x"
+
 jobs:
   Test:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
         python-version: [3.7, 3.8, 3.9, "3.10"]
         experimental: [false]
         include:
@@ -30,16 +34,16 @@ jobs:
           - os: macos-latest
             python-version: 3.9
             experimental: true
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             python-version: "3.11-dev"
             experimental: true
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             python-version: "pypy-3.7"
             experimental: true
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             python-version: "pypy-3.8"
             experimental: true
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             python-version: "pypy-3.9"
             experimental: true
       fail-fast: true
@@ -137,7 +141,7 @@ jobs:
       shell: bash
   Deploy:
     needs: [Test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - name: Cancel Previous Runs
       uses: styfle/cancel-workflow-action@0.10.0
@@ -208,9 +212,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        # disable 32 bit arm builds for now, just get a working image out. 
-        # platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
-        platforms: linux/amd64,linux/arm64
+        platforms: ${{ env.TARGET_PLATFORMS }}
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
@@ -221,7 +223,7 @@ jobs:
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
-    - name: Move cache to prevent docker cache leak 
+    - name: Move cache to prevent docker cache leak
       if: always()
       run: |
         if [ -e /tmp/.buildx-cache-new ]; then rm -rf /tmp/.buildx-cache /tmp/.buildx-cache-wheels && mv /tmp/.buildx-cache-new /tmp/.buildx-cache && cp -R /tmp/.buildx-cache /tmp/.buildx-cache-wheels; fi
@@ -231,9 +233,7 @@ jobs:
       with:
         context: .
         file: Dockerfile
-        # disable 32 bit arm builds for now, just get a working image out. 
-        # platforms: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
-        platforms: linux/amd64,linux/arm64
+        platforms: ${{ env.TARGET_PLATFORMS }}
         push: false
         outputs: type=local,dest=/tmp/sickchill-wheels
         target: sickchill-wheels

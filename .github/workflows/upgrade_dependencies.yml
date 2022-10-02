@@ -12,7 +12,7 @@ jobs:
   depends:
     strategy:
       fail-fast: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         if: success() && !env.ACT
@@ -34,16 +34,16 @@ jobs:
         uses: actions/cache@v3
         with:
           path: $(python -m pip cache dir)
-          key: ubuntu-latest-pip-3.9-${{ hashFiles('**/pyproject.toml') }}
+          key: ubuntu-22.04-pip-3.9-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
-            ubuntu-latest-pip-3.9-
+            ubuntu-22.04-pip-3.9-
       - name: Restore npm cache
         uses: actions/cache@v3
         with:
           path: $(npm config get cache)
-          key: ubuntu-latest-node-${{ hashFiles('**/package.json') }}
+          key: ubuntu-22.04-node-${{ hashFiles('**/package.json') }}
           restore-keys: |
-            ubuntu-latest-node-
+            ubuntu-22.04-node-
       - name: Install yarn
         run: npm install -g yarn
         shell: bash
@@ -60,13 +60,13 @@ jobs:
         uses: actions/cache@v3
         with:
           path: $(poetry config cache-dir)
-          key: ubuntu-latest-poetry-3.9-${{ hashFiles('**/pyproject.toml') }}
+          key: ubuntu-22.04-poetry-3.9-${{ hashFiles('**/pyproject.toml') }}
       - name: Restore virtualenv
         if: success() && !env.ACT
         uses: actions/cache@v3
         with:
           path: .venv
-          key: ubuntu-latest-virtualenv-3.9-${{ hashFiles('**/pyproject.toml') }}
+          key: ubuntu-22.04-virtualenv-3.9-${{ hashFiles('**/pyproject.toml') }}
       - name: Run
         run: |
           pip install poethepoet

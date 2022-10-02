@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   greeting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.repository == 'SickChill/SickChill'
     steps:
     - uses: actions/first-interaction@v1

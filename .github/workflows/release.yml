@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   Release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.actor == 'miigotu'
     steps:
       - name: Set up Python
