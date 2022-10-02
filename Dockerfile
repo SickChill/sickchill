@@ -63,10 +63,11 @@ COPY . /sickchill/
 
 # https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
 RUN --mount=type=tmpfs,target=$CARGO_HOME if [ -z $SOURCE ]; then\
-  pip install --upgrade --prefer-binary sickchill[speedups] --extra-index-url https://www.piwheels.org/simple --find-links https://wheel-index.linuxserver.io/ubuntu/;\
+  pip install --upgrade sickchill[speedups];\
 else\
-  pip install --upgrade --prefer-binary poetry && poetry build --no-interaction --no-ansi && V=$(poetry version --short) &&\
-  pip install --upgrade --prefer-binary "dist/sickchill-${V}-py3-none-any.whl[speedups]" --extra-index-url https://www.piwheels.org/simple --find-links https://wheel-index.linuxserver.io/ubuntu/;\
+  pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
+  poetry build --no-interaction --no-ansi && V=$(poetry version --short) \
+  pip install --upgrade "dist/sickchill-${V}-py3-none-any.whl[speedups]";\
 fi
 
 RUN mkdir -m 777 /sickchill-wheels;\
