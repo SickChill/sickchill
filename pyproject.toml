@@ -280,4 +280,6 @@ IMDbPY = ">=2020.09.25"
 babelfish = ">=0.6.0b1"
 kodipydent-alt = ">=2022.9.3"
 beekeeper-alt = ">=2022.9.3"
-# cryptography = "<35.0.0"
+cryptography = [
+    { version = "<35.0.0", markers = "sys_platform==\"linux\" and platform_machine in \"ppc64le, s390x\""}
+]
