@@ -251,11 +251,11 @@ jobs:
 #      with:
 #        name: armv6
 #        path: /tmp/sickchill-wheels/linux_arm_v6
-#    - name: Upload linux/arm/v7 wheels
-#      uses: actions/upload-artifact@v3
-#      with:
-#        name: armv7
-#        path: /tmp/sickchill-wheels/lnux_arm_v7
+    - name: Upload linux/arm/v7 wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: armv7
+        path: /tmp/sickchill-wheels/lnux_arm_v7
     - name: Move wheels docker cache to prevent cache leak
       run: |
         if [ -e /tmp/.buildx-cache-wheels-new ]; then rm -rf /tmp/.buildx-cache-wheels && mv /tmp/.buildx-cache-wheels-new /tmp/.buildx-cache-wheels; fi
