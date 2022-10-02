@@ -87,7 +87,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
-        version: 1.2.0
+        version: 1.2.1
         virtualenvs-path: .venv
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -168,7 +168,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
-        version: 1.2.0
+        version: 1.2.1
         virtualenvs-create: false
         installer-parallel: false
     - name: Docker meta
