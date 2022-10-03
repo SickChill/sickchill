@@ -42,14 +42,14 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 RUN mkdir -m 777 -p /sickchill $POETRY_CACHE_DIR
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
-RUN apt-get update -qq;\
+RUN apt-get update -qq && apt-get upgrade -yqq &&\
  apt-get install -yqq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar &&\
  apt-get clean -yqq &&\
  rm -rf /var/lib/apt/lists/*
 
 FROM base as builder
-RUN apt-get update -qq &&\
- apt-get install -yqq build-essential libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev findutils sed &&\
+RUN apt-get update -qq && apt-get upgrade -yqq &&\
+ apt-get install -yqq build-essential python3-distutils-extra python3-dev libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev findutils sed &&\
  apt-get clean -yqq &&\
  rm -rf /var/lib/apt/lists/*
 
