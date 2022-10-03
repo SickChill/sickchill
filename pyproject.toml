@@ -281,6 +281,7 @@ babelfish = ">=0.6.0b1"
 kodipydent-alt = ">=2022.9.3"
 beekeeper-alt = ">=2022.9.3"
 
-[tool.poetry.dependencies.cryptography]
-version = "<35.0.0"
-markers = "sys_platform == 'linux' and (platform_machine == 's390x' or platform_machine == 'ppc64le')"
+# TODO: Why isn't this working! 
+#[tool.poetry.dependencies.cryptography]
+#version = "<35.0.0"
+#markers = "sys_platform == 'linux' and (platform_machine == 's390x' or platform_machine == 'ppc64le')"
