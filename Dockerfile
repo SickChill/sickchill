@@ -40,13 +40,13 @@ RUN mkdir -m 777 -p /sickchill $POETRY_CACHE_DIR
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
 RUN apt-get update -qq;\
- apt-get install -yq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar &&\
+ apt-get install -yqq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar &&\
  apt-get clean -yqq &&\
  rm -rf /var/lib/apt/lists/*
 
 FROM base as builder
 RUN apt-get update -qq &&\
- apt-get install -yq build-essential libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev findutils &&\
+ apt-get install -yqq build-essential libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev findutils &&\
  apt-get clean -yqq &&\
  rm -rf /var/lib/apt/lists/*
 
@@ -54,7 +54,7 @@ ENV HOME="/root/"
 ENV CARGO_HOME="/root/.cargo"
 ENV PATH="$CARGO_HOME/bin:$PATH"
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN --security=insecure curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 # Always just create our own virtualenv to prevent issues, try using system-site-packages for apt installed packages
 RUN python3 -m venv $POETRY_VIRTUALENVS_PATH --system-site-packages --upgrade --upgrade-deps # upgrade-deps requires python3.9+
