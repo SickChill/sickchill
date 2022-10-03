@@ -146,6 +146,14 @@ jobs:
         persist-credentials: false
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
+    - name: Create buildkitd config override
+      run: |
+        echo "debug = true" > /tmp/buildkitd.toml
+        echo 'insecure-entitlements = [ "network.host", "security.insecure" ]' >> /tmp/buildkitd.toml
+        echo "[worker.oci]" >> /tmp/buildkitd.toml
+        echo "enabled = true" >> /tmp/buildkitd.toml
+        echo "max-parallelism = 1" >> /tmp/buildkitd.toml
+        cat /tmp/buildkitd.toml
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     - name: Cache Docker layers

@@ -6,6 +6,8 @@
 
 FROM --platform=$TARGETPLATFORM python:3.9-slim as base
 
+RUN --security=insecure [ "$(cat /proc/self/status | grep CapBnd)" == "CapBnd:	0000003fffffffff" ] && echo "No capabilities dropped" || echo "Capabilities dropped"
+
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
 
@@ -46,7 +48,7 @@ RUN apt-get update -qq;\
 
 FROM base as builder
 RUN apt-get update -qq &&\
- apt-get install -yqq build-essential libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev findutils &&\
+ apt-get install -yqq build-essential libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev python3-dev findutils sed &&\
  apt-get clean -yqq &&\
  rm -rf /var/lib/apt/lists/*
 
@@ -54,7 +56,7 @@ ENV HOME="/root/"
 ENV CARGO_HOME="/root/.cargo"
 ENV PATH="$CARGO_HOME/bin:$PATH"
 
-RUN --security=insecure curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN --security=insecure curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile complete || exit 1
 
 # Always just create our own virtualenv to prevent issues, try using system-site-packages for apt installed packages
 RUN python3 -m venv $POETRY_VIRTUALENVS_PATH --system-site-packages --upgrade --upgrade-deps # upgrade-deps requires python3.9+
