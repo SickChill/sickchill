@@ -6,7 +6,7 @@
 
 FROM --platform=$TARGETPLATFORM python:3.9-slim as base
 
-RUN if [ "$(cat /proc/self/status | grep CapBnd)" == "CapBnd:	0000003fffffffff" ]; then echo "No capabilities dropped"; else echo "Capabilities dropped"; fi
+RUN cat /proc/self/status
 #RUN --security=insecure [ "$(cat /proc/self/status | grep CapBnd)" == "CapBnd:	0000003fffffffff" ] && echo "No capabilities dropped" || echo "Capabilities dropped"
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
@@ -56,6 +56,7 @@ RUN apt-get update -qq &&\
 ENV HOME="/root/"
 ENV CARGO_HOME="/root/.cargo"
 ENV PATH="$CARGO_HOME/bin:$PATH"
+ENV SHELL="/bin/sh"
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile complete || exit 1
 
