@@ -286,5 +286,5 @@ stevedore = {version = "<=3.5.0", python = "<3.8"}
 importlib-metadata = {version = "<5.0.0", python = "<3.8"}
 
 # Cryptography wheels for 35+ require rust, and the build does not work on github.
-cryptography = {version = "<35.0.0", markers = "sys_platform == 'linux' and platform_machine in 's390x, ppc64le'"}
+cryptography = {version = "<39.0.0", markers = "sys_platform == 'linux' and platform_machine in 's390x, ppc64le'"}
 
