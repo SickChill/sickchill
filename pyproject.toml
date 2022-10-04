@@ -283,7 +283,7 @@ beekeeper-alt = ">=2022.9.3"
 
 # stevedore dropped support for python 3.7
 stevedore = {version = "<=3.5.0", python = "<3.8"}
-importlib-metadata = {version = "<5.0.0", python = "<3.8"}
+importlib-metadata = {version = "<6.0.0", python = "<3.8"}
 
 # Cryptography wheels for 35+ require rust, and the build does not work on github.
 cryptography = {version = "<35.0.0", markers = "sys_platform == 'linux' and platform_machine in 's390x, ppc64le'"}
