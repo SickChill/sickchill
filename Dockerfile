@@ -55,7 +55,11 @@ ENV CARGO_HOME="/root/.cargo"
 ENV PATH="$CARGO_HOME/bin:$PATH"
 ENV SHELL="/bin/sh"
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile complete || exit 1
+# Make sure HOME exists
+RUN mkdir -p $HOME
+
+# --no-modify-path is required to prevent cargo from modifying the PATH that we already set
+RUN set -ex && HOME=$HOME curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile minimal --default-toolchain nightly --no-modify-path
 
 # Always just create our own virtualenv to prevent issues, try using system-site-packages for apt installed packages
 RUN python3 -m venv $POETRY_VIRTUALENVS_PATH --upgrade --upgrade-deps # upgrade-deps requires python3.9+
