@@ -6,9 +6,6 @@
 
 FROM --platform=$TARGETPLATFORM python:3.10-slim-bullseye as base
 
-RUN cat /proc/self/status
-#RUN --security=insecure [ "$(cat /proc/self/status | grep CapBnd)" == "CapBnd:	0000003fffffffff" ] && echo "No capabilities dropped" || echo "Capabilities dropped"
-
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
 
