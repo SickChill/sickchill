@@ -282,9 +282,9 @@ kodipydent-alt = ">=2022.9.3"
 beekeeper-alt = ">=2022.9.3"
 
 # stevedore dropped support for python 3.7
-stevedore = {version = "<=3.4.1", python = "<3.8"}
+stevedore = {version = "<=3.5.0", python = "<3.8"}
+importlib-metadata = {version = "<5.0.0", python = "<3.8"}
 
-# TODO: Why isn't this working! 
-#[tool.poetry.dependencies.cryptography]
-#version = "<35.0.0"
-#markers = "sys_platform == 'linux' and (platform_machine == 's390x' or platform_machine == 'ppc64le')"
+# Cryptography wheels for 35+ require rust, and the build does not work on github.
+cryptography = {version = "<35.0.0", markers = "sys_platform == 'linux' and platform_machine in 's390x, ppc64le,'", python = "<3.8"}
+
