@@ -14,64 +14,38 @@ jobs:
       fail-fast: true
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
+      -
+        name: Checkout
         if: success() && !env.ACT
         uses: actions/checkout@v3
         with:
           ref: 'develop'
           token: ${{ secrets.PAT }}
-      - name: Set up Python
+      -
+        name: Install poetry
+        run: pipx install poetry
+      -
+        name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
-      - name: Set up Node
+          check-latest: true
+          cache: 'poetry'
+      -
+        name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: '16.x'
           cache: 'npm'
-      - name: Restore pip cache
-        if: success() && !env.ACT
-        uses: actions/cache@v3
-        with:
-          path: $(python -m pip cache dir)
-          key: ubuntu-22.04-pip-3.9-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ubuntu-22.04-pip-3.9-
-      - name: Restore npm cache
-        uses: actions/cache@v3
-        with:
-          path: $(npm config get cache)
-          key: ubuntu-22.04-node-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ubuntu-22.04-node-
       - name: Install yarn
         run: npm install -g yarn
-        shell: bash
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.3.1
-        with:
-          version: 1.2.0
-          virtualenvs-path: .venv
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: false
-      - name: Restore poetry cache
-        if: success() && !env.ACT
-        uses: actions/cache@v3
-        with:
-          path: $(poetry config cache-dir)
-          key: ubuntu-22.04-poetry-3.9-${{ hashFiles('**/pyproject.toml') }}
-      - name: Restore virtualenv
-        if: success() && !env.ACT
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: ubuntu-22.04-virtualenv-3.9-${{ hashFiles('**/pyproject.toml') }}
-      - name: Run
+      -
+        name: Run
         run: |
           pip install poethepoet
           poe depup
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      -
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update poetry (python) and yarn (npm) dependencies
           commit_options: '--no-verify --signoff'
