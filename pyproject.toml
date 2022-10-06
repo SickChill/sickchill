@@ -39,6 +39,16 @@ packages = [
     { include = "SickChill.py" },
 ]
 
+[tool.poetry.urls]
+"Changelog" = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/CHANGES.md"
+"Bug Tracker" = "https://github.com/sickchill/sickchill/issues"
+"News" = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/news.md"
+"Discord" = "https://discord.com/invite/U8WPBdf"
+"Slack" = "https://sickchill.slack.com/"
+"Telegram" = "https://t.me/sickchill"
+"IRC" = "https://webchat.freenode.net/?channels=#sickchill"
+"Donate"= "https://github.com/SickChill/SickChill/wiki/Donations"
+
 [tool.poetry.scripts]
 SickChill = "SickChill:main"
 sickchill = "SickChill:main"

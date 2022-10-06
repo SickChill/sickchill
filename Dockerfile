@@ -15,7 +15,7 @@ ENV PYTHONUNBUFFERED=1
 
 ARG SOURCE
 ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
-ARG HOME=${HOME:-/}
+ARG HOME=${HOME:-}
 
 ENV POETRY_INSTALLER_PARALLEL=false
 ENV POETRY_VIRTUALENVS_CREATE=false
@@ -35,9 +35,9 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 
 # TODO: Add a user and drop privileges, preferablty from --user argument
 
-RUN mkdir -m 777 -p /sickchill $POETRY_CACHE_DIR
+RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 
-RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
+RUN sed -i -e "s/ main/ main contrib non-free/gm" /etc/apt/sources.list
 RUN apt-get update -qq && apt-get upgrade -yqq && \
  apt-get install -yqq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar && \
  apt-get clean -yqq && \
@@ -55,34 +55,35 @@ ENV CARGO_HOME="/root/.cargo"
 ENV PATH="$CARGO_HOME/bin:$PATH"
 ENV SHELL="/bin/sh"
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # Make sure HOME exists
-RUN mkdir -p $HOME
+RUN mkdir -m 755 -p "$HOME"
 
 # --no-modify-path is required to prevent cargo from modifying the PATH that we already set
-RUN set -ex && HOME=$HOME curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile minimal --default-toolchain nightly --no-modify-path
+RUN set -ex && HOME=$HOME curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly --no-modify-path
 
 # Always just create our own virtualenv to prevent issues
-RUN python3 -m venv $POETRY_VIRTUALENVS_PATH --upgrade --upgrade-deps # upgrade-deps requires python3.9+
+RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrade-deps requires python3.9+
 RUN pip install -U wheel setuptools-rust
 
 WORKDIR /sickchill
 COPY . /sickchill/
 
 # https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
-RUN --mount=type=tmpfs,target=$CARGO_HOME if [ -z $SOURCE ]; then \
-  pip install --upgrade sickchill[speedups]; \
+RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
+  pip install --upgrade "sickchill[speedups]"; \
 else \
   pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
-  poetry build --no-interaction --no-ansi && V=$(poetry version --short) \
-  pip install --upgrade --find-links=./dist sickchill[speedups]; \
+  poetry build --no-interaction --no-ansi && pip install --upgrade --find-links=./dist "sickchill[speedups]"; \
 fi
 
-RUN mkdir -m 777 /sickchill-wheels \
+RUN mkdir -m 777 /sickchill-wheels && \
  pip download sickchill --dest /sickchill-wheels && \
  rm -rf /sickchill-wheels/*none-any.whl && \
  rm -rf /sickchill-wheels/*.gz;
 
-RUN if [ -z $SOURCE ]; then \
+RUN if [ -z "$SOURCE" ]; then \
   rm -rf /sickchill-wheels/sickchill*.whl && \
   cp dist/sickchill*.whl /sickchill-wheels/; \
 fi
@@ -92,7 +93,7 @@ COPY --from=builder /sickchill-wheels /
 
 FROM base as sickchill-final
 
-COPY --from=builder $POETRY_VIRTUALENVS_PATH $POETRY_VIRTUALENVS_PATH
+COPY --from=builder "$POETRY_VIRTUALENVS_PATH" "$POETRY_VIRTUALENVS_PATH"
 
 # When you docker exec, show the config files in the container
 ENV HOME=/data
@@ -100,7 +101,7 @@ WORKDIR /data
 
 VOLUME /data /downloads /tv
 
-CMD sickchill --nolaunch --datadir=/data --port 8081
+CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
 EXPOSE 8081
 
 HEALTHCHECK --interval=5m --timeout=3s \
