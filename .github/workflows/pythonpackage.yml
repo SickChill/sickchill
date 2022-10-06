@@ -200,7 +200,7 @@ jobs:
         docker run -d --rm -p 8081:8081 --name ${{ env.DOCKER_CONTAINER_NAME }} ${{ env.DOCKER_TEST_TAG }}
         echo "Waiting ${{ env.SLEEP }} seconds for the container to start..." && sleep ${{ env.SLEEP }}
         [ $(curl http://0.0.0.0:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || exit 1
-        docker stop ${{ env.DOCKER_CONTAINER_NAME }} && docker rm ${{ env.DOCKER_CONTAINER_NAME }}
+        docker stop ${{ env.DOCKER_CONTAINER_NAME }}
         echo ${{ needs.Test.steps.testmeta.outputs.labels }}
         echo ${{ needs.Test.steps.testmeta.outputs.tags }}
   Deploy:
