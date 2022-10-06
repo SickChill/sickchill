@@ -11,7 +11,6 @@ LABEL maintainer="miigotu@gmail.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONIOENCODING="UTF-8"
-#ENV PYTHONBUFFERED 1
 ENV PYTHONUNBUFFERED=1
 
 ARG SOURCE
@@ -39,15 +38,16 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 RUN mkdir -m 777 -p /sickchill $POETRY_CACHE_DIR
 
 RUN sed -i -e's/ main/ main contrib non-free/gm' /etc/apt/sources.list
-RUN apt-get update -qq && apt-get upgrade -yqq &&\
- apt-get install -yqq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar &&\
- apt-get clean -yqq &&\
+RUN apt-get update -qq && apt-get upgrade -yqq && \
+ apt-get install -yqq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar && \
+ apt-get clean -yqq && \
  rm -rf /var/lib/apt/lists/*
 
 FROM base as builder
-RUN apt-get update -qq && apt-get upgrade -yqq &&\
- apt-get install -yqq build-essential python3-distutils-extra python3-dev libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev findutils sed &&\
- apt-get clean -yqq &&\
+RUN apt-get update -qq && apt-get upgrade -yqq && \
+ apt-get install -yqq build-essential python3-distutils-extra python3-dev \
+ libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev findutils sed && \
+ apt-get clean -yqq && \
  rm -rf /var/lib/apt/lists/*
 
 ENV HOME="/root/"
@@ -61,7 +61,7 @@ RUN mkdir -p $HOME
 # --no-modify-path is required to prevent cargo from modifying the PATH that we already set
 RUN set -ex && HOME=$HOME curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile minimal --default-toolchain nightly --no-modify-path
 
-# Always just create our own virtualenv to prevent issues, try using system-site-packages for apt installed packages
+# Always just create our own virtualenv to prevent issues
 RUN python3 -m venv $POETRY_VIRTUALENVS_PATH --upgrade --upgrade-deps # upgrade-deps requires python3.9+
 RUN pip install -U wheel setuptools-rust
 
@@ -69,24 +69,22 @@ WORKDIR /sickchill
 COPY . /sickchill/
 
 # https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
-RUN --mount=type=tmpfs,target=$CARGO_HOME if [ -z $SOURCE ]; then\
-  pip install --upgrade sickchill[speedups];\
-else\
+RUN --mount=type=tmpfs,target=$CARGO_HOME if [ -z $SOURCE ]; then \
+  pip install --upgrade sickchill[speedups]; \
+else \
   pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
   poetry build --no-interaction --no-ansi && V=$(poetry version --short) \
   pip install --upgrade --find-links=./dist sickchill[speedups]; \
 fi
 
-RUN mkdir -m 777 /sickchill-wheels;\
- ls $(pip cache dir)/wheels/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/ &&\
- ls $(poetry config cache-dir)/artifacts/*/*/*/*/*.whl | sed "/none-any/d" | xargs -I {} cp --update {} /sickchill-wheels/ &&\
- pip download sickchill --dest /sickchill-wheels &&\
- rm -rf /sickchill-wheels/*none-any.whl &&\
+RUN mkdir -m 777 /sickchill-wheels \
+ pip download sickchill --dest /sickchill-wheels && \
+ rm -rf /sickchill-wheels/*none-any.whl && \
  rm -rf /sickchill-wheels/*.gz;
 
-RUN if [ -z $SOURCE ]; then\
-  rm -rf /sickchill-wheels/sickchill*.whl &&\
-  cp dist/sickchill*.whl /sickchill-wheels/;\
+RUN if [ -z $SOURCE ]; then \
+  rm -rf /sickchill-wheels/sickchill*.whl && \
+  cp dist/sickchill*.whl /sickchill-wheels/; \
 fi
 
 FROM scratch AS sickchill-wheels
@@ -105,5 +103,5 @@ VOLUME /data /downloads /tv
 CMD sickchill --nolaunch --datadir=/data --port 8081
 EXPOSE 8081
 
-HEALTHCHECK --interval=5m --timeout=3s\
+HEALTHCHECK --interval=5m --timeout=3s \
  CMD curl -f http://localhost:8081/ || curl -f https://localhost:8081/ || exit 1
