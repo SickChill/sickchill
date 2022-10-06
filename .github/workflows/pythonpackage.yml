@@ -211,8 +211,19 @@ jobs:
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
     -
+      name: Create buildkitd config override
+      run: |
+        echo 'experimantal = true' > /tmp/buildkitd.toml
+        echo 'debug = true' >> /tmp/buildkitd.toml
+        echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
+        echo '[worker.oci]' >> /tmp/buildkitd.toml
+        echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
+        cat /tmp/buildkitd.toml
+    -
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+      with:
+        config: /tmp/buildkitd.toml
     -
       if: github.actor == 'miigotu' && !env.ACT
       name: Login to DockerHub
@@ -266,6 +277,8 @@ jobs:
         cache-to: type=gha,mode=max
         cache-from: type=gha
         build-args: SOURCE=1
+        allow: |
+          security.insecure
     -
       if: github.actor == 'miigotu'
       name: Snag wheels
@@ -280,6 +293,8 @@ jobs:
         cache-from: type=gha
         build-args: |
           SOURCE=1
+        allow: |
+          security.insecure
     -
       if: github.actor == 'miigotu'
       name: List wheels directory
