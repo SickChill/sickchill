@@ -176,12 +176,6 @@ jobs:
       uses: docker/setup-buildx-action@v2
       with:
         config: /tmp/buildkitd.toml
--
-      name: Cache environment files
-        uses: actions/cache@v3
-        with:
-          path: /tmp/buildkitd.toml
-          key: ${{ github.workflow}}-environment
     -
       name: Test Docker Build
       uses: docker/build-push-action@v3
