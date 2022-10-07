@@ -157,6 +157,8 @@ jobs:
     -
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+      with:
+        buildkitd-flags: --debug --allow-insecure-entitlement security.insecure
     -
       name: Docker meta
       id: meta
@@ -193,7 +195,11 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         target: sickchill-final
         cache-from: type=gha
-        build-args: SOURCE=1
+        build-args: |
+          SOURCE=1
+        allow: |
+          security.insecure
+        
     -
       name: Test Docker Image
       run: |
@@ -276,7 +282,8 @@ jobs:
         target: sickchill-final
         cache-to: type=gha,mode=max
         cache-from: type=gha
-        build-args: SOURCE=1
+        build-args: |
+          SOURCE=1
         allow: |
           security.insecure
     -
