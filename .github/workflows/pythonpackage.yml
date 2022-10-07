@@ -29,6 +29,42 @@ defaults:
     shell: bash
 
 jobs:
+  Environment:
+    runs-on: ubuntu-22.04
+    outputs:
+      docker: ${{ steps.docker.outputs }}
+    steps:
+    -
+      name: Docker meta
+      id: docker
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          ${{ github.repository }}
+          ghcr.io/${{ github.repository }}
+        labels: |
+          org.opencontainers.image.source=https://github.com/sickchill/sickchill
+          org.opencontainers.image.url=https://sickchill.github.io
+          org.opencontainers.image.licenses=GPL-3.0+
+        tags: |
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=tag
+          type=ref,event=pr
+          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.run_id }},event=push
+          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.sha }},event=push
+          type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
+          type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
+          type=edge,branch=develop
+          type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    -
+      name: Cache environment files
+        uses: actions/cache@v3
+        with:
+          path: /tmp/buildkitd.toml
+          key: ${{ github.workflow}}-environment
   Test:
     strategy:
       matrix:
@@ -122,35 +158,16 @@ jobs:
       if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
       name: Coverage
       run: poetry run poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
-    -
-      name: Docker meta
-      id: testmeta
-      uses: docker/metadata-action@v4
-      with:
-        images: |
-          ${{ github.repository }}
-          ghcr.io/${{ github.repository }}
-        labels: |
-          org.opencontainers.image.source=https://github.com/sickchill/sickchill
-          org.opencontainers.image.url=https://sickchill.github.io
-          org.opencontainers.image.licenses=GPL-3.0+
-        tags: |
-          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-          type=schedule
-          type=ref,event=branch
-          type=ref,event=tag
-          type=ref,event=pr
-          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.run_id }},event=push
-          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.sha }},event=push
-          type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
-          type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
-          type=edge,branch=develop
-          type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-          type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
   Test-Docker:
-    needs: [Test]
+    needs: [Environment, Test]
     runs-on: ubuntu-22.04
     steps:
+    -
+      name: Restore environment files
+        uses: actions/cache@v3
+        with:
+          path: /tmp/buildkitd.toml
+          restore-keys: ${{ github.workflow}}-environment
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -158,32 +175,13 @@ jobs:
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
       with:
-        buildkitd-flags: --debug --allow-insecure-entitlement security.insecure
-    -
-      name: Docker meta
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: |
-          ${{ github.repository }}
-          ghcr.io/${{ github.repository }}
-        labels: |
-          org.opencontainers.image.source=https://github.com/sickchill/sickchill
-          org.opencontainers.image.url=https://sickchill.github.io
-          org.opencontainers.image.licenses=GPL-3.0+
-        tags: |
-          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-          type=schedule
-          type=ref,event=branch
-          type=ref,event=tag
-          type=ref,event=pr
-          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.run_id }},event=push
-          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.sha }},event=push
-          type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
-          type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
-          type=edge,branch=develop
-          type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-          type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+        config: /tmp/buildkitd.toml
+-
+      name: Cache environment files
+        uses: actions/cache@v3
+        with:
+          path: /tmp/buildkitd.toml
+          key: ${{ github.workflow}}-environment
     -
       name: Test Docker Build
       uses: docker/build-push-action@v3
@@ -192,14 +190,13 @@ jobs:
         push: false
         tags: ${{ env.DOCKER_TEST_TAG }}
         load: true
-        labels: ${{ steps.meta.outputs.labels }}
+        labels: ${{ needs.Environment.outputd.docker.labels }}
         target: sickchill-final
         cache-from: type=gha
         build-args: |
           SOURCE=1
         allow: |
           security.insecure
-        
     -
       name: Test Docker Image
       run: |
@@ -207,24 +204,21 @@ jobs:
         echo "Waiting ${{ env.SLEEP }} seconds for the container to start..." && sleep ${{ env.SLEEP }}
         [ $(curl http://0.0.0.0:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || exit 1
         docker stop ${{ env.DOCKER_CONTAINER_NAME }}
-        echo ${{ needs.Test.steps.testmeta.outputs.labels }}
-        echo ${{ needs.Test.steps.testmeta.outputs.tags }}
+        echo ${{ needs.Environment.outputs.docker.labels }}
+        echo ${{ needs.Environment.outputs.docker.tags }}
   Deploy:
-    needs: [Test, Test-Docker]
+    needs: [Environment, Test, Test-Docker]
     runs-on: ubuntu-22.04
     steps:
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
     -
-      name: Create buildkitd config override
-      run: |
-        echo 'experimantal = true' > /tmp/buildkitd.toml
-        echo 'debug = true' >> /tmp/buildkitd.toml
-        echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
-        echo '[worker.oci]' >> /tmp/buildkitd.toml
-        echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
-        cat /tmp/buildkitd.toml
+      name: Cache environment files
+        uses: actions/cache@v3
+        with:
+          path: /tmp/buildkitd.toml
+          restore-keys: ${{ github.workflow}}-environment
     -
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -246,39 +240,14 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.GITHUB_TOKEN }}
     -
-      name: Docker meta
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: |
-          ${{ github.repository }}
-          ghcr.io/${{ github.repository }}
-        labels: |
-          org.opencontainers.image.source=https://github.com/sickchill/sickchill
-          org.opencontainers.image.url=https://sickchill.github.io
-          org.opencontainers.image.licenses=GPL-3.0+
-        tags: |
-          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-          type=schedule
-          type=ref,event=branch
-          type=ref,event=tag
-          type=ref,event=pr
-          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.run_id }},event=push
-          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.sha }},event=push
-          type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
-          type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
-          type=edge,branch=develop
-          type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-          type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-    -
       if: github.actor == 'miigotu'
       name: Build and Push
       uses: docker/build-push-action@v3
       with:
         platforms: ${{ env.TARGET_PLATFORMS }}
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        tags: ${{ needs.Environment.outputs.docker.tags }}
+        labels: ${{ needs.Environment.outputs.docker.labels }}
         target: sickchill-final
         cache-to: type=gha,mode=max
         cache-from: type=gha
