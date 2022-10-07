@@ -281,7 +281,6 @@ jobs:
       name: Snag wheels
       uses: docker/build-push-action@v3
       with:
-        context: .
         file: Dockerfile
         platforms: ${{ env.TARGET_PLATFORMS }}
         push: false
