@@ -66,7 +66,7 @@ ENV RUSTUP_HOME "$HOME/.rustup"
 ENV RUSTUP_PERMIT_COPY_RENAME "yes"
 ENV RUSTUP_IO_THREADS 1
 ENV CARGO_TERM_VERBOSE "true"
-ENV CARGO "$CARGO_HOME/bin/cargo
+ENV CARGO "$CARGO_HOME/bin/cargo"
 
 RUN --security=insecure curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile minimal --default-toolchain nightly
 

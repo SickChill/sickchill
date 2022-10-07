@@ -154,6 +154,7 @@ jobs:
     -
       name: Install dependencies
       run: |
+        poetry run pip install --upgrade setuptools wheel
         poetry install --no-interaction --with dev --with speedups
     -
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
@@ -213,10 +214,12 @@ jobs:
       run: |
         docker run -d --rm -p 8081:8081 --name ${{ env.DOCKER_CONTAINER_NAME }} ${{ env.DOCKER_TEST_TAG }}
         echo "Waiting ${{ env.SLEEP }} seconds for the container to start..." && sleep ${{ env.SLEEP }}
-        [ $(curl http://0.0.0.0:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || exit 1
+        echo "Checking if container is alive..."
+        [ $(curl http://0.0.0.0:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || (echo "Faile" && exit 1)
+        echo "Checking if we have a working home page..."
+        [ $(curl http://0.0.0.0:8081 -s) ~='site-notification-modal' ] && echo "Success!" || (echo "Faile" && exit 1)
+        echo "Stopping and removing container..."
         docker stop ${{ env.DOCKER_CONTAINER_NAME }}
-        echo ${{ needs.Environment.outputs.docker.labels }}
-        echo ${{ needs.Environment.outputs.docker.tags }}
   Deploy:
     needs: [Environment, Test, Test-Docker]
     runs-on: ubuntu-22.04
