@@ -169,6 +169,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: /tmp/buildkitd.toml
+        key: ${{ github.workflow }}-environment
         restore-keys: ${{ github.workflow }}-environment
     -
       name: Set up QEMU
@@ -214,6 +215,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: /tmp/buildkitd.toml
+        key: ${{ github.workflow }}-environment
         restore-keys: ${{ github.workflow }}-environment
     -
       name: Set up Docker Buildx
