@@ -32,7 +32,8 @@ jobs:
   Environment:
     runs-on: ubuntu-22.04
     outputs:
-      docker: ${{ steps.docker.outputs }}
+      docker_tags: ${{ steps.docker.outputs.tags }}
+      docker_labels: ${{ steps.docker.outputs.labels }}
     steps:
     -
       name: Docker meta
@@ -184,7 +185,7 @@ jobs:
         push: false
         tags: ${{ env.DOCKER_TEST_TAG }}
         load: true
-        labels: ${{ needs.Environment.outputd.docker.labels }}
+        labels: ${{ needs.Environment.outputs.docker_labels }}
         target: sickchill-final
         cache-from: type=gha
         build-args: |
@@ -240,8 +241,8 @@ jobs:
       with:
         platforms: ${{ env.TARGET_PLATFORMS }}
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
-        tags: ${{ needs.Environment.outputs.docker.tags }}
-        labels: ${{ needs.Environment.outputs.docker.labels }}
+        tags: ${{ needs.Environment.outputs.docker_tags }}
+        labels: ${{ needs.Environment.outputs.docker_labels }}
         target: sickchill-final
         cache-to: type=gha,mode=max
         cache-from: type=gha
