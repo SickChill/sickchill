@@ -42,6 +42,15 @@ jobs:
         path: /tmp/buildkitd.toml
         key: ${{ github.workflow }}-environment
     -
+      name: Create buildkitd config
+      run: |
+        echo 'experimantal = true' > /tmp/buildkitd.toml
+        echo 'debug = true' >> /tmp/buildkitd.toml
+        echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
+        echo '[worker.oci]' >> /tmp/buildkitd.toml
+        echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
+        cat /tmp/buildkitd.toml
+    -
       name: Docker meta
       id: docker
       uses: docker/metadata-action@v4
