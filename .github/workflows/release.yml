@@ -12,36 +12,24 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.actor == 'miigotu'
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.3.1
-        with:
-          version: 1.2.0
-          virtualenvs-path: .venv
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: false
-      - name: Restore poetry cache
-        if: success() && !env.ACT
-        uses: actions/cache@v3
-        with:
-          path: $(poetry config cache-dir)
-          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
-      - name: Restore virtualenv
-        if: success() && !env.ACT
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: ${{ runner.os }}-virtualenv-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
-      - name: Checkout SickChill
+      -
+        name: Install poetry
+        run: pipx install poetry
+      -
+        name: Checkout SickChill
         uses: actions/checkout@v3
         with:
           ref: master
           path: sickchill
-      - name: Publish
+      -
+        name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          cache: 'poetry'
+          check-latest: true
+      -
+        name: Publish
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}

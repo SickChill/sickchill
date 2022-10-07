@@ -24,7 +24,7 @@ class TestPipUpdateManager:
 
     def test_get_clean_version(self, updater):
         assert updater.get_clean_version() == updater.version_text
-        assert updater.get_clean_version(use_version=packaging_version.parse("2022.8.30")) == "2022.08.30"
+        assert updater.get_clean_version(use_version=packaging_version.parse("2022.8.30")) == "2022.8.30"
 
     def test_get_newest_version(self, updater):
         assert updater.get_newest_version() == packaging_version.parse(updater.newest_version_text)

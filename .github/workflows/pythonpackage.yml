@@ -8,6 +8,7 @@ on:
     branches:
       - master
       - develop
+      - test-deploy
   pull_request:
     branches:
       - develop
@@ -17,144 +18,41 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  SLEEP: 60
   DOCKER_BUILDKIT: '1'
-  TARGET_PLATFORMS: "linux/amd64,linux/arm/v7,linux/arm64/v8,linux/s390x,linux/ppc64le"
-
+  DOCKER_TEST_TAG: sickchill/sickchill:test
+  DOCKER_CONTAINER_NAME: sickchill_test
+  TARGET_PLATFORMS: "linux/amd64,linux/arm64"
 
 defaults:
   run:
     shell: bash
 
 jobs:
-  Test:
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
-        python-version: [3.7, 3.8, 3.9, "3.10"]
-        experimental: [false]
-        include:
-          - os: windows-latest
-            python-version: "3.10"
-            experimental: true
-          - os: macos-latest
-            python-version: "3.10"
-            experimental: true
-          - os: ubuntu-22.04
-            python-version: "3.11.0-rc.2"
-            experimental: true
-          - os: ubuntu-22.04
-            python-version: "pypy-3.7"
-            experimental: true
-          - os: ubuntu-22.04
-            python-version: "pypy-3.8"
-            experimental: true
-          - os: ubuntu-22.04
-            python-version: "pypy-3.10"
-            experimental: true
-      fail-fast: true
-    continue-on-error: ${{ matrix.experimental }}
-    runs-on: ${{ matrix.os }}
-    steps:
-    - name: Cancel Previous Runs
-      if: success() && !env.ACT
-      uses: styfle/cancel-workflow-action@0.10.1
-      with:
-        access_token: ${{ github.token }}
-    - name: Checkout
-      if: success() && !env.ACT
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
-        persist-credentials: false
-    - name: Lint shell scripts
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10 && !env.ACT
-      uses: ludeeus/action-shellcheck@master
-      with:
-        format: diff
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: "poetry"
-        cache-dependency-path: pyproject.toml
-    - name: Set up Node
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16.x'
-        cache: 'yarn'
-    - name: Install yarn
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
-      run: npm install -g yarn
-    - name: Install Poetry
-      uses: snok/install-poetry@v1.3.1
-      with:
-        version: 1.2.1
-        virtualenvs-path: .venv
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-        installer-parallel: false
-    - name: Update pip
-      run: |
-        curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-        poetry run python get-pip.py
-        rm get-pip.py
-    - name: Install dependencies
-      run: |
-        poetry install --no-interaction --with dev --with speedups
-    - name: Run yarn
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
-      run: poe yarn
-    - name: Lint Python
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
-      run: poe lint
-    - name: Lint and test Javascript
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
-      run: poe yarn test
-    - name: Test Python
-      run: |
-        poe pytest
-        poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
-      shell: bash
-  Deploy:
-    needs: [Test]
+  Environment:
     runs-on: ubuntu-22.04
+    outputs:
+      docker_tags: ${{ steps.docker.outputs.tags }}
+      docker_labels: ${{ steps.docker.outputs.labels }}
     steps:
-    - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.10.1
+    -
+      name: Cache environment files
+      uses: actions/cache@v3
       with:
-        access_token: ${{ github.token }}
-    - name: Checkout
-      if: success() && !env.ACT
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
-        persist-credentials: false
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    - name: Login to DockerHub
-      if: github.actor == 'miigotu' && !env.ACT
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Login to GitHub Container Registry
-      if: github.actor == 'miigotu' && !env.ACT
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Install Poetry
-      uses: snok/install-poetry@v1.3.1
-      with:
-        version: 1.2.1
-        virtualenvs-create: false
-        installer-parallel: false
-    - name: Docker meta
-      id: meta
+        path: /tmp/buildkitd.toml
+        key: ${{ github.workflow }}-environment
+    -
+      name: Create buildkitd config
+      run: |
+        echo 'experimantal = true' > /tmp/buildkitd.toml
+        echo 'debug = true' >> /tmp/buildkitd.toml
+        echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
+        # echo '[worker.oci]' >> /tmp/buildkitd.toml
+        # echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
+        cat /tmp/buildkitd.toml
+    -
+      name: Docker meta
+      id: docker
       uses: docker/metadata-action@v4
       with:
         images: |
@@ -177,24 +75,212 @@ jobs:
           type=edge,branch=develop
           type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
           type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-    - name: Build and Push
-      if: github.actor == 'miigotu'
+  Test:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        python-version: [3.7, 3.8, 3.9, "3.10"]
+        experimental: [false]
+        include:
+          -
+            os: ubuntu-22.04
+            python-version: "3.11.0-rc.2"
+            experimental: true
+          -
+            os: windows-latest
+            python-version: "3.10"
+            experimental: true
+          -
+            os: macos-latest
+            python-version: "3.10"
+            experimental: true
+          -
+            os: ubuntu-22.04
+            python-version: "pypy3.9-v7.3.8"
+            experimental: true
+          -
+            os: ubuntu-22.04
+            python-version: "pypy3.8-v7.3.9"
+            experimental: true
+          -
+            os: ubuntu-22.04
+            python-version: "pypy3.7-v7.3.9"
+            experimental: true
+      fail-fast: true
+    continue-on-error: ${{ matrix.experimental }}
+    runs-on: ${{ matrix.os }}
+    steps:
+    -
+      if: success() && !env.ACT
+      name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        persist-credentials: false
+    -
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10 && !env.ACT
+      name: Lint shell scripts
+      uses: ludeeus/action-shellcheck@master
+      with:
+        format: diff
+    -
+      name: Install Poetry
+      uses: snok/install-poetry@v1.3.1
+      with:
+        version: 1.2.0
+        virtualenvs-path: .venv
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: false
+    -
+      name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: "poetry"
+        cache-dependency-path: pyproject.toml
+        check-latest: true
+    -
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      name: Set up Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+        cache: 'yarn'
+    -
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      name: Install yarn
+      run: npm install -g yarn
+    -
+      name: Update pip
+      run: |
+        curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+        poetry run python get-pip.py
+        rm get-pip.py
+    -
+      name: Install dependencies
+      run: |
+        poetry run pip install --upgrade setuptools wheel
+        poetry install --no-interaction --with dev --with speedups
+    -
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      name: Run yarn
+      run: poetry run poe yarn
+    -
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      name: Lint Python
+      run: poetry run poe lint
+    -
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      name: Lint and test Javascript
+      run: poetry run poe yarn test
+    -
+      name: Test Python
+      run: poetry run poe pytest
+    -
+      if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+      name: Coverage
+      run: poetry run poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+  Test-Docker:
+    needs: [Environment, Test]
+    runs-on: ubuntu-22.04
+    steps:
+    -
+      name: Restore environment files
+      uses: actions/cache@v3
+      with:
+        path: /tmp/buildkitd.toml
+        key: ${{ github.workflow }}-environment
+        restore-keys: ${{ github.workflow }}-environment
+    -
+      name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      with:
+        config: /tmp/buildkitd.toml
+    -
+      name: Test Docker Build
       uses: docker/build-push-action@v3
       with:
-        context: .
+        platforms: linux/amd64
+        push: false
+        tags: ${{ env.DOCKER_TEST_TAG }}
+        load: true
+        labels: ${{ needs.Environment.outputs.docker_labels }}
+        target: sickchill-final
+        cache-from: type=gha
+        build-args: |
+          SOURCE=1
+        allow: |
+          security.insecure
+    -
+      name: Test Docker Image
+      run: |
+        docker run -d --rm -p 8081:8081 --name ${{ env.DOCKER_CONTAINER_NAME }} ${{ env.DOCKER_TEST_TAG }}
+        echo "Waiting ${{ env.SLEEP }} seconds for the container to start..." && sleep ${{ env.SLEEP }}
+        echo "Checking if container is alive..."
+        [ $(curl http://0.0.0.0:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || (echo "Faile" && exit 1)
+        echo "Checking if we have a working home page..."
+        [ $(curl http://0.0.0.0:8081 -s) ~='site-notification-modal' ] && echo "Success!" || (echo "Faile" && exit 1)
+        echo "Stopping and removing container..."
+        docker stop ${{ env.DOCKER_CONTAINER_NAME }}
+  Deploy:
+    needs: [Environment, Test, Test-Docker]
+    runs-on: ubuntu-22.04
+    steps:
+    -
+      name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    -
+      name: Cache environment files
+      uses: actions/cache@v3
+      with:
+        path: /tmp/buildkitd.toml
+        key: ${{ github.workflow }}-environment
+        restore-keys: ${{ github.workflow }}-environment
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      with:
+        config: /tmp/buildkitd.toml
+    -
+      if: github.actor == 'miigotu' && !env.ACT
+      name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    -
+      if: github.actor == 'miigotu' && !env.ACT
+      name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    -
+      if: github.actor == 'miigotu'
+      name: Build and Push
+      uses: docker/build-push-action@v3
+      with:
         platforms: ${{ env.TARGET_PLATFORMS }}
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        tags: ${{ needs.Environment.outputs.docker_tags }}
+        labels: ${{ needs.Environment.outputs.docker_labels }}
         target: sickchill-final
         cache-to: type=gha,mode=max
         cache-from: type=gha
-        build-args: SOURCE=1
-    - name: Snag wheels
+        build-args: |
+          SOURCE=1
+        allow: |
+          security.insecure
+    -
       if: github.actor == 'miigotu'
+      name: Snag wheels
       uses: docker/build-push-action@v3
       with:
-        context: .
         file: Dockerfile
         platforms: ${{ env.TARGET_PLATFORMS }}
         push: false
@@ -203,21 +289,27 @@ jobs:
         cache-from: type=gha
         build-args: |
           SOURCE=1
-    - name: List wheels directory
+        allow: |
+          security.insecure
+    -
       if: github.actor == 'miigotu'
+      name: List wheels directory
       run: |
         ls -R /tmp/sickchill-wheels
-    - name: Upload linux/amd64 wheels
+    -
+      name: Upload linux/amd64 wheels
       uses: actions/upload-artifact@v3
       with:
         name: amd64
         path: /tmp/sickchill-wheels/linux_amd64
-    - name: Upload linux/arm64 wheels
+    -
+      name: Upload linux/arm64 wheels
       uses: actions/upload-artifact@v3
       with:
         name: arm64
         path: /tmp/sickchill-wheels/linux_arm64
-    - name: Upload linux/arm/v7 wheels
+    -
+      name: Upload linux/arm/v7 wheels
       uses: actions/upload-artifact@v3
       with:
         name: armv7

@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:experimental
+
 # docker run -dit --user 1000:1000 --name sickchill --restart=always \
 # -v mount_point:/mount_point \
 # -v /docker/sickchill/data:/data \
@@ -60,8 +62,15 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Make sure HOME exists
 RUN mkdir -m 755 -p "$HOME"
 
-# --no-modify-path is required to prevent cargo from modifying the PATH that we already set
-RUN set -ex && HOME=$HOME curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly --no-modify-path
+ENV RUSTUP_HOME "$HOME/.rustup"
+ENV RUSTUP_PERMIT_COPY_RENAME "yes"
+ENV RUSTUP_IO_THREADS 1
+ENV CARGO_TERM_VERBOSE "true"
+ENV CARGO "$CARGO_HOME/bin/cargo"
+
+RUN --security=insecure curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile minimal --default-toolchain nightly
+
+ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
 
 # Always just create our own virtualenv to prevent issues
 RUN python3 -m venv "$POETRY_VIRTUALENVS_PATH" --upgrade --upgrade-deps # upgrade-deps requires python3.9+
@@ -105,4 +114,4 @@ CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
 EXPOSE 8081
 
 HEALTHCHECK --interval=5m --timeout=3s \
- CMD curl -f http://localhost:8081/ || curl -f https://localhost:8081/ || exit 1
+ CMD bash -c 'if [ $(curl -f http://localhost:8081/ui/get_messages -s) == "{}" ]; then echo "sickchill is alive"; elif [ $(curl -f https://localhost:8081/ui/get_messages -s) == "{}" ]; then echo "sickchill is alive"; else echo 1; fi'
