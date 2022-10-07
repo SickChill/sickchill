@@ -61,10 +61,10 @@ jobs:
           type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     -
       name: Cache environment files
-        uses: actions/cache@v3
-        with:
-          path: /tmp/buildkitd.toml
-          key: ${{ github.workflow}}-environment
+      uses: actions/cache@v3
+      with:
+        path: /tmp/buildkitd.toml
+        key: ${{ github.workflow}}-environment
   Test:
     strategy:
       matrix:
@@ -164,10 +164,10 @@ jobs:
     steps:
     -
       name: Restore environment files
-        uses: actions/cache@v3
-        with:
-          path: /tmp/buildkitd.toml
-          restore-keys: ${{ github.workflow}}-environment
+      uses: actions/cache@v3
+      with:
+        path: /tmp/buildkitd.toml
+        restore-keys: ${{ github.workflow}}-environment
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -215,10 +215,10 @@ jobs:
       uses: docker/setup-qemu-action@v2
     -
       name: Cache environment files
-        uses: actions/cache@v3
-        with:
-          path: /tmp/buildkitd.toml
-          restore-keys: ${{ github.workflow}}-environment
+      uses: actions/cache@v3
+      with:
+        path: /tmp/buildkitd.toml
+        restore-keys: ${{ github.workflow}}-environment
     -
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
