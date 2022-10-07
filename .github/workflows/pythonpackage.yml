@@ -36,6 +36,12 @@ jobs:
       docker_labels: ${{ steps.docker.outputs.labels }}
     steps:
     -
+      name: Cache environment files
+      uses: actions/cache@v3
+      with:
+        path: /tmp/buildkitd.toml
+        key: ${{ github.workflow }}-environment
+    -
       name: Docker meta
       id: docker
       uses: docker/metadata-action@v4
@@ -60,12 +66,6 @@ jobs:
           type=edge,branch=develop
           type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
           type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-    -
-      name: Cache environment files
-      uses: actions/cache@v3
-      with:
-        path: /tmp/buildkitd.toml
-        key: ${{ github.workflow }}-environment
   Test:
     strategy:
       matrix:
@@ -73,24 +73,29 @@ jobs:
         python-version: [3.7, 3.8, 3.9, "3.10"]
         experimental: [false]
         include:
-          - os: ubuntu-22.04
+          -
+            os: ubuntu-22.04
             python-version: "3.11.0-rc.2"
             experimental: true
-          - os: windows-latest
+          -
+            os: windows-latest
             python-version: "3.10"
             experimental: true
-          - os: macos-latest
+          -
+            os: macos-latest
             python-version: "3.10"
             experimental: true
-
-          - os: ubuntu-22.04
-            python-version: "pypy3.7-v7.3.9"
+          -
+            os: ubuntu-22.04
+            python-version: "pypy3.9-v7.3.8"
             experimental: true
-          - os: ubuntu-22.04
+          -
+            os: ubuntu-22.04
             python-version: "pypy3.8-v7.3.9"
             experimental: true
-          - os: ubuntu-22.04
-            python-version: "pypy3.9-v7.3.9"
+          -
+            os: ubuntu-22.04
+            python-version: "pypy3.7-v7.3.9"
             experimental: true
       fail-fast: true
     continue-on-error: ${{ matrix.experimental }}
