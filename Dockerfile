@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:experimental
+
 # docker run -dit --user 1000:1000 --name sickchill --restart=always \
 # -v mount_point:/mount_point \
 # -v /docker/sickchill/data:/data \
