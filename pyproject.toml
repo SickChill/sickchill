@@ -180,7 +180,7 @@ src_paths = [ "sickchill", "tests", "SickChill.py", "setup.py" ]
 line-length = 160
 target_version = ['py310']
 include = '\.pyi?$'
-exclude = 'contrib/scmaintools'
+exclude = 'contrib/scmaintools|\.venv|\.git|\.hg|\.mypy_cache|\.tox|\.venv|_build|buck-out|build|dist|node_modules|bower_components'
 
 [tool.poe.tasks]
 pytest = "pytest"
