@@ -23,6 +23,7 @@ env:
   DOCKER_TEST_TAG: sickchill/sickchill:test
   DOCKER_CONTAINER_NAME: sickchill_test
   TARGET_PLATFORMS: "linux/amd64,linux/arm64"
+  CRYPTOGRAPHY_DONT_BUILD_RUST: 1
 
 defaults:
   run:
@@ -125,7 +126,7 @@ jobs:
         format: diff
     -
       name: Install Poetry
-      uses: snok/install-poetry@v1.3.1
+      uses: snok/install-poetry@v1.3.2
       with:
         version: 1.2.0
         virtualenvs-path: .venv
