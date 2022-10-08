@@ -120,7 +120,6 @@ jobs:
       with:
         fetch-depth: 1
         persist-credentials: false
-        submodules: "recursive"
     -
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10' && !env.ACT
       name: Lint shell scripts
