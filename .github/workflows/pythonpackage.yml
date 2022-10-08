@@ -23,7 +23,7 @@ env:
   DOCKER_TEST_TAG: sickchill/sickchill:test
   DOCKER_CONTAINER_NAME: sickchill_test
   TARGET_PLATFORMS: "linux/amd64,linux/arm64"
-  CRYPTOGRAPHY_DONT_BUILD_RUST=1
+  CRYPTOGRAPHY_DONT_BUILD_RUST: 1
 
 defaults:
   run:
