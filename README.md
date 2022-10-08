@@ -33,7 +33,9 @@ Visit the [Installation & Configuration guides page](https://github.com/SickChil
 
 #### Dependencies
 
-To run SickChill you will need Python 3.6+
+To run SickChill you will need Python 3.7+, preferably 3.10 or newer.
+
+PyPy (python 3.7-3.9) 7.8.x+ is also supported.
 
 #### More info
 
