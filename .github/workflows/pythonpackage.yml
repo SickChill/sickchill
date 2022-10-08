@@ -120,9 +120,8 @@ jobs:
       with:
         fetch-depth: 1
         persist-credentials: false
-        submodules: "recursive"
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10 && !env.ACT
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10' && !env.ACT
       name: Lint shell scripts
       uses: ludeeus/action-shellcheck@master
       with:
@@ -145,14 +144,14 @@ jobs:
         cache-dependency-path: pyproject.toml
         check-latest: true
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
       name: Set up Node
       uses: actions/setup-node@v3
       with:
         node-version: '16.x'
         cache: 'yarn'
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
       name: Install yarn
       run: npm install -g yarn
     -
@@ -167,15 +166,15 @@ jobs:
         poetry run pip install --upgrade setuptools wheel
         poetry install --no-interaction --with dev --with speedups
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
       name: Run yarn
       run: poetry run poe yarn
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
       name: Lint Python
       run: poetry run poe lint
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
       name: Lint and test Javascript
       run: poetry run poe yarn test
     -
