@@ -30,6 +30,8 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: false
+      - name: Create lock file
+        run: poetry lock --no-update
       -
         name: Set up Python
         uses: actions/setup-python@v4
