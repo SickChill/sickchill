@@ -37,6 +37,7 @@ classifiers = [
 packages = [
     { include = "sickchill" },
     { include = "SickChill.py" },
+    { include = "frontend" }
 ]
 
 [tool.poetry.urls]
@@ -107,10 +108,17 @@ optional = true
 [tool.poetry.group.experimental.dependencies]
 pyaes = "^1.6.1"
 
+[tool.poetry.group.frontend]
+optional = true
+
+[tool.poetry.group.frontend.dependencies]
+Flask = "^2.2.2"
+
 [tool.poetry.extras]
 experimental = ["experimental"]
-speedups = ["html5lib", "lxml", "Js2Py"]
+speedups = ["speedups"]
 types = ["types"]
+frontend = ["frontend"]
 
 
 [tool.commitizen]
