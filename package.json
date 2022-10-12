@@ -121,7 +121,8 @@
       "lib/**/*",
       "Gruntfile.js",
       "sickchill/gui/slick/js/lib/*",
-      "tests/js/index.js"
+      "tests/js/index.js",
+      "frontend/static/*",
     ]
   }
 }
