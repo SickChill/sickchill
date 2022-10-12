@@ -22,7 +22,7 @@ jobs:
     steps:
       -
         name: Install Poetry
-        uses: snok/install-poetry@v1.3.2
+        uses: snok/install-poetry@v1.3.3
         with:
           version: 1.2.0
           virtualenvs-path: .venv
