@@ -304,7 +304,3 @@ beekeeper-alt = ">=2022.9.3"
 stevedore = {version = "<=3.5.0", python = "<3.8"}
 importlib-metadata = {version = "<5.0.0", python = "<3.8"}
 
-# Cryptography wheels for 35+ require rust, and the build does not work on github.
-cryptography = [
-  {version = "<35.0.0", markers = "platform_machine != 'amd64' and platform_machine != 'arm64' and platform_machine != 'aarch64' and platform_machine != 'x86_64'"}
-]
