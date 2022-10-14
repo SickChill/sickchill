@@ -1,0 +1,19 @@
+<block head %>
+    <link rel="stylesheet" href="/static/shows.css">
+    <title><block title %><endblock %></title>
+<endblock %>
+<block content %>
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="header">Listing Shows</h1>
+            {% for show in shows %}
+            <p>{{ show.name }} ({{ show.startyear }})</p>
+            <p>{tvdb: {{ show.indexerid }}</p>
+            <p>imdb {{ show.imdb_id }}</p>
+            {% endfor %}
+        </div>
+    </div>
+<endblock %>
+<%block footer %>
+    <script src="/static/shows.js"></script>
+<endblock %>

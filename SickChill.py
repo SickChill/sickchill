@@ -12,6 +12,12 @@ import time
 import traceback
 
 import sickchill.start
+
+try:
+    from frontend.app import FlaskServer
+except (ModuleNotFoundError, ImportError):
+    FlaskServer = None
+
 from sickchill import logger, settings
 from sickchill.helper.common import choose_data_dir
 from sickchill.init_helpers import check_installed, get_current_version, remove_pid_file, setup_gettext
@@ -45,7 +51,7 @@ signal.signal(signal.SIGINT, sickchill.start.sig_handler)
 signal.signal(signal.SIGTERM, sickchill.start.sig_handler)
 
 
-class SickChill(object):
+class SickChill:
 
     """
     Main SickChill module
@@ -119,18 +125,18 @@ class SickChill(object):
             try:
                 os.makedirs(settings.DATA_DIR, 0o744)
             except os.error:
-                raise SystemExit("Unable to create data directory: {0}".format(settings.DATA_DIR))
+                raise SystemExit("Unable to create data directory: {}".format(settings.DATA_DIR))
 
         # Make sure we can write to the data dir
         if not os.access(settings.DATA_DIR, os.W_OK):
-            raise SystemExit("Data directory must be writeable: {0}".format(settings.DATA_DIR))
+            raise SystemExit("Data directory must be writeable: {}".format(settings.DATA_DIR))
 
         # Make sure we can write to the config file
         if not os.access(settings.CONFIG_FILE, os.W_OK):
             if os.path.isfile(settings.CONFIG_FILE):
-                raise SystemExit("Config file must be writeable: {0}".format(settings.CONFIG_FILE))
+                raise SystemExit("Config file must be writeable: {}".format(settings.CONFIG_FILE))
             elif not os.access(os.path.dirname(settings.CONFIG_FILE), os.W_OK):
-                raise SystemExit("Config file root dir must be writeable: {0}".format(os.path.dirname(settings.CONFIG_FILE)))
+                raise SystemExit("Config file root dir must be writeable: {}".format(os.path.dirname(settings.CONFIG_FILE)))
 
         os.chdir(settings.DATA_DIR)
 
@@ -139,11 +145,11 @@ class SickChill(object):
         if os.path.exists(restore_dir):
             success = self.restore_db(restore_dir, settings.DATA_DIR)
             if self.console_logging:
-                sys.stdout.write("Restore: restoring DB and config.ini {0}!\n".format(("FAILED", "SUCCESSFUL")[success]))
+                sys.stdout.write("Restore: restoring DB and config.ini {}!\n".format(("FAILED", "SUCCESSFUL")[success]))
 
         # Load the config and publish it to the oldbeard package
         if self.console_logging and not os.path.isfile(settings.CONFIG_FILE):
-            sys.stdout.write("Unable to find {0}, all settings will be default!\n".format(settings.CONFIG_FILE))
+            sys.stdout.write("Unable to find {}, all settings will be default!\n".format(settings.CONFIG_FILE))
 
         settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
 
@@ -178,6 +184,24 @@ class SickChill(object):
         # start web server
         self.web_server = SRWebServer(web_options)
         self.web_server.start()
+
+        if args.flask and FlaskServer:
+            # start the flask frontend
+            if args.flask_port:
+                port = args.flask_port
+            else:
+                port = int(self.start_port) + 1
+
+            if args.flask_host:
+                web_host = args.flask_host
+            else:
+                if settings.WEB_HOST and settings.WEB_HOST != "0.0.0.0":
+                    web_host = settings.WEB_HOST
+                else:
+                    web_host = ("0.0.0.0", "")[settings.WEB_IPV6]
+
+            self.flask_server = FlaskServer(web_host, port)
+            self.flask_server.start()
 
         # Fire up all our threads
         sickchill.start.start()
@@ -216,7 +240,7 @@ class SickChill(object):
                 cur_show.nextEpisode()
                 settings.showList.append(cur_show)
             except Exception as error:
-                logger.exception("There was an error creating the show in {0}: Error {1}".format(sql_show["location"], error))
+                logger.exception("There was an error creating the show in {}: Error {}".format(sql_show["location"], error))
                 logger.debug(traceback.format_exc())
 
     @staticmethod
@@ -233,7 +257,7 @@ class SickChill(object):
             for filename in files_list:
                 src_file = os.path.join(src_dir, filename)
                 dst_file = os.path.join(dst_dir, filename)
-                bak_file = os.path.join(dst_dir, "{0}.bak-{1}".format(filename, datetime.datetime.now().strftime("%Y%m%d_%H%M%S")))
+                bak_file = os.path.join(dst_dir, "{}.bak-{}".format(filename, datetime.datetime.now().strftime("%Y%m%d_%H%M%S")))
                 sickchill_db = os.path.join(dst_dir, "sickchill.db")
                 sickbeard_db = os.path.join(src_dir, "sickbeard.db")
                 if os.path.isfile(src_file):
