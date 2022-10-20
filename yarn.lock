@@ -2641,9 +2641,9 @@ camelcase@^6.3.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001400:
-  version "1.0.30001421"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001421.tgz#979993aaacff5ab72a8d0d58c28ddbcb7b4deba6"
-  integrity sha512-Sw4eLbgUJAEhjLs1Fa+mk45sidp1wRn5y6GtDpHGBaNJ9OCDJaVh2tIaWWUnGfuXfKf1JCBaIarak3FkVAvEeA==
+  version "1.0.30001422"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001422.tgz#f2d7c6202c49a8359e6e35add894d88ef93edba1"
+  integrity sha512-hSesn02u1QacQHhaxl/kNMZwqVG35Sz/8DgvmgedxSH8z9UUpcDYSPYgsj3x5dQNRcNp6BwpSfQfVzYUTm+fog==
 
 capture-stack-trace@^1.0.0:
   version "1.0.2"
@@ -4064,9 +4064,9 @@ eslint-plugin-prettier@^4.0.0:
     prettier-linter-helpers "^1.0.0"
 
 eslint-plugin-promise@^6.0.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-6.1.0.tgz#99e54d07272df5a6440209cb36d0d692be0610dd"
-  integrity sha512-NYCfDZF/KHt27p06nFAttgWuFyIDSUMnNaJBIY1FY9GpBFhdT2vMG64HlFguSgcJeyM5by6Yr5csSOuJm60eXQ==
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-6.1.1.tgz#269a3e2772f62875661220631bd4dafcb4083816"
+  integrity sha512-tjqWDwVZQo7UIPMeDReOpUgHCmCiH+ePnVT+5zVapL0uuHnegBUs2smM13CzOs2Xb5+MHMRFTs9v24yjba4Oig==
 
 eslint-plugin-unicorn@^42.0.0:
   version "42.0.0"
@@ -9284,9 +9284,9 @@ snapdragon@^0.8.1:
     use "^3.1.0"
 
 snyk@^1.1030.0:
-  version "1.1034.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1034.0.tgz#12b63d4b7fae22e56c8aac989b9426ed71b68fca"
-  integrity sha512-zhDh1BoOwhLWgH1vGRHcIkAG+jgq4bf5lVlCTxT5IzXxs9tha6v2RgPsqvc4ih2Wwhngz0+d1rV0a/Uh0lushQ==
+  version "1.1035.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1035.0.tgz#0e03ddf9fb1a127a2605630a815d17dc96d45e3b"
+  integrity sha512-EE6mguhgPZnT06eHn8F7nwLjQcwfx7p+ovuJicOD7DkVAanpeoYso6gKDJbLtBUihgT3urGQFKRNoBo1tKoWiw==
 
 sockjs@^0.3.24:
   version "0.3.24"
