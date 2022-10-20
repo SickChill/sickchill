@@ -64,7 +64,7 @@
     "mini-css-extract-plugin": "^2.6.1",
     "sass": "^1.55.0",
     "sass-loader": "^13.1.0",
-    "snyk": "^1.1030.0",
+    "snyk": "^1.1037.0",
     "style-loader": "^3.3.1",
     "toml": "^3.0.0",
     "webpack": "^5.74.0",

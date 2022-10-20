@@ -1488,7 +1488,7 @@
   dependencies:
     "@types/node" "*"
 
-"@typescript-eslint/eslint-plugin@*":
+"@typescript-eslint/eslint-plugin@^5.35.1":
   version "5.40.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.40.1.tgz#3203a6ff396b1194083faaa6e5110c401201d7d5"
   integrity sha512-FsWboKkWdytGiXT5O1/R9j37YgcjO8MKHSUmWnIEjVaz0krHkplPnYi7mwdb+5+cs0toFNQb0HIrN7zONdIEWg==
@@ -1502,7 +1502,7 @@
     semver "^7.3.7"
     tsutils "^3.21.0"
 
-"@typescript-eslint/parser@*":
+"@typescript-eslint/parser@^5.35.1":
   version "5.40.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.40.1.tgz#e7f8295dd8154d0d37d661ddd8e2f0ecfdee28dd"
   integrity sha512-IK6x55va5w4YvXd4b3VrXQPldV9vQTxi5ov+g4pMANsXPTXOcfjx08CRR1Dfrcc51syPtXHF5bgLlMHYFrvQtg==
@@ -3905,7 +3905,7 @@ eslint-config-prettier@^8.5.0:
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
 
-eslint-config-xo-typescript@*:
+eslint-config-xo-typescript@^0.53.0:
   version "0.53.0"
   resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.53.0.tgz#702be21ea0dfcb124903c5f723d023b1fdeb0da2"
   integrity sha512-IJ1n70egMPTou/41HoGGFbLf/2WCsVW5lSUxOSklrR8T1221fMRPVJxIVZ3evr8R+N5wR6uzg/0uzSymwWA5Bg==
@@ -9283,10 +9283,10 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-snyk@^1.1030.0:
-  version "1.1035.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1035.0.tgz#0e03ddf9fb1a127a2605630a815d17dc96d45e3b"
-  integrity sha512-EE6mguhgPZnT06eHn8F7nwLjQcwfx7p+ovuJicOD7DkVAanpeoYso6gKDJbLtBUihgT3urGQFKRNoBo1tKoWiw==
+snyk@^1.1037.0:
+  version "1.1037.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1037.0.tgz#dc6a7112d627db34a6a9a75f5e8350b859822f42"
+  integrity sha512-ygnLzb5Qpu+R6HnIdvO7qXFbVryEmerPY18y5cwXZgo8wFtBReaQ8slIE5zJvhX6w7zrM4X94GT4zYoC1U2etA==
 
 sockjs@^0.3.24:
   version "0.3.24"
