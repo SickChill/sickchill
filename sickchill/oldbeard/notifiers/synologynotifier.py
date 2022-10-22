@@ -3,6 +3,7 @@ import subprocess
 
 from sickchill import logger, settings
 from sickchill.oldbeard import common
+from sickchill.oldbeard.classes import UIError
 
 
 class Notifier(object):
@@ -29,6 +30,13 @@ class Notifier(object):
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._send_synologyNotifier(update_text.format(ipaddress), title)
+
+    def notify_logged_error(self, ui_error: UIError):
+        if settings.USE_SYNOLOGYNOTIFIER and ui_error:
+            update_text = ui_error.message
+            title = ui_error.title
+
+            self._send_synologyNotifier(update_text, title)
 
     @staticmethod
     def _send_synologyNotifier(message, title):

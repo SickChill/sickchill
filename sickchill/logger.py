@@ -15,7 +15,7 @@ from github.GithubException import RateLimitExceededException, TwoFactorExceptio
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
 from sickchill.init_helpers import get_current_version
-from sickchill.oldbeard import classes
+from sickchill.oldbeard import classes, notifiers
 
 # log levels
 ERROR = logging.ERROR
@@ -77,6 +77,8 @@ class DispatchFormatter(logging.Formatter, object):
 
         if record.levelno == ERROR:
             classes.ErrorViewer.add(classes.UIError(msg))
+            notifiers.notify_logged_error(classes.UIError(msg))
+
         elif record.levelno == WARNING:
             classes.WarningViewer.add(classes.UIError(msg))
 
