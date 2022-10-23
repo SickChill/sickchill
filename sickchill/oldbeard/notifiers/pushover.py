@@ -5,6 +5,7 @@ import time
 import requests
 
 from sickchill import logger, settings
+from sickchill.oldbeard.classes import UIError
 from sickchill.oldbeard.common import (
     NOTIFY_DOWNLOAD,
     NOTIFY_LOGIN,
@@ -126,6 +127,10 @@ class Notifier(object):
             update_text = notifyStrings[NOTIFY_LOGIN_TEXT]
             title = notifyStrings[NOTIFY_LOGIN]
             self._notify_pushover(title, update_text.format(ipaddress))
+
+    def notify_logged_error(self, ui_error: UIError):
+        if settings.USE_PUSHOVER:
+            self._notify_pushover(title=ui_error.title, message=ui_error.message)
 
     def _notify_pushover(self, title, message, sound=None, userKey=None, apiKey=None, force=False):
         """
