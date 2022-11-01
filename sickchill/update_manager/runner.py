@@ -106,10 +106,10 @@ class UpdateManager(object):
         if not backup_dir:
             return False
         source = [
-            os.path.join(settings.DATA_DIR, "sickchill.db"),
+            settings.DATA_DIR / "sickchill.db",
             settings.CONFIG_FILE,
-            os.path.join(settings.DATA_DIR, "failed.db"),
-            os.path.join(settings.DATA_DIR, "cache.db"),
+            settings.DATA_DIR / "failed.db",
+            settings.DATA_DIR / "cache.db",
         ]
         target = os.path.join(backup_dir, "sickchill-" + time.strftime("%Y%m%d%H%M%S") + ".zip")
 

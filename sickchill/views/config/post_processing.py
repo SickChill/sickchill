@@ -167,7 +167,7 @@ class ConfigPostProcessing(Config):
                 logger.warning(x)
             ui.notifications.error(_("Error(s) Saving Configuration"), "<br>\n".join(results))
         else:
-            ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
+            ui.notifications.message(_("Configuration Saved"), settings.CONFIG_FILE)
 
         return self.redirect("/config/postProcessing/")
 

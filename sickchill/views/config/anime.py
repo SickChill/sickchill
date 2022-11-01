@@ -30,6 +30,6 @@ class ConfigAnime(Config):
         settings.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(split_home_in_tabs)
 
         sickchill.start.save_config()
-        ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
+        ui.notifications.message(_("Configuration Saved"), settings.CONFIG_FILE)
 
         return self.redirect("/config/anime/")

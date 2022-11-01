@@ -122,7 +122,7 @@
       "Gruntfile.js",
       "sickchill/gui/slick/js/lib/*",
       "tests/js/index.js",
-      "frontend/static/*",
+      "sickchill/frontend/static/*",
       "webpack.config.js"
     ]
   }

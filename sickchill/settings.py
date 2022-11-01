@@ -10,6 +10,8 @@ from sickchill.oldbeard.numdict import NumDict
 from .init_helpers import setup_gettext, sickchill_dir
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from .movies import MovieList
 
 setup_gettext()
@@ -90,7 +92,7 @@ COMING_EPS_DISPLAY_SNATCHED = False
 COMING_EPS_LAYOUT = None
 COMING_EPS_MISSED_RANGE = None
 COMING_EPS_SORT = None
-CONFIG_FILE = ""
+CONFIG_FILE: "Path" = ""
 CONFIG_VERSION = 8
 CPU_PRESET = None
 CREATE_MISSING_SHOW_DIRS = False
@@ -100,7 +102,7 @@ CUSTOM_CSS_PATH = None
 DAEMON = None
 DAILYSEARCH_FREQUENCY = 40
 dailySearchScheduler = None
-DATA_DIR = ""
+DATA_DIR: "Path" = ""
 DATE_PRESET = None
 DBDEBUG = False
 DEBUG = False
@@ -174,8 +176,8 @@ HANDLE_REVERSE_PROXY = False
 HISTORY_LAYOUT = None
 HISTORY_LIMIT = 0
 HOME_LAYOUT = None
-HTTPS_CERT = None
-HTTPS_KEY = None
+HTTPS_CERT = Path("server.crt")
+HTTPS_KEY = "server.key"
 IGNORE_BROKEN_SYMLINKS = False
 IGNORE_WORDS = "german,french,core2hd,dutch,swedish,reenc,MrLss"
 IGNORED_SUBS_LIST = "dk,fin,heb,kor,nor,nordic,pl,swe"
@@ -202,7 +204,7 @@ KODI_UPDATE_FULL = False
 KODI_UPDATE_LIBRARY = False
 KODI_UPDATE_ONLYFIRST = False
 KODI_USERNAME = None
-LAUNCH_BROWSER = False
+NO_LAUNCH_BROWSER = False
 LEGENDASTV_PASS = None
 LEGENDASTV_USER = None
 LIBNOTIFY_NOTIFY_ONDOWNLOAD = False
@@ -210,7 +212,7 @@ LIBNOTIFY_NOTIFY_ONPOSTPROCESS = False
 LIBNOTIFY_NOTIFY_ONSNATCH = False
 LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = False
 LOCALHOST_IP = None
-LOG_DIR = None
+LOG_DIR = ""
 LOG_NR = 5
 LOG_SIZE = 10.0
 LOGO_URL = "https://sickchill.github.io/images/ico/favicon-64.png"
@@ -546,12 +548,12 @@ CACHE_RETENTION = 30
 VERSION_NOTIFY = False
 versionCheckScheduler = None
 WEB_COOKIE_SECRET = None
-WEB_HOST = None
+WEB_HOST = "0.0.0.0"
 WEB_IPV6 = False
 WEB_LOG = False
 WEB_PASSWORD = None
-WEB_PORT = None
-WEB_ROOT = None
+WEB_PORT = 8081
+WEB_ROOT = ""
 WEB_USE_GZIP = True
 WEB_USERNAME = None
 WINDOWS_SHARES = {}
@@ -571,3 +573,10 @@ unpackStrings = NumDict(
         UNPACK_PROCESS_INTACT: _("Treat as video (process archive as-is)"),
     }
 )
+
+QUIET = False
+FORCE_UPDATE = False
+FLASK = False
+FLASK_HOST = None
+FLASK_PORT = None
+VERSION = None

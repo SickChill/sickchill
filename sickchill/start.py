@@ -4,6 +4,7 @@ import re
 import shutil
 import socket
 import sys
+from pathlib import Path
 
 import rarfile
 from configobj import ConfigObj
@@ -85,14 +86,14 @@ def initialize(consoleLogging=True):
         settings.DEVELOPER = check_setting_bool(settings.CFG, "General", "developer")
 
         # debugging
-        settings.DEBUG = check_setting_bool(settings.CFG, "General", "debug")
-        settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug")
+        settings.DEBUG = check_setting_bool(settings.CFG, "General", "debug", settings.DEBUG)
+        settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug", settings.DBDEBUG)
 
         settings.DEFAULT_PAGE = check_setting_str(settings.CFG, "General", "default_page", "home")
         if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
             settings.DEFAULT_PAGE = "home"
 
-        settings.LOG_DIR = check_setting_str(settings.CFG, "General", "log_dir", os.path.normpath(os.path.join(settings.DATA_DIR, "Logs")))
+        settings.LOG_DIR = check_setting_str(settings.CFG, "General", "log_dir", settings.DATA_DIR / "Logs")
         settings.LOG_NR = check_setting_int(settings.CFG, "General", "log_nr", 5, min_val=1)  # Default to 5 backup file (sickchill.log.x)
         settings.LOG_SIZE = check_setting_float(settings.CFG, "General", "log_size", 10.0, min_val=0.5)  # Default to max 10MB per logfile
 
@@ -117,12 +118,12 @@ def initialize(consoleLogging=True):
 
         load_gettext_translations(locale_dir, "messages")
 
-        settings.CACHE_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "cache"))
+        settings.CACHE_DIR = settings.DATA_DIR / "cache"
 
         # Check if we need to perform a restore of the cache folder
         try:
-            restoreDir = os.path.join(settings.DATA_DIR, "restore")
-            if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, "cache")):
+            restoreDir = settings.DATA_DIR / "restore"
+            if restoreDir.exists() and (restoreDir / "cache").exists():
 
                 def restoreCache(srcDir, dstDir):
                     def path_leaf(path):
@@ -144,7 +145,7 @@ def initialize(consoleLogging=True):
         except Exception as error:
             logger.exception(f"Restore: restoring cache failed: {error}")
         finally:
-            if os.path.exists(os.path.join(settings.DATA_DIR, "restore")):
+            if (settings.DATA_DIR / "restore").exists():
                 try:
                     shutil.rmtree(os.path.join(settings.DATA_DIR, "restore"))
                 except Exception as error:
@@ -170,14 +171,14 @@ def initialize(consoleLogging=True):
         socket.setdefaulttimeout(settings.SOCKET_TIMEOUT)
 
         try:
-            settings.WEB_PORT = check_setting_int(settings.CFG, "General", "web_port", 8081, min_val=21, max_val=65535)
+            settings.WEB_PORT = check_setting_int(settings.CFG, "General", "web_port", settings.WEB_PORT, min_val=21, max_val=65535)
         except Exception:
             settings.WEB_PORT = 8081
 
-        settings.WEB_HOST = check_setting_str(settings.CFG, "General", "web_host", "0.0.0.0")
-        settings.WEB_IPV6 = check_setting_bool(settings.CFG, "General", "web_ipv6")
-        settings.WEB_ROOT = check_setting_str(settings.CFG, "General", "web_root").rstrip("/")
-        settings.WEB_LOG = check_setting_bool(settings.CFG, "General", "web_log")
+        settings.WEB_HOST = check_setting_str(settings.CFG, "General", "web_host", settings.WEB_HOST)
+        settings.WEB_IPV6 = check_setting_bool(settings.CFG, "General", "web_ipv6", settings.WEB_IPV6)
+        settings.WEB_ROOT = check_setting_str(settings.CFG, "General", "web_root", settings.WEB_ROOT).rstrip("/")
+        settings.WEB_LOG = check_setting_bool(settings.CFG, "General", "web_log", settings.WEB_LOG)
         settings.WEB_USERNAME = check_setting_str(settings.CFG, "General", "web_username", censor_log=True)
         settings.WEB_PASSWORD = check_setting_str(settings.CFG, "General", "web_password", censor_log=True)
         settings.WEB_COOKIE_SECRET = check_setting_str(settings.CFG, "General", "web_cookie_secret", helpers.generateCookieSecret(), censor_log=True)
@@ -196,7 +197,7 @@ def initialize(consoleLogging=True):
         if settings.EP_DEFAULT_DELETED_STATUS not in (SKIPPED, ARCHIVED, IGNORED):
             settings.EP_DEFAULT_DELETED_STATUS = ARCHIVED
 
-        settings.LAUNCH_BROWSER = check_setting_bool(settings.CFG, "General", "launch_browser", True)
+        settings.NO_LAUNCH_BROWSER = not check_setting_bool(settings.CFG, "General", "launch_browser", True)
 
         settings.DOWNLOAD_URL = check_setting_str(settings.CFG, "General", "download_url")
 
@@ -239,8 +240,8 @@ def initialize(consoleLogging=True):
 
         settings.NOTIFY_ON_LOGIN = check_setting_bool(settings.CFG, "General", "notify_on_login")
 
-        settings.HTTPS_CERT = check_setting_str(settings.CFG, "General", "https_cert", "server.crt")
-        settings.HTTPS_KEY = check_setting_str(settings.CFG, "General", "https_key", "server.key")
+        settings.HTTPS_CERT = Path(check_setting_str(settings.CFG, "General", "https_cert", settings.HTTPS_CERT))
+        settings.HTTPS_KEY = Path(check_setting_str(settings.CFG, "General", "https_key", settings.HTTPS_KEY))
 
         settings.HANDLE_REVERSE_PROXY = check_setting_bool(settings.CFG, "General", "handle_reverse_proxy")
 
@@ -814,8 +815,8 @@ def initialize(consoleLogging=True):
 
         providers.check_enabled_providers()
 
-        if not os.path.isfile(settings.CONFIG_FILE):
-            logger.debug("Unable to find '" + settings.CONFIG_FILE + "', all settings will be default!")
+        if not settings.CONFIG_FILE.is_file():
+            logger.debug(f"Unable to find '{settings.CONFIG_FILE}', all settings will be default!")
             save_config()
 
         # initialize the main SB database
@@ -1067,7 +1068,7 @@ def saveAll():
 
 
 def save_config():
-    new_config = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
+    new_config = ConfigObj(str(settings.CONFIG_FILE), encoding="UTF-8", indent_type="  ")
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
@@ -1206,7 +1207,7 @@ def save_config():
                 "naming_anime": int(settings.NAMING_ANIME),
                 "indexerDefaultLang": settings.INDEXER_DEFAULT_LANGUAGE,
                 "ep_default_deleted_status": int(settings.EP_DEFAULT_DELETED_STATUS),
-                "launch_browser": int(settings.LAUNCH_BROWSER),
+                "launch_browser": int(not settings.NO_LAUNCH_BROWSER),
                 "trash_remove_show": int(settings.TRASH_REMOVE_SHOW),
                 "trash_rotate_logs": int(settings.TRASH_ROTATE_LOGS),
                 "ignore_broken_symlinks": int(settings.IGNORE_BROKEN_SYMLINKS),

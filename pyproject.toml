@@ -37,7 +37,6 @@ classifiers = [
 packages = [
     { include = "sickchill" },
     { include = "SickChill.py" },
-    { include = "frontend" }
 ]
 
 [tool.poetry.urls]
@@ -113,6 +112,7 @@ optional = true
 
 [tool.poetry.group.frontend.dependencies]
 Flask = "^2.2.2"
+watchdog = "^2.1.9"
 
 [tool.poetry.extras]
 experimental = ["experimental"]

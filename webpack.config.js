@@ -11,13 +11,13 @@ const isProduction = process.env.NODE_ENV == "production";
 const stylesHandler = MiniCssExtractPlugin.loader;
 
 const config = {
-  context:  path.resolve(__dirname, 'frontend/templates'),
+  context:  path.resolve(__dirname, 'sickchill/frontend/templates'),
   entry: {
       shows: ['./js/shows.jsx'],
       show: ['./js/show.jsx']
   },
   output: {
-    path: __dirname + "/frontend/static",
+    path: __dirname + "/sickchill/frontend/static",
     filename: '[name].js',
     publicPath: path.resolve('static')
   },

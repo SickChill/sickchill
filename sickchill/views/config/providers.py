@@ -309,6 +309,6 @@ class ConfigProviders(Config):
         # Add a site_message if no providers are enabled for daily and/or backlog
         sickchill.oldbeard.providers.check_enabled_providers()
 
-        ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
+        ui.notifications.message(_("Configuration Saved"), settings.CONFIG_FILE)
 
         return self.redirect("/config/providers/")

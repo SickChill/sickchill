@@ -21,6 +21,7 @@ import os
 import os.path
 import shutil
 import unittest
+from pathlib import Path
 
 import pytest
 from configobj import ConfigObj
@@ -38,7 +39,7 @@ from sickchill.tv import TVEpisode, TVShow
 # =================
 #  test globals
 # =================
-TEST_DIR = os.path.abspath(os.path.dirname(__file__))
+TEST_DIR = Path(__file__).parent
 TEST_DB_NAME = "sickchill.db"
 TEST_CACHE_DB_NAME = "cache.db"
 TEST_FAILED_DB_NAME = "failed.db"
@@ -47,10 +48,10 @@ SHOW_NAME = "show name"
 SEASON = 4
 EPISODE = 2
 FILENAME = f"show name - s0{SEASON}e0{EPISODE}.mkv"
-FILE_DIR = os.path.join(TEST_DIR, SHOW_NAME)
+FILE_DIR = TEST_DIR / SHOW_NAME
 FILE_PATH = os.path.join(FILE_DIR, FILENAME)
-SHOW_DIR = os.path.join(TEST_DIR, SHOW_NAME + " final")
-PROCESSING_DIR = os.path.join(TEST_DIR, "Downloads")
+SHOW_DIR = TEST_DIR / SHOW_NAME + " final"
+PROCESSING_DIR = TEST_DIR / "Downloads"
 NUM_SEASONS = 5
 EPISODES_PER_SEASON = 20
 
@@ -97,18 +98,18 @@ settings.TV_DOWNLOAD_DIR = PROCESSING_DIR
 settings.providerList = providers.makeProviderList()
 
 settings.DATA_DIR = TEST_DIR
-settings.CONFIG_FILE = os.path.join(settings.DATA_DIR, "config.ini")
-settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
+settings.CONFIG_FILE = settings.DATA_DIR / "config.ini"
+settings.CFG = ConfigObj(str(settings.CONFIG_FILE), encoding="UTF-8", indent_type="  ")
 settings.GUI_NAME = "slick"
 
 settings.GIT_USERNAME = sickchill.oldbeard.config.check_setting_str(settings.CFG, "General", "git_username")
 settings.GIT_TOKEN = sickchill.oldbeard.config.check_setting_str(settings.CFG, "General", "git_token_password", censor_log=True)
 
-settings.LOG_DIR = os.path.join(TEST_DIR, "Logs")
-sickchill.logger.log_file = os.path.join(settings.LOG_DIR, "test_sickchill.log")
+settings.LOG_DIR = settings.DATA_DIR / "Logs"
+sickchill.logger.log_file = settings.LOG_DIR / "test_sickchill.log"
 create_test_log_folder()
 
-settings.CACHE_DIR = os.path.join(TEST_DIR, "cache")
+settings.CACHE_DIR = settings.DATA_DIR / "cache"
 create_test_cache_folder()
 
 sickchill.logger.init_logging(False, True)
@@ -225,7 +226,7 @@ class TestDBConnection(db.DBConnection, object):
 
     def __init__(self, filename=TEST_DB_NAME, suffix=None, row_type=None):
         if TEST_DIR not in filename:
-            filename = os.path.join(TEST_DIR, filename)
+            filename = TEST_DIR / filename
         super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
 
@@ -238,7 +239,7 @@ class TestCacheDBConnection(TestDBConnection, object):
 
     def __init__(self, filename=TEST_CACHE_DB_NAME, suffix=None, row_type="dict"):
         if TEST_DIR not in filename:
-            filename = os.path.join(TEST_DIR, filename)
+            filename = TEST_DIR / filename
         super().__init__(filename=filename, suffix=suffix, row_type=row_type)
 
 
@@ -279,7 +280,7 @@ def teardown_test_db():
     #     db_cons[connection].close()
     #
     # for current_db in [ TEST_DB_NAME, TEST_CACHE_DB_NAME, TEST_FAILED_DB_NAME ]:
-    #    filename = os.path.join(TEST_DIR, current_db)
+    #    filename = TEST_DIR / current_db
     #    if os.path.exists(filename):
     #        try:
     #            os.remove(filename)

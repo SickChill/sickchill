@@ -92,6 +92,6 @@ class ConfigSubtitles(Config):
         # Reset provider pool so next time we use the newest settings
         subtitle_module.SubtitleProviderPool().reset()
 
-        ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
+        ui.notifications.message(_("Configuration Saved"), settings.CONFIG_FILE)
 
         return self.redirect("/config/subtitles/")

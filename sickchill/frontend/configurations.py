@@ -5,6 +5,7 @@ class BaseConfig:
 
     DEBUG = True
     TESTING = False
+    SERVER_NAME = "SickChill"
 
 
 class ProductionConfig(BaseConfig):

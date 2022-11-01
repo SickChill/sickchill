@@ -2,6 +2,7 @@ import datetime
 import os.path
 import platform
 import re
+from pathlib import Path
 from urllib import parse
 
 import rarfile
@@ -9,6 +10,7 @@ from tornado.escape import xhtml_unescape
 
 import sickchill.start
 from sickchill import logger, settings
+from sickchill.helper.argument_parser import SickChillArgumentParser
 from sickchill.helper.common import try_int
 
 from . import db, helpers, naming
@@ -44,6 +46,8 @@ naming_multi_ep_type_text = ("extend", "duplicate", "repeat")
 naming_sep_type = (" - ", " ")
 naming_sep_type_text = (" - ", "space")
 
+args = SickChillArgumentParser().parse_args()
+
 
 def change_https_cert(https_cert):
     """
@@ -52,13 +56,15 @@ def change_https_cert(https_cert):
     :param https_cert: path to the new certificate file
     :return: True on success, False on failure
     """
-    if https_cert == "":
-        settings.HTTPS_CERT = ""
+    https_cert = Path(https_cert)
+
+    if not https_cert.name:
+        settings.HTTPS_CERT = Path("server.crt")
         return True
 
-    if os.path.normpath(settings.HTTPS_CERT) != os.path.normpath(https_cert):
-        if helpers.makeDir(os.path.dirname(os.path.abspath(https_cert))):
-            settings.HTTPS_CERT = os.path.normpath(https_cert)
+    if settings.HTTPS_CERT.resolve() != https_cert.resolve():
+        if helpers.makeDir(https_cert.parent):
+            settings.HTTPS_CERT = https_cert.resolve()
             logger.info("Changed https cert path to " + https_cert)
         else:
             return False
@@ -541,7 +547,7 @@ def change_log_dir(log_dir):
     :return: True on success, False on failure
     """
     if log_dir == "":
-        settings.LOG_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
+        settings.LOG_DIR = settings.DATA_DIR / "Logs"
         return True
 
     if os.path.normpath(settings.LOG_DIR) != os.path.normpath(log_dir):
@@ -690,6 +696,9 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
     :return: value of `config[cfg_name][item_name]` or `min_val`/`max_val` (see def_low_high) `def_val` (see def_val)
     :rtype: int
     """
+    if hasattr(args, item_name) and getattr(args, item_name):
+        return getattr(args, item_name)
+
     if not isinstance(def_val, int):
         logger.error("{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="int", dt=type(def_val)))
 
@@ -755,6 +764,10 @@ def check_setting_float(config, cfg_name, item_name, def_val=0.0, min_val=None, 
     :return: value of `config[cfg_name][item_name]` or `min_val`/`max_val` (see def_low_high) `def_val` (see def_val)
     :rtype: float
     """
+
+    if hasattr(args, item_name) and getattr(args, item_name):
+        return getattr(args, item_name)
+
     if not isinstance(def_val, float):
         logger.error(
             "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="float", dt=type(def_val))
@@ -814,12 +827,16 @@ def check_setting_str(config, cfg_name, item_name, def_val=str(""), silent=True,
              or `def_val` (see cases of def_val)
     :rtype: str
     """
-    if not isinstance(def_val, str):
+
+    if hasattr(args, item_name) and getattr(args, item_name):
+        return getattr(args, item_name)
+
+    if not isinstance(def_val, (str, Path)):
         logger.error(
             "{dom}:{key} default value is not the correct type. Expected {t}, got {dt}".format(dom=cfg_name, key=item_name, t="string", dt=type(def_val))
         )
 
-    # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
+    # For passwords, you must include the word `password` in the item_name and add `helpers.encrypt(ITEM_NAME, ENCRYPTION_VERSION)` in save_config()
     encryption_version = (0, settings.ENCRYPTION_VERSION)["password" in item_name]
 
     try:
@@ -865,6 +882,9 @@ def check_setting_bool(config, cfg_name, item_name, def_val=False, silent=True):
              or `def_val` (see cases of def_val)
     :rtype: bool
     """
+    if hasattr(args, item_name) and getattr(args, item_name):
+        return getattr(args, item_name)
+
     try:
         if not isinstance(def_val, bool):
             logger.error(

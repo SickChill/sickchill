@@ -67,7 +67,7 @@ class ConfigGeneral(Config):
         self,
         log_nr=5,
         log_size=1,
-        web_port=None,
+        web_port=8081,
         notify_on_login=None,
         web_log=None,
         encryption_version=None,
@@ -141,7 +141,7 @@ class ConfigGeneral(Config):
         settings.INDEXER_DEFAULT_LANGUAGE = indexerDefaultLang
         settings.EP_DEFAULT_DELETED_STATUS = ep_default_deleted_status
         settings.SKIP_REMOVED_FILES = config.checkbox_to_value(skip_removed_files)
-        settings.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
+        settings.NO_LAUNCH_BROWSER = not config.checkbox_to_value(launch_browser)
         settings.NO_LGMARGIN = config.checkbox_to_value(no_lgmargin)
         config.change_showupdate_hour(showupdate_hour)
         config.change_version_notify(version_notify)
@@ -157,7 +157,7 @@ class ConfigGeneral(Config):
         settings.TRASH_ROTATE_LOGS = config.checkbox_to_value(trash_rotate_logs)
         settings.IGNORE_BROKEN_SYMLINKS = config.checkbox_to_value(ignore_broken_symlinks)
         config.change_update_frequency(update_frequency)
-        settings.LAUNCH_BROWSER = config.checkbox_to_value(launch_browser)
+        settings.NO_LAUNCH_BROWSER = not config.checkbox_to_value(launch_browser)
         settings.SORT_ARTICLE = config.checkbox_to_value(sort_article)
         settings.GRAMMAR_ARTICLES = grammar_articles
         settings.CPU_PRESET = cpu_preset
@@ -243,6 +243,6 @@ class ConfigGeneral(Config):
                 logger.exception(x)
             ui.notifications.error(_("Error(s) Saving Configuration"), "<br>\n".join(results))
         else:
-            ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))
+            ui.notifications.message(_("Configuration Saved"), settings.CONFIG_FILE)
 
         return self.redirect("/config/general/")

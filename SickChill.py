@@ -14,9 +14,11 @@ import traceback
 import sickchill.start
 
 try:
-    from frontend.app import FlaskServer
-except (ModuleNotFoundError, ImportError):
+    from sickchill.frontend.app import FlaskServer
+except (ModuleNotFoundError, ImportError) as error:
     FlaskServer = None
+    if "--flask" in sys.argv:
+        raise error
 
 from sickchill import logger, settings
 from sickchill.helper.common import choose_data_dir
@@ -66,10 +68,6 @@ class SickChill:
 
         # web server constants
         self.web_server = None
-        self.forced_port = None
-        self.no_launch = False
-
-        self.start_port = settings.WEB_PORT
 
         self.console_logging = True
 
@@ -100,43 +98,20 @@ class SickChill:
         # Rename the main thread
         threading.current_thread().name = "MAIN"
 
-        args = SickChillArgumentParser(settings.DATA_DIR).parse_args()
+        args = SickChillArgumentParser().parse_args()
 
         if args.force_update:
             result = self.force_update()
             sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 
-        settings.NO_RESIZE = args.noresize
         self.console_logging = not (hasattr(sys, "frozen") or args.quiet or args.daemon)
-        self.no_launch = args.nolaunch or args.daemon
-        self.forced_port = args.port
+        self.port = args.web_port
         self.run_as_daemon = args.daemon and platform.system() != "Windows"
 
         # The pid file is only useful in daemon mode, make sure we can write the file properly
         if bool(args.pidfile) and not self.run_as_daemon:
             if self.console_logging:
                 sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
-
-        settings.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else settings.DATA_DIR
-        settings.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(settings.DATA_DIR, "config.ini")
-
-        # Make sure that we can create the data dir
-        if not os.access(settings.DATA_DIR, os.F_OK):
-            try:
-                os.makedirs(settings.DATA_DIR, 0o744)
-            except os.error:
-                raise SystemExit("Unable to create data directory: {}".format(settings.DATA_DIR))
-
-        # Make sure we can write to the data dir
-        if not os.access(settings.DATA_DIR, os.W_OK):
-            raise SystemExit("Data directory must be writeable: {}".format(settings.DATA_DIR))
-
-        # Make sure we can write to the config file
-        if not os.access(settings.CONFIG_FILE, os.W_OK):
-            if os.path.isfile(settings.CONFIG_FILE):
-                raise SystemExit("Config file must be writeable: {}".format(settings.CONFIG_FILE))
-            elif not os.access(os.path.dirname(settings.CONFIG_FILE), os.W_OK):
-                raise SystemExit("Config file root dir must be writeable: {}".format(os.path.dirname(settings.CONFIG_FILE)))
 
         os.chdir(settings.DATA_DIR)
 
@@ -148,10 +123,10 @@ class SickChill:
                 sys.stdout.write("Restore: restoring DB and config.ini {}!\n".format(("FAILED", "SUCCESSFUL")[success]))
 
         # Load the config and publish it to the oldbeard package
-        if self.console_logging and not os.path.isfile(settings.CONFIG_FILE):
-            sys.stdout.write("Unable to find {}, all settings will be default!\n".format(settings.CONFIG_FILE))
+        if self.console_logging and not settings.CONFIG_FILE.is_file():
+            sys.stdout.write(f"Unable to find {settings.CONFIG_FILE}, all settings will be default!\n")
 
-        settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
+        settings.CFG = ConfigObj(str(settings.CONFIG_FILE), encoding="UTF-8", indent_type="  ")
 
         # Initialize the config and our threads
         sickchill.start.initialize(consoleLogging=self.console_logging)
@@ -169,28 +144,16 @@ class SickChill:
         if settings.DEVELOPER:
             settings.movie_list = MovieList()
 
-        web_options = {}
-        if self.forced_port:
-            logger.info("Forcing web server to port {port}".format(port=self.forced_port))
-            self.start_port = self.forced_port
-            web_options.update(
-                {
-                    "port": int(self.start_port),
-                }
-            )
-        else:
-            self.start_port = settings.WEB_PORT
-
         # start web server
-        self.web_server = SRWebServer(web_options)
+        self.web_server = SRWebServer()
         self.web_server.start()
 
-        if args.flask and FlaskServer:
+        if settings.FLASK and FlaskServer:
             # start the flask frontend
             if args.flask_port:
                 port = args.flask_port
             else:
-                port = int(self.start_port) + 1
+                port = int(settings.WEB_PORT) + 1
 
             if args.flask_host:
                 web_host = args.flask_host
@@ -200,7 +163,7 @@ class SickChill:
                 else:
                     web_host = ("0.0.0.0", "")[settings.WEB_IPV6]
 
-            self.flask_server = FlaskServer(web_host, port)
+            self.flask_server = FlaskServer(web_host, port, tornado=self.web_server)
             self.flask_server.start()
 
         # Fire up all our threads
@@ -216,7 +179,7 @@ class SickChill:
         # oldbeard.showUpdateScheduler.forceRun()
 
         # Launch browser
-        if settings.LAUNCH_BROWSER and not self.no_launch:
+        if not (settings.NO_LAUNCH_BROWSER or self.run_as_daemon):
             sickchill.start.launchBrowser("https" if settings.ENABLE_HTTPS else "http", self.start_port, settings.WEB_ROOT)
 
         # main loop
