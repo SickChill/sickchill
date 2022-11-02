@@ -1,4 +1,5 @@
 import random
+from pathlib import Path
 from threading import Lock
 from typing import TYPE_CHECKING
 
@@ -10,8 +11,6 @@ from sickchill.oldbeard.numdict import NumDict
 from .init_helpers import setup_gettext, sickchill_dir
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from .movies import MovieList
 
 setup_gettext()
@@ -92,7 +91,7 @@ COMING_EPS_DISPLAY_SNATCHED = False
 COMING_EPS_LAYOUT = None
 COMING_EPS_MISSED_RANGE = None
 COMING_EPS_SORT = None
-CONFIG_FILE: "Path" = ""
+CONFIG_FILE: Path = ""
 CONFIG_VERSION = 8
 CPU_PRESET = None
 CREATE_MISSING_SHOW_DIRS = False
@@ -102,7 +101,7 @@ CUSTOM_CSS_PATH = None
 DAEMON = None
 DAILYSEARCH_FREQUENCY = 40
 dailySearchScheduler = None
-DATA_DIR: "Path" = ""
+DATA_DIR: Path = ""
 DATE_PRESET = None
 DBDEBUG = False
 DEBUG = False
