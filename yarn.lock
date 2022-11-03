@@ -6775,9 +6775,9 @@ lru-cache@^6.0.0:
     yallist "^4.0.0"
 
 lru-cache@^7.7.1:
-  version "7.14.0"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.14.0.tgz#21be64954a4680e303a09e9468f880b98a0b3c7f"
-  integrity sha512-EIRtP1GrSJny0dqb50QXRUNBxHJhcpxHC++M5tD7RYbvLLn5KVWKsbyswSSqDuU15UFi3bgTQIY8nhDMeF6aDQ==
+  version "7.14.1"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.14.1.tgz#8da8d2f5f59827edb388e63e459ac23d6d408fea"
+  integrity sha512-ysxwsnTKdAx96aTRdhDOCQfDgbHnt8SK0KY8SEjO0wHinhWOFTESbjVCMPbU1uGXg/ch4lifqx0wfjOawU2+WA==
 
 magic-string@^0.25.0, magic-string@^0.25.7:
   version "0.25.9"
@@ -9256,9 +9256,9 @@ snapdragon@^0.8.1:
     use "^3.1.0"
 
 snyk@^1.1043.0:
-  version "1.1048.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1048.0.tgz#e71c66e5e917bd268cd36bd864c36be284172997"
-  integrity sha512-vDTZfras0X43PIWeU+p8HwfnX48XUp5zAHtQ7ii6fON30NBliGgm0AEXqhYuX+DOX/RWlzbvBY5IMI3XX9js5g==
+  version "1.1049.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1049.0.tgz#357e503b55136eaf87331976a2c73136c760bf08"
+  integrity sha512-Z4qaJJGXB1HF1QrLrmjWeRZDeS3glPuIVCivAr0N1LE5etWwe5BFrwE2h2mGO4T9RYy+TJa7CCMsYznMH8zuzQ==
 
 sockjs@^0.3.24:
   version "0.3.24"
@@ -10895,9 +10895,9 @@ yargs-parser@^21.0.0:
   integrity sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==
 
 yargs@^17.5.1:
-  version "17.6.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.6.0.tgz#e134900fc1f218bc230192bdec06a0a5f973e46c"
-  integrity sha512-8H/wTDqlSwoSnScvV2N/JHfLWOKuh5MVla9hqLjK3nsfyy6Y4kDSYSvkU5YCUEPOSnRXfIyx3Sq+B/IWudTo4g==
+  version "17.6.1"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.6.1.tgz#712508771045019cda059bc1ba3ae091aaa1402e"
+  integrity sha512-leBuCGrL4dAd6ispNOGsJlhd0uZ6Qehkbu/B9KCR+Pxa/NVdNwi+i31lo0buCm6XxhJQFshXCD0/evfV4xfoUg==
   dependencies:
     cliui "^8.0.1"
     escalade "^3.1.1"
