@@ -53,9 +53,9 @@
     semver "^6.3.0"
 
 "@babel/generator@^7.20.1", "@babel/generator@^7.20.2":
-  version "7.20.3"
-  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.20.3.tgz#e58c9ae2f7bf7fdf4899160cf1e04400a82cd641"
-  integrity sha512-Wl5ilw2UD1+ZYprHVprxHZJCFeBWlzZYOovE4SDYLZnqCOD11j+0QzNeEWKLLTWM7nixrZEh7vNIyb76MyJg3A==
+  version "7.20.4"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.20.4.tgz#4d9f8f0c30be75fd90a0562099a26e5839602ab8"
+  integrity sha512-luCf7yk/cm7yab6CAW1aiFnmEfBJplb/JojV56MYEK7ziWfGmFlTfmL9Ehwfy4gFhbjBfWO1wj7/TuSbVNEEtA==
   dependencies:
     "@babel/types" "^7.20.2"
     "@jridgewell/gen-mapping" "^0.3.2"
@@ -3885,9 +3885,9 @@ eslint-config-prettier@^8.5.0:
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
 
 eslint-config-xo-typescript@*:
-  version "0.53.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.53.0.tgz#702be21ea0dfcb124903c5f723d023b1fdeb0da2"
-  integrity sha512-IJ1n70egMPTou/41HoGGFbLf/2WCsVW5lSUxOSklrR8T1221fMRPVJxIVZ3evr8R+N5wR6uzg/0uzSymwWA5Bg==
+  version "0.54.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.54.1.tgz#2af7ee9e3458891cba66eddac3115ab950f4a53b"
+  integrity sha512-IfxkS6D4H6s+7g87L8OjiOSycOKkwy0eInTImOam3hea0+aLwIG8e29bLkCd0KMQAYku+8aEIPbrIy6eBuYegQ==
 
 eslint-config-xo@^0.42.0:
   version "0.42.0"
@@ -8970,9 +8970,9 @@ sass-loader@^13.1.0:
     neo-async "^2.6.2"
 
 sass@^1.55.0:
-  version "1.56.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.56.0.tgz#134032075a3223c8d49cb5c35e091e5ba1de8e0a"
-  integrity sha512-WFJ9XrpkcnqZcYuLRJh5qiV6ibQOR4AezleeEjTjMsCocYW59dEG19U3fwTTXxzi2Ed3yjPBp727hbbj53pHFw==
+  version "1.56.1"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.56.1.tgz#94d3910cd468fd075fa87f5bb17437a0b617d8a7"
+  integrity sha512-VpEyKpyBPCxE7qGDtOcdJ6fFbcpOM+Emu7uZLxVrkX8KVU/Dp5UF7WLvzqRuUhB6mqqQt1xffLoG+AndxTZrCQ==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
     immutable "^4.0.0"
@@ -9256,9 +9256,9 @@ snapdragon@^0.8.1:
     use "^3.1.0"
 
 snyk@^1.1043.0:
-  version "1.1054.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1054.0.tgz#381717679c4aec9216f8c72000aef3f886fd7aa8"
-  integrity sha512-gRatzs9zNU5c+Z+t+qf04XjRJn/pP1f8j0HMclE95VmDwhP/nwE8Fd7Cz5PLJ7D+ehFvV3cpKX4EpGaGgZak6w==
+  version "1.1056.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1056.0.tgz#35adb1545c8918e40166715af1e3de742c814879"
+  integrity sha512-Ny9dHfI6SgNHfh6HbRgtMN0MKUH0QhIcWYbw24t5GM0qejoMSEQSJv9kDzrIQLRd0OBBlZAba5EEPRiSafrxmQ==
 
 sockjs@^0.3.24:
   version "0.3.24"
@@ -9461,9 +9461,9 @@ ssri@^9.0.0:
     minipass "^3.1.1"
 
 stack-utils@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/stack-utils/-/stack-utils-2.0.5.tgz#d25265fca995154659dbbfba3b49254778d2fdd5"
-  integrity sha512-xrQcmYhOsn/1kX+Vraq+7j4oE2j/6BFscZ0etmYg81xuM8Gq0022Pxb8+IqgOFUIaxHs0KaSb7T1+OegiNrNFA==
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/stack-utils/-/stack-utils-2.0.6.tgz#aaf0748169c02fc33c8232abccf933f54a1cc34f"
+  integrity sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==
   dependencies:
     escape-string-regexp "^2.0.0"
 
