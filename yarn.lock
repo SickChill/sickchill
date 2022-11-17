@@ -3885,9 +3885,9 @@ eslint-config-prettier@^8.5.0:
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
 
 eslint-config-xo-typescript@*:
-  version "0.54.1"
-  resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.54.1.tgz#2af7ee9e3458891cba66eddac3115ab950f4a53b"
-  integrity sha512-IfxkS6D4H6s+7g87L8OjiOSycOKkwy0eInTImOam3hea0+aLwIG8e29bLkCd0KMQAYku+8aEIPbrIy6eBuYegQ==
+  version "0.55.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.55.0.tgz#84b008cb927ec43f57ad0d7969fb30fe8ba1968a"
+  integrity sha512-JJbuUbkgDWjN0o6i2Olpw8teP8mq81aMH0vSzEssDS4k1fRvUtsHQNVFb4Q0XyvO0FU9fD4wsqcPv2w1n/AulQ==
 
 eslint-config-xo@^0.42.0:
   version "0.42.0"
@@ -7127,9 +7127,9 @@ min-indent@^1.0.0, min-indent@^1.0.1:
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
 
 mini-css-extract-plugin@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-2.6.1.tgz#9a1251d15f2035c342d99a468ab9da7a0451b71e"
-  integrity sha512-wd+SD57/K6DiV7jIR34P+s3uckTRuQvx0tKPcvjFlrEylk6P4mQ2KSWk1hblj1Kxaqok7LogKOieygXqBczNlg==
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-2.7.0.tgz#d7d9ba0c5b596d155e36e2b174082fc7f010dd64"
+  integrity sha512-auqtVo8KhTScMsba7MbijqZTfibbXiBNlPAQbsVt7enQfcDYLdgG57eGxMqwVU3mfeWANY4F1wUg+rMF+ycZgw==
   dependencies:
     schema-utils "^4.0.0"
 
@@ -9263,9 +9263,9 @@ snapdragon@^0.8.1:
     use "^3.1.0"
 
 snyk@^1.1043.0:
-  version "1.1059.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1059.0.tgz#31968d853aaff714be8d29155e63240642f49fdf"
-  integrity sha512-R9MspdxrMUD2aWnpH32WOQkFsvJ89E5DpD/ms8IwDJdhHwKds7cWoftL7Ofk3SWM+K3C6nGA5nXzDclkGmOlDw==
+  version "1.1060.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1060.0.tgz#42ecc48cee64167cc29321cb9fc4a75c3f54ad5a"
+  integrity sha512-WAYComfIYczRf/BnXNOTnmboGuyX6zkYznqJReKxb+h6AbG6IzC5O9qOWe6ws3v3BXDpfi4AjcaaBeo4WHOxMw==
 
 sockjs@^0.3.24:
   version "0.3.24"
