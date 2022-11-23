@@ -68,7 +68,7 @@
     "style-loader": "^3.3.1",
     "toml": "^3.0.0",
     "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0",
+    "webpack-cli": "^5.0.0",
     "webpack-dev-server": "^4.11.1",
     "workbox-webpack-plugin": "^6.5.4",
     "xo": "^0.52.2",
