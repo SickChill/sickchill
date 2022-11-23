@@ -71,7 +71,7 @@
     "webpack-cli": "^5.0.0",
     "webpack-dev-server": "^4.11.1",
     "workbox-webpack-plugin": "^6.5.4",
-    "xo": "^0.52.2",
+    "xo": "^0.53.1",
     "yarn-minify": "^1.0.1"
   },
   "ava": {
