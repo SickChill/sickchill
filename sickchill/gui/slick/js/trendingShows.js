@@ -28,6 +28,7 @@ $(document).ready(() => {
                 sortCriteria = 'original-order';
                 break;
             }
+
             case 'rating': {
                 /* Randomise, else the rating_votes can already
                  * have sorted leaving this with nothing to do.
@@ -36,18 +37,22 @@ $(document).ready(() => {
                 sortCriteria = 'rating';
                 break;
             }
+
             case 'rating_votes': {
                 sortCriteria = ['rating', 'votes'];
                 break;
             }
+
             case 'votes': {
                 sortCriteria = 'votes';
                 break;
             }
+
             default: {
                 sortCriteria = 'name';
                 break;
             }
+            
         }
 
         $('#container').isotope({sortBy: sortCriteria});
