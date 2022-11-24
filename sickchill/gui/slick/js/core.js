@@ -2357,14 +2357,17 @@ const SICKCHILL = {
                         sort = ['progress', 'total', 'name'];
                         break;
                     }
+
                     case 'date': {
                         sort = ['date', 'status', 'name'];
                         break;
                     }
+
                     case 'status': {
                         sort = ['status', 'progress', 'name'];
                         break;
                     }
+
                     default: {
                         sort = getMeta('settings.POSTER_SORTBY');
                         break;
@@ -2496,14 +2499,17 @@ const SICKCHILL = {
                         sort = ['progress', 'total', 'name'];
                         break;
                     }
+
                     case 'date': {
                         sort = ['date', 'status', 'name'];
                         break;
                     }
+
                     case 'status': {
                         sort = ['status', 'progress', 'name'];
                         break;
                     }
+
                     default: {
                         sort = getMeta('settings.POSTER_SORTBY');
                         break;
@@ -3952,6 +3958,7 @@ const SICKCHILL = {
                             sortCriteria = 'original-order';
                             break;
                         }
+
                         case 'rating': {
                             /* Randomise, else the rating_votes can already
                              * have sorted leaving this with nothing to do.
@@ -3960,18 +3967,22 @@ const SICKCHILL = {
                             sortCriteria = 'rating';
                             break;
                         }
+
                         case 'rating_votes': {
                             sortCriteria = ['rating', 'votes'];
                             break;
                         }
+
                         case 'votes': {
                             sortCriteria = 'votes';
                             break;
                         }
+
                         case 'rank': {
                             sortCriteria = 'rank';
                             break;
                         }
+
                         default: {
                             sortCriteria = 'name';
                             break;
