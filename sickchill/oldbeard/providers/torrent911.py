@@ -8,7 +8,7 @@ from sickchill.providers.torrent.FrenchProvider import FrenchTorrentProvider
 
 class Provider(FrenchTorrentProvider):
     def __init__(self):
-        super().__init__("Torrent911", "https://www.torrent911.cc")
+        super().__init__("Torrent911", "https://www.torrent911.tv")
 
     def search(self, search_strings, age=0, ep_obj=None):
         results = []
