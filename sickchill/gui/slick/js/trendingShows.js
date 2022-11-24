@@ -52,7 +52,6 @@ $(document).ready(() => {
                 sortCriteria = 'name';
                 break;
             }
-            
         }
 
         $('#container').isotope({sortBy: sortCriteria});

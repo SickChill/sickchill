@@ -2372,7 +2372,6 @@ const SICKCHILL = {
                         sort = getMeta('settings.POSTER_SORTBY');
                         break;
                     }
-
                 }
 
                 $('.loading-spinner').hide();
@@ -2515,7 +2514,6 @@ const SICKCHILL = {
                         sort = getMeta('settings.POSTER_SORTBY');
                         break;
                     }
-
                 }
 
                 $('.show-grid').isotope({
@@ -3989,7 +3987,6 @@ const SICKCHILL = {
                             sortCriteria = 'name';
                             break;
                         }
-                        
                     }
 
                     $('#container').isotope({
