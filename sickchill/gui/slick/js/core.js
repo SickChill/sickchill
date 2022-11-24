@@ -2499,7 +2499,7 @@ const SICKCHILL = {
                         sort = ['progress', 'total', 'name'];
                         break;
                     }
-                    
+
                     case 'date': {
                         sort = ['date', 'status', 'name'];
                         break;
