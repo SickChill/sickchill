@@ -3745,11 +3745,11 @@ enhanced-resolve@^0.9.1:
     tapable "^0.1.8"
 
 enhanced-resolve@^5.10.0:
-  version "5.11.0"
-  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.11.0.tgz#543cf6c847a85adba0c4a5e2170bded4d493919a"
-  integrity sha512-0Gcraf7gAJSQoPg+bTSXNhuzAYtXqLc4C011vb8S3B8XUSEkGYNBk20c68X9291VF4vvsCD8SPkr6Mza+DwU+g==
+  version "5.12.0"
+  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.12.0.tgz#300e1c90228f5b570c4d35babf263f6da7155634"
+  integrity sha512-QHTXI/sZQmko1cbDoNAa3mJ5qhWUUNAq3vR0/YiD379fWQrcfuoX1+HW2S0MTt7XmoPLapdaDKUtelUSPic7hQ==
   dependencies:
-    graceful-fs "^4.2.9"
+    graceful-fs "^4.2.4"
     tapable "^2.2.0"
 
 entities@1.0:
@@ -4205,11 +4205,11 @@ eslint@^8.27.0, eslint@^8.9.0:
     text-table "^0.2.0"
 
 esm-utils@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/esm-utils/-/esm-utils-4.1.0.tgz#c224ed458fd96fa242e3479c87aa2d28dca382e9"
-  integrity sha512-/oTSIjfeNL/gzVgM7CbRL4bqE8aKU1ANJqr8voBwTXvVMjYYm15PdYG6c6zNSAHNa3s9b6UMRHDosIq26OBdWg==
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/esm-utils/-/esm-utils-4.1.1.tgz#c7df7fe93f76adbfb5f919df36d8cf5b72689489"
+  integrity sha512-cTy4OQgEP/yc7RY3s6EgwMGZ10gAPhCLE9FcrQ6/5bhf37o9PZCFSjzQR1tYb4GaKAEMaW1UmDcMZR13H4p6LQ==
   dependencies:
-    import-meta-resolve "2.1.0"
+    import-meta-resolve "2.2.0"
     url-or-path "2.1.0"
 
 esm@^3.2.25:
@@ -5143,7 +5143,7 @@ got@^6.2.0:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.5, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.10, graceful-fs@^4.2.6, graceful-fs@^4.2.9:
+graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.5, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.10, graceful-fs@^4.2.4, graceful-fs@^4.2.6, graceful-fs@^4.2.9:
   version "4.2.10"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
@@ -5759,10 +5759,10 @@ import-local@^3.0.2:
     pkg-dir "^4.2.0"
     resolve-cwd "^3.0.0"
 
-import-meta-resolve@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/import-meta-resolve/-/import-meta-resolve-2.1.0.tgz#c8952d331ed6e9bb6ad524a7549deb3d34af41ce"
-  integrity sha512-yG9pxkWJVTy4cmRsNWE3ztFdtFuYIV8G4N+cbCkO8b+qngkLyIUhxQFuZ0qJm67+0nUOxjMPT7nfksPKza1v2g==
+import-meta-resolve@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/import-meta-resolve/-/import-meta-resolve-2.2.0.tgz#701aa29a044954bd135214049294745ac70dd607"
+  integrity sha512-CpPOtiCHxP9HdtDM5F45tNiAe66Cqlv3f5uHoJjt+KlaLrUh9/Wz9vepADZ78SlqEo62aDWZtj9ydMGXV+CPnw==
 
 import-modules@^2.1.0:
   version "2.1.0"
