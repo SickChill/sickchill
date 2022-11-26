@@ -65,7 +65,6 @@ class BaseParser(type):
             self.provider.session.verify = True
             settings.SSL_VERIFY = True
 
-            settings.QUALITY_ALLOW_HEVC = True
             self.provider.username = self.username
             self.provider.password = self.password
             settings.movie_list = movies.MovieList()

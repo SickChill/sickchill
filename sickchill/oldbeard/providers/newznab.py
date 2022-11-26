@@ -17,7 +17,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
     Tested with: newznab, nzedb, spotweb, torznab
     """
 
-    def __init__(self, name, url, key="0", catIDs="5030,5040", search_mode="eponly", search_fallback=False, enable_daily=True, enable_backlog=False):
+    def __init__(self, name, url, key="0", catIDs="5030,5040,5090", search_mode="eponly", search_fallback=False, enable_daily=True, enable_backlog=False):
 
         super().__init__(name)
 
@@ -87,9 +87,6 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 providers_dict[default.name].catIDs = (
                     ",".join([x for x in providers_dict[default.name].catIDs.split(",") if 5000 <= try_int(x) <= 5999]) or default.catIDs
                 )
-
-                if settings.QUALITY_ALLOW_HEVC and "5090" not in providers_dict[default.name].catIDs:
-                    providers_dict[default.name].catIDs += ",5090"
 
         return [x for x in providers_list if x]
 
