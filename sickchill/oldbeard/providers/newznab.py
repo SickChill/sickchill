@@ -17,7 +17,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
     Tested with: newznab, nzedb, spotweb, torznab
     """
 
-    def __init__(self, name, url, key="0", catIDs="5030,5040,5045", search_mode="eponly", search_fallback=False, enable_daily=True, enable_backlog=False):
+    def __init__(self, name, url, key="0", catIDs="5030,5040", search_mode="eponly", search_fallback=False, enable_daily=True, enable_backlog=False):
 
         super().__init__(name)
 
