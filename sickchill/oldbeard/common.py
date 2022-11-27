@@ -5,7 +5,6 @@ import uuid
 from functools import reduce
 from os import path
 
-from sickchill import settings
 from sickchill.helper import video_screen_size
 from sickchill.init_helpers import get_current_version, setup_gettext
 from sickchill.recompiled import tags
@@ -299,8 +298,6 @@ class Quality(object):
             # SD TV
             elif sd_options:
                 result = Quality.SDTV
-        elif ep.hevc and not settings.QUALITY_ALLOW_HEVC:
-            result = Quality.UNKNOWN
         elif ep.mpeg:
             result = Quality.RAWHDTV
         # Is it UHD?
