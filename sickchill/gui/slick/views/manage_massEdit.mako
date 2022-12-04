@@ -282,7 +282,7 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_prefer_words" name="prefer_words" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${('', 'selected="selected"')[prefer_words_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="keep" ${('', 'selected="selected"')[prefer_words_value is None]}>< ${_('Keep')} ></option>
                             <option value="new" ${('', 'selected="selected"')[prefer_words_value == 1]}>${_('New')}</option>
                             <option value="clear" ${('', 'selected="selected"')[prefer_words_value == 0]}>${_('Clear')}</option>
                         </select>
@@ -299,7 +299,7 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_require_words" name="require_words" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${('', 'selected="selected"')[require_words_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="keep" ${('', 'selected="selected"')[require_words_value is None]}>< ${_('Keep')} ></option>
                             <option value="new" ${('', 'selected="selected"')[require_words_value == 1]}>${_('New')}</option>
                             <option value="clear" ${('', 'selected="selected"')[require_words_value == 0]}>${_('Clear')}</option>
                         </select>
