@@ -2594,9 +2594,9 @@ camelcase@^7.0.0:
   integrity sha512-xlx1yCK2Oc1APsPXDL2LdlNP6+uu8OCDdhOBSVT279M/S+y75O30C2VuD8T2ogdePBBl7PfPF4504tnLgX3zfw==
 
 caniuse-lite@^1.0.30001400:
-  version "1.0.30001439"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001439.tgz#ab7371faeb4adff4b74dad1718a6fd122e45d9cb"
-  integrity sha512-1MgUzEkoMO6gKfXflStpYgZDlFM7M/ck/bgfVCACO5vnAf0fXoNVHdWtqGU+MYca+4bL9Z5bpOVmR33cWW9G2A==
+  version "1.0.30001441"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001441.tgz#987437b266260b640a23cd18fbddb509d7f69f3e"
+  integrity sha512-OyxRR4Vof59I3yGWXws6i908EtGbMzVUi3ganaZQHmydk1iwDhRnvaPG2WaR0KcqrDFKrxVZHULT396LEPhXfg==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -8486,9 +8486,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1043.0:
-  version "1.1073.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1073.0.tgz#88bbf485d1ac62e68834372ddd745032c18cb46f"
-  integrity sha512-THPprC+HUcP+AZTQKwSljW1NwzHV/F8NWFGgemWR3QNfEgWBk22CEuEdBFZuTy6HykSe8IrMWfPvT+3yJyrgmQ==
+  version "1.1074.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1074.0.tgz#988039dca9447e4e0cab016fc402562376d24e0a"
+  integrity sha512-zMCPd/W3kcUhEClmFmnwaCogs3MaiSzVwMfm7/EZ0oRQQGmqywzVQrARz3kFX1qGyPEPlbWgEzhawAsreFxYmA==
 
 sockjs@^0.3.24:
   version "0.3.24"
