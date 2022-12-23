@@ -81,7 +81,6 @@ class ConfigSearch(Config):
         syno_dsm_user=None,
         syno_dsm_pass=None,
         syno_dsm_path=None,
-        quality_allow_hevc=False,
         prefer_words=None,
         flaresolverr_uri=None,
     ):
@@ -120,7 +119,6 @@ class ConfigSearch(Config):
         settings.CHECK_PROPERS_INTERVAL = check_propers_interval
 
         settings.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(allow_high_priority)
-        settings.QUALITY_ALLOW_HEVC = config.checkbox_to_value(quality_allow_hevc)
 
         settings.USE_FAILED_DOWNLOADS = config.checkbox_to_value(use_failed_downloads)
         settings.DELETE_FAILED = config.checkbox_to_value(delete_failed)

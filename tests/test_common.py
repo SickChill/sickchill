@@ -13,7 +13,6 @@ class QualityStringTests(unittest.TestCase):
     Test Case for strings in common.Quality
     """
 
-    settings.QUALITY_ALLOW_HEVC = True
     test_cases = {
         "sd_tv": [
             "Test.Show.S01E02.PDTV.XViD-GROUP",

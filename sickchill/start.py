@@ -249,7 +249,6 @@ def initialize(consoleLogging=True):
             settings.ROOT_DIRS = ""
 
         settings.QUALITY_DEFAULT = check_setting_int(settings.CFG, "General", "quality_default", SD)
-        settings.QUALITY_ALLOW_HEVC = check_setting_bool(settings.CFG, "General", "quality_allow_hevc", False)
         settings.STATUS_DEFAULT = check_setting_int(settings.CFG, "General", "status_default", SKIPPED)
         if settings.STATUS_DEFAULT not in (SKIPPED, WANTED, IGNORED):
             settings.STATUS_DEFAULT = SKIPPED
@@ -1180,7 +1179,6 @@ def save_config():
                 "skip_removed_files": int(settings.SKIP_REMOVED_FILES),
                 "allowed_extensions": settings.ALLOWED_EXTENSIONS,
                 "quality_default": int(settings.QUALITY_DEFAULT),
-                "quality_allow_hevc": int(settings.QUALITY_ALLOW_HEVC),
                 "status_default": int(settings.STATUS_DEFAULT),
                 "status_default_after": int(settings.STATUS_DEFAULT_AFTER),
                 "season_folders_default": int(settings.SEASON_FOLDERS_DEFAULT),

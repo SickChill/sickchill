@@ -262,16 +262,6 @@
                             </div>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Allow downloading HEVC x265 releases')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="quality_allow_hevc"
-                                           id="quality_allow_hevc" ${('', 'checked="checked"')[bool(settings.QUALITY_ALLOW_HEVC)]}/>
-                                    <label for="quality_allow_hevc">${_('whether we should download HEVC x265 releases')}</label>
-                                </div>
-                            </div>
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Use Failed Downloads')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
