@@ -34,7 +34,16 @@ class ConfigGeneral(Config):
 
     @staticmethod
     def saveAddShowDefaults(
-        defaultStatus, anyQualities, bestQualities, defaultSeasonFolders, subtitles=False, anime=False, scene=False, defaultStatusAfter=WANTED
+        defaultStatus,
+        anyQualities,
+        bestQualities,
+        defaultSeasonFolders,
+        whitelist,
+        blacklist,
+        subtitles=False,
+        anime=False,
+        scene=False,
+        defaultStatusAfter=WANTED,
     ):
 
         if anyQualities:
@@ -48,6 +57,9 @@ class ConfigGeneral(Config):
             bestQualities = []
 
         newQuality = Quality.combineQualities([int(quality) for quality in anyQualities], [int(quality) for quality in bestQualities])
+
+        settings.WHITELIST_DEFAULT = whitelist
+        settings.BLACKLIST_DEFAULT = blacklist
 
         settings.STATUS_DEFAULT = int(defaultStatus)
         settings.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)

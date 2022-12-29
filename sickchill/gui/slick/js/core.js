@@ -286,8 +286,6 @@ const SICKCHILL = {
             },
         },
         updateBlackWhiteList(showName) {
-            $('#white').children().remove();
-            $('#black').children().remove();
             $('#pool').children().remove();
 
             if ($('#anime').is(':checked')) {
@@ -4077,7 +4075,7 @@ const SICKCHILL = {
                 $('#bestQualities option:selected').each((i, d) => {
                     bestQualArray.push($(d).val());
                 });
-
+                generateBlackWhiteList(); // eslint-disable-line no-undef
                 $.post(scRoot + '/config/general/saveAddShowDefaults', {
                     defaultStatus: $('#statusSelect').val(),
                     anyQualities: anyQualArray.join(','),
@@ -4087,12 +4085,14 @@ const SICKCHILL = {
                     anime: $('#anime').is(':checked'),
                     scene: $('#scene').is(':checked'),
                     defaultStatusAfter: $('#statusSelectAfter').val(),
+                    whitelist: $('#whitelist').val(),
+                    blacklist: $('#blacklist').val(),
                 });
 
                 $(this).attr('disabled', true);
             });
 
-            $('#statusSelect, #qualityPreset, #season_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter').on('change', () => {
+            $('#statusSelect, #qualityPreset, #season_folders, #anyQualities, #bestQualities, #subtitles, #scene, #anime, #statusSelectAfter, #white, #black').on('change', () => {
                 $('#saveDefaultsButton').attr('disabled', false);
             });
 
