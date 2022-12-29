@@ -8496,9 +8496,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1043.0:
-  version "1.1077.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1077.0.tgz#6ea8c6bcb69dde99d2c68d0d1e4966d8e1e8d43a"
-  integrity sha512-D9FBtdPKL+RjGpj9tGW1ExevG1x7HR4LyqZ+58gV4jo9Z+gnCEooXayU5xNAafhRYXM0lZxR+mdpmwEX7YFOPA==
+  version "1.1079.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1079.0.tgz#de17afec667597d2d51e33510dcc2cd317d107a9"
+  integrity sha512-vrg9l9in8S01Yya3L9Ub/Qsaa5/CtNJtjQdRXq0+JNU/7wznuu8wGzuVaVOMfI75q9woyD/6m6ZJIf0TgcTe5g==
 
 sockjs@^0.3.24:
   version "0.3.24"
