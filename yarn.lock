@@ -1564,9 +1564,9 @@
     "@types/node" "*"
 
 "@types/ws@^8.5.1":
-  version "8.5.3"
-  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.3.tgz#7d25a1ffbecd3c4f2d35068d0b283c037003274d"
-  integrity sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==
+  version "8.5.4"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.4.tgz#bb10e36116d6e570dd943735f86c933c1587b8a5"
+  integrity sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==
   dependencies:
     "@types/node" "*"
 
@@ -3054,9 +3054,9 @@ copy-webpack-plugin@^11.0.0:
     serialize-javascript "^6.0.0"
 
 core-js-compat@^3.25.1:
-  version "3.27.0"
-  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.27.0.tgz#e2c58a89df6432a5f36f3fa34097e9e83e709fb6"
-  integrity sha512-spN2H4E/wocMML7XtbKuqttHHM+zbF3bAdl9mT4/iyFaF33bowQGjxiWNWyvUJGH9F+hTgnhWziiLtwu3oC/Qg==
+  version "3.27.1"
+  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.27.1.tgz#b5695eb25c602d72b1d30cbfba3cb7e5e4cf0a67"
+  integrity sha512-Dg91JFeCDA17FKnneN7oCMz4BkQ4TcffkgHP4OWwp9yx3pi7ubqMDXXSacfNak1PQqjc95skyt+YBLHQJnkJwA==
   dependencies:
     browserslist "^4.21.4"
 
@@ -8496,9 +8496,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1043.0:
-  version "1.1079.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1079.0.tgz#de17afec667597d2d51e33510dcc2cd317d107a9"
-  integrity sha512-vrg9l9in8S01Yya3L9Ub/Qsaa5/CtNJtjQdRXq0+JNU/7wznuu8wGzuVaVOMfI75q9woyD/6m6ZJIf0TgcTe5g==
+  version "1.1080.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1080.0.tgz#df882a4bd73dc9e01d49dc4f00347be7864aa8aa"
+  integrity sha512-ELqdJ8hCM/oWyMGbclhRkqezvBtJBBjT99AtpqKgIZu8TNCa8NPYc2TlgqCDaxERr2QYtzeh/qXE56EziDt1LA==
 
 sockjs@^0.3.24:
   version "0.3.24"
