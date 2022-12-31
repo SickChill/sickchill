@@ -476,6 +476,9 @@ class Manage(Home, WebRoot):
         scene_value = last_scene if scene_all_same else None
         sports_value = last_sports if sports_all_same else None
         air_by_date_value = last_air_by_date if air_by_date_all_same else None
+        ignore_words_value = None
+        prefer_words_value = None
+        require_words_value = None
 
         return t.render(
             showList=toEdit,
@@ -495,6 +498,9 @@ class Manage(Home, WebRoot):
             controller="manage",
             action="massEdit",
             topmenu="manage",
+            ignore_words_value=ignore_words_value,
+            prefer_words_value=prefer_words_value,
+            require_words_value=require_words_value,
         )
 
     # noinspection PyProtectedMember, PyUnusedLocal
@@ -512,6 +518,12 @@ class Manage(Home, WebRoot):
         anyQualities=None,
         bestQualities=None,
         toEdit=None,
+        mass_ignore_words=None,
+        mass_prefer_words=None,
+        mass_require_words=None,
+        ignore_words=None,
+        prefer_words=None,
+        require_words=None,
         *args,
         **kwargs,
     ):
@@ -544,6 +556,28 @@ class Manage(Home, WebRoot):
             new_season_folders = ("off", "on")[(season_folders == "enable", show_obj.season_folders)[season_folders == "keep"]]
             new_subtitles = ("off", "on")[(subtitles == "enable", show_obj.subtitles)[subtitles == "keep"]]
 
+            # new mass words update section
+            if ignore_words == "new":
+                new_ignore_words = mass_ignore_words
+            elif ignore_words == "clear":
+                new_ignore_words = ""
+            else:
+                new_ignore_words = show_obj.rls_ignore_words
+
+            if require_words == "new":
+                new_require_words = mass_require_words
+            elif require_words == "clear":
+                new_require_words = ""
+            else:
+                new_require_words = show_obj.rls_require_words
+
+            if prefer_words == "new":
+                new_prefer_words = mass_prefer_words
+            elif prefer_words == "clear":
+                new_prefer_words = ""
+            else:
+                new_prefer_words = show_obj.rls_prefer_words
+
             if quality_preset == "keep":
                 anyQualities, bestQualities = Quality.splitQuality(show_obj.quality)
             elif try_int(quality_preset, None):
@@ -562,6 +596,9 @@ class Manage(Home, WebRoot):
                 paused=new_paused,
                 sports=new_sports,
                 subtitles=new_subtitles,
+                rls_ignore_words=new_ignore_words,
+                rls_prefer_words=new_prefer_words,
+                rls_require_words=new_require_words,
                 anime=new_anime,
                 scene=new_scene,
                 air_by_date=new_air_by_date,

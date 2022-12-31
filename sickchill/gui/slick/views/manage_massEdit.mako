@@ -259,6 +259,56 @@
                     </div>
                 </div>
 
+                <div class="field-pair row">
+                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                        <span class="component-title">${_('Ignored Words')}</span>
+                    </div>
+                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                        <select id="edit_ignore_words" name="ignore_words" class="form-control form-control-inline input-sm">
+                            <option value="keep" ${('', 'selected="selected"')[ignore_words_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="new" ${('', 'selected="selected"')[ignore_words_value == 1]}>${_('New')}</option>
+                            <option value="clear" ${('', 'selected="selected"')[ignore_words_value == 0]}>${_('Clear')}</option>
+                        </select>
+                        <input type="text" id="edit_mass_ignore_words"
+                               name="mass_ignore_words" value=""
+                               class="form-control input-sm input350" autocapitalize="off"/>
+                        <label for="edit_mass_ignore_words">${_('Ignore words.')}</label>
+                    </div>
+                </div>
+                
+                <div class="field-pair row">
+                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                        <span class="component-title">${_('Prefered Words')}</span>
+                    </div>
+                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                        <select id="edit_prefer_words" name="prefer_words" class="form-control form-control-inline input-sm">
+                            <option value="keep" ${('', 'selected="selected"')[prefer_words_value is None]}>< ${_('Keep')} ></option>
+                            <option value="new" ${('', 'selected="selected"')[prefer_words_value == 1]}>${_('New')}</option>
+                            <option value="clear" ${('', 'selected="selected"')[prefer_words_value == 0]}>${_('Clear')}</option>
+                        </select>
+                        <input type="text" id="edit_mass_prefer_words"
+                               name="mass_prefer_words" value=""
+                               class="form-control input-sm input350" autocapitalize="off"/>
+                        <label for="edit_mass_prefer_words">${_('Prefer words.')}</label>
+                    </div>
+                </div>
+                
+                <div class="field-pair row">
+                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                        <span class="component-title">${_('Required Words')}</span>
+                    </div>
+                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                        <select id="edit_require_words" name="require_words" class="form-control form-control-inline input-sm">
+                            <option value="keep" ${('', 'selected="selected"')[require_words_value is None]}>< ${_('Keep')} ></option>
+                            <option value="new" ${('', 'selected="selected"')[require_words_value == 1]}>${_('New')}</option>
+                            <option value="clear" ${('', 'selected="selected"')[require_words_value == 0]}>${_('Clear')}</option>
+                        </select>
+                        <input type="text" id="edit_mass_require_words"
+                               name="mass_require_words" value=""
+                               class="form-control input-sm input350" autocapitalize="off"/>
+                        <label for="edit_mass_require_words">${_('Require words.')}</label>
+                    </div>
+                </div>
             </fieldset>
         </div>
     </form>
