@@ -24,25 +24,34 @@ $(document).ready(() => {
     $('#showsort').on('change', function () {
         let sortCriteria;
         switch (this.value) {
-            case 'original':
+            case 'original': {
                 sortCriteria = 'original-order';
                 break;
-            case 'rating':
+            }
+
+            case 'rating': {
                 /* Randomise, else the rating_votes can already
                  * have sorted leaving this with nothing to do.
                  */
                 $('#container').isotope({sortBy: 'random'});
                 sortCriteria = 'rating';
                 break;
-            case 'rating_votes':
+            }
+
+            case 'rating_votes': {
                 sortCriteria = ['rating', 'votes'];
                 break;
-            case 'votes':
+            }
+
+            case 'votes': {
                 sortCriteria = 'votes';
                 break;
-            default:
+            }
+
+            default: {
                 sortCriteria = 'name';
                 break;
+            }
         }
 
         $('#container').isotope({sortBy: sortCriteria});

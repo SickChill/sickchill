@@ -126,16 +126,16 @@
                     </div>
 
                     <div class="show-date">
-                        % if cur_airs_next or cur_airs_prev:
-                        <%
-                            ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next or cur_airs_prev, curShow.airs, curShow.network))
+                        % if cur_airs_next:
+                            <%
+                            ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next,  curShow.airs, curShow.network))
                             try:
                                 out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
                             except (ValueError, OSError):
                                 out = _('Invalid date')
                                 pass
-                        %>
-                        ${_(display_status)} ${out}
+                            %>
+                            ${_(display_status)} ${out}
                         % else:
                             ${_(display_status)}
                         % endif

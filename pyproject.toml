@@ -37,6 +37,7 @@ classifiers = [
 packages = [
     { include = "sickchill" },
     { include = "SickChill.py" },
+    { include = "frontend" }
 ]
 
 [tool.poetry.urls]
@@ -107,10 +108,17 @@ optional = true
 [tool.poetry.group.experimental.dependencies]
 pyaes = "^1.6.1"
 
+[tool.poetry.group.frontend]
+optional = true
+
+[tool.poetry.group.frontend.dependencies]
+Flask = "^2.2.2"
+
 [tool.poetry.extras]
 experimental = ["experimental"]
-speedups = ["html5lib", "lxml", "Js2Py"]
+speedups = ["speedups"]
 types = ["types"]
+frontend = ["frontend"]
 
 
 [tool.commitizen]
@@ -289,10 +297,10 @@ deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = ">=2021.3.18,<2023.0.0"
-packaging = ">=20.9,<22.0"
+packaging = ">=20.9,<23.0"
 timeago = "^1.0.15"
 SQLAlchemy = "^1.4.3"
-python-slugify = ">=4.0.1,<7.0.0"
+python-slugify = ">=4.0.1,<8.0.0"
 guessit = "^3.3.1"
 requests = "^2.25.1"
 IMDbPY = ">=2020.09.25"

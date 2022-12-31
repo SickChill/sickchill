@@ -2353,18 +2353,25 @@ const SICKCHILL = {
             $('.show-grid').imagesLoaded(() => {
                 let sort;
                 switch (getMeta('settings.POSTER_SORTBY')) {
-                    case 'progress':
+                    case 'progress': {
                         sort = ['progress', 'total', 'name'];
                         break;
-                    case 'date':
+                    }
+
+                    case 'date': {
                         sort = ['date', 'status', 'name'];
                         break;
-                    case 'status':
+                    }
+
+                    case 'status': {
                         sort = ['status', 'progress', 'name'];
                         break;
-                    default:
+                    }
+
+                    default: {
                         sort = getMeta('settings.POSTER_SORTBY');
                         break;
+                    }
                 }
 
                 $('.loading-spinner').hide();
@@ -2488,18 +2495,25 @@ const SICKCHILL = {
             $('#postersort').on('change', function () {
                 let sort;
                 switch ($(this).val()) {
-                    case 'progress':
+                    case 'progress': {
                         sort = ['progress', 'total', 'name'];
                         break;
-                    case 'date':
+                    }
+
+                    case 'date': {
                         sort = ['date', 'status', 'name'];
                         break;
-                    case 'status':
+                    }
+
+                    case 'status': {
                         sort = ['status', 'progress', 'name'];
                         break;
-                    default:
+                    }
+
+                    default: {
                         sort = getMeta('settings.POSTER_SORTBY');
                         break;
+                    }
                 }
 
                 $('.show-grid').isotope({
@@ -3940,28 +3954,39 @@ const SICKCHILL = {
                 $('#showsort').on('change', function () {
                     let sortCriteria;
                     switch (this.value) {
-                        case 'original':
+                        case 'original': {
                             sortCriteria = 'original-order';
                             break;
-                        case 'rating':
+                        }
+
+                        case 'rating': {
                             /* Randomise, else the rating_votes can already
                              * have sorted leaving this with nothing to do.
                              */
                             $('#container').isotope({sortBy: 'random'});
                             sortCriteria = 'rating';
                             break;
-                        case 'rating_votes':
+                        }
+
+                        case 'rating_votes': {
                             sortCriteria = ['rating', 'votes'];
                             break;
-                        case 'votes':
+                        }
+
+                        case 'votes': {
                             sortCriteria = 'votes';
                             break;
-                        case 'rank':
+                        }
+
+                        case 'rank': {
                             sortCriteria = 'rank';
                             break;
-                        default:
+                        }
+
+                        default: {
                             sortCriteria = 'name';
                             break;
+                        }
                     }
 
                     $('#container').isotope({

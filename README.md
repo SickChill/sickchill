@@ -59,4 +59,4 @@ A full list can be found here: [Link](https://github.com/SickChill/SickChill/wik
 [news.md and CHANGES.md have moved to a separate repo, click here](https://github.com/SickChill/SickChill.github.io)
 
 
-<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm_icon.svg" width="50" height="50"></a>
+<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="60" height="60"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg" width="60" height="60"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm_icon.svg" width="60" height="60"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_icon.svg" width="60" height="60"></a>
