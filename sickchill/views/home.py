@@ -1195,13 +1195,14 @@ class Home(WebRoot):
             show_obj.subtitles_sr_metadata = subtitles_sr_metadata
             show_obj.air_by_date = air_by_date
             show_obj.default_ep_status = int(defaultEpStatus)
+            # words added to mass update so moved from directCall to here.
+            show_obj.rls_ignore_words = rls_ignore_words.strip()
+            show_obj.rls_require_words = rls_require_words.strip()
+            show_obj.rls_prefer_words = rls_prefer_words.strip()
 
             if not directCall:
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
-                show_obj.rls_ignore_words = rls_ignore_words.strip()
-                show_obj.rls_require_words = rls_require_words.strip()
-                show_obj.rls_prefer_words = rls_prefer_words.strip()
 
             location = os.path.normpath(xhtml_unescape(location))
             # noinspection PyProtectedMember
