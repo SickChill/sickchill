@@ -18,7 +18,7 @@ class PipUpdateManager(UpdateManagerBase):
         self.version_text = get_current_version()
         self.newest_version_text = get_current_version()
 
-        self._newest_version: Union[packaging_version.LegacyVersion, packaging_version.Version] = None
+        self._newest_version: packaging_version.Version = None
         self.session = helpers.make_session()
 
     def get_current_version(self) -> str:
@@ -27,7 +27,7 @@ class PipUpdateManager(UpdateManagerBase):
     def get_clean_version(self, use_version: packaging_version.Version = None):
         return str(use_version or self.get_current_version())
 
-    def get_newest_version(self) -> Union[packaging_version.LegacyVersion, packaging_version.Version]:
+    def get_newest_version(self) -> packaging_version.Version:
         self._newest_version = packaging_version.parse(self.session.get("https://pypi.org/pypi/sickchill/json").json()["info"]["version"])
         return self._newest_version
 
