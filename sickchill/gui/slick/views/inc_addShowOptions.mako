@@ -96,6 +96,14 @@
         </div>
     </div>
     <br>
+
+    % if enable_anime_options:
+        <% import sickchill.oldbeard.blackandwhitelist %>
+        <%include file="/inc_blackwhitelist.mako"/>
+    % else:
+        <input type="hidden" name="anime" id="anime" value="0" />
+    % endif
+
     <div class="field-pair row">
         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
             <span class="component-title">
@@ -106,10 +114,3 @@
             <label>${_('Use current values as the defaults')}</label>
         </div>
     </div>
-
-    % if enable_anime_options:
-        <% import sickchill.oldbeard.blackandwhitelist %>
-        <%include file="/inc_blackwhitelist.mako"/>
-    % else:
-        <input type="hidden" name="anime" id="anime" value="0" />
-    % endif

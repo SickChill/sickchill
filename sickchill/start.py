@@ -263,6 +263,9 @@ def initialize(consoleLogging=True):
         settings.ANIME_DEFAULT = check_setting_bool(settings.CFG, "General", "anime_default")
         settings.SCENE_DEFAULT = check_setting_bool(settings.CFG, "General", "scene_default")
 
+        settings.WHITELIST_DEFAULT = check_setting_str(settings.CFG, "General", "whitelist_default")
+        settings.BLACKLIST_DEFAULT = check_setting_str(settings.CFG, "General", "blacklist_default")
+
         settings.PROVIDER_ORDER = check_setting_str(settings.CFG, "General", "provider_order").split()
 
         settings.NAMING_PATTERN = check_setting_str(settings.CFG, "General", "naming_pattern", "Season %0S/%SN - S%0SE%0E - %EN")
@@ -1186,6 +1189,8 @@ def save_config():
                 "indexer_timeout": int(settings.INDEXER_TIMEOUT),
                 "anime_default": int(settings.ANIME_DEFAULT),
                 "scene_default": int(settings.SCENE_DEFAULT),
+                "whitelist_default": settings.WHITELIST_DEFAULT,
+                "blacklist_default": settings.BLACKLIST_DEFAULT,
                 "provider_order": " ".join(settings.PROVIDER_ORDER),
                 "version_notify": int(settings.VERSION_NOTIFY),
                 "auto_update": int(settings.AUTO_UPDATE),
