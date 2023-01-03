@@ -76,7 +76,6 @@ isort = "^5.10.1"
 poethepoet = "^0.16.0"
 po2json = "^0.2.2"
 bandit = "<=1.7.2"
-commitizen = "^2.35.0"
 pre-commit = "^2.20.0"
 
 [tool.poetry.group.speedups]
@@ -119,12 +118,6 @@ experimental = ["experimental"]
 speedups = ["speedups"]
 types = ["types"]
 frontend = ["frontend"]
-
-
-[tool.commitizen]
-name = "cz_conventional_commits"
-version = "2022.10.8"
-tag_format = "$version"
 
 [build-system]
 requires = ["poetry-core>=1.2.0"]

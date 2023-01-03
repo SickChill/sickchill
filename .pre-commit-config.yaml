@@ -22,13 +22,13 @@ repos:
       - id: black
     repo: https://github.com/psf/black
     rev: 22.10.0
-  - hooks:
-      - id: commitizen
-      - id: commitizen-branch
-        stages:
-          - push
-    repo: https://github.com/commitizen-tools/commitizen
-    rev: v2.35.0
+#  - hooks:
+#      - id: commitizen
+#      - id: commitizen-branch
+#        stages:
+#          - push
+#    repo: https://github.com/commitizen-tools/commitizen
+#    rev: v2.35.0
 #  - hooks:
 #      - id: prettier
 #    repo: https://github.com/pre-commit/mirrors-prettier
