@@ -8570,10 +8570,10 @@ smart-buffer@^4.2.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
-snyk@^1.1043.0:
-  version "1.1087.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1087.0.tgz#a166244d40f88ca75e6da7652a18c4cddac6f18d"
-  integrity sha512-4Ap2O59+qHCKmzeJu0Kq6S74M409UwRer3ss3wLCNO7vwj8hpfi4wvA+bZc8ywwKv028X9nLhw8hzcJ7bmsavQ==
+snyk@^1.1088.0:
+  version "1.1088.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1088.0.tgz#7ccb3ed17f2ee2d97f3cd1c1062058c8396499d8"
+  integrity sha512-kYpiwuF0spEVAfGiBHWByu+Py4QnPbKoyz2VsnPEnmVcvjbGp2Te2XenDDUGQa5ZG3GXjUCeX5sFJ3yvmBgXwg==
 
 sockjs@^0.3.24:
   version "0.3.24"
