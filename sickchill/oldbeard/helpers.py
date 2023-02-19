@@ -1192,6 +1192,7 @@ def request_defaults(kwargs):
 def getURL(
     url,
     post_data=None,
+    files=None,
     params=None,
     headers=None,
     timeout=30,
@@ -1240,9 +1241,10 @@ def getURL(
             return json_result["response"]
 
         response = session.request(
-            "POST" if post_data else "GET",
+            "POST" if post_data or files else "GET",
             url,
             data=post_data or {},
+            files=files or {},
             params=params or {},
             timeout=timeout,
             allow_redirects=allow_redirects,
