@@ -108,8 +108,8 @@ def strip_xmlns(element, xmlns):
     :param xmlns: xml namespace to be removed
     :return: processed element
     """
-    for e in element.iter():
-        e.tag = e.tag.replace("{" + xmlns + "}", "")
+    for subelement in element.iter():
+        subelement.tag = subelement.tag.replace("{" + xmlns + "}", "")
 
     return element
 
