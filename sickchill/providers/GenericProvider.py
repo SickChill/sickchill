@@ -210,11 +210,7 @@ class GenericProvider(object):
                         [
                             parse_result.season_number is not None,
                             parse_result.episode_numbers,
-                            [
-                                ep
-                                for ep in episodes
-                                if ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers
-                            ],
+                            [ep for ep in episodes if ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers],
                         ]
                     ) and not all(
                         [
