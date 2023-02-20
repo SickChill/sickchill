@@ -11,6 +11,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship,
 
 logger = logging.getLogger("sickchill.movie")
 
+
 class Base(DeclarativeBase):
     """Declarative Base Class"""
 
