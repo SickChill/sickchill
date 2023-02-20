@@ -1,43 +1,48 @@
 import datetime
 import logging
+from typing import List
 
 import guessit
 from slugify import slugify
-from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, Interval, JSON, SmallInteger, String
+from sqlalchemy import ForeignKey, JSON
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
 logger = logging.getLogger("sickchill.movie")
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    """Declarative Base Class"""
+
+
 Session = sessionmaker()
 
 
 class Movie(Base):
     __tablename__ = "movie"
-    pk = Column(Integer, primary_key=True)
-    name = Column(String)
-    date = Column(Date)
-    year = Column(SmallInteger)
-    status = Column(Integer)
-    paused = Column(Boolean, default=False)
-    location = Column(String)
-    start = Column(Interval, default=datetime.timedelta(days=-7))
-    interval = Column(Interval, default=datetime.timedelta(days=1))
-    added = Column(DateTime, default=datetime.datetime.now)
-    updated = Column(DateTime, onupdate=datetime.datetime.now)
-    completed = Column(DateTime)
-    searched = Column(DateTime)
-    slug = Column(String)
+    pk: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    date: Mapped[datetime.date]
+    year: Mapped[int]
+    status: Mapped[int]
+    paused: Mapped[bool] = mapped_column(default=False)
+    location: Mapped[str]
+    start: Mapped[datetime.timedelta] = mapped_column(default=datetime.timedelta(days=-7))
+    interval: Mapped[datetime.timedelta] = mapped_column(default=datetime.timedelta(days=1))
+    added: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
+    updated: Mapped[datetime.datetime] = mapped_column(onupdate=datetime.datetime.now)
+    completed: Mapped[datetime.datetime]
+    searched: Mapped[datetime.datetime]
+    slug: Mapped[str]
 
-    language = Column(String)
+    language: Mapped[str]
 
-    result_pk = Column(Integer, ForeignKey("result.pk"))
-    results: list = relationship("Result", backref="movie")
+    result_pk: Mapped[int] = mapped_column(ForeignKey("result.pk"))
+    results: Mapped[List["Result"]] = relationship(backref="movie")
 
-    images: list = relationship("Images", backref="movie")
-    indexer_data: list = relationship("IndexerData", backref="movie")
+    images: Mapped[List["Images"]] = relationship(backref="movie")
+    indexer_data: Mapped[List["IndexerData"]] = relationship(backref="movie")
 
     def __init__(self, name: str, year: int):
         self.name = name
@@ -129,21 +134,21 @@ listen(Movie.name, "set", Movie.slugify, retval=False)
 
 class Result(Base):
     __tablename__ = "result"
-    pk = Column(Integer, primary_key=True)
-    name = Column(String)
-    title = Column(String)
-    url = Column(String)
-    size = Column(Integer)
-    year = Column(SmallInteger)
-    provider = Column(String)
-    seeders = Column(Integer)
-    leechers = Column(Integer)
-    info_hash = Column(String)
-    group = Column(String)
-    type = Column(String)
-    guess = Column(JSON)
-    found = Column(DateTime, default=datetime.datetime.now)
-    updated = Column(DateTime, onupdate=datetime.datetime.now)
+    pk: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    title: Mapped[str]
+    url: Mapped[str]
+    size: Mapped[int]
+    year: Mapped[int]
+    provider: Mapped[str]
+    seeders: Mapped[int]
+    leechers: Mapped[int]
+    info_hash: Mapped[str]
+    group: Mapped[str]
+    kind: Mapped[str]
+    guess = mapped_column(JSON)
+    found: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
+    updated: Mapped[datetime.datetime] = mapped_column(onupdate=datetime.datetime.now)
 
     session = Session()
 
@@ -167,7 +172,7 @@ class Result(Base):
         self.leechers = result["leechers"]
         self.size = result["size"]
         self.year = guess["year"] or movie.year
-        self.type = provider.provider_type
+        self.kind = provider.provider_type
 
         self.provider = provider.get_id()
 
@@ -182,12 +187,12 @@ class Result(Base):
 class Images(Base):
     __tablename__ = "images"
 
-    url = Column(String, primary_key=True)
-    path = Column(String)
-    site = Column(String)
-    style = Column(Integer)
+    url: Mapped[str] = mapped_column(primary_key=True)
+    path: Mapped[str]
+    site: Mapped[str]
+    style: Mapped[int]
 
-    movie_pk = Column(Integer, ForeignKey("movie.pk"))
+    movie_pk: Mapped[int] = mapped_column(ForeignKey("movie.pk"))
 
     def __init__(self, site: str, movie_pk: int, url: str, path: str, style: int):
         self.url = url
@@ -199,13 +204,13 @@ class Images(Base):
 
 class IndexerData(Base):
     __tablename__ = "indexer_data"
-    pk = Column(String, primary_key=True)
-    site = Column(String)
-    data = Column(JSON)
+    pk: Mapped[str] = mapped_column(primary_key=True)
+    site: Mapped[str]
+    data = mapped_column(JSON)
 
-    movie_pk = Column(Integer, ForeignKey("movie.pk"))
+    movie_pk: Mapped[int] = mapped_column(ForeignKey("movie.pk"))
 
-    genres: list = relationship("Genres", backref="indexer_data")
+    genres: Mapped[List["Genres"]] = relationship(backref="indexer_data")
 
     def __repr__(self):
         return f"[{self.__tablename__.replace('_', ' ').title()}] {self.site}: {self.pk} - {self.movie.name}"
@@ -213,5 +218,5 @@ class IndexerData(Base):
 
 class Genres(Base):
     __tablename__ = "genres"
-    pk = Column(String, primary_key=True)
-    indexer_data_pk = Column(Integer, ForeignKey("indexer_data.pk"))
+    pk: Mapped[str] = mapped_column(primary_key=True)
+    indexer_data_pk: Mapped[int] = mapped_column(ForeignKey("indexer_data.pk"))
