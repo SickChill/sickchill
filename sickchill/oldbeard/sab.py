@@ -49,7 +49,7 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
     elif nzb.resultType == "nzbdata":
         params["mode"] = "addfile"
         multiPartParams = {"nzbfile": (nzb.name + ".nzb", nzb.extraInfo[0])}
-        jdata = helpers.getURL(url, params=params, file=multiPartParams, session=session, returns="json", verify=False)
+        jdata = helpers.getURL(url, params=params, files=multiPartParams, session=session, returns="json", verify=False)
 
     if not jdata:
         logger.info("Error connecting to sab, no data returned")

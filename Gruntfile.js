@@ -325,19 +325,19 @@ module.exports = function(grunt) {
                     let isRelease = stdout.match(/pyproject.toml/gm)
 
                     if (isRelease) {
-                        commitMsg.push('bump: release version ' + grunt.config('next_version'));
+                        commitMsg.push('Release version ' + grunt.config('next_version'));
                         commitPaths.push('pyproject.toml');
                     }
                     if (stdout.match(/sickchill\/gui\/.*(vendor|core)\.min\.(js|css)$/gm)) {
                         if (!isRelease) {
-                            commitMsg.push('chore: grunt');
+                            commitMsg.push('Grunt');
                         }
                         commitPaths.push('sickchill/gui/**/vendor.min.*');
                         commitPaths.push('sickchill/gui/**/core.min.*');
                     }
                     if (stdout.match(/sickchill\/locale\/.*(pot|po|mo|json)$/gm)) {
                         if (!isRelease) {
-                            commitMsg.push('chore: update translations');
+                            commitMsg.push('Update translations');
                         }
                         commitPaths.push('sickchill/locale/');
                     }
@@ -469,7 +469,7 @@ module.exports = function(grunt) {
                         grunt.log.warn('Pushing with --dry-run ...'.magenta);
                         pushCmd += ' --dry-run';
                     }
-                    return ['cd ' + path, 'git commit -asm "chore: update changelog"', 'git fetch origin', 'git rebase',
+                    return ['cd ' + path, 'git commit -asm "Update changelog"', 'git fetch origin', 'git rebase',
                         pushCmd].join(' && ');
                 },
                 stdout: true

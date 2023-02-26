@@ -210,12 +210,7 @@ class GenericProvider(object):
                         [
                             parse_result.season_number is not None,
                             parse_result.episode_numbers,
-                            [
-                                ep
-                                for ep in episodes
-                                if (ep.season, ep.scene_season)[ep.show.is_scene] == (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene]
-                                and (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers
-                            ],
+                            [ep for ep in episodes if ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers],
                         ]
                     ) and not all(
                         [
@@ -345,7 +340,7 @@ class GenericProvider(object):
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
         kwargs["hooks"] = {"response": self.get_url_hook}
-        return getURL(url, post_data, params, self.headers, timeout, self.session, **kwargs)
+        return getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout, session=self.session, **kwargs)
 
     def image_name(self):
         return self.get_id() + ".png"

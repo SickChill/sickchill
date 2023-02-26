@@ -211,7 +211,7 @@ jobs:
         config: /tmp/buildkitd.toml
     -
       name: Test Docker Build
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         platforms: linux/amd64
         push: false
@@ -272,7 +272,7 @@ jobs:
     -
       if: github.actor == 'miigotu'
       name: Build and Push
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         platforms: ${{ env.TARGET_PLATFORMS }}
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
@@ -288,7 +288,7 @@ jobs:
     -
       if: github.actor == 'miigotu'
       name: Snag wheels
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         file: Dockerfile
         platforms: ${{ env.TARGET_PLATFORMS }}
