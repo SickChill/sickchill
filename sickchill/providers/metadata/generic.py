@@ -292,11 +292,17 @@ class GenericMetadata(object):
                     try:
                         if not hasattr(ep_obj, attribute_map[attribute]):
                             continue
-
                         node = episodeXML.find(attribute)
-                        if node is None or node.text == str(getattr(ep_obj, attribute_map[attribute])):
+                        if node is None:
                             continue
 
+                        # line endings read from xml file with ElementTree and access with node.text changes the lineendings to \r\n (also from \n) 
+                        # also the xml can contain mixed line endings and this seems to be a problem with python (https://stackoverflow.com/questions/1749466/whats-the-most-pythonic-way-of-normalizing-lineends-in-a-string),
+                        # so remove all lineendings before compairing for now
+                        text1 = ''.join(node.text.splitlines())
+                        text2 = ''.join(str(getattr(ep_obj, attribute_map[attribute])).splitlines())
+                        if text1 == text2:
+                            continue
                         node.text = str(getattr(ep_obj, attribute_map[attribute]))
                         changed = True
                     except AttributeError:
