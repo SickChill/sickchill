@@ -295,7 +295,7 @@ class GenericMetadata(object):
                         node = episodeXML.find(attribute)
                         if node is None:
                             continue
-        
+
                         text1 = "".join(node.text.splitlines())
                         text2 = "".join(str(getattr(ep_obj, attribute_map[attribute])).splitlines())
                         if text1 == text2:
