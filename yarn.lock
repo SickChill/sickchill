@@ -3566,9 +3566,9 @@ ejs@^3.1.6, ejs@^3.1.8:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.284:
-  version "1.4.313"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.313.tgz#ff95f01926ab748c65beb23fc55f2f178e7a24a9"
-  integrity sha512-QckB9OVqr2oybjIrbMI99uF+b9+iTja5weFe0ePbqLb5BHqXOJUO1SG6kDj/1WtWPRIBr51N153AEq8m7HuIaA==
+  version "1.4.314"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.314.tgz#33e4ad7a2ca2ddbe2e113874cc0c0e2a00cb46bf"
+  integrity sha512-+3RmNVx9hZLlc0gW//4yep0K5SYKmIvB5DXg1Yg6varsuAHlHwTeqeygfS8DWwLCsNOWrgj+p9qgM5WYjw1lXQ==
 
 emittery@^1.0.1:
   version "1.0.1"
@@ -5585,9 +5585,9 @@ ipaddr.js@^2.0.1:
   integrity sha512-1qTgH9NG+IIJ4yfKs2e6Pp1bZg8wbDbKHT21HrLIeYBTRLgMYKnMTPAuI3Lcs61nfx5h1xlXnbJtH1kX5/d/ng==
 
 irregular-plurals@^3.2.0, irregular-plurals@^3.3.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/irregular-plurals/-/irregular-plurals-3.4.0.tgz#4be22a18af7c428e6480163d0de555e343b876db"
-  integrity sha512-YXxECO/W6N9aMBVKMKKZ8TXESgq7EFrp3emCGGUcrYY1cgJIeZjoB75MTu8qi+NAKntS9NwPU8VdcQ3r6E6aWQ==
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/irregular-plurals/-/irregular-plurals-3.4.1.tgz#1ef8a7200db56ee79323c0b26e11620c553fd1a5"
+  integrity sha512-JR7VL+1Kd9z79bE+2uSgifpzrTwLWmTvyeUewhxZCHVtpPImAsLk4adfRxg86uvdsJ8etYYrpzN7vRT30gGnOA==
 
 is-absolute@^1.0.0:
   version "1.0.0"
@@ -8603,9 +8603,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1043.0:
-  version "1.1109.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1109.0.tgz#d7f192a0e16c7d493c34464ccfdb1ad74bece4f1"
-  integrity sha512-sBcibkAfcq6nXr6t0GieDjdc8kQfEf429+M1VKavGfLaJPQNIqSjtOhQJ5FcZqaB/mCWa1szektkHeyAiB4m9A==
+  version "1.1110.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1110.0.tgz#7ae0204a3f370247a59eb309083a26068ff557a4"
+  integrity sha512-rmyaxtEesqEPQOLeWcX7R9duOxNUKfP1ypX6/XaXxQRduvj7S+P6qXCIpZuJIcR3fnnN/jNbvY6WR+sdc2uqxA==
 
 sockjs@^0.3.24:
   version "0.3.24"
