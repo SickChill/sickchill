@@ -33,7 +33,6 @@ class UpdateManager(object):
         self.session = helpers.make_session()
 
     def run(self, force=False):
-
         self.amActive = True
 
         if self.updater:
@@ -113,7 +112,7 @@ class UpdateManager(object):
         ]
         target = os.path.join(backup_dir, "sickchill-" + time.strftime("%Y%m%d%H%M%S") + ".zip")
 
-        for (path, dirs, files) in os.walk(settings.CACHE_DIR):
+        for path, dirs, files in os.walk(settings.CACHE_DIR):
             for dirname in dirs:
                 if path == settings.CACHE_DIR and dirname not in ["images"]:
                     dirs.remove(dirname)

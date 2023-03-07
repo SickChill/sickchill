@@ -15,7 +15,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("KickAssTorrents")
 
         self.public = True
@@ -54,7 +53,6 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
-
                 # search_params["q"] = (search_string, None)[mode == "RSS"]
                 search_params["field"] = ("seeders", "time_add")[mode == "RSS"]
 

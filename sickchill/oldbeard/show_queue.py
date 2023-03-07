@@ -80,7 +80,6 @@ class ShowQueue(generic_queue.GenericQueue):
         return {x for x in self.queue + [self.currentItem] if x and x.is_loading}
 
     def update_show(self, show, force=False):
-
         if self.is_being_added(show):
             raise CantUpdateShowException(f"{show.name} is still being added, wait until it is finished before you update.")
 
@@ -97,7 +96,6 @@ class ShowQueue(generic_queue.GenericQueue):
         return queue_item_obj
 
     def refresh_show(self, show, force=False):
-
         if self.is_being_refreshed(show) and not force:
             raise CantRefreshShowException("This show is already being refreshed, not refreshing again.")
 
@@ -149,7 +147,6 @@ class ShowQueue(generic_queue.GenericQueue):
         default_status_after=None,
         root_dir=None,
     ):
-
         if lang is None:
             lang = settings.INDEXER_DEFAULT_LANGUAGE
 
@@ -270,7 +267,6 @@ class QueueItemAdd(ShowQueueItem):
         default_status_after,
         root_dir,
     ):
-
         super(QueueItemAdd, self).__init__(ShowQueueActions.ADD, None)
 
         self.showDir = showDir
@@ -336,7 +332,6 @@ class QueueItemAdd(ShowQueueItem):
         )
 
     def run(self):
-
         super(QueueItemAdd, self).run()
 
         logger.info(
@@ -568,7 +563,6 @@ class QueueItemRefresh(ShowQueueItem):
         self.force = force
 
     def run(self):
-
         super(QueueItemRefresh, self).run()
 
         logger.info(f"Performing refresh on {self.show.name}")
@@ -591,7 +585,6 @@ class QueueItemRename(ShowQueueItem):
         super(QueueItemRename, self).__init__(ShowQueueActions.RENAME, show)
 
     def run(self):
-
         super(QueueItemRename, self).run()
 
         logger.info(f"Performing rename on {self.show.name}")
@@ -647,7 +640,6 @@ class QueueItemUpdate(ShowQueueItem):
         self.priority = generic_queue.QueuePriorities.HIGH
 
     def run(self):
-
         super(QueueItemUpdate, self).run()
 
         logger.debug(f"Beginning update of {self.show.name}")

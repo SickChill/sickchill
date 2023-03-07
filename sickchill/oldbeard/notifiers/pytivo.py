@@ -25,7 +25,6 @@ class Notifier(object):
 
     @staticmethod
     def update_library(ep_obj):
-
         # Values from config
 
         if not settings.USE_PYTIVO:

@@ -97,7 +97,6 @@ class SearchQueue(generic_queue.GenericQueue):
         return length
 
     def add_item(self, item):
-
         add_item = False
         if isinstance(item, DailySearchQueueItem):
             # daily searches

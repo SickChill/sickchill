@@ -12,7 +12,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("HDTorrents")
 
         self.username = None
@@ -37,7 +36,6 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll HDTorrents every 30 minutes max
 
     def _check_auth(self):
-
         if not self.username or not self.password:
             logger.warning("Invalid username or password. Check your settings")
 
@@ -69,7 +67,6 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
-
                 if mode != "RSS":
                     search_url = self.urls["search"] % (quote_plus(search_string), self.categories)
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))

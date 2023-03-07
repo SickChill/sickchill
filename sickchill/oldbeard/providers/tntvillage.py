@@ -41,7 +41,6 @@ category_excluded = {
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("TNTVillage")
 
         self._uid = None
@@ -92,7 +91,6 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll TNTVillage every 30 minutes max
 
     def _check_auth(self):
-
         if not self.username or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
@@ -118,7 +116,6 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _reverseQuality(quality):
-
         quality_string = ""
 
         if quality == Quality.SDTV:
@@ -196,7 +193,6 @@ class Provider(TorrentProvider):
             return Quality.UNKNOWN
 
     def _is_italian(self, torrent_rows):
-
         name = str(torrent_rows("td")[1].find("b").find("span"))
         if not name or name == "None":
             return False
@@ -221,7 +217,6 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _is_english(torrent_rows):
-
         name = str(torrent_rows("td")[1].find("b").find("span"))
         if not name or name == "None":
             return False
@@ -235,7 +230,6 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _is_season_pack(name):
-
         try:
             parse_result = NameParser(tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
@@ -259,7 +253,6 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in search_params[mode]:
-
                 if mode == "RSS":
                     self.page = 2
 
@@ -304,7 +297,6 @@ class Provider(TorrentProvider):
                                 last_page = 1
 
                             for result in torrent_table("tr")[2:]:
-
                                 try:
                                     link = result.find("td").find("a")
                                     title = link.string

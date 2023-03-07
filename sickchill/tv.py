@@ -199,14 +199,12 @@ class TVShow(object):
     location = property(_getLocation, _setLocation)
 
     def flushEpisodes(self):
-
         for curSeason in self.episodes:
             self.episodes[curSeason].clear()
 
         self.episodes.clear()
 
     def getAllEpisodes(self, season=None, has_location=False):
-
         # detect multi-episodes
         sql_selection = "SELECT season, episode, "
         sql_selection += "(SELECT COUNT (*) FROM tv_episodes WHERE showid = tve.showid "
@@ -335,7 +333,6 @@ class TVShow(object):
         return False
 
     def writeShowNFO(self):
-
         result = False
 
         if not os.path.isdir(self._location):
@@ -349,7 +346,6 @@ class TVShow(object):
         return result
 
     def writeMetadata(self, show_only=False):
-
         if not os.path.isdir(self._location):
             logger.info(f"{self.indexerid}: Show dir doesn't exist, skipping NFO generation")
             return
@@ -362,7 +358,6 @@ class TVShow(object):
             self.writeEpisodeNFOs()
 
     def writeEpisodeNFOs(self):
-
         if not os.path.isdir(self._location):
             logger.info(f"{self.indexerid}: Show dir doesn't exist, skipping NFO generation")
             return
@@ -381,7 +376,6 @@ class TVShow(object):
             curEp.createMetaFiles()
 
     def updateMetadata(self):
-
         if not os.path.isdir(self._location):
             logger.info(f"{self.indexerid}: Show dir doesn't exist, skipping NFO generation")
             return
@@ -456,7 +450,6 @@ class TVShow(object):
             main_db_con.mass_action(sql_l)
 
     def loadEpisodesFromDB(self):
-
         logger.debug("Loading all episodes from the database")
         scannedEps = {}
 
@@ -472,7 +465,6 @@ class TVShow(object):
         curShowName = None
 
         for curResult in sql_results:
-
             curSeason = int(curResult["season"])
             curEpisode = int(curResult["episode"])
             curShowid = int(curResult["showid"])
@@ -549,7 +541,6 @@ class TVShow(object):
         season_posters_result = season_banners_result = season_all_poster_result = season_all_banner_result = False
 
         for cur_provider in settings.metadata_provider_dict.values():
-
             fanart_result = cur_provider.create_fanart(self) or fanart_result
             poster_result = cur_provider.create_poster(self) or poster_result
             banner_result = cur_provider.create_banner(self) or banner_result
@@ -1005,7 +996,6 @@ class TVShow(object):
         settings.IMAGE_CACHE.fill_cache(self)
 
     def refreshDir(self):
-
         if not os.path.isdir(self._location) and not settings.CREATE_MISSING_SHOW_DIRS:
             logger.info(
                 "Show dir does not exist, and `create missing show dirs` is disabled. Skipping refresh (statuses will not be updated): {}".format(
@@ -1039,13 +1029,11 @@ class TVShow(object):
 
             # if the path doesn't exist or if it's not in our show dir
             if not os.path.isfile(curLoc) or not os.path.normpath(curLoc).startswith(os.path.normpath(self._location)):
-
                 # check if downloaded files still exist, update our data if this has changed
                 if not settings.SKIP_REMOVED_FILES:
                     with curEp.lock:
                         # if it used to have a file associated with it and it doesn't anymore then set it to oldbeard.EP_DEFAULT_DELETED_STATUS
                         if curEp.status in Quality.DOWNLOADED:
-
                             if settings.EP_DEFAULT_DELETED_STATUS == ARCHIVED:
                                 oldStatus_, oldQuality = Quality.splitCompositeStatus(curEp.status)
                                 new_status = Quality.compositeStatus(ARCHIVED, oldQuality)
@@ -1058,7 +1046,7 @@ class TVShow(object):
                                 )
                             )
                             curEp.status = new_status
-                            curEp.subtitles = list()
+                            curEp.subtitles = []
                             curEp.subtitles_searchcount = 0
                             curEp.subtitles_lastsearch = str(datetime.datetime.min)
                         curEp.location = ""
@@ -1096,7 +1084,6 @@ class TVShow(object):
             logger.error(traceback.format_exc())
 
     def saveToDB(self, forceSave=False):
-
         if not self.dirty and not forceSave:
             return
 
@@ -1171,7 +1158,6 @@ class TVShow(object):
         return ", ".join([Quality.qualityStrings[quality] for quality in qualities or [] if quality and quality in Quality.qualityStrings]) or "None"
 
     def wantEpisode(self, season, episode, quality, manualSearch=False, downCurQuality=False):
-
         allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
         logger.debug(
             f"Any,Best = [ {self.qualitiesToString(allowed_qualities)} ] [ {self.qualitiesToString(preferred_qualities)} ]"
@@ -1432,7 +1418,6 @@ class TVEpisode(object):
         return new_subtitles
 
     def checkForMetaFiles(self):
-
         oldhasnfo = self.hasnfo
         oldhastbn = self.hastbn
 
@@ -1461,7 +1446,6 @@ class TVEpisode(object):
         return oldhasnfo != self.hasnfo or oldhastbn != self.hastbn
 
     def specifyEpisode(self, season, episode):
-
         sql_results = self.loadFromDB(season, episode)
 
         if not sql_results:
@@ -1484,7 +1468,6 @@ class TVEpisode(object):
                         raise EpisodeNotFoundException("Couldn't find episode {ep}".format(ep=episode_num(season, episode)))
 
     def loadFromDB(self, season, episode):
-
         main_db_con = db.DBConnection()
         sql = "SELECT * FROM tv_episodes JOIN tv_shows WHERE showid = indexer_id and showid = ? AND season = ? AND episode = ?"
         sql_results = main_db_con.select(sql, [self.show.indexerid, season, episode])
@@ -1556,7 +1539,6 @@ class TVEpisode(object):
             return True
 
     def loadFromIndexer(self, season=None, episode=None):
-
         myEp = self.idxr.episode(self.show, season or self.season, episode or self.episode)
         if not myEp:
             if self.name:
@@ -1675,7 +1657,6 @@ class TVEpisode(object):
             self.status = UNKNOWN
 
     def loadFromNFO(self, location):
-
         if not os.path.isdir(self.show._location):
             logger.info(f"{self.show.indexerid}: The show dir is missing, not bothering to try loading the episode NFO")
             return
@@ -1685,7 +1666,6 @@ class TVEpisode(object):
         self.location = location
 
         if self.location != "":
-
             if self.status == UNKNOWN and is_media_file(self.location):
                 logger.debug(f"7 Status changes from {self.status} to {Quality.statusFromName(self.location, anime=self.show.is_anime)}")
                 self.status = Quality.statusFromName(self.location, anime=self.show.is_anime)
@@ -1751,7 +1731,6 @@ class TVEpisode(object):
                 self.hastbn = False
 
     def __str__(self):
-
         return "\n".join(
             [
                 f"{self.show.name} - S{self.season}E{self.episode} - {self.name}",
@@ -1768,7 +1747,6 @@ class TVEpisode(object):
         )
 
     def createMetaFiles(self):
-
         if not os.path.isdir(self.show._location):
             logger.info(f"{self.show.indexerid}: The show dir is missing, not bothering to try to create metadata")
             return
@@ -1780,7 +1758,6 @@ class TVEpisode(object):
             self.saveToDB()
 
     def createNFO(self):
-
         result = False
 
         for cur_provider in settings.metadata_provider_dict.values():
@@ -1790,7 +1767,6 @@ class TVEpisode(object):
         return result
 
     def createThumbnail(self):
-
         result = False
 
         for cur_provider in settings.metadata_provider_dict.values():
@@ -1799,7 +1775,6 @@ class TVEpisode(object):
         return result
 
     def deleteEpisode(self):
-
         logger.debug(_("Deleting {show} {ep} from the DB").format(show=self.show.name, ep=episode_num(self.season, self.episode)))
 
         # remove myself from the show dictionary
@@ -2300,7 +2275,6 @@ class TVEpisode(object):
             # start with the ep string, eg. E03
             ep_string = self._format_string(ep_format.upper(), replace_map)
             for other_ep in self.relatedEps:
-
                 # for limited extend we only append the last ep
                 if multi in (NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED) and other_ep != self.relatedEps[-1]:
                     continue

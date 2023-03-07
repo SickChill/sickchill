@@ -73,7 +73,7 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.items():
+            for name, result in test.items():
                 assert GenericProvider(name).get_id() == result
 
     def test_image_name(self):
@@ -135,7 +135,7 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.items():
+            for name, result in test.items():
                 assert GenericProvider(name).image_name() == result
 
     def test_is_active(self):
@@ -209,7 +209,7 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (name, result) in test.items():
+            for name, result in test.items():
                 assert GenericProvider.make_id(name) == result
 
     def test_seed_ratio(self):
@@ -256,7 +256,7 @@ class GenericProviderTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (search_params, result) in test.items():
+            for search_params, result in test.items():
                 assert GenericProvider("Test Provider").search(search_params) == result
 
     def test__get_size(self):
@@ -295,10 +295,10 @@ class GenericProviderTests(unittest.TestCase):
             len(unicode_items_list), len(unicode_results_list)
         )
 
-        for (index, item) in enumerate(items_list):
+        for index, item in enumerate(items_list):
             assert GenericProvider("Test Provider")._get_title_and_url(item) == results_list[index]
 
-        for (index, item) in enumerate(unicode_items_list):
+        for index, item in enumerate(unicode_items_list):
             assert GenericProvider("Test Provider")._get_title_and_url(item) == unicode_results_list[index]
 
     def test__verify_download(self):

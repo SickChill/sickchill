@@ -80,7 +80,6 @@ class Notifier(object):
         trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
         if settings.USE_TRAKT:
-
             data = {}
             try:
                 # URL parameters
@@ -135,7 +134,6 @@ class Notifier(object):
 
     @staticmethod
     def trakt_show_data_generate(data):
-
         showList = []
         # TODO: is indexer and indexerid swapped here or in traktChecker:591? !Important
         for indexer, indexerid, title, year in data:
@@ -148,7 +146,6 @@ class Notifier(object):
 
     @staticmethod
     def trakt_episode_data_generate(data):
-
         # Find how many unique season we have
         uniqueSeasons = []
         for season, episode in data:

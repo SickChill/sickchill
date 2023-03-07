@@ -36,7 +36,6 @@ class WDTVMetadata(generic.GenericMetadata):
         season_all_poster=False,
         season_all_banner=False,
     ):
-
         super().__init__(
             show_metadata, episode_metadata, fanart, poster, banner, episode_thumbnails, season_posters, season_banners, season_all_poster, season_all_banner
         )

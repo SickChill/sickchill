@@ -58,7 +58,6 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _reverseQuality(quality):
-
         quality_string = ""
 
         if quality == Quality.SDTV:
@@ -121,7 +120,6 @@ class Provider(TorrentProvider):
             return Quality.UNKNOWN
 
     def _is_italian(self, name):
-
         if not name or name == "None":
             return False
 
@@ -145,7 +143,6 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _is_english(name):
-
         if not name or name == "None":
             return False
 
@@ -158,7 +155,6 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _is_season_pack(name):
-
         try:
             parse_result = NameParser(tryIndexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:

@@ -62,7 +62,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (http_code, result) in test.items():
+            for http_code, result in test.items():
                 assert http_code_description(http_code) == result
 
     def test_is_sync_file(self):
@@ -108,7 +108,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in tests.items():
+            for filename, result in tests.items():
                 if isinstance(filename, (PathLike, str)):
                     assert is_sync_file(filename) == result, (filename, result)
                 else:
@@ -143,7 +143,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in tests.items():
+            for filename, result in tests.items():
                 if isinstance(filename, (PathLike, str)):
                     assert is_torrent_or_nzb_file(filename) == result, (filename, result)
                 else:
@@ -259,7 +259,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (size, result) in tests.items():
+            for size, result in tests.items():
                 assert pretty_file_size(size) == result
 
     def test_remove_extension(self):
@@ -300,7 +300,7 @@ class CommonTests(unittest.TestCase):
             "file.name.avi": "file.name",
         }
         for tests in test_cases, unicode_test_cases:
-            for (name, result) in tests.items():
+            for name, result in tests.items():
                 if isinstance(name, (PathLike, str)):
                     assert remove_extension(name) == result, (name, result)
                 else:
@@ -380,7 +380,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for ((filename, extension), result) in tests.items():
+            for (filename, extension), result in tests.items():
                 if isinstance(filename, (PathLike, str)) and isinstance(extension, (PathLike, str)):
                     assert replace_extension(filename, extension) == result, repr(((filename, extension), result))
                 else:
@@ -414,7 +414,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (filename, result) in tests.items():
+            for filename, result in tests.items():
                 assert sanitize_filename(filename) == result
 
     def test_try_int(self):
@@ -444,7 +444,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (candidate, result) in test.items():
+            for candidate, result in test.items():
                 assert try_int(candidate) == result
 
     def test_try_int_with_default(self):
@@ -475,7 +475,7 @@ class CommonTests(unittest.TestCase):
         }
 
         for test in test_cases, unicode_test_cases:
-            for (candidate, result) in test.items():
+            for candidate, result in test.items():
                 assert try_int(candidate, default_value) == result
 
     def test_convert_size(self):

@@ -428,7 +428,6 @@ class AddShows(Home):
         default_season_folders=None,
         configure_show_options=None,
     ):
-
         if indexer != "TVDB":
             indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not indexer_id:

@@ -11,12 +11,10 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class Client(GenericClient):
     def __init__(self, host: str = None, username: str = None, password: str = None):
-
         super().__init__("Transmission", host, username, password)
         self.url = "/".join((self.host.rstrip("/"), settings.TORRENT_RPCURL.strip("/"), "rpc"))
 
     def _get_auth(self):
-
         post_data = json.dumps(
             {
                 "method": "session-get",

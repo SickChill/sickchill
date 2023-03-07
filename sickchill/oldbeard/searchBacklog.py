@@ -20,7 +20,6 @@ class BacklogSearchScheduler(scheduler.Scheduler):
 
 class BacklogSearcher(object):
     def __init__(self):
-
         self._lastBacklog = self._get_lastBacklog()
         self.cycleTime = settings.BACKLOG_FREQUENCY / 60 / 24
         self.lock = threading.Lock()
@@ -46,7 +45,6 @@ class BacklogSearcher(object):
         return (not self.amWaiting) and self.amActive
 
     def searchBacklog(self, which_shows=None):
-
         if self.amActive:
             logger.debug("Backlog is still running, not starting it again")
             return
@@ -70,7 +68,6 @@ class BacklogSearcher(object):
 
         # go through non air-by-date shows and see if they need any episodes
         for curShow in show_list:
-
             if curShow.paused:
                 continue
 
@@ -94,7 +91,6 @@ class BacklogSearcher(object):
         self._resetPI()
 
     def _get_lastBacklog(self):
-
         logger.debug("Retrieving the last check time from the DB")
 
         main_db_con = db.DBConnection()
@@ -154,7 +150,6 @@ class BacklogSearcher(object):
 
     @staticmethod
     def _set_lastBacklog(when):
-
         logger.debug(f"Setting the last backlog in the DB to {when}")
 
         main_db_con = db.DBConnection()

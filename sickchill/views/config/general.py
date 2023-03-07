@@ -45,7 +45,6 @@ class ConfigGeneral(Config):
         scene=False,
         defaultStatusAfter=WANTED,
     ):
-
         if anyQualities:
             anyQualities = anyQualities.split(",")
         else:
@@ -141,7 +140,6 @@ class ConfigGeneral(Config):
         ended_shows_update_interval=None,
         log_dir=None,
     ):
-
         results = []
 
         if gui_language != settings.GUI_LANG:

@@ -12,7 +12,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("EliteTorrent")
 
         self.onlyspasearch = None
@@ -142,7 +141,6 @@ class Provider(TorrentProvider):
 
     @staticmethod
     def _processTitle(title):
-
         # Quality, if no literal is defined it's HDTV
         if "calidad" not in title:
             title += " HDTV x264"

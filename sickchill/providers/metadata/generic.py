@@ -44,7 +44,6 @@ class GenericMetadata(object):
         season_all_poster=False,
         season_all_banner=False,
     ):
-
         self.name = "Generic"
 
         self._ep_nfo_extension = "nfo"

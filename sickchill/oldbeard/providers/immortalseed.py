@@ -13,7 +13,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         # Provider Init
         super().__init__("Immortalseed")
 
@@ -42,7 +41,6 @@ class Provider(TorrentProvider):
         self.cache = ImmortalseedCache(self, min_time=20)
 
     def _check_auth(self):
-
         if not self.username or not self.password:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 

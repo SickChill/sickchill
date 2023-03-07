@@ -32,7 +32,7 @@ class ComingEpisodesTests(unittest.TestCase):
             len(categories_list), len(results_list)
         )
 
-        for (index, categories) in enumerate(categories_list):
+        for index, categories in enumerate(categories_list):
             assert ComingEpisodes._get_categories(categories) == results_list[index]
 
     def test_get_categories_map(self):
@@ -46,7 +46,7 @@ class ComingEpisodesTests(unittest.TestCase):
             len(categories_list), len(results_list)
         )
 
-        for (index, categories) in enumerate(categories_list):
+        for index, categories in enumerate(categories_list):
             assert ComingEpisodes._get_categories_map(categories) == results_list[index]
 
     def test_get_sort(self):
@@ -77,7 +77,7 @@ class ComingEpisodesTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (sort, result) in tests.items():
+            for sort, result in tests.items():
                 assert ComingEpisodes._get_sort(sort) == result
 
 

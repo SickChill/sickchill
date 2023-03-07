@@ -11,7 +11,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class TorrentRssProvider(TorrentProvider):
     def __init__(self, name, url, cookies="", titleTAG="title", search_mode="eponly", search_fallback=False, enable_daily=False, enable_backlog=False):
-
         super().__init__(name)
 
         self.cache = TorrentRssCache(self, min_time=15)
@@ -61,7 +60,6 @@ class TorrentRssProvider(TorrentProvider):
         return "torrentrss.png"
 
     def _get_title_and_url(self, item):
-
         title = item.get(self.titleTAG, "").replace(" ", ".")
 
         attempt_list = [lambda: item.get("torrent_magneturi"), lambda: item.enclosures[0].href, lambda: item.get("link")]
@@ -120,7 +118,6 @@ class TorrentRssProvider(TorrentProvider):
         return new_provider
 
     def validateRSS(self):
-
         try:
             if self.cookies:
                 success, status = self.add_cookies_from_ui()

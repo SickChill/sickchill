@@ -220,7 +220,6 @@ class GenericProvider(object):
                             [ep for ep in episodes if ep.show.is_anime and ep.absolute_number in parse_result.ab_episode_numbers],
                         ]
                     ):
-
                         logger.info(f"The result {title} doesn't seem to match an episode that we are currently trying to snatch, skipping it")
                         skip_release = True
 
@@ -308,7 +307,6 @@ class GenericProvider(object):
                 results[episode_number].append(result)
 
         if cl:
-
             # Access to a protected member of a client class
             cache_db = self.cache._get_db()
             cache_db.mass_upsert("results", cl)

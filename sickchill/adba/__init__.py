@@ -121,7 +121,6 @@ class Connection(threading.Thread):
                 self.handle(response.req, response.req.callback)
 
     def handle(self, command, callback):
-
         with self.lock:
             if self.counterAge < (time() - 120):  # the last request was older then 2 min reset delay and counter
                 self.counter = 0

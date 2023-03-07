@@ -156,11 +156,9 @@ def split_result(obj):
 
         # make sure the result is sane
         if (parsed_obj.season_number != season) or (parsed_obj.season_number is None and season != 1):
-
             logger.warning("Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to belong to the same season, ignoring it")
             continue
         elif not parsed_obj.episode_numbers:
-
             logger.warning("Found " + new_nzb + " inside " + obj.name + " but it doesn't seem to be a valid episode NZB, ignoring it")
             continue
 

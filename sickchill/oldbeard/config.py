@@ -726,7 +726,6 @@ def check_setting_int(config, cfg_name, item_name, def_val=0, min_val=None, max_
         config[cfg_name][item_name] = my_val
 
     if not silent:
-
         logger.debug(f"{item_name} -> {my_val}")
 
     return my_val
@@ -985,7 +984,6 @@ class ConfigMigrator(object):
 
         # if any shows had season folders on then prepend season folder to the pattern
         if season_folder_shows:
-
             old_season_format = check_setting_str(self.config_obj, "General", "season_folders_format", "Season %02d")
 
             if old_season_format:
@@ -1002,7 +1000,6 @@ class ConfigMigrator(object):
 
         # if no shows had it on then don't flatten any shows and don't put season folders in the config
         else:
-
             logger.info("No shows were using season folders before, so I'm disabling flattening on all shows")
 
             # don't flatten any shows at all
@@ -1011,7 +1008,6 @@ class ConfigMigrator(object):
         settings.NAMING_FORCE_FOLDERS = naming.check_force_season_folders()
 
     def _name_to_pattern(self, abd=False):
-
         # get the old settings from the file
         use_periods = check_setting_bool(self.config_obj, "General", "naming_use_periods")
         ep_type = check_setting_int(self.config_obj, "General", "naming_ep_type")
@@ -1163,7 +1159,6 @@ class ConfigMigrator(object):
                 logger.info("Upgrading " + metadata_name + " metadata, new value: " + metadata)
 
             elif len(cur_metadata) == 10:
-
                 metadata = "|".join(cur_metadata)
                 logger.info("Keeping " + metadata_name + " metadata, value: " + metadata)
 

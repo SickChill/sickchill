@@ -146,7 +146,6 @@ def http_code_description(http_code):
 
 
 def get_extension(path: Union[Path, PathLike, str] = None, lower: bool = False) -> str:
-
     path = Path(path)
     result = path.suffix.lstrip(".")
     if lower:

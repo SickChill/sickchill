@@ -54,7 +54,6 @@ class Notifier(object):
         )
 
     def _sendPushbullet(self, pushbullet_api=None, pushbullet_device=None, pushbullet_channel=None, event=None, message=None, link=None, force=False):
-
         if not (settings.USE_PUSHBULLET or force):
             return False
 

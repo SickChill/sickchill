@@ -8,7 +8,6 @@ from sickchill.oldbeard import common
 
 
 class Notifier(object):
-
     SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/"
     SLACK_ICON_URL = "https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png"
 

@@ -274,7 +274,6 @@ def download_subtitles(episode, force_lang=None):
         )
 
         if settings.SUBTITLES_EXTRA_SCRIPTS and is_media_file(video_path) and not settings.EMBEDDED_SUBTITLES_ALL:
-
             run_subs_extra_scripts(episode, subtitle, video, single=not settings.SUBTITLES_MULTI)
 
     new_subtitles = sorted({subtitle.language.opensubtitles for subtitle in found_subtitles})

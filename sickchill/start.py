@@ -45,7 +45,6 @@ from .system.Shutdown import Shutdown
 
 def initialize(consoleLogging=True):
     with settings.INIT_LOCK:
-
         if settings.__INITIALIZED__:
             return False
 
@@ -850,7 +849,6 @@ def initialize(consoleLogging=True):
             (settings.METADATA_TIVO, metadata.tivo),
             (settings.METADATA_MEDE8ER, metadata.mede8er),
         ]:
-
             cur_metadata_config, cur_metadata_module = cur_metadata_tuple
             cur_metadata_class = cur_metadata_module.metadata_class()
             cur_metadata_class.set_config(cur_metadata_config)
@@ -1637,7 +1635,6 @@ def save_config():
 
 
 def launchBrowser(protocol="http", startPort=None, web_root="/"):
-
     try:
         import webbrowser
     except ImportError:

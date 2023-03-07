@@ -12,7 +12,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         # Provider Init
         super().__init__("YggTorrent")
 
@@ -95,7 +94,6 @@ class Provider(TorrentProvider):
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
-
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
                 # search string needs to be normalized, single quotes are apparently not allowed on the site

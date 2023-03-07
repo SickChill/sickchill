@@ -78,7 +78,6 @@ class Client(GenericClient, DelugeBase):
 
         if label:
             try:
-
                 if "label" not in [x.decode().lower() for x in self.client.core.get_available_plugins()]:
                     logger.debug(f"{self.name}: label plugin not detected")
                     return False
