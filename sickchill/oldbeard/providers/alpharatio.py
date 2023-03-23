@@ -12,7 +12,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         # Provider Init
         super().__init__("AlphaRatio")
 

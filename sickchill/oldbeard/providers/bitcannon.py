@@ -10,7 +10,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("BitCannon")
 
         self.minseed = 0
@@ -97,7 +96,6 @@ class Provider(TorrentProvider):
     @staticmethod
     def _check_auth_from_data(data):
         if not all([isinstance(data, dict), data.pop("status", 200) != 401, data.pop("message", "") != "Invalid API key"]):
-
             logger.warning("Invalid api key. Check your settings")
             return False
 

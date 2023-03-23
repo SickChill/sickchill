@@ -16,7 +16,6 @@ class Client(GenericClient, DelugeBase):
         self.session.headers.update({"Content-Type": "application/json"})
 
     def _get_auth(self):
-
         post_data = json.dumps({"method": "auth.login", "params": [self.password], "id": 1})
 
         try:
@@ -94,7 +93,6 @@ class Client(GenericClient, DelugeBase):
         return self.response.json()["result"]
 
     def _set_torrent_label(self, result):
-
         label = settings.TORRENT_LABEL.lower()
         if result.show.is_anime:
             label = settings.TORRENT_LABEL_ANIME.lower()

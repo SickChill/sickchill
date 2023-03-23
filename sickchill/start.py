@@ -45,7 +45,6 @@ from .system.Shutdown import Shutdown
 
 def initialize(consoleLogging=True):
     with settings.INIT_LOCK:
-
         if settings.__INITIALIZED__:
             return False
 
@@ -262,6 +261,9 @@ def initialize(consoleLogging=True):
 
         settings.ANIME_DEFAULT = check_setting_bool(settings.CFG, "General", "anime_default")
         settings.SCENE_DEFAULT = check_setting_bool(settings.CFG, "General", "scene_default")
+
+        settings.WHITELIST_DEFAULT = check_setting_str(settings.CFG, "General", "whitelist_default")
+        settings.BLACKLIST_DEFAULT = check_setting_str(settings.CFG, "General", "blacklist_default")
 
         settings.PROVIDER_ORDER = check_setting_str(settings.CFG, "General", "provider_order").split()
 
@@ -847,7 +849,6 @@ def initialize(consoleLogging=True):
             (settings.METADATA_TIVO, metadata.tivo),
             (settings.METADATA_MEDE8ER, metadata.mede8er),
         ]:
-
             cur_metadata_config, cur_metadata_module = cur_metadata_tuple
             cur_metadata_class = cur_metadata_module.metadata_class()
             cur_metadata_class.set_config(cur_metadata_config)
@@ -1186,6 +1187,8 @@ def save_config():
                 "indexer_timeout": int(settings.INDEXER_TIMEOUT),
                 "anime_default": int(settings.ANIME_DEFAULT),
                 "scene_default": int(settings.SCENE_DEFAULT),
+                "whitelist_default": settings.WHITELIST_DEFAULT,
+                "blacklist_default": settings.BLACKLIST_DEFAULT,
                 "provider_order": " ".join(settings.PROVIDER_ORDER),
                 "version_notify": int(settings.VERSION_NOTIFY),
                 "auto_update": int(settings.AUTO_UPDATE),
@@ -1632,7 +1635,6 @@ def save_config():
 
 
 def launchBrowser(protocol="http", startPort=None, web_root="/"):
-
     try:
         import webbrowser
     except ImportError:

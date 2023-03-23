@@ -12,7 +12,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         # Provider Init
         super().__init__("TorrentDay")
 
@@ -99,7 +98,6 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in search_params[mode]:
-
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
@@ -118,7 +116,6 @@ class Provider(TorrentProvider):
                     continue
 
                 for torrent in torrents:
-
                     title = re.sub(r"\[.*=.*\].*\[/.*\]", "", torrent["name"]) if torrent["name"] else None
                     torrent_url = urljoin(download_url, "{0}/{1}.torrent".format(torrent["t"], torrent["name"])) if torrent["t"] and torrent["name"] else None
                     if not all([title, torrent_url]):

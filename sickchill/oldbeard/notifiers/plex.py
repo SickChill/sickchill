@@ -115,7 +115,6 @@ class Notifier(object):
         hosts_failed = set()
 
         for cur_host in host_list:
-
             url = "http{0}://{1}/library/sections".format(("", "s")[settings.PLEX_SERVER_HTTPS], cur_host)
             try:
                 xml_response = getURL(url, headers=self.headers, session=self.session, returns="text", verify=False, allow_proxy=False)
@@ -145,7 +144,6 @@ class Notifier(object):
 
             for section in sections:
                 if "show" == section.attrib["type"]:
-
                     keyed_host = [(str(section.attrib["key"]), cur_host)]
                     hosts_all.update(keyed_host)
                     if not file_location:
@@ -170,7 +168,6 @@ class Notifier(object):
 
         hosts_try = (hosts_match.copy(), hosts_all.copy())[not len(hosts_match)]
         for section_key, cur_host in hosts_try.items():
-
             url = "http{0}://{1}/library/sections/{2}/refresh".format(("", "s")[settings.PLEX_SERVER_HTTPS], cur_host, section_key)
             try:
                 getURL(url, headers=self.headers, session=self.session, returns="text", verify=False, allow_proxy=False)

@@ -31,7 +31,6 @@ class DBConnection(object):
     MAX_ATTEMPTS = 5
 
     def __init__(self, filename="sickchill.db", suffix=None, row_type=None):
-
         self.filename = filename
         self.suffix = suffix
         self.row_type = row_type

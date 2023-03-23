@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sickchill"
-version = "2022.10.13"
+version = "2023.1.2"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPL-3.0-or-later"
 
@@ -58,11 +58,11 @@ sickchill = "SickChill:main"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.8.0"
+black = ">=22.8,<24.0"
 coveralls = "^3.3.1"
-mock = "^4.0.3"
+mock = ">=4.0.3,<6.0.0"
 Babel = "^2.9.0"
-pytest-cov = "^3.0.0"
+pytest-cov = ">=3,<5"
 pytest-isort = "^3.0.0"
 flake8-pytest-style = "^1.5.1"
 flake8-commas = "^2.0.0"
@@ -73,10 +73,9 @@ flake9 = "^3.8.3"
 codecov = "^2.1.12"
 pytest = "^7.0.1"
 isort = "^5.10.1"
-poethepoet = "^0.16.0"
+poethepoet = ">=0.16,<0.20"
 po2json = "^0.2.2"
 bandit = "<=1.7.2"
-commitizen = "^2.35.0"
 pre-commit = "^2.20.0"
 
 [tool.poetry.group.speedups]
@@ -85,21 +84,21 @@ optional = true
 [tool.poetry.group.speedups.dependencies]
 html5lib = "^1.1"
 lxml = "^4.9.1"
-Js2Py = "^0.71"
-pymediainfo = "^5.0.3"
+Js2Py = ">=0.71,<0.75"
+pymediainfo = ">=5.0.3,<7.0.0"
 
 [tool.poetry.group.types]
 optional = true
 
 [tool.poetry.group.types.dependencies]
 types-attrs = "^19.1.0"
-types-pyOpenSSL = "^22.0.10"
+types-pyOpenSSL = ">=22.0.10,<24.0.0"
 types-python-dateutil = "^2.8.19"
-types-python-slugify = "^6.1.0"
+types-python-slugify = ">=6.1,<9.0"
 types-requests = "^2.28.11"
 types-chardet = "^5.0.4"
 types-pytz = "^2022.2.1.0"
-types-setuptools = "^65.3.0"
+types-setuptools = ">=65.3,<68.0"
 types-six = "^1.16.20"
 
 [tool.poetry.group.experimental]
@@ -119,12 +118,6 @@ experimental = ["experimental"]
 speedups = ["speedups"]
 types = ["types"]
 frontend = ["frontend"]
-
-
-[tool.commitizen]
-name = "cz_conventional_commits"
-version = "2022.10.8"
-tag_format = "$version"
 
 [build-system]
 requires = ["poetry-core>=1.2.0"]
@@ -273,7 +266,7 @@ jsonrpclib-pelix = "^0.4.2"
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
 PyGithub = "^1.54.1"
-pyOpenSSL = ">=20.0.1,<23.0.0"
+pyOpenSSL = ">=20.0.1,<24.0.0"
 python-dateutil = "^2.8.1"
 python-twitter = "^3.5"
 rarfile = "^4.0"
@@ -296,11 +289,11 @@ Send2Trash = {version = "^1.5.0", optional = true}
 deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
 new-rtorrent-python = "^1.0.1-alpha.0"
-qbittorrent-api = ">=2021.3.18,<2023.0.0"
-packaging = ">=20.9,<22.0"
+qbittorrent-api = ">=2021.3.18,<2024.0.0"
+packaging = ">=20.9,<24.0"
 timeago = "^1.0.15"
-SQLAlchemy = "^1.4.3"
-python-slugify = ">=4.0.1,<8.0.0"
+SQLAlchemy = ">=2.0.0,<3.0.0"
+python-slugify = ">=4.0.1,<9.0.0"
 guessit = "^3.3.1"
 requests = "^2.25.1"
 IMDbPY = ">=2020.09.25"

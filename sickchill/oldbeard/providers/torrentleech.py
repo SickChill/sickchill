@@ -11,7 +11,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         # Provider Init
         super().__init__("TorrentLeech")
 
@@ -70,7 +69,6 @@ class Provider(TorrentProvider):
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
-
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format(search_string))
 

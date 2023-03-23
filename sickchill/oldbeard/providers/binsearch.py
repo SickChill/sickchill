@@ -8,7 +8,6 @@ from sickchill.providers.nzb.NZBProvider import NZBProvider
 
 class Provider(NZBProvider):
     def __init__(self):
-
         super().__init__("BinSearch")
 
         self.url = "https://www.binsearch.info"

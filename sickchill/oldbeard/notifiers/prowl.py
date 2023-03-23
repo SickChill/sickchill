@@ -98,7 +98,6 @@ class Notifier(object):
 
     @staticmethod
     def _send_prowl(prowl_api=None, prowl_priority=None, event=None, message=None, force=False):
-
         if not settings.USE_PROWL and not force:
             return False
 

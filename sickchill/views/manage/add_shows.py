@@ -229,8 +229,8 @@ class AddShows(Home):
             provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name,
             provided_indexer=provided_indexer,
-            whitelist=[],
-            blacklist=[],
+            whitelist=settings.WHITELIST_DEFAULT.split(","),
+            blacklist=settings.BLACKLIST_DEFAULT.split(","),
             groups=[],
             title=_("New Show"),
             header=_("New Show"),
@@ -428,7 +428,6 @@ class AddShows(Home):
         default_season_folders=None,
         configure_show_options=None,
     ):
-
         if indexer != "TVDB":
             indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not indexer_id:

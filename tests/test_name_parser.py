@@ -187,7 +187,7 @@ class UnicodeTests(conftest.SickChillTestDBCase):
         """
         Test str
         """
-        for (name, result) in UNICODE_TEST_CASES:
+        for name, result in UNICODE_TEST_CASES:
             self._test_unicode(name, result)
 
 
@@ -261,7 +261,7 @@ class ComboTests(conftest.SickChillTestDBCase):
         """
         Perform combination tests
         """
-        for (name, result, which_regexes) in COMBINATION_TEST_CASES:
+        for name, result, which_regexes in COMBINATION_TEST_CASES:
             # Normalise the paths. Converts UNIX-style paths into Windows-style
             # paths when test is run on Windows.
             self._test_combo(os.path.normpath(name), result, which_regexes)

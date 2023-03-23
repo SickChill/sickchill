@@ -283,13 +283,11 @@ class WebRoot(WebHandler):
         return self.redirect("/schedule/")
 
     def toggleScheduleDisplayPaused(self):
-
         settings.COMING_EPS_DISPLAY_PAUSED = not settings.COMING_EPS_DISPLAY_PAUSED
 
         return self.redirect("/schedule/")
 
     def toggleScheduleDisplaySnatched(self):
-
         settings.COMING_EPS_DISPLAY_SNATCHED = not settings.COMING_EPS_DISPLAY_SNATCHED
 
         return self.redirect("/schedule/")
@@ -331,7 +329,6 @@ class WebRoot(WebHandler):
 @Route("/ui(/?.*)", name="ui")
 class UI(WebRoot):
     def locale_json(self):
-
         lang = self.get_query_argument("lang")
         """ Get /locale/{lang_code}/LC_MESSAGES/messages.json """
         locale_file = os.path.normpath(f"{locale_dir}/{lang}/LC_MESSAGES/messages.json")

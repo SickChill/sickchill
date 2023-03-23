@@ -9,7 +9,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("ncore")
         self.username = None
         self.password = None
@@ -32,7 +31,6 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self)
 
     def login(self):
-
         login_params = {
             "nev": self.username,
             "pass": self.password,

@@ -36,7 +36,6 @@ class ShowUpdater(object):
 
                     current_check = update_timestamp
                     while current_check >= last_update:
-
                         try:
                             TvdbData = sickchill.indexer[1].updates(fromTime=current_check - self.seven_days, toTime=current_check)
                             TvdbData.series()

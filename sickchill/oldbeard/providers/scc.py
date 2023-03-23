@@ -14,7 +14,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("SceneAccess")
 
         self.username = None
@@ -96,7 +95,6 @@ class Provider(TorrentProvider):
                         continue
 
                     for result in torrent_table("tr")[1:]:
-
                         try:
                             link = result.find("td", class_="ttr_name").find("a")
                             url = result.find("td", class_="td_dl").find("a")

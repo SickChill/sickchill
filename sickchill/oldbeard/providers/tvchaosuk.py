@@ -10,7 +10,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("TvChaosUK")
 
         self.username = None
@@ -61,7 +60,6 @@ class Provider(TorrentProvider):
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
-
                 if mode == "Season":
                     search_string = re.sub(r"(.*)S0?", r"\1Series ", search_string)
 

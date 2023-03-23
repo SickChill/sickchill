@@ -35,7 +35,6 @@ class TorrentBasicTests(conftest.SickChillTestDBCase):
         provider.api_key = ""
 
         if provider.custom_url:
-
             search_strings_list = provider.get_episode_search_strings(self.shows[0].episodes[0])  # [{'Episode': ['Italian Works S05E10']}]
             for search_strings in search_strings_list:
                 provider.search(search_strings)  # {'Episode': ['Italian Works S05E10']}

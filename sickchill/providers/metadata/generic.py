@@ -44,7 +44,6 @@ class GenericMetadata(object):
         season_all_poster=False,
         season_all_banner=False,
     ):
-
         self.name = "Generic"
 
         self._ep_nfo_extension = "nfo"
@@ -256,7 +255,7 @@ class GenericMetadata(object):
                 # Make it purdy
                 helpers.indentXML(root)
 
-                showXML.write(nfo_file_path, encoding="UTF-8")
+                showXML.write(nfo_file_path, encoding="UTF-8", xml_declaration=True)
                 helpers.chmodAsParent(nfo_file_path)
 
                 return True
@@ -292,11 +291,14 @@ class GenericMetadata(object):
                     try:
                         if not hasattr(ep_obj, attribute_map[attribute]):
                             continue
-
                         node = episodeXML.find(attribute)
-                        if node is None or node.text == str(getattr(ep_obj, attribute_map[attribute])):
+                        if node is None:
                             continue
 
+                        text1 = "".join(node.text.splitlines())
+                        text2 = "".join(str(getattr(ep_obj, attribute_map[attribute])).splitlines())
+                        if text1 == text2:
+                            continue
                         node.text = str(getattr(ep_obj, attribute_map[attribute]))
                         changed = True
                     except AttributeError:
@@ -310,7 +312,7 @@ class GenericMetadata(object):
                 # Make it purdy
                 helpers.indentXML(root)
 
-                episodeXML.write(nfo_file_path, encoding="UTF-8")
+                episodeXML.write(nfo_file_path, encoding="UTF-8", xml_declaration=True)
                 helpers.chmodAsParent(nfo_file_path)
 
                 return True
@@ -407,7 +409,7 @@ class GenericMetadata(object):
             logger.debug("Writing show nfo file to " + nfo_file_path)
 
             nfo_file = open(nfo_file_path, "wb")
-            data.write(nfo_file, encoding="UTF-8")
+            data.write(nfo_file, encoding="UTF-8", xml_declaration=True)
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as error:
@@ -454,7 +456,7 @@ class GenericMetadata(object):
 
             logger.debug("Writing episode nfo file to " + nfo_file_path)
             nfo_file = open(nfo_file_path, "wb")
-            data.write(nfo_file, encoding="UTF-8")
+            data.write(nfo_file, encoding="UTF-8", xml_declaration=True)
             nfo_file.close()
             helpers.chmodAsParent(nfo_file_path)
         except IOError as error:

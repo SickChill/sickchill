@@ -61,6 +61,7 @@ result_type_map = {
 
 # basically everything except RESULT_SUCCESS / success is bad
 
+
 # noinspection PyAbstractClass
 class ApiHandler(RequestHandler):
     """api class that returns json results"""
@@ -260,7 +261,6 @@ class ApiCall(ApiHandler):
 
     def return_help(self):
         for paramDict, paramType in [(self._requiredParams, "requiredParameters"), (self._optionalParams, "optionalParameters")]:
-
             if paramType in self._help:
                 for paramName in paramDict:
                     if paramName not in self._help[paramType]:
@@ -1215,7 +1215,6 @@ class CMDBacklog(ApiCall):
 
         main_db_con = db.DBConnection(row_type="dict")
         for curShow in settings.showList:
-
             show_eps = []
 
             # noinspection PyPep8
@@ -1225,7 +1224,6 @@ class CMDBacklog(ApiCall):
             )
 
             for curResult in sql_results:
-
                 cur_ep_cat = curShow.getOverview(curResult["status"])
                 if cur_ep_cat and cur_ep_cat in (Overview.WANTED, Overview.QUAL):
                     show_eps.append(curResult)
@@ -1270,7 +1268,6 @@ class CMDLogs(ApiCall):
         num_to_show = min(50, len(data))
 
         for x in reversed(data):
-
             match = re.match(regex, x)
 
             if match:

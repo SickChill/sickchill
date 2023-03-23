@@ -27,7 +27,6 @@ class ConfigProviders(Config):
 
     @staticmethod
     def canAddNewznabProvider(name):
-
         if not name:
             return json.dumps({"error": "No Provider Name specified"})
 
@@ -68,7 +67,6 @@ class ConfigProviders(Config):
 
     @staticmethod
     def deleteNewznabProvider(nnid):
-
         providerDict = {x.get_id(): x for x in settings.newznabProviderList}
         if nnid not in providerDict or providerDict[nnid].default:
             return "0"
@@ -83,7 +81,6 @@ class ConfigProviders(Config):
 
     @staticmethod
     def canAddTorrentRssProvider(name, url, cookies, titleTAG):
-
         if not name:
             return json.dumps({"error": "Invalid name specified"})
 
@@ -101,7 +98,6 @@ class ConfigProviders(Config):
 
     @staticmethod
     def deleteTorrentRssProvider(provider_id):
-
         providerDict = {x.get_id(): x for x in settings.torrentRssProviderList}
 
         if provider_id not in providerDict:
@@ -169,7 +165,6 @@ class ConfigProviders(Config):
 
         if torrentrss_string:
             for curTorrentRssProviderStr in torrentrss_string.split("!!!"):
-
                 if not curTorrentRssProviderStr:
                     continue
 

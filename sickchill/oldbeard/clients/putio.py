@@ -6,7 +6,6 @@ from sickchill.oldbeard.clients.generic import GenericClient
 
 class Client(GenericClient):
     def __init__(self, host=None, username=None, password=None):
-
         super().__init__("put.io", host, username, password)
         self.url = "https://api.put.io/login"
 

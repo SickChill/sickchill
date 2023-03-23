@@ -12,7 +12,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("HDTorrents.it")
 
         self.username = None
@@ -37,7 +36,6 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll HDTorrents every 30 minutes ma
 
     def _check_auth(self):
-
         if not self.username or not self.password:
             logger.warning("Invalid username or password. Check your settings")
 

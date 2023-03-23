@@ -110,7 +110,6 @@ def get_all_scene_exceptions(indexer_id):
         sanitized_custom_name = helpers.full_sanitizeSceneName(show.custom_name)
 
         if sanitized_name or sanitized_custom_name:
-
             if -1 not in all_exceptions_dict:
                 all_exceptions_dict[-1] = []
 
@@ -154,12 +153,10 @@ def get_scene_exception_by_name_multiple(show_name):
     all_exception_results = cache_db_con.select("SELECT show_name, indexer_id, season FROM scene_exceptions")
 
     for cur_exception in all_exception_results:
-
         cur_exception_name = cur_exception["show_name"]
         cur_indexer_id = int(cur_exception["indexer_id"])
 
         if show_name.lower() in (cur_exception_name.lower(), sickchill.oldbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace(".", " ")):
-
             logger.debug(f"Scene exception lookup got indexer id {cur_indexer_id}, using that")
 
             out.append((cur_indexer_id, int(cur_exception["season"])))

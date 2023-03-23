@@ -715,7 +715,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from OpenSSL import crypto
 
         from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
-    except (ModuleNotFoundError):
+    except ModuleNotFoundError:
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))
         return False
@@ -1192,6 +1192,7 @@ def request_defaults(kwargs):
 def getURL(
     url,
     post_data=None,
+    files=None,
     params=None,
     headers=None,
     timeout=30,
@@ -1240,9 +1241,10 @@ def getURL(
             return json_result["response"]
 
         response = session.request(
-            "POST" if post_data else "GET",
+            "POST" if post_data or files else "GET",
             url,
             data=post_data or {},
+            files=files or {},
             params=params or {},
             timeout=timeout,
             allow_redirects=allow_redirects,
@@ -1286,7 +1288,6 @@ def download_file(url, filename, session=None, headers=None, **kwargs):  # pylin
         with closing(
             session.get(url, allow_redirects=True, stream=True, verify=verify, headers=headers, cookies=cookies, hooks=hooks, proxies=proxies)
         ) as resp:
-
             resp.raise_for_status()
 
             # Workaround for jackett.
@@ -1662,7 +1663,6 @@ def is_file_locked(checkfile, write_check=False):
 
 
 def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-return-statements
-
     session = make_session()
     tvdb_id = ""
     if indexer == "IMDB":

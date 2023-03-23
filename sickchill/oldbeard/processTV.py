@@ -290,7 +290,6 @@ def validate_dir(process_path, release_name, failed, result):
             process_path.lower().startswith(os.path.realpath(sqlShow["location"]).lower() + os.sep)
             or process_path.lower() == os.path.realpath(sqlShow["location"]).lower()
         ):
-
             result.output += log_helper("Cannot process an episode that's already been moved to its show dir, skipping " + process_path, logger.WARNING)
             return False
 

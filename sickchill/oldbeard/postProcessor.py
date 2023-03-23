@@ -116,7 +116,6 @@ class PostProcessor(object):
 
         # if the new file exists, return the appropriate code depending on the size
         if os.path.isfile(existing_file):
-
             # see if it's bigger than our old file
             if os.path.getsize(existing_file) > os.path.getsize(self.directory):
                 self._log(_("File {existing_file} is larger than {directory}").format(existing_file=existing_file, directory=self.directory), logger.DEBUG)
@@ -344,7 +343,6 @@ class PostProcessor(object):
         """
 
         def _int_move(cur_file_path, new_file_path):
-
             self._log(_("Moving file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG)
             try:
                 helpers.moveFile(cur_file_path, new_file_path)
@@ -371,7 +369,6 @@ class PostProcessor(object):
         """
 
         def _int_copy(cur_file_path, new_file_path):
-
             self._log(_("Copying file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG)
             try:
                 helpers.copyFile(cur_file_path, new_file_path)
@@ -398,7 +395,6 @@ class PostProcessor(object):
         """
 
         def _int_hard_link(cur_file_path, new_file_path):
-
             self._log(
                 _("Hard linking file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG
             )
@@ -427,7 +423,6 @@ class PostProcessor(object):
         """
 
         def _int_move_and_sym_link(cur_file_path, new_file_path):
-
             self._log(
                 _("Moving then symbolically linking file from {cur_file_path} to {new_file_path}").format(
                     cur_file_path=cur_file_path, new_file_path=new_file_path
@@ -459,7 +454,6 @@ class PostProcessor(object):
         """
 
         def _int_sym_link(cur_file_path, new_file_path):
-
             self._log(
                 _("Creating then symbolically linking file from {new_file_path} to {cur_file_path}").format(
                     cur_file_path=cur_file_path, new_file_path=new_file_path
@@ -562,7 +556,6 @@ class PostProcessor(object):
             and ((parse_result.season_number is not None and parse_result.episode_numbers) or parse_result.air_date)
             and parse_result.release_group
         ):
-
             if not self.release_name:
                 self.release_name = helpers.remove_non_release_groups(remove_extension(os.path.basename(parse_result.original_name)))
 
@@ -673,7 +666,6 @@ class PostProcessor(object):
 
         # attempt every possible method to get our info
         for cur_attempt in attempt_list:
-
             try:
                 cur_show, cur_season, cur_episodes, cur_quality, cur_version = cur_attempt()
             except (InvalidNameException, InvalidShowException) as error:
@@ -803,7 +795,6 @@ class PostProcessor(object):
 
         # search all possible names for our new quality, in case the file or dir doesn't have it
         for cur_name in name_list:
-
             # some stuff might be None at this point still
             if not cur_name:
                 continue
@@ -1005,7 +996,6 @@ class PostProcessor(object):
                 newest_season_num = max_season[0][0]
                 episode_season = ep_obj.season
                 if int(episode_season) > newest_season_num:
-
                     self._log(
                         _(
                             "File has season {episode_season}, while the indexer is on season {newest_season_num}. "
@@ -1066,7 +1056,6 @@ class PostProcessor(object):
 
         for cur_ep in [ep_obj] + ep_obj.relatedEps:
             with cur_ep.lock:
-
                 if self.release_name:
                     self._log(_("Found release name ") + self.release_name, logger.DEBUG)
                     cur_ep.release_name = self.release_name

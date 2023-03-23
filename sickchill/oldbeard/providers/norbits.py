@@ -26,7 +26,6 @@ class Provider(TorrentProvider):
         self.urls = {"search": self.url + "/api2.php?action=torrents", "download": self.url + "/download.php?"}
 
     def _check_auth(self):
-
         if not self.username or not self.passkey:
             raise AuthException(("Your authentication credentials for {} are " "missing, check your config.").format(self.name))
 

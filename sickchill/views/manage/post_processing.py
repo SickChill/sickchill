@@ -30,7 +30,6 @@ class PostProcess(Home):
         *args_,
         **kwargs,
     ):
-
         mode = kwargs.get("type", proc_type)
         process_path = xhtml_unescape(kwargs.get("dir", proc_dir or "") or "")
         if not process_path:

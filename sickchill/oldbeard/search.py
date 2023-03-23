@@ -37,7 +37,6 @@ def _downloadResult(result: "TorrentSearchResult"):
         newResult = resProvider.download_result(result)
     # if it's an nzb data result
     elif result.resultType == GenericProvider.NZBDATA:
-
         # get the final file path to the nzb
         filename = os.path.join(settings.NZB_DIR, f"{result.name}.nzb")
 
@@ -549,7 +548,6 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
                 logger.info(f"No eps from this season are wanted at this quality, ignoring the result of {bestSeasonResult.name}")
 
             else:
-
                 if bestSeasonResult.resultType != GenericProvider.TORRENT:
                     logger.debug("Breaking apart the NZB and adding the individual ones to our results")
 
@@ -568,7 +566,6 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
                 # If this is a torrent all we can do is leech the entire torrent, user will have to select which eps not do download in his torrent client
                 else:
-
                     # Season result from Torrent Provider must be a full-season torrent, creating multi-ep result for it.
                     logger.info(
                         "Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!"
@@ -588,7 +585,6 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
         multiResults = {}
         if MULTI_EP_RESULT in foundResults[curProvider.name]:
             for _multiResult in foundResults[curProvider.name][MULTI_EP_RESULT]:
-
                 logger.debug(f"Seeing if we want to bother with multi-episode result {_multiResult.name}")
 
                 # Filter result by ignore/required/whitelist/blacklist/quality, etc

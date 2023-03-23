@@ -124,7 +124,6 @@ class Manage(Home, WebRoot):
 
         main_db_con = db.DBConnection()
         for cur_indexer_id in to_change:
-
             # get a list of all the eps we want to change if they just said "all"
             if "all" in to_change[cur_indexer_id]:
                 all_eps_results = main_db_con.select(
@@ -279,7 +278,6 @@ class Manage(Home, WebRoot):
 
         main_db_con = db.DBConnection()
         for curShow in settings.showList:
-
             epCounts = {
                 Overview.SKIPPED: 0,
                 Overview.WANTED: 0,
@@ -302,7 +300,6 @@ class Manage(Home, WebRoot):
             for curResult in sql_results:
                 curEpCat = curShow.getOverview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
                 if curEpCat:
-
                     epCats["{ep}".format(ep=episode_num(curResult["season"], curResult["episode"]))] = curEpCat
                     epCounts[curEpCat] += 1
 
@@ -405,7 +402,6 @@ class Manage(Home, WebRoot):
         root_dir_list = []
 
         for curShow in showList:
-
             cur_root_dir = self.__gooey_path(curShow._location, "dirname")
             if cur_root_dir and cur_root_dir != curShow._location and cur_root_dir not in root_dir_list:
                 root_dir_list.append(cur_root_dir)
@@ -476,6 +472,9 @@ class Manage(Home, WebRoot):
         scene_value = last_scene if scene_all_same else None
         sports_value = last_sports if sports_all_same else None
         air_by_date_value = last_air_by_date if air_by_date_all_same else None
+        ignore_words_value = None
+        prefer_words_value = None
+        require_words_value = None
 
         return t.render(
             showList=toEdit,
@@ -495,6 +494,9 @@ class Manage(Home, WebRoot):
             controller="manage",
             action="massEdit",
             topmenu="manage",
+            ignore_words_value=ignore_words_value,
+            prefer_words_value=prefer_words_value,
+            require_words_value=require_words_value,
         )
 
     # noinspection PyProtectedMember, PyUnusedLocal
@@ -512,6 +514,12 @@ class Manage(Home, WebRoot):
         anyQualities=None,
         bestQualities=None,
         toEdit=None,
+        mass_ignore_words=None,
+        mass_prefer_words=None,
+        mass_require_words=None,
+        ignore_words=None,
+        prefer_words=None,
+        require_words=None,
         *args,
         **kwargs,
     ):
@@ -544,6 +552,28 @@ class Manage(Home, WebRoot):
             new_season_folders = ("off", "on")[(season_folders == "enable", show_obj.season_folders)[season_folders == "keep"]]
             new_subtitles = ("off", "on")[(subtitles == "enable", show_obj.subtitles)[subtitles == "keep"]]
 
+            # new mass words update section
+            if ignore_words == "new":
+                new_ignore_words = mass_ignore_words
+            elif ignore_words == "clear":
+                new_ignore_words = ""
+            else:
+                new_ignore_words = show_obj.rls_ignore_words
+
+            if require_words == "new":
+                new_require_words = mass_require_words
+            elif require_words == "clear":
+                new_require_words = ""
+            else:
+                new_require_words = show_obj.rls_require_words
+
+            if prefer_words == "new":
+                new_prefer_words = mass_prefer_words
+            elif prefer_words == "clear":
+                new_prefer_words = ""
+            else:
+                new_prefer_words = show_obj.rls_prefer_words
+
             if quality_preset == "keep":
                 anyQualities, bestQualities = Quality.splitQuality(show_obj.quality)
             elif try_int(quality_preset, None):
@@ -562,6 +592,9 @@ class Manage(Home, WebRoot):
                 paused=new_paused,
                 sports=new_sports,
                 subtitles=new_subtitles,
+                rls_ignore_words=new_ignore_words,
+                rls_prefer_words=new_prefer_words,
+                rls_require_words=new_require_words,
                 anime=new_anime,
                 scene=new_scene,
                 air_by_date=new_air_by_date,
@@ -580,7 +613,6 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None, toSubtitle=None):
-
         toUpdate = toUpdate.split("|") if toUpdate else []
         toRefresh = toRefresh.split("|") if toRefresh else []
         toRename = toRename.split("|") if toRename else []
@@ -596,7 +628,6 @@ class Manage(Home, WebRoot):
         subtitles = []
 
         for curShowID in set(toUpdate + toRefresh + toRename + toSubtitle + toDelete + toRemove + toMetadata):
-
             if curShowID == "":
                 continue
 

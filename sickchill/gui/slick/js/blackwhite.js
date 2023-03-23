@@ -61,6 +61,7 @@ $('#addToWhite').on('click', () => {
         option.html(group);
         option.appendTo('#white');
         $('#addToPoolText').val('');
+        $('#saveDefaultsButton').attr('disabled', false);
     }
 });
 
@@ -72,5 +73,6 @@ $('#addToBlack').on('click', () => {
         option.html(group);
         option.appendTo('#black');
         $('#addToPoolText').val('');
+        $('#saveDefaultsButton').attr('disabled', false);
     }
 });

@@ -21,7 +21,6 @@ provider_cache_db = {}
 
 
 class RSSTorrentMixin:
-
     # {'title': 'Danger.in.the.House.2022.720p.WEB.h264-BAE', 'title_detail': {'type': 'text/plain', 'language': None, 'base': '', 'value': 'Danger.in.the.House.2022.720p.WEB.h264-BAE'}, 'id': 'https://example.com/details/random-guid', 'guidislink': True, 'link': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450', 'links': [{'rel': 'alternate', 'type': 'text/html', 'href': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450'}, {'length': '1962145316', 'type': 'application/x-nzb', 'href': 'https://example.com/getnzb?id=random-guid.nzb&r=1260abc930e0cebbbfc687a42a7c1450', 'rel': 'enclosure'}], 'comments': 'https://example.com/details/random-guid#comments', 'published': 'Tue, 30 Aug 2022 01:30:51 +0200', 'published_parsed': time.struct_time(tm_year=2022, tm_mon=8, tm_mday=29, tm_hour=23, tm_min=30, tm_sec=51, tm_wday=0, tm_yday=241, tm_isdst=0), 'summary': 'Danger.in.the.House.2022.720p.WEB.h264-BAE', 'summary_detail': {'type': 'text/html', 'language': None, 'base': '', 'value': 'Danger.in.the.House.2022.720p.WEB.h264-BAE'}, 'newznab_attr': {'name': 'size', 'value': '1962145316'}}
     #   <item>
     #    <title>Danger.in.the.House.2022.720p.WEB.h264-BAE</title>
@@ -333,10 +332,8 @@ class TVCache(RSSTorrentMixin):
         return True
 
     def _add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
-
         # check if we passed in a parsed result or should we try and create one
         if not parse_result:
-
             # create show_obj from indexer_id if available
             show_obj = None
             if indexer_id:

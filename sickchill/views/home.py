@@ -291,7 +291,6 @@ class Home(WebRoot):
             return _("Registration and Testing of growl failed {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
 
     def testProwl(self):
-
         prowl_api = self.get_query_argument("prowl_api")
         prowl_priority = self.get_query_argument("prowl_priority")
         result = notifiers.prowl_notifier.test_notify(prowl_api, prowl_priority)
@@ -335,7 +334,6 @@ class Home(WebRoot):
 
     @staticmethod
     def testTwitter():
-
         result = notifiers.twitter_notifier.test_notify()
         if result:
             return _("Tweet successful, check your twitter to make sure it worked")
@@ -546,7 +544,6 @@ class Home(WebRoot):
 
     @staticmethod
     def loadShowNotifyLists():
-
         main_db_con = db.DBConnection()
         rows = main_db_con.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
 
@@ -566,7 +563,6 @@ class Home(WebRoot):
         return json.dumps(data)
 
     def saveShowNotifyList(self):
-
         show = self.get_body_argument("show")
         main_db_con = db.DBConnection()
         rows = main_db_con.select("SELECT show_id, notify_list FROM tv_shows WHERE show_id = ?", [show])
@@ -716,7 +712,6 @@ class Home(WebRoot):
 
     @staticmethod
     def compare_db_version():
-
         update_manager = UpdateManager()
         db_status = update_manager.compare_db_version()
 
@@ -992,7 +987,6 @@ class Home(WebRoot):
         banner=None,
         fanart=None,
     ):
-
         anidb_failed = False
 
         try:
@@ -1195,13 +1189,14 @@ class Home(WebRoot):
             show_obj.subtitles_sr_metadata = subtitles_sr_metadata
             show_obj.air_by_date = air_by_date
             show_obj.default_ep_status = int(defaultEpStatus)
+            # words added to mass update so moved from directCall to here.
+            show_obj.rls_ignore_words = rls_ignore_words.strip()
+            show_obj.rls_require_words = rls_require_words.strip()
+            show_obj.rls_prefer_words = rls_prefer_words.strip()
 
             if not directCall:
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
-                show_obj.rls_ignore_words = rls_ignore_words.strip()
-                show_obj.rls_require_words = rls_require_words.strip()
-                show_obj.rls_prefer_words = rls_prefer_words.strip()
 
             location = os.path.normpath(xhtml_unescape(location))
             # noinspection PyProtectedMember
@@ -1320,7 +1315,6 @@ class Home(WebRoot):
         return self.redirect(f"/home/displayShow?show={show.indexerid}")
 
     def updateShow(self, show=None, force=0):
-
         if not show:
             return self._genericMessage(_("Error"), _("Invalid show ID"))
 
@@ -1341,7 +1335,6 @@ class Home(WebRoot):
         return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
     def subtitleShow(self, show=None, force=0):
-
         if not show:
             return self._genericMessage(_("Error"), _("Invalid show ID"))
 
@@ -1405,7 +1398,6 @@ class Home(WebRoot):
             return self.redirect("/home/")
 
     def setStatus(self, show=None, eps=None, status=None, direct=False):
-
         if not all([show, eps, status]):
             errMsg = _("You must specify a show and at least one episode")
             if direct:
@@ -1438,7 +1430,6 @@ class Home(WebRoot):
             trakt_data = []
             sql_l = []
             for cur_ep in eps.split("|"):
-
                 if not cur_ep:
                     logger.debug("cur_ep was empty when trying to setStatus")
 
@@ -1555,7 +1546,6 @@ class Home(WebRoot):
             return self.redirect("/home/displayShow?show=" + show)
 
     def testRename(self, show=None):
-
         if not show:
             return self._genericMessage(_("Error"), _("You must specify a show"))
 
@@ -1593,7 +1583,6 @@ class Home(WebRoot):
 
         main_db_con = db.DBConnection()
         for cur_ep in eps.split("|"):
-
             epInfo = cur_ep.split("x")
 
             # this is probably the worst possible way to deal with double eps but I've kinda painted myself into a corner here with this stupid database
@@ -1694,7 +1683,6 @@ class Home(WebRoot):
         return self.redirect("/home/displayShow?show=" + show)
 
     def searchEpisode(self, show=None, season=None, episode=None, downCurQuality=0):
-
         # retrieve the episode object and fail if we can't get one
         ep_obj, error_msg = self._getEpisode(show, season, episode)
         if error_msg or not ep_obj:
@@ -1869,7 +1857,6 @@ class Home(WebRoot):
         return json.dumps({"result": status, "subtitles": ",".join(ep_obj.subtitles)})
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None, sceneEpisode=None, sceneAbsolute=None):
-
         # sanitize:
         if forSeason in ("null", ""):
             forSeason = None

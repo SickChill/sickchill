@@ -54,7 +54,7 @@ class ShowTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for ((use_shows, indexer_id), result) in tests.items():
+            for (use_shows, indexer_id), result in tests.items():
                 if use_shows:
                     assert Show.find(shows, indexer_id) == result
                 else:
@@ -105,7 +105,7 @@ class ShowTests(unittest.TestCase):
             len(indexer_id_list), len(results_list)
         )
 
-        for (index, indexer_id) in enumerate(indexer_id_list):
+        for index, indexer_id in enumerate(indexer_id_list):
             assert Show._validate_indexer_id(indexer_id) == results_list[index]
 
 

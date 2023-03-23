@@ -39,7 +39,7 @@ class TorrentProviderTests(GenericProviderTests):
             (True, True): True,
         }
 
-        for ((use_torrents, enabled), result) in test_cases.items():
+        for (use_torrents, enabled), result in test_cases.items():
             settings.USE_TORRENTS = use_torrents
 
             provider = TorrentProvider("Test Provider")
@@ -170,7 +170,7 @@ class TorrentProviderTests(GenericProviderTests):
             len(items_list), len(results_list)
         )
 
-        for (index, item) in enumerate(items_list):
+        for index, item in enumerate(items_list):
             assert TorrentProvider("Test Provider")._get_size(item) == results_list[index]
 
     def test__get_storage_dir(self):

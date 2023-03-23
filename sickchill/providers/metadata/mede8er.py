@@ -38,7 +38,6 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
         season_all_poster=False,
         season_all_banner=False,
     ):
-
         mediabrowser.MediaBrowserMetadata.__init__(
             self,
             show_metadata,

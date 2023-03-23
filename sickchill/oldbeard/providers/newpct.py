@@ -10,7 +10,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("Newpct")
 
         self.onlyspasearch = None

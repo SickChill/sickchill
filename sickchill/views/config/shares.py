@@ -12,7 +12,6 @@ from . import Config
 class ConfigShares(Config):
     @addslash
     def index(self):
-
         t = PageTemplate(rh=self, filename="config_shares.mako")
         return t.render(
             title=_("Config - Shares"),

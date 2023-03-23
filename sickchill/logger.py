@@ -204,7 +204,6 @@ class Logger(object):
             sys.exit(1)
 
     def submit_errors(self):
-
         submitter_result = ""
         issue_id = None
 
@@ -326,7 +325,6 @@ class Logger(object):
                         or (malformed_error and is_malformed_error(report.title))
                         or (ascii_error and is_ascii_error(report.title))
                     ):
-
                         issue_id = report.number
                         if not report.raw_data["locked"]:
                             if report.create_comment(message):

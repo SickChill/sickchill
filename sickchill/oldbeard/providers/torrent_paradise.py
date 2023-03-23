@@ -8,7 +8,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("torrent-paradise")
         self.minseed = 0
         self.minleech = 0

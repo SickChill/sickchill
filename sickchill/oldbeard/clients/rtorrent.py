@@ -11,7 +11,6 @@ class Client(GenericClient):
         super().__init__("rTorrent", host, username, password)
 
     def _get_auth(self):
-
         if self.auth is not None:
             return self.auth
 
@@ -35,7 +34,6 @@ class Client(GenericClient):
         return self.auth
 
     def _add_torrent_uri(self, result):
-
         if not (self.auth and result):
             return False
 
@@ -53,7 +51,6 @@ class Client(GenericClient):
             return False
 
     def _add_torrent_file(self, result):
-
         if not (self.auth and result):
             return False
 
