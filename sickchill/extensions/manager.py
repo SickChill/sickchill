@@ -1,10 +1,9 @@
 import importlib
 import pkgutil
 
+import sickchill.extensions
 from sickchill import logger, settings
 from sickchill.oldbeard import config
-
-import sickchill.extensions
 
 
 def iter_namespace(ns_pkg):
