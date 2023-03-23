@@ -10,8 +10,9 @@ from sickchill.oldbeard.numdict import NumDict
 from .init_helpers import setup_gettext, sickchill_dir
 
 if TYPE_CHECKING:
-    from .movies import MovieList
     from configobj import ConfigObj
+    
+    from .movies import MovieList
 
 setup_gettext()
 
