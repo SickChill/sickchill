@@ -879,7 +879,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickChill to be running on your Synology NAS.')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('requires SickChill to be running on your Synology NAS (DSM 6 only).')}</label>
                                     </div>
                                 </div>
                             </div>
