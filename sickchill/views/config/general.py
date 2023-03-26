@@ -113,6 +113,7 @@ class ConfigGeneral(Config):
         calendar_unprotected=None,
         calendar_icons=None,
         debug=None,
+        notify_on_logged_error=None,
         ssl_verify=None,
         no_restart=None,
         coming_eps_missed_range=None,
@@ -189,6 +190,7 @@ class ConfigGeneral(Config):
         settings.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
         settings.NO_RESTART = config.checkbox_to_value(no_restart)
         settings.DEBUG = config.checkbox_to_value(debug)
+        settings.NOTIFY_ON_LOGGED_ERROR = config.checkbox_to_value(notify_on_logged_error)
         logger.set_level()
 
         settings.SSL_VERIFY = config.checkbox_to_value(ssl_verify)

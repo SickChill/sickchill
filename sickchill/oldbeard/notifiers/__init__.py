@@ -124,3 +124,10 @@ def notify_login(ipaddress):
                 n.notify_login(ipaddress)
             else:
                 print(n.__module__)
+
+
+def notify_logged_error(ui_error):
+    if settings.NOTIFY_ON_LOGGED_ERROR:
+        for n in notifiers:
+            if hasattr(n, "notify_logged_error"):
+                n.notify_logged_error(ui_error)
