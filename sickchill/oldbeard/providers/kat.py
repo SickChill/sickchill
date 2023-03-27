@@ -158,8 +158,7 @@ class Provider(TorrentProvider):
             logger.info("Setting mirror to use to {url}".format(url=self.url))
         else:
             logger.warning(
-                "Unable to get a working mirror for KickassTorrent. You might need to enable another provider and disable KAT until it starts working "
-                "again."
+                "Unable to get a working mirror for KickassTorrent. You might need to enable another provider and disable KAT until it starts working again."
             )
 
         self.urls = {"search": urljoin(self.url, "/usearch/{q}/"), "rss": urljoin(self.url, "/tv/")}
