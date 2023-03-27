@@ -145,7 +145,8 @@ class DiscordTask(generic_queue.QueueItem):
             return False
         except requests.exceptions.RequestException as error:
             if error.response.status_code != 429 or int(error.response.headers.get("X-RateLimit-Remaining")) != 0:
-                raise traceback.format_exc()
+                logger.exception(f"RequestException traceback: {traceback.format_exc()}")
+                raise error
 
             logger.info("Discord rate limiting, retrying after {} seconds".format(error.response.headers.get("X-RateLimit-Reset-After")))
             time.sleep(int(error.response.headers.get("X-RateLimit-Reset-After")) + 1)
@@ -154,8 +155,8 @@ class DiscordTask(generic_queue.QueueItem):
             )
             r.raise_for_status()
         except Exception as error:
-            logger.exception(f"Error Sending Discord message: {traceback.format_exc()}")
-
+            logger.exception(f"Error Sending Discord message: {error}")
+            logger.exception(f"Traceback: {traceback.format_exc()}")
             return False
 
         return True
