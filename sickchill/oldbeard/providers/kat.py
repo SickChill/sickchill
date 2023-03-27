@@ -158,7 +158,7 @@ class Provider(TorrentProvider):
             logger.info("Setting mirror to use to {url}".format(url=self.url))
         else:
             logger.warning(
-                "Unable to get a working mirror for kickasstorrents, you might need to enable another provider and disable it until it starts working "
+                "Unable to get a working mirror for KickassTorrent. You might need to enable another provider and disable KAT until it starts working "
                 "again."
             )
 
