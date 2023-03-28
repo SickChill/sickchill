@@ -1433,7 +1433,7 @@ class Home(WebRoot):
                 if not cur_ep:
                     logger.debug("cur_ep was empty when trying to setStatus")
 
-                logger.debug("Attempting to set status on episode " + cur_ep + " to " + status)
+                logger.debug(f'Attempting to set status of {show} episode {cur_ep} to {status}')
 
                 epInfo = cur_ep.split("x")
 
