@@ -3404,7 +3404,7 @@
                                       <input type="text" name="discord_name" id="discord_name" value="${settings.DISCORD_NAME}" class="form-control input-sm input350" autocapitalize="off" />
                                     </div>
                                     <div class="col-md-12">
-                                      <label for="discord_name">${_('Blank will use webhook default Name.')}</label>
+                                      <label for="discord_name">${_('Must use Bot Name. Blank no longer valid and will fail')}</label>
                                     </div>
                                   </div>
                                 </div>

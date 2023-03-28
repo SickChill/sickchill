@@ -131,6 +131,10 @@ class DiscordTask(generic_queue.QueueItem):
         avatar_icon = avatar or settings.DISCORD_AVATAR_URL
         discord_tts = bool(settings.DISCORD_TTS if tts is None else tts)
 
+        if not discord_name:
+            logger.warning("Discord Bot Name is Blank. Please enter Webhook dedicated Bot Name.")
+            return False
+
         logger.info("Sending discord message: " + ", ".join(f["value"] for f in self.embed["fields"]))
         logger.info("Sending discord message to url: " + discord_webhook)
 
