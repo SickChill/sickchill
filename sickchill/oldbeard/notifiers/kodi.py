@@ -72,6 +72,8 @@ class Notifier(object):
             The result will either be 'OK' or False, this is used to be parsed by the calling function.
 
         """
+        if not settings.USE_KODI and not force:
+            return False
 
         self.setup(hosts=hosts, username=username, password=password)
         results = dict()
