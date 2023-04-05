@@ -1,4 +1,4 @@
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.oldbeard import common
 from sickchill.oldbeard.classes import UIError
 
@@ -47,6 +47,7 @@ class Notifier(object):
 
     def _notify_discord(self, message="", force=False):
         if not settings.USE_DISCORD and not force:
+            logger.debug("Notification for Discord not enabled, skipping this notification")
             return False
 
         return self._send_discord(message, force=force)

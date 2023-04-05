@@ -89,6 +89,7 @@ class Notifier(object):
 
     def _notify_matrix(self, message="", force=False):
         if not settings.USE_MATRIX and not force:
+            logger.debug("Notification for Matrix not enabled, skipping this notification")
             return False
 
         return self._send_matrix(message)

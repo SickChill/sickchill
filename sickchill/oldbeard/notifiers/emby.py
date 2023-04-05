@@ -21,6 +21,10 @@ class Notifier(object):
         url = urljoin(host or settings.EMBY_HOST, "emby/Notifications/Admin")
         params = {"Name": "SickChill", "Description": message, "ImageUrl": settings.LOGO_URL}
 
+        if not settings.USE_EMBY:
+            logger.debug("Notification for Emby not enabled, skipping this notification")
+            return False
+
         try:
             response = requests.get(url, params=params, headers=self._make_headers(emby_apikey))
             if response:

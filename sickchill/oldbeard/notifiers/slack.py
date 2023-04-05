@@ -61,6 +61,7 @@ class Notifier(object):
 
     def _notify_slack(self, message="", force=False):
         if not settings.USE_SLACK and not force:
+            logger.debug("Notification for Slack not enabled, skipping this notification")
             return False
 
         return self._send_slack(message)

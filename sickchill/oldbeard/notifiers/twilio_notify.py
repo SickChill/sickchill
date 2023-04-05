@@ -54,6 +54,7 @@ class Notifier(object):
 
     def _notifyTwilio(self, message="", force=False, allow_raise=False):
         if not (settings.USE_TWILIO or force or self.number_regex.match(settings.TWILIO_TO_NUMBER)):
+            logger.debug("Notification for Twilio not enabled, skipping this notification")
             return False
 
         logger.debug("Sending Twilio SMS: " + message)
