@@ -217,37 +217,22 @@ class ConfigNotifications(Config):
         results = []
 
         settings.USE_KODI = config.checkbox_to_value(use_kodi)
-        if use_kodi:
-            settings.KODI_ALWAYS_ON = config.checkbox_to_value(kodi_always_on)
-            settings.KODI_NOTIFY_ONSNATCH = config.checkbox_to_value(kodi_notify_onsnatch)
-            settings.KODI_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(kodi_notify_ondownload)
-            settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(kodi_notify_onsubtitledownload)
-            settings.KODI_UPDATE_LIBRARY = config.checkbox_to_value(kodi_update_library)
-            settings.KODI_UPDATE_FULL = config.checkbox_to_value(kodi_update_full)
-            settings.KODI_UPDATE_ONLYFIRST = config.checkbox_to_value(kodi_update_onlyfirst)
-        else:
-            settings.KODI_ALWAYS_ON = False
-            settings.KODI_NOTIFY_ONSNATCH = False
-            settings.KODI_NOTIFY_ONDOWNLOAD = False
-            settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = False
-            settings.KODI_UPDATE_LIBRARY = False
-            settings.KODI_UPDATE_FULL = False
-            settings.KODI_UPDATE_ONLYFIRST = False
+        settings.KODI_ALWAYS_ON = config.checkbox_to_value(kodi_always_on)
+        settings.KODI_NOTIFY_ONSNATCH = config.checkbox_to_value(kodi_notify_onsnatch)
+        settings.KODI_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(kodi_notify_ondownload)
+        settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(kodi_notify_onsubtitledownload)
+        settings.KODI_UPDATE_LIBRARY = config.checkbox_to_value(kodi_update_library)
+        settings.KODI_UPDATE_FULL = config.checkbox_to_value(kodi_update_full)
+        settings.KODI_UPDATE_ONLYFIRST = config.checkbox_to_value(kodi_update_onlyfirst)
         settings.KODI_HOST = config.clean_hosts(kodi_host)
         settings.KODI_USERNAME = kodi_username
         settings.KODI_PASSWORD = filters.unhide(settings.KODI_PASSWORD, kodi_password)
 
         settings.USE_PLEX_SERVER = config.checkbox_to_value(use_plex_server)
-        if use_plex_server:
-            settings.PLEX_NOTIFY_ONSNATCH = config.checkbox_to_value(plex_notify_onsnatch)
-            settings.PLEX_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(plex_notify_ondownload)
-            settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(plex_notify_onsubtitledownload)
-            settings.PLEX_UPDATE_LIBRARY = config.checkbox_to_value(plex_update_library)
-        else:
-            settings.PLEX_NOTIFY_ONSNATCH = False
-            settings.PLEX_NOTIFY_ONDOWNLOAD = False
-            settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = False
-            settings.PLEX_UPDATE_LIBRARY = False
+        settings.PLEX_NOTIFY_ONSNATCH = config.checkbox_to_value(plex_notify_onsnatch)
+        settings.PLEX_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(plex_notify_ondownload)
+        settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(plex_notify_onsubtitledownload)
+        settings.PLEX_UPDATE_LIBRARY = config.checkbox_to_value(plex_update_library)
         settings.PLEX_CLIENT_HOST = config.clean_hosts(plex_client_host)
         settings.PLEX_SERVER_HOST = config.clean_hosts(plex_server_host)
         settings.PLEX_SERVER_TOKEN = config.clean_host(plex_server_token)
@@ -264,161 +249,97 @@ class ConfigNotifications(Config):
         settings.EMBY_APIKEY = filters.unhide(settings.EMBY_APIKEY, emby_apikey)
 
         settings.USE_GROWL = config.checkbox_to_value(use_growl)
-        if use_growl:
-            settings.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)
-            settings.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(growl_notify_ondownload)
-            settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(growl_notify_onsubtitledownload)
-        else:
-            settings.GROWL_NOTIFY_ONSNATCH = False
-            settings.GROWL_NOTIFY_ONDOWNLOAD = False
-            settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)
+        settings.GROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(growl_notify_ondownload)
+        settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(growl_notify_onsubtitledownload)
         settings.GROWL_HOST = config.clean_host(growl_host, default_port=23053)
         settings.GROWL_PASSWORD = filters.unhide(settings.GROWL_PASSWORD, growl_password)
 
         settings.USE_FREEMOBILE = config.checkbox_to_value(use_freemobile)
-        if use_freemobile:
-            settings.FREEMOBILE_NOTIFY_ONSNATCH = config.checkbox_to_value(freemobile_notify_onsnatch)
-            settings.FREEMOBILE_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(freemobile_notify_ondownload)
-            settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(freemobile_notify_onsubtitledownload)
-        else:
-            settings.FREEMOBILE_NOTIFY_ONSNATCH = False
-            settings.FREEMOBILE_NOTIFY_ONDOWNLOAD = False
-            settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.FREEMOBILE_NOTIFY_ONSNATCH = config.checkbox_to_value(freemobile_notify_onsnatch)
+        settings.FREEMOBILE_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(freemobile_notify_ondownload)
+        settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(freemobile_notify_onsubtitledownload)
         settings.FREEMOBILE_ID = freemobile_id
         settings.FREEMOBILE_APIKEY = filters.unhide(settings.FREEMOBILE_APIKEY, freemobile_apikey)
 
         settings.USE_TELEGRAM = config.checkbox_to_value(use_telegram)
-        if use_telegram:
-            settings.TELEGRAM_NOTIFY_ONSNATCH = config.checkbox_to_value(telegram_notify_onsnatch)
-            settings.TELEGRAM_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(telegram_notify_ondownload)
-            settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(telegram_notify_onsubtitledownload)
-        else:
-            settings.TELEGRAM_NOTIFY_ONSNATCH = False
-            settings.TELEGRAM_NOTIFY_ONDOWNLOAD = False
-            settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.TELEGRAM_NOTIFY_ONSNATCH = config.checkbox_to_value(telegram_notify_onsnatch)
+        settings.TELEGRAM_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(telegram_notify_ondownload)
+        settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(telegram_notify_onsubtitledownload)
         settings.TELEGRAM_ID = telegram_id
         settings.TELEGRAM_APIKEY = filters.unhide(settings.TELEGRAM_APIKEY, telegram_apikey)
 
         settings.USE_JOIN = config.checkbox_to_value(use_join)
-        if use_join:
-            settings.JOIN_NOTIFY_ONSNATCH = config.checkbox_to_value(join_notify_onsnatch)
-            settings.JOIN_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(join_notify_ondownload)
-            settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(join_notify_onsubtitledownload)
-        else:
-            settings.JOIN_NOTIFY_ONSNATCH = False
-            settings.JOIN_NOTIFY_ONDOWNLOAD = False
-            settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.JOIN_NOTIFY_ONSNATCH = config.checkbox_to_value(join_notify_onsnatch)
+        settings.JOIN_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(join_notify_ondownload)
+        settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(join_notify_onsubtitledownload)
         settings.JOIN_ID = join_id
         settings.JOIN_APIKEY = filters.unhide(settings.JOIN_APIKEY, join_apikey)
 
         settings.USE_PROWL = config.checkbox_to_value(use_prowl)
-        if use_prowl:
-            settings.PROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(prowl_notify_onsnatch)
-            settings.PROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(prowl_notify_ondownload)
-            settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(prowl_notify_onsubtitledownload)
-        else:
-            settings.PROWL_NOTIFY_ONSNATCH = False
-            settings.PROWL_NOTIFY_ONDOWNLOAD = False
-            settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.PROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(prowl_notify_onsnatch)
+        settings.PROWL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(prowl_notify_ondownload)
+        settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(prowl_notify_onsubtitledownload)
         settings.PROWL_API = prowl_api
         settings.PROWL_PRIORITY = prowl_priority
         settings.PROWL_MESSAGE_TITLE = prowl_message_title
 
         settings.USE_TWITTER = config.checkbox_to_value(use_twitter)
-        if use_twitter:
-            settings.TWITTER_NOTIFY_ONSNATCH = config.checkbox_to_value(twitter_notify_onsnatch)
-            settings.TWITTER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twitter_notify_ondownload)
-            settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twitter_notify_onsubtitledownload)
-        else:
-            settings.TWITTER_NOTIFY_ONSNATCH = False
-            settings.TWITTER_NOTIFY_ONDOWNLOAD = False
-            settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.TWITTER_NOTIFY_ONSNATCH = config.checkbox_to_value(twitter_notify_onsnatch)
+        settings.TWITTER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twitter_notify_ondownload)
+        settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twitter_notify_onsubtitledownload)
         settings.TWITTER_USEDM = config.checkbox_to_value(twitter_usedm)
         settings.TWITTER_DMTO = twitter_dmto
 
         settings.USE_TWILIO = config.checkbox_to_value(use_twilio)
-        if use_twilio:
-            settings.TWILIO_NOTIFY_ONSNATCH = config.checkbox_to_value(twilio_notify_onsnatch)
-            settings.TWILIO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twilio_notify_ondownload)
-            settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twilio_notify_onsubtitledownload)
-        else:
-            settings.TWILIO_NOTIFY_ONSNATCH = False
-            settings.TWILIO_NOTIFY_ONDOWNLOAD = False
-            settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.TWILIO_NOTIFY_ONSNATCH = config.checkbox_to_value(twilio_notify_onsnatch)
+        settings.TWILIO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(twilio_notify_ondownload)
+        settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(twilio_notify_onsubtitledownload)
         settings.TWILIO_PHONE_SID = twilio_phone_sid
         settings.TWILIO_ACCOUNT_SID = twilio_account_sid
         settings.TWILIO_AUTH_TOKEN = twilio_auth_token
         settings.TWILIO_TO_NUMBER = twilio_to_number
 
         settings.USE_SLACK = config.checkbox_to_value(use_slack)
-        if use_slack:
-            settings.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)
-            settings.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
-            settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(slack_notify_subtitledownload)
-        else:
-            settings.SLACK_NOTIFY_SNATCH = False
-            settings.SLACK_NOTIFY_DOWNLOAD = False
-            settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = False
+        settings.SLACK_NOTIFY_SNATCH = config.checkbox_to_value(slack_notify_snatch)
+        settings.SLACK_NOTIFY_DOWNLOAD = config.checkbox_to_value(slack_notify_download)
+        settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(slack_notify_subtitledownload)
         settings.SLACK_WEBHOOK = slack_webhook
         settings.SLACK_ICON_EMOJI = slack_icon_emoji
 
         settings.USE_ROCKETCHAT = config.checkbox_to_value(use_rocketchat)
-        if use_rocketchat:
-            settings.ROCKETCHAT_NOTIFY_SNATCH = config.checkbox_to_value(rocketchat_notify_snatch)
-            settings.ROCKETCHAT_NOTIFY_DOWNLOAD = config.checkbox_to_value(rocketchat_notify_download)
-            settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(rocketchat_notify_subtitledownload)
-        else:
-            settings.ROCKETCHAT_NOTIFY_SNATCH = False
-            settings.ROCKETCHAT_NOTIFY_DOWNLOAD = False
-            settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = False
+        settings.ROCKETCHAT_NOTIFY_SNATCH = config.checkbox_to_value(rocketchat_notify_snatch)
+        settings.ROCKETCHAT_NOTIFY_DOWNLOAD = config.checkbox_to_value(rocketchat_notify_download)
+        settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(rocketchat_notify_subtitledownload)
         settings.ROCKETCHAT_WEBHOOK = rocketchat_webhook
         settings.ROCKETCHAT_ICON_EMOJI = rocketchat_icon_emoji
 
         settings.USE_MATRIX = config.checkbox_to_value(use_matrix)
-        if use_matrix:
-            settings.MATRIX_NOTIFY_SNATCH = config.checkbox_to_value(matrix_notify_snatch)
-            settings.MATRIX_NOTIFY_DOWNLOAD = config.checkbox_to_value(matrix_notify_download)
-            settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(matrix_notify_subtitledownload)
-        else:
-            settings.MATRIX_NOTIFY_SNATCH = False
-            settings.MATRIX_NOTIFY_DOWNLOAD = False
-            settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = False
+        settings.MATRIX_NOTIFY_SNATCH = config.checkbox_to_value(matrix_notify_snatch)
+        settings.MATRIX_NOTIFY_DOWNLOAD = config.checkbox_to_value(matrix_notify_download)
+        settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(matrix_notify_subtitledownload)
         settings.MATRIX_API_TOKEN = matrix_api_token
         settings.MATRIX_SERVER = matrix_server
         settings.MATRIX_ROOM = matrix_room
 
         settings.USE_DISCORD = config.checkbox_to_value(use_discord)
-        if use_discord:
-            settings.DISCORD_NOTIFY_SNATCH = config.checkbox_to_value(discord_notify_snatch)
-            settings.DISCORD_NOTIFY_DOWNLOAD = config.checkbox_to_value(discord_notify_download)
-        else:
-            settings.DISCORD_NOTIFY_SNATCH = False
-            settings.DISCORD_NOTIFY_DOWNLOAD = False
+        settings.DISCORD_NOTIFY_SNATCH = config.checkbox_to_value(discord_notify_snatch)
+        settings.DISCORD_NOTIFY_DOWNLOAD = config.checkbox_to_value(discord_notify_download)
         settings.DISCORD_WEBHOOK = discord_webhook
         settings.DISCORD_NAME = discord_name
         settings.DISCORD_AVATAR_URL = discord_avatar_url
         settings.DISCORD_TTS = discord_tts
 
         settings.USE_BOXCAR2 = config.checkbox_to_value(use_boxcar2)
-        if use_boxcar2:
-            settings.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)
-            settings.BOXCAR2_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(boxcar2_notify_ondownload)
-            settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(boxcar2_notify_onsubtitledownload)
-        else:
-            settings.BOXCAR2_NOTIFY_ONSNATCH = False
-            settings.BOXCAR2_NOTIFY_ONDOWNLOAD = False
-            settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)
+        settings.BOXCAR2_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(boxcar2_notify_ondownload)
+        settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(boxcar2_notify_onsubtitledownload)
         settings.BOXCAR2_ACCESSTOKEN = boxcar2_accesstoken
 
         settings.USE_PUSHOVER = config.checkbox_to_value(use_pushover)
-        if use_pushover:
-            settings.PUSHOVER_NOTIFY_ONSNATCH = config.checkbox_to_value(pushover_notify_onsnatch)
-            settings.PUSHOVER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushover_notify_ondownload)
-            settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushover_notify_onsubtitledownload)
-        else:
-            settings.PUSHOVER_NOTIFY_ONSNATCH = False
-            settings.PUSHOVER_NOTIFY_ONDOWNLOAD = False
-            settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.PUSHOVER_NOTIFY_ONSNATCH = config.checkbox_to_value(pushover_notify_onsnatch)
+        settings.PUSHOVER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushover_notify_ondownload)
+        settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushover_notify_onsubtitledownload)
         settings.PUSHOVER_USERKEY = pushover_userkey
         settings.PUSHOVER_APIKEY = filters.unhide(settings.PUSHOVER_APIKEY, pushover_apikey)
         settings.PUSHOVER_DEVICE = pushover_device
@@ -426,14 +347,9 @@ class ConfigNotifications(Config):
         settings.PUSHOVER_PRIORITY = pushover_priority
 
         settings.USE_LIBNOTIFY = config.checkbox_to_value(use_libnotify)
-        if use_libnotify:
-            settings.LIBNOTIFY_NOTIFY_ONSNATCH = config.checkbox_to_value(libnotify_notify_onsnatch)
-            settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(libnotify_notify_ondownload)
-            settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(libnotify_notify_onsubtitledownload)
-        else:
-            settings.LIBNOTIFY_NOTIFY_ONSNATCH = False
-            settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD = False
-            settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.LIBNOTIFY_NOTIFY_ONSNATCH = config.checkbox_to_value(libnotify_notify_onsnatch)
+        settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(libnotify_notify_ondownload)
+        settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(libnotify_notify_onsubtitledownload)
 
         settings.USE_NMJ = config.checkbox_to_value(use_nmj)
         settings.NMJ_HOST = config.clean_host(nmj_host)
@@ -448,14 +364,9 @@ class ConfigNotifications(Config):
         settings.USE_SYNOINDEX = config.checkbox_to_value(use_synoindex)
 
         settings.USE_SYNOLOGYNOTIFIER = config.checkbox_to_value(use_synologynotifier)
-        if use_synologynotifier:
-            settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = config.checkbox_to_value(synologynotifier_notify_onsnatch)
-            settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(synologynotifier_notify_ondownload)
-            settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(synologynotifier_notify_onsubtitledownload)
-        else:
-            settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = False
-            settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = False
-            settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH = config.checkbox_to_value(synologynotifier_notify_onsnatch)
+        settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(synologynotifier_notify_ondownload)
+        settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(synologynotifier_notify_onsubtitledownload)
 
         config.change_use_trakt(use_trakt)
         settings.TRAKT_USERNAME = trakt_username
@@ -473,16 +384,10 @@ class ConfigNotifications(Config):
         settings.TRAKT_BLACKLIST_NAME = trakt_blacklist_name
 
         settings.USE_EMAIL = config.checkbox_to_value(use_email)
-        if use_email:
-            settings.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
-            settings.EMAIL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(email_notify_ondownload)
-            settings.EMAIL_NOTIFY_ONPOSTPROCESS = config.checkbox_to_value(email_notify_onpostprocess)
-            settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(email_notify_onsubtitledownload)
-        else:
-            settings.EMAIL_NOTIFY_ONSNATCH = False
-            settings.EMAIL_NOTIFY_ONDOWNLOAD = False
-            settings.EMAIL_NOTIFY_ONPOSTPROCESS = False
-            settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.EMAIL_NOTIFY_ONSNATCH = config.checkbox_to_value(email_notify_onsnatch)
+        settings.EMAIL_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(email_notify_ondownload)
+        settings.EMAIL_NOTIFY_ONPOSTPROCESS = config.checkbox_to_value(email_notify_onpostprocess)
+        settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(email_notify_onsubtitledownload)
         settings.EMAIL_HOST = config.clean_host(email_host)
         settings.EMAIL_PORT = try_int(email_port, 25)
         settings.EMAIL_FROM = email_from
@@ -493,40 +398,24 @@ class ConfigNotifications(Config):
         settings.EMAIL_SUBJECT = email_subject
 
         settings.USE_PYTIVO = config.checkbox_to_value(use_pytivo)
-        if use_pytivo:
-            settings.PYTIVO_NOTIFY_ONSNATCH = config.checkbox_to_value(pytivo_notify_onsnatch)
-            settings.PYTIVO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pytivo_notify_ondownload)
-            settings.PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pytivo_notify_onsubtitledownload)
-            settings.PYTIVO_UPDATE_LIBRARY = config.checkbox_to_value(pytivo_update_library)
-        else:
-            settings.PYTIVO_NOTIFY_ONSNATCH = False
-            settings.PYTIVO_NOTIFY_ONDOWNLOAD = False
-            settings.PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD = False
-            settings.PYTIVO_UPDATE_LIBRARY = False
+        settings.PYTIVO_NOTIFY_ONSNATCH = config.checkbox_to_value(pytivo_notify_onsnatch)
+        settings.PYTIVO_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pytivo_notify_ondownload)
+        settings.PYTIVO_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pytivo_notify_onsubtitledownload)
+        settings.PYTIVO_UPDATE_LIBRARY = config.checkbox_to_value(pytivo_update_library)
         settings.PYTIVO_HOST = config.clean_host(pytivo_host)
         settings.PYTIVO_SHARE_NAME = pytivo_share_name
         settings.PYTIVO_TIVO_NAME = pytivo_tivo_name
 
         settings.USE_PUSHALOT = config.checkbox_to_value(use_pushalot)
-        if use_pushalot:
-            settings.PUSHALOT_NOTIFY_ONSNATCH = config.checkbox_to_value(pushalot_notify_onsnatch)
-            settings.PUSHALOT_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushalot_notify_ondownload)
-            settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushalot_notify_onsubtitledownload)
-        else:
-            settings.PUSHALOT_NOTIFY_ONSNATCH = False
-            settings.PUSHALOT_NOTIFY_ONDOWNLOAD = False
-            settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.PUSHALOT_NOTIFY_ONSNATCH = config.checkbox_to_value(pushalot_notify_onsnatch)
+        settings.PUSHALOT_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushalot_notify_ondownload)
+        settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushalot_notify_onsubtitledownload)
         settings.PUSHALOT_AUTHORIZATIONTOKEN = pushalot_authorizationtoken
 
         settings.USE_PUSHBULLET = config.checkbox_to_value(use_pushbullet)
-        if use_pushbullet:
-            settings.PUSHBULLET_NOTIFY_ONSNATCH = config.checkbox_to_value(pushbullet_notify_onsnatch)
-            settings.PUSHBULLET_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushbullet_notify_ondownload)
-            settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushbullet_notify_onsubtitledownload)
-        else:
-            settings.PUSHBULLET_NOTIFY_ONSNATCH = False
-            settings.PUSHBULLET_NOTIFY_ONDOWNLOAD = False
-            settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = False
+        settings.PUSHBULLET_NOTIFY_ONSNATCH = config.checkbox_to_value(pushbullet_notify_onsnatch)
+        settings.PUSHBULLET_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(pushbullet_notify_ondownload)
+        settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(pushbullet_notify_onsubtitledownload)
         settings.PUSHBULLET_API = pushbullet_api
         settings.PUSHBULLET_DEVICE = pushbullet_device_list
         settings.PUSHBULLET_CHANNEL = pushbullet_channel_list or ""

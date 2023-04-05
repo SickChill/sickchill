@@ -60,6 +60,7 @@ class Notifier(object):
 
     def _notify_rocketchat(self, message="", force=False):
         if not settings.USE_ROCKETCHAT and not force:
+            logger.debug("Notification for RocketChat not enabled, skipping this notification")
             return False
 
         return self._send_rocketchat(message)

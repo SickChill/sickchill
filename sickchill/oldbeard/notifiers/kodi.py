@@ -73,6 +73,7 @@ class Notifier(object):
 
         """
         if not settings.USE_KODI and not force:
+            logger.debug("Notification for Kodi not enabled, skipping this notification")
             return False
 
         self.setup(hosts=hosts, username=username, password=password)

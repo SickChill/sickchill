@@ -96,6 +96,10 @@ class Notifier(object):
         return self._notify("Test notification", "This is a test notification from SickChill", force=True)
 
     def _notify(self, title, message, force=False):
+        if not settings.USE_LIBNOTIFY and not force:
+            logger.debug("Notification for libnotify not enabled, skipping this notification")
+            return False
+
         if self.notify_initialized and settings.USE_LIBNOTIFY | force:
             icon = os.path.join(settings.PROG_DIR, "gui", settings.GUI_NAME, "images", "ico", "favicon-120.png")
             # noinspection PyBroadException
