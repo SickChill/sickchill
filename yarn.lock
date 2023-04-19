@@ -3496,9 +3496,9 @@ dns-equal@^1.0.0:
   integrity sha512-z+paD6YUQsk+AbGCEM4PrOXSss5gd66QfcVBFTKR/HpFL9jCqikS94HYwKww6fQyO7IxrIIyUu+g0Ka9tUS2Cg==
 
 dns-packet@^5.2.2:
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-5.5.0.tgz#f59cbf3396c130957c56a6ad5fd3959ccdc30065"
-  integrity sha512-USawdAUzRkV6xrqTjiAEp6M9YagZEzWcSUaZTcIFAiyQWW1SoI6KyId8y2+/71wbgHKQAKd+iupLv4YvEwYWvA==
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-5.6.0.tgz#2202c947845c7a63c23ece58f2f70ff6ab4c2f7d"
+  integrity sha512-rza3UH1LwdHh9qyPXp8lkwpjSNk/AMD3dPytUoRoqnypDUhY0xvbdmVhWOfxO68frEfV9BU8V12Ez7ZsHGZpCQ==
   dependencies:
     "@leichtgewicht/ip-codec" "^2.0.1"
 
@@ -3627,9 +3627,9 @@ ejs@^3.1.6, ejs@^3.1.8:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.284:
-  version "1.4.367"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.367.tgz#d9ddc529ba2315fc852b722c359e4a40e86aa742"
-  integrity sha512-mNuDxb+HpLhPGUKrg0hSxbTjHWw8EziwkwlJNkFUj3W60ypigLDRVz04vU+VRsJPi8Gub+FDhYUpuTm9xiEwRQ==
+  version "1.4.368"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.368.tgz#75901f97d3e23da2e66feb1e61fbb8e70ac96430"
+  integrity sha512-e2aeCAixCj9M7nJxdB/wDjO6mbYX+lJJxSJCXDzlr5YPGYVofuJwGN9nKg2o6wWInjX6XmxRinn3AeJMK81ltw==
 
 emittery@^1.0.1:
   version "1.0.1"
@@ -8731,9 +8731,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1138.0:
-  version "1.1142.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1142.0.tgz#e8adc8d7e833816331da968340304d426abe13b2"
-  integrity sha512-8Zoy3GqBC/itu4tvMxylz2OL1xGnoYJmpt8x3tgL+fs06FF2oSLocM2M+Bc7mgHBhhM1YTOSpbEFc/2yM+qgPA==
+  version "1.1143.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1143.0.tgz#62d86861ecda800491f0e3730930de5afd2dcebd"
+  integrity sha512-NxPv6281FUUDZuqHEWLgXtYsRg47WfNc98ojjQrxDx6aQ//oMdyXnsF0Q2eDyhDiIQNSCIwCFQ8U64YocxXVGw==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
@@ -9238,9 +9238,9 @@ terser-webpack-plugin@^5.3.7:
     terser "^5.16.5"
 
 terser@^5.0.0, terser@^5.10.0, terser@^5.16.5:
-  version "5.16.9"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-5.16.9.tgz#7a28cb178e330c484369886f2afd623d9847495f"
-  integrity sha512-HPa/FdTB9XGI2H1/keLFZHxl6WNvAI4YalHGtDQTlMnJcoqSab1UwL4l1hGEhs6/GmLHBZIg/YgB++jcbzoOEg==
+  version "5.17.1"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-5.17.1.tgz#948f10830454761e2eeedc6debe45c532c83fd69"
+  integrity sha512-hVl35zClmpisy6oaoKALOpS0rDYLxRFLHhRuDlEGTKey9qHjS1w9GMORjuwIMt70Wan4lwsLYyWDVnWgF+KUEw==
   dependencies:
     "@jridgewell/source-map" "^0.3.2"
     acorn "^8.5.0"
