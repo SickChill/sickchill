@@ -2907,7 +2907,7 @@ ci-parallel-vars@^1.0.1:
   resolved "https://registry.yarnpkg.com/ci-parallel-vars/-/ci-parallel-vars-1.0.1.tgz#e87ff0625ccf9d286985b29b4ada8485ca9ffbc2"
   integrity sha512-uvzpYrpmidaoxvIQHM+rKSrigjOe9feHYbw4uOI2gdfe1C3xIlxO+kVXq83WQWNniTf8bAxVpy+cQeFQsMERKg==
 
-clean-css@^5.0.1, clean-css@^5.2.2:
+clean-css@^5.2.2, clean-css@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-5.3.2.tgz#70ecc7d4d4114921f5d298349ff86a31a9975224"
   integrity sha512-JVJbM+f3d3Q704rF4bqQ5UUyTtuJ0JRKNbTKVEeujCCBoMdkEi+V+e8oktO9qGQNSvHrFTM6JZRXrUvGR1czww==
@@ -5147,13 +5147,13 @@ grunt-contrib-copy@^1.0.0:
     chalk "^1.1.1"
     file-sync-cmp "^0.1.0"
 
-grunt-contrib-cssmin@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/grunt-contrib-cssmin/-/grunt-contrib-cssmin-4.0.0.tgz#ffe7460d0fa53dbc5c7879e80088404cfed93d3b"
-  integrity sha512-jXU+Zlk8Q8XztOGNGpjYlD/BDQ0n95IHKrQKtFR7Gd8hZrzgqiG1Ra7cGYc8h2DD9vkSFGNlweb9Q00rBxOK2w==
+grunt-contrib-cssmin@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/grunt-contrib-cssmin/-/grunt-contrib-cssmin-5.0.0.tgz#c572bc20e8d085fcd66fc1c53dcd20d2c6e9b547"
+  integrity sha512-SNp4H4+85mm2xaHYi83FBHuOXylpi5vcwgtNoYCZBbkgeXQXoeTAKa59VODRb0woTDBvxouP91Ff5PzCkikg6g==
   dependencies:
-    chalk "^4.1.0"
-    clean-css "^5.0.1"
+    chalk "^4.1.2"
+    clean-css "^5.3.2"
     maxmin "^3.0.0"
 
 grunt-contrib-jshint@^3.2.0:
