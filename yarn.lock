@@ -6839,7 +6839,7 @@ mem-fs-editor@^10.0.2:
     normalize-path "^3.0.0"
     textextensions "^5.13.0"
 
-"mem-fs@^1.2.0 || ^2.0.0", mem-fs@^2.2.1:
+"mem-fs@^1.2.0 || ^2.0.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/mem-fs/-/mem-fs-2.3.0.tgz#d38bdd729ab0316bfb56d0d0ff669f91e7078463"
   integrity sha512-GftCCBs6EN8sz3BoWO1bCj8t7YBtT713d8bUgbhg9Iel5kFSqnSvCK06TYIDJAtJ51cSiWkM/YemlT0dfoFycw==
