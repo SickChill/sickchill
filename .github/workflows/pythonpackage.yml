@@ -190,15 +190,6 @@ jobs:
       if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
       name: Coverage
       run: poetry run poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
-    -
-      name: Bandit
-      uses: mdegis/bandit-action@v1
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        path: "."
-        level: high
-        confidence: high
-        exit_zero: true
   Test-Docker:
     needs: [Environment, Test]
     runs-on: ubuntu-22.04
