@@ -28,7 +28,7 @@ import certifi
 import ifaddr
 import requests
 import urllib3.exceptions
-from cachecontrol import CacheControl
+from cacheyou import CacheControl
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 from urllib3 import disable_warnings
