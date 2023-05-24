@@ -37,7 +37,7 @@ class QualityTests(unittest.TestCase):
             1000000: "Custom",  # An invalid quality number to test the default case
         }
 
-        for (quality, result) in tests.items():
+        for quality, result in tests.items():
             assert get_quality_string(quality) == result
 
 

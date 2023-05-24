@@ -214,7 +214,6 @@ class ConfigNotifications(Config):
         discord_avatar_url=None,
         discord_tts=False,
     ):
-
         results = []
 
         settings.USE_KODI = config.checkbox_to_value(use_kodi)

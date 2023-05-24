@@ -4,6 +4,7 @@ from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings
 from sickchill.oldbeard import common, helpers
+from sickchill.oldbeard.classes import UIError
 
 
 class Notifier(object):
@@ -53,8 +54,10 @@ class Notifier(object):
             pushbullet_api=None, event=common.notifyStrings[common.NOTIFY_LOGIN], message=common.notifyStrings[common.NOTIFY_LOGIN_TEXT].format(ipaddress)
         )
 
-    def _sendPushbullet(self, pushbullet_api=None, pushbullet_device=None, pushbullet_channel=None, event=None, message=None, link=None, force=False):
+    def notify_logged_error(self, ui_error: UIError):
+        self._sendPushbullet(pushbullet_api=None, event=ui_error.title, message=ui_error.message)
 
+    def _sendPushbullet(self, pushbullet_api=None, pushbullet_device=None, pushbullet_channel=None, event=None, message=None, link=None, force=False):
         if not (settings.USE_PUSHBULLET or force):
             return False
 

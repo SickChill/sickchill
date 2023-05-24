@@ -15,7 +15,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("KickAssTorrents")
 
         self.public = True
@@ -54,7 +53,6 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
-
                 # search_params["q"] = (search_string, None)[mode == "RSS"]
                 search_params["field"] = ("seeders", "time_add")[mode == "RSS"]
 
@@ -160,8 +158,7 @@ class Provider(TorrentProvider):
             logger.info("Setting mirror to use to {url}".format(url=self.url))
         else:
             logger.warning(
-                "Unable to get a working mirror for kickasstorrents, you might need to enable another provider and disable KAT until KAT starts working "
-                "again."
+                "Unable to get a working mirror for KickassTorrent. You might need to enable another provider and disable KAT until it starts working again."
             )
 
         self.urls = {"search": urljoin(self.url, "/usearch/{q}/"), "rss": urljoin(self.url, "/tv/")}

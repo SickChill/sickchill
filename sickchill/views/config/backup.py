@@ -28,7 +28,6 @@ class ConfigBackupRestore(Config):
 
     @staticmethod
     def backup(backupDir=None):
-
         finalResult = ""
 
         if backupDir:
@@ -40,7 +39,7 @@ class ConfigBackupRestore(Config):
             ]
             target = os.path.join(backupDir, "sickchill-" + time.strftime("%Y%m%d%H%M%S") + ".zip")
 
-            for (path, dirs, files) in os.walk(settings.CACHE_DIR, topdown=True):
+            for path, dirs, files in os.walk(settings.CACHE_DIR, topdown=True):
                 for dirname in dirs:
                     if path == settings.CACHE_DIR and dirname not in ["images"]:
                         dirs.remove(dirname)
@@ -60,7 +59,6 @@ class ConfigBackupRestore(Config):
 
     @staticmethod
     def restore(backupFile=None):
-
         finalResult = ""
 
         if backupFile:

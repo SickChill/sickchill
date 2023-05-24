@@ -84,7 +84,6 @@ class ConfigSearch(Config):
         prefer_words=None,
         flaresolverr_uri=None,
     ):
-
         results = []
 
         if not config.change_nzb_dir(nzb_dir):

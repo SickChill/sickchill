@@ -12,7 +12,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("HoundDawgs")
 
         self.username = None
@@ -75,7 +74,6 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
-
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
@@ -105,7 +103,6 @@ class Provider(TorrentProvider):
                         del entries[1::2]
 
                         for result in entries[1:]:
-
                             torrent = result("td")
                             if len(torrent) <= 1:
                                 break

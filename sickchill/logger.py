@@ -15,7 +15,7 @@ from github.GithubException import RateLimitExceededException, TwoFactorExceptio
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
 from sickchill.init_helpers import get_current_version
-from sickchill.oldbeard import classes
+from sickchill.oldbeard import classes, notifiers
 
 # log levels
 ERROR = logging.ERROR
@@ -77,6 +77,8 @@ class DispatchFormatter(logging.Formatter, object):
 
         if record.levelno == ERROR:
             classes.ErrorViewer.add(classes.UIError(msg))
+            notifiers.notify_logged_error(classes.UIError(msg))
+
         elif record.levelno == WARNING:
             classes.WarningViewer.add(classes.UIError(msg))
 
@@ -202,7 +204,6 @@ class Logger(object):
             sys.exit(1)
 
     def submit_errors(self):
-
         submitter_result = ""
         issue_id = None
 
@@ -324,7 +325,6 @@ class Logger(object):
                         or (malformed_error and is_malformed_error(report.title))
                         or (ascii_error and is_ascii_error(report.title))
                     ):
-
                         issue_id = report.number
                         if not report.raw_data["locked"]:
                             if report.create_comment(message):

@@ -184,7 +184,6 @@ class sbdatetime(datetime.datetime):
             strd = "UNK"
 
         finally:
-
             try:
                 locale.setlocale(locale.LC_TIME, "")
             except Exception:

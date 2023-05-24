@@ -76,7 +76,6 @@ class SearchResult(object):
         return result
 
     def __str__(self):
-
         if self.provider is None:
             return "Invalid provider, unable to print self"
 

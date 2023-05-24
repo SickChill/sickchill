@@ -47,7 +47,6 @@ class ConfigSubtitles(Config):
         subscenter_pass=None,
         subtitles_keep_only_wanted=None,
     ):
-
         config.change_subtitle_finder_frequency(subtitles_finder_frequency)
         config.change_use_subtitles(use_subtitles)
 

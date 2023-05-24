@@ -116,7 +116,7 @@ function updateImages(data) {
 function checkManualSearches() {
     let pollInterval = 5000;
     const showId = $('#showID').val();
-    const url = showId !== undefined ? searchStatusUrl + '?show=' + showId : searchStatusUrl; // eslint-disable-line no-negated-condition
+    const url = showId ? searchStatusUrl + '?show=' + showId : searchStatusUrl;
     $.ajax({
         url,
         success(data) {

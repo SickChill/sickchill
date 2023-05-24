@@ -92,7 +92,6 @@ class ProperFinder(object):
         finalPropers = []
 
         for curProper in sortedPropers:
-
             try:
                 parse_result = NameParser(False).parse(curProper.name)
             except (InvalidNameException, InvalidShowException) as error:
@@ -209,7 +208,6 @@ class ProperFinder(object):
                 continue
 
             else:
-
                 # make sure that none of the existing history downloads are the same proper we're trying to download
                 clean_proper_name = self._genericName(helpers.remove_non_release_groups(curProper.name))
                 isSame = False

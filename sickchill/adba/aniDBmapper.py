@@ -203,7 +203,6 @@ class AniDBMapper:
         return map
 
     def checkMapping(self, verbos=False):
-
         print("------")
         print(f"File F: {self.checkMapFileF(verbos)}")
         print("------")

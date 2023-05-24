@@ -56,11 +56,9 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [fixed_status, episode_id])
 
     def fix_duplicate_shows(self, column="indexer_id"):
-
         sql_results = self.connection.select(f"SELECT show_id, {column}, COUNT({column}) as count FROM tv_shows GROUP BY {column} HAVING count > 1")
 
         for cur_duplicate in sql_results:
-
             logger.debug(
                 _("Duplicate show detected! {column}: {dupe} count: {count}".format(column=column, dupe=cur_duplicate[column], count=cur_duplicate["count"]))
             )
@@ -80,7 +78,6 @@ class MainSanityCheck(db.DBSanityCheck):
                 self.connection.action("DELETE FROM tv_shows WHERE show_id = ?", [cur_dupe_id["show_id"]])
 
     def fix_duplicate_episodes(self):
-
         sql_results = self.connection.select(
             "SELECT showid, season, episode, COUNT(showid) as count FROM tv_episodes GROUP BY showid, season, episode HAVING count > 1"
         )
@@ -109,7 +106,6 @@ class MainSanityCheck(db.DBSanityCheck):
                 self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [current_episode_id])
 
     def fix_orphan_episodes(self):
-
         sql_results = self.connection.select(
             "SELECT episode_id, showid, tv_shows.indexer_id FROM tv_episodes "
             "LEFT JOIN tv_shows ON tv_episodes.showid=tv_shows.indexer_id WHERE tv_shows.indexer_id is NULL"
@@ -154,7 +150,6 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season, episode, status, airdate)")
 
     def fix_unaired_episodes(self):
-
         current_date = datetime.date.today()
         sql_results = self.connection.select(
             "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
@@ -182,7 +177,6 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNKNOWN, current_episode_id])
 
     def fix_invalid_airdates(self):
-
         sql_results = self.connection.select("SELECT episode_id, showid FROM tv_episodes WHERE airdate >= ? OR airdate < 1", [datetime.date.max.toordinal()])
 
         for bad_airdate in sql_results:

@@ -8,7 +8,6 @@ from sickchill.oldbeard import common
 
 
 class Notifier(object):
-
     ROCKETCHAT_ICON_URL = "https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png"
 
     def notify_snatch(self, ep_name):

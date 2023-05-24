@@ -12,7 +12,6 @@ class QueuePriorities(object):
 
 class GenericQueue(object):
     def __init__(self):
-
         self.amActive = False
 
         self.currentItem = None
@@ -65,7 +64,6 @@ class GenericQueue(object):
         with self.lock:
             # only start a new task if one isn't already going
             if self.currentItem is None or not self.currentItem.is_alive():
-
                 # if the thread is dead then the current item should be finished
                 if self.currentItem:
                     self.currentItem.finish()
@@ -73,7 +71,6 @@ class GenericQueue(object):
 
                 # if there's something in the queue then run it in a thread and take it out of the queue
                 if self.queue:
-
                     from functools import cmp_to_key
 
                     # sort by priority

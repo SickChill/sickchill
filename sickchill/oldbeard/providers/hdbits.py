@@ -10,7 +10,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("HDBits")
 
         self.username = None
@@ -22,7 +21,6 @@ class Provider(TorrentProvider):
         self.urls = {"search": urljoin(self.url, "/api/torrents"), "rss": urljoin(self.url, "/api/torrents"), "download": urljoin(self.url, "/download.php")}
 
     def _check_auth(self):
-
         if not self.username or not self.passkey:
             raise AuthException("Your authentication credentials for " + self.name + " are missing, check your config.")
 
@@ -52,7 +50,6 @@ class Provider(TorrentProvider):
         return title, url
 
     def search(self, search_params, age=0, ep_obj=None):
-
         # FIXME
         results = []
 
@@ -96,7 +93,6 @@ class Provider(TorrentProvider):
         return results
 
     def make_post_data_JSON(self, show=None, episode=None, season=None, search_term=None):
-
         post_data = {
             "username": self.username,
             "passkey": self.passkey,

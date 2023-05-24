@@ -16,7 +16,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("BTN")
 
         self.supports_absolute_numbering = True
@@ -39,7 +38,6 @@ class Provider(TorrentProvider):
         return True
 
     def _check_auth_from_data(self, parsed_json):
-
         if parsed_json is None:
             return self._check_auth()
 
@@ -50,7 +48,6 @@ class Provider(TorrentProvider):
         return True
 
     def search(self, search_params, age=0, ep_obj=None):  # pylint:disable=too-many-locals
-
         self._check_auth()
 
         results = []
@@ -71,7 +68,6 @@ class Provider(TorrentProvider):
             return results
 
         if self._check_auth_from_data(parsed_json):
-
             if "torrents" in parsed_json:
                 found_torrents = parsed_json["torrents"]
             else:
@@ -108,7 +104,6 @@ class Provider(TorrentProvider):
         return results
 
     def _api_call(self, apikey, params=None, results_per_page=1000, offset=0):
-
         server = jsonrpclib.Server(self.urls["base_url"])
         parsed_json = {}
 
@@ -142,7 +137,6 @@ class Provider(TorrentProvider):
         return parsed_json
 
     def _get_title_and_url(self, parsed_json):
-
         # The BTN API gives a lot of information in response,
         # however SickChill is built mostly around Scene or
         # release names, which is why we are using them here.
@@ -211,7 +205,6 @@ class Provider(TorrentProvider):
         return search_params
 
     def get_episode_search_strings(self, ep_obj, add_string=""):
-
         if not ep_obj:
             return [{}]
 

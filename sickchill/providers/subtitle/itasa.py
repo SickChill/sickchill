@@ -178,7 +178,6 @@ class ItaSAProvider(Provider):
         # Not in the first page of result try next (if any)
         next_page = root.find("data/next")
         while next_page.text is not None:  # pragma: no cover
-
             r = self.session.get(next_page.text, timeout=10)
             r.raise_for_status()
             root = ElementTree.fromstring(r.content)
@@ -291,7 +290,6 @@ class ItaSAProvider(Provider):
         return subs
 
     def query(self, series, season, episode, source, resolution, country=None):
-
         # To make queries you need to be logged in
         if not self.logged_in:  # pragma: no cover
             raise ConfigurationError("Cannot query if not logged in")
@@ -358,7 +356,6 @@ class ItaSAProvider(Provider):
         # Looking for subtitles in first page
         for subtitle in root.findall("data/subtitles/subtitle"):
             if "%dx%02d" % (season, episode) in subtitle.find("name").text.lower():
-
                 logger.debug("Found subtitle id %d - %r - %r", int(subtitle.find("id").text), subtitle.find("name").text, subtitle.find("version").text)
 
                 sub = ItaSASubtitle(
@@ -370,7 +367,6 @@ class ItaSAProvider(Provider):
         # Not in the first page of result try next (if any)
         next_page = root.find("data/next")
         while next_page.text is not None:  # pragma: no cover
-
             r = self.session.get(next_page.text, timeout=30)
             r.raise_for_status()
             root = ElementTree.fromstring(r.content)
@@ -380,7 +376,6 @@ class ItaSAProvider(Provider):
             # Looking for show in following pages
             for subtitle in root.findall("data/subtitles/subtitle"):
                 if "%dx%02d" % (season, episode) in subtitle.find("name").text.lower():
-
                     logger.debug("Found subtitle id %d - %r - %r", int(subtitle.find("id").text), subtitle.find("name").text, subtitle.find("version").text)
 
                     sub = ItaSASubtitle(
@@ -394,7 +389,6 @@ class ItaSAProvider(Provider):
         # Download the subs found, can be more than one in zip
         additional_subs = []
         for sub in subtitles:
-
             # open the zip
             content = self._download_zip(sub.sub_id)
             if not is_zipfile(io.BytesIO(content)):  # pragma: no cover
@@ -405,9 +399,7 @@ class ItaSAProvider(Provider):
 
             with ZipFile(io.BytesIO(content)) as zf:
                 if len(zf.namelist()) > 1:  # pragma: no cover
-
                     for index, name in enumerate(zf.namelist()):
-
                         if index == 0:
                             # First element
                             sub.content = fix_line_ending(zf.read(name))

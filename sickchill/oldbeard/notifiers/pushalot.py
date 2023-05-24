@@ -37,7 +37,6 @@ class Notifier(object):
         self._sendPushalot(pushalot_authorizationtoken=None, event=title, message=update_text.format(ipaddress))
 
     def _sendPushalot(self, pushalot_authorizationtoken=None, event=None, message=None, force=False):
-
         if not (settings.USE_PUSHALOT or force):
             return False
 

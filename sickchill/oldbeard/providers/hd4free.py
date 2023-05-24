@@ -8,7 +8,6 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 class Provider(TorrentProvider):
     def __init__(self):
-
         super().__init__("HD4Free")
 
         self.url = "https://hd4free.xyz"

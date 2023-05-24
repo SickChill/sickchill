@@ -19,7 +19,6 @@ class Provider(NZBProvider):
         self.proper_strings = [".PROPER.", ".REPACK."]
 
     def _check_auth(self):
-
         if not self.username or not self.api_key:
             logger.warning("Invalid api key. Check your settings")
             return False
@@ -27,7 +26,6 @@ class Provider(NZBProvider):
         return True
 
     def _check_auth_from_data(self, parsed_data, is_XML=True):
-
         if not parsed_data:
             return self._check_auth()
 

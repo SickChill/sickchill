@@ -11,7 +11,7 @@ from sickchill.update_manager import pip
 def updater(caplog):
     with caplog.at_level(logging.WARNING, logger="root"):
         caplog.set_level(logging.DEBUG, logger="sickchill")
-        caplog.set_level(logging.WARNING, logger="cachecontrol")
+        caplog.set_level(logging.WARNING, logger="cacheyou")
         caplog.set_level(logging.WARNING, logger="urllib3")
         fixture = pip.PipUpdateManager()
         fixture.version_text = "2022.9.14"

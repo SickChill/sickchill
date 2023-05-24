@@ -278,6 +278,7 @@ NO_RESIZE = False
 NO_RESTART = False
 notificationsTaskScheduler = None
 NOTIFY_ON_LOGIN = False
+NOTIFY_ON_LOGGED_ERROR = False
 NOTIFY_ON_UPDATE = False
 NZB_DIR = None
 NZB_METHOD = None

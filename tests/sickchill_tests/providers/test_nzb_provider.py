@@ -39,7 +39,7 @@ class NZBProviderTests(GenericProviderTests):
             (True, True): True,
         }
 
-        for ((use_nzb, enabled), result) in test_cases.items():
+        for (use_nzb, enabled), result in test_cases.items():
             settings.USE_NZBS = use_nzb
 
             provider = NZBProvider("Test Provider")
@@ -99,10 +99,10 @@ class NZBProviderTests(GenericProviderTests):
             len(unicode_items_list), len(unicode_results_list)
         )
 
-        for (index, item) in enumerate(items_list):
+        for index, item in enumerate(items_list):
             assert NZBProvider("Test Provider")._get_size(item) == results_list[index]
 
-        for (index, item) in enumerate(unicode_items_list):
+        for index, item in enumerate(unicode_items_list):
             assert NZBProvider("Test Provider")._get_size(item) == unicode_results_list[index]
 
     def test__get_storage_dir(self):

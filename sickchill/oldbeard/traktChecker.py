@@ -18,7 +18,6 @@ def setEpisodeToWanted(show, s, e):
     """
     epObj = show.getEpisode(s, e)
     if epObj:
-
         with epObj.lock:
             if epObj.status != SKIPPED or epObj.airdate == datetime.date.min:
                 return
@@ -85,7 +84,6 @@ class TraktChecker(object):
 
     def removeShowFromTraktLibrary(self, show_obj):
         if self.findShow(show_obj.indexer, show_obj.indexerid):
-
             # URL parameters
             data = {"shows": [{"title": show_obj.name, "year": show_obj.startyear, "ids": {show_obj.idxr.slug: show_obj.indexerid}}]}
 
@@ -528,7 +526,6 @@ class TraktChecker(object):
             for slug in self.ShowWatchlist:
                 for watchlist_el in TraktShowWatchlist:
                     if watchlist_el["show"]["ids"][slug]:
-
                         title = watchlist_el["show"]["title"]
                         year = str(watchlist_el["show"]["year"])
 
@@ -549,7 +546,6 @@ class TraktChecker(object):
             for slug in self.EpisodeWatchlist:
                 for watchlist_el in TraktEpisodeWatchlist:
                     if watchlist_el["show"]["ids"][slug]:
-
                         title = watchlist_el["show"]["title"]
                         year = str(watchlist_el["show"]["year"])
                         season = str(watchlist_el["episode"]["season"])

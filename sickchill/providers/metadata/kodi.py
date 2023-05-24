@@ -44,7 +44,6 @@ class KODIMetadata(generic.GenericMetadata):
         season_all_poster=False,
         season_all_banner=False,
     ):
-
         super().__init__(
             show_metadata, episode_metadata, fanart, poster, banner, episode_thumbnails, season_posters, season_banners, season_all_poster, season_all_banner
         )
@@ -195,7 +194,6 @@ class KODIMetadata(generic.GenericMetadata):
 
         # write an NFO containing info for all matching episodes
         for curEpToWrite in eps_to_write:
-
             myEp = curEpToWrite.idxr.episode(curEpToWrite)
             if not myEp:
                 logger.info(

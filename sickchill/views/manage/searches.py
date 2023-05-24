@@ -38,7 +38,6 @@ class ManageSearches(Manage):
         return self.redirect("/manage/manageSearches/")
 
     def forceSearch(self):
-
         # force it to run the next time it looks
         result = settings.dailySearchScheduler.forceRun()
         if result:

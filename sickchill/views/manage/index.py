@@ -124,7 +124,6 @@ class Manage(Home, WebRoot):
 
         main_db_con = db.DBConnection()
         for cur_indexer_id in to_change:
-
             # get a list of all the eps we want to change if they just said "all"
             if "all" in to_change[cur_indexer_id]:
                 all_eps_results = main_db_con.select(
@@ -279,7 +278,6 @@ class Manage(Home, WebRoot):
 
         main_db_con = db.DBConnection()
         for curShow in settings.showList:
-
             epCounts = {
                 Overview.SKIPPED: 0,
                 Overview.WANTED: 0,
@@ -302,7 +300,6 @@ class Manage(Home, WebRoot):
             for curResult in sql_results:
                 curEpCat = curShow.getOverview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
                 if curEpCat:
-
                     epCats["{ep}".format(ep=episode_num(curResult["season"], curResult["episode"]))] = curEpCat
                     epCounts[curEpCat] += 1
 
@@ -405,7 +402,6 @@ class Manage(Home, WebRoot):
         root_dir_list = []
 
         for curShow in showList:
-
             cur_root_dir = self.__gooey_path(curShow._location, "dirname")
             if cur_root_dir and cur_root_dir != curShow._location and cur_root_dir not in root_dir_list:
                 root_dir_list.append(cur_root_dir)
@@ -617,7 +613,6 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None, toSubtitle=None):
-
         toUpdate = toUpdate.split("|") if toUpdate else []
         toRefresh = toRefresh.split("|") if toRefresh else []
         toRename = toRename.split("|") if toRename else []
@@ -633,7 +628,6 @@ class Manage(Home, WebRoot):
         subtitles = []
 
         for curShowID in set(toUpdate + toRefresh + toRename + toSubtitle + toDelete + toRemove + toMetadata):
-
             if curShowID == "":
                 continue
 

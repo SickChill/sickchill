@@ -37,7 +37,7 @@ class RestartTests(unittest.TestCase):
         }
 
         for tests in test_cases, unicode_test_cases:
-            for (pid, result) in tests.items():
+            for pid, result in tests.items():
                 assert Restart.restart(pid) == result
 
 

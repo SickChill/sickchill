@@ -34,7 +34,6 @@ class Notifier(object):
         self._sendGrowl(title, update_text.format(ipaddress))
 
     def _send_growl(self, options, message=None):
-
         # Send Notification
         notice = gntp.core.GNTPNotice()
 

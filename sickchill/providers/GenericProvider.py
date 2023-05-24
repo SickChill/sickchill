@@ -210,12 +210,7 @@ class GenericProvider(object):
                         [
                             parse_result.season_number is not None,
                             parse_result.episode_numbers,
-                            [
-                                ep
-                                for ep in episodes
-                                if (ep.season, ep.scene_season)[ep.show.is_scene] == (parse_result.season_number, parse_result.scene_season)[ep.show.is_scene]
-                                and (ep.episode, ep.scene_episode)[ep.show.is_scene] in parse_result.episode_numbers
-                            ],
+                            [ep for ep in episodes if ep.season == parse_result.season_number and ep.episode in parse_result.episode_numbers],
                         ]
                     ) and not all(
                         [
@@ -225,7 +220,6 @@ class GenericProvider(object):
                             [ep for ep in episodes if ep.show.is_anime and ep.absolute_number in parse_result.ab_episode_numbers],
                         ]
                     ):
-
                         logger.info(f"The result {title} doesn't seem to match an episode that we are currently trying to snatch, skipping it")
                         skip_release = True
 
@@ -313,7 +307,6 @@ class GenericProvider(object):
                 results[episode_number].append(result)
 
         if cl:
-
             # Access to a protected member of a client class
             cache_db = self.cache._get_db()
             cache_db.mass_upsert("results", cl)
@@ -345,7 +338,7 @@ class GenericProvider(object):
 
     def get_url(self, url, post_data=None, params=None, timeout=30, **kwargs):
         kwargs["hooks"] = {"response": self.get_url_hook}
-        return getURL(url, post_data, params, self.headers, timeout, self.session, **kwargs)
+        return getURL(url, post_data=post_data, params=params, headers=self.headers, timeout=timeout, session=self.session, **kwargs)
 
     def image_name(self):
         return self.get_id() + ".png"

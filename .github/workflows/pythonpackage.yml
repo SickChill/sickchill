@@ -87,15 +87,15 @@ jobs:
         include:
           -
             os: ubuntu-22.04
-            python-version: "3.11.0-rc.2"
+            python-version: "3.12-dev"
             experimental: true
           -
             os: windows-latest
-            python-version: "3.10"
+            python-version: "3.11"
             experimental: true
           -
             os: macos-latest
-            python-version: "3.10"
+            python-version: "3.11"
             experimental: true
           -
             os: ubuntu-22.04
@@ -171,6 +171,8 @@ jobs:
       run: |
         poetry run pip install --upgrade setuptools wheel
         poetry install --no-interaction --with dev --with speedups
+        poetry run pip install --upgrade pytest-github-actions-annotate-failures
+
     -
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
       name: Run yarn
@@ -211,7 +213,7 @@ jobs:
         config: /tmp/buildkitd.toml
     -
       name: Test Docker Build
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         platforms: linux/amd64
         push: false
@@ -272,7 +274,7 @@ jobs:
     -
       if: github.actor == 'miigotu'
       name: Build and Push
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         platforms: ${{ env.TARGET_PLATFORMS }}
         push: ${{ github.event_name != 'pull_request' && !env.ACT }}
@@ -288,7 +290,7 @@ jobs:
     -
       if: github.actor == 'miigotu'
       name: Snag wheels
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         file: Dockerfile
         platforms: ${{ env.TARGET_PLATFORMS }}

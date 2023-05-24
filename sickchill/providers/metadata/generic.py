@@ -44,7 +44,6 @@ class GenericMetadata(object):
         season_all_poster=False,
         season_all_banner=False,
     ):
-
         self.name = "Generic"
 
         self._ep_nfo_extension = "nfo"
@@ -292,11 +291,14 @@ class GenericMetadata(object):
                     try:
                         if not hasattr(ep_obj, attribute_map[attribute]):
                             continue
-
                         node = episodeXML.find(attribute)
-                        if node is None or node.text == str(getattr(ep_obj, attribute_map[attribute])):
+                        if node is None:
                             continue
 
+                        text1 = "".join(node.text.splitlines())
+                        text2 = "".join(str(getattr(ep_obj, attribute_map[attribute])).splitlines())
+                        if text1 == text2:
+                            continue
                         node.text = str(getattr(ep_obj, attribute_map[attribute]))
                         changed = True
                     except AttributeError:

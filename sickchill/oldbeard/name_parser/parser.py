@@ -27,7 +27,6 @@ class NameParser(object):
     ANIME_REGEX = 2
 
     def __init__(self, filename: bool = True, showObj=None, tryIndexers: bool = False, naming_pattern: bool = False, parse_method: str = None):
-
         self.filename: bool = filename
         self.showObj: TVShow = showObj
         self.tryIndexers: bool = tryIndexers
@@ -88,7 +87,7 @@ class NameParser(object):
         matches = []
         best_result = None
 
-        for (cur_regex_num, cur_regex_name, cur_regex) in self.compiled_regexes:
+        for cur_regex_num, cur_regex_name, cur_regex in self.compiled_regexes:
             match = cur_regex.match(name)
 
             if not match:
@@ -508,7 +507,6 @@ class ParseResult(object):
         quality=None,
         version=None,
     ):
-
         self.original_name = original_name
 
         self.series_name = series_name
