@@ -24,7 +24,7 @@
     "@babel/preset-env": "^7.19.4",
     "@popperjs/core": "^2.11.6",
     "@webpack-cli/generators": "^3.0.0",
-    "ava": "^5.0.1",
+    "ava": "^5.3.0",
     "babel-loader": "^9.0.0",
     "bootstrap": "^5.2.2",
     "bower": "^1.8.13",
