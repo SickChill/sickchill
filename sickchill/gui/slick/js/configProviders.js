@@ -68,7 +68,7 @@ $(document).ready(function () {
             url = 'http://' + url;
         }
 
-        if (url.match('/$') === null) {
+        if (url.match('/$') === null && url.match(/morethantv/i) == null) {
             url += '/';
         }
 

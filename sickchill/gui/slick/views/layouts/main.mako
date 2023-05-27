@@ -255,10 +255,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a href="${static_url("news/", include_version=False)}"><i class="fa fa-fw fa-newspaper-o"></i>&nbsp;${_('News')}${newsBadge}</a></li>
-                                    <li><a href="${static_url("IRC/", include_version=False)}"><i class="fa fa-fw fa-hashtag"></i>&nbsp;${_('IRC')}</a></li>
                                     <li><a href="https://discord.gg/U8WPBdf"><i class="fa fa-fw fa-discord-alt"></i>&nbsp;${_('Discord')}</a></li>
-                                    <li><a href="https://sickchill.slack.com"><i class="fa fa-fw fa-slack"></i>&nbsp;${_('Slack')}</a></li>
-                                    <li><a href="https://t.me/sickchill"><i class="fa fa-fw fa-telegram"></i>&nbsp;${_('Telegram')}</a></li>
                                     <li><a href="${static_url("changes/", include_version=False)}"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
                                     <li><a href="https://github.com/SickChill/SickChill/wiki/Donations" rel="noreferrer" onclick="window.open('${settings.ANON_REDIRECT}' + this.href); return false;"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickChill')}</a></li>
                                     <li role="separator" class="divider"></li>
@@ -395,6 +392,20 @@
                 <script type="text/javascript" src="${static_url('js/lib/formwizard.js')}"></script><!-- Can't be added to bower -->
                 <script type="text/javascript" src="${static_url('js/parsers.js')}"></script>
                 <script type="text/javascript" src="${static_url('js/rootDirs.js')}"></script>
+                <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
+                    const button = new Crate({
+                      server: '502612977271439372', // sickchill
+                      channel: '502612977803984898', // #chat
+                      defer: true
+                    });
+
+                    // Random color every 300 milliseconds
+                    setInterval(() => {
+                      button.options.color = "#000000".replace(/0/g, () => {
+                          return (~~(Math.random() * 16)).toString(16)
+                      })
+                    }, 600)
+                </script>
                 % if settings.DEVELOPER:
                     <script type="text/javascript" src="${static_url('js/core.js')}"></script>
                 % else:

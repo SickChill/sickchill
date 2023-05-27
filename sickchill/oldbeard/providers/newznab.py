@@ -118,6 +118,19 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         self._caps = any([self.cap_tv_search])
 
+    @property
+    def request_url(self) -> str:
+        url_parts: list = self.url.lower().split("/")
+        if "api" in url_parts and url_parts.index("api") > 2:
+            response = self.url
+        else:
+            response = urljoin(self.url, "api")
+
+        if "morethantv" in response.lower():
+            response = response.rstrip("/")
+
+        return response
+
     def get_newznab_categories(self, just_caps=False):
         """
         Uses the newznab provider url and apikey to get the capabilities.
@@ -134,7 +147,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
         if self.needs_auth and self.key:
             url_params["apikey"] = self.key
 
-        data = self.get_url(urljoin(self.url, "api"), params=url_params, returns="text")
+        data = self.get_url(self.request_url, params=url_params, returns="text")
         if not data:
             error_string = "Error getting caps xml for [{0}]".format(self.name)
             logger.warning(error_string)
@@ -301,7 +314,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                         search_params["q"] = search_string
 
                 time.sleep(cpu_presets[settings.CPU_PRESET])
-                data = self.get_url(urljoin(self.url, "api"), params=search_params, returns="text")
+                data = self.get_url(self.request_url, params=search_params, returns="text")
 
                 if not data:
                     logger.debug("No data was returned from the provider")
