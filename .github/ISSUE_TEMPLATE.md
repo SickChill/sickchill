@@ -1,5 +1,5 @@
 ## Notice:
-Ther issue tracker, wiki,and discussions tab on GitHub is going to be archived/disabled in the near future for SickChill, and all issues, discussions, support,  pkease consider raising your issue there ittcommunication, and feature requests will be handled only on discord.
+The issue tracker, wiki,and discussions tab on GitHub is going to be archived/disabled in the near future for SickChill. All issues, discussions, support, guides, feature requests, and communication will be handled on [discord](https://discord.gg/FXre9qkHwE). Please consider raising your issue there instead. 
 
 ## Before submitting your issue:
 
