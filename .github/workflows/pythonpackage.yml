@@ -158,7 +158,7 @@ jobs:
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.12-dev'
       name: Use mdboom-greenlet PR for python-3.12 until merged
       run: |
-        poetry add "https://github.com/mdboom/greenlet.git#python-312"
+        poetry run pip install --upgrade git+https://github.com/mdboom/greenlet@python-312
     -
       name: Install dependencies
       run: |
