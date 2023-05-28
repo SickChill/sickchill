@@ -86,10 +86,6 @@ jobs:
         experimental: [false]
         include:
           -
-            os: ubuntu-latest
-            python-version: "3.12-dev"
-            experimental: true
-          -
             os: windows-latest
             python-version: "3.11"
             experimental: false
@@ -143,30 +139,21 @@ jobs:
       name: Install yarn
       run: npm install -g yarn
     -
-      name: Update pip
+      name: Install python dependency tools
       run: |
-        curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-        poetry run python get-pip.py
-        rm get-pip.py
+        poetry run pip install --upgrade pip
+        poetry run pip install --upgrade setuptools wheel
     -
-      name: Output poetry info
+      name: Output tooling environment information
       run: |
-        which poetry
-        poetry env info
-        python -V
-    -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.12-dev'
-      name: Use mdboom-greenlet PR for python-3.12 until merged
-      run: |
-        sed -i 's#^greenlet.*$#greenlet = {git="https://github.com/mdboom/greenlet.git", branch="python-312"}#' pyproject.toml
-        sed -i 's#^lxml.*$#lxml = {git="https://github.com/lxml/lxml.git", branch="master"}#' pyproject.toml
+        echo -e "$(poetry --version --ansi) is at $(which poetry)\n$(poetry env info --ansi)\n\v$(poetry --ansi run pip -V)"
     -
       name: Install dependencies
       run: |
+        poetry run pip install --upgrade pip
         poetry run pip install --upgrade setuptools wheel
-        poetry install --no-interaction --with dev --with speedups
         poetry run pip install --upgrade pytest-github-actions-annotate-failures
-
+        poetry install --no-interaction --with dev --with speedups
     -
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.11'
       name: Run yarn
