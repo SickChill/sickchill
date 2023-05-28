@@ -3,7 +3,7 @@
 ---
 
 ###  Important Notice*
-Issue/Bug tracking, feature requests, support, amd developer communication is moving strictly to [discord](https://discord.gg/FXre9qkHwE) - please start making the habit to go there, rather than creating issues on GitHub. After a period of time GitHub issue tracker, discussions, and other social features will be disabled on GitHub.
+Issue/Bug tracking, feature requests, support, and developer communication is moving strictly to [discord](https://discord.gg/FXre9qkHwE) - please start making the habit to go there, rather than creating issues on GitHub. After a period of time GitHub issue tracker, discussions, and other social features will be disabled on GitHub.
 
 ---
 [![Language](https://img.shields.io/github/languages/top/sickchill/sickchill?logo=python&style=plastic)](https://python.org)
