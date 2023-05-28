@@ -58,6 +58,7 @@ class NotificationsQueue(generic_queue.GenericQueue):
     def add_item(self, message, notifier="discord", force_next=False):
         added = False
         item = None
+        
         if not settings.USE_DISCORD:
             logger.debug("Notification for Discord not enabled, skipping this notification")
             return added
@@ -134,7 +135,7 @@ class DiscordTask(generic_queue.QueueItem):
         discord_name = name or settings.DISCORD_NAME
         avatar_icon = avatar or settings.DISCORD_AVATAR_URL
         discord_tts = bool(settings.DISCORD_TTS if tts is None else tts)
- 
+
         if not settings.USE_DISCORD:
             logger.debug("Notification for Discord not enabled, skipping this notification")
             return False
