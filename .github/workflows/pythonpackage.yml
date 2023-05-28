@@ -17,7 +17,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   SLEEP: 60
@@ -33,7 +33,7 @@ defaults:
 
 jobs:
   Environment:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       docker_tags: ${{ steps.docker.outputs.tags }}
       docker_labels: ${{ steps.docker.outputs.labels }}
@@ -81,34 +81,22 @@ jobs:
   Test:
     strategy:
       matrix:
-        os: [ubuntu-22.04]
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        os: [ubuntu-latest]
+        python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
         experimental: [false]
         include:
           -
-            os: ubuntu-22.04
+            os: ubuntu-latest
             python-version: "3.12-dev"
             experimental: true
           -
             os: windows-latest
             python-version: "3.11"
-            experimental: true
+            experimental: false
           -
             os: macos-latest
             python-version: "3.11"
-            experimental: true
-          -
-            os: ubuntu-22.04
-            python-version: "pypy3.9-v7.3.8"
-            experimental: true
-          -
-            os: ubuntu-22.04
-            python-version: "pypy3.8-v7.3.9"
-            experimental: true
-          -
-            os: ubuntu-22.04
-            python-version: "pypy3.7-v7.3.9"
-            experimental: true
+            experimental: false
       fail-fast: true
     continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
@@ -167,6 +155,11 @@ jobs:
         poetry env info
         python -V
     -
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.12-dev'
+      name: Use mdboom-greenlet PR for python-3.12 until merged
+      run: |
+        poetry add "https://github.com/mdboom/greenlet.git#python-312"
+    -
       name: Install dependencies
       run: |
         poetry run pip install --upgrade setuptools wheel
@@ -174,15 +167,15 @@ jobs:
         poetry run pip install --upgrade pytest-github-actions-annotate-failures
 
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.11'
       name: Run yarn
       run: poetry run poe yarn
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.11'
       name: Lint Python
       run: poetry run poe lint
     -
-      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
+      if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.11'
       name: Lint and test Javascript
       run: poetry run poe yarn test
     -
