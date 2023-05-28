@@ -159,6 +159,7 @@ jobs:
       name: Use mdboom-greenlet PR for python-3.12 until merged
       run: |
         sed -i 's#^greenlet.*$#greenlet = {git="https://github.com/mdboom/greenlet.git", branch="python-312"}#' pyproject.toml
+        sed -i 's#^lxml.*$#lxml = {git="https://github.com/lxml/lxml.git", branch="master"}#' pyproject.toml
     -
       name: Install dependencies
       run: |
