@@ -58,7 +58,7 @@ class NotificationsQueue(generic_queue.GenericQueue):
     def add_item(self, message, notifier="discord", force_next=False):
         added = False
         item = None
-        
+
         if not settings.USE_DISCORD:
             logger.debug("Notification for Discord not enabled, skipping this notification")
             return added
