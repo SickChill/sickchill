@@ -257,7 +257,7 @@ pybabel update
 python = ">=3.7.2,<4"
 "bencode.py" = "^4.0.0"
 configobj = "^5.0.6"
-greenlet = {version = ">=1.1.2", allow-prereleases = true}
+greenlet = {version = ">=2.0.0", allow-prereleases = true}
 ipaddress = "^1.0.23"
 jsonrpclib-pelix = "^0.4.2"
 Mako = "^1.1.4"
