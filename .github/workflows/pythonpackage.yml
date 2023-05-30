@@ -141,18 +141,15 @@ jobs:
     -
       name: Install python dependency tools
       run: |
-        poetry run pip install --upgrade pip
         poetry run pip install --upgrade setuptools wheel
+        poetry run pip install --upgrade pytest-github-actions-annotate-failures
     -
       name: Output tooling environment information
       run: |
         echo -e "$(poetry --version --ansi) is at $(which poetry)\n$(poetry env info --ansi)\n\v$(poetry --ansi run pip -V)"
     -
-      name: Install dependencies
+      name: Install sickchill
       run: |
-        poetry run pip install --upgrade pip
-        poetry run pip install --upgrade setuptools wheel
-        poetry run pip install --upgrade pytest-github-actions-annotate-failures
         poetry install --no-interaction --with dev --with speedups
     -
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.11'
