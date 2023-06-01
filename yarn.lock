@@ -9241,10 +9241,10 @@ smart-buffer@^4.2.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
-snyk@^1.1163.0:
-  version "1.1170.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1170.0.tgz#c53610a80325663b2e4b9913c45e3cc8fe861d5b"
-  integrity sha512-CPblFc7oPTJq5lZQAmXvywxy2pRZD8apu/M9M8NX8J+7lGPI/oAQj0lGypc3oxpf4/29BrKnpJoJFTa/Wz/UYQ==
+snyk@^1.1171.0:
+  version "1.1171.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1171.0.tgz#577648eddfd95ecb63d6ea3e4cc5a3cf88709c72"
+  integrity sha512-QzxLXrnAgrKEbTn6LRx03mSiTffjMGZLESNctBaYhvKZjXu3SySL2PBbkcq49e9moka+VER4hX0jIFMJjGHW3Q==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
