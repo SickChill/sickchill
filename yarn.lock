@@ -291,9 +291,9 @@
     "@babel/plugin-transform-optional-chaining" "^7.22.3"
 
 "@babel/plugin-proposal-private-property-in-object@^7.21.0":
-  version "7.21.0"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-private-property-in-object/-/plugin-proposal-private-property-in-object-7.21.0.tgz#19496bd9883dd83c23c7d7fc45dcd9ad02dfa1dc"
-  integrity sha512-ha4zfehbJjc5MmXBlHec1igel5TJXXLDDRbuJ4+XT2TJcyD9/V1919BA8gMvsdHcNMBy4WBUBiRb3nw/EQUtBw==
+  version "7.21.10"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-private-property-in-object/-/plugin-proposal-private-property-in-object-7.21.10.tgz#861ab9c7d152291c47d27838867f27c560f562c4"
+  integrity sha512-3YybmT8FN4sZFXp0kTr9Gbu90wAIhC3feNung+qcRQ1wALGoSHgOz1c+fR3ZLGZ0LXqIpYmtE6Faua6tMDarUg==
   dependencies:
     "@babel/helper-annotate-as-pure" "^7.18.6"
     "@babel/helper-create-class-features-plugin" "^7.21.0"
@@ -1990,29 +1990,29 @@
     "@webassemblyjs/ast" "1.11.6"
     "@xtuc/long" "4.2.2"
 
-"@webpack-cli/configtest@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@webpack-cli/configtest/-/configtest-2.1.0.tgz#b59b33377b1b896a9a7357cfc643b39c1524b1e6"
-  integrity sha512-K/vuv72vpfSEZoo5KIU0a2FsEoYdW0DUMtMpB5X3LlUwshetMZRZRxB7sCsVji/lFaSxtQQ3aM9O4eMolXkU9w==
+"@webpack-cli/configtest@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@webpack-cli/configtest/-/configtest-2.1.1.tgz#3b2f852e91dac6e3b85fb2a314fb8bef46d94646"
+  integrity sha512-wy0mglZpDSiSS0XHrVR+BAdId2+yxPSoJW8fsna3ZpYSlufjvxnP4YbKTCBZnNIcGN4r6ZPXV55X4mYExOfLmw==
 
 "@webpack-cli/generators@^3.0.0":
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/@webpack-cli/generators/-/generators-3.0.4.tgz#52ce0a4586b51b051d3e790d2df858ff77659a31"
-  integrity sha512-XAUSYlzyyZn+6uQyFJCP+qtD4Hbd3q4As3MGyb5Oeo9LDUz0FuTxnL/YdC6DMXF5Vhul1pd1XO+JHMj3d9pviA==
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@webpack-cli/generators/-/generators-3.0.5.tgz#0437ffc3a05289fdf3958ca7c2a4b4e59b8670f7"
+  integrity sha512-Yu+IBcQhmiyKnxWZsKagNO99K9PUf6JOKopOOHM0YtWg9Cj6O5s4l6CnKRKvbPOr//psHwMbYdxphenhbfnX3w==
   dependencies:
-    webpack-cli "^5.1.1"
+    webpack-cli "^5.1.2"
     yeoman-environment "^3.9.1"
     yeoman-generator "^5.7.0"
 
-"@webpack-cli/info@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@webpack-cli/info/-/info-2.0.1.tgz#eed745799c910d20081e06e5177c2b2569f166c0"
-  integrity sha512-fE1UEWTwsAxRhrJNikE7v4EotYflkEhBL7EbajfkPlf6E37/2QshOy/D48Mw8G5XMFlQtS6YV42vtbG9zBpIQA==
+"@webpack-cli/info@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@webpack-cli/info/-/info-2.0.2.tgz#cc3fbf22efeb88ff62310cf885c5b09f44ae0fdd"
+  integrity sha512-zLHQdI/Qs1UyT5UBdWNqsARasIA+AaF8t+4u2aS2nEpBQh2mWIVb8qAklq0eUENnC5mOItrIB4LiS9xMtph18A==
 
-"@webpack-cli/serve@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.4.tgz#3982ee6f8b42845437fc4d391e93ac5d9da52f0f"
-  integrity sha512-0xRgjgDLdz6G7+vvDLlaRpFatJaJ69uTalZLRSMX5B3VUrDmXcrVA3+6fXXQgmYz7bY9AAgs348XQdmtLsK41A==
+"@webpack-cli/serve@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
+  integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -2882,9 +2882,9 @@ camelcase@^7.0.0:
   integrity sha512-xlx1yCK2Oc1APsPXDL2LdlNP6+uu8OCDdhOBSVT279M/S+y75O30C2VuD8T2ogdePBBl7PfPF4504tnLgX3zfw==
 
 caniuse-lite@^1.0.30001489:
-  version "1.0.30001492"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001492.tgz#4a06861788a52b4c81fd3344573b68cc87fe062b"
-  integrity sha512-2efF8SAZwgAX1FJr87KWhvuJxnGJKOnctQa8xLOskAXNXq8oiuqgl6u1kk3fFpsp3GgvzlRjiK1sl63hNtFADw==
+  version "1.0.30001494"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001494.tgz#3e56e04a48da7a79eae994559eb1ec02aaac862f"
+  integrity sha512-sY2B5Qyl46ZzfYDegrl8GBCzdawSLT4ThM9b9F+aDYUrAG2zCOyMbd2Tq34mS1g4ZKBfjRlzOohQMxx28x6wJg==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -9458,9 +9458,9 @@ stealthy-require@^1.1.1:
   integrity sha512-ZnWpYnYugiOVEY5GkcuJK1io5V8QmNYChG62gSit9pQVGErXtrKuPC55ITaVSukmMta5qpMU7vqLt2Lnni4f/g==
 
 streamx@^2.12.5:
-  version "2.13.2"
-  resolved "https://registry.yarnpkg.com/streamx/-/streamx-2.13.2.tgz#9de43569a1cd54980d128673b3c1429b79afff1c"
-  integrity sha512-+TWqixPhGDXEG9L/XczSbhfkmwAtGs3BJX5QNU6cvno+pOLKeszByWcnaTu6dg8efsTYqR8ZZuXWHhZfgrxMvA==
+  version "2.13.3"
+  resolved "https://registry.yarnpkg.com/streamx/-/streamx-2.13.3.tgz#b2ba7c07fe02ac2ae72a595d3c8b0620b67ab3b7"
+  integrity sha512-fIN4FfQmDnjMiN/odoAMM4q4tkxK7vJx9CCJM5604uvmi9B5IULLS/W19sx5bgrRVeId9hBik3CeEMQHQq93uQ==
   dependencies:
     fast-fifo "^1.1.0"
     queue-tick "^1.0.1"
@@ -10366,15 +10366,15 @@ webidl-conversions@^4.0.2:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
   integrity sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
 
-webpack-cli@^5.0.0, webpack-cli@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-5.1.1.tgz#c211ac6d911e77c512978f7132f0d735d4a97ace"
-  integrity sha512-OLJwVMoXnXYH2ncNGU8gxVpUtm3ybvdioiTvHgUyBuyMLKiVvWy+QObzBsMtp5pH7qQoEuWgeEUQ/sU3ZJFzAw==
+webpack-cli@^5.0.0, webpack-cli@^5.1.2:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-5.1.2.tgz#08d083522b1340ea2ab58a66b961c911292fb667"
+  integrity sha512-RI4KfVpjX1qdy5Sq4A1ycCxgTZ2rLLtrTJDBYh3A3DpSSDZ+WP4oBlj/CuD70oXz4wB1WqVjg+lMxH/MPYWb5g==
   dependencies:
     "@discoveryjs/json-ext" "^0.5.0"
-    "@webpack-cli/configtest" "^2.1.0"
-    "@webpack-cli/info" "^2.0.1"
-    "@webpack-cli/serve" "^2.0.4"
+    "@webpack-cli/configtest" "^2.1.1"
+    "@webpack-cli/info" "^2.0.2"
+    "@webpack-cli/serve" "^2.0.5"
     colorette "^2.0.14"
     commander "^10.0.1"
     cross-spawn "^7.0.3"
