@@ -38,7 +38,7 @@ class Provider(TorrentProvider):
         self.enable_cookies = True
 
         # Cache
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll IPTorrents every 10 minutes max
+        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll every 10 minutes max
 
     def login(self):
         cookie_dict = dict_from_cookiejar(self.session.cookies)
