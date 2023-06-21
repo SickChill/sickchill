@@ -150,6 +150,9 @@ class GenericClient(object):
                 raise Exception("Torrent without content")
 
             try:
+                if result.content.endswith('\n'):
+                    result.content = result.content.rstrip('\n')
+
                 torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
             except (bencodepy.BencodeDecodeError, Exception) as error:
                 logger.exception("Unable to bdecode torrent")
