@@ -151,9 +151,8 @@ class GenericClient(object):
 
             try:
                 logger.info("bencoded data1: {0}".format(result.content))
-                if str(result.content).endswith("\n'"):
-                    result.content = result.content[:-2]
-                    logger.info(f"bencoded data2: {result.content!r}")
+                result.content = result.content.strip("\n")
+                logger.info(f"bencoded data2: {result.content!r}")
 
                 torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
             except (bencodepy.BencodeDecodeError, Exception) as error:
