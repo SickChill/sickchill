@@ -150,10 +150,8 @@ class GenericClient(object):
                 raise Exception("Torrent without content")
 
             try:
-                logger.info("bencoded data1: {0}".format(result.content))
-                # Change the \n here to the exact bytes you see at the end of the torrent, b"" means its bytes
+                # Remove \n from end if it exists (bytes) primarily for TorrentLeech
                 result.content = result.content.strip(b"\n")
-                logger.info(f"bencoded data2: {result.content!r}")
 
                 torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
             except (bencodepy.BencodeDecodeError, Exception) as error:
