@@ -6,9 +6,7 @@ license = "GPL-3.0-or-later"
 
 authors = [
     "Dustyn Gibson <miigotu@gmail.com>",
-    "BKSteve <stephen.rieger@gmail.com>",
-    "pigsyn <nobody@github.com>",
-    "kyuuk <nobody@github.com>"
+    "BKSteve <stephen.rieger@gmail.com>"
 ]
 
 maintainers = [
@@ -96,7 +94,7 @@ types-python-slugify = ">=6.1,<9.0"
 types-requests = "^2.28.11"
 types-chardet = "^5.0.4"
 types-pytz = ">=2022.2.1,<2024.0.0"
-types-setuptools = ">=65.3,<68.0"
+types-setuptools = ">=65.3,<69.0"
 types-six = "^1.16.20"
 
 [tool.poetry.group.experimental]
@@ -110,6 +108,8 @@ optional = true
 
 [tool.poetry.group.frontend.dependencies]
 Flask = "^2.2.2"
+urllib3 = "<2.0.0"
+flask-sqlalchemy = "^3.0.3"
 
 [tool.poetry.extras]
 experimental = ["experimental"]

@@ -1,0 +1,40 @@
+#!/bin/sh
+
+set -e
+set -x
+
+configure() {
+  USER="sickchill"
+
+  if ! id -u "$USER" >/dev/null ; then
+    adduser \
+      --quiet \
+      --system \
+      --group \
+      --disabled-login \
+      --disabled-password \
+      --no-create-home \
+      --gecos "sickchill daemon" \
+      "$USER"
+  fi
+
+  adduser "$USER" dialout
+}
+
+case "$1" in
+  configure)
+	  configure
+  ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
+  ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+  ;;
+esac
+
+#DEBHELPER#
+
+exit 0

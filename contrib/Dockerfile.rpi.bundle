@@ -1,0 +1,35 @@
+FROM balenalib/raspberry-pi-debian:latest-build
+
+RUN echo "deb http://deb.debian.org/debian bullseye-updates bullseye-backports main contrib non-free" | sudo tee -a /etc/apt/sources.list.d/bullseye.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6ED0E7B82643E131 0E98404D386FA1D9
+RUN apt-get update && apt-get -y upgrade && apt-get update
+
+RUN apt-get -y install sudo dpkg-dev debhelper dh-virtualenv python3.9 python3.9-venv python3-pip python3-wheel
+
+RUN apt-get -y install libxslt-dev libxml2-dev
+RUN apt-get -y install build-essential libssl-dev libffi-dev python3-dev
+RUN apt-get -y install zlib1g-dev
+
+#RUN (curl -sSL https://install.python-poetry.org | python3 -) || (cat /poetry-installer-error-*.log && exit 1)
+#RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+
+RUN ln -s /root/.cargo/env /etc/profile.d/cargo_env.sh
+ENV PATH=/root/.cargo/bin::/root/.local/bin:$PATH \
+  DEB_BUILD_ARCH=armhf \
+  DEB_BUILD_ARCH_BITS=32 \
+  PIP_DEFAULT_TIMEOUT=600 \
+  PIP_TIMEOUT=600 \
+  PIP_RETRIES=100
+
+RUN pip install -U pip wheel setuptools poetry
+
+RUN mkdir /build
+COPY . /build/
+RUN mkdir /build/dist && mv /build/contrib/debian /build/dist/
+
+WORKDIR /build
+RUN poetry build
+
+WORKDIR /build/dist
+RUN dpkg-buildpackage -us -uc
