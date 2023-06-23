@@ -61,8 +61,8 @@ class Provider(TorrentProvider):
         if not self.login():
             return results
 
-        # TV, Episodes, BoxSets, Episodes HD, Animation, Anime, Cartoons
-        # 2,26,27,32,7,34,35
+        # Episodes, BoxSets, Episodes HD, Anime, Cartoons - no longer TV, Animation
+        # 26,27,32,34,35 - gone 2,7
 
         for mode in search_strings:
             items = []
@@ -72,12 +72,13 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     logger.debug("Search string: {0}".format(search_string))
 
-                    categories = ["2", "7", "35"]
-                    categories += ["26", "32"] if mode == "Episode" else ["27"]
+                    categories = ["26", "32", "35"]
+                    if mode != "Episode":
+                        categories += ["27"]
                     if self.show and self.show.is_anime:
                         categories += ["34"]
                 else:
-                    categories = ["2", "26", "27", "32", "7", "34", "35"]
+                    categories = ["26", "27", "32", "34", "35"]
 
                 # Craft the query URL
                 categories_url = "categories/{categories}/".format(categories=",".join(categories))
