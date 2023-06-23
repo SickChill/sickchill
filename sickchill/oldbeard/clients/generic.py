@@ -152,7 +152,7 @@ class GenericClient(object):
             try:
                 logger.info("bencoded data1: {0}".format(result.content))
                 # Change the \n here to the exact bytes you see at the end of the torrent, b"" means its bytes
-                result.content = result.content).strip(b"\n")
+                result.content = result.content.strip(b"\n")
                 logger.info(f"bencoded data2: {result.content!r}")
 
                 torrent_bdecode: Union[Iterable, Dict] = bencodepy.decode(result.content)
