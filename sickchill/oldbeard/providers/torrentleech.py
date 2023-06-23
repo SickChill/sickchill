@@ -34,7 +34,7 @@ class Provider(TorrentProvider):
         self.proper_strings = ["PROPER", "REPACK"]
 
         # Cache
-        self.cache = tvcache.TVCache(self, min_time=10)  # Only poll every 10 minutes max
+        self.cache = tvcache.TVCache(self, min_time=20)  # Only poll every 10 minutes max
 
     def login(self):
         if any(dict_from_cookiejar(self.session.cookies).values()):
