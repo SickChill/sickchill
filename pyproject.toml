@@ -6,9 +6,7 @@ license = "GPL-3.0-or-later"
 
 authors = [
     "Dustyn Gibson <miigotu@gmail.com>",
-    "BKSteve <stephen.rieger@gmail.com>",
-    "pigsyn <nobody@github.com>",
-    "kyuuk <nobody@github.com>"
+    "BKSteve <stephen.rieger@gmail.com>"
 ]
 
 maintainers = [
@@ -110,6 +108,8 @@ optional = true
 
 [tool.poetry.group.frontend.dependencies]
 Flask = "^2.2.2"
+urllib3 = "<2.0.0"
+flask-sqlalchemy = "^3.0.3"
 
 [tool.poetry.extras]
 experimental = ["experimental"]

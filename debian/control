@@ -1,0 +1,12 @@
+Source: sickchill
+Section: python
+Priority: extra
+Maintainer: Dustyn Gibson <miigotu@gmail.com>
+Build-Depends: debhelper (>= 9), python3 (>= 3.8), dh-virtualenv (>= 1.1), libxslt1-dev, libxml2-dev, zlib1g-dev
+Standards-Version: 3.9.5
+
+Package: sickchill
+Architecture: any
+Pre-Depends: dpkg (>= 1.19.1), python3 (>= 3.8), ${misc:Pre-Depends}
+Depends: ${python:Depends}, ${misc:Depends}, libxslt1.1, libxml2, zlib1g
+Description: Automatic Video Library Manager for TV Shows.

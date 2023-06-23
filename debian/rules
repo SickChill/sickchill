@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+# vim: set noexpandtab:
+
+include /usr/share/dpkg/architecture.mk
+
+%:
+	dh $@ --with python-virtualenv --with=systemd
+
+DEB_DEBIAN_DIR=$(dir $(firstword $(MAKEFILE_LIST)))
+DEB_UPSTREAM_VERSION=$(shell dpkg-parsechangelog -l$(DEB_DEBIAN_DIR)/changelog \
+                               | sed -rne 's,^Version: ([^+-]+).*,\1,p')
+
+override_dh_virtualenv:
+	tar xvzf "dist/sickchill-$(DEB_UPSTREAM_VERSION).tar.gz"
+	dh_virtualenv \
+		--python python3 \
+		--sourcedirectory="sickchill-$(DEB_UPSTREAM_VERSION)"

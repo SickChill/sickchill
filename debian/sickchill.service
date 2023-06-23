@@ -1,0 +1,15 @@
+[Unit]
+Description=sickchill daemon
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=sickchill
+Group=sickchill
+
+Type=simple
+ExecStart=/usr/bin/sickchill --quiet --nolaunch
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
