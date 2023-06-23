@@ -108,7 +108,7 @@ optional = true
 
 [tool.poetry.group.frontend.dependencies]
 Flask = "^2.2.2"
-urllib3 = "<2.0.0"
+urllib3 = "<3.0.0"
 flask-sqlalchemy = "^3.0.3"
 
 [tool.poetry.extras]
