@@ -35,10 +35,12 @@ class DailySearcher(object):
             curDate = (datetime.date.today() + datetime.timedelta(days=2)).toordinal()
 
         curTime = datetime.datetime.now(network_timezones.sb_timezone)
+        delta_time = curTime - datetime.timedelta(days=settings.SHOW_SKIP_OLDER)
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select(
-            "SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)", [common.UNAIRED, curDate]
+            "SELECT showid, airdate, season, episode FROM tv_episodes WHERE status = ? AND (airdate <= ? and airdate > 1)",
+            [common.UNAIRED, curDate]
         )
 
         sql_l = []
@@ -54,12 +56,14 @@ class DailySearcher(object):
                     continue
 
             except MultipleShowObjectsException:
-                logger.info(_("ERROR: expected to find a single show matching {show_id}").format(show_id=sqlEp["showid"]))
+                logger.info(
+                    _("ERROR: expected to find a single show matching {show_id}").format(show_id=sqlEp["showid"]))
                 continue
 
             if show.airs and show.network:
                 # This is how you assure it is always converted to local time
-                air_time = network_timezones.parse_date_time(sqlEp["airdate"], show.airs, show.network).astimezone(network_timezones.sb_timezone)
+                air_time = network_timezones.parse_date_time(sqlEp["airdate"], show.airs, show.network).astimezone(
+                    network_timezones.sb_timezone)
 
                 # filter out any episodes that haven't started airing yet,
                 # but set them to the default status while they are airing so that they are snatched faster
@@ -70,22 +74,30 @@ class DailySearcher(object):
             with ep.lock:
                 prefix = _("New episode {episode_string} airs today,").format(episode_string=ep.pretty_name)
                 if ep.season == 0:
-                    logger.info(_("{prefix} setting status to SKIPPED because is a special season").format(prefix=prefix))
+                    logger.info(
+                        _("{prefix} setting status to SKIPPED because is a special season").format(prefix=prefix))
                     ep.status = common.SKIPPED
                 else:
                     if ep.status != common.UNAIRED:
                         logger.debug(
-                            _(
-                                "{prefix} but it has already been snatched or downloaded, but has not been saved to the database yet. Skipping so we don't download it again!"
-                            ).format(prefix=prefix)
+                            _("{prefix} but it has already been snatched or downloaded, "
+                              "but has not been saved to the database yet. Skipping so we don't download it again!").
+                            format(prefix=prefix)
                         )
                     else:
-                        logger.info(
-                            _("{prefix} setting to default episode status for this show: {status_string}").format(
-                                prefix=prefix, status_string=common.statusStrings[ep.show.default_ep_status]
+                        if ep.air_time < delta_time:
+                            logger.info(
+                                _("{prefix} as episode is old, setting status for this show: Skipped").format(
+                                    prefix=prefix)
                             )
-                        )
-                        ep.status = ep.show.default_ep_status
+                            ep.status = common.SKIPPED
+                        else:
+                            logger.info(
+                                _("{prefix} setting to default episode status for this show: {status_string}").format(
+                                    prefix=prefix, status_string=common.statusStrings[ep.show.default_ep_status]
+                                )
+                            )
+                            ep.status = ep.show.default_ep_status
 
                 sql_l.append(ep.get_sql())
 

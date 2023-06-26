@@ -328,6 +328,30 @@
 
                             </div>
 
+                            <div id="show_skip_age">
+
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Episode Skipped if older than')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="number" min="0" step="1" name="show_skip_older"
+                                                       value="${settings.SHOW_SKIP_OLDER}" class="form-control input-sm input75"
+                                                       autocapitalize="off" id="show_skip_older"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="show_skip_older">${_('number of day(s) after which new episodes are set to Skipped (Default: 30 days)')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
                         </fieldset>
                     </div>
                 </div>
