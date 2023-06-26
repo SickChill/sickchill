@@ -1639,9 +1639,12 @@ class TVEpisode(object):
                 logger.debug(f"{self.show.indexerid}: Episode airs in the future or has no airdate, marking it {statusStrings[UNAIRED]}")
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
+                # Do some date calc
+                delta_time = datetime.date.today() - datetime.timedelta(days=settings.SHOW_SKIP_OLDER)
                 # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
-                logger.debug(f"Episode has already aired, marking it {statusStrings[self.show.default_ep_status]}")
-                self.status = self.show.default_ep_status if self.season > 0 else SKIPPED  # auto-skip specials
+                # auto-skip specials and check date in delta period too.
+                self.status = self.show.default_ep_status if self.season > 0 and self.airdate > delta_time else SKIPPED
+                logger.debug(f"Episode has already aired, marking it {statusStrings[self.status]}")
             else:
                 logger.debug(f"Not touching status [ {statusStrings[self.status]} ] It could be skipped/ignored/snatched/archived")
 
