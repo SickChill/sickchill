@@ -71,8 +71,7 @@ class DailySearcher(object):
             with ep.lock:
                 prefix = _("New episode {episode_string} airs today,").format(episode_string=ep.pretty_name)
                 if ep.season == 0:
-                    logger.info(
-                        _("{prefix} setting status to SKIPPED because is a special season").format(prefix=prefix))
+                    logger.info(_("{prefix} setting status to SKIPPED because is a special season").format(prefix=prefix))
                     ep.status = common.SKIPPED
                 else:
                     if ep.status != common.UNAIRED:
