@@ -382,7 +382,7 @@ class UI(WebRoot):
         return settings.SITE_MESSAGES
 
     def dismiss_site_message(self):
-        index = self.get_query_argument("index")
+        index = self.get_argument("index")
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         helpers.remove_site_message(key=index)
         return settings.SITE_MESSAGES
