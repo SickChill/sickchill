@@ -59,8 +59,7 @@ class DailySearcher(object):
 
             if show.airs and show.network:
                 # This is how you assure it is always converted to local time
-                air_time = network_timezones.parse_date_time(sqlEp["airdate"], show.airs, show.network).astimezone(
-                    network_timezones.sb_timezone)
+                air_time = network_timezones.parse_date_time(sqlEp["airdate"], show.airs, show.network).astimezone(network_timezones.sb_timezone)
 
                 # filter out any episodes that haven't started airing yet,
                 # but set them to the default status while they are airing so that they are snatched faster
@@ -76,9 +75,9 @@ class DailySearcher(object):
                 else:
                     if ep.status != common.UNAIRED:
                         logger.debug(
-                            _("{prefix} but it has already been snatched or downloaded, "
-                              "but has not been saved to the database yet. Skipping so we don't download it again!").
-                            format(prefix=prefix)
+                            _(
+                                "{prefix} but it has already been snatched or downloaded, but has not been saved to the database yet. Skipping so we don't download it again!"
+                            ).format(prefix=prefix)
                         )
                     else:
                         logger.info(
