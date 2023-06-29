@@ -35,7 +35,6 @@ jobs:
         with:
           fetch-depth: 0
           path: sickchill
-          submodules: "recursive"
       -
         name: Set up Python
         uses: actions/setup-python@v4
@@ -45,11 +44,10 @@ jobs:
           check-latest: true
       -
         name: Bump version
-        working-directory: sickchill/contrib/scmaintools
         run: |
           poetry install
-          # -n to just print the version for now
-          python scmaintools -n
+          # Set release version to todays date
+          # debchange with gbd-change with new version
       -
         name: Publish
         env:

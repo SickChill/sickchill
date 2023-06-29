@@ -1,5 +1,0 @@
-[submodule "contrib/scmaintools"]
-	path = contrib/scmaintools
-	url = https://github.com/SickChill/scmaintools.git
-	branch = main
-	ignore = dirty
