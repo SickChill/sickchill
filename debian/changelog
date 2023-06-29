@@ -1,3 +1,14 @@
+sickchill (2023.6.27) UNRELEASED; urgency=medium
+
+  * Release 2023.6.27
+  * Fix discord banner dismissal
+  * Fix bdecode and torrentleech errors
+  * Add ability to build deb packages
+  * Add package to homebrew repository (brew tap sickchill/sickchill until https://github.com/Homebrew/homebrew-core/pull/134927 is merged
+  * Update dependencies
+
+ -- miigotu <miigotu@gmail.com>  Wed, 28 Jun 2023 00:13:39 -0400
+
 sickchill (2023.5.30) unstable; urgency=low
 
   * Initial release.
