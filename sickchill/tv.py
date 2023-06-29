@@ -1643,6 +1643,9 @@ class TVEpisode(object):
                 delta_time = datetime.date.today() - datetime.timedelta(days=settings.SHOW_SKIP_OLDER)
                 # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
                 # auto-skip specials and check date in delta period too.
+                show_skip_value_bak = settings.SHOW_SKIP_OLDER
+                if self.show.add_first_time == 1:
+                    settings.SHOW_SKIP_OLDER = 0
                 if self.season == 0:
                     self.status = SKIPPED
                     logger.debug(f"Episode is a Special, marking: {statusStrings[self.status]}")
@@ -1652,11 +1655,13 @@ class TVEpisode(object):
                             self.status = SKIPPED
                             logger.debug(f"Episode air date is older than settings, marking: {statusStrings[self.status]}")
                         else:
-                            self.status = self.show.default_ep_status if self.season > 0 else SKIPPED
+                            self.status = self.show.default_ep_status
                             logger.debug(f"Episode air date is newer than settings, marking: {statusStrings[self.status]}")
                     else:
-                        self.status = self.show.default_ep_status if self.season > 0 else SKIPPED
+                        self.status = self.show.default_ep_status
                         logger.debug(f"Episode has already aired, marking: {statusStrings[self.status]}")
+                settings.SHOW_SKIP_OLDER = show_skip_value_bak
+                self.show.add_first_time = 0
 
             else:
                 logger.debug(f"Not touching status [ {statusStrings[self.status]} ] It could be skipped/ignored/snatched/archived")

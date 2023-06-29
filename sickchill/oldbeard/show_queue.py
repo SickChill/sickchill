@@ -442,6 +442,7 @@ class QueueItemAdd(ShowQueueItem):
             # set up default new/missing episode status
             logger.info(_("Setting all episodes to the specified default status: {default_status}").format(default_status=self.default_status))
             self.show.default_ep_status = self.default_status
+            self.show.add_first_time = 1
 
             if self.show.anime:
                 self.show.release_groups = BlackAndWhiteList(self.show.indexerid)
