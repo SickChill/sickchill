@@ -10,6 +10,7 @@ import sys
 import threading
 import time
 import traceback
+from typing import Union
 
 import sickchill.start
 
@@ -22,6 +23,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import choose_data_dir
 from sickchill.init_helpers import check_installed, get_current_version, remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
+from sickchill.oldbeard.name_parser.parser import NameParser, ParseResult
 
 setup_gettext()
 
@@ -101,6 +103,16 @@ class SickChill:
         threading.current_thread().name = "MAIN"
 
         args = SickChillArgumentParser(settings.DATA_DIR).parse_args()
+
+        # Add methods here when you want to perform an action and exit, without starting the webserver
+        if args.test_name:
+            results = []
+            for parser in args.parser.lower().split(","):
+                result = self.test_name(args.test_name, parser if parser != "all" else "")
+                results.append(result)
+                parser_name = parser or "all"
+                sys.stdout.write(f"{parser_name}: {result}\n")
+            sys.exit(int(not any(results)))
 
         if args.force_update:
             result = self.force_update()
@@ -337,6 +349,10 @@ class SickChill:
 
         print("Successfully updated to the latest pip release. You may now run SickChill normally.")
         return True
+
+    @staticmethod
+    def test_name(name: str, parse_method="") -> list[Union[ParseResult, None]]:
+        return NameParser(parse_method=parse_method)._parse_string(name)
 
 
 def main():
