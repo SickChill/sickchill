@@ -101,7 +101,7 @@ jobs:
       if: success() && !env.ACT
       name: Remove submodules
       run: |
-        git config --remove-section submodule.contrib/scmaintools
+        git config --global --remove-section submodule.contrib/scmaintools
     -
       if: success() && !env.ACT
       name: Checkout
