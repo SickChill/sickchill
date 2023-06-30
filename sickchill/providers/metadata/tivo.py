@@ -1,5 +1,9 @@
 import datetime
 import os
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVEpisode, TVShow
 
 from sickchill.oldbeard import helpers
 
@@ -57,45 +61,51 @@ class TIVOMetadata(generic.GenericMetadata):
         # no show metadata generated, we abort this lookup function
         return None, None, None
 
-    def create_show_metadata(self, show_obj):
+    def create_show_metadata(self, show_obj: "TVShow"):
         pass
 
-    def update_show_indexer_metadata(self, show_obj):
+    def update_episode_metadata(self, ep_obj: "TVEpisode"):
+        if self.episode_metadata and ep_obj:
+            logger.debug(f"[{self.name} META] Updating episode metadata for {ep_obj.pretty_name}")
+            return self.write_ep_file(ep_obj)
+        return False
+
+    def update_show_indexer_metadata(self, show_obj: "TVShow"):
         pass
 
-    def get_show_file_path(self, show_obj):
+    def get_show_file_path(self, show_obj: "TVShow"):
         pass
 
-    def create_fanart(self, show_obj):
+    def create_fanart(self, show_obj: "TVShow"):
         pass
 
-    def create_poster(self, show_obj):
+    def create_poster(self, show_obj: "TVShow"):
         pass
 
-    def create_banner(self, show_obj):
+    def create_banner(self, show_obj: "TVShow"):
         pass
 
-    def create_episode_thumb(self, ep_obj):
+    def create_episode_thumb(self, ep_obj: "TVEpisode"):
         pass
 
     @staticmethod
-    def get_episode_thumb_path(ep_obj):
+    def get_episode_thumb_path(ep_obj: "TVEpisode"):
         pass
 
-    def create_season_posters(self, ep_obj):
+    def create_season_posters(self, ep_obj: "TVEpisode"):
         pass
 
-    def create_season_banners(self, ep_obj):
+    def create_season_banners(self, ep_obj: "TVEpisode"):
         pass
 
-    def create_season_all_poster(self, show_obj):
+    def create_season_all_poster(self, show_obj: "TVShow"):
         pass
 
-    def create_season_all_banner(self, show_obj):
+    def create_season_all_banner(self, show_obj: "TVShow"):
         pass
 
     # Override generic class
-    def get_episode_file_path(self, ep_obj):
+    def get_episode_file_path(self, ep_obj: "TVEpisode"):
         """
         Returns a full show dir/.meta/episode.txt path for Tivo
         episode metadata files.
@@ -111,11 +121,25 @@ class TIVOMetadata(generic.GenericMetadata):
             metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), ".meta")
             metadata_file_path = os.path.join(metadata_dir_name, metadata_filename)
         else:
-            logger.debug(f"Episode location doesn't exist: {ep_obj.location}")
+            logger.debug(f"{self.name} META] Episode location doesn't exist: {ep_obj.location}")
             return ""
         return metadata_file_path
 
-    def _ep_data(self, ep_obj):
+    def episode_pretty_title(self, ep_obj: "TVEpisode"):
+        """
+        Returns the name of this episode in a "pretty" human-readable format
+
+        Returns: A string representing the episode's name and season/ep numbers
+        """
+
+        if ep_obj.show.anime and not ep_obj.show.scene:
+            return ep_obj._format_pattern("%AB - %EN")
+        elif ep_obj.show.air_by_date:
+            return ep_obj._format_pattern("%AD - %EN")
+
+        return ep_obj._format_pattern("S%0SE%0E - %EN")
+
+    def _ep_data(self, ep_obj: "TVEpisode"):
         """
         Creates a key value structure for a Tivo episode metadata file and
         returns the resulting data object.
@@ -124,10 +148,10 @@ class TIVOMetadata(generic.GenericMetadata):
 
         The key values for the tivo metadata file are from:
 
-        http://pytivo.sourceforge.net/wiki/index.php/Metadata
+        https://pytivo.sourceforge.net/wiki/index.php/Metadata
         """
 
-        data = ""
+        data = []
 
         eps_to_write = [ep_obj] + ep_obj.relatedEps
 
@@ -153,11 +177,11 @@ class TIVOMetadata(generic.GenericMetadata):
                 return None
 
             if myShow.seriesName:
-                data += "title : " + myShow.seriesName + "\n"
-                data += "seriesTitle : " + myShow.seriesName + "\n"
+                data.append(f"title : {myShow.seriesName}")
+                data.append(f"seriesTitle : {myShow.seriesName}")
 
             # noinspection PyProtectedMember
-            data += "episodeTitle : " + curEpToWrite._format_pattern("%Sx%0E %EN") + "\n"
+            data.append(f"episodeTitle : {self.episode_pretty_title(curEpToWrite)}")
 
             # This should be entered for episodic shows and omitted for movies. The standard tivo format is to enter
             # the season number followed by the episode number for that season. For example, enter 201 for season 2
@@ -168,13 +192,13 @@ class TIVOMetadata(generic.GenericMetadata):
             # This seems to disappear once the video is transferred to TiVo.
 
             # NOTE: May not be correct format, missing season, but based on description from wiki leaving as is.
-            data += f"episodeNumber : {curEpToWrite.episode}\n"
+            data.append(f"episodeNumber : {curEpToWrite.episode}")
 
             # Must be entered as true or false. If true, the year from originalAirDate will be shown in parentheses
             # after the episode's title and before the description on the Program screen.
 
             # FIXME: Hardcode isEpisode to true for now, not sure how to handle movies
-            data += "isEpisode : true\n"
+            data.append("isEpisode : true")
 
             # Write the synopsis of the video here
             # Micrsoft Word's smartquotes can die in a fire.
@@ -184,27 +208,28 @@ class TIVOMetadata(generic.GenericMetadata):
             # Replace single curly quotes
             sanitizedDescription = sanitizedDescription.replace("\u2018", "'").replace("\u2019", "'").replace("\u02BC", "'")
 
-            data += "description : " + sanitizedDescription + "\n"
+            data.append(f"description : {sanitizedDescription}")
 
             # Usually starts with "SH" and followed by 6-8 digits.
             # Tivo uses zap2it for thier data, so the series id is the zap2itId.
             if getattr(myShow, "zap2itId", None):
-                data += "seriesId : " + myShow.zap2itId + "\n"
+                data.append(f"seriesId : {myShow.zap2itId}")
 
             # This is the call sign of the channel the episode was recorded from.
             if getattr(myShow, "network", None):
-                data += "callsign : " + myShow.network + "\n"
+                data.append(f"callsign : {myShow.network}")
 
             # This must be entered as yyyy-mm-ddThh:mm:ssZ (the t is capitalized and never changes, the Z is also
             # capitalized and never changes). This is the original air date of the episode.
             # NOTE: Hard coded the time to T00:00:00Z as we really don't know when during the day the first run happened.
             if curEpToWrite.airdate != datetime.date.min:
-                data += f"originalAirDate : {curEpToWrite.airdate}T00:00:00Z\n"
+                data.append(f"originalAirDate : {curEpToWrite.airdate}T00:00:00Z")
 
             # This shows up at the beginning of the description on the Program screen and on the Details screen.
             for actor in ep_obj.idxr.actors(myShow):
-                if "name" in actor and actor["name"].strip():
-                    data += "vActor : " + actor["name"].strip() + "\n"
+                actor_name = actor.get("name", "").strip()
+                if actor_name:
+                    data.append(f"vActor : {actor_name}")
 
             # This is shown on both the Program screen and the Details screen.
             if myEp.get("siteRating"):
@@ -215,18 +240,18 @@ class TIVOMetadata(generic.GenericMetadata):
                 # convert 10 to 4 star rating. 4 * rating / 10
                 # only whole numbers or half numbers work. multiply by 2, round, divide by 2.0
                 rating = round(8 * rating / 10) / 2.0
-                data += f"starRating : {rating}\n"
+                data.append(f"starRating : {rating}")
 
             # This is shown on both the Program screen and the Details screen.
             # It uses the standard TV rating system of: TV-Y7, TV-Y, TV-G, TV-PG, TV-14, TV-MA and TV-NR.
             if getattr(myShow, "rating", None):
-                data += f"tvRating : {myShow.rating}\n"
+                data.append(f"tvRating : {myShow.rating}")
 
             # This field can be repeated as many times as necessary or omitted completely.
             if ep_obj.show.genre:
                 for genre in ep_obj.show.genre:
                     if genre:
-                        data += f"vProgramGenre : {genre}\n"
+                        data.append(f"vProgramGenre : {genre}")
 
                         # NOTE: The following are metadata keywords are not used
                         # displayMajorNumber
@@ -238,9 +263,9 @@ class TIVOMetadata(generic.GenericMetadata):
                         # partCount
                         # partIndex
 
-        return data
+        return "\n".join(data)
 
-    def write_ep_file(self, ep_obj):
+    def write_ep_file(self, ep_obj: "TVEpisode"):
         """
         Generates and writes ep_obj's metadata under the given path with the
         given filename root. Uses the episode's name with the extension in
