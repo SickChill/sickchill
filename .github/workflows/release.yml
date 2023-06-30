@@ -33,7 +33,7 @@ jobs:
         if: success() && !env.ACT
         name: Remove submodules
         run: |
-          git config --global --remove-section submodule.contrib/scmaintools
+          git config --remove-section submodule.contrib/scmaintools
       -
         name: Checkout SickChill
         uses: actions/checkout@v3
