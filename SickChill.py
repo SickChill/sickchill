@@ -10,7 +10,7 @@ import sys
 import threading
 import time
 import traceback
-from typing import Union
+from typing import List, Union
 
 import sickchill.start
 
@@ -351,7 +351,7 @@ class SickChill:
         return True
 
     @staticmethod
-    def test_name(name: str, parse_method="") -> list[Union[ParseResult, None]]:
+    def test_name(name: str, parse_method="") -> List[Union[ParseResult, None]]:
         return NameParser(parse_method=parse_method)._parse_string(name)
 
 
