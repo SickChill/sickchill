@@ -539,7 +539,7 @@ class Manage(Home, WebRoot):
             cur_show_dir = self.__gooey_path(show_obj._location, "basename")
             if cur_root_dir and dir_map.get(cur_root_dir) and cur_root_dir != dir_map.get(cur_root_dir):
                 new_show_dir = os.path.join(dir_map[cur_root_dir], cur_show_dir)
-                logger.info("For show " + show_obj.name + " changing dir from " + show_obj._location + " to " + new_show_dir)
+                logger.info("For show {show_obj.name}" + " changing dir from " + show_obj._location + " to " + new_show_dir)
             else:
                 new_show_dir = show_obj._location
 

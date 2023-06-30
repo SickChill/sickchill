@@ -1318,7 +1318,7 @@ class TVEpisode(object):
     indexer = DirtySetter(1)
     startyear = DirtySetter("")
 
-    def __init__(self, show, season, episode, ep_file=""):
+    def __init__(self, show: TVShow, season, episode, ep_file=""):
         self.season = season
         self.episode = episode
         self._location = ep_file
@@ -1327,7 +1327,7 @@ class TVEpisode(object):
         # setting any of the above sets the dirty flag
         self.dirty = True
 
-        self.show = show
+        self.show: TVShow = show
         self.indexer = self.show.indexer
 
         self.scene_season = 0

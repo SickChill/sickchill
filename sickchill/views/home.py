@@ -1522,7 +1522,7 @@ class Home(WebRoot):
             if segments:
                 ui.notifications.message(_("Backlog started"), msg)
         elif int(status) == WANTED and show_obj.paused:
-            logger.info("Some episodes were set to wanted, but " + show_obj.name + " is paused. Not adding to Backlog until show is unpaused")
+            logger.info("Some episodes were set to wanted, but {show_obj.name}" + " is paused. Not adding to Backlog until show is unpaused")
 
         if int(status) == FAILED:
             msg = _("Retrying Search was automatically started for the following season of <b>{show_name}</b>").format(show_name=show_obj.name)

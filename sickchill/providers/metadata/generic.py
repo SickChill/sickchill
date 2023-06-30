@@ -228,13 +228,13 @@ class GenericMetadata(object):
 
     def create_show_metadata(self, show_obj):
         if self.show_metadata and show_obj and not self._has_show_metadata(show_obj):
-            logger.debug("Metadata provider " + self.name + " creating show metadata for " + show_obj.name)
+            logger.debug(f"[{self.name} META] Creating show metadata for {show_obj.name}")
             return self.write_show_file(show_obj)
         return False
 
     def update_show_indexer_metadata(self, show_obj):
         if self.show_metadata and show_obj and self._has_show_metadata(show_obj):
-            logger.debug("Metadata provider " + self.name + " updating show indexer info metadata file for " + show_obj.name)
+            logger.debug(f"[{self.name} META] Updating show indexer info metadata file for {show_obj.name}")
 
             nfo_file_path = self.get_show_file_path(show_obj)
 
@@ -264,13 +264,13 @@ class GenericMetadata(object):
 
     def create_episode_metadata(self, ep_obj):
         if self.episode_metadata and ep_obj and not self._has_episode_metadata(ep_obj):
-            logger.debug("Metadata provider " + self.name + " creating episode metadata for " + ep_obj.pretty_name)
+            logger.debug(f"[{self.name} META] Creating episode metadata for {ep_obj.pretty_name}")
             return self.write_ep_file(ep_obj)
         return False
 
     def update_episode_metadata(self, ep_obj):
         if self.episode_metadata and ep_obj and self._has_episode_metadata(ep_obj):
-            logger.debug("Metadata provider " + self.name + " updating episode indexer info metadata file for " + ep_obj.pretty_name)
+            logger.debug(f"[{self.name} META] Updating episode indexer info metadata file for {ep_obj.pretty_name}")
             nfo_file_path = self.get_episode_file_path(ep_obj)
 
             attribute_map = {
@@ -323,25 +323,25 @@ class GenericMetadata(object):
 
     def create_fanart(self, show_obj):
         if self.fanart and show_obj and not self._has_fanart(show_obj):
-            logger.debug("Metadata provider " + self.name + " creating fanart for " + show_obj.name)
+            logger.debug(f"[{self.name} META] Creating fanart for {show_obj.name}")
             return self.save_fanart(show_obj)
         return False
 
     def create_poster(self, show_obj):
         if self.poster and show_obj and not self._has_poster(show_obj):
-            logger.debug("Metadata provider " + self.name + " creating poster for " + show_obj.name)
+            logger.debug(f"[{self.name} META] Creating poster for {show_obj.name}")
             return self.save_poster(show_obj)
         return False
 
     def create_banner(self, show_obj):
         if self.banner and show_obj and not self._has_banner(show_obj):
-            logger.debug("Metadata provider " + self.name + " creating banner for " + show_obj.name)
+            logger.debug(f"[{self.name} META] Creating banner for {show_obj.name}")
             return self.save_banner(show_obj)
         return False
 
     def create_episode_thumb(self, ep_obj):
         if self.episode_thumbnails and ep_obj and not self._has_episode_thumb(ep_obj):
-            logger.debug("Metadata provider " + self.name + " creating episode thumbnail for " + ep_obj.pretty_name)
+            logger.debug(f"[{self.name} META] Creating episode thumbnail for {ep_obj.pretty_name}")
             return self.save_thumbnail(ep_obj)
         return False
 
@@ -350,7 +350,7 @@ class GenericMetadata(object):
             result = []
             for season in show_obj.episodes:
                 if not self._has_season_poster(show_obj, season):
-                    logger.debug("Metadata provider " + self.name + " creating season posters for " + show_obj.name)
+                    logger.debug(f"[{self.name} META] Creating season posters for {show_obj.name}")
                     result.extend([self.save_season_poster(show_obj, season)])
             return all(result)
         return False
@@ -358,7 +358,7 @@ class GenericMetadata(object):
     def create_season_banners(self, show_obj):
         if self.season_banners and show_obj:
             result = []
-            logger.debug("Metadata provider " + self.name + " creating season banners for " + show_obj.name)
+            logger.debug(f"[{self.name} META] Creating season banners for {show_obj.name}")
             for season in show_obj.episodes:
                 if not self._has_season_banner(show_obj, season):
                     result.extend([self.save_season_banner(show_obj, season)])
@@ -367,13 +367,13 @@ class GenericMetadata(object):
 
     def create_season_all_poster(self, show_obj):
         if self.season_all_poster and show_obj and not self._has_season_all_poster(show_obj):
-            logger.debug("Metadata provider " + self.name + " creating season all poster for " + show_obj.name)
+            logger.debug(f"[{self.name} META] Creating season all poster for {show_obj.name}")
             return self.save_season_all_poster(show_obj)
         return False
 
     def create_season_all_banner(self, show_obj):
         if self.season_all_banner and show_obj and not self._has_season_all_banner(show_obj):
-            logger.debug("Metadata provider " + self.name + " creating season all banner for " + show_obj.name)
+            logger.debug(f"[{self.name} META] Creating season all banner for {show_obj.name}")
             return self.save_season_all_banner(show_obj)
         return False
 
