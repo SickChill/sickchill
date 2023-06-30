@@ -198,6 +198,7 @@ jobs:
         load: true
         labels: ${{ needs.Environment.outputs.docker_labels }}
         target: sickchill-final
+        cache-to: gha,mode=max
         cache-from: type=gha
         build-args: |
           SOURCE=1
