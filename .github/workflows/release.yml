@@ -30,11 +30,6 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: false
       -
-        if: success() && !env.ACT
-        name: Remove submodules
-        run: |
-          git config --remove-section submodule.contrib/scmaintools
-      -
         name: Checkout SickChill
         uses: actions/checkout@v3
         with:

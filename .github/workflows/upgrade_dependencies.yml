@@ -15,11 +15,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       -
-        if: success() && !env.ACT
-        name: Remove submodules
-        run: |
-          git config --remove-section submodule.contrib/scmaintools
-      -
         name: Checkout
         if: success() && !env.ACT
         uses: actions/checkout@v3
