@@ -42,9 +42,9 @@ class SickChillArgumentParser:
         self.parser.add_argument("--flask-host", help="the host for flask listen on", required=False)
         self.parser.add_argument("--flask-port", type=int, help="the port for flask listen on", required=False)
 
-        test_subparser = self.parser.add_subparsers(help="test commands parsers")
+        test_subparser = self.parser.add_subparsers(help="test commands parsers", dest="subparser_name")
         test_name_parser = test_subparser.add_parser("test-name", help="test a release name to see the parse result")
-        test_name_parser.add_argument("test_name", nargs="?", help="test a release name to see the parse result")
+        test_name_parser.add_argument("--name", help="test a release name to see the parse result", required=True)
         test_name_parser.add_argument(
             "--parser",
             help="parser type to use when testing a release name with the parser",

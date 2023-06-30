@@ -105,10 +105,10 @@ class SickChill:
         args = SickChillArgumentParser(settings.DATA_DIR).parse_args()
 
         # Add methods here when you want to perform an action and exit, without starting the webserver
-        if args.test_name:
+        if args.subparser_name == "test-name" and args.name:
             results = []
             for parser in args.parser.lower().split(","):
-                result = self.test_name(args.test_name, parser if parser != "all" else "")
+                result = self.test_name(args.name, parser if parser != "all" else "")
                 results.append(result)
                 parser_name = parser or "all"
                 sys.stdout.write(f"{parser_name}: {result}\n")
