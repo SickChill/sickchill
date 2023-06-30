@@ -104,10 +104,6 @@ jobs:
       with:
         fetch-depth: 1
     -
-      name: Remove submodules
-      run:
-        git submodule deinit --all -f || false
-    -
       if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10' && !env.ACT
       name: Lint shell scripts
       uses: ludeeus/action-shellcheck@master
@@ -202,8 +198,7 @@ jobs:
         load: true
         labels: ${{ needs.Environment.outputs.docker_labels }}
         target: sickchill-final
-        cache-to: type=gha,mode=max
-        # cache-from: type=gha
+        cache-from: type=gha
         build-args: |
           SOURCE=1
         allow: |
@@ -279,7 +274,6 @@ jobs:
         push: false
         outputs: type=local,dest=/tmp/sickchill-wheels
         target: sickchill-wheels
-        cache-to: type=gha,mode=max
         cache-from: type=gha
         build-args: |
           SOURCE=1
