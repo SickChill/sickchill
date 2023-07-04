@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
-    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-env": "^7.22.6",
     "@popperjs/core": "^2.11.6",
     "@webpack-cli/generators": "^3.0.0",
     "ava": "^5.0.1",
