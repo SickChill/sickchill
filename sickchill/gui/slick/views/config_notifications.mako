@@ -2144,7 +2144,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.JOIN_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="join_notify_onsnatch" id="join_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.JOIN_NOTIFY_ONSNATCH)]}/>
                                     <label for="join_notify_onsnatch">${_('send a message when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3079,7 +3079,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_subtitledownload" id="clack_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="slack_notify_subtitledownload" id="slack_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD)]}/>
                                     <label for="slack_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
