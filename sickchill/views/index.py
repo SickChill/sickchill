@@ -243,7 +243,7 @@ class WebRoot(WebHandler):
 
     def setPosterSortBy(self):
         sort = self.get_query_argument("sort")
-        if sort not in ("name", "date", "network", "progress"):
+        if sort not in ("name", "date", "network", "progress", "status"):
             sort = "name"
 
         settings.POSTER_SORTBY = sort
