@@ -563,7 +563,8 @@ movie_list: "MovieList" = None
 
 
 def get_backlog_cycle_time():
-    cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
+    # backlog timer multiple of daily frequency and ensure multiple per mako 'step="60"'
+    cycletime = ((DAILYSEARCH_FREQUENCY * 2) // 60) * 60
     return max([cycletime, 720])
 
 
