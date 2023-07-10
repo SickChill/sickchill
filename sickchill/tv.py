@@ -246,7 +246,7 @@ class TVShow(object):
 
         return ep_list
 
-    def getEpisode(self, season=None, episode=None, ep_file=None, noCreate=False, absolute_number=None):
+    def getEpisode(self, season=None, episode=None, ep_file=None, noCreate=False, absolute_number=None) -> "TVEpisode":
         season = try_int(season, None)
         episode = try_int(episode, None)
         absolute_number = try_int(absolute_number, None)
@@ -496,7 +496,7 @@ class TVShow(object):
 
         return scannedEps
 
-    def loadEpisodesFromIndexer(self):
+    def loadEpisodesFromIndexer(self, force_all: bool = False):
         logger.debug(_("{show_id}: Loading all episodes from {indexer_name}...").format(show_id=self.indexerid, indexer_name=self.indexer_name))
 
         scannedEps = {}
@@ -520,7 +520,7 @@ class TVShow(object):
             else:
                 try:
                     with show_episode.lock:
-                        show_episode.loadFromIndexer(*season_episode)
+                        show_episode.loadFromIndexer(series_episode["airedSeason"], series_episode["airedEpisodeNumber"], force_all=force_all)
                         show_episode.saveToDB()
                         # sql_l.append(show_episode.get_sql())
                 except EpisodeDeletedException:
@@ -1461,7 +1461,7 @@ class TVEpisode(object):
                     try:
                         result = self.loadFromIndexer(season, episode)
                     except EpisodeDeletedException:
-                        result = False
+                        result = None
 
                     # if we failed SQL *and* NFO, Indexers then fail
                     if not result:
@@ -1538,11 +1538,11 @@ class TVEpisode(object):
             self.dirty = False
             return True
 
-    def loadFromIndexer(self, season=None, episode=None):
+    def loadFromIndexer(self, season=None, episode=None, force_all: bool = False):
         myEp = self.idxr.episode(self.show, season or self.season, episode or self.episode)
         if not myEp:
             if self.name:
-                logger.debug("{} timed out but we have enough info from other sources, allowing the error".format(self.indexer_name))
+                logger.debug("{} timed out, but we have enough info from other sources, allowing the error".format(self.indexer_name))
                 return
             else:
                 logger.error("{} timed out, unable to create the episode".format(self.indexer_name))
@@ -1639,25 +1639,22 @@ class TVEpisode(object):
                 logger.debug(f"{self.show.indexerid}: Episode airs in the future or has no airdate, marking it {statusStrings[UNAIRED]}")
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
-                # Do some current date offset calculation
-                delta_time = datetime.date.today() - datetime.timedelta(days=settings.SHOW_SKIP_OLDER)
-                # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
-                # auto-skip specials and check date in delta period too.
                 if self.season == 0:
                     self.status = SKIPPED
                     logger.debug(f"Episode is a Special, marking: {statusStrings[self.status]}")
                 else:
-                    if settings.SHOW_SKIP_OLDER > 0:
-                        if self.airdate < delta_time:
+                    if settings.SHOW_SKIP_OLDER > 0 and not force_all:
+                        # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
+                        # auto-skip specials and check date in delta period too.
+                        if self.airdate < datetime.date.today() - datetime.timedelta(days=settings.SHOW_SKIP_OLDER):
                             self.status = SKIPPED
                             logger.debug(f"Episode air date is older than settings, marking: {statusStrings[self.status]}")
                         else:
-                            self.status = self.show.default_ep_status if self.season > 0 else SKIPPED
+                            self.status = self.show.default_ep_status
                             logger.debug(f"Episode air date is newer than settings, marking: {statusStrings[self.status]}")
                     else:
-                        self.status = self.show.default_ep_status if self.season > 0 else SKIPPED
+                        self.status = self.show.default_ep_status
                         logger.debug(f"Episode has already aired, marking: {statusStrings[self.status]}")
-
             else:
                 logger.debug(f"Not touching status [ {statusStrings[self.status]} ] It could be skipped/ignored/snatched/archived")
 

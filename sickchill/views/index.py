@@ -175,12 +175,8 @@ class WebHandler(BaseHandler):
             kwargs = self.request.arguments
             for arg, value in kwargs.items():
                 if len(value) == 1:
-                    kwargs[arg] = xhtml_escape(value[0])
-                elif isinstance(value, str):
-                    kwargs[arg] = xhtml_escape(value)
-                elif isinstance(value, list):
-                    kwargs[arg] = [xhtml_escape(v) for v in value]
-                else:
+                    kwargs[arg] = value[0]
+                elif not isinstance(value, [str, list]):
                     raise Exception
             return function(**kwargs)
         except TypeError:

@@ -116,6 +116,7 @@ DELETE_FAILED = False
 DELETE_NON_ASSOCIATED_FILES = False
 DELRARCONTENTS = False
 DEVELOPER = False
+DISABLE_UPDATER = False
 DISCORD_AVATAR_URL = "https://raw.githubusercontent.com/SickChill/SickChill/master/sickchill/gui/slick/images/sickchill-sc.png"
 DISCORD_NAME = "SickChill"
 DISCORD_NOTIFY_DOWNLOAD = None

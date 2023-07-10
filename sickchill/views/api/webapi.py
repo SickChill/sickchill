@@ -2715,7 +2715,7 @@ class CMDShowUpdate(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            settings.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
+            settings.showQueueScheduler.action.update_show(show_obj, True)
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as error:
             logger.debug("API::Unable to update show: {0}".format(error))

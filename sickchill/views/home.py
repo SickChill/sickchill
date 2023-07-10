@@ -685,8 +685,8 @@ class Home(WebRoot):
 
     def updateCheck(self):
         pid = self.get_query_argument("pid")
-        if str(pid) != str(settings.PID):
-            return self.redirect("/home/")
+        if settings.DISABLE_UPDATER or str(pid) != str(settings.PID):
+            return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
         settings.versionCheckScheduler.action.check_for_new_version(force=True)
         settings.versionCheckScheduler.action.check_for_new_news()
@@ -694,8 +694,8 @@ class Home(WebRoot):
         return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
     def update(self, pid, branch=None):
-        if str(pid) != str(settings.PID):
-            return self.redirect("/home/")
+        if settings.DISABLE_UPDATER or str(pid) != str(settings.PID):
+            return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
         updater = UpdateManager()
         if updater.backup():
