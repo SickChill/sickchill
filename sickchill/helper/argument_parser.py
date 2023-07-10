@@ -38,6 +38,7 @@ class SickChillArgumentParser:
             help="download the latest stable version and force an " "update (use when you're unable to do so using " "the web ui)",
         )
 
+        self.parser.add_argument("--no-update", action="store_true", help="disable the built-in updater")
         self.parser.add_argument("--flask", action="store_true", help="run the flask server")
         self.parser.add_argument("--flask-host", help="the host for flask listen on", required=False)
         self.parser.add_argument("--flask-port", type=int, help="the port for flask listen on", required=False)

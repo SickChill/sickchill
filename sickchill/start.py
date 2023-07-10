@@ -813,10 +813,10 @@ def initialize(consoleLogging=True):
             if hasattr(curProvider, "cookies"):
                 curProvider.cookies = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cookies"), censor_log=True)
 
-        message = _(
-            'SickChill support, discussions, bug reports, feature requests, and all other communication is now on <a href="https://discord.gg/FXre9qkHwE">discord (click here)</a> or can be found in the menu under tools>discord. Code and releases will remain on GitHub!'
-        )
-        helpers.add_site_message(message, tag="discord_support", level="success")
+        # message = _(
+        #     'SickChill support, discussions, bug reports, feature requests, and all other communication is now on <a href="https://discord.gg/FXre9qkHwE">discord (click here)</a> or can be found in the menu under tools>discord. Code and releases will remain on GitHub!'
+        # )
+        # helpers.add_site_message(message, tag="discord_support", level="success")
 
         providers.check_enabled_providers()
 
