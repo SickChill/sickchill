@@ -442,7 +442,6 @@ class QueueItemAdd(ShowQueueItem):
             # set up default new/missing episode status
             logger.info(_("Setting all episodes to the specified default status: {default_status}").format(default_status=self.default_status))
             self.show.default_ep_status = self.default_status
-            self.show.add_first_time = 1
 
             if self.show.anime:
                 self.show.release_groups = BlackAndWhiteList(self.show.indexerid)
@@ -495,7 +494,7 @@ class QueueItemAdd(ShowQueueItem):
             settings.showList.append(self.show)
 
         try:
-            self.show.loadEpisodesFromIndexer()
+            self.show.loadEpisodesFromIndexer(force_all=True)
         except Exception as error:
             logger.exception(f"Error with {self.show.idxr.name}, not creating episode list: {error}")
             logger.debug(traceback.format_exc())
@@ -669,7 +668,7 @@ class QueueItemUpdate(ShowQueueItem):
         # get episode list from TVDB
         logger.debug(f"Loading all episodes from {self.show.idxr.name}")
         try:
-            IndexerEpList = self.show.loadEpisodesFromIndexer()
+            IndexerEpList = self.show.loadEpisodesFromIndexer(self.force)
         except Exception as error:
             logger.exception(f"Unable to get info from {self.show.idxr.name}, the show info will not be refreshed: {error}")
             IndexerEpList = None
