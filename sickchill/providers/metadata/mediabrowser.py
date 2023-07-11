@@ -87,7 +87,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), "metadata")
             xml_file_path = os.path.join(metadata_dir_name, xml_filename)
         else:
-            logger.debug(f"Episode location doesn't exist: {ep_obj.location}")
+            logger.debug(f"{self.name} META] Episode location doesn't exist: {ep_obj.location}")
             return ""
 
         return xml_file_path
