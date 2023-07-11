@@ -43,8 +43,9 @@ class BaseHandler(RequestHandler):
         super().initialize()
         self.startTime = time.time()
 
-    # def set_default_headers(self):
-    #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    def set_default_headers(self):
+        self.set_header("X-Robots-Tag", "noindex")
+        # self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
 
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
