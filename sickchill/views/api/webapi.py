@@ -73,7 +73,8 @@ class ApiHandler(RequestHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "content-type")
         self.set_header("Access-Control-Allow-Methods", "GET")
-        # self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.set_header("X-Robots-Tag", "noindex")
+        # self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
 
     def get(self, *args, **kwargs):
         # kwargs = self.request.arguments
