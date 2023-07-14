@@ -114,7 +114,9 @@ class SickChill:
                 sys.stdout.write(f"{parser_name}: {result}\n")
             sys.exit(int(not any(results)))
 
-        if args.force_update:
+        if args.no_update:
+            settings.DISABLE_UPDATER = True
+        elif args.force_update:
             result = self.force_update()
             sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 

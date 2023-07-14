@@ -43,8 +43,9 @@ class BaseHandler(RequestHandler):
         super().initialize()
         self.startTime = time.time()
 
-    # def set_default_headers(self):
-    #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    def set_default_headers(self):
+        self.set_header("X-Robots-Tag", "noindex")
+        # self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
 
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
@@ -175,12 +176,8 @@ class WebHandler(BaseHandler):
             kwargs = self.request.arguments
             for arg, value in kwargs.items():
                 if len(value) == 1:
-                    kwargs[arg] = xhtml_escape(value[0])
-                elif isinstance(value, str):
-                    kwargs[arg] = xhtml_escape(value)
-                elif isinstance(value, list):
-                    kwargs[arg] = [xhtml_escape(v) for v in value]
-                else:
+                    kwargs[arg] = value[0]
+                elif not isinstance(value, [str, list]):
                     raise Exception
             return function(**kwargs)
         except TypeError:
@@ -243,7 +240,7 @@ class WebRoot(WebHandler):
 
     def setPosterSortBy(self):
         sort = self.get_query_argument("sort")
-        if sort not in ("name", "date", "network", "progress"):
+        if sort not in ("name", "date", "network", "progress", "status"):
             sort = "name"
 
         settings.POSTER_SORTBY = sort

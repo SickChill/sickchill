@@ -73,7 +73,8 @@ class ApiHandler(RequestHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "content-type")
         self.set_header("Access-Control-Allow-Methods", "GET")
-        # self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.set_header("X-Robots-Tag", "noindex")
+        # self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
 
     def get(self, *args, **kwargs):
         # kwargs = self.request.arguments
@@ -2715,7 +2716,7 @@ class CMDShowUpdate(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            settings.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
+            settings.showQueueScheduler.action.update_show(show_obj, True)
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as error:
             logger.debug("API::Unable to update show: {0}".format(error))

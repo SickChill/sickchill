@@ -914,7 +914,7 @@
                                     <div class="col-md-12">
                                         <input class="btn test-button" type="button" value="Test SABnzbd" id="testSABnzbd"/>
                                         <input type="button" value="Test DSM" id="testDSM" class="btn test-button"/>
-                                        <input type="submit" class="btn config_submitter" value="${_('Save Changes')}"/>
+                                        <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                                     </div>
                                 </div>
 
@@ -1003,7 +1003,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="submit" class="btn config_submitter" value="${_('Save Changes')}"/>
+                                            <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                                         </div>
                                     </div>
                                 </div>
@@ -1270,7 +1270,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input class="btn test-button" type="button" value="${_('Test Connection')}" id="test_torrent"/>
-                                            <input type="submit" class="btn config_submitter" value="${_('Save Changes')}"/>
+                                            <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                                         </div>
                                     </div>
 

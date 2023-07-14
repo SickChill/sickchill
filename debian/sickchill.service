@@ -8,7 +8,7 @@ User=sickchill
 Group=sickchill
 
 Type=simple
-ExecStart=/usr/bin/sickchill --quiet --nolaunch
+ExecStart=/usr/bin/sickchill --quiet --nolaunch --no-update
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]

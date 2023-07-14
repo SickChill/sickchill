@@ -62,11 +62,11 @@ class ShowUpdater(object):
                             ).days < settings.ENDED_SHOWS_UPDATE_INTERVAL:
                                 skip_update = True
 
-                        # Just update all of the shows for now until they fix the updates api
                         # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
                         if not last_update or (cur_show.indexerid in updated_shows and not skip_update):
-                            pi_list.append(settings.showQueueScheduler.action.update_show(cur_show, True))
-                        else:
+                            pi_list.append(settings.showQueueScheduler.action.update_show(cur_show, force))
+                        elif not skip_update:
+                            # TODO: do we really need to refresh every show every day if it is not updated?
                             pi_list.append(settings.showQueueScheduler.action.refresh_show(cur_show, force))
                     except (CantUpdateShowException, CantRefreshShowException) as error:
                         logger.info(_("Automatic update failed: {error}").format(error=error))
