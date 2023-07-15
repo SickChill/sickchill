@@ -3808,9 +3808,9 @@ ejs@^3.1.6, ejs@^3.1.8, ejs@^3.1.9:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.431:
-  version "1.4.460"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.460.tgz#f360a5059c039c4a5fb4dfa99680ad8129dd9f84"
-  integrity sha512-kKiHnbrHME7z8E6AYaw0ehyxY5+hdaRmeUbjBO22LZMdqTYCO29EvF0T1cQ3pJ1RN5fyMcHl1Lmcsdt9WWJpJQ==
+  version "1.4.461"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.461.tgz#6b14af66042732bf883ab63a4d82cac8f35eb252"
+  integrity sha512-1JkvV2sgEGTDXjdsaQCeSwYYuhLRphRpc+g6EHTFELJXEiznLt3/0pZ9JuAOQ5p2rI3YxKTbivtvajirIfhrEQ==
 
 emittery@^1.0.1:
   version "1.0.1"
@@ -4264,9 +4264,9 @@ eslint-scope@5.1.1, eslint-scope@^5.1.1:
     estraverse "^4.1.1"
 
 eslint-scope@^7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-7.2.0.tgz#f21ebdafda02352f103634b96dd47d9f81ca117b"
-  integrity sha512-DYj5deGlHBfMt15J7rdtyKNq/Nqlv5KfU4iodrQ019XESsRnwXH9KAE0y3cwtUHDo2ob7CypAnCqefh6vioWRw==
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-7.2.1.tgz#936821d3462675f25a18ac5fd88a67cc15b393bd"
+  integrity sha512-CvefSOsDdaYYvxChovdrPo/ZGt8d5lrJWleAc1diXRKhHGiTYEI26cvo8Kle/wGnsizoCJjK73FMg1/IkIwiNA==
   dependencies:
     esrecurse "^4.3.0"
     estraverse "^5.2.0"
@@ -4301,9 +4301,9 @@ eslint-visitor-keys@^3.3.0, eslint-visitor-keys@^3.4.1:
   integrity sha512-pZnmmLwYzf+kWaM/Qgrvpen51upAktaaiI01nsJD/Yr3lMOdNtq0cxkrrg16w64VtisN6okbs7Q8AfGqj4c9fA==
 
 eslint@^8.37.0, eslint@^8.9.0:
-  version "8.44.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.44.0.tgz#51246e3889b259bbcd1d7d736a0c10add4f0e500"
-  integrity sha512-0wpHoUbDUHgNCyvFB5aXLiQVfK9B0at6gUvzy83k4kAsQ/u769TQDX6iKC+aO4upIHO9WSaA3QoXYQDHbNwf1A==
+  version "8.45.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.45.0.tgz#bab660f90d18e1364352c0a6b7c6db8edb458b78"
+  integrity sha512-pd8KSxiQpdYRfYa9Wufvdoct3ZPQQuVuU5O6scNgMuOMYuxvH0IGaYK0wUFjo4UYYQQCUndlXiMbnxopwvvTiw==
   dependencies:
     "@eslint-community/eslint-utils" "^4.2.0"
     "@eslint-community/regexpp" "^4.4.0"
@@ -4330,7 +4330,6 @@ eslint@^8.37.0, eslint@^8.9.0:
     globals "^13.19.0"
     graphemer "^1.4.0"
     ignore "^5.2.0"
-    import-fresh "^3.0.0"
     imurmurhash "^0.1.4"
     is-glob "^4.0.0"
     is-path-inside "^3.0.3"
@@ -4342,7 +4341,6 @@ eslint@^8.37.0, eslint@^8.9.0:
     natural-compare "^1.4.0"
     optionator "^0.9.3"
     strip-ansi "^6.0.1"
-    strip-json-comments "^3.1.0"
     text-table "^0.2.0"
 
 esm-utils@^4.1.2:
@@ -4359,9 +4357,9 @@ esm@^3.2.25:
   integrity sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==
 
 espree@^9.0.0, espree@^9.4.0, espree@^9.6.0:
-  version "9.6.0"
-  resolved "https://registry.yarnpkg.com/espree/-/espree-9.6.0.tgz#80869754b1c6560f32e3b6929194a3fe07c5b82f"
-  integrity sha512-1FH/IiruXZ84tpUlm0aCUEwMl2Ho5ilqVh0VvQXw+byAz/4SAciyHLlfmL5WYqsvD38oymdUwBss0LtK8m4s/A==
+  version "9.6.1"
+  resolved "https://registry.yarnpkg.com/espree/-/espree-9.6.1.tgz#a2a17b8e434690a5432f2f8018ce71d331a48c6f"
+  integrity sha512-oruZaFkjorTpF32kDSI5/75ViwGeZginGGy2NoOSg3Q9bnwlnmDm4HLnkl0RE3n+njDXR037aY1+x58Z/zFdwQ==
   dependencies:
     acorn "^8.9.0"
     acorn-jsx "^5.3.2"
@@ -5750,7 +5748,7 @@ immutable@^4.0.0:
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.3.1.tgz#17988b356097ab0719e2f741d56f3ec6c317f9dc"
   integrity sha512-lj9cnmB/kVS0QHsJnYKD1uo3o39nrbKxszjnqS9Fr6NB7bZzW45U6WSGBPKXDL/CvDKqDNPA4r3DoDQ8GTxo2A==
 
-import-fresh@^3.0.0, import-fresh@^3.2.1:
+import-fresh@^3.2.1:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/import-fresh/-/import-fresh-3.3.0.tgz#37162c25fcb9ebaa2e6e53d5b4d88ce17d9e0c2b"
   integrity sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==
@@ -9233,9 +9231,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1187.0:
-  version "1.1189.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1189.0.tgz#21a5e748bccd45b04834d33ba7a2fddf778d6af6"
-  integrity sha512-X94/KQx5+/p6YpsTMPDHGEtT45J/BdJsfzEjtS59IGlT733RCzuh488WZ1yl9SNSYzqBn7UzhFX0QRRbqQrjhg==
+  version "1.1190.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1190.0.tgz#5002b79dff65bab2973fb3037d14832a79dd0be7"
+  integrity sha512-igyEHQGquLmxEjyjn8CnYAG/JkPcCou7T6RLgdbPj/XY4xUhecd2t5HJK3XagR8ii/nohy/PTyKk/MHro2hxVg==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
@@ -9652,7 +9650,7 @@ strip-json-comments@1.0.x:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-1.0.4.tgz#1e15fbcac97d3ee99bf2d73b4c656b082bbafb91"
   integrity sha512-AOPG8EBc5wAikaG1/7uFCNFJwnKOuQwFTpYBdTW6OvWHeZBQBrAA/amefHGrEiOnCPcLFZK6FUPtWVKpQVIRgg==
 
-strip-json-comments@^3.1.0, strip-json-comments@^3.1.1:
+strip-json-comments@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
