@@ -13,27 +13,27 @@ class Notifier(object):
 
     def notify_snatch(self, ep_name):
         if settings.MATTERMOSTBOTS_NOTIFY_SNATCH:
-            self._notify_mattermostbot(common.notifyStrings[common.NOTIFY_SNATCH],ep_name,"s")
+            self._notify_mattermostbot(common.notifyStrings[common.NOTIFY_SNATCH], ep_name, "s")
 
     def notify_download(self, ep_name):
         if settings.MATTERMOSTBOTS_NOTIFY_DOWNLOAD:
-            self._notify_mattermostbot(common.notifyStrings[common.NOTIFY_DOWNLOAD],ep_name,"d")
+            self._notify_mattermostbot(common.notifyStrings[common.NOTIFY_DOWNLOAD], ep_name, "d")
 
     def notify_subtitle_download(self, ep_name, lang):
         if settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD:
-            self._notify_mattermostbot(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD],ep_name + " - " + lang,"sd")
+            self._notify_mattermostbot(common.notifyStrings[common.NOTIFY_SUBTITLE_DOWNLOAD], ep_name + " - " + lang, "sd")
 
     def notify_update(self, new_version="??"):
         if settings.USE_MATTERMOSTBOT:
             update_text = common.notifyStrings[common.NOTIFY_UPDATE_TEXT]
             title = common.notifyStrings[common.NOTIFY_UPDATE]
-            self._notify_mattermostbot(title + " - " + update_text + new_version,"u")
+            self._notify_mattermostbot("Update", title + " - " + update_text + new_version, "u")
 
     def notify_login(self, ipaddress=""):
         if settings.USE_MATTERMOSTBOT:
             update_text = common.notifyStrings[common.NOTIFY_LOGIN_TEXT]
             title = common.notifyStrings[common.NOTIFY_LOGIN]
-            self._notify_mattermostbot(title + " - " + update_text.format(ipaddress),"l")
+            self._notify_mattermostbot("Login", title + " - " + update_text.format(ipaddress), "l")
 
     def test_notify(self):
         action = "Testing"
@@ -41,7 +41,7 @@ class Notifier(object):
         tmsg = "t"
         return self._notify_mattermostbot(action, message, tmsg, force=True)
 
-    def _send_mattermostbot(self,action="", message="", tmsg="t"):
+    def _send_mattermostbot(self, action="", message="", tmsg="t"):
         logger.info("Action: " + action + " | Message: " + message + " | tmsg: " + tmsg)
         mattermostbot_post_url = settings.MATTERMOSTBOT_URL + self.MATTERMOSTBOT_POST_URI
         mattermostbot_author = settings.MATTERMOSTBOT_AUTHOR
@@ -71,10 +71,10 @@ class Notifier(object):
         payload['props']['attachments'] = []
         payload['props']['attachments'].append({ "pretext":pretext, "author_name": mattermostbot_author, "color": color, "fields": {}})
         payload['props']['attachments'][0]['fields'] = []
-        payload['props']['attachments'][0]['fields'].append({'title':'Series','value':contents[0],'short':'true'})
-        payload['props']['attachments'][0]['fields'].append({'title':'EP','value':contents[1],'short':'true'})
-        payload['props']['attachments'][0]['fields'].append({'title':'Title','value':contents[2],'short':'true'})
-        payload['props']['attachments'][0]['fields'].append({'title':'Quality','value':contents[3],'short':'true'})
+        payload['props']['attachments'][0]['fields'].append({'title':'Series', 'value':contents[0], 'short':'true'})
+        payload['props']['attachments'][0]['fields'].append({'title':'EP', 'value':contents[1], 'short':'true'})
+        payload['props']['attachments'][0]['fields'].append({'title':'Title', 'value':contents[2], 'short':'true'})
+        payload['props']['attachments'][0]['fields'].append({'title':'Quality', 'value':contents[3], 'short':'true'})
         
         try:
             r = requests.post(
@@ -94,4 +94,4 @@ class Notifier(object):
             logger.debug("Notification for Mattermost Bot not enabled, skipping this notification")
             return False
 
-        return self._send_mattermostbot(act,message,tmsg)
+        return self._send_mattermostbot(act, message, tmsg)
