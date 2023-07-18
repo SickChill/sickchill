@@ -55,13 +55,13 @@ class Notifier(object):
 
         if tmsg == "s":
             color = "#ffff50"
-            pretext ="Snatch/Start"
+            pretext = "Snatch/Start"
         elif tmsg == "d":
             color = "#009900"
             pretext = "Finish"
         elif tmsg == "t":
             color = "#0000ff"
-            pretext ="Testing"
+            pretext = "Testing"
         else:
             color = "#ff0000"
             pretext = "Type: " + tmsg
