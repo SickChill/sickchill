@@ -12,11 +12,11 @@ class Notifier(object):
     MATTERMOSTBOT_ICON_URL = "https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png"
 
     def notify_snatch(self, ep_name):
-        if settings.MATTERMOSTBOTS_NOTIFY_SNATCH:
+        if settings.MATTERMOSTBOT_NOTIFY_SNATCH:
             self._notify_mattermostbot(common.notifyStrings[common.NOTIFY_SNATCH], ep_name, "s")
 
     def notify_download(self, ep_name):
-        if settings.MATTERMOSTBOTS_NOTIFY_DOWNLOAD:
+        if settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD:
             self._notify_mattermostbot(common.notifyStrings[common.NOTIFY_DOWNLOAD], ep_name, "d")
 
     def notify_subtitle_download(self, ep_name, lang):
@@ -45,37 +45,37 @@ class Notifier(object):
         logger.info("Action: " + action + " | Message: " + message + " | tmsg: " + tmsg)
         mattermostbot_post_url = settings.MATTERMOSTBOT_URL + self.MATTERMOSTBOT_POST_URI
         mattermostbot_author = settings.MATTERMOSTBOT_AUTHOR
-        mattermostbot_post_url.replace("//api","/api")
+        mattermostbot_post_url.replace("//api", "/api")
         mattermostbot_icon_emoji = settings.MATTERMOSTBOT_ICON_EMOJI
         logger.info("Sending mattermost bot message: " + message + " towards " + mattermostbot_post_url)
         logger.info("Sending mattermost bot action: " + action)
 
-        headers = CaseInsensitiveDict({"Content-Type": "application/json","Authorization": "Bearer "+ settings.MATTERMOSTBOT_TOKEN})
-        contents=message.split(" - ")
-        
-        if tmsg == "s":
-            color="#ffff50"
-            pretext="Snatch/Start"
-        elif tmsg == "d":
-            color="#009900"
-            pretext="Finish"
-        elif tmsg == "t":
-            color="#0000ff"
-            pretext="Testing"
-        else:
-            color="#ff0000"
-            pretext="Type: " + tmsg
+        headers = CaseInsensitiveDict({"Content-Type": "application/json", "Authorization": "Bearer " + settings.MATTERMOSTBOT_TOKEN})
+        contents = message.split(" - ")
 
-        payload={"channel_id": settings.MATTERMOSTBOT_CHANNEL, "message": "SickChill Work", "props": { "attachments": []}};
-        payload['channel_id'] = settings.MATTERMOSTBOT_CHANNEL
-        payload['props']['attachments'] = []
-        payload['props']['attachments'].append({ "pretext":pretext, "author_name": mattermostbot_author, "color": color, "fields": {}})
-        payload['props']['attachments'][0]['fields'] = []
-        payload['props']['attachments'][0]['fields'].append({'title':'Series', 'value':contents[0], 'short':'true'})
-        payload['props']['attachments'][0]['fields'].append({'title':'EP', 'value':contents[1], 'short':'true'})
-        payload['props']['attachments'][0]['fields'].append({'title':'Title', 'value':contents[2], 'short':'true'})
-        payload['props']['attachments'][0]['fields'].append({'title':'Quality', 'value':contents[3], 'short':'true'})
-        
+        if tmsg == "s":
+            color = "#ffff50"
+            pretext ="Snatch/Start"
+        elif tmsg == "d":
+            color = "#009900"
+            pretext = "Finish"
+        elif tmsg == "t":
+            color = "#0000ff"
+            pretext ="Testing"
+        else:
+            color = "#ff0000"
+            pretext = "Type: " + tmsg
+
+        payload = {"channel_id": settings.MATTERMOSTBOT_CHANNEL, "message": "SickChill Work", "props": {"attachments": []}}
+        payload["channel_id"] = settings.MATTERMOSTBOT_CHANNEL
+        payload["props"]["attachments"] = []
+        payload["props"]["attachments"].append({"pretext": pretext, "author_name": mattermostbot_author, "color": color, "fields": {}})
+        payload["props"]["attachments"][0]["fields"] = []
+        payload["props"]["attachments"][0]["fields"].append({"title": "Series", "value": contents[0], "short": "true"})
+        payload["props"]["attachments"][0]["fields"].append({"title": "EP", "value": contents[1], "short": "true"})
+        payload["props"]["attachments"][0]["fields"].append({"title": "Title", "value": contents[2], "short": "true"})
+        payload["props"]["attachments"][0]["fields"].append({"title": "Quality", "value": contents[3], "short": "true"})
+
         try:
             r = requests.post(
                 mattermostbot_post_url,

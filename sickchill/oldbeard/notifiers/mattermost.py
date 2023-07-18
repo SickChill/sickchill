@@ -12,11 +12,11 @@ class Notifier(object):
     MATTERMOST_ICON_URL = "https://github.com/SickChill/SickChill/raw/master/sickchill/gui/slick/images/sickchill-sc.png"
 
     def notify_snatch(self, ep_name):
-        if settings.MATTERMOSTS_NOTIFY_SNATCH:
+        if settings.MATTERMOST_NOTIFY_SNATCH:
             self._notify_mattermost(common.notifyStrings[common.NOTIFY_SNATCH] + ": " + ep_name)
 
     def notify_download(self, ep_name):
-        if settings.MATTERMOSTS_NOTIFY_DOWNLOAD:
+        if settings.MATTERMOST_NOTIFY_DOWNLOAD:
             self._notify_mattermost(common.notifyStrings[common.NOTIFY_DOWNLOAD] + ": " + ep_name)
 
     def notify_subtitle_download(self, ep_name, lang):
