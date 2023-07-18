@@ -3122,6 +3122,234 @@
 
             <div class="config-group-divider"></div>
 
+            <!-- /mattermost component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-matters" title="${_('Mattermost')}"></span>
+                        <h3><a href="${anon_url('http://www.mattermost.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Mattermost Webhook</a></h3>
+                        <p>${_('Secure collaboration for technical teams. Give operational and engineering teams the workspace they need to collaborate securely and effectively.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_mattermost" id="use_mattermost" ${('', 'checked="checked"')[bool(settings.USE_MATTERMOST)]}/>
+                                        <label for="use_mattermost">${_('should SickChill post messages on Mattermost?')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_mattermost">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermost_notify_snatch" id="mattermost_notify_snatch" ${('', 'checked="checked"')[bool(settings.MATTERMOST_NOTIFY_SNATCH)]}/>
+                                    <label for="mattermost_notify_snatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermost_notify_download" id="mattermost_notify_download" ${('', 'checked="checked"')[bool(settings.MATTERMOST_NOTIFY_DOWNLOAD)]}/>
+                                    <label for="mattermost_notify_download">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermost_notify_subtitledownload" id="mattermost_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <label for="mattermost_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermost_webhook" class="component-title">${_('Mattermost Incoming Webhook')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermost_webhook" id="mattermost_webhook" value="${settings.MATTERMOST_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermost_username" class="component-title">${_('Mattermost Username')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermost_username" id="mattermost_username" value="${settings.MATTERMOST_USERNAME}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermost_icon_emoji" class="component-title">${_('Mattermost Icon Emoji')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermost_icon_emoji" id="mattermost_icon_emoji" value="${settings.MATTERMOST_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testMattermost-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test Mattermost" id="testMattermost" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="config-group-divider"></div>
+
+            <!-- /mattermostbot component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-matters" title="${_('MattermostBot')}"></span>
+                        <h3><a href="${anon_url('http://www.mattermost.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Mattermost Bot</a></h3>
+                        <p>${_('Secure collaboration for technical teams. Give operational and engineering teams the workspace they need to collaborate securely and effectively.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_mattermostbot" id="use_mattermostbot" ${('', 'checked="checked"')[bool(settings.USE_MATTERMOSTBOT)]}/>
+                                        <label for="use_mattermostbot">${_('should SickChill post messages on Mattermost Bot?')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_mattermostbot">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermostbot_notify_snatch" id="mattermostbot_notify_snatch" ${('', 'checked="checked"')[bool(settings.MATTERMOSTBOT_NOTIFY_SNATCH)]}/>
+                                    <label for="mattermostbot_notify_snatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermostbot_notify_download" id="mattermostbot_notify_download" ${('', 'checked="checked"')[bool(settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD)]}/>
+                                    <label for="mattermostbot_notify_download">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermostbot_notify_subtitledownload" id="mattermostbot_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <label for="mattermostbot_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_url" class="component-title">${_('Mattermost Base URL')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_url" id="mattermostbot_url" value="${settings.MATTERMOSTBOT_URL}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_author" class="component-title">${_('Mattermost Author Name')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_author" id="mattermostbot_author" value="${settings.MATTERMOSTBOT_AUTHOR}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_token" class="component-title">${_('Mattermost Bot Token')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_token" id="mattermostbot_token" value="${settings.MATTERMOSTBOT_TOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_channel" class="component-title">${_('Mattermost Bot Channel ID')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_channel" id="mattermostbot_channel" value="${settings.MATTERMOSTBOT_CHANNEL}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_icon_emoji" class="component-title">${_('Mattermost Bot Icon Emoji')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_icon_emoji" id="mattermostbot_icon_emoji" value="${settings.MATTERMOSTBOT_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testMattermostBot-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test Mattermost Bot" id="testMattermostBot" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="config-group-divider"></div>
+
             <!-- /Rocket.Chat component-group //-->
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">

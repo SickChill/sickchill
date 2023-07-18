@@ -2058,6 +2058,11 @@ div.metadataDiv .disabled {
     float: left;
 }
 
+.icon-notifiers-matters {
+    background: url("../images/mattermost.png");
+    background-size: 32px;
+}
+
 .icon-notifiers-slack {
     background: url("../images/Slack_Mark_Web.png");
     background-size: 32px;

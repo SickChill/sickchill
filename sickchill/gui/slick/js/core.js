@@ -683,6 +683,18 @@ const SICKCHILL = {
                 });
             });
 
+            $('#testMattermost').on('click', () => {
+                $.post(scRoot + '/home/testMattermost', data => {
+                    $('#testMattermost-result').html(data);
+                });
+            });
+
+            $('#testMattermostBot').on('click', () => {
+                $.post(scRoot + '/home/testMattermostBot', data => {
+                    $('#testMattermostBot-result').html(data);
+                });
+            });
+
             $('#testRocketChat').on('click', () => {
                 $.post(scRoot + '/home/testRocketChat', data => {
                     $('#testRocketChat-result').html(data);

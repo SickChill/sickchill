@@ -369,6 +369,22 @@ class Home(WebRoot):
             return _("Slack message failed")
 
     @staticmethod
+    def testMattermost():
+        result = notifiers.mattermost_notifier.test_notify()
+        if result:
+            return _("Mattermost message successful")
+        else:
+            return _("Mattermost message failed")
+
+    @staticmethod
+    def testMattermostBot():
+        result = notifiers.mattermostbot_notifier.test_notify()
+        if result:
+            return _("Mattermost Bot message successful")
+        else:
+            return _("Mattermost Bot message failed")
+
+    @staticmethod
     def testRocketChat():
         result = notifiers.rocketchat_notifier.test_notify()
         if result:

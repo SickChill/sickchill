@@ -567,6 +567,24 @@ def initialize(consoleLogging=True):
         settings.SLACK_WEBHOOK = check_setting_str(settings.CFG, "Slack", "slack_webhook")
         settings.SLACK_ICON_EMOJI = check_setting_str(settings.CFG, "Slack", "slack_icon_emoji")
 
+        settings.USE_MATTERMOST = check_setting_bool(settings.CFG, "Mattermost", "use_mattermost")
+        settings.MATTERMOST_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_snatch")
+        settings.MATTERMOST_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_download")
+        settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_subtitledownload")
+        settings.MATTERMOST_WEBHOOK = check_setting_str(settings.CFG, "Mattermost", "mattermost_webhook")
+        settings.MATTERMOST_USERNAME = check_setting_str(settings.CFG, "Mattermost", "mattermost_username")
+        settings.MATTERMOST_ICON_EMOJI = check_setting_str(settings.CFG, "Mattermost", "mattermost_icon_emoji")
+
+        settings.USE_MATTERMOSTBOT = check_setting_bool(settings.CFG, "MattermostBot", "use_mattermostbot")
+        settings.MATTERMOSTBOT_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_snatch")
+        settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_download")
+        settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_subtitledownload")
+        settings.MATTERMOSTBOT_URL = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_url")
+        settings.MATTERMOSTBOT_TOKEN = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_token")
+        settings.MATTERMOSTBOT_CHANNEL = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_channel")
+        settings.MATTERMOSTBOT_ICON_EMOJI = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_icon_emoji")
+        settings.MATTERMOSTBOT_AUTHOR = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_author")
+
         settings.USE_ROCKETCHAT = check_setting_bool(settings.CFG, "RocketChat", "use_rocketchat")
         settings.ROCKETCHAT_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "RocketChat", "rocketchat_notify_snatch")
         settings.ROCKETCHAT_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "RocketChat", "rocketchat_notify_download")
@@ -1469,6 +1487,26 @@ def save_config():
                 "slack_notify_subtitledownload": int(settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD),
                 "slack_webhook": settings.SLACK_WEBHOOK,
                 "slack_icon_emoji": settings.SLACK_ICON_EMOJI,
+            },
+            "Mattermost": {
+                "use_mattermost": int(settings.USE_MATTERMOST),
+                "mattermost_notify_snatch": int(settings.MATTERMOST_NOTIFY_SNATCH),
+                "mattermost_notify_download": int(settings.MATTERMOST_NOTIFY_DOWNLOAD),
+                "mattermost_notify_subtitledownload": int(settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD),
+                "mattermost_username": settings.MATTERMOST_USERNAME,
+                "mattermost_webhook": settings.MATTERMOST_WEBHOOK,
+                "mattermost_icon_emoji": settings.MATTERMOST_ICON_EMOJI,
+            },
+            "MattermostBot": {
+                "use_mattermostbot": int(settings.USE_MATTERMOSTBOT),
+                "mattermostbot_notify_snatch": int(settings.MATTERMOSTBOT_NOTIFY_SNATCH),
+                "mattermostbot_notify_download": int(settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD),
+                "mattermostbot_notify_subtitledownload": int(settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD),
+                "mattermostbot_token": settings.MATTERMOSTBOT_TOKEN,
+                "mattermostbot_channel": settings.MATTERMOSTBOT_CHANNEL,
+                "mattermostbot_url": settings.MATTERMOSTBOT_URL,
+                "mattermostbot_icon_emoji": settings.MATTERMOSTBOT_ICON_EMOJI,
+                "mattermostbot_author": settings.MATTERMOSTBOT_AUTHOR,
             },
             "RocketChat": {
                 "use_rocketchat": int(settings.USE_ROCKETCHAT),
