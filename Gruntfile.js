@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         // Start merging and releasing
         'exec:git:merge:develop --strategy-option theirs', // Merge develop into master
         'default', // Run default task, grunt
-        'exec:update_translations', // Update translations
+        // 'exec:update_translations', // Update translations
 
         'exec:commit_changed_files:yes', // Commit the updates to translations and grunt
 
