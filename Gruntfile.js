@@ -15,7 +15,7 @@ module.exports = function(grunt) {
     /****************************************
     *  Admin only tasks                     *
     ****************************************/
-    grunt.registerTask('plublish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
+    grunt.registerTask('publish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
         'exec:check_return_branch', // Save the branch we are currently on, so we can return here
 
         // Make sure we have the newest remote changes locally
