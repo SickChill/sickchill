@@ -121,7 +121,7 @@ class TIVOMetadata(generic.GenericMetadata):
             metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), ".meta")
             metadata_file_path = os.path.join(metadata_dir_name, metadata_filename)
         else:
-            logger.debug(f"{self.name} META] Episode location doesn't exist: {ep_obj.location}")
+            logger.debug(f"[{self.name} META] Episode location doesn't exist: {ep_obj.location}")
             return ""
         return metadata_file_path
 
