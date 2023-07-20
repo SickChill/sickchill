@@ -373,7 +373,7 @@ module.exports = function(grunt) {
                 stdout: false,
                 callback: function(err, stdout) {
                     let commits = stdout.trim()
-                        .replace(/`/gm, '').replace(/^\([\w\s,.\-+_/>]+\)\s/gm, '').replace(/"/gm, '\\"');  // removes ` and tag information
+                        .replaceAll(/`/m, '').replaceAll(/^\([\w\s,.\-+_/>]+\)\s/m, '').replaceAll(/"/m, '\\"');  // removes ` and tag information
                     if (commits) {
                         grunt.config('commits', commits);
                     } else {
@@ -422,7 +422,7 @@ module.exports = function(grunt) {
                         grunt.fatal('Git command failed to execute: ' + err);
                     }
                     let allTags = stdout
-                        .replace(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/g, '')
+                        .replaceAll(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/, '')
                         .split('\xB6\xB6\xB6');
                     let foundTags = [];
                     allTags.forEach(function(curTag) {
@@ -512,7 +512,7 @@ module.exports = function(grunt) {
             return row
                 // link issue n return numbers, style links of issues and pull requests
 
-                .replace(/([\w\-.]+\/[\w\-.]+)?#(\d+)|https?:\/\/github.com\/([\w\-.]+\/[\w\-.]+)\/(issues|pull)\/(\d+)/gm,
+                .replaceAll(/([\w\-.]+\/[\w\-.]+)?#(\d+)|https?:\/\/github.com\/([\w\-.]+\/[\w\-.]+)\/(issues|pull)\/(\d+)/m,
                     function(all, repoL, numL, repoR, typeR, numR) {
                         if (numL) { // repoL, numL = user/repo#1234 style
                             return '[' + (repoL ? repoL : '') + '#' + numL + '](https://github.com/' + (repoL ? repoL : 'SickChill/SickChill') + '/issues/' + numL + ')';
@@ -521,20 +521,20 @@ module.exports = function(grunt) {
                         }
                 })
                 // shorten and link commit hashes
-                .replace(/([a-f\d]{40}(?![a-f\d]))/g, function(sha1) {
+                .replaceAll(/([a-f\d]{40}(?![a-f\d]))/, function(sha1) {
                     return '[' + sha1.substring(0, 7) + '](https://github.com/SickChill/SickChill/commit/' + sha1 + ')';
                 })
                 // remove tag information
-                .replace(/^\([\w\s,.\-+/>]+\)\s/gm, '')
+                .replaceAll(/^\([\w\s,.\-+/>]+\)\s/m, '')
                 // remove commit hashes from start
-                .replace(/^[a-f\d]{7} /gm, '')
+                .replaceAll(/^[a-f\d]{7} /m, '')
                 // style messages that contain lists
-                .replace(/( {3,}\*)(?!\*)/g, '\n  -')
+                .replaceAll(/( {3,}\*)(?!\*)/, '\n  -')
                 // escapes markdown __ tags
-                .replace(/__/gm, '\\_\\_')
+                .replaceAll(/__/m, '\\_\\_')
                 // add * to the first line only
                 .replace(/^(\w)/, '* $1')
-                .replace(/^.*Merge branch '(develop|master)'.*$/gmi, '')
+                .replaceAll(/^.*Merge branch '(develop|master)'.*$/mi, '')
         }
 
         function processArray(arr, output) {
