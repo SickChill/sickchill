@@ -39,7 +39,7 @@ packages = [
 ]
 
 [tool.poetry.urls]
-"Changelog" = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/CHANGES.md"
+"Changelog" = "https://github.com/SickChill/SickChill/blob/master/CHANGES.md"
 "Bug Tracker" = "https://github.com/sickchill/sickchill/issues"
 "News" = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/news.md"
 "Discord" = "https://discord.com/invite/U8WPBdf"

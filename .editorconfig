@@ -18,9 +18,14 @@ indent_size = 4
 [*.{js,jsx,json}]
 charset = utf-8
 indent_style = space
-indent_size = 2
+indent_size = 4
 
 # Matches configuration files for services like Travis, AppVeyor and Codecov
 [*.yml]
+indent_style = space
+indent_size = 2
+
+[{package.json, bower.json, webpack.config.js}]
+charset = utf-8
 indent_style = space
 indent_size = 2

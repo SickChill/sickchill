@@ -10,34 +10,51 @@ module.exports = function(grunt) {
         'copy',
         'uglify',
         'cssmin'
-    ]);
-
-    grunt.registerTask('auto_update_trans', 'Update translations on master and push to master & develop', function() {
-        if (!CI) {
-            grunt.fatal('This task is only for CI!');
-            return false;
-        }
-        grunt.log.writeln('Running grunt and updating translations...'.magenta);
-        grunt.task.run([
-            'exec:git:checkout:master',
-            'default', // Run default task
-            'exec:update_translations', // Update translations
-            'exec:commit_changed_files:yes', // Determine what we need to commit if needed, stop if nothing to commit.
-            'exec:git:reset --hard', // Reset unstaged changes (to allow for a rebase)
-            'exec:git:checkout:develop', // Checkout develop
-            'exec:git:rebase:master', // FF develop to the updated master
-            'exec:git_push:origin:master develop' // Push master and develop
-        ]);
-    });
+    ])
 
     /****************************************
     *  Admin only tasks                     *
     ****************************************/
-    grunt.registerTask('publish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
-        // 'exec:test', // Run tests
-        'newrelease', // Pull and merge develop to master, create and push a new release
-        'genchanges' // Update CHANGES.md
+    grunt.registerTask('plublish', 'ADMIN: Create a new release tag and generate new CHANGES.md', [
+        'exec:check_return_branch', // Save the branch we are currently on, so we can return here
+
+        // Make sure we have the newest remote changes locally
+        'exec:git:checkout:develop', // Switch to develop
+        'exec:git:pull', // Pull develop
+        'exec:git:checkout:master', // Switch to master
+        'exec:git:pull', // Pull master
+
+        // Set up old and new version strings
+        '_get_last_version', // Get last tagged version
+        '_get_next_version', // Get next version to set
+
+        // Start merging and releasing
+        'exec:git:merge:develop --strategy-option theirs', // Merge develop into master
+        'default', // Run default task, grunt
+        'exec:update_translations', // Update translations
+
+        'exec:commit_changed_files:yes', // Commit the updates to translations and grunt
+
+        'exec:git_list_changes', // List changes from since last tag
+
+        'exec:bump_version', // Update version in pyproject.toml
+        'exec:git_list_tags', // Get list of tags
+        '_genchanges:yes', // Generate changelog
+        'exec:commit_changed_files:yes', // Commit the changelog
+
+        'exec:git_tag_next_version:yes', // Create new release tag
+
+        'exec:git_push:origin:master:tags', // Push master + tags
+        'exec:git:checkout:develop', // Go back to develop
+        'exec:git:merge:master --strategy-option theirs', // Merge master back into develop
+        'exec:git_push:origin:develop:tags', // Push develop + tags
+
+        'exec:check_return_branch:true', // Go back to the branch we were on
     ]);
+
+    grunt.registerTask('genchanges', "Generate CHANGES.md file", function() {
+        grunt.task.run(['exec:git_list_tags', '_genchanges']);
+    });
 
     grunt.registerTask('reset_publishing', 'reset the repository back to clean master and develop from remote, and remove the local tag created to facilitate easier testing to the changes made here.', function() {
         if (CI) {
@@ -57,43 +74,6 @@ module.exports = function(grunt) {
             'exec:check_return_branch:true', // Go back to the branch we were on
 
         ]);
-    });
-    grunt.registerTask('newrelease', "Pull and merge develop to master, create and push a new release", [
-        // Make sure we have the newest remote changes locally
-        'exec:git:checkout:develop', // Switch to develop
-        'exec:git:pull', // Pull develop
-        'exec:git:checkout:master', // Switch to master
-        'exec:git:pull', // Pull master
-
-        // Set up old and new version strings
-        '_get_last_version', // Get last tagged version
-        '_get_next_version', // Get next version to set
-
-        // Start merging and releasing
-        'exec:git:merge:develop --strategy-option theirs', // Merge develop into master
-        'exec:bump_version', // Update version in pyproject.toml
-        'exec:commit_changed_files:yes', // Commit the new changed version
-        'exec:git_list_changes', // List changes from since last tag
-        'exec:git_tag_next_version', // Create new release tag
-        'exec:git_push:origin:master:tags', // Push master + tags
-        'exec:git:checkout:develop', // Go back to develop
-        'exec:git:merge:master --strategy-option theirs', // Merge master back into develop
-        'exec:git_push:origin:develop:tags', // Push develop + tags
-    ]);
-
-    grunt.registerTask('genchanges', "Generate CHANGES.md file", function() {
-        let file = grunt.option('file'); // --file=path/to/sickchill.github.io/sickchill-news/CHANGES.md
-        if (!file) {
-            file = process.env.SICKCHILL_CHANGES_FILE;
-        }
-        if (file && grunt.file.exists(file)) {
-            grunt.config('changesmd_file', file.replace(/\\/g, '/')); // Use forward slashes only.
-        } else {
-            grunt.fatal('\tYou must provide a path to CHANGES.md to generate changes.\n' +
-                '\t\tUse --file=path/to/sickchill.github.io/sickchill-news/CHANGES.md\n' +
-                '\t\tor set the path in SICKCHILL_CHANGES_FILE (environment variable)');
-        }
-        grunt.task.run(['exec:git_list_tags', '_genchanges', 'exec:commit_changelog']);
     });
 
     /****************************************
@@ -276,12 +256,13 @@ module.exports = function(grunt) {
             },
             'bump_version': {
                 cmd: function () {
+                    grunt.task.requires('_get_next_version');
                     return 'poetry version ' + grunt.config('next_version');
                 },
                 callback: function(err, stdout) {
                     stdout = stdout.trim();
                     if (!stdout.length) {
-                        grunt.fatal('No changes to commit.', 0);
+                        grunt.fatal('Failed to bump version!.', 0);
                     }
                     if (!stdout.match(/Bumping version from \d{4}\.\d{1,2}\.\d{1,2}(\.\d*)?/)) {
                         grunt.fatal('Did the version update in pyproject.toml?')
@@ -292,6 +273,7 @@ module.exports = function(grunt) {
             // delete tags from today
             'delete_today_tags': {
                 cmd: function () {
+                    grunt.task.requires('_get_next_version');
                     return 'git tag -d $(git describe --match "' + grunt.config('today') + '*" --abbrev=0 --tags $(git rev-list --tags --max-count=1))'
                 },
                 stderr: false
@@ -310,9 +292,9 @@ module.exports = function(grunt) {
             'commit_changed_files': { // Choose what to commit.
                 cmd: function(ci) {
                     grunt.config('stop_no_changes', Boolean(ci));
-                    return 'git status -s -- pyproject.toml sickchill/locale/ sickchill/gui/';
+                    return 'git status -s -- pyproject.toml sickchill/locale/ sickchill/gui/ CHANGES.md';
                 },
-                stdout: false,
+                stdout: true,
                 callback: function(err, stdout) {
                     stdout = stdout.trim();
                     if (!stdout.length) {
@@ -322,23 +304,27 @@ module.exports = function(grunt) {
                     let commitMsg = [];
                     let commitPaths = [];
 
-                    let isRelease = stdout.match(/pyproject.toml/gm)
+                    let isRelease = stdout.match(/pyproject.toml/gm);
 
                     if (isRelease) {
+                        grunt.task.requires('_get_next_version')
                         commitMsg.push('Release version ' + grunt.config('next_version'));
                         commitPaths.push('pyproject.toml');
                     }
+
+                    let changes = stdout.match(/CHANGES.md/gm);
+                    if (changes) {
+                        commitMsg.push('Update Changelog')
+                        commitPaths.push('CHANGES.md');
+                    }
+
                     if (stdout.match(/sickchill\/gui\/.*(vendor|core)\.min\.(js|css)$/gm)) {
-                        if (!isRelease) {
-                            commitMsg.push('Grunt');
-                        }
+                        commitMsg.push('Grunt');
                         commitPaths.push('sickchill/gui/**/vendor.min.*');
                         commitPaths.push('sickchill/gui/**/core.min.*');
                     }
                     if (stdout.match(/sickchill\/locale\/.*(pot|po|mo|json)$/gm)) {
-                        if (!isRelease) {
-                            commitMsg.push('Update translations');
-                        }
+                        commitMsg.push('Update translations');
                         commitPaths.push('sickchill/locale/');
                     }
 
@@ -350,9 +336,6 @@ module.exports = function(grunt) {
                         }
                     } else {
                         commitMsg = commitMsg.join(', ');
-                        if (process.env.GITHUB_RUN_ID && !isRelease) {
-                            commitMsg += ' (build ' + process.env.GITHUB_RUN_ID + ') [skip ci]';
-                        }
 
                         grunt.config('commit_msg', commitMsg);
                         grunt.config('commit_paths', commitPaths.join(' '));
@@ -362,6 +345,8 @@ module.exports = function(grunt) {
             },
             'commit_combined': {
                 cmd: function() {
+                    grunt.task.requires('commit_changed_files');
+
                     const message = grunt.config('commit_msg');
                     const paths = grunt.config('commit_paths');
                     if (!message || !paths) {
@@ -382,7 +367,9 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_changes': {
-                cmd: function() { return 'git log --oneline --first-parent --pretty=format:%s ' + grunt.config('last_version') + '..HEAD'; },
+                cmd: function() {
+                    grunt.task.requires('_get_last_version');
+                    return 'git log --oneline --first-parent --pretty=format:%s ' + grunt.config('last_version') + '..HEAD'; },
                 stdout: false,
                 callback: function(err, stdout) {
                     let commits = stdout.trim()
@@ -396,7 +383,11 @@ module.exports = function(grunt) {
             },
             'git_tag_next_version': {
                 cmd: function (sign) {
+                    grunt.task.requires('_get_next_version');
+                    grunt.task.requires('exec:git_list_changes');
+
                     const next_version = grunt.config('next_version');
+
                     grunt.log.ok(('Creating tag ' + next_version).green);
                     sign = sign !== "true" ? '' : '-s ';
                     return 'git tag ' + sign + next_version + ' -m "' + grunt.config('commits') + '"';
@@ -421,14 +412,14 @@ module.exports = function(grunt) {
                 }
             },
             'git_list_tags': {
-                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\xB6\xB6\xB6" refs/tags/20[0-9][0-9].[0-9][0-9].[0-9][0-9]*',
+                cmd: 'git for-each-ref --sort=refname --format="%(refname:short)|||%(objectname)|||%(contents)\xB6\xB6\xB6" refs/tags/20[2-9][2-9].[0-9]*.[0-9]*',
                 stdout: false,
                 callback: function(err, stdout) {
-                    if (!stdout) {
+                    if (!stdout && !err) {
                         grunt.fatal('Git command returned no data.');
                     }
                     if (err) {
-                        grunt.fatal('Git command failed to execute.');
+                        grunt.fatal('Git command failed to execute: ' + err);
                     }
                     let allTags = stdout
                         .replace(/-{5}BEGIN PGP SIGNATURE-{5}(.*\n)+?-{5}END PGP SIGNATURE-{5}\n/g, '')
@@ -453,26 +444,6 @@ module.exports = function(grunt) {
                         grunt.fatal('Could not get existing tags information');
                     }
                 }
-            },
-            'commit_changelog': {
-                cmd: function() {
-                    const file = grunt.config('changesmd_file');
-                    if (!file) {
-                        grunt.fatal('Missing file path.');
-                    }
-                    let path = file.slice(0, -25); // slices 'sickchill-news/CHANGES.md' (len=25)
-                    if (!path) {
-                        grunt.fatal('path = "' + path + '"');
-                    }
-                    let pushCmd = 'git push origin master';
-                    if (grunt.option('no-push')) {
-                        grunt.log.warn('Pushing with --dry-run ...'.magenta);
-                        pushCmd += ' --dry-run';
-                    }
-                    return ['cd ' + path, 'git commit -asm "Update changelog"', 'git fetch origin', 'git rebase',
-                        pushCmd].join(' && ');
-                },
-                stdout: true
             },
         }
     });
@@ -511,75 +482,115 @@ module.exports = function(grunt) {
             return
         }
 
+        grunt.task.requires('_get_last_version');
+
         const last_version = grunt.config('last_version');
-        if (last_version === undefined || !last_version.length) {
-            grunt.fatal('Must call _get_last_version first!');
-        }
 
         if (next_version === last_version) {
-            grunt.fatal('Let\'s only release once a day, or semver is broken. We can fix this when we do away with grunt')
+            grunt.log.writeln('Let\'s only release once a day, or semver is broken. We can fix this when we do away with grunt')
             next_version += '.' + hours + minutes + seconds
         }
 
         grunt.config('next_version', next_version);
     });
 
-    grunt.registerTask('_genchanges', "(internal) do not run", function() {
+    grunt.registerTask('_genchanges', "(internal) do not run", function(isRelease) {
         // actual generate changes
+        grunt.task.requires('exec:git_list_tags');
+
         const allTags = grunt.config('all_tags');
         if (!allTags) {
             grunt.fatal('No tags information was received.');
         }
 
-        const file = grunt.config('changesmd_file'); // --file=path/to/sickchill.github.io/sickchill-news/CHANGES.md
-        if (!file) {
-            grunt.fatal('Missing file path.');
+        const file = grunt.config('changesmd_file', './CHANGES.md');
+        if (!grunt.file.exists(file)) {
+            grunt.fatal('Specified CHANGES file does not exist: ' + file);
+        }
+
+        function processCommit(row) {
+            return row
+                // link issue n return numbers, style links of issues and pull requests
+
+                .replace(/([\w\-.]+\/[\w\-.]+)?#(\d+)|https?:\/\/github.com\/([\w\-.]+\/[\w\-.]+)\/(issues|pull)\/(\d+)/gm,
+                    function(all, repoL, numL, repoR, typeR, numR) {
+                        if (numL) { // repoL, numL = user/repo#1234 style
+                            return '[' + (repoL ? repoL : '') + '#' + numL + '](https://github.com/' + (repoL ? repoL : 'SickChill/SickChill') + '/issues/' + numL + ')';
+                        } else if (numR) { // repoR, type, numR = https://github/user/repo/issues/1234 style
+                            return '[#' + numR + ']' + '(https://github.com/' + repoR + '/' + typeR + '/' + numR + ')';
+                        }
+                })
+                // shorten and link commit hashes
+                .replace(/([a-f\d]{40}(?![a-f\d]))/g, function(sha1) {
+                    return '[' + sha1.substring(0, 7) + '](https://github.com/SickChill/SickChill/commit/' + sha1 + ')';
+                })
+                // remove tag information
+                .replace(/^\([\w\s,.\-+/>]+\)\s/gm, '')
+                // remove commit hashes from start
+                .replace(/^[a-f\d]{7} /gm, '')
+                // style messages that contain lists
+                .replace(/( {3,}\*)(?!\*)/g, '\n  -')
+                // escapes markdown __ tags
+                .replace(/__/gm, '\\_\\_')
+                // add * to the first line only
+                .replace(/^(\w)/, '* $1')
+                .replace(/^.*Merge branch '(develop|master)'.*$/gmi, '')
+        }
+
+        function processArray(arr, output) {
+            new Set(arr).forEach(function (row) {
+                let result = processCommit(row)
+                if (result.length > 3) {
+                    output += result
+                    output += '\n';
+                }
+            })
+            if (Boolean(output)) {
+                output += '\n';
+            }
+
+            return output;
         }
 
         let contents = "";
+
+        if (isRelease) {
+            grunt.task.requires('_get_last_version');
+            grunt.task.requires('_get_next_version');
+            grunt.task.requires('exec:git_list_changes');
+
+            const last_version = grunt.config('last_version');
+            const next_version = grunt.config('next_version');
+
+            if (!next_version) {
+                grunt.fatal('Can not generate changelog for a release without the next version information!');
+            }
+            if (!last_version) {
+                grunt.fatal('Can not generate changelog for a release without the last version information!');
+            }
+
+            contents += '### ' + next_version + '\n';
+            contents += '\n';
+            contents += '[full changelog](https://github.com/SickChill/SickChill/compare/' + last_version + '...' + next_version + ')\n';
+            contents += '\n';
+            const commits = grunt.config('commits');
+
+            contents = processArray(commits, contents)
+        }
+
         allTags.forEach(function(tag) {
             contents += '### ' + tag.tag + '\n';
             contents += '\n';
             if (tag.previous) {
-                contents += '[full changelog](https://github.com/SickChill/SickChill/compare/' +
-                    tag.previous + '...' + tag.tag + ')\n';
-            }
-            contents += '\n';
-            tag.message.forEach(function (row) {
-                contents += row
-                    // link issue n return 'git tag ' + grunt.config('next_version') + ' -sm "' + grunt.config('commits') + '"';umbers, style links of issues and pull requests
-                    .replace(/([\w\-.]+\/[\w\-.]+)?#(\d+)|https?:\/\/github.com\/([\w\-.]+\/[\w\-.]+)\/(issues|pull)\/(\d+)/gm,
-                        function(all, repoL, numL, repoR, typeR, numR) {
-                            if (numL) { // repoL, numL = user/repo#1234 style
-                                return '[' + (repoL ? repoL : '') + '#' + numL + '](https://github.com/' +
-                                (repoL ? repoL : 'SickChill/SickChill') + '/issues/' + numL + ')';
-                            } else if (numR) { // repoR, type, numR = https://github/user/repo/issues/1234 style
-                                return '[#' + numR + ']' + '(https://github.com/' +
-                                    repoR + '/' + typeR + '/' + numR + ')';
-                            }
-                    })
-                    // shorten and link commit hashes
-                    .replace(/([a-f\d]{40}(?![a-f\d]))/g, function(sha1) {
-                        return '[' + sha1.substring(0, 7) + '](https://github.com/SickChill/SickChill/commit/' + sha1 + ')';
-                    })
-                    // remove tag information
-                    .replace(/^\([\w\s,.\-+/>]+\)\s/gm, '')
-                    // remove commit hashes from start
-                    .replace(/^[a-f\d]{7} /gm, '')
-                    // style messages that contain lists
-                    .replace(/( {3,}\*)(?!\*)/g, '\n  -')
-                    // escapes markdown __ tags
-                    .replace(/__/gm, '\\_\\_')
-                    // add * to the first line only
-                    .replace(/^(\w)/, '* $1');
-
+                contents += '[full changelog](https://github.com/SickChill/SickChill/compare/' + tag.previous + '...' + tag.tag + ')\n';
                 contents += '\n';
-            });
-            contents += '\n';
+            }
+            contents = processArray(tag.message, contents);
         });
 
         if (contents) {
-            grunt.file.write(file, contents);
+            contents.re
+            grunt.file.write(file, contents.replace(/\n*$/, '\n'));
             return true;
         } else {
             grunt.fatal('Received no contents to write to file, aborting');

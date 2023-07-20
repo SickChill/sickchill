@@ -13,8 +13,8 @@ const stylesHandler = MiniCssExtractPlugin.loader;
 const config = {
   context:  path.resolve(__dirname, 'frontend/templates'),
   entry: {
-      shows: ['./js/shows.jsx'],
-      show: ['./js/show.jsx']
+    shows: ['./js/shows.jsx'],
+    show: ['./js/show.jsx']
   },
   output: {
     path: __dirname + "/frontend/static",
@@ -22,7 +22,7 @@ const config = {
     publicPath: path.resolve('static')
   },
  resolve: {
-  extensions: ['.js','.jsx','.css']
+    extensions: ['.js','.jsx','.css']
  },
   devServer: {
     open: true,
