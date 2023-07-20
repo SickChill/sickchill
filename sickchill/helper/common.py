@@ -190,26 +190,26 @@ def is_media_file(filename):
     # ignore samples
     is_rar = is_rar_file(filename)
 
-    path = Path(filename)
-    if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", path.name, re.I):
-        return False
+    with Path(filename) as path:
+        if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", path.name, re.I):
+            return False
 
-    # ignore RARBG release intro
-    if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", path.name, re.I):
-        return False
+        # ignore RARBG release intro
+        if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", path.name, re.I):
+            return False
 
-    # ignore Kodi tvshow trailers
-    if path.name == "tvshow-trailer.mp4":
-        return False
+        # ignore Kodi tvshow trailers
+        if path.name == "tvshow-trailer.mp4":
+            return False
 
-    # ignore MACOS's retarded "resource fork" files
-    if path.name.startswith("._"):
-        return False
+        # ignore MACOS's retarded "resource fork" files
+        if path.name.startswith("._"):
+            return False
 
-    if re.search("extras?$", path.name, re.I):
-        return False
+        if re.search("extras?$", path.name, re.I):
+            return False
 
-    return (get_extension(path, lower=True) in MEDIA_EXTENSIONS) or (is_rar and settings.UNPACK == settings.UNPACK_PROCESS_INTACT)
+        return (get_extension(path, lower=True) in MEDIA_EXTENSIONS) or (is_rar and settings.UNPACK == settings.UNPACK_PROCESS_INTACT)
 
 
 def is_rar_file(filename: Union[Path, PathLike, str]) -> bool:
@@ -222,15 +222,15 @@ def is_rar_file(filename: Union[Path, PathLike, str]) -> bool:
          True if this is RAR/Part file, False if not
     """
     result = False
-    path = Path(filename)
-    archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
-    try:
-        if path.is_file():
-            result = rarfile.is_rarfile(path)
-        else:
-            result = re.search(archive_regex, path.name) != None
-    except (IOError, OSError):
-        return result
+    with Path(filename) as path:
+        archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
+        try:
+            if path.is_file():
+                result = rarfile.is_rarfile(path)
+            else:
+                result = re.search(archive_regex, path.name) != None
+        except (IOError, OSError):
+            return result
     return result
 
 
@@ -323,12 +323,12 @@ def remove_extension(filename: Union[Path, PathLike, str] = None, media_only: bo
     :param filename: The filename from which we want to remove the extension
     :return: The ``filename`` without its extension.
     """
-    path = Path(filename)
-    if not path.name:
-        return filename
+    with Path(filename) as path:
+        if not path.name:
+            return filename
 
-    is_media = get_extension(path, lower=True) in ["nzb", "torrent"] + MEDIA_EXTENSIONS
-    return type(filename)((path, path.with_suffix(""))[media_only and is_media])
+        is_media = get_extension(path, lower=True) in ["nzb", "torrent"] + MEDIA_EXTENSIONS
+        return type(filename)((path, path.with_suffix(""))[media_only and is_media])
 
 
 def replace_extension(filename: Union[Path, PathLike, str] = None, new_extension: str = None, media_only: bool = False) -> Union[Path, PathLike, str]:
@@ -341,15 +341,15 @@ def replace_extension(filename: Union[Path, PathLike, str] = None, new_extension
     if not isinstance(new_extension, (PathLike, str)):
         raise TypeError()
 
-    path = Path(filename)
-    if not path.name:
-        return filename
-    if not path.suffix:
-        return filename
-    else:
-        if new_extension and not new_extension.startswith("."):
-            new_extension = f".{new_extension}"
-        return type(filename)(path.with_suffix(new_extension))
+    with Path(filename) as path:
+        if not path.name:
+            return filename
+        if not path.suffix:
+            return filename
+        else:
+            if new_extension and not new_extension.startswith("."):
+                new_extension = f".{new_extension}"
+            return type(filename)(path.with_suffix(new_extension))
 
 
 def sanitize_filename(filename):
