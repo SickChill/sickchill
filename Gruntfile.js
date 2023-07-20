@@ -345,7 +345,7 @@ module.exports = function(grunt) {
             },
             'commit_combined': {
                 cmd: function() {
-                    grunt.task.requires('commit_changed_files');
+                    // grunt.task.requires('commit_changed_files');
 
                     const message = grunt.config('commit_msg');
                     const paths = grunt.config('commit_paths');
