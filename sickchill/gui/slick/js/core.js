@@ -2984,7 +2984,7 @@ const SICKCHILL = {
 
             $('.sceneSeasonXEpisode').on('change', function () {
                 // Strip non-numeric characters
-                $(this).val($(this).val().replace(/[^\dxX]*/g, ''));
+                $(this).val($(this).val().replaceAll(/[^\dxX]*/, ''));
                 const forSeason = $(this).attr('data-for-season');
                 const forEpisode = $(this).attr('data-for-episode');
                 const m = $(this).val().match(/^(\d+)x(\d+)$/i);
@@ -3014,7 +3014,7 @@ const SICKCHILL = {
 
             $('.sceneAbsolute').on('change', function () {
                 // Strip non-numeric characters
-                $(this).val($(this).val().replace(/[^\dxX]*/g, ''));
+                $(this).val($(this).val().replaceAll(/[^\dxX]*/, ''));
                 const forAbsolute = $(this).attr('data-for-absolute');
 
                 const m = $(this).val().match(/^(\d{1,3})$/i);
@@ -3541,7 +3541,7 @@ const SICKCHILL = {
         massEdit() {
             function findDirIndex(which) {
                 const dirParts = which.split('_');
-                return dirParts[dirParts.length - 1];
+                return dirParts.at(-1);
             }
 
             function editRootDir(path, options) {
@@ -4267,7 +4267,7 @@ const SICKCHILL = {
                             const shows = [];
 
                             $.each(data.results, (index, object) => {
-                                const whichSeries = object.join('|').replace(/"/g, '');
+                                const whichSeries = object.join('|').replaceAll(/"/, '');
 
                                 const show = {
                                     obj: whichSeries,
