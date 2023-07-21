@@ -39,10 +39,12 @@ class AddShows(Home):
     def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
+        search_term = xhtml_unescape(search_term)
+        lang = xhtml_unescape(lang)
+        indexer = xhtml_unescape(indexer)
+        exact = xhtml_unescape(exact)
         if not lang or lang == "null":
             lang = settings.INDEXER_DEFAULT_LANGUAGE
-
-        search_term = xhtml_unescape(search_term)
 
         search_terms = [search_term]
 
@@ -105,7 +107,7 @@ class AddShows(Home):
             final_results.sort(key=lambda x: x[4].lower().index(search_term.lower()))
             final_results.sort(key=lambda x: x[4].lower() == search_term.lower(), reverse=True)
 
-        lang_id = sickchill.indexer.lang_dict()[lang.decode()]
+        lang_id = sickchill.indexer.lang_dict()[lang]
         return json.dumps({"results": final_results, "langid": lang_id, "success": len(final_results) > 0})
 
     def massAddTable(self, rootDir=None):
