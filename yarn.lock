@@ -3827,9 +3827,9 @@ ejs@^3.1.6, ejs@^3.1.8, ejs@^3.1.9:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.431:
-  version "1.4.466"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.466.tgz#17193d70f203da3d52a89c653b8d89f47a51d79d"
-  integrity sha512-TSkRvbXRXD8BwhcGlZXDsbI2lRoP8dvqR7LQnqQNk9KxXBc4tG8O+rTuXgTyIpEdiqSGKEBSqrxdqEntnjNncA==
+  version "1.4.467"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.467.tgz#b0660bf644baff7eedea33b8c742fb53ec60e3c2"
+  integrity sha512-2qI70O+rR4poYeF2grcuS/bCps5KJh6y1jtZMDDEteyKJQrzLOEhFyXCLcHW6DTBjKjWkk26JhWoAi+Ux9A0fg==
 
 emittery@^1.0.1:
   version "1.0.1"
@@ -9265,9 +9265,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1191.0:
-  version "1.1192.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1192.0.tgz#c9f6a4496e4dd9f9e01bfef51d6430a4b5b98715"
-  integrity sha512-26Pj6ece4hEE4STEnYAFcbVdplVIb8kzzFuCs5mrhNeZs+eBb0KJNLL4d38nhtFd7iyYIhdrofXxs9TItCAsMg==
+  version "1.1193.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1193.0.tgz#7e94f381817b77b27668d352a05258235df156d7"
+  integrity sha512-si4DBAnY2jWBNJAdYDaLVtRQ0Bw/YbwRNWfnFJxZp/66gpUnmiTfF68euLHAEwQc5I2iRV2dtlLbQmYgUhcavQ==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
