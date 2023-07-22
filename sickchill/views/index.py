@@ -197,8 +197,6 @@ class WebHandler(BaseHandler):
                 elif isinstance(value, list):
                     kwargs[arg] = get_arguments(arg,  strip=True)
                 else:
-                    kwargs[arg] = get_arguments(arg, strip=True)[0]
-                elif not isinstance(value, [str, list]):
                     raise Exception
             return function(**kwargs)
         except TypeError:
