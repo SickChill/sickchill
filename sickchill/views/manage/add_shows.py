@@ -37,10 +37,12 @@ class AddShows(Home):
     def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
-        search_terms = self.get_arguments("search_term", strip=True)  # get_arguments to male this a list of terms, we can probably add advanced searching here.
-        lang = self.get_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
-        indexer = int(self.get_argument("indexer", default=settings.INDEXER_DEFAULT, strip=True))
-        exact = config.checkbox_to_value(self.get_argument("exact", strip=True))
+        # search_terms = self.get_arguments("search_term", strip=True)  # get_arguments to make this a list of terms, we can probably add advanced searching here.
+        # lang = self.get_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
+        # indexer = int(self.get_argument("indexer", default=settings.INDEXER_DEFAULT, strip=True))
+        # exact = config.checkbox_to_value(self.get_argument("exact", strip=True))
+
+        search_terms = [search_term]
 
         # If search term ends with what looks like a year, enclose it in ()
         matches = re.match(r"^(.+ |)([12][0-9]{3})$", search_term)

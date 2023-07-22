@@ -183,13 +183,14 @@ class WebHandler(BaseHandler):
             if self.request.method == "POST":
                 get_argument = self.get_body_argument
                 get_arguments = self.get_body_arguments
-            elif self.requesta.method == "GET":
+            elif self.request.method == "GET":
                 get_argument = self.get_query_argument
                 get_arguments = self.get_query_arguments
             else:
                 get_argument = self.get_argument
                 get_arguments = self.get_arguments
 
+            kwargs = self.request.arguments
             for arg, value in self.request.arguments.items():
                 if len(value) == 1:
                     kwargs[arg] = get_arguments(arg, strip=True)[0]
