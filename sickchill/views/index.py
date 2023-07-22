@@ -158,6 +158,11 @@ class WebHandler(BaseHandler):
             # route -> method obj
             route = route.strip("/").replace(".", "_").replace("-", "_") or "index"
             method = getattr(self, route)
+            if settings.DEVELOPER:
+                from inspect import signature
+                sig = signature(method)
+                if len(sig.parameters):
+                    logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
             results = yield self.async_call(method)
 
@@ -170,13 +175,29 @@ class WebHandler(BaseHandler):
     @run_on_executor
     def async_call(self, function):
         try:
-            # TODO: Make all routes use get_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
+            # TODO: Make all routes use get_*_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
+            # TODO: Until the new web interface is ready, we should also make each route asynchronous and yield back the result.
             # nonsense loop so we can just yield the method directly
-            # raise Exception('Raising from async_call')
-            kwargs = self.request.arguments
-            for arg, value in kwargs.items():
+            
+            if self.request.method == "POST":
+                get_argument = self.get_body_argument
+                get_arguments = self.get_body_arguments
+            elif self.requesta.method == "GET":
+                get_argument = self.get_query_argument
+                get_arguments = self.get_query_arguments
+            else:
+                get_argument = self.get_argument
+                get_arguments = self.get_arguments
+
+            for arg, value in self.request.arguments.items():
                 if len(value) == 1:
-                    kwargs[arg] = value[0]
+                    kwargs[arg] = get_arguments(arg, strip=True)[0]
+                elif isinstance(value, str):
+                    kwargs[arg] = get_argument(arg, strip=True)
+                elif isinstance(value, list):
+                    kwargs[arg] = get_arguments(arg,  strip=True)
+                else:
+                    kwargs[arg] = get_arguments(arg, strip=True)[0]
                 elif not isinstance(value, [str, list]):
                     raise Exception
             return function(**kwargs)
