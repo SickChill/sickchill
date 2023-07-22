@@ -190,7 +190,7 @@ class WebHandler(BaseHandler):
                 get_argument = self.get_argument
                 get_arguments = self.get_arguments
 
-            kwargs = self.request.arguments
+            kwargs = {}
             for arg, value in self.request.arguments.items():
                 if len(value) == 1:
                     kwargs[arg] = get_arguments(arg, strip=True)[0]
