@@ -11,7 +11,6 @@ from pathlib import Path
 from urllib.parse import unquote_plus
 
 import requests
-from tornado.escape import xhtml_unescape
 
 import sickchill.oldbeard
 from sickchill import adba, logger, settings
@@ -1214,7 +1213,8 @@ class Home(WebRoot):
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
 
-            location = os.path.normpath(xhtml_unescape(location))
+            location = os.path.normpath(self.get_argument(location))
+
             # noinspection PyProtectedMember
             old_location = os.path.normpath(show_obj._location)
             # if we change location clear the db of episodes, change it, write to db, and rescan

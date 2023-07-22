@@ -12,7 +12,6 @@ from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
 from tornado.concurrent import run_on_executor
-from tornado.escape import utf8, xhtml_escape
 from tornado.gen import coroutine
 from tornado.web import authenticated, HTTPError, RequestHandler
 
