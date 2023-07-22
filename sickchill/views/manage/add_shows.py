@@ -37,7 +37,9 @@ class AddShows(Home):
     def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
-        search_terms = [self.get_argument("search_term", strip=True)]  # get_arguments to make this a list of terms, we can probably add advanced searching here.
+        search_terms = [
+            self.get_argument("search_term", strip=True)
+        ]  # get_arguments to make this a list of terms, we can probably add advanced searching here.
         lang = self.get_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
         indexer = int(self.get_argument("indexer", default=settings.INDEXER_DEFAULT, strip=True))
         exact = config.checkbox_to_value(self.get_argument("exact", strip=True))
