@@ -16,7 +16,7 @@
             <div class="show-container" data-name="${loading_show.sort_name}"
                  data-date="1" data-network="0" data-progress="0" data-progress-total="0" data-status="Loading">
                 <div class="show-image">
-                    <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="${static_url("images/poster.png")}"
+                    <img alt="${loading_show.sort_name}" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="${static_url('images/poster.png')}"
                          data-src="${static_url(loading_show.show_image_url('poster_thumb'))}" />
                 </div>
                 <div class="show-information">
@@ -31,7 +31,7 @@
                                 </td>
                                 <td class="show-table">
                                     <span title="${loading_show.network}">
-                                        <img class="show-network-image" src="${static_url("images/network/nonetwork.png")}"
+                                        <img class="show-network-image" src="${static_url('images/network/nonetwork.png')}"
                                              data-src="${static_url(loading_show.network_image_url)}"
                                              alt="${loading_show.network}" title="${loading_show.network}" />
                                     </span>
@@ -113,7 +113,7 @@
                  data-progress="${int(progressbar_percent)}" data-progress-total="${cur_total}" data-status="${curShow.status}">
                 <div class="show-image">
                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
-                        <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
+                        <img alt="${static_url(curShow.sort_name)}" class="show-image" src="${static_url('images/poster.png')}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
                     </a>
                 </div>
 

@@ -88,7 +88,7 @@
                                     <td align="center">
                                         % if curShow.network:
                                             <span title="${curShow.network}">
-                                                <img class="show-network-image" src="${static_url("images/network/nonetwork.png")}"
+                                                <img class="show-network-image" src="${static_url('images/network/nonetwork.png')}"
                                                      data-src="${static_url(curShow.network_image_url)}" alt="${curShow.network}" title="${curShow.network}" />
                                             </span>
                                         % endif

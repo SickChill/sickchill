@@ -62,7 +62,7 @@ class PageTemplate(Template):
 
         self.context["numErrors"] = len(classes.ErrorViewer.errors)
         self.context["numWarnings"] = len(classes.WarningViewer.errors)
-        self.context["sbPID"] = str(settings.PID)
+        self.context["scPID"] = str(settings.PID)
 
         self.context["title"] = "FixME"
         self.context["header"] = "FixME"

@@ -123,7 +123,7 @@ $(document).ready(() => {
         $.post(scRoot + '/config/general/saveRootDirs', {
             rootDirString: $('#rootDirText').val()});
     }
-    
+
     function addRootDir(path) {
         if (path.length === 0) {
             return;

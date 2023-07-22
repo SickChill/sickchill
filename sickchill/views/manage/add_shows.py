@@ -38,11 +38,11 @@ class AddShows(Home):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
         search_terms = [
-            self.get_argument("search_term", strip=True)
+            self.get_body_argument("search_term", strip=True)
         ]  # get_arguments to make this a list of terms, we can probably add advanced searching here.
-        lang = self.get_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
-        indexer = int(self.get_argument("indexer", default=settings.INDEXER_DEFAULT, strip=True))
-        exact = config.checkbox_to_value(self.get_argument("exact", strip=True))
+        lang = self.get_body_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
+        indexer = int(self.get_body_argument("indexer", default=settings.INDEXER_DEFAULT, strip=True))
+        exact = config.checkbox_to_value(self.get_body_argument("exact", strip=True))
 
         # If search term ends with what looks like a year, enclose it in ()
         matches = re.match(r"^(.+ |)([12][0-9]{3})$", search_term)
@@ -548,7 +548,7 @@ class AddShows(Home):
         indexerLang = self.get_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
 
         # grab our list of other dirs if given
-        other_shows = self.get_arguments("other_shows", default=[], strip=True)
+        other_shows = self.get_arguments("other_shows", strip=True)
         whichSeries = self.get_argument("whichSeries", strip=True)
         fullShowPath = self.get_argument("fullShowPath", default=None, strip=True)
 
@@ -696,7 +696,7 @@ class AddShows(Home):
         """
 
         # grab a list of other shows to add, if provided
-        shows_to_add = self.get_arguments("shows_to_add", default=[], strip=True)
+        shows_to_add = self.get_arguments("shows_to_add", strip=True)
 
         indexer_id_given = []
         dirs_only = []
@@ -717,7 +717,7 @@ class AddShows(Home):
                 indexer_id_given.append((int(indexer), show_dir, int(indexer_id), show_name))
 
         # if they want me to prompt for settings then I will just carry on to the newShow page
-        if shows_to_add and config.checkbox_to_value(promptForSettings):
+        if shows_to_add and config.checkbox_to_value(self.get_argument("promptForSettings")):
             return self.newShow(shows_to_add[0], shows_to_add[1:])
 
         # if they don't want me to prompt for settings then I can just add all the nfo shows now

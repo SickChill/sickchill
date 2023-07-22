@@ -170,7 +170,7 @@
                                     <td class="banner">
                                         <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="bannerThumb"
-                                                 src="${static_url("images/banner.png")}"
+                                                 src="${static_url('images/banner.png')}"
                                                  data-src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'banner_thumb'))}"
                                             />
                                         </a>
@@ -199,18 +199,18 @@
                                     <td align="center" style="vertical-align: middle;">
                                         % if cur_result['imdb_id']:
                                             <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
-                                               onclick="window.open(this.href, '_blank'); return false"
+                                               target="_blank"
                                                title="http://www.imdb.com/title/${cur_result['imdb_id']}">
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
                                             <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
-                                               onclick="window.open(this.href, '_blank'); return false;"
+                                               target="_blank"
                                                title="https://trakt.tv/shows/${cur_result['imdb_id']}">
                                                 <span class="displayshow-icon-trakt"></span>
                                             </a>
                                         % endif
                                         <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
-                                           rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
+                                           rel="noreferrer" target="_blank"
                                            title="${show_indexer.show_url(cur_indexer)}${cur_result['showid']}">
                                             <img alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
                                                  src="${static_url(show_indexer.icon(cur_indexer))}"/>
@@ -442,16 +442,16 @@
                                         <span class="tvshowTitleIcons">
                                             % if cur_result['imdb_id']:
                                                 <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
-                                                   onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}">
+                                                   target="_blank" title="http://www.imdb.com/title/${cur_result['imdb_id']}">
                                                     <span class="displayshow-icon-imdb"></span>
                                                 </a>
                                                 <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
-                                                   onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
+                                                   target="_blank" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
                                                     <span class="displayshow-icon-trakt"></span>
                                                 </a>
                                             % endif
                                             <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
-                                               rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
+                                               rel="noreferrer" target="_blank"
                                                title="${show_indexer.show_url(cur_indexer)}"><img
                                                     alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
                                                     src="${static_url(show_indexer.icon(cur_indexer))}"/>

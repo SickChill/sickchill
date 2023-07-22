@@ -133,67 +133,67 @@ class APITestSickChill(unittest.TestCase):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_add_root_dir(self):
+    def test_sc_add_root_dir(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_check_scheduler(self):
+    def test_sc_check_scheduler(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_check_version(self):
+    def test_sc_check_version(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_delete_root_dir(self):
+    def test_sc_delete_root_dir(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_get_defaults(self):
+    def test_sc_get_defaults(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_get_messages(self):
+    def test_sc_get_messages(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_get_root_dirs(self):
+    def test_sc_get_root_dirs(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_pause_backlog(self):
+    def test_sc_pause_backlog(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_ping(self):
+    def test_sc_ping(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_restart(self):
+    def test_sc_restart(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_search_indexers(self):
+    def test_sc_search_indexers(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_search_tvdb(self):
+    def test_sc_search_tvdb(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_search_tvrage(self):
+    def test_sc_search_tvrage(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_set_defaults(self):
+    def test_sc_set_defaults(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_shutdown(self):
+    def test_sc_shutdown(self):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_sb_update(self):
+    def test_sc_update(self):
         pass
 
 

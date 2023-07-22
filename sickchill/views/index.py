@@ -22,7 +22,7 @@ from sickchill.init_helpers import check_installed, locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
-from ..oldbeard import db, helpers, network_timezones, ui
+from ..oldbeard import config, db, helpers, network_timezones, ui
 from .api.webapi import function_mapper
 from .common import PageTemplate
 
@@ -360,8 +360,18 @@ class UI(WebRoot):
             self.set_status(204)  # "No Content"
             return None
 
-    @staticmethod
-    def add_message():
+    def add_message(self):
+        title = self.get_body_argument("title")
+        message = self.get_body_argument("message")
+        success = config.checkbox_to_value(self.get_body_argument("success"))
+
+        if title and message:
+            if success:
+                ui.notifications.message(title, message)
+            else:
+                ui.notifications.error(title, message)
+            return
+
         ui.notifications.message(_("Test 1"), _("This is test number 1"))
         ui.notifications.error(_("Test 2"), _("This is test number 2"))
 
