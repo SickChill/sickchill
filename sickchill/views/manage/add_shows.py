@@ -4,10 +4,8 @@ import os
 import re
 import traceback
 from operator import itemgetter
-from urllib.parse import unquote_plus
 
 import dateutil.parser
-from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
 
 import sickchill
@@ -39,14 +37,10 @@ class AddShows(Home):
     def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
-        search_term = xhtml_unescape(search_term)
-        lang = xhtml_unescape(lang)
-        indexer = xhtml_unescape(indexer)
-        exact = xhtml_unescape(exact)
-        if not lang or lang == "null":
-            lang = settings.INDEXER_DEFAULT_LANGUAGE
-
-        search_terms = [search_term]
+        search_terms = self.get_arguments("search_term", strip=True) # get_arguments to male this a list of terms, we can probably add advanced searching here.
+        lang = self.get_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
+        indexer = int(self.get_argument("indexer", default=settings.INDEXER_DEFAULT, strip=True))
+        exact = config.checkbox_to_value(self.get_argument("exact", strip=True))
 
         # If search term ends with what looks like a year, enclose it in ()
         matches = re.match(r"^(.+ |)([12][0-9]{3})$", search_term)
@@ -112,15 +106,9 @@ class AddShows(Home):
 
     def massAddTable(self, rootDir=None):
         t = PageTemplate(rh=self, filename="home_massAddTable.mako")
-
-        if not rootDir:
+        root_dirs = self.get_arguments("rootDir", strip=True)
+        if not root_dirs:
             return _("No folders selected.")
-        elif not isinstance(rootDir, list):
-            root_dirs = [rootDir]
-        else:
-            root_dirs = rootDir
-
-        root_dirs = [unquote_plus(xhtml_unescape(x)) for x in root_dirs]
 
         if settings.ROOT_DIRS:
             default_index = int(settings.ROOT_DIRS.split("|")[0])
@@ -555,14 +543,12 @@ class AddShows(Home):
         provided then it forwards back to newShow, if not it goes to /home.
         """
 
-        if not indexerLang:
-            indexerLang = settings.INDEXER_DEFAULT_LANGUAGE
+        indexerLang = self.get_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
 
         # grab our list of other dirs if given
-        if not other_shows:
-            other_shows = []
-        elif not isinstance(other_shows, list):
-            other_shows = [other_shows]
+        other_shows = self.get_arguments("other_shows", default=[], strip=True)
+        whichSeries = self.get_argument("whichSeries", strip=True)
+        fullShowPath = self.get_argument("fullShowPath", default=None, strip=True)
 
         def finishAddShow():
             # if there are no extra shows then go home
@@ -597,19 +583,16 @@ class AddShows(Home):
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
             # Show name was sent in UTF-8 in the form
-            show_name = xhtml_unescape(series_pieces[4])
+            show_name = series_pieces[4]
         else:
             # if no indexer was provided use the default indexer set in General settings
-            if not providedIndexer:
-                providedIndexer = settings.INDEXER_DEFAULT
-
-            indexer = int(providedIndexer)
+            indexer = int(self.get_argument("providedIndexer", default=settings.INDEXER_DEFAULT, strip=True))
             indexer_id = int(whichSeries)
-            show_name = os.path.basename(os.path.normpath(xhtml_unescape(fullShowPath)))
+            show_name = os.path.basename(os.path.normpath(fullShowPath))
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
-            show_dir = os.path.normpath(xhtml_unescape(fullShowPath))
+            show_dir = os.path.normpath(fullShowPath)
             extra_check_dir = show_dir
         else:
             folder_name = show_name
@@ -622,8 +605,8 @@ class AddShows(Home):
                 except (TypeError, ValueError):
                     logger.info(_("Could not append the show year folder for the show: {0}").format(folder_name))
 
-            show_dir = os.path.join(rootDir, sanitize_filename(xhtml_unescape(folder_name)))
-            extra_check_dir = os.path.join(rootDir, sanitize_filename(xhtml_unescape(show_name)))
+            show_dir = os.path.join(rootDir, sanitize_filename(folder_name))
+            extra_check_dir = os.path.join(rootDir, sanitize_filename(show_name))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if (os.path.isdir(show_dir) or os.path.isdir(extra_check_dir)) and not fullShowPath:
@@ -711,12 +694,7 @@ class AddShows(Home):
         """
 
         # grab a list of other shows to add, if provided
-        if not shows_to_add:
-            shows_to_add = []
-        elif not isinstance(shows_to_add, list):
-            shows_to_add = [shows_to_add]
-
-        shows_to_add = [unquote_plus(xhtml_unescape(x)) for x in shows_to_add]
+        shows_to_add = self.get_arguments("shows_to_add", default=[], strip=True)
 
         indexer_id_given = []
         dirs_only = []
