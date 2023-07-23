@@ -37,6 +37,10 @@ function create_UUID() {
 }
 
 let notificationTimer;
+let notificationDown = {
+    title: 'error',
+    message: 'sickchill is restarting or is not running'
+};
 
 function checkNotifications() {
     $.getJSON(scRoot + '/ui/get_messages', data => {
@@ -44,11 +48,7 @@ function checkNotifications() {
             displayPNotify(data.type, data.title, data.message, data.hash);
         })
         .fail(
-            let notification = {
-                title: 'error',
-                message: 'sickchill is restarting or is not running'
-            }
-            displayPNotify(notification.title, notification.message, create_UUID());
+            displayPNotify(notificationDown.title, notificationDown.message, create_UUID());
             notificationTimer = clearTimeout(notificationTimer);
         )
     });
