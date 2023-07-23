@@ -5,7 +5,6 @@ import re
 from urllib import parse
 
 import rarfile
-from tornado.escape import xhtml_unescape
 
 import sickchill.start
 from sickchill import logger, settings
@@ -634,7 +633,7 @@ def clean_url(url):
     """
 
     if url and url.strip():
-        url = xhtml_unescape(url.strip())
+        url = url.strip()
 
         if "://" not in url:
             url = "//" + url

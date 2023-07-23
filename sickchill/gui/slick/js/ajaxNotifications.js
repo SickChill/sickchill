@@ -19,10 +19,10 @@ function displayPNotify(type, title, message, id) {
         },
         type,
         title,
-        text: message.replaceAll(/<br[\s/]*(?:\s[^>]*)?>/i, '\n')
-            .replaceAll(/<\/?b(?:\s[^>]*)?>/i, '*')
-            .replaceAll(/<i(?:\s[^>]*)?>/i, '[').replaceAll(/<\/i>/i, ']')
-            .replaceAll(/<(?:\/?ul|\/li)(?:\s[^>]*)?>/i, '').replaceAll(/<li(?:\s[^>]*)?>/i, '\n* '),
+        text: message.replaceAll(/<br[\s/]*(?:\s[^>]*)?>/gi, '\n')
+            .replaceAll(/<\/?b(?:\s[^>]*)?>/gi, '*')
+            .replaceAll(/<i(?:\s[^>]*)?>/gi, '[').replaceAll(/<\/i>/gi, ']')
+            .replaceAll(/<(?:\/?ul|\/li)(?:\s[^>]*)?>/gi, '').replaceAll(/<li(?:\s[^>]*)?>/gi, '\n* '),
     });
 }
 

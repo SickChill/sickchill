@@ -89,7 +89,7 @@
                                 <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[curProvider.provider_type == GenericProvider.TORRENT]}" id="${curName}">
                                     <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.is_enabled]}/>
                                     <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer"
-                                       onclick="window.open(this.href, '_blank'); return false;">
+                                       target="_blank">
                                         <img src="${static_url('images/providers/' + curProvider.image_name())}"
                                             alt="${curProvider.name}" title="${curProvider.name}" width="16"
                                             height="16" style="vertical-align:middle;"/>

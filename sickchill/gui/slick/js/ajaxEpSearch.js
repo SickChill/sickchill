@@ -103,7 +103,7 @@ function updateImages(data) {
 
                     if (actionElement.length > 0) {
                         // Remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
-                        actionElement.attr('class', (i, value) => value.replaceAll(/(^|\s)listing-\S+/, '')).addClass('listing-snatched');
+                        actionElement.attr('class', (i, value) => value.replaceAll(/(^|\s)listing-\S+/g, '')).addClass('listing-snatched');
                     }
                 }
 
