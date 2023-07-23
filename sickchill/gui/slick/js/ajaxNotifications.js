@@ -26,17 +26,36 @@ function displayPNotify(type, title, message, id) {
     });
 }
 
+function create_UUID() {
+    var dt = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (dt + Math.random() * 16) % 16 | 0;
+        dt = Math.floor(dt / 16);
+        return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+    });
+    return uuid;
+}
+
+let notificationTimer;
+
 function checkNotifications() {
     $.getJSON(scRoot + '/ui/get_messages', data => {
         $.each(data, (name, data) => {
             displayPNotify(data.type, data.title, data.message, data.hash);
-        });
+        })
+        .fail(
+            const notification = {
+                title: 'error',
+                message: 'sickchill is restarting or is not running'
+            }
+            displayPNotify(notification.title, notification.message, create_UUID());
+            notificationTimer = clearTimeout(notificationTimer);
+        )
     });
-    setTimeout(checkNotifications, 3000);
 }
 
 $(document).ready(() => {
-    checkNotifications();
+    notificationTimer = setTimeout(checkNotifications, 3000);
     if (test) {
         displayPNotify('notice', 'test', 'test<br><i class="test-class">hello <b>world</b></i><ul><li>item 1</li><li>item 2</li></ul>', 'notification-test');
     }
