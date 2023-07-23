@@ -14,7 +14,6 @@ from sickchill.helper.common import is_media_file, is_rar_file, is_sync_file, is
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
 
 from . import common, db, failedProcessor, helpers, postProcessor
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 if TYPE_CHECKING:
     from sickchill.oldbeard.name_parser.parser import ParseResult
