@@ -16,18 +16,16 @@ function configSuccess() {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
+        window.location.href = scRoot + '/config/providers/';
     });
     $('.config_submitter_refresh').each(function () {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
-        // window.location.href = scRoot + '/config/providers/';
+        window.location.reload(true);
     });
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');
-
-    // $.post(scRoot + '/ui/add_message', {title: 'Settings', message: 'Saved!', success: 1});
-    window.location.reload(true);
 }
 
 function metaToBool(pyVar) {
@@ -351,21 +349,21 @@ const SICKCHILL = {
 
             // Bind 'myForm' and provide a simple callback function
             $('#configForm').ajaxForm({
-                beforeSubmit: function() {
+                beforeSubmit() {
                     $('.config_submitter .config_submitter_refresh').each(function () {
                         $(this).attr('disabled', 'disabled');
                         $(this).after('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt="loading"> Saving...</span>');
                         $(this).hide();
                     });
                 },
-                success: function() {
+                success() {
                     setTimeout(configSuccess, 2000);
                 },
             });
 
             $('#config_save_button').on('click', () => {
                 $('#configForm').submit();
-            })
+            });
 
             $('#api_key').on('click', () => {
                 $('#api_key').select();
@@ -4274,7 +4272,7 @@ const SICKCHILL = {
                             const shows = [];
 
                             $.each(data.results, (index, object) => {
-                                const whichSeries = object.join('|').replaceAll(/"/g, '');
+                                const whichSeries = object.join('|').replaceAll(/"/, '');
 
                                 const show = {
                                     obj: whichSeries,
