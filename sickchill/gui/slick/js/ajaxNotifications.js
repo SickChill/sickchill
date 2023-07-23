@@ -44,7 +44,7 @@ function checkNotifications() {
             displayPNotify(data.type, data.title, data.message, data.hash);
         })
         .fail(
-            const notification = {
+            let notification = {
                 title: 'error',
                 message: 'sickchill is restarting or is not running'
             }
