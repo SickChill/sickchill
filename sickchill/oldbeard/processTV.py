@@ -17,7 +17,6 @@ from . import common, db, failedProcessor, helpers, postProcessor
 
 if TYPE_CHECKING:
     from sickchill.oldbeard.name_parser.parser import ParseResult
-    from sickchill.tv import TVShow
 
 
 class ProcessResult(object):
