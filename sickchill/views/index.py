@@ -104,7 +104,7 @@ class BaseHandler(RequestHandler):
             assert isinstance(status, int)
             assert 300 <= status <= 399
         self.set_status(status)
-        self.set_header("Location", urljoin(utf8(self.request.uri), utf8(url)))
+        self.set_header("Location", urljoin(self.request.uri, url))
 
     def get_current_user(self):
         if isinstance(self, UI):

@@ -277,40 +277,40 @@
                                             % if settings.USE_SUBTITLES:
                                                 <tr>
                                                     <td class="showLegend">${_('Subtitles')}: </td>
-                                                    <td><span class="displayshow-icon-${("disable", "enable")[bool(show.subtitles)]}" title=${("N", "Y")[bool(show.subtitles)]}></span></td>
+                                                    <td><span class="displayshow-icon-${('disable', 'enable')[bool(show.subtitles)]}" title=${("N", "Y")[bool(show.subtitles)]}></span></td>
                                                 </tr>
                                             % endif
                                             <tr>
                                                 <td class="showLegend">${_('Subtitles SC Metadata')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.subtitles_sr_metadata)]}" title=${("N", "Y")[bool(show.subtitles_sr_metadata)]}></span></td>
+                                                <td><span class="displayshow-icon-${('disable', 'enable')[bool(show.subtitles_sr_metadata)]}" title=${("N", "Y")[bool(show.subtitles_sr_metadata)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Season Folders')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.season_folders or settings.NAMING_FORCE_FOLDERS)]}" title=${("N", "Y")[bool(show.season_folders or settings.NAMING_FORCE_FOLDERS)]}></span></td>
+                                                <td><span class="displayshow-icon-${('disable', 'enable')[bool(show.season_folders or settings.NAMING_FORCE_FOLDERS)]}" title=${("N", "Y")[bool(show.season_folders or settings.NAMING_FORCE_FOLDERS)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Paused')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.paused)]}" title=${("N", "Y")[bool(show.paused)]}></span></td>
+                                                <td><span class="displayshow-icon-${('disable', 'enable')[bool(show.paused)]}" title=${("N", "Y")[bool(show.paused)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Air-by-Date')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.air_by_date)]}" title=${("N", "Y")[bool(show.air_by_date)]}></span></td>
+                                                <td><span class="displayshow-icon-${('disable', 'enable')[bool(show.air_by_date)]}" title=${("N", "Y")[bool(show.air_by_date)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Sports')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[show.is_sports]}" title=${("N", "Y")[show.is_sports]}></span></td>
+                                                <td><span class="displayshow-icon-${('disable', 'enable')[show.is_sports]}" title=${("N", "Y")[show.is_sports]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Anime')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[show.is_anime]}" title=${("N", "Y")[show.is_anime]}></span></td>
+                                                <td><span class="displayshow-icon-${('disable', 'enable')[show.is_anime]}" title=${("N", "Y")[show.is_anime]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('DVD Order')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.dvdorder)]}" title=${("N", "Y")[bool(show.dvdorder)]}></span></td>
+                                                <td><span class="displayshow-icon-${('disable', 'enable')[bool(show.dvdorder)]}" title=${("N","Y")[bool(show.dvdorder)]}></span></td>
                                             </tr>
                                             <tr>
                                                 <td class="showLegend">${_('Scene Numbering')}: </td>
-                                                <td><span class="displayshow-icon-${("disable", "enable")[bool(show.scene)]}" title=${("N", "Y")[bool(show.scene)]}></span></td>
+                                                <td><span class="displayshow-icon-${('disable', 'enable')[bool(show.scene)]}" title=${("N", "Y")[bool(show.scene)]}></span></td>
                                             </tr>
                                         </table>
                                     </div>

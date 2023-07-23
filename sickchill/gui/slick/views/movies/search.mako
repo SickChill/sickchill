@@ -56,7 +56,7 @@
                                 <div class="movie-image">
                                     <img
                                             src="${static_url('images/poster.png')}"
-                                            data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}'}"
+                                            data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result['poster_path']}'}"
                                             class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"
                                             onerror="this.src='${static_url('images/poster.png')}'"
                                     />
@@ -96,7 +96,7 @@
                                 <div class="movie-image">
                                     <img
                                             src="${static_url('images/poster.png')}"
-                                            data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result["poster_path"]}' if result["poster_path"] else static_url('images/poster.png')}"
+                                            data-src="${f'https://image.tmdb.org/t/p/w300_and_h450_bestv2{result['poster_path']}' if result['poster_path'] else static_url('images/poster.png')}"
                                             class="tvshowImg" alt="${_('Poster for')} ${result['title']} - ${result['release_date']}"
                                             onerror="this.src='${static_url('images/poster.png')}'"
                                     />

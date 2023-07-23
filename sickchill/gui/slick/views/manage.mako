@@ -94,12 +94,12 @@
                                         % endif
                                     </td>
                                     <td align="center">${renderQualityPill(curShow.quality, showTitle=True)}</td>
-                                    <td align="center"><span class="displayshow-icon-${("disable", "enable")[bool(curShow.is_sports)]}" title=${("N", "Y")[bool(curShow.is_sports)]}></span></td>
-                                    <td align="center"><span class="displayshow-icon-${("disable", "enable")[bool(curShow.is_scene)]}" title=${("N", "Y")[bool(curShow.is_scene)]}></span></td>
-                                    <td align="center"><span class="displayshow-icon-${("disable", "enable")[bool(curShow.is_anime)]}" title=${("N", "Y")[bool(curShow.is_anime)]}></span></td>
-                                    <td align="center"><span class="displayshow-icon-${("disable", "enable")[bool(curShow.season_folders)]}" title=${("N", "Y")[bool(curShow.season_folders)]}></span></td>
-                                    <td align="center"><span class="displayshow-icon-${("disable", "enable")[bool(curShow.paused)]}" title=${("N", "Y")[bool(curShow.paused)]}></span></td>
-                                    <td align="center"><span class="displayshow-icon-${("disable", "enable")[bool(curShow.subtitles)]}" title=${("N", "Y")[bool(curShow.subtitles)]}></span></td>
+                                    <td align="center"><span class="displayshow-icon-${('disable', 'enable')[bool(curShow.is_sports)]}" title=${("N", "Y")[bool(curShow.is_sports)]}></span></td>
+                                    <td align="center"><span class="displayshow-icon-${('disable', 'enable')[bool(curShow.is_scene)]}" title=${("N", "Y")[bool(curShow.is_scene)]}></span></td>
+                                    <td align="center"><span class="displayshow-icon-${('disable', 'enable')[bool(curShow.is_anime)]}" title=${("N", "Y")[bool(curShow.is_anime)]}></span></td>
+                                    <td align="center"><span class="displayshow-icon-${('disable', 'enable')[bool(curShow.season_folders)]}" title=${("N", "Y")[bool(curShow.season_folders)]}></span></td>
+                                    <td align="center"><span class="displayshow-icon-${('disable', 'enable')[bool(curShow.paused)]}" title=${("N", "Y")[bool(curShow.paused)]}></span></td>
+                                    <td align="center"><span class="displayshow-icon-${('disable', 'enable')[bool(curShow.subtitles)]}" title=${("N", "Y")[bool(curShow.subtitles)]}></span></td>
                                     <td align="center">${statusStrings[curShow.default_ep_status]}</td>
                                     <td align="center">${_(curShow.status)}</td>
                                     <td align="center">${curUpdate}</td>
