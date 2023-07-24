@@ -1724,7 +1724,9 @@ class Home(WebRoot):
     # ## Returns the current ep_queue_item status for the current viewed show.
     # Possible status: Downloaded, Snatched, etc...
     # Returns {'show': 279530, 'episodes' : ['episode' : 6, 'season' : 1, 'searchstatus' : 'queued', 'status' : 'running', 'quality': '4013']
-    def getManualSearchStatus(self, show=None):
+    def getManualSearchStatus(self):
+        show = self.get_query_argument("show")
+
         def getEpisodes(search_thread, search_status):
             results = []
             show_obj = Show.find(settings.showList, int(search_thread.show.indexerid))

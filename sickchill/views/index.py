@@ -156,15 +156,16 @@ class WebHandler(BaseHandler):
             # logger.debug(f"Call for {route} with args [{self.request.arguments}]")
             # route -> method obj
             route = route.strip("/").replace(".", "_").replace("-", "_") or "index"
+            # logger.debug(f"Route: {route}")
             method = getattr(self, route)
-            if settings.DEVELOPER:
-                from inspect import signature
+            from inspect import signature
 
-                sig = signature(method)
+            sig = signature(method)
+            if settings.DEVELOPER:
                 if len(sig.parameters):
                     logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
-            results = yield self.async_call(method)
+            results = yield self.async_call(method, len(sig.parameters))
 
             self.finish(results)
 
@@ -173,11 +174,14 @@ class WebHandler(BaseHandler):
             raise HTTPError(404)
 
     @run_on_executor
-    def async_call(self, function):
+    def async_call(self, function, needs_params):
         try:
             # TODO: Make all routes use get_*_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
             # TODO: Until the new web interface is ready, we should also make each route asynchronous and yield back the result.
             # nonsense loop so we can just yield the method directly
+
+            if not needs_params:
+                return function()
 
             if self.request.method == "POST":
                 get_argument = self.get_body_argument
@@ -194,10 +198,7 @@ class WebHandler(BaseHandler):
                 if isinstance(value, str):
                     kwargs[arg] = get_argument(arg, strip=True)
                 elif isinstance(value, list):
-                    if len(value) == 1:
-                        kwargs[arg] = get_arguments(arg, strip=True)[0]
-                    else:
-                        kwargs[arg] = get_arguments(arg, strip=True)
+                    kwargs[arg] = get_arguments(arg, strip=True)
                 else:
                     raise Exception
             return function(**kwargs)
@@ -214,6 +215,8 @@ class WebHandler(BaseHandler):
 class WebRoot(WebHandler):
     def print_traceback(self, error, *args, **kwargs):
         logger.info(f"A mako error occurred: {error}")
+        logger.debug(traceback.format_exc())
+        logger.debug(f"args: {args}, kwargs: {kwargs}")
         t = PageTemplate(rh=self, filename="500.mako")
         kwargs["backtrace"] = RichTraceback(error=error)
         return t.render(*args, **kwargs)
