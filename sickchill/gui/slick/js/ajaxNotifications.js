@@ -42,7 +42,7 @@ const notificationDown = {
 };
 
 function checkNotifications() {
-    $.getJSON(scRoot + '/ui/get_messages', (data) => {
+    $.getJSON(scRoot + '/ui/get_messages', data => {
         $.each(data, (name, data) => {
             displayPNotify(data.type, data.title, data.message, data.hash);
         });
