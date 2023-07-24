@@ -48,7 +48,7 @@ function checkNotifications() {
             displayPNotify(data.type, data.title, data.message, data.hash);
         })
         .fail(
-            displayPNotify(notificationDown.title, notificationDown.message, create_UUID());
+            displayPNotify(notificationDown.title, notificationDown.message, create_UUID())
             notificationTimer = clearTimeout(notificationTimer);
         )
     });
