@@ -38,7 +38,8 @@ function create_UUID() {
 
 let notificationTimer;
 let notificationDown = {
-    title: 'error',
+    type: 'error',
+    title: 'offline',
     message: 'sickchill is restarting or is not running'
 };
 
@@ -48,9 +49,9 @@ function checkNotifications() {
             displayPNotify(data.type, data.title, data.message, data.hash);
         })
         .fail(function () {
-            displayPNotify(notificationDown.title, notificationDown.message, create_UUID());
+            displayPNotify(notification.type, notificationDown.title, notificationDown.message, create_UUID());
             notificationTimer = clearTimeout(notificationTimer);
-        ))
+        })
     });
 }
 
