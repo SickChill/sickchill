@@ -1,7 +1,7 @@
 import re
 
-from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
+from twilio.rest import Client
 
 from sickchill import logger, settings
 from sickchill.oldbeard import common
