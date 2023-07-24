@@ -560,7 +560,7 @@ class Home(WebRoot):
     @staticmethod
     def loadShowNotifyLists():
         main_db_con = db.DBConnection()
-        rows = main_db_con.select("SELECT show_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
+        rows = main_db_con.select("SELECT indexer_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
 
         data = {}
         size = 0
@@ -573,14 +573,19 @@ class Home(WebRoot):
                 else:
                     notify_list = dict(ast.literal_eval(r["notify_list"]))
 
-            data[r["show_id"]] = {"id": r["show_id"], "name": r["show_name"], "list": notify_list["emails"], "prowl_notify_list": notify_list["prowlAPIs"]}
+            data[r["indexer_id"]] = {
+                "id": r["indexer_id"],
+                "name": r["show_name"],
+                "list": notify_list["emails"],
+                "prowl_notify_list": notify_list["prowlAPIs"],
+            }
         data["_size"] = len(data)
         return json.dumps(data)
 
     def saveShowNotifyList(self):
         show = self.get_body_argument("show")
         main_db_con = db.DBConnection()
-        rows = main_db_con.select("SELECT show_id, notify_list FROM tv_shows WHERE show_id = ?", [show])
+        rows = main_db_con.select("SELECT indexer_id, notify_list FROM tv_shows WHERE indexer_id = ?", [show])
         # Get existing data from db for both email and prowl
         data = {}
 
@@ -592,7 +597,7 @@ class Home(WebRoot):
                     notify_list["emails"] = r["notify_list"]
                 else:
                     notify_list = dict(ast.literal_eval(r["notify_list"]))
-            data = {"id": r["show_id"], "email_list": notify_list["emails"], "prowl_list": notify_list["prowlAPIs"]}
+            data = {"id": r["indexer_id"], "email_list": notify_list["emails"], "prowl_list": notify_list["prowlAPIs"]}
 
         show_email = data["email_list"]
         show_prowl = data["prowl_list"]
@@ -605,9 +610,9 @@ class Home(WebRoot):
 
         # TODO: Split emails and do validators.email
         if emails or prowlAPIs:
-            result = main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [str(entries), show])
+            result = main_db_con.action("UPDATE tv_shows SET notify_list = ? WHERE indexer_id = ?", [str(entries), show])
         else:
-            result = main_db_con.action("UPDATE tv_shows SET notify_list = Null WHERE show_id = ?", [show])
+            result = main_db_con.action("UPDATE tv_shows SET notify_list = Null WHERE indexer_id = ?", [show])
 
         if not result:
             return "ERROR"

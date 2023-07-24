@@ -896,7 +896,7 @@ class ConfigMigrator(object):
     def __init__(self, config_obj):
         """
         Initializes a config migrator that can take the config from the version indicated in the config
-        file up to the version required by SB
+        file up to the version required by SC
         """
 
         self.config_obj = config_obj
@@ -921,7 +921,7 @@ class ConfigMigrator(object):
 
     def migrate_config(self):
         """
-        Calls each successive migration until the config is the same version as SB expects
+        Calls each successive migration until the config is the same version as SC expects
         """
 
         if self.config_version > self.expected_config_version:

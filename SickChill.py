@@ -44,7 +44,7 @@ from sickchill.oldbeard import db, name_cache, network_timezones
 from sickchill.oldbeard.event_queue import Events
 from sickchill.tv import TVShow
 from sickchill.update_manager import PipUpdateManager
-from sickchill.views.server_settings import SRWebServer
+from sickchill.views.server_settings import SCWebServer
 
 # http://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime("20110101", "%Y%m%d")
@@ -196,7 +196,7 @@ class SickChill:
             self.start_port = settings.WEB_PORT
 
         # start web server
-        self.web_server = SRWebServer(web_options)
+        self.web_server = SCWebServer(web_options)
         self.web_server.start()
 
         if args.flask and FlaskServer:

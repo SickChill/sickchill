@@ -2,7 +2,6 @@ const searchStatusUrl = scRoot + '/home/getManualSearchStatus';
 let failedDownload = false;
 let qualityDownload = false;
 let selectedEpisode = '';
-PNotify.prototype.options.maxonscreen = 5;
 
 $.fn.manualSearches = [];
 

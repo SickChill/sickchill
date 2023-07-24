@@ -37,10 +37,10 @@
 # Type=simple
 # ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch
 
-### Example Using simple with EnvironmentFile where SR_DATA=/home/sickchill/.sickchill in /etc/sickchill.conf
+### Example Using simple with EnvironmentFile where SC_DATA=/home/sickchill/.sickchill in /etc/sickchill.conf
 # Type=simple
 # EnvironmentFile=/etc/sickchill.conf
-# ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch --datadir=${SR_DATA}
+# ExecStart=/usr/bin/python3 /opt/sickchill/SickChill.py -q --nolaunch --datadir=${SC_DATA}
 
 ### Configuration
 

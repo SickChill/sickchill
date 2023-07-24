@@ -143,7 +143,7 @@
                                                                                          style="height: 50px;padding: 3px;"
                                                                                  class="img-responsive pull-left" /></a>
                 </div>
-                % if srLogin:
+                % if scLogin:
                     <div class="collapse navbar-collapse" id="collapsible-navbar">
                         <ul class="nav navbar-nav navbar-right">
                             <%block name="navbar" />
@@ -280,7 +280,7 @@
                                         class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
                                     <li><a href="${static_url('home/shutdown/?pid={}'.format(scPID), include_version=False)}" class="confirm shutdown"><i
                                         class="fa fa-fw fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
-                                    % if srLogin:
+                                    % if scLogin:
                                         <li><a href="${static_url('logout', include_version=False)}" class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
                                     <li role="separator" class="divider"></li>
@@ -321,7 +321,7 @@
                     </div>
                 % endif
                 <div class="clearfix"></div>
-                % if srLogin:
+                % if scLogin:
                     <div id="site-messages"></div>
                 % endif
             </div>
@@ -350,7 +350,7 @@
                 </div>
             </div>
 
-            % if srLogin:
+            % if scLogin:
                 <div class="row">
                     <div class="footer clearfix col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
                         <%

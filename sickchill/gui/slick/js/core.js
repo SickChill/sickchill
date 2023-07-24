@@ -1212,6 +1212,7 @@ const SICKCHILL = {
                     }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
+                    // TODO: Why is this not just sent as json to begin with?
                     const _list = [];
                     for (const _show in list) {
                         if (Object.prototype.hasOwnProperty.call(list, _show) && _show.charAt(0) !== '_') {
@@ -3698,6 +3699,9 @@ const SICKCHILL = {
                             0(node) { // Time
                                 return $(node).find('time').attr('datetime');
                             },
+                            2(node) { // Provider
+                                return ($(node).find('img').attr('alt') || 'unknown').toLowerCase();
+                            },
                             4(node) { // Quality
                                 return $(node).find('span').text().toLowerCase();
                             },
@@ -3709,7 +3713,7 @@ const SICKCHILL = {
                             return $(node).find('time').attr('datetime');
                         },
                         2(node) { // Provider
-                            return $(node).attr('provider').toLowerCase();
+                            return $(node).find('span').text().toLowerCase();
                         },
                     };
 

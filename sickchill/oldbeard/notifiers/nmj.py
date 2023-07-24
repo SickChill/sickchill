@@ -152,7 +152,7 @@ class Notifier(object):
 
     def _notifyNMJ(self, host=None, database=None, mount=None, force=False):
         """
-        Sends a NMJ update command based on the SB config settings
+        Sends a NMJ update command based on the SC config settings
 
         host: The host to send the command to (optional, defaults to the host in the config)
         database: The database to use (optional, defaults to the database in the config)

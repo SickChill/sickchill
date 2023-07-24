@@ -16,7 +16,7 @@
     "jquery-timeago": "~1.5.4",
     "bootstrap3-typeahead": "~4.0.2",
     "underscore": "~1.8.3",
-    "pnotify": "<3.0",
+    "pnotify": "~3.2.1",
     "qtip2": "~2.2.1",
     "tablesorter": "jquery.tablesorter#~2.28.4",
     "jquery-confirm": "~2.7.0",

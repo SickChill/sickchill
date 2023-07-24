@@ -360,9 +360,9 @@ class UI(WebRoot):
             return None
 
     def add_message(self):
-        title = self.get_body_argument("title")
-        message = self.get_body_argument("message")
-        success = config.checkbox_to_value(self.get_body_argument("success"))
+        title = self.get_argument("title")
+        message = self.get_argument("message")
+        success = config.checkbox_to_value(self.get_argument("success"))
 
         if title and message:
             if success:

@@ -534,7 +534,7 @@ class QueueItemAdd(ShowQueueItem):
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
 
-        # check if show has XEM mapping so we can determine if searches should go by scene numbering or indexer numbering.
+        # check if show has XEM mapping, so we can determine if searches should go by scene numbering or indexer numbering.
         if not self.scene and scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
             self.show.scene = 1
 

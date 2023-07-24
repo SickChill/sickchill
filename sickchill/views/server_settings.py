@@ -46,7 +46,7 @@ class SickChillStaticFileHandler(StaticFileHandler):
         return "%s?v=%s" % (url, version_hash)
 
 
-class SRWebServer(threading.Thread):
+class SCWebServer(threading.Thread):
     def __init__(self, options=None):
         super().__init__()
         self.daemon = True
