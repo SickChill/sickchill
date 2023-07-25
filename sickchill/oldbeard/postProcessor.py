@@ -1151,7 +1151,7 @@ class PostProcessor(object):
                 # download subtitles
                 if settings.USE_SUBTITLES and ep_obj.show.subtitles and (cur_ep.season != 0 or settings.SUBTITLES_INCLUDE_SPECIALS):
                     cur_ep.refreshSubtitles()
-                    cur_ep.download_subtitles(force=True)
+                    cur_ep.download_subtitles()
                 sql_l.append(cur_ep.get_sql())
 
         # now that processing has finished, we can put the info in the DB. If we do it earlier, then when processing fails, it won't try again.

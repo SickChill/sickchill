@@ -750,6 +750,7 @@ class Home(WebRoot):
 
     def displayShow(self):
         show = self.get_query_argument("show")
+
         # todo: add more comprehensive show validation
         try:
             show_obj = Show.find(settings.showList, int(show))
@@ -771,7 +772,7 @@ class Home(WebRoot):
         )
 
         t = PageTemplate(rh=self, filename="displayShow.mako")
-        submenu = [{"title": _("Edit"), "path": "home/editShow?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-pencil"}]
+        submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid}", "icon": "fa fa-pencil"}]
 
         try:
             showLoc = (show_obj.location, True)
@@ -805,32 +806,28 @@ class Home(WebRoot):
         if not settings.showQueueScheduler.action.is_being_added(show_obj):
             if not settings.showQueueScheduler.action.is_being_updated(show_obj):
                 if show_obj.paused:
-                    submenu.append({"title": _("Resume"), "path": "home/togglePause?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-play"})
+                    submenu.append({"title": _("Resume"), "path": f"home/togglePause?show={show_obj.indexerid}", "icon": "fa fa-play"})
                 else:
-                    submenu.append({"title": _("Pause"), "path": "home/togglePause?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-pause"})
+                    submenu.append({"title": _("Pause"), "path": f"home/togglePause?show={show_obj.indexerid}", "icon": "fa fa-pause"})
 
                 # noinspection PyPep8
                 submenu.append(
                     {
                         "title": _("Remove"),
-                        "path": "home/deleteShow?show={0:d}".format(show_obj.indexerid),
+                        "path": f"home/deleteShow?show={show_obj.indexerid}",
                         "class": "removeshow",
                         "confirm": True,
                         "icon": "fa fa-trash",
                     }
                 )
-                submenu.append(
-                    {"title": _("Re-scan files"), "path": "home/refreshShow?show={0:d}&amp;force=1".format(show_obj.indexerid), "icon": "fa fa-refresh"}
-                )
+                submenu.append({"title": _("Re-scan files"), "path": f"home/refreshShow?show={show_obj.indexerid}&amp;force=1", "icon": "fa fa-refresh"})
                 # noinspection PyPep8
-                submenu.append(
-                    {"title": _("Force Full Update"), "path": "home/updateShow?show={0:d}&amp;force=1".format(show_obj.indexerid), "icon": "fa fa-exchange"}
-                )
+                submenu.append({"title": _("Force Full Update"), "path": f"home/updateShow?show={show_obj.indexerid}&amp;force=1", "icon": "fa fa-exchange"})
                 # noinspection PyPep8
                 submenu.append(
                     {
                         "title": _("Update show in KODI"),
-                        "path": "home/updateKODI?show={0:d}".format(show_obj.indexerid),
+                        "path": f"home/updateKODI?show={show_obj.indexerid}",
                         "requires": self.haveKODI(),
                         "icon": "menu-icon-kodi",
                     }
@@ -839,7 +836,7 @@ class Home(WebRoot):
                 submenu.append(
                     {
                         "title": _("Update show in Emby"),
-                        "path": "home/updateEMBY?show={0:d}".format(show_obj.indexerid),
+                        "path": f"home/updateEMBY?show={show_obj.indexerid}",
                         "requires": self.haveEMBY(),
                         "icon": "menu-icon-emby",
                     }
@@ -850,7 +847,7 @@ class Home(WebRoot):
                         submenu.append(
                             {
                                 "title": _("Hide specials"),
-                                "path": "home/toggleDisplayShowSpecials/?show={0:d}".format(show_obj.indexerid),
+                                "path": f"home/toggleDisplayShowSpecials/?show={show_obj.indexerid}",
                                 "confirm": True,
                                 "icon": "fa fa-times",
                             }
@@ -860,19 +857,17 @@ class Home(WebRoot):
                         submenu.append(
                             {
                                 "title": _("Show specials"),
-                                "path": "home/toggleDisplayShowSpecials/?show={0:d}".format(show_obj.indexerid),
+                                "path": f"home/toggleDisplayShowSpecials/?show={show_obj.indexerid}",
                                 "confirm": True,
                                 "icon": "fa fa-check",
                             }
                         )
 
-                submenu.append({"title": _("Preview Rename"), "path": "home/testRename?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-tag"})
+                submenu.append({"title": _("Preview Rename"), "path": f"home/testRename?show={show_obj.indexerid}", "icon": "fa fa-tag"})
 
                 if settings.USE_SUBTITLES and show_obj.subtitles and not settings.showQueueScheduler.action.is_being_subtitled(show_obj):
                     # noinspection PyPep8
-                    submenu.append(
-                        {"title": _("Download Subtitles"), "path": "home/subtitleShow?show={0:d}".format(show_obj.indexerid), "icon": "fa fa-language"}
-                    )
+                    submenu.append({"title": _("Download Subtitles"), "path": f"home/subtitleShow?show={show_obj.indexerid}", "icon": "fa fa-language"})
 
         epCounts = {
             Overview.SKIPPED: 0,
@@ -1012,14 +1007,14 @@ class Home(WebRoot):
         try:
             show_obj = Show.find(settings.showList, int(show))
         except (ValueError, TypeError):
-            errString = _("Invalid show ID") + ": {show}".format(show=str(show))
+            errString = _("Invalid show ID") + f": {show}"
             if directCall:
                 return [errString]
             else:
                 return self._genericMessage(_("Error"), errString)
 
         if not show_obj:
-            errString = _("Unable to find the specified show") + ": {show}".format(show=str(show))
+            errString = _("Unable to find the specified show") + f": {show}"
             if directCall:
                 return [errString]
             else:
@@ -1239,11 +1234,9 @@ class Home(WebRoot):
                             # show_obj.loadEpisodesFromIndexer()
                             # rescan the episodes in the new folder
                     except NoNFOException:
-                        # noinspection PyPep8
                         errors.append(
-                            "The folder at <tt>{0}</tt> doesn't contain a tvshow.nfo - copy your files to that folder before you change the directory in SickChill.".format(
-                                location
-                            )
+                            f"The folder at <tt>{location}</tt> doesn't contain a tvshow.nfo - "
+                            + "copy your files to that folder before you change the directory in SickChill."
                         )
 
             # save it to the DB
@@ -1280,7 +1273,7 @@ class Home(WebRoot):
         if errors:
             ui.notifications.error(
                 _("{num_errors:d} error{plural} while saving changes:").format(num_errors=len(errors), plural="" if len(errors) == 1 else "s"),
-                "<ul>" + "\n".join(["<li>{0}</li>".format(error) for error in errors]) + "</ul>",
+                "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
             )
 
         return self.redirect("/home/displayShow?show=" + show)
@@ -1295,7 +1288,7 @@ class Home(WebRoot):
             _("{show_name} has been {paused_resumed}").format(show_name=show.name, paused_resumed=(_("resumed"), _("paused"))[show.paused])
         )
 
-        return self.redirect("/home/displayShow?show={0:d}".format(show.indexerid))
+        return self.redirect(f"/home/displayShow?show={show.indexerid}")
 
     def deleteShow(self, show=None, full=0):
         if show:
@@ -1355,17 +1348,15 @@ class Home(WebRoot):
 
         return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
-    def subtitleShow(self, show=None, force=0):
-        if not show:
-            return self._genericMessage(_("Error"), _("Invalid show ID"))
-
+    def subtitleShow(self):
+        show = self.get__query_argument("show")
         show_obj = Show.find(settings.showList, int(show))
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Unable to find the specified show"))
 
         # search and download subtitles
-        settings.showQueueScheduler.action.download_subtitles(show_obj, bool(force))
+        settings.showQueueScheduler.action.download_subtitles(show_obj)
 
         time.sleep(cpu_presets[settings.CPU_PRESET])
 
@@ -1459,7 +1450,7 @@ class Home(WebRoot):
                 epInfo = cur_ep.split("x")
 
                 if not all(epInfo):
-                    logger.debug("Something went wrong when trying to setStatus, epInfo[0]: {0}, epInfo[1]: {1}".format(epInfo[0], epInfo[1]))
+                    logger.debug(f"Something went wrong when trying to setStatus, {episode_num(*epInfo)}")
                     continue
 
                 ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
@@ -1582,7 +1573,7 @@ class Home(WebRoot):
 
         show_obj.getAllEpisodes(has_location=True)
         t = PageTemplate(rh=self, filename="testRename.mako")
-        submenu = [{"title": _("Edit"), "path": "home/editShow?show={0:d}".format(show_obj.indexerid), "icon": "ui-icon ui-icon-pencil"}]
+        submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid}", "icon": "ui-icon ui-icon-pencil"}]
 
         return t.render(submenu=submenu, show=show_obj, title=_("Preview Rename"), header=_("Preview Rename"), controller="home", action="previewRename")
 
@@ -1662,14 +1653,14 @@ class Home(WebRoot):
         for result in results:
             episodes_list = [int(ep) for ep in result["episodes"].split("|") if ep]
             if len(episodes_list) > 1:
-                result["ep_string"] = "S{:02}E{}-{}".format(result["season"], min(episodes_list), max(episodes_list))
+                result["ep_string"] = f"S{result['season']:02}E{min(episodes_list)}-{max(episodes_list)}"
             else:
                 result["ep_string"] = episode_num(result["season"], episodes_list[0])
 
         # TODO: If no cache results do a search on indexers and post back to this method.
 
         t = PageTemplate(rh=self, filename="manual_search_show_releases.mako")
-        submenu = [{"title": _("Edit"), "path": "home/editShow?show={0}".format(show), "icon": "fa fa-pencil"}]
+        submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show}", "icon": "fa fa-pencil"}]
         return t.render(
             submenu=submenu, title=_("Manual Snatch"), header=_("Manual Snatch"), controller="home", action="manual_search_show_releases", results=results
         )
@@ -1918,7 +1909,7 @@ class Home(WebRoot):
             result["success"] = False
             result["errorMessage"] = error_msg
         elif show_obj.is_anime:
-            logger.debug("setAbsoluteSceneNumbering for {0} from {1} to {2}".format(show, forAbsolute, sceneAbsolute))
+            logger.debug(f"setAbsoluteSceneNumbering for {show} from {forAbsolute} to {sceneAbsolute}")
 
             show = int(show)
             indexer = int(indexer)
@@ -1928,7 +1919,7 @@ class Home(WebRoot):
 
             set_scene_numbering(show, indexer, absolute_number=forAbsolute, sceneAbsolute=sceneAbsolute)
         else:
-            logger.debug("setEpisodeSceneNumbering for {0} from {1}x{2} to {3}x{4}".format(show, forSeason, forEpisode, sceneSeason, sceneEpisode))
+            logger.debug(f"setEpisodeSceneNumbering for {show} from {episode_num(forSeason, forEpisode)} to {episode_num(sceneSeason, sceneEpisode)}")
 
             show = int(show)
             indexer = int(indexer)
@@ -1975,15 +1966,15 @@ class Home(WebRoot):
 
     @staticmethod
     def fetch_releasegroups(show_name):
-        logger.info("ReleaseGroups: {0}".format(show_name))
+        logger.info(f"ReleaseGroups: {show_name}")
         if helpers.set_up_anidb_connection():
             try:
                 anime = adba.Anime(settings.ADBA_CONNECTION, name=show_name, cache_dir=Path(settings.CACHE_DIR))
                 groups = anime.get_groups()
-                logger.info("ReleaseGroups: {0}".format(groups))
+                logger.info(f"ReleaseGroups: {groups}")
                 return json.dumps({"result": "success", "groups": groups})
             except AttributeError as error:
-                logger.debug("Unable to get ReleaseGroups: {0}".format(error))
+                logger.debug(f"Unable to get ReleaseGroups: {error}")
                 logger.debug(traceback.format_exc())
 
         return json.dumps({"result": "failure"})

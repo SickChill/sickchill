@@ -57,7 +57,7 @@ from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidS
 from sickchill.show.Show import Show
 
 try:
-    from send2trash import send2trash
+    from send2trash import send2trash  # noqa
 except ModuleNotFoundError:
 
     def send2trash(path):
@@ -800,7 +800,7 @@ class TVShow(object):
 
     def check_imdb_id(self):
         if self.imdb_id:
-            self.imdb_id = re.sub(r"[^\d]", "", self.imdb_id)
+            self.imdb_id = re.sub(r"\D", "", self.imdb_id)
 
         if self.imdb_id:
             self.imdb_id = "tt" + self.imdb_id
@@ -812,39 +812,64 @@ class TVShow(object):
 
     def load_imdb_info(self):
         try:
-            client = imdb.IMDb()
-
             # Check that the imdb_id we have is valid for searching
             self.check_imdb_id()
 
             if self.name and not self.imdb_id:
+                logger.debug(f"{self.indexerid}: Trying to find the imdbID for {self.name}")
                 # Add regular name and custom name to be searched first
-                attempts = {self.show_name}
-                if self.custom_name:
-                    attempts.add(self.custom_name)
+                attempts = set()
+                # custom name first, then the name returned by thetvdb
+                for name in {self.custom_name, self.show_name}:
+                    if name:
+                        if self.startyear:
+                            # add name (year) first, as it is the most restrictive for matching
+                            attempts.add(f"{name} ({self.startyear})".strip('" '))
+                        # then bare name, without year
+                        attempts.add(name.strip('" '))
 
-                # Now the generated name/year search string types for normal name
-                attempts.update({f"{self.show_name} ({self.startyear})", f'"{self.show_name}" ({self.startyear})'})
-
-                if self.custom_name:
-                    # Now the generated name/year search string types for custom name
-                    attempts.update({f"{self.custom_name} ({self.startyear})", f'"{self.custom_name}" ({self.startyear})'})
+                # TODO: Create shows only database from s3 datasets, possibly distributable from sickchill.github.io until they are integrated into sickindexer
+                client = imdb.IMDb()
 
                 for attempt in attempts:
-                    results = [x for x in client.search_movie(attempt) if x["kind"] == "tv series" and x["title"] == attempt]
-                    if self.startyear:
-                        results = [x for x in results if x["year"] == self.startyear]
-                    if len(results) == 1:
-                        self.imdb_id = results[0]["imdbID"]
+                    logger.debug(f"{self.indexerid}: searching IMDb with {attempt}")
+                    result = client.title2imdbID(attempt, kind="tv series")
+                    if not result:
+                        continue
 
-                    if self.imdb_id:
+                    if isinstance(result, str):
+                        # if the result is a string each criterion has matched, we can stop searching and use it
+                        logger.debug(f"{self.indexerid}: found IMDb id: {result} for {attempt}, using it")
+                        self.imdb_id = result
                         break
+
+                if not self.imdb_id:
+                    logger.debug(f"{self.indexerid}: new method failed to determine IMDb id, trying a modified old method")
+                    for attempt in attempts:
+                        results = client.search_movie_advanced(attempt, adult=True)
+
+                        series_results = [
+                            x for x in results if x["title"].strip('" ') in attempts and x["kind"].startswith("tv") and not x["kind"].endswith("episode")
+                        ]
+                        if self.startyear:
+                            series_results = [x for x in results if x["year"] == self.startyear]
+
+                        imdb_id_set = {x.getID() for x in series_results}
+                        if len(imdb_id_set) == 1:
+                            self.imdb_id = imdb_id_set.pop()
+                            break
+
+                        if len(series_results) == 1:
+                            self.imdb_id = list(series_results)[0].getID()
+                            break
+
+                        logger.debug(f"{self.indexerid}: more than imdb one result was found with titles in {attempts}, not using any of them")
 
             # Make sure the lib didn't give us back something bogus
             self.check_imdb_id()
 
             if not self.imdb_id:
-                logger.debug(f"{self.indexerid}: Not loading show info from IMDb, because we don't know the imdb_id")
+                logger.debug(f"{self.indexerid}: not loading show info from IMDb, because we don't know the imdb_id")
                 return
 
             logger.debug(f"{self.indexerid}: Loading show info from IMDb")
@@ -1063,7 +1088,7 @@ class TVShow(object):
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
-    def download_subtitles(self, force=False):
+    def download_subtitles(self):
         if not os.path.isdir(self._location):
             logger.debug(f"{self.indexerid}: Show dir doesn't exist, can't download subtitles")
             return
@@ -1077,7 +1102,7 @@ class TVShow(object):
                 return
 
             for episode in episodes:
-                episode.download_subtitles(force=force)
+                episode.download_subtitles()
 
         except Exception:
             logger.debug(f"{self.indexerid}: Error occurred when downloading subtitles for {self.name}")
@@ -1374,7 +1399,7 @@ class TVEpisode(object):
         if save_subtitles:
             self.saveToDB()
 
-    def download_subtitles(self, force=False, force_lang=None):
+    def download_subtitles(self, force_lang=None):
         if not os.path.isfile(self.location):
             logger.debug(
                 "{id}: Episode file doesn't exist, can't download subtitles for {ep}".format(id=self.show.indexerid, ep=episode_num(self.season, self.episode))

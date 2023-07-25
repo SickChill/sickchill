@@ -115,14 +115,12 @@ class ShowQueue(generic_queue.GenericQueue):
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    # noinspection PyUnusedLocal
-    def rename_show_episodes(self, show, force=False):
+    def rename_show_episodes(self, show):
         queue_item_obj = QueueItemRename(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    # noinspection PyUnusedLocal
-    def download_subtitles(self, show, force=False):
+    def download_subtitles(self, show):
         queue_item_obj = QueueItemSubtitle(show)
         self.add_item(queue_item_obj)
         return queue_item_obj

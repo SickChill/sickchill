@@ -104,6 +104,8 @@ class Logger(object):
             logging.getLogger("sqlalchemy.engine"),
             logging.getLogger("sqlalchemy.pool"),
             logging.getLogger("sqlalchemy.dialect"),
+            logging.getLogger("imdbpy"),
+            logging.getLogger("imdbpy.parser.s3"),
         ]
 
         self.console_logging = False
@@ -148,7 +150,7 @@ class Logger(object):
         for logger in self.loggers:
             if logger.name in ("subliminal", "tornado.access", "tornado.general", "imdbpy.parser.http.piculet"):
                 logger.setLevel("CRITICAL")
-            elif logger.name.startswith("sqlalchemy") and not self.database_logging:
+            elif (logger.name.startswith("sqlalchemy") or logger.name.startswith("imdb")) and not self.database_logging:
                 logger.setLevel("WARNING")
             else:
                 logger.setLevel(log_level)
