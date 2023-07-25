@@ -19,6 +19,7 @@ from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
+from sickchill.tv import TVShow
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
@@ -189,15 +190,12 @@ class AddShows(Home):
         else:
             use_provided_info = False
 
-        # use the given show_dir for the indexer search if available
-        if not show_dir:
-            if search_string:
-                default_show_name = search_string
-            else:
-                default_show_name = ""
-
-        elif not show_name:
+        if show_name:
+            default_show_name = show_name
+        elif show_dir:
             default_show_name = re.sub(r" \(\d{4}\)", "", os.path.basename(os.path.normpath(show_dir)).replace(".", " "))
+        elif search_string:
+            default_show_name = search_string
         else:
             default_show_name = show_name
 
@@ -393,130 +391,42 @@ class AddShows(Home):
             enable_anime_options=False, title=_("Existing Show"), header=_("Existing Show"), topmenu="home", controller="addShows", action="addExistingShow"
         )
 
-    # noinspection PyUnusedLocal
-    def addShowByID(
-        self,
-        indexer_id,
-        show_name,
-        indexer="TVDB",
-        which_series=None,
-        indexer_lang=None,
-        root_dir=None,
-        default_status=None,
-        quality_preset=None,
-        any_qualities=None,
-        best_qualities=None,
-        season_folders=None,
-        subtitles=None,
-        full_show_path=None,
-        other_shows=None,
-        skip_show=None,
-        provided_indexer=None,
-        anime=None,
-        scene=None,
-        blacklist=None,
-        whitelist=None,
-        default_status_after=None,
-        default_season_folders=None,
-        configure_show_options=None,
-    ):
+    def addShowByID(self):
+        indexer_id = self.get_query_argument("indexer_id", strip=True)
+        show_name = self.get_query_argument("show_name", strip=True)
+        indexer = self.get_query_argument("indexer", default="TVDB", strip=True)
+
+        def add_error(existing: TVShow = None) -> None:
+            title = f"Unable to add {show_name}"
+            messages = {
+                "not-found": f"Could not add {show_name} with {indexer_id}. We were unable to locate the tvdb id at this time.",
+                "existing": f"{existing.name} with {existing.indexerid} is already in your show list.",
+            }
+            key = ("not-found", "existing")[bool(existing)]
+            logger.info(" ".join([title, messages[key]]))
+            ui.notifications.error(title, messages[key])
+
         if indexer != "TVDB":
             indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not indexer_id:
-                logger.info("Unable to to find tvdb ID to add {0}".format(show_name))
-                ui.notifications.error(
-                    "Unable to add {0}".format(show_name), "Could not add {0}.  We were unable to locate the tvdb id at this time.".format(show_name)
-                )
-                return
+                return add_error()
 
         indexer_id = try_int(indexer_id)
+        existing = Show.find(settings.showList, indexer_id)
+        if indexer_id <= 0 or existing:
+            return add_error(existing)
 
-        if indexer_id <= 0 or Show.find(settings.showList, indexer_id):
-            return
-
-        # Sanitize the parameter anyQualities and bestQualities. As these would normally be passed as lists
-        any_qualities = any_qualities.split(",") if any_qualities else []
-        best_qualities = best_qualities.split(",") if best_qualities else []
-
-        # If configure_show_options is enabled let's use the provided settings
-        if config.checkbox_to_value(configure_show_options):
-            # prepare the inputs for passing along
-            scene = config.checkbox_to_value(scene)
-            anime = config.checkbox_to_value(anime)
-            season_folders = config.checkbox_to_value(season_folders)
-            subtitles = config.checkbox_to_value(subtitles)
-
-            if whitelist:
-                whitelist = short_group_names(whitelist)
-            if blacklist:
-                blacklist = short_group_names(blacklist)
-
-            if not any_qualities:
-                any_qualities = []
-
-            if not best_qualities or try_int(quality_preset, None):
-                best_qualities = []
-
-            if not isinstance(any_qualities, list):
-                any_qualities = [any_qualities]
-
-            if not isinstance(best_qualities, list):
-                best_qualities = [best_qualities]
-
-            quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
-
-            location = root_dir
-
+        if settings.ROOT_DIRS:
+            root_dirs = settings.ROOT_DIRS.split("|")
+            location = root_dirs[int(root_dirs[0]) + 1]
         else:
-            default_status = settings.STATUS_DEFAULT
-            quality = settings.QUALITY_DEFAULT
-            season_folders = settings.SEASON_FOLDERS_DEFAULT
-            subtitles = settings.SUBTITLES_DEFAULT
-            anime = settings.ANIME_DEFAULT
-            scene = settings.SCENE_DEFAULT
-            default_status_after = settings.STATUS_DEFAULT_AFTER
-
-            if settings.ROOT_DIRS:
-                root_dirs = settings.ROOT_DIRS.split("|")
-                location = root_dirs[int(root_dirs[0]) + 1]
-            else:
-                location = None
+            location = None
 
         if not location:
             logger.info("There was an error creating the show, no root directory setting found")
-            return _("No root directories setup, please go back and add one.")
+            return _("No root directories are set up, please go back and add one.")
 
-        show_name = sickchill.indexer[1].get_series_by_id(indexer_id, indexer_lang).seriesName
-        show_dir = None
-
-        if not show_name:
-            ui.notifications.error(_("Unable to add show"))
-            return self.redirect("/home/")
-
-        # add the show
-        settings.showQueueScheduler.action.add_show(
-            indexer=1,
-            indexer_id=indexer_id,
-            showDir=show_dir,
-            default_status=default_status,
-            quality=quality,
-            season_folders=season_folders,
-            lang=indexer_lang,
-            subtitles=subtitles,
-            subtitles_sr_metadata=None,
-            anime=anime,
-            scene=scene,
-            paused=None,
-            blacklist=blacklist,
-            whitelist=whitelist,
-            default_status_after=default_status_after,
-            root_dir=location,
-        )
-
-        ui.notifications.message(_("Show added"), _("Adding the specified show {show_name}").format(show_name=show_name))
-
-        # done adding show
-        return self.redirect("/home/")
+        return self.newShow("|".join([indexer, None, indexer_id, show_name]), [], search_string=show_name)
 
     def addNewShow(
         self,
