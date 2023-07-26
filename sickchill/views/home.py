@@ -1349,7 +1349,7 @@ class Home(WebRoot):
         return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
     def subtitleShow(self):
-        show = self.get__query_argument("show")
+        show = self.get_query_argument("show")
         show_obj = Show.find(settings.showList, int(show))
 
         if not show_obj:

@@ -111,6 +111,9 @@
 
         <%block name="css" />
 
+            <script>
+                console.log('${settings.DATA_DIR}');
+            </script>
         % if settings.CUSTOM_CSS:
             ## TODO: check if this exists first
             <link rel="stylesheet" type="text/css" href="${static_url('ui/custom.css', include_version=False)}" />
@@ -140,7 +143,6 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="${static_url('home/', include_version=False)}" title="SickChill"><img alt="SickChill" src="${static_url('images/sickchill.png')}"
-                                                                                         style="height: 50px;padding: 3px;"
                                                                                  class="img-responsive pull-left" /></a>
                 </div>
                 % if scLogin:
@@ -162,7 +164,7 @@
                                         % endfor
                                     % endif
                                 </ul>
-                                <div style="clear:both;"></div>
+                                <i class="clearfix"></i>
                             </li>
                             % if settings.DEVELOPER:
                             <li id="NAVmovies" class="navbar-split dropdown${('', ' active')[topmenu == 'movies']}">
@@ -173,7 +175,7 @@
                                     <li><a href="${reverse_url('movies', '')}"><i class="fa fa-fw fa-home"></i>&nbsp;${_('Movie List')}</a></li>
                                     <li><a href="${reverse_url('movies-search', 'search')}"><i class="fa fa-fw fa-television"></i>&nbsp;${_('Add Movies')}</a></li>
                                 </ul>
-                                <div style="clear:both;"></div>
+                                <i class="clearfix"></i>
                             </li>
                             % endif
                             <li id="NAVschedule"${('', ' class="active"')[topmenu == 'schedule']}>
@@ -212,7 +214,7 @@
                                         <li><a href="${static_url('manage/subtitleMissed/', include_version=False)}"><i class="fa fa-fw fa-language"></i>&nbsp;${_('Missed Subtitle Management')}</a></li>
                                     % endif
                                 </ul>
-                                <div style="clear:both;"></div>
+                                <i class="clearfix"></i>
                             </li>
 
                             <li id="NAVconfig" class="navbar-split dropdown${('', ' active')[topmenu == 'config']}">
@@ -235,7 +237,7 @@
                                     <li role="separator" class="divider"></li>
                                     <li><a href="${static_url('apibuilder', include_version=False)}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('API Builder')}</a></li>
                                 </ul>
-                                <div style="clear:both;"></div>
+                                <i class="clearfix"></i>
                             </li>
 
                             <%
@@ -286,7 +288,7 @@
                                     <li role="separator" class="divider"></li>
                                     <li><a href="${static_url('home/status/', include_version=False)}"><i class="fa fa-fw fa-info-circle"></i>&nbsp;${_('Server Status')}</a></li>
                                 </ul>
-                                <div style="clear:both;"></div>
+                                <i class="clearfix"></i>
                             </li>
                         </ul>
                     </div>
@@ -312,7 +314,7 @@
                                     % endfor
                                 % else:
                                     <a href="${static_url(menuItem['path'], include_version=False)}" class="btn ${('', ' confirm ')['confirm' in menuItem] + menuItem.get('class', '')}">
-                                        <i class='${menuItem.get('icon', '')}'></i> ${menuItem['title']}
+                                        <i class="${menuItem.get('icon', '')}"></i> ${menuItem['title']}
                                     </a>
                                     <% first = False %>
                                 % endif

@@ -18,12 +18,12 @@
                 }
             });
             % if settings.USE_NZBS:
-                % for curNewznabProvider in settings.newznabProviderList:
+                % for curNewznabProvider in settings.newznab_provider_list:
                     $(this).addProvider('${curNewznabProvider.get_id()}', '${curNewznabProvider.name}', '${curNewznabProvider.url}', '${curNewznabProvider.key}', '${curNewznabProvider.catIDs}', ${int(curNewznabProvider.default)});
                 % endfor
             % endif
             % if settings.USE_TORRENTS:
-                % for curTorrentRssProvider in settings.torrentRssProviderList:
+                % for curTorrentRssProvider in settings.torrent_rss_provider_list:
                     $(this).addTorrentRssProvider('${curTorrentRssProvider.get_id()}', '${curTorrentRssProvider.name}', '${curTorrentRssProvider.url}', '${curTorrentRssProvider.cookies}', '${curTorrentRssProvider.titleTAG}');
                 % endfor
             % endif
@@ -73,7 +73,7 @@
                     <fieldset class="component-group-list">
 
                         <ul id="provider_order_list">
-                            % for curProvider in providers.sortedProviderList():
+                            % for curProvider in providers.sorted_provider_list():
                             <%
                                 if curProvider.provider_type == GenericProvider.NZB and not settings.USE_NZBS:
                                     continue
@@ -102,7 +102,7 @@
                                 </li>
                             % endfor
                         </ul>
-                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id(':'+str(int(x.is_enabled))) for x in providers.sortedProviderList()])}" />
+                        <input type="hidden" name="provider_order" id="provider_order" value="${" ".join([x.get_id(':'+str(int(x.is_enabled))) for x in providers.sorted_provider_list()])}" />
                     </fieldset>
                 </div>
             </div>
@@ -129,7 +129,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <%
                                     provider_config_list = []
-                                    for curProvider in providers.sortedProviderList():
+                                    for curProvider in providers.sorted_provider_list():
                                         if curProvider.provider_type == GenericProvider.NZB and not (settings.USE_NZBS and curProvider.is_enabled):
                                             continue
                                         elif curProvider.provider_type == GenericProvider.TORRENT and not (settings.USE_TORRENTS and curProvider.is_enabled):
@@ -150,7 +150,7 @@
 
 
                         <!-- start div for editing providers //-->
-                        % for curNewznabProvider in settings.newznabProviderList:
+                        % for curNewznabProvider in settings.newznab_provider_list:
                             <div class="providerDiv" id="${curNewznabProvider.get_id("Div")}">
                                 % if curNewznabProvider.default and curNewznabProvider.needs_auth:
 
@@ -263,7 +263,7 @@
                             </div>
                         % endfor
 
-                        % for curNzbProvider in [curProvider for curProvider in providers.sortedProviderList() if curProvider.provider_type == GenericProvider.NZB and curProvider not in settings.newznabProviderList]:
+                        % for curNzbProvider in [curProvider for curProvider in providers.sorted_provider_list() if curProvider.provider_type == GenericProvider.NZB and curProvider not in settings.newznab_provider_list]:
                             <div class="providerDiv" id="${curNzbProvider.get_id("Div")}">
                                 % if hasattr(curNzbProvider, 'username'):
                                     <div class="field-pair row">
@@ -376,7 +376,7 @@
                             </div>
                         % endfor
 
-                        % for curTorrentProvider in [curProvider for curProvider in providers.sortedProviderList() if curProvider.provider_type == GenericProvider.TORRENT]:
+                        % for curTorrentProvider in [curProvider for curProvider in providers.sorted_provider_list() if curProvider.provider_type == GenericProvider.TORRENT]:
                             <div class="providerDiv" id="${curTorrentProvider.get_id("Div")}">
 
                                 % if hasattr(curTorrentProvider, 'custom_url'):
@@ -897,7 +897,7 @@
                                     <label class="component-title">${_('Select provider')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="hidden" name="torrentrss_string" id="torrentrss_string"/>
+                                    <input type="hidden" name="torrent_rss_string" id="torrent_rss_string"/>
                                     <select id="editATorrentRssProvider" class="form-control input-sm input200">
                                         <option value="addTorrentRss">${_('-- add new provider --')}</option>
                                     </select>

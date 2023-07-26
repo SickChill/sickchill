@@ -28,9 +28,9 @@ class BacklogSearcher(object):
         self.amWaiting = False
         self.currentSearchInfo = {"title": "Initializing"}
 
-        self._resetPI()
+        self._reset_pi()
 
-    def _resetPI(self):
+    def _reset_pi(self):
         self.percentDone = 0
         self.currentSearchInfo = {"title": "Initializing"}
 
@@ -88,7 +88,7 @@ class BacklogSearcher(object):
             self._set_lastBacklog(curDate)
 
         self.amActive = False
-        self._resetPI()
+        self._reset_pi()
 
     def _get_lastBacklog(self):
         logger.debug("Retrieving the last check time from the DB")

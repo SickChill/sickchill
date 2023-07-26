@@ -184,10 +184,14 @@ class TVDB(Indexer):
             return location
         return f'https://artworks.thetvdb.com/banners/{re.sub(r"^_cache/", "", location)}'
 
-    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError), image_api=True)
+    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, requests.exceptions.HTTPError, KeyError, Exception), image_api=True)
     def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None, multiple=False):
         api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
-        images = getattr(api_results, keyType)(lang or show.lang)
+        try:
+            images = getattr(api_results, keyType)(lang or show.lang)
+        except:
+            return [] if multiple else ""
+
         images = sorted(images, key=lambda img: img["ratingsInfo"]["average"], reverse=True)
         return [self.complete_image_url(image["fileName"]) for image in images] if multiple else self.complete_image_url(images[0]["fileName"])
 

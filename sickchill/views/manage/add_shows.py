@@ -27,7 +27,7 @@ from sickchill.views.routes import Route
 
 @Route("/addShows(/?.*)", name="addShows")
 class AddShows(Home):
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="addShows.mako")
         return t.render(title=_("Add Shows"), header=_("Add Shows"), topmenu="home", controller="addShows", action="index")
 
@@ -38,12 +38,10 @@ class AddShows(Home):
     def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
-        search_terms = [
-            self.get_body_argument("search_term", strip=True)
-        ]  # get_arguments to make this a list of terms, we can probably add advanced searching here.
-        lang = self.get_body_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
-        indexer = int(self.get_body_argument("indexer", default=settings.INDEXER_DEFAULT, strip=True))
-        exact = config.checkbox_to_value(self.get_body_argument("exact", strip=True))
+        search_terms = [self.get_body_argument("search_term")]  # get_arguments to make this a list of terms, we can probably add advanced searching here.
+        lang = self.get_body_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE)
+        indexer = int(self.get_body_argument("indexer", default=settings.INDEXER_DEFAULT))
+        exact = config.checkbox_to_value(self.get_body_argument("exact"))
 
         # If search term ends with what looks like a year, enclose it in ()
         matches = re.match(r"^(.+ |)([12][0-9]{3})$", search_term)
@@ -229,39 +227,38 @@ class AddShows(Home):
             action="newShow",
         )
 
-    def trendingShows(self, traktList=None):
+    def trendingShows(self):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        if not traktList:
-            traktList = ""
+
+        traktList = self.get_argument("traktList", default="anticipated", strip=True)
+
+        trakt_options = {
+            "anticipated": _("Most Anticipated Shows"),
+            "newshow": _("New Shows"),
+            "newseason": _("Season Premieres"),
+            "trending": _("Trending Shows"),
+            "popular": _("Popular Shows"),
+            "watched": _("Most Watched Shows"),
+            "played": _("Most Played Shows"),
+            "collected": _("Most Collected Shows"),
+        }
+        if settings.TRAKT_ACCESS_TOKEN:
+            trakt_options["recommended"] = _("Recommended Shows")
 
         traktList = traktList.lower()
 
-        if traktList == "trending":
-            page_title = _("Trending Shows")
-        elif traktList == "popular":
-            page_title = _("Popular Shows")
-        elif traktList == "anticipated":
-            page_title = _("Most Anticipated Shows")
-        elif traktList == "collected":
-            page_title = _("Most Collected Shows")
-        elif traktList == "watched":
-            page_title = _("Most Watched Shows")
-        elif traktList == "played":
-            page_title = _("Most Played Shows")
-        elif traktList == "recommended":
-            page_title = _("Recommended Shows")
-        elif traktList == "newshow":
-            page_title = _("New Shows")
-        elif traktList == "newseason":
-            page_title = _("Season Premieres")
-        else:
-            page_title = _("Most Anticipated Shows")
-
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
-        return t.render(title=page_title, header=page_title, enable_anime_options=False, traktList=traktList, controller="addShows", action="trendingShows")
+        return t.render(
+            title=trakt_options[traktList],
+            header=trakt_options[traktList],
+            traktList=traktList,
+            trakt_options=trakt_options,
+            controller="addShows",
+            action="trendingShows",
+        )
 
     def getTrendingShows(self, traktList=None):
         """
@@ -303,8 +300,8 @@ class AddShows(Home):
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
-    @staticmethod
-    def getTrendingShowImage(indexerId):
+    def getTrendingShowImage(self):
+        indexerId = self.get_body_argument("indexerId")
         image_url = sickchill.indexer.series_poster_url_by_id(indexerId)
         if image_url:
             image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexerId))
@@ -392,41 +389,32 @@ class AddShows(Home):
         )
 
     def addShowByID(self):
-        indexer_id = self.get_query_argument("indexer_id", strip=True)
-        show_name = self.get_query_argument("show_name", strip=True)
-        indexer = self.get_query_argument("indexer", default="TVDB", strip=True)
+        indexer_id = self.get_query_argument("indexer_id")
+        show_name = self.get_query_argument("show_name")
+        indexer = self.get_query_argument("indexer", default="TVDB")
 
         def add_error(existing: TVShow = None) -> None:
             title = f"Unable to add {show_name}"
-            messages = {
-                "not-found": f"Could not add {show_name} with {indexer_id}. We were unable to locate the tvdb id at this time.",
-                "existing": f"{existing.name} with {existing.indexerid} is already in your show list.",
-            }
-            key = ("not-found", "existing")[bool(existing)]
-            logger.info(" ".join([title, messages[key]]))
-            ui.notifications.error(title, messages[key])
+
+            message = f"Could not add {show_name} with {indexer}:{indexer_id}. We were unable to locate the tvdb id at this time."
+            if existing:
+                message = f"{existing.name} with {existing.indexerid} is already in your show list."
+
+            logger.info(" ".join([title, message]))
+            ui.notifications.error(title, message)
+
+            return self.redirect("/home/")
 
         if indexer != "TVDB":
             indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not indexer_id:
                 return add_error()
 
-        indexer_id = try_int(indexer_id)
         existing = Show.find(settings.showList, indexer_id)
-        if indexer_id <= 0 or existing:
+        if try_int(indexer_id) <= 0 or existing:
             return add_error(existing)
 
-        if settings.ROOT_DIRS:
-            root_dirs = settings.ROOT_DIRS.split("|")
-            location = root_dirs[int(root_dirs[0]) + 1]
-        else:
-            location = None
-
-        if not location:
-            logger.info("There was an error creating the show, no root directory setting found")
-            return _("No root directories are set up, please go back and add one.")
-
-        return self.newShow("|".join([indexer, None, indexer_id, show_name]), [], search_string=show_name)
+        return self.newShow("|".join([1, "", indexer_id, show_name]), [], search_string=show_name)
 
     def addNewShow(
         self,

@@ -16,7 +16,7 @@ class History(WebRoot):
         self.history = HistoryTool()
 
     def index(self):
-        settings.HISTORY_LIMIT = try_int(self.get_query_argument("limit", default=100, strip=True), 100)
+        settings.HISTORY_LIMIT = try_int(self.get_query_argument("limit", default=100), 100)
         sickchill.start.save_config()
 
         compact = []

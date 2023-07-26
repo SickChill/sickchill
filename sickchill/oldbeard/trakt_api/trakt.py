@@ -63,11 +63,11 @@ class TraktAPI:
         if headers is None:
             headers = self.headers
 
-        if settings.TRAKT_ACCESS_TOKEN == "" and count >= 2:
+        if count >= 2 and not settings.TRAKT_ACCESS_TOKEN:
             logger.warning(_("You must get a Trakt TOKEN. Check your Trakt settings"))
             return {}
 
-        if settings.TRAKT_ACCESS_TOKEN != "":
+        if settings.TRAKT_ACCESS_TOKEN:
             headers["Authorization"] = "Bearer " + settings.TRAKT_ACCESS_TOKEN
 
         try:

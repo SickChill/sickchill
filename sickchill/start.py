@@ -766,13 +766,13 @@ def initialize(consoleLogging=True):
         settings.providerList = providers.makeProviderList()
 
         settings.NEWZNAB_DATA = check_setting_str(settings.CFG, "Newznab", "newznab_data")
-        settings.newznabProviderList = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
+        settings.newznab_provider_list = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(settings.CFG, "TorrentRss", "torrentrss_data")
-        settings.torrentRssProviderList = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
+        settings.torrent_rss_provider_list = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
 
         # dynamically load provider settings
-        for curProvider in providers.sortedProviderList():
+        for curProvider in providers.sorted_provider_list():
             curProvider.enabled = (curProvider.can_daily or curProvider.can_backlog) and check_setting_bool(
                 settings.CFG, curProvider.get_id().upper(), curProvider.get_id()
             )
@@ -1089,7 +1089,7 @@ def save_config():
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
-    for curProvider in providers.sortedProviderList():
+    for curProvider in providers.sorted_provider_list():
         new_config[curProvider.get_id().upper()] = {}
         new_config[curProvider.get_id().upper()][curProvider.get_id()] = int(curProvider.enabled)
         if hasattr(curProvider, "custom_url"):
@@ -1597,7 +1597,7 @@ def save_config():
                 "email_subject": settings.EMAIL_SUBJECT,
             },
             "Newznab": {"newznab_data": settings.NEWZNAB_DATA},
-            "TorrentRss": {"torrentrss_data": "!!!".join([x.configStr() for x in settings.torrentRssProviderList])},
+            "TorrentRss": {"torrentrss_data": "!!!".join([x.config_string() for x in settings.torrent_rss_provider_list])},
             "GUI": {
                 "gui_name": settings.GUI_NAME,
                 "language": settings.GUI_LANG,

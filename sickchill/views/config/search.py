@@ -15,7 +15,7 @@ from . import Config
 @Route("/config/search(/?.*)", name="config:search")
 class ConfigSearch(Config):
     @addslash
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="config_search.mako")
 
         return t.render(

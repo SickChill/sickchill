@@ -45,7 +45,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
 
-    def configStr(self):
+    def config_string(self):
         """
         Generates a '|' delimited string of instance attributes, for saving to config.ini
         """

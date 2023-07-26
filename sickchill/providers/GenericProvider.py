@@ -4,12 +4,16 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
+from typing import Callable
 
 from requests.structures import CaseInsensitiveDict
 from requests.utils import add_dict_to_cookiejar
 
 import sickchill.oldbeard
 from sickchill import logger
+
+from sickchill.oldbeard import filters
+
 from sickchill.helper.common import sanitize_filename
 from sickchill.oldbeard.classes import Proper, SearchResult
 from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
@@ -567,3 +571,18 @@ class GenericProvider(object):
             return True, "torrent cookie"
 
         return False, f"No Cookies added from ui for provider: {self.name}"
+
+    def has_option(self, option):
+        return hasattr(self, option)
+
+    def check_set_option(self, view, option, default="", cast: Callable = str, unhide=False):
+        if hasattr(self, option):
+            if view.request.method == "GET":
+                value = view.get_query_argument(self.get_id("_" + option), default=default)
+            if view.request.method == "POST":
+                value = view.get_body_argument(self.get_id("_" + option), default=default)
+
+            if unhide:
+                value = filters.unhide(getattr(self, option), value)
+
+            return setattr(self, option, cast(value))

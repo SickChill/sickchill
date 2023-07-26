@@ -13,7 +13,6 @@ class Provider(TorrentProvider):
         self.supports_backlog = False
 
         self.passkey = None
-        self.options = None
 
         self.cache = ShazbatCache(self, min_time=20)
 

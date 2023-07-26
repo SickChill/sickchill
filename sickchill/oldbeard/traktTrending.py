@@ -23,7 +23,7 @@ class traktTrending(object):
 
         try:
             not_liked_show = ""
-            if settings.TRAKT_ACCESS_TOKEN != "":
+            if settings.TRAKT_ACCESS_TOKEN:
                 library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
                 if settings.TRAKT_BLACKLIST_NAME:
                     not_liked_show = trakt_api.traktRequest("users/" + settings.TRAKT_USERNAME + "/lists/" + settings.TRAKT_BLACKLIST_NAME + "/items") or []
@@ -37,7 +37,7 @@ class traktTrending(object):
 
             shows = trakt_api.traktRequest(page_url + limit_show + "extended=full") or []
 
-            if settings.TRAKT_ACCESS_TOKEN != "":
+            if settings.TRAKT_ACCESS_TOKEN:
                 library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
 
             for show in shows:
@@ -45,18 +45,20 @@ class traktTrending(object):
                     if "show" not in show:
                         show["show"] = show
 
-                    if settings.TRAKT_ACCESS_TOKEN != "":
-                        if show["show"]["ids"]["tvdb"] not in (lshow["show"]["ids"]["tvdb"] for lshow in library_shows):
+                    if settings.TRAKT_ACCESS_TOKEN:
+                        if show["show"]["ids"]["tvdb"] and show["show"]["ids"]["tvdb"] not in (lshow["show"]["ids"]["tvdb"] for lshow in library_shows):
                             if not_liked_show:
                                 if show["show"]["ids"]["tvdb"] not in (nlshow["show"]["ids"]["tvdb"] for nlshow in not_liked_show if nlshow["type"] == "show"):
                                     trending_shows += [show]
-                            else:
+                            elif show["show"]["ids"]["tvdb"]:
                                 trending_shows += [show]
                     else:
                         if not_liked_show:
-                            if show["show"]["ids"]["tvdb"] not in (nlshow["show"]["ids"]["tvdb"] for nlshow in not_liked_show if nlshow["type"] == "show"):
+                            if show["show"]["ids"]["tvdb"] and show["show"]["ids"]["tvdb"] not in (
+                                nlshow["show"]["ids"]["tvdb"] for nlshow in not_liked_show if nlshow["type"] == "show"
+                            ):
                                 trending_shows += [show]
-                        else:
+                        elif show["show"]["ids"]["tvdb"]:
                             trending_shows += [show]
 
                 except MultipleShowObjectsException:

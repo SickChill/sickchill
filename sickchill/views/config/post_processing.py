@@ -16,7 +16,7 @@ from . import Config
 @Route("/config/postProcessing(/?.*)", name="config:postprocessing")
 class ConfigPostProcessing(Config):
     @addslash
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="config_postProcessing.mako")
 
         return t.render(
