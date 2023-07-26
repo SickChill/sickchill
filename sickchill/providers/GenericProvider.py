@@ -11,10 +11,8 @@ from requests.utils import add_dict_to_cookiejar
 
 import sickchill.oldbeard
 from sickchill import logger
-
-from sickchill.oldbeard import filters
-
 from sickchill.helper.common import sanitize_filename
+from sickchill.oldbeard import filters
 from sickchill.oldbeard.classes import Proper, SearchResult
 from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickchill.oldbeard.db import DBConnection

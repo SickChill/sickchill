@@ -2,12 +2,6 @@ import sys
 from random import shuffle
 from typing import List, Union
 
-from sickchill.oldbeard.providers.newznab import NewznabProvider
-from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
-from sickchill.providers.GenericProvider import GenericProvider
-from sickchill.providers.torrent.TorrentProvider import TorrentProvider
-from sickchill.providers.nzb.NZBProvider import NZBProvider
-
 import sickchill.oldbeard.helpers
 from sickchill import settings
 from sickchill.oldbeard.providers import (
@@ -67,6 +61,11 @@ from sickchill.oldbeard.providers import (
     xthor,
     yggtorrent,
 )
+from sickchill.oldbeard.providers.newznab import NewznabProvider
+from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.nzb.NZBProvider import NZBProvider
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 __all__ = [
     "abnormal",

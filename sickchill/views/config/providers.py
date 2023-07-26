@@ -1,5 +1,6 @@
 import json
 import os
+
 from tornado.web import addslash
 
 import sickchill.start
@@ -9,7 +10,6 @@ from sickchill.oldbeard import config, ui
 from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill.providers.GenericProvider import GenericProvider
-
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
