@@ -8,8 +8,8 @@ inc_top.mako
 }
 
 .ui-widget-content {
-    background: #606060;
     border: 1px solid #111111;
+    background: #606060;
     color: #FFFFFF;
 }
 
@@ -23,8 +23,8 @@ inc_top.mako
 }
 
 .ui-widget-header {
-    background: #3D3D3D;
     border: 1px solid #111111;
+    background: #3D3D3D;
     color: #FFFFFF;
 }
 
@@ -73,13 +73,13 @@ inc_top.mako
 
 .ui-tabs {
     padding: 0;
-    background: none;
     border-width: 0;
+    background: none;
 }
 
 .ui-tabs .ui-tabs-panel {
-    background-color: #3D3D3D !important;
     border: 1px solid #111111 !important;
+    background-color: #3D3D3D !important;
 }
 
 .ui-tabs-nav > :not(.ui-tabs-active) {
@@ -113,8 +113,8 @@ home.mako
 }
 
 .progressbarText {
-    text-shadow: 0 0 0.1em #000000;
     color: #FFFFFF;
+    text-shadow: 0 0 0.1em #000000;
 }
 
 .progress-100 {
@@ -157,8 +157,8 @@ home.mako
 }
 
 .show-container, .movie-container {
-    background-color: #333333;
     border-color: #333333;
+    background-color: #333333;
 }
 
 .show-title:after, .movie-title:after {
@@ -202,14 +202,14 @@ home_newShow.mako
 ========================================================================== */
 
 #displayText {
-    background-color: #3D3D3D;
     border: 1px solid #111111;
+    background-color: #3D3D3D;
 }
 
 .new-show-table {
-    color: #FFFFFF !important;
     border-right: 1px solid black;
     border-bottom: 1px solid black;
+    color: #FFFFFF !important;
 }
 
 .new-show-table tr.in-list,
@@ -258,8 +258,8 @@ ul.tags li {
 }
 
 #summary {
-    background-color: #3D3D3D;
     border: 1px solid #111111;
+    background-color: #3D3D3D;
 }
 
 .displayShowTable th.row-seasonheader {
@@ -306,8 +306,8 @@ h2.day, h2.network {
 }
 
 #showListTable td.tvShow a:hover {
-    cursor: pointer;
     color: #09A2FF;
+    cursor: pointer;
 }
 
 table.cal-odd {
@@ -357,13 +357,13 @@ config_postProcessing.mako
 ========================================================================== */
 
 #config div.example {
-    background-color: #333333;
     border: 1px solid #111111;
+    background-color: #333333;
 }
 
 .Key {
-    background-color: #3D3D3D;
     border: 1px solid #111111;
+    background-color: #3D3D3D;
 }
 
 .Key th, .tableHeader {
@@ -383,14 +383,14 @@ config_notifications.mako
 ========================================================================== */
 
 div.metadata_options {
+    border: 1px solid #111111;
     background: #333333;
     color: #FFFFFF;
-    border: 1px solid #111111;
 }
 
 div.metadata_options label:hover {
-    color: #FFFFFF;
     background-color: #15528F;
+    color: #FFFFFF;
 }
 
 div.metadata_options label {
@@ -414,8 +414,8 @@ Global
 ========================================================================== */
 
 span.path {
-    color: #09A2FF;
     background-color: #333333;
+    color: #09A2FF;
 }
 
 /* =======================================================================
@@ -423,23 +423,23 @@ bootstrap Overrides
 ========================================================================== */
 
 body {
-    color: #FFFFFF;
     background-color: #222222;
+    color: #FFFFFF;
 }
 
 pre {
-     color: #FFFFFF;
-     background-color: #3D3D3D;
      border-color: #111111;
+     background-color: #3D3D3D;
+     color: #FFFFFF;
  }
 
 /* navbar styling */
 .navbar-default {
-    background-color: #15528F;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#297AB8', endColorstr='#15528F');
+    border-color: #3E3F3A;
     background: -webkit-gradient(linear, left top, left bottom, from(#297AB8), to(#15528F));
     background: -moz-linear-gradient(top, #297AB8, #15528F);
-    border-color: #3E3F3A;
+    background-color: #15528F;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#297AB8', endColorstr='#15528F');
 }
 
 .navbar-default .navbar-nav > li > a:hover,
@@ -450,8 +450,8 @@ pre {
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
-    color: #FFFFFF;
     background-color: #124477;
+    color: #FFFFFF;
 }
 
 .navbar-default .navbar-toggle:hover,
@@ -474,15 +474,15 @@ pre {
     .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
     .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
     .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
-        color: #FFFFFF;
         background-color: #124477;
+        color: #FFFFFF;
     }
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+    background-color: #15528F;
     color: #FFFFFF;
     text-decoration: none;
-    background-color: #15528F;
 }
 
 .dropdown-menu > li > a {
@@ -491,14 +491,15 @@ pre {
 }
 
 .dropdown-menu {
-    background-color: #333333;
     border: 1px solid rgba(0, 0, 0, 0.15);
+    background-color: #333333;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
 }
 
 .btn {
-    color: #FFFFFF;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
+    border: 1px solid #111111;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    border-color: #111111;
     background-color: #2672B6;
     *background-color: #2672B6;
     background-image: -ms-linear-gradient(top, #297AB8, #15528F);
@@ -507,10 +508,9 @@ pre {
     background-image: -o-linear-gradient(top, #297AB8, #15528F);
     background-image: linear-gradient(top, #297AB8, #15528F);
     background-image: -moz-linear-gradient(top, #297AB8, #15528F);
-    border: 1px solid #111111;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    border-color: #111111;
+    color: #FFFFFF;
     filter: progid:dximagetransform.microsoft.gradient(startColorstr='#297AB8', endColorstr='#15528F', GradientType=0);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
 }
 
 .btn:hover,
@@ -529,10 +529,10 @@ pre {
 }
 
 .btn:hover {
+    background: #2672B6 0 -150px;
+    *background-color: #2672B6;
     color: #FFFFFF;
     text-decoration: none;
-    *background-color: #2672B6;
-    background: #2672B6 0 -150px;
     -webkit-transition: background-position 0.0s linear;
     -moz-transition: background-position 0.0s linear;
     -ms-transition: background-position 0.0s linear;
@@ -546,8 +546,8 @@ pre {
 
 .btn.active,
 .btn:active {
-    background-color: #2672B6 \9;
     background: #2672B6 none;
+    background-color: #2672B6 \9;
     color: #FFFFFF;
 }
 
@@ -568,14 +568,14 @@ browser.css overrides
 
 .fileBrowserDialog ul li {
     margin: 2px 0;
-    list-style-type: none;
-    cursor: pointer;
     background: #333333 !important;
+    cursor: pointer;
+    list-style-type: none;
 }
 
 .fileBrowserDialog ul li a:hover {
-    color: #09A2FF;
     background: none !important;
+    color: #09A2FF;
 }
 
 /* =======================================================================
@@ -608,12 +608,12 @@ pnotify.css
     background-image: linear-gradient(#333333, #3D3D3D) !important;
     background-image: -webkit-linear-gradient(#333333, #3D3D3D) !important;
     background-image: -o-linear-gradient(#333333, #3D3D3D) !important;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr=#333333, endColorstr=#3D3D3D) !important;
-    -ms-filter: progid:dximagetransform.microsoft.gradient(startColorstr=#333333, endColorstr=#3D3D3D) !important;
     -moz-box-shadow: 0 0 2px #000000;
     -webkit-box-shadow: 0 0 2px #000000;
     -o-box-shadow: 0 0 2px #000000;
     box-shadow: 0 0 2px #000000;
+    -ms-filter: progid:dximagetransform.microsoft.gradient(startColorstr=#333333, endColorstr=#3D3D3D) !important;
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr=#333333, endColorstr=#3D3D3D) !important;
 }
 
 .ui-pnotify-title {
@@ -629,8 +629,8 @@ tablesorter.css
 ========================================================================== */
 
 .tablesorter {
-    color: #FFFFFF;
     background-color: transparent;
+    color: #FFFFFF;
 }
 
 .tablesorter th,
@@ -648,12 +648,12 @@ tablesorter.css
 }
 
 .tablesorter th {
-    color: #FFFFFF;
-    text-align: center;
-    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
     background-color: #15528F;
     border-collapse: collapse;
+    color: #FFFFFF;
     font-weight: normal;
+    text-align: center;
+    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
 }
 
 .tablesorter thead .tablesorter-headerDesc {
@@ -680,9 +680,9 @@ thead.tablesorter-stickyHeader {
 
 .tablesorter tr.tablesorter-filter-row,
 .tablesorter tr.tablesorter-filter-row td {
-    text-align: center;
-    background: #333333;
     border-bottom: 1px solid #111111;
+    background: #333333;
+    text-align: center;
 }
 
 /* add extra border at left edge */
@@ -704,11 +704,11 @@ token-input.css
 ========================================================================== */
 
 div.token-input-dropdown {
-    background-color: #FFFFFF;
-    color: #000000;
-    border-left-color: #CCCCCC;
     border-right-color: #CCCCCC;
     border-bottom-color: #CCCCCC;
+    border-left-color: #CCCCCC;
+    background-color: #FFFFFF;
+    color: #000000;
 }
 
 /* =======================================================================
@@ -748,8 +748,8 @@ bootstrap panel
 ========================================================================== */
 
 .panel-default {
-    background-color: #3D3D3D;
     border-color: #111111;
+    background-color: #3D3D3D;
 }
 
 .panel-heading {
@@ -762,24 +762,24 @@ new #confirmBox
 ========================================================================== */
 .modal-dialog {
     position: fixed;
-    text-align: center;
-    width: 100%;
     top: 30%;
+    width: 100%;
     margin: 0 !important;
+    text-align: center;
 }
 
 .modal-content {
+    display: inline-block;
     max-width: 460px;
+    border: 1px solid #111111;
+    border-radius: 0;
     margin: 10px;
     box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.175);
-    border: 1px solid #111111;
-    display: inline-block;
-    border-radius: 0;
 }
 
 .modal-header {
-    border-bottom: none;
     border-radius: 0;
+    border-bottom: none;
 }
 
 .modal-body, .modal-content {
@@ -804,26 +804,26 @@ new #confirmBox
 }
 
 .modal-footer button {
-    margin-right: 15px;
-    padding: 2px 15px;
-    text-decoration: none;
     display: inline-block;
-    color: #FFFFFF;
-    text-align: center;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
-    background-clip: padding-box;
-    border: 1px solid #111111;
-    border-radius: 3px;
-    cursor: pointer;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    padding: 2px 15px;
+    border: 1px solid #111111;
+    border-radius: 3px;
+    margin-right: 15px;
+    background-clip: padding-box;
     background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 51%, rgba(0, 0, 0, 0.25));
     background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 51%, rgba(0, 0, 0, 0.25));
     background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 51%, rgba(0, 0, 0, 0.25));
     background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 51%, rgba(0, 0, 0, 0.25));
     -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.1), inset 0 -1px 3px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.15);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.1), inset 0 -1px 3px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.15);
+    color: #FFFFFF;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
 }
 
 .modal-footer button:last-child {
