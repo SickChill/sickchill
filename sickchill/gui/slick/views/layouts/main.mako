@@ -111,9 +111,6 @@
 
         <%block name="css" />
 
-            <script>
-                console.log('${settings.DATA_DIR}');
-            </script>
         % if settings.CUSTOM_CSS:
             ## TODO: check if this exists first
             <link rel="stylesheet" type="text/css" href="${static_url('ui/custom.css', include_version=False)}" />
