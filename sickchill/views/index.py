@@ -150,7 +150,6 @@ class WebHandler(BaseHandler):
 
     @authenticated
     async def get(self, route, *args, **kwargs):
-
         try:
             # logger.debug(f"Call for {route} with {args} and {kwargs}")
             # logger.debug(f"Call for {route} with args [{self.request.arguments}]")
