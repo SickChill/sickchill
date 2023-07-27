@@ -43,7 +43,7 @@ from .providers import metadata
 from .system.Shutdown import Shutdown
 
 
-def initialize(consoleLogging=True):
+def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool = False, disable_file_logging: bool = False) -> bool:
     with settings.INIT_LOCK:
         if settings.__INITIALIZED__:
             return False
@@ -84,8 +84,8 @@ def initialize(consoleLogging=True):
         settings.DEVELOPER = check_setting_bool(settings.CFG, "General", "developer")
 
         # debugging
-        settings.DEBUG = check_setting_bool(settings.CFG, "General", "debug")
-        settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug")
+        settings.DEBUG = check_setting_bool(settings.CFG, "General", "debug") or debug
+        settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug") or dbdebug
 
         settings.DEFAULT_PAGE = check_setting_str(settings.CFG, "General", "default_page", "home")
         if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
@@ -97,14 +97,14 @@ def initialize(consoleLogging=True):
 
         if settings.LOG_SIZE > 100:
             settings.LOG_SIZE = 10.0
-        fileLogging = True
+        file_logging = not disable_file_logging
 
-        if not helpers.makeDir(settings.LOG_DIR) or not os.access(settings.LOG_DIR, os.W_OK):
+        if file_logging and not (helpers.makeDir(settings.LOG_DIR) and os.access(settings.LOG_DIR, os.W_OK)):
             sys.stderr.write("!!! No log folder or log folder not writable, logging to console only!\n")
-            fileLogging = False
+            file_logging = False
 
         # init logging
-        logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
+        logger.init_logging(console_logging=console_logging, file_logging=file_logging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
 
         # Initializes oldbeard.gh
         setup_github()
@@ -120,10 +120,10 @@ def initialize(consoleLogging=True):
 
         # Check if we need to perform a restore of the cache folder
         try:
-            restoreDir = os.path.join(settings.DATA_DIR, "restore")
-            if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, "cache")):
+            restore_dir = os.path.join(settings.DATA_DIR, "restore")
+            if os.path.exists(restore_dir) and os.path.exists(os.path.join(restore_dir, "cache")):
 
-                def restoreCache(srcDir, dstDir):
+                def restore_cache(srcDir, dstDir):
                     def path_leaf(path):
                         head, tail = os.path.split(path)
                         return tail or os.path.basename(head)
@@ -139,7 +139,7 @@ def initialize(consoleLogging=True):
                     except Exception as er:
                         logger.exception(f"Restore: restoring cache failed: {er}")
 
-                restoreCache(os.path.join(restoreDir, "cache"), settings.CACHE_DIR)
+                restore_cache(os.path.join(restore_dir, "cache"), settings.CACHE_DIR)
         except Exception as error:
             logger.exception(f"Restore: restoring cache failed: {error}")
         finally:

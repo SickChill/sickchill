@@ -12,7 +12,6 @@ from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
 from tornado.concurrent import run_on_executor
-from tornado.gen import coroutine
 from tornado.web import authenticated, HTTPError, RequestHandler
 
 import sickchill.start
@@ -150,14 +149,24 @@ class WebHandler(BaseHandler):
         self.executor = ThreadPoolExecutor(thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
 
     @authenticated
-    @coroutine
-    def get(self, route, *args, **kwargs):
+    async def get(self, route, *args, **kwargs):
+
         try:
+            # logger.debug(f"Call for {route} with {args} and {kwargs}")
             # logger.debug(f"Call for {route} with args [{self.request.arguments}]")
+
             # route -> method obj
             route = route.strip("/").replace(".", "_").replace("-", "_") or "index"
             # logger.debug(f"Route: {route}")
-            method = getattr(self, route)
+            if hasattr(self, route):
+                method = getattr(self, route)
+            else:
+                message = ("404", "Could not find the page you requested")
+                ui.notifications.error(*message)
+                logger.info(", ".join(message))
+                helpers.add_site_message(message[1], tag=", ".join(message), level="danger")
+                return self.redirect("/home/")
+
             from inspect import signature
 
             sig = signature(method)
@@ -165,7 +174,7 @@ class WebHandler(BaseHandler):
                 if len(sig.parameters):
                     logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
-            results = yield self.async_call(method, len(sig.parameters))
+            results = await self.async_call(method, len(sig.parameters))
 
             self.finish(results)
 

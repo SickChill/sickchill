@@ -122,7 +122,7 @@ class SickChill:
 
         settings.NO_RESIZE = args.noresize
         self.console_logging = not (hasattr(sys, "frozen") or args.quiet or args.daemon)
-        self.no_launch = args.nolaunch or args.daemon
+        self.no_launch = args.nolaunch or args.daemon or args.debug
         self.forced_port = args.port
         self.run_as_daemon = args.daemon and platform.system() != "Windows"
 
@@ -168,7 +168,9 @@ class SickChill:
         settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
 
         # Initialize the config and our threads
-        sickchill.start.initialize(consoleLogging=self.console_logging)
+        sickchill.start.initialize(
+            console_logging=self.console_logging, debug=args.debug, dbdebug=args.dbdebug, disable_file_logging=args.no_file_logging or args.debug
+        )
 
         # Get PID
         settings.PID = os.getpid()
@@ -183,7 +185,7 @@ class SickChill:
         if settings.DEVELOPER:
             settings.movie_list = MovieList()
 
-        web_options = {}
+        web_options = {"debug": args.debug}
         if self.forced_port:
             logger.info("Forcing web server to port {port}".format(port=self.forced_port))
             self.start_port = self.forced_port

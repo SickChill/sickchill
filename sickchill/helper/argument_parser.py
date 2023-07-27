@@ -1,6 +1,6 @@
 import os
 import sys
-from argparse import ArgumentParser
+from argparse import ArgumentParser, SUPPRESS
 
 
 class SickChillArgumentParser:
@@ -37,6 +37,10 @@ class SickChillArgumentParser:
             action="store_true",
             help="download the latest stable version and force an " "update (use when you're unable to do so using " "the web ui)",
         )
+
+        self.parser.add_argument("--debug", action="store_true", default=False, help=SUPPRESS)
+        self.parser.add_argument("--dbdebug", action="store_true", default=False, help=SUPPRESS)
+        self.parser.add_argument("--no-file-logging", action="store_true", default=False, help=SUPPRESS)
 
         self.parser.add_argument("--no-update", action="store_true", help="disable the built-in updater")
         self.parser.add_argument("--flask", action="store_true", help="run the flask server")
