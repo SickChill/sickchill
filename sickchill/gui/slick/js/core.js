@@ -16,12 +16,12 @@ function configSuccess() {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
+        window.location.reload();
     });
     $('.config_submitter_refresh').each(function () {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
-        window.location.reload(true);
     });
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');

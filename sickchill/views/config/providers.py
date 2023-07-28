@@ -248,7 +248,7 @@ class ConfigProviders(Config):
             current_provider.check_set_option(self, "sorting", "seeders")
             current_provider.check_set_option(self, "search_mode", "eponly")
 
-            current_provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_int(x, None), -1))
+            current_provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_int(x), -1))
 
         settings.NEWZNAB_DATA = "!!!".join([x.config_string() for x in settings.newznab_provider_list])
         settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
