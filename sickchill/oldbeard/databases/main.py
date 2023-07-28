@@ -15,7 +15,7 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_duplicate_shows()
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
-        # This is setting future skipped episodes to unaired, lets keep them skipped so peope can pre-skip episodes.
+        # This is setting future skipped episodes to unaired, lets keep them skipped so people can pre-skip episodes.
         # Also, this potentially sets skipped episodes back to unaired if the airdate was temporarily incorrectly set by thetvdb
         # Then when the airdate is fixed, it is reset to wanted, even if a file exists, causing a re-download to occur.
         # self.fix_unaired_episodes()

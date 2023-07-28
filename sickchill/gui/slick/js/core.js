@@ -16,7 +16,6 @@ function configSuccess() {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
-        window.location.href = scRoot + '/config/providers/';
     });
     $('.config_submitter_refresh').each(function () {
         $(this).removeAttr('disabled');
