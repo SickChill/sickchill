@@ -195,7 +195,7 @@ class AddShows(Home):
         elif search_string:
             default_show_name = search_string
         else:
-            default_show_name = show_name
+            default_show_name = ""
 
         # carry a list of other dirs if given
         if not other_shows:
@@ -443,12 +443,15 @@ class AddShows(Home):
         provided then it forwards back to newShow, if not it goes to /home.
         """
 
+        logger.debug(f"indexerLang {indexerLang}")
         indexerLang = self.get_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
+        logger.debug(f"indexerLang {indexerLang}")
 
         # grab our list of other dirs if given
         other_shows = self.get_arguments("other_shows", strip=True)
         whichSeries = self.get_argument("whichSeries", strip=True)
         fullShowPath = self.get_argument("fullShowPath", default=None, strip=True)
+        logger.debug(f"addNewShow {whichSeries} o:{other_shows} p:{fullShowPath}")
 
         def finishAddShow():
             # if there are no extra shows then go home
