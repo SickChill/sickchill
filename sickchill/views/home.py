@@ -987,7 +987,7 @@ class Home(WebRoot):
         dvdorder=None,
         indexerLang=None,
         subtitles=None,
-        subtitles_sr_metadata=None,
+        subtitles_sc_metadata=None,
         rls_ignore_words=None,
         rls_require_words=None,
         rls_prefer_words=None,
@@ -1081,7 +1081,7 @@ class Home(WebRoot):
         sports = config.checkbox_to_value(sports)
         anime = config.checkbox_to_value(anime)
         subtitles = config.checkbox_to_value(subtitles)
-        subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
+        subtitles_sc_metadata = config.checkbox_to_value(subtitles_sc_metadata)
 
         if indexerLang and indexerLang in show_obj.idxr.languages:
             indexer_lang = indexerLang
@@ -1201,7 +1201,7 @@ class Home(WebRoot):
             show_obj.anime = anime
             show_obj.sports = sports
             show_obj.subtitles = subtitles
-            show_obj.subtitles_sr_metadata = subtitles_sr_metadata
+            show_obj.subtitles_sc_metadata = subtitles_sc_metadata
             show_obj.air_by_date = air_by_date
             show_obj.default_ep_status = int(defaultEpStatus)
             # words added to mass update so moved from directCall to here.

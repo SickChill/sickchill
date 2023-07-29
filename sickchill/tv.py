@@ -105,7 +105,7 @@ class TVShow(object):
     paused = DirtySetter(0)
     air_by_date = DirtySetter(0)
     subtitles = DirtySetter(int(settings.SUBTITLES_DEFAULT))
-    subtitles_sr_metadata = DirtySetter(0)
+    subtitles_sc_metadata = DirtySetter(0)
     dvdorder = DirtySetter(0)
     lang = DirtySetter("en")
     last_update_indexer = DirtySetter(1)
@@ -753,7 +753,7 @@ class TVShow(object):
             if self.is_anime:
                 self.release_groups = BlackAndWhiteList(self.indexerid)
 
-            self.subtitles_sr_metadata = int(sql_results[0]["sub_use_sr_metadata"] or 0)
+            self.subtitles_sc_metadata = int(sql_results[0]["sub_use_sr_metadata"] or 0)
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
@@ -1143,7 +1143,7 @@ class TVShow(object):
             "rls_require_words": self.rls_require_words,
             "rls_prefer_words": self.rls_prefer_words,
             "default_ep_status": self.default_ep_status,
-            "sub_use_sr_metadata": self.subtitles_sr_metadata,
+            "sub_use_sr_metadata": self.subtitles_sc_metadata,
         }
 
         main_db_con = db.DBConnection()

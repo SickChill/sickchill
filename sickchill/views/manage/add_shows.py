@@ -427,7 +427,7 @@ class AddShows(Home):
         bestQualities=None,
         season_folders=None,
         subtitles=None,
-        subtitles_sr_metadata=None,
+        subtitles_sc_metadata=None,
         fullShowPath=None,
         other_shows=None,
         skipShow=None,
@@ -534,7 +534,7 @@ class AddShows(Home):
         anime = config.checkbox_to_value(anime)
         season_folders = config.checkbox_to_value(season_folders)
         subtitles = config.checkbox_to_value(subtitles)
-        subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
+        subtitles_sc_metadata = config.checkbox_to_value(subtitles_sc_metadata)
 
         if whitelist:
             whitelist = short_group_names(whitelist)
@@ -561,7 +561,7 @@ class AddShows(Home):
             season_folders=season_folders,
             lang=indexerLang,
             subtitles=subtitles,
-            subtitles_sr_metadata=subtitles_sr_metadata,
+            subtitles_sc_metadata=subtitles_sc_metadata,
             anime=anime,
             scene=scene,
             paused=None,
