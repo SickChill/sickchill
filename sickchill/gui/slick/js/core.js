@@ -4275,7 +4275,7 @@ const SICKCHILL = {
                             const shows = [];
 
                             $.each(data.results, (index, object) => {
-                                const whichSeries = object.join('|').replaceAll(/"/, '');
+                                const whichSeries = object.join('|').replaceAll(/"/g, '');
 
                                 const show = {
                                     obj: whichSeries,
