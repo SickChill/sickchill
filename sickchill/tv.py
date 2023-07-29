@@ -13,6 +13,7 @@ from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
 import imdb
+from imdb import Cinemagoer
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
@@ -811,6 +812,9 @@ class TVShow(object):
             self.imdb_id = ""
 
     def load_imdb_info(self):
+        # TODO: Create shows only database from s3 datasets, possibly distributable from sickchill.github.io until they are integrated into sickindexer
+        client = Cinemagoer()
+
         try:
             # Check that the imdb_id we have is valid for searching
             self.check_imdb_id()
@@ -827,9 +831,6 @@ class TVShow(object):
                             attempts.add(f"{name} ({self.startyear})".strip('" '))
                         # then bare name, without year
                         attempts.add(name.strip('" '))
-
-                # TODO: Create shows only database from s3 datasets, possibly distributable from sickchill.github.io until they are integrated into sickindexer
-                client = imdb.IMDb()
 
                 for attempt in attempts:
                     logger.debug(f"{self.indexerid}: searching IMDb with {attempt}")
