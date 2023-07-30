@@ -182,9 +182,11 @@ class AddShows(Home):
         t = PageTemplate(rh=self, filename="addShows_newShow.mako")
 
         indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
+        logger.debug(f'newShow1 {indexer}, {show_dir}, {indexer_id}, {show_name}')
 
         if indexer_id and indexer and show_name:
             use_provided_info = True
+            logger.debug(f'newShow 2 Proven all')
         else:
             use_provided_info = False
 
@@ -207,6 +209,7 @@ class AddShows(Home):
         provided_indexer_name = show_name
 
         provided_indexer = int(indexer or settings.INDEXER_DEFAULT)
+        logger.debug(f'newShow3 {provided_indexer}, {show_dir}, {provided_indexer_id}, {provided_indexer_name}')
 
         return t.render(
             enable_anime_options=True,
@@ -414,7 +417,7 @@ class AddShows(Home):
         if try_int(indexer_id) <= 0 or existing:
             return add_error(existing)
 
-        return self.newShow("|".join([1, "", indexer_id, show_name]), [], search_string=show_name)
+        return self.newShow("|".join([str(1), "", indexer_id, show_name]), [], search_string=show_name)
 
     def addNewShow(
         self,
