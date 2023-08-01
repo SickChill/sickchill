@@ -182,11 +182,9 @@ class AddShows(Home):
         t = PageTemplate(rh=self, filename="addShows_newShow.mako")
 
         indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
-        logger.debug(f'newShow1 {indexer}, {show_dir}, {indexer_id}, {show_name}')
 
         if indexer_id and indexer and show_name:
             use_provided_info = True
-            logger.debug(f'newShow 2 Proven all')
         else:
             use_provided_info = False
 
@@ -209,7 +207,6 @@ class AddShows(Home):
         provided_indexer_name = show_name
 
         provided_indexer = int(indexer or settings.INDEXER_DEFAULT)
-        logger.debug(f'newShow3 {provided_indexer}, {show_dir}, {provided_indexer_id}, {provided_indexer_name}')
 
         return t.render(
             enable_anime_options=True,
@@ -446,15 +443,12 @@ class AddShows(Home):
         provided then it forwards back to newShow, if not it goes to /home.
         """
 
-        logger.debug(f"indexerLang {indexerLang}")
         indexerLang = self.get_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
-        logger.debug(f"indexerLang {indexerLang}")
 
         # grab our list of other dirs if given
         other_shows = self.get_arguments("other_shows", strip=True)
         whichSeries = self.get_argument("whichSeries", strip=True)
         fullShowPath = self.get_argument("fullShowPath", default=None, strip=True)
-        logger.debug(f"addNewShow {whichSeries} o:{other_shows} p:{fullShowPath}")
 
         def finishAddShow():
             # if there are no extra shows then go home
