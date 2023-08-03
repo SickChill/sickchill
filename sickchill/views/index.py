@@ -163,7 +163,7 @@ class WebHandler(BaseHandler):
                 message = ("404", "Could not find the page you requested")
                 ui.notifications.error(*message)
                 logger.info(", ".join(message))
-                helpers.add_site_message(message[1], tag=", ".join(message), level="danger")
+                helpers.add_site_message(", ".join(message), tag=message[0], level="danger")
                 return self.redirect("/home/")
 
             from inspect import signature

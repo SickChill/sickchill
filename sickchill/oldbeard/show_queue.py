@@ -413,19 +413,19 @@ class QueueItemAdd(ShowQueueItem):
 
         try:
             try:
-                newShow = TVShow(self.indexer, self.indexer_id, self.lang)
+                new_show = TVShow(self.indexer, self.indexer_id, self.lang)
             except MultipleShowObjectsException as error:
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
                 existing_show = Show.find(settings.showList, self.indexer_id)
                 # noinspection PyProtectedMember
                 if existing_show and not os.path.isdir(existing_show._location):
-                    newShow = existing_show
+                    new_show = existing_show
                 else:
                     raise error
 
-            newShow.loadFromIndexer()
+            new_show.loadFromIndexer()
 
-            self.show = newShow
+            self.show = new_show
 
             # set up initial values
             self.show.location = self.showDir

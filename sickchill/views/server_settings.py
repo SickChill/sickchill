@@ -129,7 +129,7 @@ class SCWebServer(threading.Thread):
         self.app = Application(
             [],
             debug=self.options.get("debug"),
-            autoreload=self.options.get("debug"),
+            autoreload=True,
             gzip=settings.WEB_USE_GZIP,
             cookie_secret=settings.WEB_COOKIE_SECRET,
             login_url=f'{self.options["web_root"]}/login/',
