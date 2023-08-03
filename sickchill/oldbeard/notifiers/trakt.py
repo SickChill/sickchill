@@ -65,7 +65,7 @@ class Notifier(object):
                 logger.warning(f"Could not connect to Trakt service: {error}")
 
     @staticmethod
-    def update_watchlist(show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
+    def update_watchlist(show_obj=None, season=None, episode=None, data_show=None, data_episode=None, update="add"):
         """
         Sends a request to trakt indicating that the given episode is part of our library.
 
@@ -74,16 +74,16 @@ class Notifier(object):
         e: episode number
         data_show: structured object of shows trakt type
         data_episode: structured object of episodes trakt type
-        update: type o action add or remove
+        update: type of action add or remove
         """
 
         trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
-        if settings.USE_TRAKT:
+        if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST:
             data = {}
             try:
                 # URL parameters
-                if show_obj is not None:
+                if show_obj:
                     data = {
                         "shows": [
                             {
@@ -93,28 +93,28 @@ class Notifier(object):
                             }
                         ]
                     }
-                elif data_show is not None:
+                elif data_show:
                     data.update(data_show)
                 else:
                     logger.warning("there's a coding problem contact developer. It's needed to be provided at lest one of the two: data_show or show_obj")
                     return False
 
-                if data_episode is not None:
+                if data_episode:
                     data["shows"][0].update(data_episode)
 
-                elif s is not None:
+                elif season:
                     # trakt URL parameters
                     season = {
                         "season": [
                             {
-                                "number": s,
+                                "number": season,
                             }
                         ]
                     }
 
-                    if e is not None:
+                    if episode:
                         # trakt URL parameters
-                        episode = {"episodes": [{"number": e}]}
+                        episode = {"episodes": [{"number": episode}]}
 
                         season["season"][0].update(episode)
 
@@ -180,7 +180,7 @@ class Notifier(object):
         try:
             trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
             trakt_api.validateAccount()
-            if blacklist_name and blacklist_name is not None:
+            if blacklist_name:
                 trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
                 found = False
                 for trakt_list in trakt_lists:

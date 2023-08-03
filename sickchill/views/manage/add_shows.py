@@ -456,11 +456,11 @@ class AddShows(Home):
                 return self.redirect("/home/")
 
             # peel off the next one
-            next_show_dir = other_shows[0]
-            rest_of_show_dirs = other_shows[1:]
+            next_show = other_shows[0]
+            remaining_shows = other_shows[1:]
 
             # go to add the next show
-            return self.newShow(next_show_dir, rest_of_show_dirs)
+            return self.newShow(next_show, remaining_shows)
 
         # if we're skipping then behave accordingly
         if skipShow:
@@ -575,11 +575,17 @@ class AddShows(Home):
     def split_extra_show(extra_show):
         if not extra_show:
             return None, None, None, None
+
         split_vals = extra_show.split("|")
-        if len(split_vals) < 4:
+        if len(split_vals) == 1:
+            indexer = settings.INDEXER_DEFAULT
+            show_dir = split_vals[0]
+            return indexer, show_dir, None, None
+        elif len(split_vals) < 4:
             indexer = split_vals[0]
             show_dir = split_vals[1]
             return indexer, show_dir, None, None
+
         indexer = split_vals[0]
         show_dir = split_vals[1]
         indexer_id = split_vals[2]
@@ -587,7 +593,7 @@ class AddShows(Home):
 
         return indexer, show_dir, indexer_id, show_name
 
-    def addExistingShows(self, shows_to_add, promptForSettings, **kwargs):
+    def addExistingShows(self):
         """
         Receives a dir list and add them. Adds the ones with given TVDB IDs first, then forwards
         along to the newShow page.

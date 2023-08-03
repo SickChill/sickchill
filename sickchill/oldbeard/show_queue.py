@@ -520,10 +520,10 @@ class QueueItemAdd(ShowQueueItem):
 
         if settings.USE_TRAKT:
             # if there are specific episodes that need to be added by trakt
-            settings.traktCheckerScheduler.action.manageNewShow(self.show)
+            settings.traktCheckerScheduler.action.check_new_show(self.show)
             # add show to trakt.tv library
             if settings.TRAKT_SYNC:
-                settings.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
+                settings.traktCheckerScheduler.action.add_show_to_trakt_library(self.show)
 
             if settings.TRAKT_SYNC_WATCHLIST:
                 logger.info("update watchlist")
@@ -720,7 +720,7 @@ class QueueItemRemove(ShowQueueItem):
 
         if settings.USE_TRAKT:
             try:
-                settings.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
+                settings.traktCheckerScheduler.action.remove_show_from_trakt_library(self.show)
             except Exception as error:
                 logger.warning(_("Unable to delete show from Trakt: {show_name}. Error: {error}").format(show_name=self.show.name, error=error))
 
