@@ -242,7 +242,7 @@ class Provider(TorrentProvider):
         if int(episodes[0]["count"]) == len(parse_result.episode_numbers):
             return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, age=0, episode_object=None):
         results = []
         if not self.login():
             return results

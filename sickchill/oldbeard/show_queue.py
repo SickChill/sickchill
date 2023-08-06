@@ -423,7 +423,7 @@ class QueueItemAdd(ShowQueueItem):
                 else:
                     raise error
 
-            new_show.loadFromIndexer()
+            new_show.load_from_indexer()
 
             self.show = new_show
 
@@ -602,7 +602,7 @@ class QueueItemRename(ShowQueueItem):
             # Only want to rename if we have a location
             if cur_ep_obj.location:
                 # do we have one of multi-episodes in the rename list already
-                for cur_related_ep in cur_ep_obj.relatedEps + [cur_ep_obj]:
+                for cur_related_ep in cur_ep_obj.related_episodes + [cur_ep_obj]:
                     if cur_related_ep in ep_obj_rename_list:
                         break
                 else:
@@ -644,7 +644,7 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.debug(f"Retrieving show info from {self.show.idxr.name}")
         try:
-            self.show.loadFromIndexer()
+            self.show.load_from_indexer()
         except Exception as error:
             logger.warning(f"Unable to contact {self.show.idxr.name}, aborting: {error}")
             super(QueueItemUpdate, self).finish()
@@ -726,9 +726,9 @@ class QueueItemRemove(ShowQueueItem):
 
         # If any notification fails, don't stop removal
         try:
-            # TODO: ep_obj is undefined here, so all of these will fail.
+            # TODO: episode_object is undefined here, so all of these will fail.
             # send notifications
-            # notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+            # notifiers.notify_download(episode_object._format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(self.show.name)

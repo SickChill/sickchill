@@ -25,7 +25,7 @@ class Provider(TorrentProvider):
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, episode_object=None):
         results = []
         search_params = {"imdb_id": None, "page": 1, "limit": 100}
 

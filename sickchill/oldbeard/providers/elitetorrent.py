@@ -23,9 +23,9 @@ class Provider(TorrentProvider):
 
         self.url = self.urls["base_url"]
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, episode_object=None):
         results = []
-        lang_info = "" if not ep_obj or not ep_obj.show else ep_obj.show.lang
+        lang_info = "" if not episode_object or not episode_object.show else episode_object.show.lang
 
         """
         Search query:

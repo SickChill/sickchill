@@ -61,7 +61,7 @@ class PS3Metadata(generic.GenericMetadata):
     def get_show_file_path(self, show_obj):
         pass
 
-    def create_episode_metadata(self, ep_obj):
+    def create_episode_metadata(self, episode_object):
         pass
 
     def create_fanart(self, show_obj):
@@ -73,7 +73,7 @@ class PS3Metadata(generic.GenericMetadata):
     def create_season_posters(self, show_obj):
         pass
 
-    def create_season_banners(self, ep_obj):
+    def create_season_banners(self, episode_object):
         pass
 
     def create_season_all_poster(self, show_obj):
@@ -83,15 +83,15 @@ class PS3Metadata(generic.GenericMetadata):
         pass
 
     @staticmethod
-    def get_episode_thumb_path(ep_obj):
+    def get_episode_thumb_path(episode_object):
         """
         Returns the path where the episode thumbnail should be stored. Defaults to
         the same path as the episode file but with a .cover.jpg extension.
 
-        ep_obj: a TVEpisode instance for which to create the thumbnail
+        episode_object: a TVEpisode instance for which to create the thumbnail
         """
-        if os.path.isfile(ep_obj.location):
-            tbn_filename = ep_obj.location + ".cover.jpg"
+        if os.path.isfile(episode_object.location):
+            tbn_filename = episode_object.location + ".cover.jpg"
         else:
             return None
 

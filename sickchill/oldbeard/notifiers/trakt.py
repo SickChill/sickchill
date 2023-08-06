@@ -24,11 +24,11 @@ class Notifier(object):
         pass
 
     @staticmethod
-    def update_library(ep_obj):
+    def update_library(episode_object):
         """
         Sends a request to trakt indicating that the given episode is part of our library.
 
-        ep_obj: The TVEpisode object to add to trakt
+        episode_object: The TVEpisode object to add to trakt
         """
 
         trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
@@ -39,9 +39,9 @@ class Notifier(object):
                 data = {
                     "shows": [
                         {
-                            "title": ep_obj.show.name,
-                            "year": ep_obj.show.startyear,
-                            "ids": {ep_obj.idxr.slug: ep_obj.show.indexerid},
+                            "title": episode_object.show.name,
+                            "year": episode_object.show.startyear,
+                            "ids": {episode_object.idxr.slug: episode_object.show.indexerid},
                         }
                     ]
                 }
@@ -50,9 +50,9 @@ class Notifier(object):
                     trakt_api.traktRequest("sync/watchlist/remove", data, method="POST")
 
                 # Add Season and Episode + Related Episodes
-                data["shows"][0]["seasons"] = [{"number": ep_obj.season, "episodes": []}]
+                data["shows"][0]["seasons"] = [{"number": episode_object.season, "episodes": []}]
 
-                for relEp_Obj in [ep_obj] + ep_obj.relatedEps:
+                for relEp_Obj in [episode_object] + episode_object.related_episodes:
                     data["shows"][0]["seasons"][0]["episodes"].append({"number": relEp_Obj.episode})
 
                 if settings.TRAKT_SYNC_WATCHLIST and settings.TRAKT_REMOVE_WATCHLIST:

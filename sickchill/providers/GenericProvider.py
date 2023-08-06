@@ -153,7 +153,7 @@ class GenericProvider(object):
                 search_strings = self.get_episode_search_strings(episode)
 
             for search_string in search_strings:
-                items_list += self.search(search_string, ep_obj=episode)
+                items_list += self.search(search_string, episode_object=episode)
 
         if len(results) == len(episodes):
             return results
@@ -395,7 +395,7 @@ class GenericProvider(object):
     def login(self):
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, age=0, episode_object=None):
         return []
 
     def _get_result(self, episodes):

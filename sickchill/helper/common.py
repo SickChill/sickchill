@@ -399,12 +399,13 @@ def episode_num(season=None, episode=None, **kwargs):
 
     numbering = kwargs.pop("numbering", "standard")
 
-    if numbering == "standard":
-        if season is not None and episode:
-            return "S{0:0>2}E{1:02}".format(season, episode)
-    elif numbering == "absolute":
-        if not (season and episode) and (season or episode):
-            return "{0:0>3}".format(season or episode)
+    if season or episode:
+        if numbering == "standard":
+            if season is not None and episode is not None:
+                return f"S{season:02}E{episode:02}"
+        elif numbering == "absolute":
+            if episode is None:
+                return f"{season:03}"
 
 
 def setup_github():

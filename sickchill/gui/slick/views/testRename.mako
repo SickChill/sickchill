@@ -77,27 +77,25 @@
                             <tbody>
                             % for current_episode in sorted(show.episodes[current_season], reverse=True):
                                 <%
-                                    ep_obj = show.episodes[current_season][current_episode]
-                                    if not (ep_obj and ep_obj._location):
+                                    episode_object = show.episodes[current_season][current_episode]
+                                    if not (episode_object and episode_object._location):
                                         continue
 
-                                    epStr = str(ep_obj.season) + "x" + str(ep_obj.episode)
-
-                                    epList = sorted([ep_obj.episode] + [x.episode for x in ep_obj.relatedEps])
-                                    if ep_obj.episode != min(epList):
+                                    epList = sorted([episode_object.episode] + [x.episode for x in episode_object.related_episodes])
+                                    if episode_object.episode != min(epList):
                                         continue
 
                                     if len(epList) > 1:
                                         epList = [min(epList), max(epList)]
 
-                                    curLoc = ep_obj.location[len(show._location)+1:]
+                                    curLoc = episode_object.location[len(show._location)+1:]
                                     curExt = curLoc.split('.')[-1]
-                                    newLoc = ep_obj.proper_path() + '.' + curExt
+                                    newLoc = episode_object.proper_path() + '.' + curExt
                                 %>
                                 <tr class="season-${current_season} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
                                     <td class="col-checkbox">
                                         % if curLoc != newLoc:
-                                            <input type="checkbox" class="epCheck" id="${epStr}" name="${epStr}"  title="Episode check"/>
+                                            <input type="checkbox" class="epCheck" id="${episode_object.episode_number}" name="${episode_object.episode_number}"  title="Episode check"/>
                                         % endif
                                     </td>
                                     <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>

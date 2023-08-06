@@ -426,13 +426,13 @@ class TVCache(RSSTorrentMixin):
                 [self.provider_id, episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"],
             )
         else:
-            for ep_obj in episode:
+            for episode_object in episode:
                 cl.append(
                     [
                         "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ? AND quality IN ("
-                        + ",".join([str(x) for x in ep_obj.wantedQuality])
+                        + ",".join([str(x) for x in episode_object.wantedQuality])
                         + ")",
-                        [self.provider_id, ep_obj.show.indexerid, ep_obj.season, "%|" + str(ep_obj.episode) + "|%"],
+                        [self.provider_id, episode_object.show.indexerid, episode_object.season, "%|" + str(episode_object.episode) + "|%"],
                     ]
                 )
 
@@ -475,7 +475,7 @@ class TVCache(RSSTorrentMixin):
                 logger.debug("Ignoring " + cur_result["name"])
                 continue
 
-            ep_obj = show_obj.getEpisode(cur_season, cur_ep)
+            episode_object = show_obj.getEpisode(cur_season, cur_ep)
 
             # build a result object
             title = cur_result["name"]
@@ -483,7 +483,7 @@ class TVCache(RSSTorrentMixin):
 
             logger.info("Found result " + title + " at " + url)
 
-            result = self.provider.get_result([ep_obj])
+            result = self.provider.get_result([episode_object])
             result.show = show_obj
             result.url = url
             result.name = title
@@ -493,10 +493,10 @@ class TVCache(RSSTorrentMixin):
             result.content = None
 
             # add it to the list
-            if ep_obj not in needed_eps:
-                needed_eps[ep_obj] = [result]
+            if episode_object not in needed_eps:
+                needed_eps[episode_object] = [result]
             else:
-                needed_eps[ep_obj].append(result)
+                needed_eps[episode_object].append(result)
 
         # datetime stamp this search so cache gets cleared
         self.set_last_search()
