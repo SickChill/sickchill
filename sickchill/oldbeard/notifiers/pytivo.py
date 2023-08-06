@@ -27,7 +27,7 @@ class Notifier(object):
     def update_library(episode_object):
         # Values from config
 
-        if not settings.USE_PYTIVO and settings.PYTIVO_HOST:
+        if not (settings.USE_PYTIVO and settings.PYTIVO_HOST):
             return False
 
         # There are two more values required, the container and file.

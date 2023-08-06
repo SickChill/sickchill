@@ -1213,7 +1213,7 @@ class Home(WebRoot):
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
 
-            location = os.path.normpath(self.get_argument(location))
+            location = os.path.normpath(self.get_argument("location", strip=True))
 
             # noinspection PyProtectedMember
             old_location = os.path.normpath(show_obj._location)
@@ -1447,13 +1447,14 @@ class Home(WebRoot):
 
                 logger.debug(f"Attempting to set status of {show} episode {cur_ep} to {status}")
 
-                epInfo = cur_ep.split("x")
+                # if mako changes from epStr to episode_object.episode_number see line 1600
+                ep_info = cur_ep.split("x")
 
-                if not all(epInfo):
-                    logger.debug(f"Something went wrong when trying to setStatus, {episode_num(*epInfo)}")
+                if not all(ep_info):
+                    logger.debug(f"Something went wrong when trying to setStatus, {episode_num(*ep_info)}")
                     continue
 
-                episode_object = show_obj.getEpisode(epInfo[0], epInfo[1])
+                episode_object = show_obj.getEpisode(ep_info[0], ep_info[1])
 
                 if not episode_object:
                     return self._genericMessage(_("Error"), _("Episode couldn't be retrieved"))
@@ -1596,20 +1597,20 @@ class Home(WebRoot):
 
         main_db_con = db.DBConnection()
         for cur_ep in eps.split("|"):
-            epInfo = cur_ep.split("x")
+            ep_info = cur_ep.split("x")
 
             # this is probably the worst possible way to deal with double eps but I've kinda painted myself into a corner here with this stupid database
             ep_result = main_db_con.select(
-                "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5", [show, epInfo[0], epInfo[1]]
+                "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5", [show, ep_info[0], ep_info[1]]
             )
             if not ep_result:
-                logger.warning("Unable to find an episode for " + cur_ep + ", skipping")
+                logger.warning(f"Unable to find an episode for {show}: {cur_ep} , skipping")
                 continue
             related_eps_result = main_db_con.select(
-                "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?", [ep_result[0]["location"], epInfo[1]]
+                "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?", [ep_result[0]["location"], ep_info[1]]
             )
 
-            root_ep_obj = show_obj.getEpisode(epInfo[0], epInfo[1])
+            root_ep_obj = show_obj.getEpisode(ep_info[0], ep_info[1])
             root_ep_obj.related_episodes = []
 
             for cur_related_ep in related_eps_result:
