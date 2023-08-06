@@ -1638,7 +1638,7 @@ class Home(WebRoot):
         #     manual_snatch=('sponly', 'eponly')[episode is not None]
         # )
 
-        if episode:
+        if episode is not None:
             results = cache_db_con.select(
                 "SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC",
                 [show, season, f"%|{episode}|%", FAILED],

@@ -315,7 +315,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
             embedded_subtitles = bool(not settings.EMBEDDED_SUBTITLES_ALL and video_path.endswith(".mkv"))
 
         # Let sickchill add more information to video file, based on the metadata.
-        if episode:
+        if episode is not None:
             refine_video(video, episode)
 
         subliminal.refine(video, embedded_subtitles=embedded_subtitles)

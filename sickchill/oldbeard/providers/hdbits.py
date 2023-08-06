@@ -100,7 +100,7 @@ class Provider(TorrentProvider):
             # TV Category
         }
 
-        if episode:
+        if episode is not None:
             if show.air_by_date:
                 post_data["tvdb"] = {"id": show.indexerid, "episode": str(episode.airdate).replace("-", "|")}
             elif show.sports:
@@ -110,7 +110,7 @@ class Provider(TorrentProvider):
             else:
                 post_data["tvdb"] = {"id": show.indexerid, "season": episode.scene_season, "episode": episode.scene_episode}
 
-        if season:
+        if season is not None:
             if show.air_by_date or show.sports:
                 post_data["tvdb"] = {
                     "id": show.indexerid,

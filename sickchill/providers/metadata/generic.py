@@ -852,12 +852,12 @@ class GenericMetadata(object):
                     ws=fanart.WS.TV,
                     type=types[img_type],
                     sort=fanart.SORT.POPULAR,
-                    limit=(fanart.LIMIT.ONE, fanart.LIMIT.ALL)[season is not None],
+                    limit=(fanart.LIMIT.ONE, fanart.LIMIT.ALL)[season is None],
                 )
 
                 resp = request.response()
                 results = resp[types[img_type]]
-                if season:
+                if season is not None:
                     results = [x for x in results if try_int(x["season"], default_value=None) == season]
 
                 def _to_preview_url(url):

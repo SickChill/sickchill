@@ -65,7 +65,7 @@ class Notifier(object):
                 logger.warning(f"Could not connect to Trakt service: {error}")
 
     @staticmethod
-    def update_watchlist(show_obj=None, season=None, episode=None, data_show=None, data_episode=None, update="add"):
+    def update_watchlist(show_obj=None, data_show=None, data_episode=None, update="add"):
         """
         Sends a request to trakt indicating that the given episode is part of our library.
 
@@ -101,24 +101,6 @@ class Notifier(object):
 
                 if data_episode:
                     data["shows"][0].update(data_episode)
-
-                elif season:
-                    # trakt URL parameters
-                    season = {
-                        "season": [
-                            {
-                                "number": season,
-                            }
-                        ]
-                    }
-
-                    if episode:
-                        # trakt URL parameters
-                        episode = {"episodes": [{"number": episode}]}
-
-                        season["season"][0].update(episode)
-
-                    data["shows"][0].update(season)
 
                 trakt_url = "sync/watchlist"
                 if update == "remove":
