@@ -81,26 +81,23 @@
                                     if not (episode_object and episode_object._location):
                                         continue
 
-                                    epList = sorted([episode_object.episode] + [x.episode for x in episode_object.related_episodes])
-                                    if episode_object.episode != min(epList):
+                                    episode_list = episode_object.sorted_episode_list
+                                    if episode_object.episode != min(episode_list):
                                         continue
 
-                                    if len(epList) > 1:
-                                        epList = [min(epList), max(epList)]
-
-                                    curLoc = episode_object.location[len(show._location)+1:]
-                                    curExt = curLoc.split('.')[-1]
-                                    newLoc = episode_object.proper_path() + '.' + curExt
+                                    location = episode_object.location[len(show._location)+1:]
+                                    extension = location.split('.')[-1]
+                                    new_location = episode_object.proper_path() + '.' + extension
                                 %>
-                                <tr class="season-${current_season} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
+                                <tr class="season-${current_season} ${('wanted', 'good')[location == new_location]} seasonstyle">
                                     <td class="col-checkbox">
-                                        % if curLoc != newLoc:
-                                            <input type="checkbox" class="epCheck" id="${episode_object.episode_number}" name="${episode_object.episode_number}"  title="Episode check"/>
+                                        % if location != new_location:
+                                            <input type="checkbox" class="epCheck" id="${episode_object.x_format}" name="${episode_object.x_format}" title="Episode check"/>
                                         % endif
                                     </td>
-                                    <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>
-                                    <td width="50%" class="col-name">${curLoc}</td>
-                                    <td width="50%" class="col-name">${newLoc}</td>
+                                    <td align="center" valign="top" class="nowrap">${episode_object.dash_format}</td>
+                                    <td width="50%" class="col-name">${location}</td>
+                                    <td width="50%" class="col-name">${new_location}</td>
 
                                 </tr>
                             % endfor

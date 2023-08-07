@@ -1398,6 +1398,26 @@ class TVEpisode(object):
     def episode_number(self):
         return episode_num(self.season, self.episode)
 
+    @property
+    def x_format(self):
+        return f"{self.season}x{self.episode}"
+
+    @property
+    def dash_format(self):
+        return "-".join(map(str, self.sorted_episode_list))
+
+    @property
+    def sorted_episode_list(self):
+        return sorted(set([self.episode] + [x.episode for x in self.related_episodes]))
+
+    @property
+    def min_max_episode_list(self):
+        sorted_list = self.sorted_episode_list
+        if len(sorted_list) == 1:
+            return self.sorted_episode_list
+
+        return [min(sorted_list), max(sorted_list)]
+
     def refreshSubtitles(self):
         """Look for subtitles files and refresh the subtitles property"""
         self.subtitles, save_subtitles = subtitles.refresh_subtitles(self)
