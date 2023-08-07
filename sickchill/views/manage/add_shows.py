@@ -107,7 +107,7 @@ class AddShows(Home):
 
     def massAddTable(self, rootDir=None):
         t = PageTemplate(rh=self, filename="home_massAddTable.mako")
-        root_dirs = self.get_arguments("rootDir", strip=True)
+        root_dirs = self.get_arguments("rootDir")
         if not root_dirs:
             return _("No folders selected.")
 
@@ -233,7 +233,7 @@ class AddShows(Home):
         posts them to addNewShow
         """
 
-        traktList = self.get_argument("traktList", default="anticipated", strip=True)
+        traktList = self.get_argument("traktList", default="anticipated")
 
         trakt_options = {
             "anticipated": _("Most Anticipated Shows"),
@@ -443,12 +443,12 @@ class AddShows(Home):
         provided then it forwards back to newShow, if not it goes to /home.
         """
 
-        indexerLang = self.get_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE, strip=True)
+        indexerLang = self.get_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE)
 
         # grab our list of other dirs if given
-        other_shows = self.get_arguments("other_shows", strip=True)
-        whichSeries = self.get_argument("whichSeries", strip=True)
-        fullShowPath = self.get_argument("fullShowPath", default=None, strip=True)
+        other_shows = self.get_arguments("other_shows")
+        whichSeries = self.get_argument("whichSeries")
+        fullShowPath = self.get_argument("fullShowPath", default=None)
 
         def finishAddShow():
             # if there are no extra shows then go home
@@ -486,7 +486,7 @@ class AddShows(Home):
             show_name = series_pieces[4]
         else:
             # if no indexer was provided use the default indexer set in General settings
-            indexer = int(self.get_argument("providedIndexer", default=settings.INDEXER_DEFAULT, strip=True))
+            indexer = int(self.get_argument("providedIndexer", default=settings.INDEXER_DEFAULT))
             indexer_id = int(whichSeries)
             show_name = os.path.basename(os.path.normpath(fullShowPath))
 
@@ -600,7 +600,7 @@ class AddShows(Home):
         """
 
         # grab a list of other shows to add, if provided
-        shows_to_add = self.get_arguments("shows_to_add", strip=True)
+        shows_to_add = self.get_arguments("shows_to_add")
 
         indexer_id_given = []
         dirs_only = []

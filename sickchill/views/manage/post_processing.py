@@ -30,11 +30,11 @@ class PostProcess(Home):
         **kwargs,
     ):
         mode = kwargs.get("type", proc_type)
-        process_path = self.get_argument("dir", default=self.get_argument("proc_dir", default="", strip=True), strip=True)
+        process_path = self.get_argument("dir", default=self.get_argument("proc_dir", default=""))
         if not process_path:
             return self.redirect("/home/postprocess/")
 
-        release_name = self.get_argument("nzbName", default=None, strip=True)
+        release_name = self.get_argument("nzbName", default=None)
 
         result = settings.postProcessorTaskScheduler.action.add_item(
             process_path,

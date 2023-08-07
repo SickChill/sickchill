@@ -1213,7 +1213,7 @@ class Home(WebRoot):
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
 
-            location = os.path.normpath(self.get_argument("location", strip=True))
+            location = os.path.normpath(self.get_argument("location"))
 
             # noinspection PyProtectedMember
             old_location = os.path.normpath(show_obj._location)
@@ -1313,7 +1313,10 @@ class Home(WebRoot):
         # Don't redirect to the default page, so the user can confirm that the show was deleted
         return self.redirect("/home/")
 
-    def refreshShow(self, show=None, force=False):
+    def refreshShow(self):
+        show = self.get_query_argument("show")
+        force = self.get_query_argument("force", default=False)
+
         error, show = Show.refresh(show, force)
 
         # This is a show validation error
@@ -1328,7 +1331,10 @@ class Home(WebRoot):
 
         return self.redirect(f"/home/displayShow?show={show.indexerid}")
 
-    def updateShow(self, show=None, force=0):
+    def updateShow(self):
+        show = self.get_query_argument("show")
+        force = self.get_query_argument("force", default=False)
+
         if not show:
             return self._genericMessage(_("Error"), _("Invalid show ID"))
 
@@ -1559,11 +1565,10 @@ class Home(WebRoot):
         else:
             return self.redirect("/home/displayShow?show=" + show)
 
-    def testRename(self, show=None):
-        if not show:
-            return self._genericMessage(_("Error"), _("You must specify a show"))
+    def testRename(self):
+        show = self.get_query_argument("show")
 
-        show_obj = Show.find(settings.showList, int(show))
+        show_obj = Show.find(settings.showList, show)
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))

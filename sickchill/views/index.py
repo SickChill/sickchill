@@ -204,12 +204,12 @@ class WebHandler(BaseHandler):
             kwargs = {}
             for arg, value in self.request.arguments.items():
                 if isinstance(value, str):
-                    kwargs[arg] = get_argument(arg, strip=True)
+                    kwargs[arg] = get_argument(arg)
                 elif isinstance(value, list):
                     if len(value) == 1:
-                        kwargs[arg] = get_argument(arg, strip=True)
+                        kwargs[arg] = get_argument(arg)
                     else:
-                        kwargs[arg] = get_arguments(arg, strip=True)
+                        kwargs[arg] = get_arguments(arg)
                 else:
                     raise Exception
             return function(**kwargs)
