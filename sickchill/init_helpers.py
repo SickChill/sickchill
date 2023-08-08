@@ -7,10 +7,7 @@ import sys
 from pathlib import Path
 from typing import Union
 
-try:
-    from importlib.metadata import Distribution, PackageNotFoundError  # noqa
-except ImportError:
-    from importlib_metadata import Distribution, PackageNotFoundError  # noqa
+from importlib.metadata import Distribution, PackageNotFoundError
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)

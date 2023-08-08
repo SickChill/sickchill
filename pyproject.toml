@@ -26,7 +26,6 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10"
@@ -252,7 +251,7 @@ pybabel update
 """
 
 [tool.poetry.dependencies]
-python = ">=3.7.2,<4"
+python = ">=3.8,<4"
 "bencode.py" = "^4.0.0"
 configobj = "^5.0.6"
 greenlet = {version = ">=2.0.0", allow-prereleases = true}
@@ -267,7 +266,7 @@ python-twitter = "^3.5"
 rarfile = "^4.0"
 subliminal = "^2.1.0"
 tmdbsimple = "^2.8.0"
-tornado = "^6.1"
+tornado = "^6.3.2"
 tvdbsimple = "^1.0.6"
 Unidecode = "^1.2.0"
 validators = ">=0.18.2,<0.21.0"
@@ -280,7 +279,7 @@ PyNMA = "^1.0"
 "putio.py" = "^8.7.0"
 profilehooks = "^1.12.0"
 imagesize = "^1.2.0"
-Send2Trash = {version = "^1.5.0", optional = true}
+Send2Trash = ">=1.5.0"
 deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
 new-rtorrent-python = "^1.0.1-alpha.0"
@@ -292,11 +291,9 @@ python-slugify = ">=4.0.1,<9.0.0"
 guessit = "^3.3.1"
 requests = "^2.25.1"
 cinemagoer = ">=2023.05.1"
-babelfish = ">=0.6.0b1"
+babelfish = ">=0.6.0"
 kodipydent-alt = ">=2022.9.3"
 beekeeper-alt = ">=2022.9.3"
 
-# stevedore dropped support for python 3.7
-stevedore = {version = "<=3.5.0", python = "<3.8"}
-importlib-metadata = {version = "<5.0.0", python = "<3.8"}
-cacheyou = "^23.2"
+stevedore = "^5.1.0"
+cachecontrol = "^0.13.1"
