@@ -5,7 +5,6 @@ import re
 from urllib import parse
 
 import rarfile
-from tornado.escape import xhtml_unescape
 
 import sickchill.start
 from sickchill import logger, settings
@@ -533,22 +532,21 @@ def change_process_automatically(process_automatically):
     return True
 
 
-def change_log_dir(log_dir):
+def change_log_dir(log_dir: str = ""):
     """
     Change logs directory
 
     :param log_dir: New logs directory
     :return: True on success, False on failure
     """
-    if log_dir == "":
-        settings.LOG_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
-        return True
+    if log_dir in ("", None):
+        log_dir = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
 
     if os.path.normpath(settings.LOG_DIR) != os.path.normpath(log_dir):
         if helpers.makeDir(os.path.normpath(log_dir)) and os.access(os.path.normpath(log_dir), os.W_OK):
             settings.LOG_DIR = os.path.normpath(log_dir)
-            logger.info(_("Changed logs folder to {directory} sickchill must be restarted for changes de take effect").format(directory=log_dir))
-
+            logger.info(_("Changed logs folder to {directory} and restarting logging").format(directory=log_dir))
+            logger.restart(change_log_dir=True)
         else:
             return False
 
@@ -634,7 +632,7 @@ def clean_url(url):
     """
 
     if url and url.strip():
-        url = xhtml_unescape(url.strip())
+        url = url.strip()
 
         if "://" not in url:
             url = "//" + url
@@ -897,7 +895,7 @@ class ConfigMigrator(object):
     def __init__(self, config_obj):
         """
         Initializes a config migrator that can take the config from the version indicated in the config
-        file up to the version required by SB
+        file up to the version required by SC
         """
 
         self.config_obj = config_obj
@@ -922,7 +920,7 @@ class ConfigMigrator(object):
 
     def migrate_config(self):
         """
-        Calls each successive migration until the config is the same version as SB expects
+        Calls each successive migration until the config is the same version as SC expects
         """
 
         if self.config_version > self.expected_config_version:

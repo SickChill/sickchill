@@ -108,7 +108,7 @@
                         ## Fix
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Choose hour to update shows')}</label>
+                                <label class="component-title">${_('Hour to update shows')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
@@ -124,6 +124,32 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label><b>${_('note')}:</b>&nbsp;${_('minutes are randomized each time SickChill is started')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Days to wait before updating paused and ended shows')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input class="form-control input-sm input75" type="number" name="ended_shows_update_interval" id="ended_shows_update_interval" min="-1" max="365"
+                                               value="${settings.ENDED_SHOWS_UPDATE_INTERVAL}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="ended_shows_update_interval">
+                                            ${_('Paused and Ended shows will only be updated after this many days have passed, if there is an update for the show')}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('note')}:</b>&nbsp;${_('Default 7, daily 0, never -1')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -491,27 +517,6 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Days to wait before updating ended shows')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input class="form-control input-sm input75" type="number" name="ended_shows_update_interval" id="ended_shows_update_interval" min="-1" max="365"
-                                               value="${settings.ENDED_SHOWS_UPDATE_INTERVAL}">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="ended_shows_update_interval">
-                                            ${_('Ended shows will only be updated after this many days have passed, if there is an update for the show')}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Sort with "The", "A", "An"')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -701,7 +706,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('you can try all the features of the API')} <a href="${static_url("apibuilder/", include_version=False)}">${_('here')}</a></label>
+                                        <label>${_('you can try all the features of the API')} <a href="${static_url('apibuilder/', include_version=False)}">${_('here')}</a></label>
                                     </div>
                                 </div>
                             </div>
@@ -940,6 +945,16 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="debug" id="debug" ${('', 'checked="checked"')[bool(settings.DEBUG)]}/>
                                 <label for="debug">${_('enable debug logs')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable database debug')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" name="dbdebug" id="dbdebug" ${('', 'checked="checked"')[bool(settings.DBDEBUG)]}/>
+                                <label for="dbdebug">${_('enable database debug logs')}</label>
                             </div>
                         </div>
 

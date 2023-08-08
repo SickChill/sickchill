@@ -87,7 +87,7 @@ class Notifier(object):
     def test_notify_pms(self, host, username, password, plex_server_token):
         return self.update_library(host=host, username=username, password=password, plex_server_token=plex_server_token, force=True)
 
-    def update_library(self, ep_obj=None, host=None, username=None, password=None, plex_server_token=None, force=False):
+    def update_library(self, episode_object=None, host=None, username=None, password=None, plex_server_token=None, force=False):
         """Handles updating the Plex Media Server host via HTTP API
 
         Plex Media Server currently only supports updating the whole video library and not a specific path.
@@ -109,7 +109,7 @@ class Notifier(object):
             logger.warning("PLEX: Error getting auth token for Plex Media Server, check your settings")
             return False
 
-        file_location = "" if not ep_obj else ep_obj.location
+        file_location = "" if not episode_object else episode_object.location
         host_list = {x.strip() for x in host.split(",") if x.strip()}
         hosts_all = hosts_match = {}
         hosts_failed = set()

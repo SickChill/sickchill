@@ -45,7 +45,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
 
-    def configStr(self):
+    def config_string(self):
         """
         Generates a '|' delimited string of instance attributes, for saving to config.ini
         """
@@ -253,7 +253,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         return new_provider
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, age=0, episode_object=None):
         """
         Searches indexer using the params in search_strings, either for latest releases, or a string/id search
         Returns: list of results in dict form
@@ -284,18 +284,18 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
             if mode != "RSS":
                 if self.use_tv_search:
                     if "tvdbid" in str(self.cap_tv_search):
-                        search_params["tvdbid"] = ep_obj.show.indexerid
+                        search_params["tvdbid"] = episode_object.show.indexerid
 
-                    if ep_obj.show.air_by_date or ep_obj.show.sports:
-                        # date_str = str(ep_obj.airdate)
+                    if episode_object.show.air_by_date or episode_object.show.sports:
+                        # date_str = str(episode_object.airdate)
                         # search_params['season'] = date_str.partition('-')[0]
                         # search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
-                        search_params["q"] = str(ep_obj.airdate)
-                    elif ep_obj.show.is_anime:
-                        search_params["ep"] = ep_obj.absolute_number
+                        search_params["q"] = str(episode_object.airdate)
+                    elif episode_object.show.is_anime:
+                        search_params["ep"] = episode_object.absolute_number
                     else:
-                        search_params["season"] = ep_obj.scene_season
-                        search_params["ep"] = ep_obj.scene_episode
+                        search_params["season"] = episode_object.scene_season
+                        search_params["ep"] = episode_object.scene_episode
 
                 if mode == "Season":
                     search_params.pop("ep", "")

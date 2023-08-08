@@ -24,15 +24,11 @@ class Notifier(object):
         pass
 
     @staticmethod
-    def update_library(ep_obj):
+    def update_library(episode_object):
         # Values from config
 
-        if not settings.USE_PYTIVO:
+        if not (settings.USE_PYTIVO and settings.PYTIVO_HOST):
             return False
-
-        host = settings.PYTIVO_HOST
-        shareName = settings.PYTIVO_SHARE_NAME
-        tsn = settings.PYTIVO_TIVO_NAME
 
         # There are two more values required, the container and file.
         #
@@ -47,31 +43,35 @@ class Notifier(object):
         #
 
         # Calculated values
-        # noinspection PyUnresolvedReferences
-        if isinstance(ep_obj, tv.TVEpisode):
-            showPath = ep_obj.show.location
-            showName = ep_obj.show.name
-            rootShowAndSeason = os.path.dirname(ep_obj.location)
-            absPath = ep_obj.location
+        if isinstance(episode_object, tv.TVEpisode):
+            show_path = episode_object.show.location
+            show_name = episode_object.show.name
+            show_and_season_path = os.path.dirname(episode_object.location)
+            absolute_file_path = episode_object.location
         else:
             # This is a TVShow
-            showPath = ep_obj.location
-            showName = ep_obj.name
-            rootShowAndSeason = os.path.dirname(ep_obj.location)
-            absPath = ep_obj.location
+            show_path = episode_object.location
+            show_name = episode_object.name
+            show_and_season_path = os.path.dirname(episode_object.location)
+            absolute_file_path = episode_object.location
 
         # Some show names have colons in them which are illegal in a path location, so strip them out.
         # (Are there other characters?)
-        showName = showName.replace(":", "")
+        show_name = show_name.replace(":", "")
 
-        root = showPath.replace(showName, "")
-        showAndSeason = rootShowAndSeason.replace(root, "")
+        root = show_path.replace(show_name, "")
+        show_and_season_path = show_and_season_path.replace(root, "")
 
-        container = shareName + "/" + showAndSeason
-        filename = "/" + absPath.replace(root, "")
+        container = settings.PYTIVO_SHARE_NAME + "/" + show_and_season_path
+        filename = "/" + absolute_file_path.replace(root, "")
 
         # Finally create the url and make request
-        requestUrl = "http://" + host + "/TiVoConnect?" + urlencode({"Command": "Push", "Container": container, "File": filename, "tsn": tsn})
+        requestUrl = (
+            "http://"
+            + settings.PYTIVO_HOST
+            + "/TiVoConnect?"
+            + urlencode({"Command": "Push", "Container": container, "File": filename, "tsn": settings.PYTIVO_TIVO_NAME})
+        )
 
         logger.debug("pyTivo notification: Requesting " + requestUrl)
 

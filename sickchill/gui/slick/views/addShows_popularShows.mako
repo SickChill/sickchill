@@ -73,8 +73,8 @@
                                 <div class="traktContainer">
                                     <div class="trakt-image">
                                         <a class="trakt-image" href="${anon_url(imdb_url(current_result))}" target="_blank">
-                                            <img alt="" class="trakt-image" src="${current_result.get_fullsizeURL() or static_url("images/poster.png")}"
-                                                 height="273px" width="186px" onerror="this.src='${static_url("images/poster.png")}'"/>
+                                            <img alt="" class="trakt-image" src="${current_result.get_fullsizeURL() or static_url('images/poster.png')}"
+                                                 height="273px" width="186px" onerror="this.src='${static_url('images/poster.png')}'"/>
                                         </a>
                                     </div>
 

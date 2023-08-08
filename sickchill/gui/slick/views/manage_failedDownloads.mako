@@ -58,7 +58,7 @@
                                     % endif
                                 </td>
                                 <td>
-                                    <span>&nbsp;${hItem["release"]}</span>
+                                    <span>&nbsp;${hItem['release']}</span>
                                 </td>
                                 <td align="center">
                                     % if hItem["size"] != -1:

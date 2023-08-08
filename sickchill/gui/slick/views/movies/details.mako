@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="poster-container">
-                    <img class="movieImg" src="${static_url("images/poster.png")}" data-src="${movie.imdb_data['base']['image']['url']}" alt="${_('Poster for')} ${movie.name}"/>
+                    <img class="movieImg" src="${static_url('images/poster.png')}" data-src="${movie.imdb_data['base']['image']['url']}" alt="${_('Poster for')} ${movie.name}"/>
                 </div>
                 <div class="info-container">
                     <div class="row">
@@ -55,8 +55,8 @@
                                     ${movie.runtime or _('Unknown')} ${_('minutes')}
                                 </span>
                                 % if movie.imdb_id:
-                                    <a href="${anon_url('http://www.imdb.com/title/', movie.imdb_id)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="http://www.imdb.com/title/${movie.imdb_id}"><span class="displaymovie-icon-imdb"></span></a>
-                                    <a href="${anon_url('https://trakt.tv/movies/', movie.imdb_id)}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/movies/${movie.imdb_id}"><span class="displaymovie-icon-trakt"></span></a>
+                                    <a href="${anon_url('http://www.imdb.com/title/', movie.imdb_id)}" rel="noreferrer" target="_blank" title="http://www.imdb.com/title/${movie.imdb_id}"><span class="displaymovie-icon-imdb"></span></a>
+                                    <a href="${anon_url('https://trakt.tv/movies/', movie.imdb_id)}" rel="noreferrer" target="_blank" title="https://trakt.tv/movies/${movie.imdb_id}"><span class="displaymovie-icon-trakt"></span></a>
                                 % endif
                             </div>
                             <div class="pull-left col-lg-8 col-md-8 col-sm-12 col-xs-12">

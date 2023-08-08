@@ -4,6 +4,7 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
+from typing import Callable
 
 from requests.structures import CaseInsensitiveDict
 from requests.utils import add_dict_to_cookiejar
@@ -11,6 +12,7 @@ from requests.utils import add_dict_to_cookiejar
 import sickchill.oldbeard
 from sickchill import logger
 from sickchill.helper.common import sanitize_filename
+from sickchill.oldbeard import filters
 from sickchill.oldbeard.classes import Proper, SearchResult
 from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickchill.oldbeard.db import DBConnection
@@ -151,7 +153,7 @@ class GenericProvider(object):
                 search_strings = self.get_episode_search_strings(episode)
 
             for search_string in search_strings:
-                items_list += self.search(search_string, ep_obj=episode)
+                items_list += self.search(search_string, episode_object=episode)
 
         if len(results) == len(episodes):
             return results
@@ -393,7 +395,7 @@ class GenericProvider(object):
     def login(self):
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, age=0, episode_object=None):
         return []
 
     def _get_result(self, episodes):
@@ -567,3 +569,18 @@ class GenericProvider(object):
             return True, "torrent cookie"
 
         return False, f"No Cookies added from ui for provider: {self.name}"
+
+    def has_option(self, option):
+        return hasattr(self, option)
+
+    def check_set_option(self, view, option, default="", cast: Callable = str, unhide=False):
+        if hasattr(self, option):
+            if view.request.method == "GET":
+                value = view.get_query_argument(self.get_id("_" + option), default=default)
+            if view.request.method == "POST":
+                value = view.get_body_argument(self.get_id("_" + option), default=default)
+
+            if unhide:
+                value = filters.unhide(getattr(self, option), value)
+
+            return setattr(self, option, cast(value))

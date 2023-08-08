@@ -24,7 +24,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-kodi" title="KODI"></span>
-                        <h3><a href="${anon_url('http://kodi.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
+                        <h3><a href="${anon_url('http://kodi.tv/')}" rel="noreferrer" target="_blank">KODI</a></h3>
                         <p>${_('A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV.')}</p>
                     </div>
                 </div>
@@ -199,7 +199,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-plex" title="Plex Media Server"></span>
-                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Server</a></h3>
+                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" target="_blank">Plex Media Server</a></h3>
                         <p>${_('Experience your media on a visually stunning, easy to use interface on your Mac connected to your TV. Your media library has never looked this good!')}</p>
                         <p class="plexinfo hide">${_('For sending notifications to Plex Home Theater (PHT) clients, use the KODI notifier with port <b>3005</b>.')}</p>
                     </div>
@@ -236,7 +236,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <span class="component-desc">(<a href="${anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                                            <span class="component-desc">(<a href="${anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token')}" rel="noreferrer" target="_blank">
                                                 <u>Finding your account token</u></a>)
                                             </span>
                                         </div>
@@ -349,7 +349,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-plexth" title="${_('Plex Home Theater')}"></span>
-                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Home Theater</a></h3>
+                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" target="_blank">Plex Home Theater</a></h3>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -485,7 +485,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-emby" title="${_('Emby')}"></span>
-                        <h3><a href="${anon_url('http://emby.media/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Emby</a></h3>
+                        <h3><a href="${anon_url('http://emby.media/')}" rel="noreferrer" target="_blank">Emby</a></h3>
                         <p>${_('A home media server built using other popular open source technologies.')}</p>
                     </div>
                 </div>
@@ -553,7 +553,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-nmj" title="${_('Networked Media Jukebox')}"></span>
-                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">NMJ</a></h3>
+                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" target="_blank">NMJ</a></h3>
                         <p>${_('The Networked Media Jukebox, or NMJ, is the official media jukebox interface made available for the Popcorn Hour 200-series.')}</p>
                     </div>
                 </div>
@@ -669,7 +669,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-nmj" title="${_('Networked Media Jukebox v2')}"></span>
-                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">NMJv2</a></h3>
+                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" target="_blank">NMJv2</a></h3>
                         <p>${_('The Networked Media Jukebox, or NMJv2, is the official media jukebox interface made available for the Popcorn Hour 300 & 400-series.')}</p>
                     </div>
                 </div>
@@ -813,7 +813,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-syno1" title="${_('Synology')}"></span>
-                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology</a></h3>
+                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" target="_blank">Synology</a></h3>
                         <p>${_('The Synology DiskStation NAS.')}</p>
                         <p>${_('Synology Indexer is the daemon running on the Synology NAS to build its media database.')}</p>
                     </div>
@@ -859,7 +859,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-syno2" title="${_('Synology Indexer')}"></span>
-                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology Notifier</a></h3>
+                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" target="_blank">Synology Notifier</a></h3>
                         <p>${_('Synology Notifier is the notification system of Synology DSM')}</p>
                     </div>
                 </div>
@@ -934,7 +934,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pytivo" title="${_('pyTivo')}"></span>
-                        <h3><a href="${anon_url('http://pytivo.sourceforge.net/wiki/index.php/PyTivo')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">pyTivo</a></h3>
+                        <h3><a href="${anon_url('http://pytivo.sourceforge.net/wiki/index.php/PyTivo')}" rel="noreferrer" target="_blank">pyTivo</a></h3>
                         <p>${_('pyTivo is both an HMO and GoBack server. This notifier will load the completed downloads to your Tivo.')}</p>
                     </div>
                 </div>
@@ -1037,7 +1037,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-growl" title="${_('Growl')}"></span>
-                        <h3><a href="${anon_url('http://growl.info/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Growl</a></h3>
+                        <h3><a href="${anon_url('http://growl.info/')}" rel="noreferrer" target="_blank">Growl</a></h3>
                         <p>${_('A cross-platform unobtrusive global notification system.')}</p>
                     </div>
                 </div>
@@ -1149,7 +1149,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-prowl" title="${_('Prowl')}"></span>
-                        <h3><a href="${anon_url('http://www.prowlapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Prowl</a></h3>
+                        <h3><a href="${anon_url('http://www.prowlapp.com/')}" rel="noreferrer" target="_blank">Prowl</a></h3>
                         <p>${_('A Growl client for iOS.')}</p>
                     </div>
                 </div>
@@ -1221,7 +1221,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label for="prowl_api">${_('''Prowl API(s) listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows. Your Prowl API key is available at:''')}
-                                                <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                                                <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" target="_blank">
                                                          https://www.prowlapp.com/api_settings.php
                                                 </a><br>
                                                 ${_('(this field may be blank except when testing.)')}
@@ -1302,7 +1302,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-libnotify" title="${_('Libnotify')}"></span>
-                        <h3><a href="${anon_url('http://library.gnome.org/devel/libnotify/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Libnotify</a></h3>
+                        <h3><a href="${anon_url('http://library.gnome.org/devel/libnotify/')}" rel="noreferrer" target="_blank">Libnotify</a></h3>
                         <p>${_('The standard desktop notification API for Linux/*nix systems.  This notifier will only function if the pynotify module is installed (Ubuntu/Debian package <a href="apt:python-notify">python-notify</a>).')}</p>
                     </div>
                 </div>
@@ -1377,7 +1377,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushover" title="${_('Pushover')}"></span>
-                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushover</a></h3>
+                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" target="_blank">Pushover</a></h3>
                         <p>${_('Pushover makes it easy to send real-time notifications to your Android and iOS devices.')}</p>
                     </div>
                 </div>
@@ -1457,7 +1457,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
+                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" target="_blank"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1572,7 +1572,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-boxcar2" title="${_('Boxcar 2')}"></span>
-                        <h3><a href="${anon_url('https://new.boxcar.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar 2</a></h3>
+                        <h3><a href="${anon_url('https://new.boxcar.io/')}" rel="noreferrer" target="_blank">Boxcar 2</a></h3>
                         <p>${_('Read your messages where and when you want them!')}</p>
                     </div>
                 </div>
@@ -1665,7 +1665,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushalot" title="${_('Pushalot')}"></span>
-                        <h3><a href="${anon_url('https://pushalot.com')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushalot</a></h3>
+                        <h3><a href="${anon_url('https://pushalot.com')}" rel="noreferrer" target="_blank">Pushalot</a></h3>
                         <p>${_('Pushalot is a platform for receiving custom push notifications to connected devices running Windows Phone or Windows 8.')}</p>
                     </div>
                 </div>
@@ -1758,7 +1758,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushbullet" title="${_('Pushbullet')}"></span>
-                        <h3><a href="${anon_url('https://www.pushbullet.com')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushbullet</a></h3>
+                        <h3><a href="${anon_url('https://www.pushbullet.com')}" rel="noreferrer" target="_blank">Pushbullet</a></h3>
                         <p>${_('Pushbullet is a platform for receiving custom push notifications to connected devices running Android/iOS and desktop browsers such as Chrome, Firefox or Opera.')}</p>
                     </div>
                 </div>
@@ -1892,7 +1892,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-freemobile" title="${_('Free Mobile')}"></span>
-                        <h3><a href="${anon_url('http://mobile.free.fr/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Free Mobile</a></h3>
+                        <h3><a href="${anon_url('http://mobile.free.fr/')}" rel="noreferrer" target="_blank">Free Mobile</a></h3>
                         <p>${_('Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API.')}</p>
                     </div>
                 </div>
@@ -2003,7 +2003,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-telegram" title="${_('Telegram')}"></span>
-                        <h3><a href="${anon_url('https://telegram.org/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">${_('Telegram')}</a></h3>
+                        <h3><a href="${anon_url('https://telegram.org/')}" rel="noreferrer" target="_blank">${_('Telegram')}</a></h3>
                         <p>${_('Telegram is a cloud-based instant messaging service.')}</p>
                     </div>
                 </div>
@@ -2119,7 +2119,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-join" title="${_('Join')}"></span>
-                        <h3><a href="${anon_url('http://joaoapps.com/join/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">${_('Join')}</a></h3>
+                        <h3><a href="${anon_url('http://joaoapps.com/join/')}" rel="noreferrer" target="_blank">${_('Join')}</a></h3>
                         <p>${_('Join all of your devices together!')}</p>
                     </div>
                 </div>
@@ -2199,7 +2199,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="join_apikey"><a href="${anon_url('https://joaoapps.com/join/web')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Join API key')}</label>
+                                            <label for="join_apikey"><a href="${anon_url('https://joaoapps.com/join/web')}" rel="noreferrer" target="_blank"><b>${_('click here')}</b></a>${_(' to create a Join API key')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -2231,7 +2231,7 @@
 ##                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
 ##                     <div class="component-group-desc">
 ##                         <span class="icon-notifiers-twilio" title="${_('Twilio')}"></span>
-##                         <h3><a href="${anon_url('http://www.twilio.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twilio</a></h3>
+##                         <h3><a href="${anon_url('http://www.twilio.com/')}" rel="noreferrer" target="_blank">Twilio</a></h3>
 ##                         <p>${_('Twilio is a webservice API that allows you to communicate directly with a mobile number. This notifier will send a text directly to your mobile device.')}</p>
 ##                     </div>
 ##                 </div>
@@ -2383,7 +2383,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-twitter" title="${_('Twitter')}"></span>
-                        <h3><a href="${anon_url('http://www.twitter.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twitter</a></h3>
+                        <h3><a href="${anon_url('http://www.twitter.com/')}" rel="noreferrer" target="_blank">Twitter</a></h3>
                         <p>${_('A social networking and microblogging service, enabling its users to send and read other users\' messages called tweets.')}</p>
                     </div>
                 </div>
@@ -2523,7 +2523,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-trakt" title="${_('Trakt')}"></span>
-                        <h3><a href="${anon_url('http://trakt.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Trakt</a></h3>
+                        <h3><a href="${anon_url('http://trakt.tv/')}" rel="noreferrer" target="_blank">Trakt</a></h3>
                         <p>${_('Trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, Trakt recommends additional shows and movies you\'ll enjoy!')}</p>
                     </div>
                 </div>
@@ -2772,7 +2772,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-email" title="${_('Email')}"></span>
-                        <h3><a href="${anon_url('http://en.wikipedia.org/wiki/Comparison_of_webmail_providers')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Email</a></h3>
+                        <h3><a href="${anon_url('http://en.wikipedia.org/wiki/Comparison_of_webmail_providers')}" rel="noreferrer" target="_blank">Email</a></h3>
                         <p>${_('Allows configuration of email notifications on a per show basis.')}</p>
                     </div>
                 </div>
@@ -3031,7 +3031,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-slack" title="${_('Slack')}"></span>
-                        <h3><a href="${anon_url('http://www.slack.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Slack</a></h3>
+                        <h3><a href="${anon_url('http://www.slack.com/')}" rel="noreferrer" target="_blank">Slack</a></h3>
                         <p>${_('Slack brings all your communication together in one place. It\'s real-time messaging, archiving and search for modern teams.')}</p>
                     </div>
                 </div>
@@ -3127,7 +3127,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-matters" title="${_('Mattermost')}"></span>
-                        <h3><a href="${anon_url('http://www.mattermost.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Mattermost Webhook</a></h3>
+                        <h3><a href="${anon_url('http://www.mattermost.com/')}" rel="noreferrer" target="_blank">Mattermost Webhook</a></h3>
                         <p>${_('Secure collaboration for technical teams. Give operational and engineering teams the workspace they need to collaborate securely and effectively.')}</p>
                     </div>
                 </div>
@@ -3232,7 +3232,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-matters" title="${_('MattermostBot')}"></span>
-                        <h3><a href="${anon_url('http://www.mattermost.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Mattermost Bot</a></h3>
+                        <h3><a href="${anon_url('http://www.mattermost.com/')}" rel="noreferrer" target="_blank">Mattermost Bot</a></h3>
                         <p>${_('Secure collaboration for technical teams. Give operational and engineering teams the workspace they need to collaborate securely and effectively.')}</p>
                     </div>
                 </div>
@@ -3355,7 +3355,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-rocketchat" title="${_('Rocket.Chat')}"></span>
-                        <h3><a href="${anon_url('http://rocket.chat/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Rocket.Chat</a></h3>
+                        <h3><a href="${anon_url('http://rocket.chat/')}" rel="noreferrer" target="_blank">Rocket.Chat</a></h3>
                         <p>${_('Rocket.Chat is free, unlimited and open source chat software solution.')}</p>
                     </div>
                 </div>
@@ -3442,7 +3442,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-matrix" title="${_('Matrix')}"></span>
-                        <h3><a href="${anon_url('http://www.matrix.org/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Matrix</a></h3>
+                        <h3><a href="${anon_url('http://www.matrix.org/')}" rel="noreferrer" target="_blank">Matrix</a></h3>
                         <p>${_('Matrix is an open fabric for communication that anyone can participate in.')}</p>
                     </div>
                 </div>
@@ -3563,7 +3563,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-discord" title="${_('Discord')}"></span>
-                        <h3><a href="${anon_url('https://discordapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Discord</a></h3>
+                        <h3><a href="${anon_url('https://discordapp.com/')}" rel="noreferrer" target="_blank">Discord</a></h3>
                         <p>${_('All-in-one voice and text chat for gamers that\'s free, secure, and works on both your desktop and phone.')}</p>
                     </div>
                 </div>
@@ -3632,7 +3632,7 @@
                                       <input type="text" name="discord_name" id="discord_name" value="${settings.DISCORD_NAME}" class="form-control input-sm input350" autocapitalize="off" />
                                     </div>
                                     <div class="col-md-12">
-                                      <label for="discord_name">${_('Must use Bot Name. Blank no longer valid and will fail')}</label>
+                                      <label for="discord_name">${_('Must use Bot Name. Blank no longer valid and will fail. Click Save before Test.')}</label>
                                     </div>
                                   </div>
                                 </div>

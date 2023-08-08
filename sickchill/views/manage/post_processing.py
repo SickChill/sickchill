@@ -1,4 +1,3 @@
-from tornado.escape import xhtml_unescape
 from tornado.web import addslash
 
 from sickchill import settings
@@ -11,7 +10,7 @@ from sickchill.views.routes import Route
 @Route("/home/postprocess(/?.*)", name="home:postprocess")
 class PostProcess(Home):
     @addslash
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="home_postprocess.mako")
         return t.render(title=_("Post Processing"), header=_("Post Processing"), topmenu="home", controller="home", action="postProcess")
 
@@ -31,11 +30,11 @@ class PostProcess(Home):
         **kwargs,
     ):
         mode = kwargs.get("type", proc_type)
-        process_path = xhtml_unescape(kwargs.get("dir", proc_dir or "") or "")
+        process_path = self.get_argument("dir", default=self.get_argument("proc_dir", default=""))
         if not process_path:
             return self.redirect("/home/postprocess/")
 
-        release_name = xhtml_unescape(nzbName) if nzbName else nzbName
+        release_name = self.get_argument("nzbName", default=None)
 
         result = settings.postProcessorTaskScheduler.action.add_item(
             process_path,

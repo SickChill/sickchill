@@ -78,7 +78,7 @@ class Provider(TorrentProvider):
             logger.info("You need to set your cookies to use torrentday")
             return False
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, age=0, episode_object=None):
         results = []
 
         search_url = self.urls["search"]

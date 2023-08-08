@@ -24,11 +24,11 @@ class Notifier(object):
         pass
 
     @staticmethod
-    def update_library(ep_obj):
+    def update_library(episode_object):
         """
         Sends a request to trakt indicating that the given episode is part of our library.
 
-        ep_obj: The TVEpisode object to add to trakt
+        episode_object: The TVEpisode object to add to trakt
         """
 
         trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
@@ -39,9 +39,9 @@ class Notifier(object):
                 data = {
                     "shows": [
                         {
-                            "title": ep_obj.show.name,
-                            "year": ep_obj.show.startyear,
-                            "ids": {ep_obj.idxr.slug: ep_obj.show.indexerid},
+                            "title": episode_object.show.name,
+                            "year": episode_object.show.startyear,
+                            "ids": {episode_object.idxr.slug: episode_object.show.indexerid},
                         }
                     ]
                 }
@@ -50,9 +50,9 @@ class Notifier(object):
                     trakt_api.traktRequest("sync/watchlist/remove", data, method="POST")
 
                 # Add Season and Episode + Related Episodes
-                data["shows"][0]["seasons"] = [{"number": ep_obj.season, "episodes": []}]
+                data["shows"][0]["seasons"] = [{"number": episode_object.season, "episodes": []}]
 
-                for relEp_Obj in [ep_obj] + ep_obj.relatedEps:
+                for relEp_Obj in [episode_object] + episode_object.related_episodes:
                     data["shows"][0]["seasons"][0]["episodes"].append({"number": relEp_Obj.episode})
 
                 if settings.TRAKT_SYNC_WATCHLIST and settings.TRAKT_REMOVE_WATCHLIST:
@@ -65,7 +65,7 @@ class Notifier(object):
                 logger.warning(f"Could not connect to Trakt service: {error}")
 
     @staticmethod
-    def update_watchlist(show_obj=None, s=None, e=None, data_show=None, data_episode=None, update="add"):
+    def update_watchlist(show_obj=None, data_show=None, data_episode=None, update="add"):
         """
         Sends a request to trakt indicating that the given episode is part of our library.
 
@@ -74,16 +74,16 @@ class Notifier(object):
         e: episode number
         data_show: structured object of shows trakt type
         data_episode: structured object of episodes trakt type
-        update: type o action add or remove
+        update: type of action add or remove
         """
 
         trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
-        if settings.USE_TRAKT:
+        if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST:
             data = {}
             try:
                 # URL parameters
-                if show_obj is not None:
+                if show_obj:
                     data = {
                         "shows": [
                             {
@@ -93,32 +93,14 @@ class Notifier(object):
                             }
                         ]
                     }
-                elif data_show is not None:
+                elif data_show:
                     data.update(data_show)
                 else:
                     logger.warning("there's a coding problem contact developer. It's needed to be provided at lest one of the two: data_show or show_obj")
                     return False
 
-                if data_episode is not None:
+                if data_episode:
                     data["shows"][0].update(data_episode)
-
-                elif s is not None:
-                    # trakt URL parameters
-                    season = {
-                        "season": [
-                            {
-                                "number": s,
-                            }
-                        ]
-                    }
-
-                    if e is not None:
-                        # trakt URL parameters
-                        episode = {"episodes": [{"number": e}]}
-
-                        season["season"][0].update(episode)
-
-                    data["shows"][0].update(season)
 
                 trakt_url = "sync/watchlist"
                 if update == "remove":
@@ -180,7 +162,7 @@ class Notifier(object):
         try:
             trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
             trakt_api.validateAccount()
-            if blacklist_name and blacklist_name is not None:
+            if blacklist_name:
                 trakt_lists = trakt_api.traktRequest("users/" + username + "/lists")
                 found = False
                 for trakt_list in trakt_lists:

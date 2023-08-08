@@ -33,7 +33,7 @@
             </thead>
             <tfoot class="hidden-print">
                 <tr>
-                    <th rowspan="1" colspan="1" align="center"><a href="${static_url("addShows/", include_version=False)}">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
+                    <th rowspan="1" colspan="1" align="center"><a href="${static_url('addShows/', include_version=False)}">${_('Add')} ${(_('Show'), _('Anime'))[curListType == 'Anime']}</a></th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>
@@ -55,13 +55,13 @@
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     % if curLoadingShow.show:
                                         <a href="${scRoot}/home/displayShow?show=${loading_show.id}" title="${loading_show.name}">
-                                            <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                            <img src="${static_url('images/poster.png')}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
                                                  class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </a>
                                         <a href="${scRoot}/home/displayShow?show=${loading_show.id}" style="vertical-align: middle;">${loading_show.name}</a>
                                     % else:
                                         <span title="${loading_show.name}">
-                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
+                                        <img src="${static_url('images/poster.png')}" data-src="${static_url(loading_show.show_image_url('poster_thumb'))}"
                                              class="${settings.HOME_LAYOUT}" alt="${loading_show.name}"/>
                                         </span>
                                         <span style="vertical-align: middle;">${_('Loading...')} (${loading_show.name})</span>
@@ -75,7 +75,7 @@
                                     % if curLoadingShow.show:
                                         <a href="${scRoot}/home/displayShow?show=${loading_show.id}">
                                     % endif
-                                    <img src="${static_url("images/banner.png")}" data-src="${static_url(loading_show.show_image_url('banner'))}"
+                                    <img src="${static_url('images/banner.png')}" data-src="${static_url(loading_show.show_image_url('banner'))}"
                                          class="${settings.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}"/>
                                     % if curLoadingShow.show:
                                         </a>
@@ -178,7 +178,7 @@
                             <td class="tvShow">
                                 <div class="imgsmallposter ${settings.HOME_LAYOUT}">
                                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}" title="${curShow.name}">
-                                        <img src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}"
+                                        <img src="${static_url('images/poster.png')}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}"
                                              class="${settings.HOME_LAYOUT}" alt="${curShow.indexerid}"/>
                                     </a>
                                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}" style="vertical-align: middle;">${curShow.name}</a>
@@ -189,7 +189,7 @@
                                 <span style="display: none;">${curShow.name}</span>
                                 <div class="imgbanner ${settings.HOME_LAYOUT}">
                                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
-                                        <img src="${static_url("images/banner.png")}" data-src="${static_url(curShow.show_image_url('banner'))}"
+                                        <img src="${static_url('images/banner.png')}" data-src="${static_url(curShow.show_image_url('banner'))}"
                                              class="${settings.HOME_LAYOUT}" alt="${curShow.indexerid}" title="${curShow.name}"/>
                                     </a>
                                 </div>

@@ -64,10 +64,10 @@ class TIVOMetadata(generic.GenericMetadata):
     def create_show_metadata(self, show_obj: "TVShow"):
         pass
 
-    def update_episode_metadata(self, ep_obj: "TVEpisode"):
-        if self.episode_metadata and ep_obj:
-            logger.debug(f"[{self.name} META] Updating episode metadata for {ep_obj.pretty_name}")
-            return self.write_ep_file(ep_obj)
+    def update_episode_metadata(self, episode_object: "TVEpisode"):
+        if self.episode_metadata and episode_object:
+            logger.debug(f"[{self.name} META] Updating episode metadata for {episode_object.pretty_name}")
+            return self.write_ep_file(episode_object)
         return False
 
     def update_show_indexer_metadata(self, show_obj: "TVShow"):
@@ -85,17 +85,17 @@ class TIVOMetadata(generic.GenericMetadata):
     def create_banner(self, show_obj: "TVShow"):
         pass
 
-    def create_episode_thumb(self, ep_obj: "TVEpisode"):
+    def create_episode_thumb(self, episode_object: "TVEpisode"):
         pass
 
     @staticmethod
-    def get_episode_thumb_path(ep_obj: "TVEpisode"):
+    def get_episode_thumb_path(episode_object: "TVEpisode"):
         pass
 
-    def create_season_posters(self, ep_obj: "TVEpisode"):
+    def create_season_posters(self, episode_object: "TVEpisode"):
         pass
 
-    def create_season_banners(self, ep_obj: "TVEpisode"):
+    def create_season_banners(self, episode_object: "TVEpisode"):
         pass
 
     def create_season_all_poster(self, show_obj: "TVShow"):
@@ -105,7 +105,7 @@ class TIVOMetadata(generic.GenericMetadata):
         pass
 
     # Override generic class
-    def get_episode_file_path(self, ep_obj: "TVEpisode"):
+    def get_episode_file_path(self, episode_object: "TVEpisode"):
         """
         Returns a full show dir/.meta/episode.txt path for Tivo
         episode metadata files.
@@ -114,37 +114,37 @@ class TIVOMetadata(generic.GenericMetadata):
 
         ie If the episode name is foo.avi, the metadata name is foo.avi.txt
 
-        ep_obj: a TVEpisode object to get the path for
+        episode_object: a TVEpisode object to get the path for
         """
-        if os.path.isfile(ep_obj.location):
-            metadata_filename = os.path.basename(ep_obj.location) + "." + self._ep_nfo_extension
-            metadata_dir_name = os.path.join(os.path.dirname(ep_obj.location), ".meta")
+        if os.path.isfile(episode_object.location):
+            metadata_filename = os.path.basename(episode_object.location) + "." + self._ep_nfo_extension
+            metadata_dir_name = os.path.join(os.path.dirname(episode_object.location), ".meta")
             metadata_file_path = os.path.join(metadata_dir_name, metadata_filename)
         else:
-            logger.debug(f"{self.name} META] Episode location doesn't exist: {ep_obj.location}")
+            logger.debug(f"[{self.name} META] Episode location doesn't exist: {episode_object.location}")
             return ""
         return metadata_file_path
 
-    def episode_pretty_title(self, ep_obj: "TVEpisode"):
+    def episode_pretty_title(self, episode_object: "TVEpisode"):
         """
         Returns the name of this episode in a "pretty" human-readable format
 
         Returns: A string representing the episode's name and season/ep numbers
         """
 
-        if ep_obj.show.anime and not ep_obj.show.scene:
-            return ep_obj._format_pattern("%AB - %EN")
-        elif ep_obj.show.air_by_date:
-            return ep_obj._format_pattern("%AD - %EN")
+        if episode_object.show.anime and not episode_object.show.scene:
+            return episode_object._format_pattern("%AB - %EN")
+        elif episode_object.show.air_by_date:
+            return episode_object._format_pattern("%AD - %EN")
 
-        return ep_obj._format_pattern("S%0SE%0E - %EN")
+        return episode_object._format_pattern("S%0SE%0E - %EN")
 
-    def _ep_data(self, ep_obj: "TVEpisode"):
+    def _ep_data(self, episode_object: "TVEpisode"):
         """
         Creates a key value structure for a Tivo episode metadata file and
         returns the resulting data object.
 
-        ep_obj: a TVEpisode instance to create the metadata file for.
+        episode_object: a TVEpisode instance to create the metadata file for.
 
         The key values for the tivo metadata file are from:
 
@@ -153,32 +153,32 @@ class TIVOMetadata(generic.GenericMetadata):
 
         data = []
 
-        eps_to_write = [ep_obj] + ep_obj.relatedEps
+        eps_to_write = [episode_object] + episode_object.related_episodes
 
-        myShow = ep_obj.idxr.series_from_episode(ep_obj)
-        if not myShow:
-            logger.debug("Unable to connect to {} while creating meta files for {}, skipping".format(ep_obj.indexer_name, ep_obj.name))
+        indexer_show = episode_object.idxr.series_from_episode(episode_object)
+        if not indexer_show:
+            logger.debug("Unable to connect to {} while creating meta files for {}, skipping".format(episode_object.indexer_name, episode_object.name))
             return False
 
         for curEpToWrite in eps_to_write:
-            myEp = curEpToWrite.idxr.episode(curEpToWrite)
-            if not myEp:
+            indexer_episode = curEpToWrite.idxr.episode(curEpToWrite)
+            if not indexer_episode:
                 logger.info(
                     "Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}...has it been removed? Should I delete from db?".format(
-                        curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.indexer_name
+                        curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, episode_object.indexer_name
                     )
                 )
                 return False
 
-            if ep_obj.airdate != datetime.date.min and not myEp.get("firstAired"):
-                myEp["firstAired"] = str(ep_obj.airdate)
+            if episode_object.airdate != datetime.date.min and not indexer_episode.get("firstAired"):
+                indexer_episode["firstAired"] = str(episode_object.airdate)
 
-            if not (myEp.get("episodeName") and myEp.get("firstAired")):
+            if not (indexer_episode.get("episodeName") and indexer_episode.get("firstAired")):
                 return None
 
-            if myShow.seriesName:
-                data.append(f"title : {myShow.seriesName}")
-                data.append(f"seriesTitle : {myShow.seriesName}")
+            if indexer_show.seriesName:
+                data.append(f"title : {indexer_show.seriesName}")
+                data.append(f"seriesTitle : {indexer_show.seriesName}")
 
             # noinspection PyProtectedMember
             data.append(f"episodeTitle : {self.episode_pretty_title(curEpToWrite)}")
@@ -212,12 +212,12 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # Usually starts with "SH" and followed by 6-8 digits.
             # Tivo uses zap2it for thier data, so the series id is the zap2itId.
-            if getattr(myShow, "zap2itId", None):
-                data.append(f"seriesId : {myShow.zap2itId}")
+            if getattr(indexer_show, "zap2itId", None):
+                data.append(f"seriesId : {indexer_show.zap2itId}")
 
             # This is the call sign of the channel the episode was recorded from.
-            if getattr(myShow, "network", None):
-                data.append(f"callsign : {myShow.network}")
+            if getattr(indexer_show, "network", None):
+                data.append(f"callsign : {indexer_show.network}")
 
             # This must be entered as yyyy-mm-ddThh:mm:ssZ (the t is capitalized and never changes, the Z is also
             # capitalized and never changes). This is the original air date of the episode.
@@ -226,15 +226,15 @@ class TIVOMetadata(generic.GenericMetadata):
                 data.append(f"originalAirDate : {curEpToWrite.airdate}T00:00:00Z")
 
             # This shows up at the beginning of the description on the Program screen and on the Details screen.
-            for actor in ep_obj.idxr.actors(myShow):
+            for actor in episode_object.idxr.actors(indexer_show):
                 actor_name = actor.get("name", "").strip()
                 if actor_name:
                     data.append(f"vActor : {actor_name}")
 
             # This is shown on both the Program screen and the Details screen.
-            if myEp.get("siteRating"):
+            if indexer_episode.get("siteRating"):
                 try:
-                    rating = float(myEp["siteRating"])
+                    rating = float(indexer_episode["siteRating"])
                 except ValueError:
                     rating = 0.0
                 # convert 10 to 4 star rating. 4 * rating / 10
@@ -244,12 +244,12 @@ class TIVOMetadata(generic.GenericMetadata):
 
             # This is shown on both the Program screen and the Details screen.
             # It uses the standard TV rating system of: TV-Y7, TV-Y, TV-G, TV-PG, TV-14, TV-MA and TV-NR.
-            if getattr(myShow, "rating", None):
-                data.append(f"tvRating : {myShow.rating}")
+            if getattr(indexer_show, "rating", None):
+                data.append(f"tvRating : {indexer_show.rating}")
 
             # This field can be repeated as many times as necessary or omitted completely.
-            if ep_obj.show.genre:
-                for genre in ep_obj.show.genre:
+            if episode_object.show.genre:
+                for genre in episode_object.show.genre:
                     if genre:
                         data.append(f"vProgramGenre : {genre}")
 
@@ -265,24 +265,24 @@ class TIVOMetadata(generic.GenericMetadata):
 
         return "\n".join(data)
 
-    def write_ep_file(self, ep_obj: "TVEpisode"):
+    def write_ep_file(self, episode_object: "TVEpisode"):
         """
-        Generates and writes ep_obj's metadata under the given path with the
+        Generates and writes episode_object's metadata under the given path with the
         given filename root. Uses the episode's name with the extension in
         _ep_nfo_extension.
 
-        ep_obj: TVEpisode object for which to create the metadata
+        episode_object: TVEpisode object for which to create the metadata
 
         filename_path: The file name to use for this metadata. Note that the extension
                 will be automatically added based on _ep_nfo_extension. This should
                 include an absolute path.
         """
-        data = self._ep_data(ep_obj)
+        data = self._ep_data(episode_object)
 
         if not data:
             return False
 
-        nfo_file_path = self.get_episode_file_path(ep_obj)
+        nfo_file_path = self.get_episode_file_path(episode_object)
         nfo_file_dir = os.path.dirname(nfo_file_path)
 
         try:

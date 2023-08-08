@@ -23,7 +23,7 @@
                                 levels.remove('DB')
                         %>
                         % for level in levels:
-                            <option value="${LOGGING_LEVELS[level]}" ${('', 'selected="selected"')[min_level == LOGGING_LEVELS[level]]}>${level.title()}</option>
+                            <option class="text-capitalize" value="${LOGGING_LEVELS[level]}" ${('', 'selected="selected"')[min_level == LOGGING_LEVELS[level]]}>${level}</option>
                         % endfor
                     </select>
                     &nbsp;

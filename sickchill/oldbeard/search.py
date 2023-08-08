@@ -356,7 +356,7 @@ def searchForNeededEpisodes():
 
     original_thread_name = threading.current_thread().name
 
-    providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
+    providers = [x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.enable_daily and x.can_daily]
     for curProvider in providers:
         threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
         curProvider.cache.update_cache()
@@ -422,7 +422,9 @@ def searchProviders(show, episodes, manualSearch=False, downCurQuality=False):
 
     original_thread_name = threading.current_thread().name
 
-    providers = [x for x in sickchill.oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog]
+    providers = [
+        x for x in sickchill.oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active and x.can_backlog and x.enable_backlog
+    ]
     for curProvider in providers:
         threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
         curProvider.cache.update_cache()

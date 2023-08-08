@@ -26,7 +26,7 @@ class TorrentRssProvider(TorrentProvider):
         self.cookies = cookies
         self.titleTAG = titleTAG
 
-    def configStr(self):
+    def config_string(self):
         return "{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}".format(
             self.name or "",
             self.url or "",

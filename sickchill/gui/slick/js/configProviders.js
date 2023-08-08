@@ -294,7 +294,7 @@ $(document).ready(function () {
             }
         }
 
-        $('#torrentrss_string').val(provStrings.join('!!!'));
+        $('#torrent_rss_string').val(provStrings.join('!!!'));
     };
 
     $.fn.refreshProviderList = function () {

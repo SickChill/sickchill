@@ -800,12 +800,12 @@ class CMDEpisodeSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = show_obj.getEpisode(self.s, self.e)
-        if isinstance(ep_obj, str):
+        episode_object = show_obj.getEpisode(self.s, self.e)
+        if isinstance(episode_object, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.ManualSearchQueueItem(show_obj, ep_obj)
+        ep_queue_item = search_queue.ManualSearchQueueItem(show_obj, episode_object)
         settings.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
@@ -814,7 +814,7 @@ class CMDEpisodeSearch(ApiCall):
 
         # return the correct json value
         if ep_queue_item.success:
-            status, quality = Quality.splitCompositeStatus(ep_obj.status)
+            status, quality = Quality.splitCompositeStatus(episode_object.status)
             # TODO: split quality and status?
             return _responds(RESULT_SUCCESS, {"quality": get_quality_string(quality)}, "Snatched (" + get_quality_string(quality) + ")")
 
@@ -939,10 +939,10 @@ class CMDEpisodeSetStatus(ApiCall):
         self.status = status_to_code(self.status)
 
         if self.e:
-            ep_obj = show_obj.getEpisode(self.s, self.e)
-            if not ep_obj:
+            episode_object = show_obj.getEpisode(self.s, self.e)
+            if not episode_object:
                 return _responds(RESULT_FAILURE, msg="Episode not found")
-            ep_list = [ep_obj]
+            ep_list = [episode_object]
         else:
             # get all episode numbers from self, season
             ep_list = show_obj.getAllEpisodes(season=self.s)
@@ -956,42 +956,44 @@ class CMDEpisodeSetStatus(ApiCall):
         segments = {}
 
         sql_l = []
-        for ep_obj in ep_list:
-            with ep_obj.lock:
+        for episode_object in ep_list:
+            with episode_object.lock:
                 if self.status == WANTED:
                     # figure out what episodes are wanted so we can backlog them
-                    if ep_obj.season in segments:
-                        segments[ep_obj.season].append(ep_obj)
+                    if episode_object.season in segments:
+                        segments[episode_object.season].append(episode_object)
                     else:
-                        segments[ep_obj.season] = [ep_obj]
+                        segments[episode_object.season] = [episode_object]
 
                 # don't let them mess up UN-AIRED episodes
-                if ep_obj.status == UNAIRED:
+                if episode_object.status == UNAIRED:
                     # noinspection PyPep8
                     if (
                         self.e is not None
                     ):  # setting the status of an un-aired is only considered a failure if we directly wanted this episode, but is ignored on a season request
-                        ep_results.append(_ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status because it is UN-AIRED"))
+                        ep_results.append(_ep_result(RESULT_FAILURE, episode_object, "Refusing to change status because it is UN-AIRED"))
                         failure = True
                     continue
 
                 if self.status == FAILED and not settings.USE_FAILED_DOWNLOADS:
-                    ep_results.append(_ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status to FAILED because failed download handling is disabled"))
+                    ep_results.append(
+                        _ep_result(RESULT_FAILURE, episode_object, "Refusing to change status to FAILED because failed download handling is disabled")
+                    )
                     failure = True
                     continue
 
                 # allow the user to force setting the status for an already downloaded episode
-                if ep_obj.status in Quality.DOWNLOADED + Quality.ARCHIVED and not self.force:
-                    ep_results.append(_ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status because it is already marked as DOWNLOADED"))
+                if episode_object.status in Quality.DOWNLOADED + Quality.ARCHIVED and not self.force:
+                    ep_results.append(_ep_result(RESULT_FAILURE, episode_object, "Refusing to change status because it is already marked as DOWNLOADED"))
                     failure = True
                     continue
 
-                ep_obj.status = self.status
-                sql_l.append(ep_obj.get_sql())
+                episode_object.status = self.status
+                sql_l.append(episode_object.get_sql())
 
                 if self.status == WANTED:
                     start_backlog = True
-                ep_results.append(_ep_result(RESULT_SUCCESS, ep_obj))
+                ep_results.append(_ep_result(RESULT_SUCCESS, episode_object))
 
         if sql_l:
             main_db_con = db.DBConnection()
@@ -1041,13 +1043,13 @@ class CMDSubtitleSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = show_obj.getEpisode(self.s, self.e)
-        if isinstance(ep_obj, str):
+        episode_object = show_obj.getEpisode(self.s, self.e)
+        if isinstance(episode_object, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
         # noinspection PyBroadException
         try:
-            new_subtitles = ep_obj.download_subtitles()
+            new_subtitles = episode_object.download_subtitles()
         except Exception:
             return _responds(RESULT_FAILURE, msg="Unable to find subtitles")
 

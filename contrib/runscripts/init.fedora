@@ -23,11 +23,11 @@ lockfile=/var/lock/subsys/$prog
 
 ## Edit user configuation in /etc/sysconfig/sickchill to change
 ## the defaults
-username=${SR_USER-sickchill}
-homedir=${SR_HOME-/opt/sickchill}
-datadir=${SR_DATA-/opt/sickchill}
-pidfile=${SR_PIDFILE-/var/run/sickchill/sickchill.pid}
-nice=${SR_NICE-}
+username=${SC_USER-sickchill}
+homedir=${SC_HOME-/opt/sickchill}
+datadir=${SC_DATA-/opt/sickchill}
+pidfile=${SC_PIDFILE-/var/run/sickchill/sickchill.pid}
+nice=${SC_NICE-}
 python_bin=${PYTHON_BIN-/usr/bin/python3}
 ##
 

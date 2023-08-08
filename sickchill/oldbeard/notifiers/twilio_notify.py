@@ -1,6 +1,7 @@
 import re
 
-from twilio.rest import Client, TwilioException
+from twilio.base.exceptions import TwilioRestException
+from twilio.rest import Client
 
 from sickchill import logger, settings
 from sickchill.oldbeard import common
@@ -41,12 +42,12 @@ class Notifier(object):
                 return False
 
             return self._notifyTwilio(_("This is a test notification from SickChill"), force=True, allow_raise=True)
-        except TwilioException:
+        except TwilioRestException:
             return False
 
     @property
     def number(self):
-        return self.client.api.incoming_phone_numbers.get(settings.TWILIO_PHONE_SID).fetch()
+        return self.client.api.account.incoming_phone_numbers.get(settings.TWILIO_PHONE_SID).fetch()
 
     @property
     def client(self):
@@ -65,7 +66,7 @@ class Notifier(object):
                 to=settings.TWILIO_TO_NUMBER,
                 from_=self.number.phone_number,
             )
-        except TwilioException as error:
+        except TwilioRestException as error:
             logger.exception(f"Twilio notification failed: {error}")
 
             if allow_raise:

@@ -10,7 +10,20 @@ from . import Manage
 class ManageSearches(Manage):
     def index(self, *args_, **kwargs_):
         t = PageTemplate(rh=self, filename="manage_manageSearches.mako")
-        # t.backlogPI = oldbeard.backlogSearchScheduler.action.getProgressIndicator()
+
+        # TODO: Add fancy ajax table that shows progress of each thread in the UI
+        # t.backlog_search_pi = settings.backlogSearchScheduler.action.getProgressIndicator()
+        # t.daily_search_pi = settings.dailySearchScheduler.action.getProgressIndicator()
+        # t.proper_finder_pi = settings.properFinderScheduler.action.getProgressIndicator()
+        # t.search_queue_pi = settings.searchQueueScheduler.action.getProgressIndicator()
+        # t.show_queue_pi = settings.showQueueScheduler.action.getProgressIndicator()
+        # t.show_updates_pi = settings.showUpdateScheduler.action.getProgressIndicator()
+        # t.subtitles_pi = settings.subtitlesFinderScheduler.action.getProgressIndicator()
+        # t.post_processor_pi = settings.postProcessorTaskScheduler.action.getProgressIndicator()
+        # t.notifications_pi = settings.notificationsTaskScheduler.action.getProgressIndicator()
+        # t.auto_post_process_pi = settings.autoPostProcessorScheduler.action.getProgressIndicator()
+        # t.version_pi = settings.versionCheckScheduler.action.getProgressIndicator()
+        # t.trakt_checker_pi = settings.traktCheckerScheduler.action.getProgressIndicator()
 
         return t.render(
             backlogPaused=settings.searchQueueScheduler.action.is_backlog_paused(),

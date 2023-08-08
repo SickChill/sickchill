@@ -27,13 +27,13 @@ class DBBasicTests(conftest.SickChillTestDBCase):
         Set up base.
         """
         super().setUp()
-        self.sr_db = sickchill.oldbeard.db.DBConnection()
+        self.sc_db = sickchill.oldbeard.db.DBConnection()
 
     def test_select(self):
         """
         Test selecting from the database
         """
-        self.sr_db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
+        self.sc_db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
 
 
 class DBMultiTests(conftest.SickChillTestDBCase):
@@ -49,13 +49,13 @@ class DBMultiTests(conftest.SickChillTestDBCase):
         Set up base.
         """
         super().setUp()
-        self.sr_db = sickchill.oldbeard.db.DBConnection()
+        self.sc_db = sickchill.oldbeard.db.DBConnection()
 
     def select(self):
         """
         Select from the database.
         """
-        self.sr_db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
+        self.sc_db.select("SELECT * FROM tv_episodes WHERE showid = ? AND location != ''", [0000])
 
     def test_threaded(self):
         """

@@ -298,10 +298,10 @@
                                             <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
                                                 <img src="${static_url('images/subtitles/' + curService['image'])}"
                                                      alt="${curService['url']}" title="${curService['url']}" width="16"
-                                                     height="16" style="vertical-align:middle;"/>
+                                                     height="16" class="align-middle text-center" />
                                             </a>
-                                            <span style="vertical-align:middle;">${curService['name'].capitalize()}</span>
-                                            <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="vertical-align:middle;"></span>
+                                            <span class="align-middle text-center ">${curService['name']}</span>
+                                            <span class="ui-icon ui-icon-arrowthick-2-n-s pull-right align-middle text-center"></span>
                                         </li>
                                     % endfor
                                 </ul>

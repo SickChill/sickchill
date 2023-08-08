@@ -536,21 +536,25 @@ class CommonTests(unittest.TestCase):
 
         # Absolute numbering
         assert episode_num(1, numbering="absolute") == "001"
-        assert episode_num(0, 1, numbering="absolute") == "001"
-        assert episode_num(1, 0, numbering="absolute") == "001"
+
+        # Specials
+        assert episode_num(0, 1, numbering="absolute") is None
+        assert episode_num(1, 0, numbering="absolute") is None
 
         # Must have both season and episode for standard numbering
         assert episode_num(0) is None
         assert episode_num(1) is None
 
-        # Episode numbering starts at 1
+        # Episode numbering starts at 0 for season specials
         assert episode_num(0, 0) is None
-        assert episode_num(1, 0) is None
+        assert episode_num(1, 0) is not None
 
         # Absolute numbering starts at 1
         assert episode_num(0, 0, numbering="absolute") is None
 
         # Absolute numbering can't have both season and episode
+        assert episode_num(1, 1, numbering="absolute") is None
+        assert episode_num(1, 0, numbering="absolute") is None
         assert episode_num(1, 1, numbering="absolute") is None
 
     def test_glob_escape(self):

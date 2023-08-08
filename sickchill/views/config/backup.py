@@ -14,7 +14,7 @@ from .index import Config
 @Route("/config/backuprestore(/?.*)", name="config:backup")
 class ConfigBackupRestore(Config):
     @addslash
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="config_backuprestore.mako")
 
         return t.render(

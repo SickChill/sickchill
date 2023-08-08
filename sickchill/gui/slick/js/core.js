@@ -7,21 +7,21 @@ const scDefaultPage = getMeta('scDefaultPage');
 const themeSpinner = getMeta('themeSpinner');
 const anonURL = getMeta('anonURL');
 const topImageHtml = '<img src="' + scRoot + '/images/top.gif" width="31" height="11" alt="Jump to top" />'; // eslint-disable-line no-unused-vars
-const loading = '<img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" height="16" width="16" />';
+const loading = '<img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt="loading" height="16" width="16" />';
 
-let srPID = getMeta('srPID');
+let scPID = getMeta('scPID');
 
 function configSuccess() {
     $('.config_submitter').each(function () {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
+        window.location.reload();
     });
     $('.config_submitter_refresh').each(function () {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
-        window.location.href = scRoot + '/config/providers/';
     });
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');
@@ -30,7 +30,7 @@ function configSuccess() {
 function metaToBool(pyVar) {
     let meta = $('meta[data-var="' + pyVar + '"]').data('content');
     if (meta === undefined) {
-        console.log(pyVar + ' is empty, did you forget to add this to main.mako?');
+        console.log(pyVar + ' is empty, did you forget to add this to "main.mako"?');
         return meta;
     }
 
@@ -120,7 +120,7 @@ const SICKCHILL = {
 
             $('a.shutdown').confirm({
                 title: 'Shutdown',
-                text: 'Are you sure you want to shutdown SickChill?',
+                text: 'Are you sure you want to shut down SickChill?',
             });
 
             $('a.restart').confirm({
@@ -166,7 +166,7 @@ const SICKCHILL = {
                         $(this).data('topPositionTab', $(ui.newPanel).position().top);
                     }
 
-                    // Dont use the builtin fx effects. This will fade in/out both tabs, we dont want that
+                    // Don't use the builtin fx effects. This will fade in/out both tabs, we don't want that
                     // Fadein the new tab yourself
                     $(ui.newPanel).hide().fadeIn(0);
 
@@ -351,13 +351,17 @@ const SICKCHILL = {
                 beforeSubmit() {
                     $('.config_submitter .config_submitter_refresh').each(function () {
                         $(this).attr('disabled', 'disabled');
-                        $(this).after('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif"> Saving...</span>');
+                        $(this).after('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt="loading"> Saving...</span>');
                         $(this).hide();
                     });
                 },
                 success() {
                     setTimeout(configSuccess, 2000);
                 },
+            });
+
+            $('#config_save_button').on('click', () => {
+                $('#configForm').submit();
             });
 
             $('#api_key').on('click', () => {
@@ -1207,6 +1211,7 @@ const SICKCHILL = {
                     }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
+                    // TODO: Why is this not just sent as json to begin with?
                     const _list = [];
                     for (const _show in list) {
                         if (Object.prototype.hasOwnProperty.call(list, _show) && _show.charAt(0) !== '_') {
@@ -2984,7 +2989,7 @@ const SICKCHILL = {
 
             $('.sceneSeasonXEpisode').on('change', function () {
                 // Strip non-numeric characters
-                $(this).val($(this).val().replaceAll(/[^\dxX]*/, ''));
+                $(this).val($(this).val().replaceAll(/[^\dxX]*/g, ''));
                 const forSeason = $(this).attr('data-for-season');
                 const forEpisode = $(this).attr('data-for-episode');
                 const m = $(this).val().match(/^(\d+)x(\d+)$/i);
@@ -3014,7 +3019,7 @@ const SICKCHILL = {
 
             $('.sceneAbsolute').on('change', function () {
                 // Strip non-numeric characters
-                $(this).val($(this).val().replaceAll(/[^\dxX]*/, ''));
+                $(this).val($(this).val().replaceAll(/[^\dxX]*/g, ''));
                 const forAbsolute = $(this).attr('data-for-absolute');
 
                 const m = $(this).val().match(/^(\d{1,3})$/i);
@@ -3191,7 +3196,7 @@ const SICKCHILL = {
             });
         },
         restart() {
-            let currentPid = srPID;
+            let currentPid = scPID;
             let checkIsAlive = setTimeout(() => {
                 setInterval(() => {
                     $.post(scRoot + '/home/is-alive/', data => {
@@ -3206,7 +3211,7 @@ const SICKCHILL = {
                             $('#restart_loading').hide();
                             $('#restart_success').show();
                             $('#refresh_message').show();
-                            srPID = data.msg;
+                            scPID = data.msg;
                             currentPid = data.msg;
                             checkIsAlive = setInterval(() => {
                                 $.post(scRoot + '/home/is-alive/', () => { // eslint-disable-line max-nested-callbacks
@@ -3693,6 +3698,9 @@ const SICKCHILL = {
                             0(node) { // Time
                                 return $(node).find('time').attr('datetime');
                             },
+                            2(node) { // Provider
+                                return ($(node).find('img').attr('alt') || 'unknown').toLowerCase();
+                            },
                             4(node) { // Quality
                                 return $(node).find('span').text().toLowerCase();
                             },
@@ -3704,7 +3712,7 @@ const SICKCHILL = {
                             return $(node).find('time').attr('datetime');
                         },
                         2(node) { // Provider
-                            return $(node).attr('provider').toLowerCase();
+                            return $(node).find('span').text().toLowerCase();
                         },
                     };
 
@@ -4044,7 +4052,7 @@ const SICKCHILL = {
                 const url = scRoot + '/addShows/getTrendingShowImage';
                 let ajaxCount = 0;
                 $('img.trakt-image').each(function () {
-                    // Only load image from indexer when there is a indexer_id present in data-src-indexer-id
+                    // Only load image from indexer when there is an indexer_id present in data-src-indexer-id
                     const indexerId = $(this).attr('data-src-indexer-id');
                     if (indexerId) {
                         // Use setTimemout to delay lookup for each lookup
@@ -4067,7 +4075,7 @@ const SICKCHILL = {
             };
 
             $.fn.loadRemoteShows = function (path, loadingTxt, errorTxt) {
-                $(this).html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" />&nbsp;' + loadingTxt);
+                $(this).html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" />&nbsp;' + loadingTxt);
                 $(this).load(scRoot + path + ' #container', function (response, status) {
                     if (status === 'error') {
                         $(this).empty().html(errorTxt);
@@ -4240,11 +4248,11 @@ const SICKCHILL = {
 
                 const searchingFor = _($('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
                 $('#searchResults').empty().html(
-                    '<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" height="32" width="32" /> '
+                    '<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" /> '
                     + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor),
                 );
 
-                searchRequestXhr = $.ajax({
+                searchRequestXhr = $.post({
                     url: scRoot + '/addShows/searchIndexersForShowName',
                     data: {
                         search_term: $('#show-name').val().trim(), // eslint-disable-line camelcase
@@ -4267,7 +4275,7 @@ const SICKCHILL = {
                             const shows = [];
 
                             $.each(data.results, (index, object) => {
-                                const whichSeries = object.join('|').replaceAll(/"/, '');
+                                const whichSeries = object.join('|').replaceAll('"', '');
 
                                 const show = {
                                     obj: whichSeries,
@@ -4391,7 +4399,7 @@ const SICKCHILL = {
                     }
                 });
 
-                $('#tableDiv').html('<img id="searchingAnim" src="' + scRoot + '/images/loading32.gif" height="32" width="32" /> ' + _('loading folders...'));
+                $('#tableDiv').html('<img id="searchingAnim" src="' + scRoot + '/images/loading32.gif" alt="loading" height="32" width="32" /> ' + _('loading folders...'));
                 $.post(scRoot + '/addShows/massAddTable/', url, data => {
                     $('#tableDiv').html(data);
                     $('#addRootDirTable').tablesorter({

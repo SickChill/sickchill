@@ -57,7 +57,7 @@ class ProperFinder(object):
 
         # for each provider get a list of the
         original_thread_name = threading.current_thread().name
-        providers = [x for x in oldbeard.providers.sortedProviderList(settings.RANDOMIZE_PROVIDERS) if x.is_active]
+        providers = [x for x in oldbeard.providers.sorted_provider_list(settings.RANDOMIZE_PROVIDERS) if x.is_active]
         for curProvider in providers:
             threading.current_thread().name = f"{original_thread_name} :: [{curProvider.name}]"
 

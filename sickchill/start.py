@@ -43,7 +43,7 @@ from .providers import metadata
 from .system.Shutdown import Shutdown
 
 
-def initialize(consoleLogging=True):
+def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool = False, disable_file_logging: bool = False) -> bool:
     with settings.INIT_LOCK:
         if settings.__INITIALIZED__:
             return False
@@ -84,8 +84,8 @@ def initialize(consoleLogging=True):
         settings.DEVELOPER = check_setting_bool(settings.CFG, "General", "developer")
 
         # debugging
-        settings.DEBUG = check_setting_bool(settings.CFG, "General", "debug")
-        settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug")
+        settings.DEBUG = check_setting_bool(settings.CFG, "General", "debug") or debug
+        settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug") or dbdebug
 
         settings.DEFAULT_PAGE = check_setting_str(settings.CFG, "General", "default_page", "home")
         if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
@@ -97,14 +97,14 @@ def initialize(consoleLogging=True):
 
         if settings.LOG_SIZE > 100:
             settings.LOG_SIZE = 10.0
-        fileLogging = True
+        file_logging = not disable_file_logging
 
-        if not helpers.makeDir(settings.LOG_DIR) or not os.access(settings.LOG_DIR, os.W_OK):
+        if file_logging and not (helpers.makeDir(settings.LOG_DIR) and os.access(settings.LOG_DIR, os.W_OK)):
             sys.stderr.write("!!! No log folder or log folder not writable, logging to console only!\n")
-            fileLogging = False
+            file_logging = False
 
         # init logging
-        logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
+        logger.init_logging(console_logging=console_logging, file_logging=file_logging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
 
         # Initializes oldbeard.gh
         setup_github()
@@ -120,10 +120,10 @@ def initialize(consoleLogging=True):
 
         # Check if we need to perform a restore of the cache folder
         try:
-            restoreDir = os.path.join(settings.DATA_DIR, "restore")
-            if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, "cache")):
+            restore_dir = os.path.join(settings.DATA_DIR, "restore")
+            if os.path.exists(restore_dir) and os.path.exists(os.path.join(restore_dir, "cache")):
 
-                def restoreCache(srcDir, dstDir):
+                def restore_cache(srcDir, dstDir):
                     def path_leaf(path):
                         head, tail = os.path.split(path)
                         return tail or os.path.basename(head)
@@ -139,7 +139,7 @@ def initialize(consoleLogging=True):
                     except Exception as er:
                         logger.exception(f"Restore: restoring cache failed: {er}")
 
-                restoreCache(os.path.join(restoreDir, "cache"), settings.CACHE_DIR)
+                restore_cache(os.path.join(restore_dir, "cache"), settings.CACHE_DIR)
         except Exception as error:
             logger.exception(f"Restore: restoring cache failed: {error}")
         finally:
@@ -766,13 +766,13 @@ def initialize(consoleLogging=True):
         settings.providerList = providers.makeProviderList()
 
         settings.NEWZNAB_DATA = check_setting_str(settings.CFG, "Newznab", "newznab_data")
-        settings.newznabProviderList = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
+        settings.newznab_provider_list = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(settings.CFG, "TorrentRss", "torrentrss_data")
-        settings.torrentRssProviderList = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
+        settings.torrent_rss_provider_list = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
 
         # dynamically load provider settings
-        for curProvider in providers.sortedProviderList():
+        for curProvider in providers.sorted_provider_list():
             curProvider.enabled = (curProvider.can_daily or curProvider.can_backlog) and check_setting_bool(
                 settings.CFG, curProvider.get_id().upper(), curProvider.get_id()
             )
@@ -831,18 +831,13 @@ def initialize(consoleLogging=True):
             if hasattr(curProvider, "cookies"):
                 curProvider.cookies = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cookies"), censor_log=True)
 
-        # message = _(
-        #     'SickChill support, discussions, bug reports, feature requests, and all other communication is now on <a href="https://discord.gg/FXre9qkHwE">discord (click here)</a> or can be found in the menu under tools>discord. Code and releases will remain on GitHub!'
-        # )
-        # helpers.add_site_message(message, tag="discord_support", level="success")
-
         providers.check_enabled_providers()
 
         if not os.path.isfile(settings.CONFIG_FILE):
             logger.debug("Unable to find '" + settings.CONFIG_FILE + "', all settings will be default!")
             save_config()
 
-        # initialize the main SB database
+        # initialize the main SC database
         main_db_con = db.DBConnection()
         db.upgrade_database(main_db_con, main.InitialSchema)
 
@@ -1094,7 +1089,7 @@ def save_config():
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
-    for curProvider in providers.sortedProviderList():
+    for curProvider in providers.sorted_provider_list():
         new_config[curProvider.get_id().upper()] = {}
         new_config[curProvider.get_id().upper()][curProvider.get_id()] = int(curProvider.enabled)
         if hasattr(curProvider, "custom_url"):
@@ -1602,7 +1597,7 @@ def save_config():
                 "email_subject": settings.EMAIL_SUBJECT,
             },
             "Newznab": {"newznab_data": settings.NEWZNAB_DATA},
-            "TorrentRss": {"torrentrss_data": "!!!".join([x.configStr() for x in settings.torrentRssProviderList])},
+            "TorrentRss": {"torrentrss_data": "!!!".join([x.config_string() for x in settings.torrent_rss_provider_list])},
             "GUI": {
                 "gui_name": settings.GUI_NAME,
                 "language": settings.GUI_LANG,

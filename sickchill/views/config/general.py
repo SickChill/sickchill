@@ -112,7 +112,8 @@ class ConfigGeneral(Config):
         anon_redirect=None,
         calendar_unprotected=None,
         calendar_icons=None,
-        debug=None,
+        debug=False,
+        dbdebug=False,
         notify_on_logged_error=None,
         ssl_verify=None,
         no_restart=None,
@@ -139,7 +140,7 @@ class ConfigGeneral(Config):
         gui_language=None,
         ignore_broken_symlinks=None,
         ended_shows_update_interval=None,
-        log_dir=None,
+        log_dir="",
     ):
         results = []
 
@@ -190,8 +191,10 @@ class ConfigGeneral(Config):
         settings.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
         settings.NO_RESTART = config.checkbox_to_value(no_restart)
         settings.DEBUG = config.checkbox_to_value(debug)
+        settings.DBDEBUG = config.checkbox_to_value(dbdebug)
+        logger.restart()
+
         settings.NOTIFY_ON_LOGGED_ERROR = config.checkbox_to_value(notify_on_logged_error)
-        logger.set_level()
 
         settings.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         helpers.set_opener(settings.SSL_VERIFY)
