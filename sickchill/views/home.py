@@ -1723,7 +1723,7 @@ class Home(WebRoot):
     # Possible status: Downloaded, Snatched, etc...
     # Returns {'show': 279530, 'episodes' : ['episode' : 6, 'season' : 1, 'searchstatus' : 'queued', 'status' : 'running', 'quality': '4013']
     def getManualSearchStatus(self):
-        show = self.get_query_argument("show")
+        show = self.get_query_argument("show", None)
 
         def getEpisodes(search_thread, search_status):
             results = []
