@@ -173,7 +173,7 @@ const SICKCHILL = {
                     if (lastOpenedPanel) {
                         // 1. Show the previous opened tab by removing the jQuery UI class
                         // 2. Make the tab temporary position:absolute so the two tabs will overlap
-                        // 3. Set topposition so they will overlap if you go from tab 1 to tab 0
+                        // 3. Set topposition, so they will overlap if you go from tab 1 to tab 0
                         // 4. Remove position:absolute after animation
                         lastOpenedPanel
                             .toggleClass('ui-tabs-hide')
@@ -1129,7 +1129,7 @@ const SICKCHILL = {
                     for (let i = 0; i < pushbullet.devices.length; i++) {
                         if (pushbullet.devices[i].active === true) {
                             if (pushbullet.currentDevice === pushbullet.devices[i].iden) {
-                                $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '" selected>' + pushbullet.devices[i].nickname + '</option>');
+                                $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '" selected="selected">' + pushbullet.devices[i].nickname + '</option>');
                             } else {
                                 $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '">' + pushbullet.devices[i].nickname + '</option>');
                             }
@@ -1165,7 +1165,7 @@ const SICKCHILL = {
                         $('#pushbullet_channel_list').prepend('<option value="" ' + (pushbullet.currentChannel ? 'selected' : '') + '>No Channel</option>');
                         $('#pushbullet_channel_list').prop('disabled', false);
                     } else {
-                        $('#pushbullet_channel_list').prepend('<option value>No Channels</option>');
+                        $('#pushbullet_channel_list').prepend('<option value="">No Channels</option>');
                         $('#pushbullet_channel_list').prop('disabled', true);
                     }
 
