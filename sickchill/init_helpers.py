@@ -4,10 +4,9 @@ import logging
 import os
 import re
 import sys
+from importlib.metadata import Distribution, PackageNotFoundError
 from pathlib import Path
 from typing import Union
-
-from importlib.metadata import Distribution, PackageNotFoundError
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
