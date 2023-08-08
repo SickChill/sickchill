@@ -1129,7 +1129,7 @@ const SICKCHILL = {
                     for (let i = 0; i < pushbullet.devices.length; i++) {
                         if (pushbullet.devices[i].active === true) {
                             if (pushbullet.currentDevice === pushbullet.devices[i].iden) {
-                                $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '" selected="selected">' + pushbullet.devices[i].nickname + '</option>');
+                                $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '" selected>' + pushbullet.devices[i].nickname + '</option>');
                             } else {
                                 $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '">' + pushbullet.devices[i].nickname + '</option>');
                             }
