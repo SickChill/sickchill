@@ -10,10 +10,10 @@
                 <label>
                     <span>${_('Limit')}:</span>
                     <select name="limit" id="limit" class="form-control form-control-inline input-sm" title="limit">
-                        <option value="100" ${('', 'selected="selected"')[limit == '100']}>${_('100')}</option>
-                        <option value="250" ${('', 'selected="selected"')[limit == '250']}>${_('250')}</option>
-                        <option value="500" ${('', 'selected="selected"')[limit == '500']}>${_('500')}</option>
-                        <option value="0" ${('', 'selected="selected"')[limit == '0']}>${_('All')}</option>
+                        <option value="100" ${('', 'selected')[limit == '100']}>${_('100')}</option>
+                        <option value="250" ${('', 'selected')[limit == '250']}>${_('250')}</option>
+                        <option value="500" ${('', 'selected')[limit == '500']}>${_('500')}</option>
+                        <option value="0" ${('', 'selected')[limit == '0']}>${_('All')}</option>
                     </select>
                 </label>
             </div>

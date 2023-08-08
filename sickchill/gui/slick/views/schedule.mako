@@ -53,9 +53,9 @@
                     <label>
                         <span>${_('Sort By')}:</span>
                         <select id="sort" class="form-control form-control-inline input-sm" title="Sort">
-                            <option value="${scRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
-                            <option value="${scRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
-                            <option value="${scRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=date" ${('', 'selected')[settings.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=network" ${('', 'selected')[settings.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=show" ${('', 'selected')[settings.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
                         </select>
                         &nbsp;
                     </label>
@@ -63,8 +63,8 @@
                 <label>
                     <span>${_('View Paused')}:</span>
                     <select id="viewpaused" class="form-control form-control-inline input-sm" title="View paused">
-                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
-                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${('', 'selected')[not bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${('', 'selected')[bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
                     </select>
                     &nbsp;
                 </label>
@@ -72,8 +72,8 @@
                 <label>
                     <span>${_('View Snatched')}:</span>
                     <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
-                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
-                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected')[not bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected')[bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
                     </select>
                     &nbsp;
                 </label>
@@ -81,10 +81,10 @@
                 <label>
                     <span>${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm" title="Layout">
-                        <option value="${scRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
-                        <option value="${scRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
-                        <option value="${scRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
-                        <option value="${scRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=poster" ${('', 'selected')[settings.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected')[settings.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=banner" ${('', 'selected')[settings.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=list" ${('', 'selected')[settings.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
                     </select>
                 </label>
             </div>

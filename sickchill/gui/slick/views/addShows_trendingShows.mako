@@ -21,7 +21,7 @@
 
                 <select id="showsort" class="form-control form-control-inline input-sm" title="Show Sort">
                     <option value="name">${_('Name')}</option>
-                    <option value="original" selected="selected">${_('Original')}</option>
+                    <option value="original" selected>${_('Original')}</option>
                     <option value="votes">${_('Votes')}</option>
                     <option value="rating">% ${_('Rating')}</option>
                     <option value="rating_votes">% ${_('Rating > Votes')}</option>
@@ -31,7 +31,7 @@
                 </label>
 
                 <select id="showsortdirection" class="form-control form-control-inline input-sm" title="Show Sort Direction">
-                    <option value="asc" selected="selected">${_('Asc')}</option>
+                    <option value="asc" selected>${_('Asc')}</option>
                     <option value="desc">${_('Desc')}</option>
                 </select>
                 <label for="traktlistselection">
@@ -41,7 +41,7 @@
                 <select id="traktlistselection" class="form-control form-control-inline input-sm" title="Trakt List Selection">
                     % for trakt_option in trakt_options:
                         % if traktList == trakt_option:
-                            <option value="${trakt_option}" selected="selected">${trakt_options[trakt_option]}</option>
+                            <option value="${trakt_option}" selected>${trakt_options[trakt_option]}</option>
                         % else:
                             <option value="${trakt_option}">${trakt_options[trakt_option]}</option>
                         % endif

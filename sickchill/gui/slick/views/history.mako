@@ -24,7 +24,7 @@
                     <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" title="Limit">
                         % for val in [10, 25, 50, 100, 250, 500, 750, 1000, 0]:
                             % if limit == val:
-                                <option value="${val}" selected="selected">${val}</option>
+                                <option value="${val}" selected>${val}</option>
                             % else:
                                 <option value="${val}">${val}</option>
                             % endif

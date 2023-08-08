@@ -630,7 +630,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <select name="${curTorrentProvider.get_id("_sorting")}" id="${curTorrentProvider.get_id("_sorting")}" class="form-control input-sm input200">
                                                 % for curAction in ('last', 'seeders', 'leechers'):
-                                                    <option value="${curAction}" ${('', 'selected="selected"')[curAction == curTorrentProvider.sorting]}>${curAction}</option>
+                                                    <option value="${curAction}" ${('', 'selected')[curAction == curTorrentProvider.sorting]}>${curAction}</option>
                                                 % endfor
                                             </select>
                                         </div>
@@ -742,7 +742,7 @@
                                             <select name="${curTorrentProvider.get_id("_cat")}"
                                                     id="${curTorrentProvider.get_id("_cat")}" class="form-control input-sm input200">
                                                 % for i in curTorrentProvider.category_dict.values():
-                                                    <option value="${i}" ${('', 'selected="selected"')[i == curTorrentProvider.cat]}>${i}</option>
+                                                    <option value="${i}" ${('', 'selected')[i == curTorrentProvider.cat]}>${i}</option>
                                                 % endfor
                                             </select>
                                         </div>
