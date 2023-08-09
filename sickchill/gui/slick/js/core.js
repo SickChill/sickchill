@@ -3268,6 +3268,24 @@ const SICKCHILL = {
 
                 return row;
             };
+
+            // copied from above config section and put in manage area so massEditUpdate can see it.
+            $('#configForm').ajaxForm({
+                beforeSubmit() {
+                    $('.config_submitter .config_submitter_refresh').each(function () {
+                        $(this).attr('disabled', 'disabled');
+                        $(this).after('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt="loading"> Saving...</span>');
+                        $(this).hide();
+                    });
+                },
+                success() {
+                    setTimeout(configSuccess, 2000);
+                },
+            });
+
+            $('#config_save_button').on('click', () => {
+                $('#configForm').submit();
+            });
         },
         index() {
             $('.resetsorting').on('click', () => {
