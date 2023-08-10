@@ -3269,7 +3269,7 @@ const SICKCHILL = {
                 return row;
             };
 
-            // copied from above config section and put in manage area so massEditUpdate can see it.
+            // Copied from above config section and put in manage area so massEditUpdate can see it.
             $('#configForm').ajaxForm({
                 beforeSubmit() {
                     $('.config_submitter .config_submitter_refresh').each(function () {
