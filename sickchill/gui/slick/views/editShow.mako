@@ -28,7 +28,7 @@
                 <option value="${show_indexer.FANART}">Fanart</option>
                 <option value="${show_indexer.TMDB}">TMDB</option>
                 % for index, indexer in show_indexer:
-                <option value="${index}" ${('', 'selected="selected"')[show.indexer == index]}>
+                <option value="${index}" ${('', 'selected')[show.indexer == index]}>
                     ${indexer.name}
                 </option>
                 % endfor
@@ -104,7 +104,7 @@
                                             <div class="col-md-12">
                                                 <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control input-sm input100" title="defaultEpStatus">
                                                     % for curStatus in [WANTED, SKIPPED, IGNORED]:
-                                                        <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == show.default_ep_status]}>${statusStrings[curStatus]}</option>
+                                                        <option value="${curStatus}" ${('', 'selected')[curStatus == show.default_ep_status]}>${statusStrings[curStatus]}</option>
                                                     % endfor
                                                 </select>
                                             </div>

@@ -173,7 +173,7 @@ const SICKCHILL = {
                     if (lastOpenedPanel) {
                         // 1. Show the previous opened tab by removing the jQuery UI class
                         // 2. Make the tab temporary position:absolute so the two tabs will overlap
-                        // 3. Set topposition so they will overlap if you go from tab 1 to tab 0
+                        // 3. Set topposition, so they will overlap if you go from tab 1 to tab 0
                         // 4. Remove position:absolute after animation
                         lastOpenedPanel
                             .toggleClass('ui-tabs-hide')
@@ -1165,7 +1165,7 @@ const SICKCHILL = {
                         $('#pushbullet_channel_list').prepend('<option value="" ' + (pushbullet.currentChannel ? 'selected' : '') + '>No Channel</option>');
                         $('#pushbullet_channel_list').prop('disabled', false);
                     } else {
-                        $('#pushbullet_channel_list').prepend('<option value>No Channels</option>');
+                        $('#pushbullet_channel_list').prepend('<option value="">No Channels</option>');
                         $('#pushbullet_channel_list').prop('disabled', true);
                     }
 
@@ -3268,6 +3268,24 @@ const SICKCHILL = {
 
                 return row;
             };
+
+            // Copied from above config section and put in manage area so massEditUpdate can see it.
+            $('#configForm').ajaxForm({
+                beforeSubmit() {
+                    $('.config_submitter .config_submitter_refresh').each(function () {
+                        $(this).attr('disabled', 'disabled');
+                        $(this).after('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt="loading"> Saving...</span>');
+                        $(this).hide();
+                    });
+                },
+                success() {
+                    setTimeout(configSuccess, 2000);
+                },
+            });
+
+            $('#config_save_button').on('click', () => {
+                $('#configForm').submit();
+            });
         },
         index() {
             $('.resetsorting').on('click', () => {

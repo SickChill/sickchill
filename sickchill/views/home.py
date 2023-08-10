@@ -1213,7 +1213,7 @@ class Home(WebRoot):
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
 
-            location = os.path.normpath(self.get_argument("location"))
+            location = os.path.normpath(self.get_argument("location", show_obj._location))
 
             # noinspection PyProtectedMember
             old_location = os.path.normpath(show_obj._location)
@@ -1723,7 +1723,7 @@ class Home(WebRoot):
     # Possible status: Downloaded, Snatched, etc...
     # Returns {'show': 279530, 'episodes' : ['episode' : 6, 'season' : 1, 'searchstatus' : 'queued', 'status' : 'running', 'quality': '4013']
     def getManualSearchStatus(self):
-        show = self.get_query_argument("show")
+        show = self.get_query_argument("show", None)
 
         def getEpisodes(search_thread, search_status):
             results = []

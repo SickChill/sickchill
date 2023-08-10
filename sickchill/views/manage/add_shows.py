@@ -31,9 +31,8 @@ class AddShows(Home):
         t = PageTemplate(rh=self, filename="addShows.mako")
         return t.render(title=_("Add Shows"), header=_("Add Shows"), topmenu="home", controller="addShows", action="index")
 
-    @staticmethod
-    def sanitizeFileName(name):
-        return sanitize_filename(name)
+    def sanitizeFileName(self):
+        return sanitize_filename(self.get_body_argument("name"))
 
     def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
@@ -414,7 +413,7 @@ class AddShows(Home):
         if try_int(indexer_id) <= 0 or existing:
             return add_error(existing)
 
-        return self.newShow("|".join([str(1), "", indexer_id, show_name]), [], search_string=show_name)
+        return self.newShow("|".join([str(1), "", indexer_id, ""]), [], search_string=show_name)
 
     def addNewShow(
         self,

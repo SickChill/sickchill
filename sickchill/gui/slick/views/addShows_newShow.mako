@@ -90,9 +90,9 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="providedIndexer" id="providedIndexer"
                                                 class="form-control form-control-inline input-sm">
-                                            <option value="0" ${('', 'selected="selected"')[provided_indexer == 0]}>${_('All Indexers')}</option>
+                                            <option value="0" ${('', 'selected')[provided_indexer == 0]}>${_('All Indexers')}</option>
                                             % for index, indexer in show_indexer:
-                                                <option value="${index}" ${('', 'selected="selected"')[provided_indexer == index]}>
+                                                <option value="${index}" ${('', 'selected')[provided_indexer == index]}>
                                                     ${indexer.name}
                                                 </option>
                                             % endfor
