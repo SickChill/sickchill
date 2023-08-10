@@ -1213,8 +1213,7 @@ class Home(WebRoot):
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
 
-            if "massEditSubmit" not in self.path_args[0]:
-                location = os.path.normpath(self.get_argument("location"))
+            location = os.path.normpath(self.get_argument("location", show_obj._location))
 
             # noinspection PyProtectedMember
             old_location = os.path.normpath(show_obj._location)
