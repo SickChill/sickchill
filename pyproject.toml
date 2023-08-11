@@ -69,7 +69,7 @@ pytest = "^7.0.1"
 isort = "^5.10.1"
 poethepoet = ">=0.16,<0.20"
 po2json = "^0.2.2"
-pre-commit = "^2.20.0"
+pre-commit = ">=2.20,<4.0"
 
 [tool.poetry.group.speedups]
 optional = true
