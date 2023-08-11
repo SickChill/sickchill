@@ -67,7 +67,7 @@ flake9 = "^3.8.3"
 codecov = "^2.1.12"
 pytest = "^7.0.1"
 isort = "^5.10.1"
-poethepoet = ">=0.16,<0.20"
+poethepoet = ">=0.16,<0.22"
 po2json = "^0.2.2"
 pre-commit = "^2.20.0"
 
