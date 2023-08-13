@@ -353,7 +353,7 @@ const SICKCHILL = {
                 beforeSubmit() {
                     $('.config_submitter .config_submitter_refresh').each(function () {
                         $(this).attr('disabled', 'disabled');
-                        $(this).after('<span>' + loading +' Saving...</span>');
+                        $(this).after('<span>' + loading + ' Saving...</span>');
                         $(this).hide();
                     });
                 },
