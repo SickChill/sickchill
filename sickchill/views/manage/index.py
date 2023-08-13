@@ -262,10 +262,10 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/subtitleMissed/")
 
     def backlogShow(self, indexer_id):
-        show_obj = Show.find(settings.showList, int(indexer_id))
+        show_object = Show.find(settings.showList, int(indexer_id))
 
-        if show_obj:
-            settings.backlogSearchScheduler.action.searchBacklog([show_obj])
+        if show_object:
+            settings.backlogSearchScheduler.action.searchBacklog([show_object])
 
         return self.redirect("/manage/backlogOverview/")
 
@@ -277,7 +277,7 @@ class Manage(Home, WebRoot):
         showSQLResults = {}
 
         main_db_con = db.DBConnection()
-        for curShow in settings.showList:
+        for current_show in settings.showList:
             epCounts = {
                 Overview.SKIPPED: 0,
                 Overview.WANTED: 0,
@@ -294,18 +294,18 @@ class Manage(Home, WebRoot):
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.season IS NOT NULL "
                 "AND tv_episodes.showid IN (SELECT tv_shows.indexer_id FROM tv_shows WHERE tv_shows.indexer_id = ? "
                 "AND paused = 0) ORDER BY tv_episodes.season DESC, tv_episodes.episode DESC",
-                [curShow.indexerid],
+                [current_show.indexerid],
             )
 
             for curResult in sql_results:
-                curEpCat = curShow.getOverview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
+                curEpCat = current_show.getOverview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
                 if curEpCat:
                     epCats["{ep}".format(ep=episode_num(curResult["season"], curResult["episode"]))] = curEpCat
                     epCounts[curEpCat] += 1
 
-            showCounts[curShow.indexerid] = epCounts
-            showCats[curShow.indexerid] = epCats
-            showSQLResults[curShow.indexerid] = sql_results
+            showCounts[current_show.indexerid] = epCounts
+            showCats[current_show.indexerid] = epCats
+            showSQLResults[current_show.indexerid] = sql_results
 
         def showQualSnatched(show):
             return Quality.splitQuality(show.quality)[1]
@@ -323,11 +323,11 @@ class Manage(Home, WebRoot):
             ],
             key=lambda x: x.sort_name,
         )
-        for curShow in backLogShows:
-            totalWanted += showCounts[curShow.indexerid][Overview.WANTED]
-            totalQual += showCounts[curShow.indexerid][Overview.QUAL]
-            if showQualSnatched(curShow):
-                totalQualSnatched += showCounts[curShow.indexerid][Overview.SNATCHED]
+        for current_show in backLogShows:
+            totalWanted += showCounts[current_show.indexerid][Overview.WANTED]
+            totalQual += showCounts[current_show.indexerid][Overview.QUAL]
+            if showQualSnatched(current_show):
+                totalQualSnatched += showCounts[current_show.indexerid][Overview.SNATCHED]
 
         return t.render(
             showCounts=showCounts,
@@ -356,21 +356,18 @@ class Manage(Home, WebRoot):
         return result
 
     # noinspection PyProtectedMember
-    def massEdit(self, toEdit=None):
+    def massEdit(self):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
-        if not toEdit:
-            return self.redirect("/manage/")
+        edit_shows = self.get_body_argument("edit_shows")
 
-        showIDs = toEdit.split("|")
-        showList = []
-        showNames = []
-        for curID in showIDs:
-            curID = int(curID)
-            show_obj = Show.find(settings.showList, curID)
-            if show_obj:
-                showList.append(show_obj)
-                showNames.append(show_obj.name)
+        show_list = []
+        show_names = []
+        for show_id in edit_shows.split("|"):
+            show_object = Show.find(settings.showList, show_id)
+            if show_object:
+                show_list.append(show_object)
+                show_names.append(show_object.name)
 
         season_folders_all_same = True
         last_season_folders = None
@@ -401,67 +398,67 @@ class Manage(Home, WebRoot):
 
         root_dir_list = []
 
-        for curShow in showList:
-            cur_root_dir = self.__gooey_path(curShow._location, "dirname")
-            if cur_root_dir and cur_root_dir != curShow._location and cur_root_dir not in root_dir_list:
-                root_dir_list.append(cur_root_dir)
+        for current_show in show_list:
+            show_root_dir = self.__gooey_path(current_show._location, "dirname")
+            if show_root_dir and show_root_dir != current_show._location and show_root_dir not in root_dir_list:
+                root_dir_list.append(show_root_dir)
 
             # if we know they're not all the same then no point even bothering
             if paused_all_same:
                 # if we had a value already and this value is different then they're not all the same
-                if last_paused not in (None, curShow.paused):
+                if last_paused not in (None, current_show.paused):
                     paused_all_same = False
                 else:
-                    last_paused = curShow.paused
+                    last_paused = current_show.paused
 
             if default_ep_status_all_same:
-                if last_default_ep_status not in (None, curShow.default_ep_status):
+                if last_default_ep_status not in (None, current_show.default_ep_status):
                     default_ep_status_all_same = False
                 else:
-                    last_default_ep_status = curShow.default_ep_status
+                    last_default_ep_status = current_show.default_ep_status
 
             if anime_all_same:
                 # if we had a value already and this value is different then they're not all the same
-                if last_anime not in (None, curShow.is_anime):
+                if last_anime not in (None, current_show.is_anime):
                     anime_all_same = False
                 else:
-                    last_anime = curShow.anime
+                    last_anime = current_show.anime
 
             if season_folders_all_same:
-                if last_season_folders not in (None, curShow.season_folders):
+                if last_season_folders not in (None, current_show.season_folders):
                     season_folders_all_same = False
                 else:
-                    last_season_folders = curShow.season_folders
+                    last_season_folders = current_show.season_folders
 
             if quality_all_same:
-                if last_quality not in (None, curShow.quality):
+                if last_quality not in (None, current_show.quality):
                     quality_all_same = False
                 else:
-                    last_quality = curShow.quality
+                    last_quality = current_show.quality
 
             if subtitles_all_same:
-                if last_subtitles not in (None, curShow.subtitles):
+                if last_subtitles not in (None, current_show.subtitles):
                     subtitles_all_same = False
                 else:
-                    last_subtitles = curShow.subtitles
+                    last_subtitles = current_show.subtitles
 
             if scene_all_same:
-                if last_scene not in (None, curShow.scene):
+                if last_scene not in (None, current_show.scene):
                     scene_all_same = False
                 else:
-                    last_scene = curShow.scene
+                    last_scene = current_show.scene
 
             if sports_all_same:
-                if last_sports not in (None, curShow.sports):
+                if last_sports not in (None, current_show.sports):
                     sports_all_same = False
                 else:
-                    last_sports = curShow.sports
+                    last_sports = current_show.sports
 
             if air_by_date_all_same:
-                if last_air_by_date not in (None, curShow.air_by_date):
+                if last_air_by_date not in (None, current_show.air_by_date):
                     air_by_date_all_same = False
                 else:
-                    last_air_by_date = curShow.air_by_date
+                    last_air_by_date = current_show.air_by_date
 
         default_ep_status_value = last_default_ep_status if default_ep_status_all_same else None
         paused_value = last_paused if paused_all_same else None
@@ -477,8 +474,8 @@ class Manage(Home, WebRoot):
         require_words_value = None
 
         return t.render(
-            showList=toEdit,
-            showNames=showNames,
+            show_list=edit_shows,
+            show_names=show_names,
             default_ep_status_value=default_ep_status_value,
             paused_value=paused_value,
             anime_value=anime_value,
@@ -500,57 +497,56 @@ class Manage(Home, WebRoot):
         )
 
     # noinspection PyProtectedMember, PyUnusedLocal
-    def massEditSubmit(
-        self,
-        paused=None,
-        default_ep_status=None,
-        anime=None,
-        sports=None,
-        scene=None,
-        season_folders=None,
-        quality_preset=None,
-        subtitles=None,
-        air_by_date=None,
-        anyQualities=None,
-        bestQualities=None,
-        toEdit=None,
-        mass_ignore_words=None,
-        mass_prefer_words=None,
-        mass_require_words=None,
-        ignore_words=None,
-        prefer_words=None,
-        require_words=None,
-        *args,
-        **kwargs,
-    ):
-        dir_map = {}
-        for cur_arg in [x for x in kwargs if x.startswith("orig_root_dir_")]:
-            dir_map[kwargs[cur_arg]] = kwargs[cur_arg.replace("orig_root_dir_", "new_root_dir_")]
+    def massEditSubmit(self):
+        paused = self.get_body_argument("paused", None)
+        default_ep_status = self.get_body_argument("default_ep_status", None)
+        anime = self.get_body_argument("anime", None)
+        sports = self.get_body_argument("sports", None)
+        scene = self.get_body_argument("scene", None)
+        season_folders = self.get_body_argument("season_folders", None)
+        quality_preset = self.get_body_argument("quality_preset", None)
+        subtitles = self.get_body_argument("subtitles", None)
+        air_by_date = self.get_body_argument("air_by_date", None)
+        any_qualities = self.get_body_argument("anyQualities", None)
+        best_qualities = self.get_body_argument("bestQualities", None)
+        edit_shows = self.get_body_argument("edit_shows", None)
+        mass_ignore_words = self.get_body_argument("mass_ignore_words", None)
+        mass_prefer_words = self.get_body_argument("mass_prefer_words", None)
+        mass_require_words = self.get_body_argument("mass_require_words", None)
+        ignore_words = self.get_body_argument("ignore_words", None)
+        prefer_words = self.get_body_argument("prefer_words", None)
+        require_words = self.get_body_argument("require_words", None)
 
-        showIDs = toEdit.split("|")
+        root_dir_map = {}
+        for root_dir in [x for x in self.request.body_arguments if x.startswith("orig_root_dir_")]:
+            old_root = self.get_body_argument(root_dir, None)
+            new_root = self.get_body_argument(root_dir.replace("orig_root_dir_", "new_root_dir_"), None)
+            if old_root:
+                root_dir_map[old_root] = new_root
+
         errors = []
-        for curShow in showIDs:
-            curErrors = []
-            show_obj = Show.find(settings.showList, int(curShow or 0))
-            if not show_obj:
+        for current_show in edit_shows.split("|"):
+            current_show_errors = []
+            show_object = Show.find(settings.showList, current_show)
+            if not show_object:
                 continue
 
-            cur_root_dir = self.__gooey_path(show_obj._location, "dirname")
-            cur_show_dir = self.__gooey_path(show_obj._location, "basename")
-            if cur_root_dir and dir_map.get(cur_root_dir) and cur_root_dir != dir_map.get(cur_root_dir):
-                new_show_dir = os.path.join(dir_map[cur_root_dir], cur_show_dir)
-                logger.info("For show {show_obj.name}" + " changing dir from " + show_obj._location + " to " + new_show_dir)
+            show_root_dir = self.__gooey_path(show_object._location, "dirname")
+            cur_show_dir = self.__gooey_path(show_object._location, "basename")
+            if show_root_dir and root_dir_map.get(show_root_dir) and show_root_dir != root_dir_map.get(show_root_dir):
+                new_show_dir = os.path.join(root_dir_map[show_root_dir], cur_show_dir)
+                logger.info(f"For show {show_object.name}" + " changing dir from " + show_object._location + " to " + new_show_dir)
             else:
-                new_show_dir = show_obj._location
+                new_show_dir = show_object._location
 
-            new_paused = ("off", "on")[(paused == "enable", show_obj.paused)[paused == "keep"]]
-            new_default_ep_status = (default_ep_status, show_obj.default_ep_status)[default_ep_status == "keep"]
-            new_anime = ("off", "on")[(anime == "enable", show_obj.anime)[anime == "keep"]]
-            new_sports = ("off", "on")[(sports == "enable", show_obj.sports)[sports == "keep"]]
-            new_scene = ("off", "on")[(scene == "enable", show_obj.scene)[scene == "keep"]]
-            new_air_by_date = ("off", "on")[(air_by_date == "enable", show_obj.air_by_date)[air_by_date == "keep"]]
-            new_season_folders = ("off", "on")[(season_folders == "enable", show_obj.season_folders)[season_folders == "keep"]]
-            new_subtitles = ("off", "on")[(subtitles == "enable", show_obj.subtitles)[subtitles == "keep"]]
+            new_paused = ("off", "on")[(paused == "enable", show_object.paused)[paused == "keep"]]
+            new_default_ep_status = (default_ep_status, show_object.default_ep_status)[default_ep_status == "keep"]
+            new_anime = ("off", "on")[(anime == "enable", show_object.anime)[anime == "keep"]]
+            new_sports = ("off", "on")[(sports == "enable", show_object.sports)[sports == "keep"]]
+            new_scene = ("off", "on")[(scene == "enable", show_object.scene)[scene == "keep"]]
+            new_air_by_date = ("off", "on")[(air_by_date == "enable", show_object.air_by_date)[air_by_date == "keep"]]
+            new_season_folders = ("off", "on")[(season_folders == "enable", show_object.season_folders)[season_folders == "keep"]]
+            new_subtitles = ("off", "on")[(subtitles == "enable", show_object.subtitles)[subtitles == "keep"]]
 
             # new mass words update section
             if ignore_words == "new":
@@ -558,34 +554,34 @@ class Manage(Home, WebRoot):
             elif ignore_words == "clear":
                 new_ignore_words = ""
             else:
-                new_ignore_words = show_obj.rls_ignore_words
+                new_ignore_words = show_object.rls_ignore_words
 
             if require_words == "new":
                 new_require_words = mass_require_words
             elif require_words == "clear":
                 new_require_words = ""
             else:
-                new_require_words = show_obj.rls_require_words
+                new_require_words = show_object.rls_require_words
 
             if prefer_words == "new":
                 new_prefer_words = mass_prefer_words
             elif prefer_words == "clear":
                 new_prefer_words = ""
             else:
-                new_prefer_words = show_obj.rls_prefer_words
+                new_prefer_words = show_object.rls_prefer_words
 
             if quality_preset == "keep":
-                anyQualities, bestQualities = Quality.splitQuality(show_obj.quality)
+                any_qualities, best_qualities = Quality.splitQuality(show_object.quality)
             elif try_int(quality_preset, None):
-                bestQualities = []
+                best_qualities = []
 
             exceptions_list = []
 
-            curErrors += self.editShow(
-                curShow,
+            current_show_errors += self.editShow(
+                current_show,
                 new_show_dir,
-                anyQualities,
-                bestQualities,
+                any_qualities,
+                best_qualities,
                 exceptions_list,
                 defaultEpStatus=new_default_ep_status,
                 season_folders=new_season_folders,
@@ -601,9 +597,9 @@ class Manage(Home, WebRoot):
                 directCall=True,
             )
 
-            if curErrors:
-                logger.exception(f"Errors: {curErrors}")
-                errors.append("<b>{0}:</b>\n<ul>".format(show_obj.name) + " ".join(["<li>{0}</li>".format(error) for error in curErrors]) + "</ul>")
+            if current_show_errors:
+                logger.exception(f"Errors: {current_show_errors}")
+                errors.append(f"<b>{show_object.name}:</b>\n<ul>" + " ".join([f"<li>{error}</li>" for error in current_show_errors]) + "</ul>")
 
         if errors:
             ui.notifications.error(
@@ -631,42 +627,42 @@ class Manage(Home, WebRoot):
             if curShowID == "":
                 continue
 
-            show_obj = Show.find(settings.showList, int(curShowID))
-            if not show_obj:
+            show_object = Show.find(settings.showList, int(curShowID))
+            if not show_object:
                 continue
 
             if curShowID in toDelete:
-                settings.showQueueScheduler.action.remove_show(show_obj, True)
+                settings.showQueueScheduler.action.remove_show(show_object, True)
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in toRemove:
-                settings.showQueueScheduler.action.remove_show(show_obj)
+                settings.showQueueScheduler.action.remove_show(show_object)
                 # don't do anything else if it's being remove
                 continue
 
             if curShowID in toUpdate:
                 try:
-                    settings.showQueueScheduler.action.update_show(show_obj, True)
-                    updates.append(show_obj.name)
+                    settings.showQueueScheduler.action.update_show(show_object, True)
+                    updates.append(show_object.name)
                 except CantUpdateShowException as error:
                     errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
 
             # don't bother refreshing shows that were updated anyway
             if curShowID in toRefresh and curShowID not in toUpdate:
                 try:
-                    settings.showQueueScheduler.action.refresh_show(show_obj, force=True)
-                    refreshes.append(show_obj.name)
+                    settings.showQueueScheduler.action.refresh_show(show_object, force=True)
+                    refreshes.append(show_object.name)
                 except CantRefreshShowException as error:
-                    errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_obj.name, exception_format=error))
+                    errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))
 
             if curShowID in toRename:
-                settings.showQueueScheduler.action.rename_show_episodes(show_obj)
-                renames.append(show_obj.name)
+                settings.showQueueScheduler.action.rename_show_episodes(show_object)
+                renames.append(show_object.name)
 
             if curShowID in toSubtitle:
-                settings.showQueueScheduler.action.download_subtitles(show_obj)
-                subtitles.append(show_obj.name)
+                settings.showQueueScheduler.action.download_subtitles(show_object)
+                subtitles.append(show_object.name)
 
         if errors:
             ui.notifications.error(_("Errors encountered"), "<br >\n".join(errors))

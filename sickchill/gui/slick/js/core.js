@@ -11,12 +11,14 @@ const loading = '<img src="' + scRoot + '/images/loading16' + themeSpinner + '.g
 
 let scPID = getMeta('scPID');
 
-function configSuccess() {
+function configSuccess(reload = true) {
     $('.config_submitter').each(function () {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
-        window.location.reload();
+        if (reload === true) {
+            window.location.reload();
+        }
     });
     $('.config_submitter_refresh').each(function () {
         $(this).removeAttr('disabled');
@@ -346,12 +348,12 @@ const SICKCHILL = {
                 }
             });
 
-            // Bind 'myForm' and provide a simple callback function
+            // Bind 'configForm' and provide a simple callback function
             $('#configForm').ajaxForm({
                 beforeSubmit() {
                     $('.config_submitter .config_submitter_refresh').each(function () {
                         $(this).attr('disabled', 'disabled');
-                        $(this).after('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt="loading"> Saving...</span>');
+                        $(this).after('<span>' + loading +' Saving...</span>');
                         $(this).hide();
                     });
                 },
@@ -3269,20 +3271,6 @@ const SICKCHILL = {
                 return row;
             };
 
-            // Copied from above config section and put in manage area so massEditUpdate can see it.
-            $('#configForm').ajaxForm({
-                beforeSubmit() {
-                    $('.config_submitter .config_submitter_refresh').each(function () {
-                        $(this).attr('disabled', 'disabled');
-                        $(this).after('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt="loading"> Saving...</span>');
-                        $(this).hide();
-                    });
-                },
-                success() {
-                    setTimeout(configSuccess, 2000);
-                },
-            });
-
             $('#config_save_button').on('click', () => {
                 $('#configForm').submit();
             });
@@ -3375,7 +3363,7 @@ const SICKCHILL = {
 
                 const submitForm = $(
                     '<form method=\'post\' action=\'' + scRoot + '/manage/massEdit\'>'
-                        + '<input type=\'hidden\' name=\'toEdit\' value=\'' + editArray.join('|') + '\'/>'
+                        + '<input type=\'hidden\' name=\'edit_shows\' value=\'' + editArray.join('|') + '\'/>'
                     + '</form>',
                 );
                 submitForm.appendTo('body');

@@ -9,7 +9,7 @@
 
 <%block name="pages">
     <form id="configForm" action="massEditSubmit" method="post" accept-charset="utf-8">
-        <input type="hidden" name="toEdit" value="${showList}" />
+        <input type="hidden" name="edit_shows" value="${show_list}" />
 
         <div id="main">
 
@@ -31,7 +31,7 @@
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <div class="row">
                             <div class="col-md-12">
-                                <span style="font-size: 14px;">${', '.join(sorted(showNames))}</span>
+                                <span style="font-size: 14px;">${', '.join(sorted(show_names))}</span>
                             </div>
                         </div>
                     </div>
