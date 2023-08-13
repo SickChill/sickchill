@@ -519,7 +519,10 @@ class Manage(Home, WebRoot):
 
         root_dir_map = {}
         for root_dir in [x for x in self.request.body_arguments if x.startswith("orig_root_dir_")]:
-            root_dir_map[self.get_body_argument(root_dir)] = self.get_body_argument(root_dir.replace("orig_root_dir_", "new_root_dir_"))
+            old_root = self.get_body_argument(root_dir, None)
+            new_root = self.get_body_argument(root_dir.replace("orig_root_dir_", "new_root_dir_"), None)
+            if old_root:
+                root_dir_map[old_root] = new_root
 
         errors = []
         for current_show in edit_shows.split("|"):
@@ -532,7 +535,7 @@ class Manage(Home, WebRoot):
             cur_show_dir = self.__gooey_path(show_object._location, "basename")
             if show_root_dir and root_dir_map.get(show_root_dir) and show_root_dir != root_dir_map.get(show_root_dir):
                 new_show_dir = os.path.join(root_dir_map[show_root_dir], cur_show_dir)
-                logger.info("For show {show_object.name}" + " changing dir from " + show_object._location + " to " + new_show_dir)
+                logger.info(f"For show {show_object.name}" + " changing dir from " + show_object._location + " to " + new_show_dir)
             else:
                 new_show_dir = show_object._location
 
