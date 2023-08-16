@@ -3939,9 +3939,9 @@ ejs@^3.1.6, ejs@^3.1.8, ejs@^3.1.9:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.477:
-  version "1.4.491"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.491.tgz#53de4625bde1e75b5b7804a36c68b2c39f6a0c1f"
-  integrity sha512-ZzPqGKghdVzlQJ+qpfE+r6EB321zed7e5JsvHIlMM4zPFF8okXUkF5Of7h7F3l3cltPL0rG7YVmlp5Qro7RQLA==
+  version "1.4.492"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.492.tgz#83fed8beb64ec60578069e15dddd17b13a77ca56"
+  integrity sha512-36K9b/6skMVwAIEsC7GiQ8I8N3soCALVSHqWHzNDtGemAcI9Xu8hP02cywWM0A794rTHm0b0zHPeLJHtgFVamQ==
 
 emittery@^1.0.1:
   version "1.0.1"
@@ -8543,9 +8543,9 @@ postcss-value-parser@^4.1.0, postcss-value-parser@^4.2.0:
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
 postcss@^8.3.11, postcss@^8.4.21, postcss@^8.4.25:
-  version "8.4.27"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.27.tgz#234d7e4b72e34ba5a92c29636734349e0d9c3057"
-  integrity sha512-gY/ACJtJPSmUFPDCHtX78+01fHa64FaU4zaaWfuh1MhGJISufJAH4cun6k/8fwsHYeK4UQmENQK+tRLCFJE8JQ==
+  version "8.4.28"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.28.tgz#c6cc681ed00109072816e1557f889ef51cf950a5"
+  integrity sha512-Z7V5j0cq8oEKyejIKfpD8b4eBy9cwW2JWPk0+fB1HOAMsfHbnAXLLS+PfVWlzMSLQaWttKDt607I0XHmpE67Vw==
   dependencies:
     nanoid "^3.3.6"
     picocolors "^1.0.0"
@@ -8579,9 +8579,9 @@ prettier-linter-helpers@^1.0.0:
     fast-diff "^1.1.2"
 
 prettier@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.1.tgz#65271fc9320ce4913c57747a70ce635b30beaa40"
-  integrity sha512-fcOWSnnpCrovBsmFZIGIy9UqK2FaI7Hqax+DIO0A9UxeVoY4iweyaFjS5TavZN97Hfehph0nhsZnjlVKzEQSrQ==
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.2.tgz#78fcecd6d870551aa5547437cdae39d4701dca5b"
+  integrity sha512-o2YR9qtniXvwEZlOKbveKfDQVyqxbEIWn48Z8m3ZJjBjcCmUy3xZGIv+7AkaeuaTr6yPXJjwv07ZWlsWbEy1rQ==
 
 pretty-bytes@^1.0.0:
   version "1.0.4"
@@ -9561,9 +9561,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1191.0:
-  version "1.1200.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1200.0.tgz#6fbaeb9610ae999b89a84d1e152608f88d11f5e2"
-  integrity sha512-sWC5mC489SN7jylQuFDN9HyYI2eAiFbRjx+R0me902/+k20I/WHMdIwyJEcPz/rCYDUy9xALpVGb7r1GBwoKjQ==
+  version "1.1202.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1202.0.tgz#09ef1c45d5f19b4640ea523c3ca39a991930792b"
+  integrity sha512-n300P0nfksjt7tHZgclOdVRowYz5FZJs1SVV4XOeJUQiMg728D9aqWO5pl0EHeyygtUWcki77QWAiYXXI5X0hQ==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
