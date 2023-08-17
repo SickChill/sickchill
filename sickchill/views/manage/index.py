@@ -507,8 +507,8 @@ class Manage(Home, WebRoot):
         quality_preset = self.get_body_argument("quality_preset", None)
         subtitles = self.get_body_argument("subtitles", None)
         air_by_date = self.get_body_argument("air_by_date", None)
-        any_qualities = self.get_body_argument("anyQualities", None)
-        best_qualities = self.get_body_argument("bestQualities", None)
+        any_qualities = self.get_body_arguments("anyQualities", None)
+        best_qualities = self.get_body_arguments("bestQualities", None)
         edit_shows = self.get_body_argument("edit_shows", None)
         mass_ignore_words = self.get_body_argument("mass_ignore_words", None)
         mass_prefer_words = self.get_body_argument("mass_prefer_words", None)
@@ -535,7 +535,7 @@ class Manage(Home, WebRoot):
             cur_show_dir = self.__gooey_path(show_object._location, "basename")
             if show_root_dir and root_dir_map.get(show_root_dir) and show_root_dir != root_dir_map.get(show_root_dir):
                 new_show_dir = os.path.join(root_dir_map[show_root_dir], cur_show_dir)
-                logger.info(f"For show {show_object.name}" + " changing dir from " + show_object._location + " to " + new_show_dir)
+                logger.info(f"For show {show_object.name} changing dir from {show_object._location} to {new_show_dir}")
             else:
                 new_show_dir = show_object._location
 

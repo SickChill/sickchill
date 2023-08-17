@@ -1212,8 +1212,9 @@ class Home(WebRoot):
             if not directCall:
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
+                location = self.get_argument("location", show_obj._location)
 
-            location = os.path.normpath(self.get_argument("location", show_obj._location))
+            location = os.path.normpath(location)
 
             # noinspection PyProtectedMember
             old_location = os.path.normpath(show_obj._location)
