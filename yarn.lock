@@ -2962,9 +2962,9 @@ camelcase@^6.3.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001517:
-  version "1.0.30001521"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001521.tgz#e9930cf499f7c1e80334b6c1fbca52e00d889e56"
-  integrity sha512-fnx1grfpEOvDGH+V17eccmNjucGUnCbP6KL+l5KqBIerp26WK/+RQ7CIDE37KGJjaPyqWXXlFUyKiWmvdNNKmQ==
+  version "1.0.30001522"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001522.tgz#44b87a406c901269adcdb834713e23582dd71856"
+  integrity sha512-TKiyTVZxJGhsTszLuzb+6vUZSjVOAhClszBr2Ta2k9IwtNBT/4dzmL6aywt0HCgEZlmwJzXJd8yNiob6HgwTRg==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -4186,9 +4186,9 @@ eslint-import-resolver-node@^0.3.7:
     resolve "^1.22.4"
 
 eslint-import-resolver-webpack@^0.13.2:
-  version "0.13.6"
-  resolved "https://registry.yarnpkg.com/eslint-import-resolver-webpack/-/eslint-import-resolver-webpack-0.13.6.tgz#ed728facec0abe7c1095e91ebacfc3d6b2fea1c6"
-  integrity sha512-vY15tIA2lE7RxM+LMGGQI19MqpiQ21k+rFWiX0S9T2S18AS7ZC4zrnZ/RbZtl3cDqcU7k1XmWAlcFLSt4x4uxw==
+  version "0.13.7"
+  resolved "https://registry.yarnpkg.com/eslint-import-resolver-webpack/-/eslint-import-resolver-webpack-0.13.7.tgz#49cd0108767b1f8ff81123c7e1ae362305aad47b"
+  integrity sha512-2a+meyMeABBRO4K53Oj1ygkmt5lhQS79Lmx2f684Qnv6gjvD4RLOM5jfPGTXwQ0A2K03WSoKt3HRQu/uBgxF7w==
   dependencies:
     array.prototype.find "^2.2.1"
     debug "^3.2.7"
