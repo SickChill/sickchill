@@ -16,7 +16,7 @@ from sickchill.views.routes import Route
 
 @Route("/manage(/?.*)", name="manage:main")
 class Manage(Home, WebRoot):
-    def index(self, *args, **kwargs):
+    def index(self):
         t = PageTemplate(rh=self, filename="manage.mako")
         return t.render(title=_("Mass Update"), header=_("Mass Update"), topmenu="manage", controller="manage", action="index")
 
@@ -44,9 +44,10 @@ class Manage(Home, WebRoot):
 
         return json.dumps(result)
 
-    def episodeStatuses(self, whichStatus=None):
-        if whichStatus:
-            status_list = [int(whichStatus)]
+    def episodeStatuses(self):
+        which_status = self.get_body_argument("whichStatus", None)
+        if which_status:
+            status_list = [int(which_status)]
             if status_list[0] == SNATCHED:
                 status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
         else:
@@ -61,7 +62,7 @@ class Manage(Home, WebRoot):
                 header=_("Episode Overview"),
                 topmenu="manage",
                 show_names=None,
-                whichStatus=whichStatus,
+                whichStatus=which_status,
                 ep_counts=None,
                 sorted_show_ids=None,
                 controller="manage",
@@ -93,7 +94,7 @@ class Manage(Home, WebRoot):
             title=_("Episode Overview"),
             header=_("Episode Overview"),
             topmenu="manage",
-            whichStatus=whichStatus,
+            whichStatus=which_status,
             show_names=show_names,
             ep_counts=ep_counts,
             sorted_show_ids=sorted_show_ids,
@@ -168,12 +169,13 @@ class Manage(Home, WebRoot):
 
         return json.dumps(result)
 
-    def subtitleMissed(self, whichSubs=None):
+    def subtitleMissed(self):
+        which_subs = self.get_body_argument("whichSubs", None)
         t = PageTemplate(rh=self, filename="manage_subtitleMissed.mako")
 
-        if not whichSubs:
+        if not which_subs:
             return t.render(
-                whichSubs=whichSubs,
+                whichSubs=which_subs,
                 title=_("Episode Overview"),
                 header=_("Episode Overview"),
                 topmenu="manage",
@@ -196,10 +198,10 @@ class Manage(Home, WebRoot):
         show_names = {}
         sorted_show_ids = []
         for cur_status_result in status_results:
-            if whichSubs == "all":
+            if which_subs == "all":
                 if not frozenset(subtitle_module.wanted_languages()).difference(cur_status_result["subtitles"].split(",")):
                     continue
-            elif whichSubs in cur_status_result["subtitles"]:
+            elif which_subs in cur_status_result["subtitles"]:
                 continue
 
             cur_indexer_id = int(cur_status_result["indexer_id"])
@@ -213,7 +215,7 @@ class Manage(Home, WebRoot):
                 sorted_show_ids.append(cur_indexer_id)
 
         return t.render(
-            whichSubs=whichSubs,
+            whichSubs=which_subs,
             show_names=show_names,
             ep_counts=ep_counts,
             sorted_show_ids=sorted_show_ids,
@@ -608,14 +610,22 @@ class Manage(Home, WebRoot):
 
         return self.redirect("/manage/")
 
-    def massUpdate(self, toUpdate=None, toRefresh=None, toRename=None, toDelete=None, toRemove=None, toMetadata=None, toSubtitle=None):
-        toUpdate = toUpdate.split("|") if toUpdate else []
-        toRefresh = toRefresh.split("|") if toRefresh else []
-        toRename = toRename.split("|") if toRename else []
-        toSubtitle = toSubtitle.split("|") if toSubtitle else []
-        toDelete = toDelete.split("|") if toDelete else []
-        toRemove = toRemove.split("|") if toRemove else []
-        toMetadata = toMetadata.split("|") if toMetadata else []
+    def massUpdate(self):
+        to_update = self.get_body_argument("toUpdate", None)
+        to_refresh = self.get_body_argument("toRefresh", None)
+        to_rename = self.get_body_argument("toRename", None)
+        to_subtitle = self.get_body_argument("toSubtitle", None)
+        to_delete = self.get_body_argument("toDelete", None)
+        to_remove = self.get_body_argument("toRemove", None)
+        to_metadata = self.get_body_argument("toMetadata", None)
+
+        to_update = to_update.split("|") if to_update else []
+        to_refresh = to_refresh.split("|") if to_refresh else []
+        to_rename = to_rename.split("|") if to_rename else []
+        to_subtitle = to_subtitle.split("|") if to_subtitle else []
+        to_delete = to_delete.split("|") if to_delete else []
+        to_remove = to_remove.split("|") if to_remove else []
+        to_metadata = to_metadata.split("|") if to_metadata else []
 
         errors = []
         refreshes = []
@@ -623,7 +633,7 @@ class Manage(Home, WebRoot):
         renames = []
         subtitles = []
 
-        for curShowID in set(toUpdate + toRefresh + toRename + toSubtitle + toDelete + toRemove + toMetadata):
+        for curShowID in set(to_update + to_refresh + to_rename + to_subtitle + to_delete + to_remove + to_metadata):
             if curShowID == "":
                 continue
 
@@ -631,17 +641,17 @@ class Manage(Home, WebRoot):
             if not show_object:
                 continue
 
-            if curShowID in toDelete:
+            if curShowID in to_delete:
                 settings.showQueueScheduler.action.remove_show(show_object, True)
                 # don't do anything else if it's being deleted
                 continue
 
-            if curShowID in toRemove:
+            if curShowID in to_remove:
                 settings.showQueueScheduler.action.remove_show(show_object)
                 # don't do anything else if it's being remove
                 continue
 
-            if curShowID in toUpdate:
+            if curShowID in to_update:
                 try:
                     settings.showQueueScheduler.action.update_show(show_object, True)
                     updates.append(show_object.name)
@@ -649,52 +659,53 @@ class Manage(Home, WebRoot):
                     errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
 
             # don't bother refreshing shows that were updated anyway
-            if curShowID in toRefresh and curShowID not in toUpdate:
+            if curShowID in to_refresh and curShowID not in to_update:
                 try:
                     settings.showQueueScheduler.action.refresh_show(show_object, force=True)
                     refreshes.append(show_object.name)
                 except CantRefreshShowException as error:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))
 
-            if curShowID in toRename:
+            if curShowID in to_rename:
                 settings.showQueueScheduler.action.rename_show_episodes(show_object)
                 renames.append(show_object.name)
 
-            if curShowID in toSubtitle:
+            if curShowID in to_subtitle:
                 settings.showQueueScheduler.action.download_subtitles(show_object)
                 subtitles.append(show_object.name)
 
         if errors:
             ui.notifications.error(_("Errors encountered"), "<br >\n".join(errors))
 
-        messageDetail = ""
+        message_detail = ""
 
         if updates:
-            messageDetail += "<br><b>" + _("Updates") + "</b><br><ul><li>"
-            messageDetail += "</li><li>".join(updates)
-            messageDetail += "</li></ul>"
+            message_detail += "<br><b>" + _("Updates") + "</b><br><ul><li>"
+            message_detail += "</li><li>".join(updates)
+            message_detail += "</li></ul>"
 
         if refreshes:
-            messageDetail += "<br><b>" + _("Refreshes") + "</b><br><ul><li>"
-            messageDetail += "</li><li>".join(refreshes)
-            messageDetail += "</li></ul>"
+            message_detail += "<br><b>" + _("Refreshes") + "</b><br><ul><li>"
+            message_detail += "</li><li>".join(refreshes)
+            message_detail += "</li></ul>"
 
         if renames:
-            messageDetail += "<br><b>" + _("Renames") + "</b><br><ul><li>"
-            messageDetail += "</li><li>".join(renames)
-            messageDetail += "</li></ul>"
+            message_detail += "<br><b>" + _("Renames") + "</b><br><ul><li>"
+            message_detail += "</li><li>".join(renames)
+            message_detail += "</li></ul>"
 
         if subtitles:
-            messageDetail += "<br><b>" + _("Subtitles") + "</b><br><ul><li>"
-            messageDetail += "</li><li>".join(subtitles)
-            messageDetail += "</li></ul>"
+            message_detail += "<br><b>" + _("Subtitles") + "</b><br><ul><li>"
+            message_detail += "</li><li>".join(subtitles)
+            message_detail += "</li></ul>"
 
         if updates + refreshes + renames + subtitles:
-            ui.notifications.message(_("The following actions were queued") + ":", messageDetail)
+            ui.notifications.message(_("The following actions were queued") + ":", message_detail)
 
         return self.redirect("/manage/")
 
-    def failedDownloads(self, limit=100, toRemove=None):
+    def failedDownloads(self, limit=100):
+        to_remove = self.get_body_argument("toRemove", None)
         failed_db_con = db.DBConnection("failed.db")
 
         if limit == "0":
@@ -702,12 +713,12 @@ class Manage(Home, WebRoot):
         else:
             sql_results = failed_db_con.select("SELECT * FROM failed LIMIT ?", [limit])
 
-        toRemove = toRemove.split("|") if toRemove else []
+        to_remove = to_remove.split("|") if to_remove else []
 
-        for release in toRemove:
+        for release in to_remove:
             failed_db_con.action("DELETE FROM failed WHERE failed.release = ?", [release])
 
-        if toRemove:
+        if to_remove:
             return self.redirect("/manage/failedDownloads/")
 
         t = PageTemplate(rh=self, filename="manage_failedDownloads.mako")
