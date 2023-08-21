@@ -509,8 +509,8 @@ class Manage(Home, WebRoot):
         quality_preset = self.get_body_argument("quality_preset", None)
         subtitles = self.get_body_argument("subtitles", None)
         air_by_date = self.get_body_argument("air_by_date", None)
-        any_qualities = self.get_body_arguments("anyQualities", None)
-        best_qualities = self.get_body_arguments("bestQualities", None)
+        any_qualities = self.get_body_arguments("anyQualities")
+        best_qualities = self.get_body_arguments("bestQualities")
         edit_shows = self.get_body_argument("edit_shows", None)
         mass_ignore_words = self.get_body_argument("mass_ignore_words", None)
         mass_prefer_words = self.get_body_argument("mass_prefer_words", None)
@@ -704,8 +704,9 @@ class Manage(Home, WebRoot):
 
         return self.redirect("/manage/")
 
-    def failedDownloads(self, limit=100):
+    def failedDownloads(self):
         to_remove = self.get_body_argument("toRemove", None)
+        limit = self.get_argument("limit", "100")
         failed_db_con = db.DBConnection("failed.db")
 
         if limit == "0":
