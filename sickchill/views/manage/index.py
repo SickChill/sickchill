@@ -407,7 +407,7 @@ class Manage(Home, WebRoot):
 
             # if we know they're not all the same then no point even bothering
             if paused_all_same:
-                # if we had a value already and this value is different then they're not all the same
+                # if we had a value already and this value is different, then they're not all the same
                 if last_paused not in (None, current_show.paused):
                     paused_all_same = False
                 else:
@@ -420,7 +420,7 @@ class Manage(Home, WebRoot):
                     last_default_ep_status = current_show.default_ep_status
 
             if anime_all_same:
-                # if we had a value already and this value is different then they're not all the same
+                # if we had a value already and this value is different, then they're not all the same
                 if last_anime not in (None, current_show.is_anime):
                     anime_all_same = False
                 else:
@@ -648,7 +648,7 @@ class Manage(Home, WebRoot):
 
             if curShowID in to_remove:
                 settings.showQueueScheduler.action.remove_show(show_object)
-                # don't do anything else if it's being remove
+                # don't do anything else if it's being removed
                 continue
 
             if curShowID in to_update:
