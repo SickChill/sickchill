@@ -45,15 +45,8 @@ class ConfigGeneral(Config):
         scene=False,
         defaultStatusAfter=WANTED,
     ):
-        if anyQualities:
-            anyQualities = anyQualities.split(",")
-        else:
-            anyQualities = []
-
-        if bestQualities:
-            bestQualities = bestQualities.split(",")
-        else:
-            bestQualities = []
+        anyQualities = self.get_body_arguments("anyQualities")
+        bestualities = self.get_body_arguments("bestQualities")
 
         newQuality = Quality.combineQualities([int(quality) for quality in anyQualities], [int(quality) for quality in bestQualities])
 
