@@ -4290,7 +4290,7 @@ const SICKCHILL = {
                             const shows = [];
 
                             $.each(data.results, (index, object) => {
-                                // TODO: Results should be returned as json, and use attribute names rather than ondexes and joining.
+                                // TODO: Results should be returned as json, and use attribute names rather than indexes and joining.
                                 const whichSeries = object.join('|').replaceAll('"', '');
 
                                 const show = {
