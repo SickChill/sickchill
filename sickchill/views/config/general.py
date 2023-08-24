@@ -28,9 +28,8 @@ class ConfigGeneral(Config):
     def generateApiKey():
         return helpers.generateApiKey()
 
-    @staticmethod
-    def saveRootDirs(rootDirString=None):
-        settings.ROOT_DIRS = rootDirString
+    def saveRootDirs(self):
+        settings.ROOT_DIRS = self.get_query_argument("rootDirString")
 
     def saveAddShowDefaults(
         self,
