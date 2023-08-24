@@ -361,11 +361,11 @@ class Manage(Home, WebRoot):
     def massEdit(self):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
-        edit_shows = self.get_body_argument("edit_shows")
+        edit_shows = self.get_body_argument("edit_shows", "").split("|")
 
         show_list = []
         show_names = []
-        for show_id in edit_shows.split("|"):
+        for show_id in edit_shows:
             show_object = Show.find(settings.showList, show_id)
             if show_object:
                 show_list.append(show_object)
@@ -511,7 +511,7 @@ class Manage(Home, WebRoot):
         air_by_date = self.get_body_argument("air_by_date", None)
         any_qualities = self.get_body_arguments("anyQualities")
         best_qualities = self.get_body_arguments("bestQualities")
-        edit_shows = self.get_body_argument("edit_shows", None)
+        edit_shows = self.get_body_argument("edit_shows", "").split("|")
         mass_ignore_words = self.get_body_argument("mass_ignore_words", None)
         mass_prefer_words = self.get_body_argument("mass_prefer_words", None)
         mass_require_words = self.get_body_argument("mass_require_words", None)
@@ -523,11 +523,11 @@ class Manage(Home, WebRoot):
         for root_dir in [x for x in self.request.body_arguments if x.startswith("orig_root_dir_")]:
             old_root = self.get_body_argument(root_dir, None)
             new_root = self.get_body_argument(root_dir.replace("orig_root_dir_", "new_root_dir_"), None)
-            if old_root:
+            if old_root is not None and new_root is not None:
                 root_dir_map[old_root] = new_root
 
         errors = []
-        for current_show in edit_shows.split("|"):
+        for current_show in edit_shows:
             current_show_errors = []
             show_object = Show.find(settings.showList, current_show)
             if not show_object:
@@ -611,21 +611,13 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self):
-        to_update = self.get_body_argument("toUpdate", None)
-        to_refresh = self.get_body_argument("toRefresh", None)
-        to_rename = self.get_body_argument("toRename", None)
-        to_subtitle = self.get_body_argument("toSubtitle", None)
-        to_delete = self.get_body_argument("toDelete", None)
-        to_remove = self.get_body_argument("toRemove", None)
-        to_metadata = self.get_body_argument("toMetadata", None)
-
-        to_update = to_update.split("|") if to_update else []
-        to_refresh = to_refresh.split("|") if to_refresh else []
-        to_rename = to_rename.split("|") if to_rename else []
-        to_subtitle = to_subtitle.split("|") if to_subtitle else []
-        to_delete = to_delete.split("|") if to_delete else []
-        to_remove = to_remove.split("|") if to_remove else []
-        to_metadata = to_metadata.split("|") if to_metadata else []
+        to_update = self.get_body_argument("toUpdate", "").split("|")
+        to_refresh = self.get_body_argument("toRefresh", "").split("|")
+        to_rename = self.get_body_argument("toRename", "").split("|")
+        to_subtitle = self.get_body_argument("toSubtitle", "").split("|")
+        to_delete = self.get_body_argument("toDelete", "").split("|")
+        to_remove = self.get_body_argument("toRemove", "").split("|")
+        to_metadata = self.get_body_argument("toMetadata", "").split("|")
 
         errors = []
         refreshes = []
@@ -705,7 +697,7 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def failedDownloads(self):
-        to_remove = self.get_body_argument("toRemove", None)
+        to_remove = self.get_body_argument("toRemove", "").split("|")
         limit = self.get_argument("limit", "100")
         failed_db_con = db.DBConnection("failed.db")
 
@@ -713,8 +705,6 @@ class Manage(Home, WebRoot):
             sql_results = failed_db_con.select("SELECT * FROM failed")
         else:
             sql_results = failed_db_con.select("SELECT * FROM failed LIMIT ?", [limit])
-
-        to_remove = to_remove.split("|") if to_remove else []
 
         for release in to_remove:
             failed_db_con.action("DELETE FROM failed WHERE failed.release = ?", [release])
