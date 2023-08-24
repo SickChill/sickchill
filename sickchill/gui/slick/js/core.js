@@ -2794,9 +2794,12 @@ const SICKCHILL = {
                     return false;
                 }
 
-                const url = scRoot + '/home/setStatus';
-                const parameters = 'show=' + $('#showID').attr('value') + '&eps=' + epArray.join('|') + '&status=' + $('#statusSelect').val();
-                $.post(url, parameters, () => {
+                const parameters = {
+                    show: $('#showID').attr('value'),
+                    eps: epArray,
+                    status: $('#statusSelect').val()
+                }
+                $.post(scRoot + '/home/setStatus', parameters, () => {
                     location.reload(true);
                 });
             });
@@ -3360,15 +3363,7 @@ const SICKCHILL = {
                 if (editArray.length === 0) {
                     return;
                 }
-
-                const submitForm = $(
-                    '<form method=\'post\' action=\'' + scRoot + '/manage/massEdit\'>'
-                        + '<input type=\'hidden\' name=\'edit_shows\' value=\'' + editArray.join('|') + '\'/>'
-                    + '</form>',
-                );
-                submitForm.appendTo('body');
-
-                submitForm.submit();
+                $.post(scRoot + '/manage/massEdit', {edit_shows: editArray});
             });
 
             $('.submitMassUpdate').on('click', () => {
@@ -3436,8 +3431,15 @@ const SICKCHILL = {
                                 return false;
                             }
 
-                            const url = scRoot + '/manage/massUpdate';
-                            const parameters = 'toUpdate=' + updateArray.join('|') + '&toRefresh=' + refreshArray.join('|') + '&toRename=' + renameArray.join('|') + '&toSubtitle=' + subtitleArray.join('|') + '&toDelete=' + deleteArray.join('|') + '&toRemove=' + removeArray.join('|') + '&toMetadata=' + metadataArray.join('|');
+                            const parameters = {
+                                toUpdate: updateArray,
+                                toRefresh: refreshArray,
+                                toRename: renameArray,
+                                toSubtitle: subtitleArray,
+                                toDelete: deleteArray,
+                                toRemove: removeArray,
+                                toMetadata: metadataArray
+                            };
                             $.post(url, parameters, () => {
                                 location.reload(true);
                             });
@@ -3449,9 +3451,16 @@ const SICKCHILL = {
                     return false;
                 }
 
-                const url = scRoot + '/manage/massUpdate';
-                const parameters = 'toUpdate=' + updateArray.join('|') + '&toRefresh=' + refreshArray.join('|') + '&toRename=' + renameArray.join('|') + '&toSubtitle=' + subtitleArray.join('|') + '&toDelete=' + deleteArray.join('|') + '&toRemove=' + removeArray.join('|') + '&toMetadata=' + metadataArray.join('|');
-                $.post(url, parameters, () => {
+                const parameters = {
+                    toUpdate: updateArray,
+                    toRefresh: refreshArray,
+                    toRename: renameArray,
+                    toSubtitle: subtitleArray,
+                    toDelete: deleteArray,
+                    toRemove: removeArray,
+                    toMetadata: metadataArray
+                };
+                $.post(scRoot + '/manage/massUpdate', parameters, () => {
                     location.reload(true);
                 });
             });
@@ -3515,7 +3524,7 @@ const SICKCHILL = {
                     return false;
                 }
 
-                $.post(scRoot + '/manage/failedDownloads', 'toRemove=' + removeArray.join('|'), () => {
+                $.post(scRoot + '/manage/failedDownloads', {toRemove: removeArray}, () => {
                     location.reload(true);
                 });
             });
@@ -4281,6 +4290,7 @@ const SICKCHILL = {
                             const shows = [];
 
                             $.each(data.results, (index, object) => {
+                                // TODO: Results should be returned as json, and use attribute names rather than ondexes and joining.
                                 const whichSeries = object.join('|').replaceAll('"', '');
 
                                 const show = {
