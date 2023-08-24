@@ -4104,8 +4104,8 @@ const SICKCHILL = {
                 generateBlackWhiteList(); // eslint-disable-line no-undef
                 $.post(scRoot + '/config/general/saveAddShowDefaults', {
                     defaultStatus: $('#statusSelect').val(),
-                    anyQualities: anyQualArray.join(','),
-                    bestQualities: bestQualArray.join(','),
+                    anyQualities: anyQualArray,
+                    bestQualities: bestQualArray,
                     defaultSeasonFolders: $('#season_folders').is(':checked'),
                     subtitles: $('#subtitles').is(':checked'),
                     anime: $('#anime').is(':checked'),
