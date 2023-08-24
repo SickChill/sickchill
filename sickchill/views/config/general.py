@@ -32,8 +32,8 @@ class ConfigGeneral(Config):
     def saveRootDirs(rootDirString=None):
         settings.ROOT_DIRS = rootDirString
 
-    @staticmethod
     def saveAddShowDefaults(
+        self,
         defaultStatus,
         anyQualities,
         bestQualities,
