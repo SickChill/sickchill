@@ -31,36 +31,30 @@ class ConfigGeneral(Config):
     def saveRootDirs(self):
         settings.ROOT_DIRS = self.get_query_argument("rootDirString")
 
-    def saveAddShowDefaults(
-        self,
-        defaultStatus,
-        anyQualities,
-        bestQualities,
-        defaultSeasonFolders,
-        whitelist,
-        blacklist,
-        subtitles=False,
-        anime=False,
-        scene=False,
-        defaultStatusAfter=WANTED,
-    ):
-        anyQualities = self.get_body_arguments("anyQualities")
-        bestualities = self.get_body_arguments("bestQualities")
+    def saveAddShowDefaults(self):
+        anyQualities = self.get_body_argument("anyQualities", "").split(",")
+        bestQualities = self.get_body_argument("bestQualities", "").split(",")
+        defaultSeasonFolders = self.get_body_argument("defaultSeasonFolders")
+        subtitles = self.get_body_argument("subtitles", "False")
+        anime = self.get_body_argument("anime", "False")
+        scene = self.get_body_argument("scene", "False")
+
+        settings.STATUS_DEFAULT = int(self.get_body_argument("defaultStatus"))
+
+        if '' in anyQualities:
+            anyQualities = []
+        if '' in bestQualities:
+            bestQualities = []
 
         newQuality = Quality.combineQualities([int(quality) for quality in anyQualities], [int(quality) for quality in bestQualities])
-
-        settings.WHITELIST_DEFAULT = whitelist
-        settings.BLACKLIST_DEFAULT = blacklist
-
-        settings.STATUS_DEFAULT = int(defaultStatus)
-        settings.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)
         settings.QUALITY_DEFAULT = int(newQuality)
 
+        settings.WHITELIST_DEFAULT = self.get_body_argument("whitelist")
+        settings.BLACKLIST_DEFAULT = self.get_body_argument("blacklist")
+        settings.STATUS_DEFAULT_AFTER = int(self.get_body_argument("defaultStatusAfter", WANTED))
         settings.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(defaultSeasonFolders)
         settings.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
-
         settings.ANIME_DEFAULT = config.checkbox_to_value(anime)
-
         settings.SCENE_DEFAULT = config.checkbox_to_value(scene)
         sickchill.start.save_config()
 
