@@ -42,7 +42,7 @@ class ConfigGeneral(Config):
 
         settings.WHITELIST_DEFAULT = self.get_body_argument("whitelist")
         settings.BLACKLIST_DEFAULT = self.get_body_argument("blacklist")
-       
+
         settings.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(self.get_body_argument("defaultSeasonFolders", settings.SEASON_FOLDERS_DEFAULT))
         settings.SUBTITLES_DEFAULT = config.checkbox_to_value(self.get_body_argument("subtitles", settings.SUBTITLES_DEFAULT))
         settings.ANIME_DEFAULT = config.checkbox_to_value(self.get_body_argument("anime", settings.ANIME_DEFAULT))
