@@ -28,41 +28,26 @@ class ConfigGeneral(Config):
     def generateApiKey():
         return helpers.generateApiKey()
 
-    @staticmethod
-    def saveRootDirs(rootDirString=None):
-        settings.ROOT_DIRS = rootDirString
+    def saveRootDirs(self):
+        settings.ROOT_DIRS = self.get_query_argument("rootDirString")
 
-    @staticmethod
-    def saveAddShowDefaults(
-        defaultStatus,
-        anyQualities,
-        bestQualities,
-        defaultSeasonFolders,
-        whitelist,
-        blacklist,
-        subtitles=False,
-        anime=False,
-        scene=False,
-        defaultStatusAfter=WANTED,
-    ):
-        anyQualities = self.get_body_arguments("anyQualities")
-        bestualities = self.get_body_arguments("bestQualities")
+    def saveAddShowDefaults(self):
+        anyQualities = [int(quality) for quality in self.get_body_arguments("anyQualities")]
+        bestQualities = [int(quality) for quality in self.get_body_arguments("bestQualities")]
 
-        newQuality = Quality.combineQualities([int(quality) for quality in anyQualities], [int(quality) for quality in bestQualities])
+        settings.QUALITY_DEFAULT = Quality.combineQualities(anyQualities, bestQualities)
 
-        settings.WHITELIST_DEFAULT = whitelist
-        settings.BLACKLIST_DEFAULT = blacklist
+        settings.STATUS_DEFAULT = int(self.get_body_argument("defaultStatus", settings.STATUS_DEFAULT_AFTER))
+        settings.STATUS_DEFAULT_AFTER = int(self.get_body_argument("defaultStatusAfter", settings.STATUS_DEFAULT_AFTER))
 
-        settings.STATUS_DEFAULT = int(defaultStatus)
-        settings.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)
-        settings.QUALITY_DEFAULT = int(newQuality)
+        settings.WHITELIST_DEFAULT = self.get_body_argument("whitelist")
+        settings.BLACKLIST_DEFAULT = self.get_body_argument("blacklist")
+       
+        settings.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(self.get_body_argument("defaultSeasonFolders", settings.SEASON_FOLDERS_DEFAULT))
+        settings.SUBTITLES_DEFAULT = config.checkbox_to_value(self.get_body_argument("subtitles", settings.SUBTITLES_DEFAULT))
+        settings.ANIME_DEFAULT = config.checkbox_to_value(self.get_body_argument("anime", settings.ANIME_DEFAULT))
+        settings.SCENE_DEFAULT = config.checkbox_to_value(self.get_body_argument("scene", settings.SCENE_DEFAULT))
 
-        settings.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(defaultSeasonFolders)
-        settings.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
-
-        settings.ANIME_DEFAULT = config.checkbox_to_value(anime)
-
-        settings.SCENE_DEFAULT = config.checkbox_to_value(scene)
         sickchill.start.save_config()
 
         ui.notifications.message(_("Saved Defaults"), _('Your "add show" defaults have been set to your current selections.'))
