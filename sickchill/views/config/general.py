@@ -32,8 +32,8 @@ class ConfigGeneral(Config):
         settings.ROOT_DIRS = self.get_query_argument("rootDirString")
 
     def saveAddShowDefaults(self):
-        anyQualities = [int(quality) for quality in self.get_body_arguments("anyQualities")]
-        bestQualities = [int(quality) for quality in self.get_body_arguments("bestQualities")]
+        anyQualities = [int(quality) for quality in self.get_body_arguments("anyQualities[]")]
+        bestQualities = [int(quality) for quality in self.get_body_arguments("bestQualities[]")]
 
         settings.QUALITY_DEFAULT = Quality.combineQualities(anyQualities, bestQualities)
 
