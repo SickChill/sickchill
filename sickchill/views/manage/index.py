@@ -361,7 +361,7 @@ class Manage(Home, WebRoot):
     def massEdit(self):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
-        edit_shows = self.get_body_argument("edit_shows", "").split("|")
+        edit_shows = self.get_body_arguments("edit_shows")
 
         show_list = []
         show_names = []
