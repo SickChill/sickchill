@@ -1416,16 +1416,12 @@ class Home(WebRoot):
         else:
             return self.redirect("/home/")
 
-    def setStatus(self, show=None, eps=None, status=None, direct=False):
-        if not all([show, eps, status]):
-            errMsg = _("You must specify a show and at least one episode")
-            if direct:
-                ui.notifications.error(_("Error"), errMsg)
-                return json.dumps({"result": "error"})
-            else:
-                return self._genericMessage(_("Error"), errMsg)
+    def setStatus(self):
+        show = self.get_body_argument("show")
+        eps = self.get_body_arguments("eps")
+        status = self.get_body_argument("status")
+        direct = self.get_body_argument("direct", False)
 
-        # Use .has_key() since it is overridden for statusStrings in common.py
         if status not in statusStrings:
             errMsg = _("Invalid status")
             if direct:
@@ -1448,7 +1444,7 @@ class Home(WebRoot):
         if eps:
             trakt_data = []
             sql_l = []
-            for cur_ep in eps.split("|"):
+            for cur_ep in eps:
                 if not cur_ep:
                     logger.debug("cur_ep was empty when trying to setStatus")
 
@@ -1476,7 +1472,7 @@ class Home(WebRoot):
                 with episode_object.lock:
                     # don't let them mess up UNAIRED episodes
                     if episode_object.status == UNAIRED:
-                        logger.warning("Refusing to change status of " + cur_ep + " because it is UNAIRED")
+                        logger.warning(f"Refusing to change status of {cur_ep} because it is UNAIRED")
                         continue
 
                     if (
@@ -1484,7 +1480,7 @@ class Home(WebRoot):
                         and episode_object.status not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.DOWNLOADED + [IGNORED]
                         and not os.path.isfile(episode_object.location)
                     ):
-                        logger.warning("Refusing to change status of " + cur_ep + " to DOWNLOADED because it's not SNATCHED/DOWNLOADED")
+                        logger.warning(f"Refusing to change status of {cur_ep} to DOWNLOADED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if (
@@ -1492,7 +1488,7 @@ class Home(WebRoot):
                         and episode_object.status
                         not in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST + Quality.DOWNLOADED + Quality.ARCHIVED
                     ):
-                        logger.warning("Refusing to change status of " + cur_ep + " to FAILED because it's not SNATCHED/DOWNLOADED")
+                        logger.warning(f"Refusing to change status of {cur_ep} to FAILED because it's not SNATCHED/DOWNLOADED")
                         continue
 
                     if episode_object.status in Quality.DOWNLOADED + Quality.ARCHIVED and int(status) == WANTED:
@@ -1543,10 +1539,10 @@ class Home(WebRoot):
             if segments:
                 ui.notifications.message(_("Backlog started"), msg)
         elif int(status) == WANTED and show_obj.paused:
-            logger.info("Some episodes were set to wanted, but {show_obj.name}" + " is paused. Not adding to Backlog until show is unpaused")
+            logger.info(f"Some episodes were set to wanted, but {show_obj.name} is paused. Not adding to Backlog until show is unpaused")
 
         if int(status) == FAILED:
-            msg = _("Retrying Search was automatically started for the following season of <b>{show_name}</b>").format(show_name=show_obj.name)
+            msg = _(f"Retrying Search was automatically started for the following season of <b>{show_obj.name}</b>")
             msg += ":<br><ul>"
 
             for season, segment in segments.items():
@@ -1564,7 +1560,7 @@ class Home(WebRoot):
         if direct:
             return json.dumps({"result": "success"})
         else:
-            return self.redirect("/home/displayShow?show=" + show)
+            return self.redirect(f"/home/displayShow?show={show}")
 
     def testRename(self):
         show = self.get_query_argument("show")
