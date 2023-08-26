@@ -511,7 +511,7 @@ class Manage(Home, WebRoot):
         air_by_date = self.get_body_argument("air_by_date", None)
         any_qualities = self.get_body_arguments("anyQualities")
         best_qualities = self.get_body_arguments("bestQualities")
-        edit_shows = self.get_body_argument("edit_shows", "").split("|")
+        edit_shows = self.get_body_arguments("edit_shows")
         mass_ignore_words = self.get_body_argument("mass_ignore_words", None)
         mass_prefer_words = self.get_body_argument("mass_prefer_words", None)
         mass_require_words = self.get_body_argument("mass_require_words", None)
@@ -611,13 +611,13 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self):
-        to_update = self.get_body_argument("toUpdate", "").split("|")
-        to_refresh = self.get_body_argument("toRefresh", "").split("|")
-        to_rename = self.get_body_argument("toRename", "").split("|")
-        to_subtitle = self.get_body_argument("toSubtitle", "").split("|")
-        to_delete = self.get_body_argument("toDelete", "").split("|")
-        to_remove = self.get_body_argument("toRemove", "").split("|")
-        to_metadata = self.get_body_argument("toMetadata", "").split("|")
+        to_update = self.get_body_arguments("toUpdate")
+        to_refresh = self.get_body_arguments("toRefresh")
+        to_rename = self.get_body_arguments("toRename")
+        to_subtitle = self.get_body_arguments("toSubtitle")
+        to_delete = self.get_body_arguments("toDelete")
+        to_remove = self.get_body_arguments("toRemove")
+        to_metadata = self.get_body_arguments("toMetadata")
 
         errors = []
         refreshes = []
@@ -697,7 +697,7 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def failedDownloads(self):
-        to_remove = self.get_body_argument("toRemove", "").split("|")
+        to_remove = self.get_body_arguments("toRemove")
         limit = self.get_argument("limit", "100")
         failed_db_con = db.DBConnection("failed.db")
 
