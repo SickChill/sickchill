@@ -3440,7 +3440,7 @@ const SICKCHILL = {
                                 toRemove: removeArray,
                                 toMetadata: metadataArray
                             };
-                            $.post(url, parameters, () => {
+                            $.post(scRoot + '/manage/massUpdate', parameters, () => {
                                 location.reload(true);
                             });
                         },

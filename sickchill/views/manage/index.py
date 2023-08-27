@@ -361,7 +361,7 @@ class Manage(Home, WebRoot):
     def massEdit(self):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
-        edit_shows = self.get_body_arguments("edit_shows")
+        edit_shows = self.get_body_arguments("edit_shows[]")
 
         show_list = []
         show_names = []
@@ -611,13 +611,13 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self):
-        to_update = self.get_body_arguments("toUpdate")
-        to_refresh = self.get_body_arguments("toRefresh")
-        to_rename = self.get_body_arguments("toRename")
-        to_subtitle = self.get_body_arguments("toSubtitle")
-        to_delete = self.get_body_arguments("toDelete")
-        to_remove = self.get_body_arguments("toRemove")
-        to_metadata = self.get_body_arguments("toMetadata")
+        to_update = self.get_body_arguments("toUpdate[]")
+        to_refresh = self.get_body_arguments("toRefresh[]")
+        to_rename = self.get_body_arguments("toRename[]")
+        to_subtitle = self.get_body_arguments("toSubtitle[]")
+        to_delete = self.get_body_arguments("toDelete[]")
+        to_remove = self.get_body_arguments("toRemove[]")
+        to_metadata = self.get_body_arguments("toMetadata[]")
 
         errors = []
         refreshes = []
