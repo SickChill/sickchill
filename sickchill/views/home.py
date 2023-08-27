@@ -1416,11 +1416,10 @@ class Home(WebRoot):
         else:
             return self.redirect("/home/")
 
-    def setStatus(self):
+    def setStatus(self, direct=False):
         show = self.get_body_argument("show")
         eps = self.get_body_arguments("eps[]")
         status = self.get_body_argument("status")
-        direct = self.get_body_argument("direct", False)
 
         if status not in statusStrings:
             errMsg = _("Invalid status")
