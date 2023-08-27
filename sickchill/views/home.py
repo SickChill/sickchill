@@ -1418,7 +1418,7 @@ class Home(WebRoot):
 
     def setStatus(self):
         show = self.get_body_argument("show")
-        eps = self.get_body_arguments("eps")
+        eps = self.get_body_arguments("eps[]")
         status = self.get_body_argument("status")
         direct = self.get_body_argument("direct", False)
 
