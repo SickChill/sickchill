@@ -134,7 +134,7 @@ class Manage(Home, WebRoot):
                 all_eps = [str(x["season"]) + "x" + str(x["episode"]) for x in all_eps_results]
                 to_change[cur_indexer_id] = all_eps
 
-            self.setStatus(cur_indexer_id, "|".join(to_change[cur_indexer_id]), newStatus, direct=True)
+            self.setStatus()
 
         return self.redirect("/manage/episodeStatuses/")
 
