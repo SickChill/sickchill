@@ -2794,11 +2794,11 @@ const SICKCHILL = {
                     return false;
                 }
 
-                const parameters = {
+                let parameters = {
                     show: $('#showID').attr('value'),
                     eps: epArray,
-                    status: $('#statusSelect').val()
-                }
+                    status: $('#statusSelect').val(),
+                };
                 $.post(scRoot + '/home/setStatus', parameters, () => {
                     location.reload(true);
                 });
@@ -3363,7 +3363,8 @@ const SICKCHILL = {
                 if (editArray.length === 0) {
                     return;
                 }
-                $.post(scRoot + '/manage/massEdit', {edit_shows: editArray});
+
+                $.post(scRoot + '/manage/massEdit', {"edit_shows": editArray});
             });
 
             $('.submitMassUpdate').on('click', () => {
@@ -3431,14 +3432,14 @@ const SICKCHILL = {
                                 return false;
                             }
 
-                            const parameters = {
+                            let parameters = {
                                 toUpdate: updateArray,
                                 toRefresh: refreshArray,
                                 toRename: renameArray,
                                 toSubtitle: subtitleArray,
                                 toDelete: deleteArray,
                                 toRemove: removeArray,
-                                toMetadata: metadataArray
+                                toMetadata: metadataArray,
                             };
                             $.post(scRoot + '/manage/massUpdate', parameters, () => {
                                 location.reload(true);
@@ -3451,14 +3452,14 @@ const SICKCHILL = {
                     return false;
                 }
 
-                const parameters = {
+                let parameters = {
                     toUpdate: updateArray,
                     toRefresh: refreshArray,
                     toRename: renameArray,
                     toSubtitle: subtitleArray,
                     toDelete: deleteArray,
                     toRemove: removeArray,
-                    toMetadata: metadataArray
+                    toMetadata: metadataArray,
                 };
                 $.post(scRoot + '/manage/massUpdate', parameters, () => {
                     location.reload(true);
@@ -4102,8 +4103,8 @@ const SICKCHILL = {
             };
 
             $('#saveDefaultsButton').on('click', function () {
-                const anyQualArray = [];
-                const bestQualArray = [];
+                let anyQualArray = [];
+                let bestQualArray = [];
                 $('#anyQualities option:selected').each((i, d) => {
                     anyQualArray.push($(d).val());
                 });
