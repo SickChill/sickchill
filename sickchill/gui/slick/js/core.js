@@ -2794,7 +2794,7 @@ const SICKCHILL = {
                     return false;
                 }
 
-                let parameters = {
+                const parameters = {
                     show: $('#showID').attr('value'),
                     eps: epArray,
                     status: $('#statusSelect').val(),
@@ -3364,7 +3364,7 @@ const SICKCHILL = {
                     return;
                 }
 
-                $.post(scRoot + '/manage/massEdit', {"edit_shows": editArray});
+                $.post(scRoot + '/manage/massEdit', {edit_shows: editArray}); // eslint-disable-line camelcase
             });
 
             $('.submitMassUpdate').on('click', () => {
@@ -3452,7 +3452,7 @@ const SICKCHILL = {
                     return false;
                 }
 
-                let parameters = {
+                const parameters = {
                     toUpdate: updateArray,
                     toRefresh: refreshArray,
                     toRename: renameArray,
@@ -4103,8 +4103,8 @@ const SICKCHILL = {
             };
 
             $('#saveDefaultsButton').on('click', function () {
-                let anyQualArray = [];
-                let bestQualArray = [];
+                const anyQualArray = [];
+                const bestQualArray = [];
                 $('#anyQualities option:selected').each((i, d) => {
                     anyQualArray.push($(d).val());
                 });
