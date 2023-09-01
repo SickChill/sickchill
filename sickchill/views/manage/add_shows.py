@@ -216,8 +216,8 @@ class AddShows(Home):
             provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name,
             provided_indexer=provided_indexer,
-            whitelist=settings.WHITELIST_DEFAULT.split(","),
-            blacklist=settings.BLACKLIST_DEFAULT.split(","),
+            whitelist=settings.WHITELIST_DEFAULT,
+            blacklist=settings.BLACKLIST_DEFAULT,
             groups=[],
             title=_("New Show"),
             header=_("New Show"),
@@ -433,8 +433,8 @@ class AddShows(Home):
         providedIndexer=None,
         anime=None,
         scene=None,
-        blacklist=None,
-        whitelist=None,
+        blacklist=[],
+        whitelist=[],
         defaultStatusAfter=None,
     ):
         """
