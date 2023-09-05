@@ -31,7 +31,7 @@ jobs:
           installer-parallel: false
       -
         name: Checkout SickChill
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           path: sickchill
