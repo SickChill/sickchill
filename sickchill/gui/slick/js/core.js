@@ -3352,19 +3352,19 @@ const SICKCHILL = {
             });
 
             $('.submitMassEdit').on('click', () => {
-                const editArray = [];
+                let submit_edit = false;
 
+                const form = $('<form />', { action: scRoot + '/manage/massEdit', method: 'post' });
                 $('.editCheck').each(function () {
                     if (this.checked === true) {
-                        editArray.push($(this).attr('id').split('-')[1]);
+                        form.append($('<input />', { name: 'edit_shows[]', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        submit_edit = true;
                     }
                 });
-
-                if (editArray.length === 0) {
-                    return;
+                if (submit_edit === true) {
+                    form.appendTo('body');
+                    form.submit();
                 }
-
-                $.post(scRoot + '/manage/massEdit', {edit_shows: editArray}); // eslint-disable-line camelcase
             });
 
             $('.submitMassUpdate').on('click', () => {
@@ -3432,7 +3432,7 @@ const SICKCHILL = {
                                 return false;
                             }
 
-                            let parameters = {
+                            const parameters = {
                                 toUpdate: updateArray,
                                 toRefresh: refreshArray,
                                 toRename: renameArray,
