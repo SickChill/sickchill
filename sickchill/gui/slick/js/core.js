@@ -3352,16 +3352,16 @@ const SICKCHILL = {
             });
 
             $('.submitMassEdit').on('click', () => {
-                let submit_edit = false;
+                let submitEdit = false;
 
-                const form = $('<form />', { action: scRoot + '/manage/massEdit', method: 'post' });
+                const form = $('<form />', {action: scRoot + '/manage/massEdit', method: 'post'});
                 $('.editCheck').each(function () {
                     if (this.checked === true) {
-                        form.append($('<input />', { name: 'edit_shows[]', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                        submit_edit = true;
+                        form.append($('<input />', {name: 'edit_shows[]', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        submitEdit = true;
                     }
                 });
-                if (submit_edit === true) {
+                if (submitEdit === true) {
                     form.appendTo('body');
                     form.submit();
                 }
