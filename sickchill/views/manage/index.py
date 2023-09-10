@@ -527,6 +527,9 @@ class Manage(Home, WebRoot):
                 root_dir_map[old_root] = new_root
 
         errors = []
+        if len(edit_shows) == 1:
+            edit_shows = edit_shows[0].strip('[]').replace('"', '').replace("'", "").split(', ')
+
         for current_show in edit_shows:
             current_show_errors = []
             show_object = Show.find(settings.showList, current_show)
