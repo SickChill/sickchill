@@ -3357,7 +3357,7 @@ const SICKCHILL = {
                 const form = $('<form />', {action: scRoot + '/manage/massEdit', method: 'post'});
                 $('.editCheck').each(function () {
                     if (this.checked === true) {
-                        form.append($('<input />', {name: 'edit_shows[]', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        form.append($('<input />', {name: 'edit_shows', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
                         submitEdit = true;
                     }
                 });

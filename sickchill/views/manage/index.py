@@ -361,7 +361,7 @@ class Manage(Home, WebRoot):
     def massEdit(self):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
-        edit_shows = self.get_body_arguments("edit_shows[]")
+        edit_shows = self.get_body_arguments("edit_shows")
 
         show_list = []
         show_names = []
@@ -527,8 +527,6 @@ class Manage(Home, WebRoot):
                 root_dir_map[old_root] = new_root
 
         errors = []
-        if len(edit_shows) == 1:
-            edit_shows = edit_shows[0].strip('[]').replace('"', '').replace("'", "").split(', ')
 
         for current_show in edit_shows:
             current_show_errors = []
