@@ -9,7 +9,7 @@
 
 <%block name="pages">
     <form id="configForm" action="massEditSubmit" method="post" accept-charset="utf-8">
-        % for current_show in show_list:
+        % for current_show in edit_show_list:
             <input type="hidden" name="edit_shows" value="${current_show}" />
         % endfor
 
@@ -33,7 +33,7 @@
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <div class="row">
                             <div class="col-md-12">
-                                <span style="font-size: 14px;">${', '.join(sorted(show_names))}</span>
+                                <span style="font-size: 16px;">${', '.join(sorted(show_names))}</span>
                             </div>
                         </div>
                     </div>
