@@ -476,7 +476,7 @@ class Manage(Home, WebRoot):
         require_words_value = None
 
         return t.render(
-            show_list=edit_shows,
+            edit_show_list=edit_shows,
             show_names=show_names,
             default_ep_status_value=default_ep_status_value,
             paused_value=paused_value,
@@ -527,7 +527,6 @@ class Manage(Home, WebRoot):
                 root_dir_map[old_root] = new_root
 
         errors = []
-
         for current_show in edit_shows:
             current_show_errors = []
             show_object = Show.find(settings.showList, current_show)
