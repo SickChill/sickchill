@@ -9,7 +9,9 @@
 
 <%block name="pages">
     <form id="configForm" action="massEditSubmit" method="post" accept-charset="utf-8">
-        <input type="hidden" name="edit_shows" value="${show_list}" />
+        % for current_show in show_list:
+            <input type="hidden" name="edit_shows" value="${current_show}" />
+        % endfor
 
         <div id="main">
 
