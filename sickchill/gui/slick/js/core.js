@@ -3428,9 +3428,6 @@ const SICKCHILL = {
                                     deleteArray.push($(this).attr('id').split('-')[1]);
                                 }
                             });
-                            if (updateArray.length + refreshArray.length + renameArray.length + subtitleArray.length + deleteArray.length + removeArray.length + metadataArray.length === 0) {
-                                return false;
-                            }
 
                             const parameters = {
                                 toUpdate: updateArray,
