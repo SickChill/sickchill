@@ -37,12 +37,45 @@ class Client(GenericClient):
         return self.auth
 
     def _add_torrent_uri(self, result: "TorrentSearchResult"):
-        self._request(method="post", data=self.__make_post(result, method="uri"))
-        return self.response.json()["result"] == "success"
+        return self.__add_torrent(self.__make_post(result, method="uri"))
 
     def _add_torrent_file(self, result: "TorrentSearchResult"):
-        self._request(method="post", data=self.__make_post(result, method="file"))
-        return self.response.json()["result"] == "success"
+        return self.__add_torrent(self.__make_post(result, method="file"))
+
+    def __add_torrent(self, data):
+        self._request(method="post", data=json.dumps(data))
+        response = self.response.json()
+        success = response["result"] == "success"
+        if success:
+            # Torrent was successfully added, but lots of arguments given to
+            # Transmission are actually not arguments supported by the
+            # torrent-add command.
+            # Arguments like 'seedRatioLimit' need to be set in a second pass
+            # Documentation of those arguments can be found here:
+            # https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
+            id = response.get("arguments", {}).get("torrent-added", {}).get("id", None)
+            if id is not None:
+                arguments = {"ids": id}
+                for key, value in data["arguments"].items():
+                    if key in (
+                        "seedRatioLimit",
+                        "seedRatioMode",
+                        "seedIdleLimit",
+                        "seedIdleMode",
+                        "queuePosition",
+                    ):
+                        arguments[key] = value
+                if len(arguments) > 1:
+                    self._request(
+                        method="post",
+                        data=json.dumps(
+                            {
+                                "arguments": arguments,
+                                "method": "torrent-set",
+                            }
+                        ),
+                    )
+        return success
 
     @staticmethod
     def __make_post(result, method="file"):
@@ -90,4 +123,4 @@ class Client(GenericClient):
         else:
             arguments["priority-normal"] = []
 
-        return json.dumps({"arguments": arguments, "method": "torrent-add"})
+        return {"arguments": arguments, "method": "torrent-add"}
