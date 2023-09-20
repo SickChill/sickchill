@@ -611,13 +611,14 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self):
-        to_update = self.get_body_arguments("toUpdate[]")
-        to_refresh = self.get_body_arguments("toRefresh[]")
-        to_rename = self.get_body_arguments("toRename[]")
-        to_subtitle = self.get_body_arguments("toSubtitle[]")
-        to_delete = self.get_body_arguments("toDelete[]")
-        to_remove = self.get_body_arguments("toRemove[]")
-        to_metadata = self.get_body_arguments("toMetadata[]")
+        to_update = self.get_body_arguments("toUpdate")
+        to_refresh = self.get_body_arguments("toRefresh")
+        to_rename = self.get_body_arguments("toRename")
+        to_subtitle = self.get_body_arguments("toSubtitle")
+        to_delete = self.get_body_arguments("toDelete")
+        to_remove = self.get_body_arguments("toRemove")
+        to_metadata = self.get_body_arguments("toMetadata")
+        edit_shows = self.get_body_arguments("edit_shows")
 
         errors = []
         refreshes = []
@@ -693,6 +694,9 @@ class Manage(Home, WebRoot):
 
         if updates + refreshes + renames + subtitles:
             ui.notifications.message(_("The following actions were queued") + ":", message_detail)
+
+        if edit_shows:
+            return self.redirect("/manage/massEdit/")
 
         return self.redirect("/manage/")
 
