@@ -3398,14 +3398,14 @@ const SICKCHILL = {
                     }
                 });
 
-                let deleteArray = [];
+                const deleteArray = [];
                 $('.deleteCheck').each(function () {
                     if (this.checked === true) {
                         deleteArray.push($(this).attr('id').split('-')[1]);
                     }
                 });
 
-                if (deleteArray.length >= 1) {
+                if (deleteArray.length > 0) {
                     $.confirm({
                         title: 'Delete Shows',
                         text: 'You have selected to delete ' + deleteArray.length + ' show(s).  Are you sure you wish to continue? All files will be removed from your system.',
@@ -3418,9 +3418,10 @@ const SICKCHILL = {
                                 form.append($('<input />', {
                                     name: 'toDelete',
                                     type: 'hidden',
-                                    value: deleteItem
+                                    value: deleteItem,
                                 }));
                             }
+
                             submit = true;
                         },
                     });
