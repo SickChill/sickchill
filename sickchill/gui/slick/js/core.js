@@ -3351,22 +3351,6 @@ const SICKCHILL = {
                 $.tablesorter.columnSelector.attachTo($('#massUpdateTable'), '#popover-target');
             });
 
-            $('.submitMassEdit').on('click', () => {
-                let submitEdit = false;
-
-                const form = $('<form />', {action: scRoot + '/manage/massEdit', method: 'post'});
-                $('.editCheck').each(function () {
-                    if (this.checked === true) {
-                        form.append($('<input />', {name: 'edit_shows', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                        submitEdit = true;
-                    }
-                });
-                if (submitEdit === true) {
-                    form.appendTo('body');
-                    form.submit();
-                }
-            });
-
             $('.submitMassUpdate').on('click', () => {
                 let submit = false;
 
@@ -3407,63 +3391,46 @@ const SICKCHILL = {
                     }
                 });
 
-                let deleteCount = 0;
-
-                $('.deleteCheck').each(function () {
+                $('.editCheck').each(function () {
                     if (this.checked === true) {
-                        deleteCount++;
+                        form.append($('<input />', {name: 'edit_shows', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        submit = true;
                     }
                 });
 
-                if (deleteCount >= 1) {
+                let deleteArray = [];
+                $('.deleteCheck').each(function () {
+                    if (this.checked === true) {
+                        deleteArray.push($(this).attr('id').split('-')[1]);
+                    }
+                });
+
+                if (deleteArray.length >= 1) {
                     $.confirm({
                         title: 'Delete Shows',
-                        text: 'You have selected to delete ' + deleteCount + ' show(s).  Are you sure you wish to continue? All files will be removed from your system.',
+                        text: 'You have selected to delete ' + deleteArray.length + ' show(s).  Are you sure you wish to continue? All files will be removed from your system.',
                         confirmButton: 'Yes',
                         cancelButton: 'Cancel',
                         dialogClass: 'modal-dialog',
                         post: false,
                         confirm() {
-                            $('.deleteCheck').each(function () {
-                                if (this.checked === true) {
-                                    form.append($('<input />', {name: 'toDelete', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                                    submit = true;
-                                }
-                            });
+                            for (const deleteItem of deleteArray) {
+                                form.append($('<input />', {
+                                    name: 'toDelete',
+                                    type: 'hidden',
+                                    value: deleteItem
+                                }));
+                            }
+                            submit = true;
+                        },
+                    });
+                }
 
                 if (submit === true) {
                     form.appendTo('body');
                     form.submit();
                 }
             });
-
-            for (const name of ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck']) {
-                let lastCheck = null;
-
-                $(name).on('click', function (event) {
-                    if (!lastCheck || !event.shiftKey) {
-                        lastCheck = this; // eslint-disable-line unicorn/no-this-assignment
-                        return;
-                    }
-
-                    const check = this; // eslint-disable-line unicorn/no-this-assignment
-                    let found = 0;
-
-                    $(name).each(function () {
-                        if (found === 2) {
-                            return false;
-                        }
-
-                        if (found === 1 && !this.disabled) {
-                            this.checked = lastCheck.checked;
-                        }
-
-                        if (this === check || this === lastCheck) {
-                            found++;
-                        }
-                    });
-                });
-            }
         },
         backlogOverview() {
             $('#pickShow').on('change', event => {

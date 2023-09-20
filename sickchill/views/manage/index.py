@@ -696,7 +696,7 @@ class Manage(Home, WebRoot):
             ui.notifications.message(_("The following actions were queued") + ":", message_detail)
 
         if edit_shows:
-            return self.redirect("/manage/massEdit/")
+            return self.massEdit()
 
         return self.redirect("/manage/")
 
