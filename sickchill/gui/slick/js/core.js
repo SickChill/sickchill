@@ -3368,41 +3368,42 @@ const SICKCHILL = {
             });
 
             $('.submitMassUpdate').on('click', () => {
-                const updateArray = [];
-                const refreshArray = [];
-                const renameArray = [];
-                const subtitleArray = [];
-                const deleteArray = [];
-                const removeArray = [];
-                const metadataArray = [];
+                let submit = false;
+
+                const form = $('<form />', {action: scRoot + '/manage/massUpdate', method: 'post'});
 
                 $('.updateCheck').each(function () {
                     if (this.checked === true) {
-                        updateArray.push($(this).attr('id').split('-')[1]);
+                        form.append($('<input />', {name: 'toUpdate', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        submit = true;
                     }
                 });
 
                 $('.refreshCheck').each(function () {
                     if (this.checked === true) {
-                        refreshArray.push($(this).attr('id').split('-')[1]);
+                        form.append($('<input />', {name: 'toRefresh', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        submit = true;
                     }
                 });
 
                 $('.renameCheck').each(function () {
                     if (this.checked === true) {
-                        renameArray.push($(this).attr('id').split('-')[1]);
+                        form.append($('<input />', {name: 'toRename', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        submit = true;
                     }
                 });
 
                 $('.subtitleCheck').each(function () {
                     if (this.checked === true) {
-                        subtitleArray.push($(this).attr('id').split('-')[1]);
+                        form.append($('<input />', {name: 'toSubtitle', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        submit = true;
                     }
                 });
 
                 $('.removeCheck').each(function () {
                     if (this.checked === true) {
-                        removeArray.push($(this).attr('id').split('-')[1]);
+                        form.append($('<input />', {name: 'toRemove', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                        submit = true;
                     }
                 });
 
@@ -3425,42 +3426,15 @@ const SICKCHILL = {
                         confirm() {
                             $('.deleteCheck').each(function () {
                                 if (this.checked === true) {
-                                    deleteArray.push($(this).attr('id').split('-')[1]);
+                                    form.append($('<input />', {name: 'toDelete', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
+                                    submit = true;
                                 }
                             });
 
-                            const parameters = {
-                                toUpdate: updateArray,
-                                toRefresh: refreshArray,
-                                toRename: renameArray,
-                                toSubtitle: subtitleArray,
-                                toDelete: deleteArray,
-                                toRemove: removeArray,
-                                toMetadata: metadataArray,
-                            };
-                            $.post(scRoot + '/manage/massUpdate', parameters, () => {
-                                location.reload(true);
-                            });
-                        },
-                    });
+                if (submit === true) {
+                    form.appendTo('body');
+                    form.submit();
                 }
-
-                if (updateArray.length + refreshArray.length + renameArray.length + subtitleArray.length + deleteArray.length + removeArray.length + metadataArray.length === 0) {
-                    return false;
-                }
-
-                const parameters = {
-                    toUpdate: updateArray,
-                    toRefresh: refreshArray,
-                    toRename: renameArray,
-                    toSubtitle: subtitleArray,
-                    toDelete: deleteArray,
-                    toRemove: removeArray,
-                    toMetadata: metadataArray,
-                };
-                $.post(scRoot + '/manage/massUpdate', parameters, () => {
-                    location.reload(true);
-                });
             });
 
             for (const name of ['.editCheck', '.updateCheck', '.refreshCheck', '.renameCheck', '.deleteCheck', '.removeCheck']) {
