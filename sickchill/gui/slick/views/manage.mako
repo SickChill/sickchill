@@ -12,7 +12,6 @@
 
         <div class="row">
             <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 pull-right">
-                <input class="btn submitMassEdit pull-right" type="button" value="${_('Edit Selected')}" />
                 <input class="btn submitMassUpdate pull-right" type="button" value="${_('Submit')}" />
                 <span class="show-option">
                     <button id="popover" type="button" class="btn pull-right">${_('Select Columns')} <b class="caret"></b></button>
@@ -115,8 +114,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td rowspan="1" colspan="2" class="align-center alt"><input class="btn pull-left submitMassEdit" type="button" value="${_('Edit Selected')}" /></td>
-                                <td rowspan="1" colspan="${(15, 16)[bool(settings.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
+                                <td rowspan="1" colspan="${(17, 18)[bool(settings.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
                             </tr>
                         </tfoot>
                     </table>
