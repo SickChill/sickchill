@@ -3280,8 +3280,8 @@ const SICKCHILL = {
         },
         index() {
             function checkBool(item) {
-                return item === "Y" ? 'Yes' : 'No'
-            };
+                return item === 'Y' ? 'Yes' : 'No';
+            }
 
             $('#massUpdateTable:has(tbody tr)').tablesorter({
                 sortList: [[1, 0]],
@@ -3347,14 +3347,14 @@ const SICKCHILL = {
                     columnSelector_layout: '<label><input type="checkbox"/>{name}</label>', // eslint-disable-line camelcase
                     columnSelector_mediaquery: false, // eslint-disable-line camelcase
                     columnSelector_cssChecked: 'checked', // eslint-disable-line camelcase
-                    columnSelector_columns: {
-                      12: false,
+                    columnSelector_columns: { // eslint-disable-line camelcase
+                        12: false,
                     },
-                    filter_cssFilter: 'text-center text-capitalize',
-                    filter_hideFilters : false,
-                    filter_ignoreCase  : true,
-                    filter_reset: '.resetsorting',
-                    widthFixed : true,
+                    filter_cssFilter: 'text-center text-capitalize', // eslint-disable-line camelcase
+                    filter_hideFilters: false, // eslint-disable-line camelcase
+                    filter_ignoreCase: true, // eslint-disable-line camelcase
+                    filter_reset: '.resetsorting', // eslint-disable-line camelcase
+                    widthFixed: true,
 
                 },
             });
@@ -3892,7 +3892,7 @@ const SICKCHILL = {
                         filter_saveFilters: false, // eslint-disable-line camelcase
                         columnSelector_mediaquery: false, // eslint-disable-line camelcase
                         stickyHeaders_offset: 50, // eslint-disable-line camelcase
-                        filter_reset: '.resetsorting',
+                        filter_reset: '.resetsorting', // eslint-disable-line camelcase
                     },
                 });
 
