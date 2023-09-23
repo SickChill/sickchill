@@ -3279,45 +3279,48 @@ const SICKCHILL = {
             });
         },
         index() {
-            $('.resetsorting').on('click', () => {
-                $('table').trigger('filterReset');
-            });
+            function checkBool(item) {
+                return item === "Y" ? 'Yes' : 'No'
+            };
 
             $('#massUpdateTable:has(tbody tr)').tablesorter({
                 sortList: [[1, 0]],
                 textExtraction: {
                     2(node) { // Network
-                        return ($(node).find('img').attr('alt') || 'unknown').toLowerCase();
+                        return ($(node).find('img').attr('alt') || 'unknown');
                     },
                     3(node) { // Quality
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return $(node).find('span').text();
                     },
                     4(node) { // Sports
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return checkBool($(node).find('span').attr('title'));
                     },
                     5(node) { // Scene
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return checkBool($(node).find('span').attr('title'));
                     },
                     6(node) { // Anime
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return checkBool($(node).find('span').attr('title'));
                     },
                     7(node) { // Season Folders
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return checkBool($(node).find('span').attr('title'));
                     },
                     8(node) { // Paused
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return checkBool($(node).find('span').attr('title'));
                     },
                     9(node) { // Subtitle
-                        return $(node).find('span').attr('title').toLowerCase();
+                        return checkBool($(node).find('span').attr('title'));
                     },
                     10(node) { // Default Episode Status
-                        return $(node).text().toLowerCase();
+                        return $(node).text();
                     },
                     11(node) { // Show Status
-                        return $(node).text().toLowerCase();
+                        return $(node).text();
+                    },
+                    12(node) { // Root dir
+                        return $(node).text();
                     },
                 },
-                widgets: ['zebra', 'filter', 'columnSelector'],
+                widgets: ['zebra', 'filter', 'columnSelector', 'saveSort', 'stickyHeaders'],
                 headers: {
                     0: {sorter: false, filter: false},
                     1: {sorter: 'loadingNames'},
@@ -3331,15 +3334,28 @@ const SICKCHILL = {
                     9: {sorter: 'subtitle'},
                     10: {sorter: 'default_ep_status'},
                     11: {sorter: 'status'},
-                    12: {sorter: false},
+                    12: {sorter: 'roootDirs'},
                     13: {sorter: false},
                     14: {sorter: false},
                     15: {sorter: false},
                     16: {sorter: false},
                     17: {sorter: false},
+                    18: {sorter: false},
                 },
                 widgetOptions: {
+                    columnSelector_saveColumns: true, // eslint-disable-line camelcase
+                    columnSelector_layout: '<label><input type="checkbox"/>{name}</label>', // eslint-disable-line camelcase
                     columnSelector_mediaquery: false, // eslint-disable-line camelcase
+                    columnSelector_cssChecked: 'checked', // eslint-disable-line camelcase
+                    columnSelector_columns: {
+                      12: false,
+                    },
+                    filter_cssFilter: 'text-center text-capitalize',
+                    filter_hideFilters : false,
+                    filter_ignoreCase  : true,
+                    filter_reset: '.resetsorting',
+                    widthFixed : true,
+
                 },
             });
             $('#popover').popover({
@@ -3844,10 +3860,6 @@ const SICKCHILL = {
                 const sort = getMeta('settings.COMING_EPS_SORT');
                 const sortList = (sort in sortCodes) ? [[sortCodes[sort], 0]] : [[0, 0]];
 
-                $('.resetsorting').on('click', () => {
-                    $('#showListTable').trigger('filterReset');
-                });
-
                 $('#showListTable:has(tbody tr)').tablesorter({
                     widgets: ['stickyHeaders', 'filter', 'columnSelector', 'saveSort'],
                     sortList,
@@ -3880,6 +3892,7 @@ const SICKCHILL = {
                         filter_saveFilters: false, // eslint-disable-line camelcase
                         columnSelector_mediaquery: false, // eslint-disable-line camelcase
                         stickyHeaders_offset: 50, // eslint-disable-line camelcase
+                        filter_reset: '.resetsorting',
                     },
                 });
 
