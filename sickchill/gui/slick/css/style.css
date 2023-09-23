@@ -22,7 +22,7 @@ inc_top.mako
 }
 
 .ui-autocomplete-loading {
-    background: white url("../images/loading16.gif") right center no-repeat;
+    background: #ffffff url("../images/loading16.gif") right center no-repeat;
 }
 
 .browserDialog.busy .ui-dialog-buttonpane {
@@ -195,8 +195,14 @@ inc_top.mako
 
 #sub-menu a {
     margin: 2px;
-    clear-after: top;
     float: right;
+}
+
+#sub-menu a:after {
+    display: block;
+    height: 0;
+    clear: both;
+    content: "";
 }
 
 .upgrade-notification {
@@ -602,7 +608,7 @@ span.movie-option {
 }
 
 .ui-progressbar .ui-progressbar-value {
-    height: 20px
+    height: 20px;
 }
 
 .ui-progressbar .progress-20 {
@@ -618,7 +624,7 @@ span.movie-option {
 .movie-container .progress-60,
 .movie-container .progress-80 {
     height: 7px;
-    border-radius: 0
+    border-radius: 0;
 }
 
 .show-title, .movie-title {
@@ -629,17 +635,17 @@ span.movie-option {
     white-space: nowrap;
 }
 
-.show-title:after, .movie-title:after {
+.show-title:after, .movie-title:after, .show-date:after, .movie-date:after {
     position: absolute;
     top: 0;
     right: 0;
     width: 20px;
     height: 100%;
-    background-image: -webkit-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -moz-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -ms-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -o-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
+    background-image: -webkit-linear-gradient(right, #f3f3f3, rgba(243, 243, 243, 0));
+    background-image: -moz-linear-gradient(right, #f3f3f3, rgba(243, 243, 243, 0));
+    background-image: -ms-linear-gradient(right, #f3f3f3, rgba(243, 243, 243, 0));
+    background-image: -o-linear-gradient(right, #f3f3f3, rgba(243, 243, 243, 0));
+    background-image: linear-gradient(to left, #f3f3f3, rgba(243, 243, 243, 0));
     content: "";
     pointer-events: none;
 }
@@ -653,25 +659,10 @@ span.movie-option {
     white-space: nowrap;
 }
 
-.show-date:after, .movie-date:after {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 20px;
-    height: 100%;
-    background-image: -webkit-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -moz-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -ms-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: -o-linear-gradient(right, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    background-image: linear-gradient(to left, rgba(243, 243, 243, 1), rgba(243, 243, 243, 0));
-    content: "";
-    pointer-events: none;
-}
-
 .show-table, .movie-table {
     width: 33%;
     text-align: center;
-    vertical-align: middle
+    vertical-align: middle;
 }
 
 .show-add, .movie-add {
@@ -801,8 +792,8 @@ div.buttontext p {
     background-position: -76px 0;
 }
 
-add-list-icon-addtvdb {
-    background-position: 0px 0;
+.add-list-icon-addtvdb {
+    background-position: 0 0;
 }
 
 .add-list-icon-addexistingshow {
@@ -930,7 +921,7 @@ displayShow.mako
 }
 
 .poster-container {
-    float:left;
+    float: left;
 }
 
 #posterCol {
@@ -957,7 +948,6 @@ h1.title {
     margin-bottom: 15px;
     line-height: 30px;
     text-align: left;
-    text-rendering: optimizelegibility;
 }
 
 .displayspecials {
@@ -1177,7 +1167,7 @@ span.snatched b {
 }
 
 .sickchillTable.display_show {
-    clear: both
+    clear: both;
 }
 
 .sickchillTable th {
@@ -1304,10 +1294,10 @@ td.col-search {
 }
 
 #customize .custom-image.modified {
-    box-shadow: 3px 3px green,
-         3px -3px green,
-         -3px 3px green,
-         -3px -3px green;
+    box-shadow: 3px 3px #008000,
+    3px -3px #008000,
+    -3px 3px #008000,
+    -3px -3px #008000;
 }
 
 [class^="displayshow-icon-"], [class*=" displayshow-icon-"] {
@@ -1583,7 +1573,7 @@ h2.day, h2.network {
 .calendarWrapper {
     width: 1000px;
     padding: 0 3px;
-    margin: 0 auto
+    margin: 0 auto;
 }
 
 .calendarTable {
@@ -1594,20 +1584,20 @@ h2.day, h2.network {
 }
 
 .calendarShow {
-    padding: 0 !important
+    padding: 0 !important;
 }
 
 .calendarShow .poster {
-    padding-bottom: 2px
+    padding-bottom: 2px;
 }
 
 .calendarShow .poster img {
     width: 142px;
-    height: auto
+    height: auto;
 }
 
 .calendarShow .text {
-    padding: 0 5px 10px 5px
+    padding: 0 5px 10px 5px;
 }
 
 .calendarShow .text .airtime,
@@ -1615,13 +1605,13 @@ h2.day, h2.network {
     display: block;
     overflow: hidden;
     font-size: 11px;
-    text-overflow: ellipsis
+    text-overflow: ellipsis;
 }
 
 .calendarShow .show-status,
 .calendarShow .movie-status {
     padding: 5px 10px 10px;
-    text-align: center
+    text-align: center;
 }
 
 table.cal-odd {
@@ -1633,11 +1623,11 @@ table.cal-even {
 }
 
 .calendarShow .text .airtime {
-    color: #000000
+    color: #000000;
 }
 
 .calendarShow .text .episode-title {
-    color: #888888
+    color: #888888;
 }
 
 /* =======================================================================
@@ -1714,7 +1704,7 @@ config*.mako
 }
 
 #config label.space-right {
-    margin-right: 10px
+    margin-right: 10px;
 }
 
 #config .metadataDiv {
@@ -2069,14 +2059,12 @@ div.metadataDiv .disabled {
 }
 
 .icon-notifiers-matrix {
-    background: url("../images/Matrix_Web.png");
-    background-color: white;
+    background: #ffffff url("../images/Matrix_Web.png");
     background-size: 32px;
 }
 
 .icon-notifiers-rocketchat {
-    background: url("../images/RocketChat.png");
-    background-color: white;
+    background: #ffffff url("../images/RocketChat.png");
     background-size: 32px;
 }
 
@@ -2357,11 +2345,11 @@ span.Unknown {
 }
 
 span.Proper, [class^="pill-snatched"], [class*=" pill-snatched"] {
-    background-color: green;
+    background-color: #008000;
 }
 
 span.pill-downloaded {
-    background-color: blue;
+    background-color: #0000ff;
 }
 
 span.pill-wanted {
@@ -2369,11 +2357,11 @@ span.pill-wanted {
 }
 
 span.pill-failed {
-    background-color: red;
+    background-color: #ff0000;
 }
 
 span.pill-archived {
-    background-color: dimgrey;
+    background-color: #696969;
 }
 
 span.false {
@@ -2420,10 +2408,6 @@ body {
     overflow-y: scroll;
 }
 
-html * {
-    outline: 0 !important;
-}
-
 input[type="checkbox"] {
     margin: 2px 0 0;
     line-height: normal;
@@ -2434,7 +2418,7 @@ input[type="radio"] {
     line-height: normal;
 }
 
-input, textarea, select, .uneditable-input {
+input, textarea, select {
     width: auto;
     color: #000000;
 }
@@ -2448,18 +2432,23 @@ pre {
 
 .navbar-brand {
     height: 50px;
-    padding: 3px;
+    padding: 0;
+}
+
+.navbar-brand img {
+    height: 50px;
+    padding: 0;
 }
 
 .floating-badge {
     position: absolute;
     top: -5px;
     right: -8px;
-    padding: 0px 4px;
+    padding: 0 4px;
     border: 2px solid #959595;
     border-radius: 100px;
     background-color: #777777;
-    color: white;
+    color: #ffffff;
     font-size: 12px;
     font-weight: bold;
     text-decoration: none;
@@ -2669,15 +2658,12 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
     color: #333333;
     cursor: pointer;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
     font-size: 12px;
     line-height: 16px;
     *line-height: 20px;
     text-align: center;
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
     vertical-align: middle;
-    *zoom: 1;
 }
 
 .modal-header {
@@ -2722,12 +2708,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     transition: background-position 0.1s linear;
 }
 
-.btn:focus {
-    outline: thin dotted #333333;
-    outline: 5px auto -webkit-focus-ring-color;
-    outline-offset: -2px;
-}
-
 .btn.active,
 .btn:active {
     background: #E6E6E6 none;
@@ -2735,7 +2715,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-    outline: 0;
 }
 
 .btn.disabled,
@@ -2815,8 +2794,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-image: -moz-linear-gradient(top, #0088CC, #0055CC);
     background-image: linear-gradient(top, #0088CC, #0055CC);
     background-repeat: repeat-x;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#0088cc', endColorstr='#0055cc', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-primary:hover,
@@ -2845,8 +2822,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-image: -moz-linear-gradient(top, #FBB450, #F89406);
     background-image: linear-gradient(top, #FBB450, #F89406);
     background-repeat: repeat-x;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fbb450', endColorstr='#f89406', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-warning:hover,
@@ -2875,8 +2850,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-image: -moz-linear-gradient(top, #EE5F5B, #BD362F);
     background-image: linear-gradient(top, #EE5F5B, #BD362F);
     background-repeat: repeat-x;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ee5f5b', endColorstr='#bd362f', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-danger:hover,
@@ -2905,8 +2878,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-image: -moz-linear-gradient(top, #62C462, #51A351);
     background-image: linear-gradient(top, #62C462, #51A351);
     background-repeat: repeat-x;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#62c462', endColorstr='#51a351', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-success:hover,
@@ -2935,8 +2906,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-image: -moz-linear-gradient(top, #5BC0DE, #2F96B4);
     background-image: linear-gradient(top, #5BC0DE, #2F96B4);
     background-repeat: repeat-x;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#5bc0de', endColorstr='#2f96b4', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-info:hover,
@@ -2965,8 +2934,6 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-image: -moz-linear-gradient(top, #555555, #222222);
     background-image: linear-gradient(top, #555555, #222222);
     background-repeat: repeat-x;
-    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#555555', endColorstr='#222222', GradientType=0);
-    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .btn-inverse:hover,
@@ -3126,7 +3093,6 @@ div.formpaginate .prev, div.formpaginate .next {
     border-radius: 6px;
     background: #57442B;
     color: #FFFFFF;
-    cursor: hand;
     cursor: pointer;
 }
 
@@ -3349,7 +3315,7 @@ ul.token-input-list {
     z-index: 999;
     overflow: hidden;
     width: 273px;
-    height: auto !important;
+    /*height: auto !important;*/
     height: 1%;
     padding: 0 0 1px 0;
     border: 1px solid #CCCCCC;
@@ -3368,13 +3334,13 @@ ul.token-input-list li {
 ul.token-input-list li input {
     padding: 3px 4px;
     border: 0;
-    background-color: white;
+    background-color: #ffffff;
 }
 
 li.token-input-token {
     display: block;
     overflow: hidden;
-    height: auto !important;
+    /*height: auto !important;*/
     height: 1%;
     padding: 3px 5px 0 5px;
     margin: 3px;
@@ -3475,15 +3441,15 @@ span.token-input-delete-token {
 }
 
 .red-text {
-    color: #DD3333
+    color: #DD3333;
 }
 
 .clear-left {
-    clear: left
+    clear: left;
 }
 
 .nextline-block {
-    display: block
+    display: block;
 }
 
 /* =======================================================================
@@ -3498,8 +3464,8 @@ jquery.confirm.css
     width: 100%;
     height: 100%;
     background: url('../images/bg.gif');
-    background: -moz-linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)) repeat-x rgba(0, 0, 0, 0.5);
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0, 0, 0, 0.5)), to(rgba(0, 0, 0, 0.5))) repeat-x rgba(0, 0, 0, 0.5);
+    /*background: -moz-linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)) repeat-x rgba(0, 0, 0, 0.5);*/
+    /*background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0, 0, 0, 0.5)), to(rgba(0, 0, 0, 0.5))) repeat-x rgba(0, 0, 0, 0.5);*/
 }
 
 #confirmBox {
@@ -3547,7 +3513,6 @@ jquery.confirm.css
     border: 1px solid #111111;
     border-radius: 3px;
     margin-right: 15px;
-    background-clip: padding-box;
     background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 51%, rgba(0, 0, 0, 0.25));
     background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 51%, rgba(0, 0, 0, 0.25));
     background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0) 51%, rgba(0, 0, 0, 0.25));
@@ -3651,8 +3616,6 @@ input.tablesorter-filter.disabled {
     display: none;
 }
 
-/* This fixes bold fon be used */
-/* @TODO replace this with proper CSS overrides */
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header {
     font-weight: normal !important;
 }
@@ -3723,7 +3686,7 @@ input.tablesorter-filter.disabled {
     .poster-container {
         display: inline-block;
         width: 100%;
-        float:left;
+        float: left;
     }
 
     .poster-container img {
@@ -3792,6 +3755,6 @@ input.tablesorter-filter.disabled {
 }
 
 .col-shrink {
-    margin: 0 0 0 0;
     padding: 0 0 0 0;
+    margin: 0 0 0 0;
 }

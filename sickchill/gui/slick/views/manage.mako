@@ -33,51 +33,51 @@
                 <div class="horizontal-scroll">
                     <table id="massUpdateTable" class="tablesorter">
                         <thead>
-                            <tr>
-                                <th class="col-checkbox">${_('Edit')}<br>
-                                    <label for="editCheck" class="sr-only">${_('Edit All')}</label>
-                                    <input type="checkbox" class="bulkCheck" id="editCheck" />
-                                </th>
-                                <th class="col-legend nowrap">${_('Show Name')}</th>
-                                <th class="col-network filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Network')}</th>
-                                <th class="col-quality filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Quality')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Sports')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Scene')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Anime')}</th>
-                                <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('S. folders')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Paused')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Subtitle')}</th>
-                                <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap"data-placeholder="${_('All')}">${_('Default Status')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Status')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Root dir')}</th>
+                        <tr>
+                            <th class="col-checkbox">${_('Edit')}<br>
+                                <label for="editCheck" class="sr-only">${_('Edit All')}</label>
+                                <input type="checkbox" class="bulkCheck" id="editCheck" />
+                            </th>
+                            <th class="col-legend nowrap">${_('Show Name')}</th>
+                            <th class="col-network filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Network')}</th>
+                            <th class="col-quality filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Quality')}</th>
+                            <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Sports')}</th>
+                            <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Scene')}</th>
+                            <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Anime')}</th>
+                            <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('S. folders')}</th>
+                            <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Paused')}</th>
+                            <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Subtitle')}</th>
+                            <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap"data-placeholder="${_('All')}">${_('Default Status')}</th>
+                            <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Status')}</th>
+                            <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Root dir')}</th>
 
-                                <th class="col-checkbox text-nowrap">${_('Update')}<br>
-                                    <label for="updateCheck" class="sr-only">${_('Update All')}</label>
-                                    <input type="checkbox" class="bulkCheck" id="updateCheck" />
+                            <th class="col-checkbox text-nowrap">${_('Update')}<br>
+                                <label for="updateCheck" class="sr-only">${_('Update All')}</label>
+                                <input type="checkbox" class="bulkCheck" id="updateCheck" />
+                            </th>
+                            <th class="col-checkbox text-nowrap">${_('Rescan')}<br>
+                                <label for="refreshCheck" class="sr-only">${_('Rescan All')}</label>
+                                <input type="checkbox" class="bulkCheck" id="refreshCheck" />
+                            </th>
+                            <th class="col-checkbox text-nowrap">${_('Rename')}<br>
+                                <label for="renameCheck" class="sr-only">${_('Rename All')}</label>
+                                <input type="checkbox" class="bulkCheck" id="renameCheck" />
+                            </th>
+                            % if settings.USE_SUBTITLES:
+                                <th class="col-checkbox text-nowrap">${_('Search Subtitle')}<br>
+                                    <label for="subtitleCheck" class="sr-only">${_('Subtitle All')}</label>
+                                    <input type="checkbox" class="bulkCheck" id="subtitleCheck" />
                                 </th>
-                                <th class="col-checkbox text-nowrap">${_('Rescan')}<br>
-                                    <label for="refreshCheck" class="sr-only">${_('Rescan All')}</label>
-                                    <input type="checkbox" class="bulkCheck" id="refreshCheck" />
-                                </th>
-                                <th class="col-checkbox text-nowrap">${_('Rename')}<br>
-                                    <label for="renameCheck" class="sr-only">${_('Rename All')}</label>
-                                    <input type="checkbox" class="bulkCheck" id="renameCheck" />
-                                </th>
-                                % if settings.USE_SUBTITLES:
-                                    <th class="col-checkbox text-nowrap">${_('Search Subtitle')}<br>
-                                        <label for="subtitleCheck" class="sr-only">${_('Subtitle All')}</label>
-                                        <input type="checkbox" class="bulkCheck" id="subtitleCheck" />
-                                    </th>
-                                % endif
-                                <th class="col-checkbox text-nowrap">${_('Delete')}<br>
-                                    <label for="deleteCheck" class="sr-only">${_('Delete All')}</label>
-                                    <input type="checkbox" class="bulkCheck" id="deleteCheck" />
-                                </th>
-                                <th class="col-checkbox text-nowrap">${_('Remove')}<br>
-                                    <label for="removeCheck" class="sr-only">${_('Remove All')}</label>
-                                    <input type="checkbox" class="bulkCheck" id="removeCheck" />
-                                </th>
-                            </tr>
+                            % endif
+                            <th class="col-checkbox text-nowrap">${_('Delete')}<br>
+                                <label for="deleteCheck" class="sr-only">${_('Delete All')}</label>
+                                <input type="checkbox" class="bulkCheck" id="deleteCheck" />
+                            </th>
+                            <th class="col-checkbox text-nowrap">${_('Remove')}<br>
+                                <label for="removeCheck" class="sr-only">${_('Remove All')}</label>
+                                <input type="checkbox" class="bulkCheck" id="removeCheck" />
+                            </th>
+                        </tr>
                         </thead>
                         <tbody>
                             % for curShow in sorted(settings.showList, key=lambda mbr: attrgetter('sort_name')(mbr)):
