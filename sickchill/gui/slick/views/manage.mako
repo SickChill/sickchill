@@ -38,16 +38,16 @@
                                     <label for="editCheck" class="sr-only">${_('Edit All')}</label>
                                     <input type="checkbox" class="bulkCheck" id="editCheck" />
                                 </th>
-                                <th class="nowrap text-left">${_('Show Name')}</th>
+                                <th class="col-legend nowrap">${_('Show Name')}</th>
                                 <th class="col-network filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Network')}</th>
                                 <th class="col-quality filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Quality')}</th>
                                 <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Sports')}</th>
                                 <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Scene')}</th>
                                 <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Anime')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Season folders')}</th>
+                                <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('S. folders')}</th>
                                 <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Paused')}</th>
                                 <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Subtitle')}</th>
-                                <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Default Status')}</th>
+                                <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap"data-placeholder="${_('All')}">${_('Default Status')}</th>
                                 <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Status')}</th>
                                 <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Root dir')}</th>
 

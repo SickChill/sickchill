@@ -3202,7 +3202,7 @@ tablesorter.css
 
 .tablesorter th,
 .tablesorter td {
-    padding: 4px;
+    padding: 2px;
     border-top: #FFFFFF 1px solid;
     border-left: #FFFFFF 1px solid;
     vertical-align: middle;
@@ -3224,7 +3224,7 @@ tablesorter.css
 }
 
 .tablesorter .tablesorter-header {
-    padding: 4px 18px 4px 18px;
+    padding: 2px 12px 2px 12px;
     background: inherit url(data:image/gif;base64,R0lGODlhFQAJAIAAAP///////yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==) no-repeat center right;
     cursor: pointer;
 }
@@ -3238,7 +3238,7 @@ tablesorter.css
 }
 
 .tablesorter thead .sorter-false {
-    padding: 4px;
+    padding: 2px;
     background-image: none;
     cursor: default;
 }
@@ -3260,6 +3260,14 @@ thead.tablesorter-stickyHeader {
 /* filter widget */
 .tablesorter .filtered {
     display: none;
+}
+
+.tablesorter-filter {
+    display: block;
+    width: 100%;
+    padding: 0 0 0 0;
+    border: 0;
+    margin: 0 0 0 0;
 }
 
 .tablesorter input.tablesorter-filter {
@@ -3781,4 +3789,9 @@ input.tablesorter-filter.disabled {
 
 .displayshow-play-icon-kodi {
     background-position: 0 0;
+}
+
+.col-shrink {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
 }
