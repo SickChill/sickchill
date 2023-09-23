@@ -62,24 +62,6 @@
                             <%
                                 if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
                                     continue
-
-                                disabled = settings.showQueueScheduler.action.is_being_updated(curShow) or settings.showQueueScheduler.action.is_in_update_queue(curShow)
-                                curUpdate = "<input type=\"checkbox\" class=\"updateCheck\" id=\"update-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
-
-                                disabled = settings.showQueueScheduler.action.is_being_refreshed(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow)
-                                curRefresh = "<input type=\"checkbox\" class=\"refreshCheck\" id=\"refresh-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
-
-                                disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow)
-                                curRename = "<input type=\"checkbox\" class=\"renameCheck\" id=\"rename-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
-
-                                disabled = not curShow.subtitles or settings.showQueueScheduler.action.is_being_subtitled(curShow) or settings.showQueueScheduler.action.is_in_subtitle_queue(curShow)
-                                curSubtitle = "<input type=\"checkbox\" class=\"subtitleCheck\" id=\"subtitle-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
-
-                                disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow)
-                                curDelete = "<input type=\"checkbox\" class=\"confirm deleteCheck\" id=\"delete-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
-
-                                disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow)
-                                curRemove = "<input type=\"checkbox\" class=\"removeCheck\" id=\"remove-" + str(curShow.indexerid) + "\" " + ("", "disabled=\"disabled\" ")[disabled] + "/>"
                             %>
                                 <tr>
                                     <td align="center"><input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" /></td>
@@ -101,14 +83,38 @@
                                     <td align="center"><span class="displayshow-icon-${('disable', 'enable')[bool(curShow.subtitles)]}" title=${("N", "Y")[bool(curShow.subtitles)]}></span></td>
                                     <td align="center">${statusStrings[curShow.default_ep_status]}</td>
                                     <td align="center">${_(curShow.status)}</td>
-                                    <td align="center">${curUpdate}</td>
-                                    <td align="center">${curRefresh}</td>
-                                    <td align="center">${curRename}</td>
+
+                                    <td align="center">
+                                        <% disabled = settings.showQueueScheduler.action.is_being_updated(curShow) or settings.showQueueScheduler.action.is_in_update_queue(curShow) %>
+                                        <input type="checkbox" class="updateCheck" id="update-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                    </td>
+
+                                    <td align="center">
+                                        <% disabled = settings.showQueueScheduler.action.is_being_refreshed(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow) %>
+                                        <input type="checkbox" class="refreshCheck" id="refresh-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                    </td>
+
+                                    <td align="center">
+                                        <% disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) %>
+                                        <input type="checkbox" class="renameCheck" id="rename-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                    </td>
+
                                     % if settings.USE_SUBTITLES:
-                                        <td align="center">${curSubtitle}</td>
+                                        <td align="center">
+                                            <% disabled = not curShow.subtitles or settings.showQueueScheduler.action.is_being_subtitled(curShow) or settings.showQueueScheduler.action.is_in_subtitle_queue(curShow) %>
+                                            <input type="checkbox" class="subtitleCheck" id="subtitle-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                        </td>
                                     % endif
-                                    <td align="center">${curDelete}</td>
-                                    <td align="center">${curRemove}</td>
+
+                                    <td align="center">
+                                        <% disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow) %>
+                                        <input type="checkbox" class="confirm deleteCheck" id="delete-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                    </td>
+
+                                    <td align="center">
+                                        <% disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow) %>
+                                        <input type="checkbox" class="removeCheck" id="remove-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                    </td>
                                 </tr>
                             % endfor
                         </tbody>
