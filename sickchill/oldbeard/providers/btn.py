@@ -241,6 +241,12 @@ class Provider(TorrentProvider):
         # use with caution!
         return self.search({"search": search_string})
 
+    def _get_seeders_and_leechers(self, item):
+        try:
+            return item.get("Seeders", -1), item.get("Leechers", -1)
+        except AttributeError:
+            return -1, -1
+
     def find_propers(self, search_date=None):
         results = []
 
