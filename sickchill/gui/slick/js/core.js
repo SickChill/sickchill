@@ -3422,6 +3422,7 @@ const SICKCHILL = {
                 });
 
                 if (deleteArray.length > 0) {
+                    submit = false;
                     $.confirm({
                         title: 'Delete Shows',
                         text: 'You have selected to delete ' + deleteArray.length + ' show(s).  Are you sure you wish to continue? All files will be removed from your system.',
@@ -3431,14 +3432,11 @@ const SICKCHILL = {
                         post: false,
                         confirm() {
                             for (const deleteItem of deleteArray) {
-                                form.append($('<input />', {
-                                    name: 'toDelete',
-                                    type: 'hidden',
-                                    value: deleteItem,
-                                }));
+                                form.append($('<input />', {name: 'toDelete', type: 'hidden', value: deleteItem}));
                             }
 
-                            submit = true;
+                            form.appendTo('body');
+                            form.submit();
                         },
                     });
                 }
