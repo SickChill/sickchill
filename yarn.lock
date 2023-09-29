@@ -2773,12 +2773,12 @@ browserify-zlib@^0.1.4:
     pako "~0.2.0"
 
 browserslist@^4.14.5, browserslist@^4.21.10, browserslist@^4.21.9:
-  version "4.22.0"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.22.0.tgz#6adc8116589ccea8a99d0df79c5de2436199abdb"
-  integrity sha512-v+Jcv64L2LbfTC6OnRcaxtqJNJuQAVhZKSJfR/6hn7lhnChUXl4amwVviqN1k411BB+3rRoKMitELRn1CojeRA==
+  version "4.22.1"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.22.1.tgz#ba91958d1a59b87dab6fed8dfbcb3da5e2e9c619"
+  integrity sha512-FEVc202+2iuClEhZhrWy6ZiAcRLvNMyYcxZ8raemul1DYVOVdFsbqckWLdsixQZCpJlwe77Z3UTalE7jsjnKfQ==
   dependencies:
-    caniuse-lite "^1.0.30001539"
-    electron-to-chromium "^1.4.530"
+    caniuse-lite "^1.0.30001541"
+    electron-to-chromium "^1.4.535"
     node-releases "^2.0.13"
     update-browserslist-db "^1.0.13"
 
@@ -2962,10 +2962,10 @@ camelcase@^6.3.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.3.0.tgz#5685b95eb209ac9c0c177467778c9c84df58ba9a"
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
-caniuse-lite@^1.0.30001539:
-  version "1.0.30001540"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001540.tgz#a316ca4f2ae673ab02ff0ec533334016d56ff658"
-  integrity sha512-9JL38jscuTJBTcuETxm8QLsFr/F6v0CYYTEU6r5+qSM98P2Q0Hmu0eG1dTG5GBUmywU3UlcVOUSIJYY47rdFSw==
+caniuse-lite@^1.0.30001541:
+  version "1.0.30001541"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001541.tgz#b1aef0fadd87fb72db4dcb55d220eae17b81cdb1"
+  integrity sha512-bLOsqxDgTqUBkzxbNlSBt8annkDpQB9NdzdTbO2ooJ+eC/IQcvDspDc058g84ejCelF7vHUx57KIOjEecOHXaw==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -3919,10 +3919,10 @@ ejs@^3.1.6, ejs@^3.1.8, ejs@^3.1.9:
   dependencies:
     jake "^10.8.5"
 
-electron-to-chromium@^1.4.530:
-  version "1.4.532"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.532.tgz#44454731e26f2c8c14e88cca0d073f0761784f5e"
-  integrity sha512-piIR0QFdIGKmOJTSNg5AwxZRNWQSXlRYycqDB9Srstx4lip8KpcmRxVP6zuFWExWziHYZpJ0acX7TxqX95KBpg==
+electron-to-chromium@^1.4.535:
+  version "1.4.536"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.536.tgz#ebdf960fbc27fb8bd0b0dfa9a899cc333bb15f1c"
+  integrity sha512-L4VgC/76m6y8WVCgnw5kJy/xs7hXrViCFdNKVG8Y7B2isfwrFryFyJzumh3ugxhd/oB1uEaEEvRdmeLrnd7OFA==
 
 emittery@^1.0.1:
   version "1.0.1"
@@ -7390,9 +7390,9 @@ minipass@^5.0.0:
   integrity sha512-3FnjYuehv9k6ovOEbyOswadCDPX1piCfhV8ncmYtHOjuPwylVWsghTLo7rabjC3Rx5xD4HDx8Wm1xnMF7S5qFQ==
 
 "minipass@^5.0.0 || ^6.0.2 || ^7.0.0", minipass@^7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-7.0.3.tgz#05ea638da44e475037ed94d1c7efcc76a25e1974"
-  integrity sha512-LhbbwCfz3vsb12j/WkWQPZfKTsgqIe1Nf/ti1pKjYESGLHIVjWU96G9/ljLH4F9mWNVhlQOm0VySdAWzf05dpg==
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-7.0.4.tgz#dbce03740f50a4786ba994c1fb908844d27b038c"
+  integrity sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==
 
 minizlib@^2.0.0, minizlib@^2.1.1, minizlib@^2.1.2:
   version "2.1.2"
@@ -8524,9 +8524,9 @@ postcss-value-parser@^4.1.0, postcss-value-parser@^4.2.0:
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
 postcss@^8.3.11, postcss@^8.4.21, postcss@^8.4.27:
-  version "8.4.30"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.30.tgz#0e0648d551a606ef2192a26da4cabafcc09c1aa7"
-  integrity sha512-7ZEao1g4kd68l97aWG/etQKPKq07us0ieSZ2TnFDk11i0ZfDW2AwKHYU8qv4MZKqN2fdBfg+7q0ES06UA73C1g==
+  version "8.4.31"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.31.tgz#92b451050a9f914da6755af352bdc0192508656d"
+  integrity sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==
   dependencies:
     nanoid "^3.3.6"
     picocolors "^1.0.0"
@@ -9536,9 +9536,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1223.0:
-  version "1.1227.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1227.0.tgz#8de4d8b26d6e225a31c8d0f62238aaf369bacc70"
-  integrity sha512-+J1dVYBBMxsa4IahYH9hmnQYIVffmg6JKYKZWKpbzRJ4w1MzdS/GqZOryxJwVN7YFLFhCK//AZLcYhNBjbMZuQ==
+  version "1.1228.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1228.0.tgz#2e438b45aae52ddd3f2037ad55df1a74c2444aa8"
+  integrity sha512-DLPcGazN+F7sR8v2ABCvsSLifOLoW1Episyu4De9Ho8x+EXgX8sTlbI9LkmL5dndY7bmWxaQ6w0qsvXZQNB4dA==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
