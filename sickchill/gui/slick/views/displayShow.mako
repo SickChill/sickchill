@@ -482,7 +482,7 @@
                                             <img src="${static_url('images/' + ("tbn-no.gif", "tbn.gif")[bool(epResult["hastbn"])])}"
                                                  alt="${("N", "Y")[bool(epResult["hastbn"])]}" width="23" height="11" />
                                         </td>
-                                        <td class="text-center "episode">
+                                        <td class="text-center episode">
                                             <%
                                                 text = str(epResult['episode'])
                                                 if epLoc:

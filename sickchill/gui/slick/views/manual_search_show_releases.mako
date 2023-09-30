@@ -11,21 +11,21 @@
             <table id="manualSearchShowTable" class="sickchillTable tablesorter">
                 <thead>
                     <tr>
-                        <th class="text-center "text-nowrap tablesorter-header">${_('Provider')}</th>
-                        <th class="text-center "text-nowrap tablesorter-header">${_('Name')}</th>
-                        <th class="text-center "text-nowrap tablesorter-header">${_('Episode')}</th>
-                        <th class="text-center "text-nowrap tablesorter-header">${_('Quality')}</th>
-                        <th class="text-center "text-nowrap tablesorter-header" data-metric-name-abbr="b|B">${_('Size')}</th>
-                        <th class="text-center "text-nowrap tablesorter-header">${_('Seeders')}</th>
-                        <th class="text-center "text-nowrap tablesorter-header">${_('Leechers')}</th>
-                        <th class="text-center "text-nowrap tablesorter-header">${_('Download')}</th>
+                        <th class="text-center text-nowrap tablesorter-header">${_('Provider')}</th>
+                        <th class="text-center text-nowrap tablesorter-header">${_('Name')}</th>
+                        <th class="text-center text-nowrap tablesorter-header">${_('Episode')}</th>
+                        <th class="text-center text-nowrap tablesorter-header">${_('Quality')}</th>
+                        <th class="text-center text-nowrap tablesorter-header" data-metric-name-abbr="b|B">${_('Size')}</th>
+                        <th class="text-center text-nowrap tablesorter-header">${_('Seeders')}</th>
+                        <th class="text-center text-nowrap tablesorter-header">${_('Leechers')}</th>
+                        <th class="text-center text-nowrap tablesorter-header">${_('Download')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     % for result in results:
                         <tr class="${('odd', 'even')[loop.index % 2]}">
                             <% provider = getProviderClass(result["provider"]) %>
-                            <td class="text-center "text-nowrap" title="${provider.name}">
+                            <td class="text-center text-nowrap" title="${provider.name}">
                                 <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" alt="${provider.name}" />
                             </td>
                             <td class="text-center text-nowrap">${result['name']}</td>
