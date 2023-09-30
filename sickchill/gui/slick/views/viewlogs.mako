@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
     from sickchill.logger import LOGGING_LEVELS, LOG_FILTERS

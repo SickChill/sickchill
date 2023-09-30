@@ -6,8 +6,8 @@
     import os
     import re
 %>
-<%page args="curListType, myShowList"/>
-<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+<%page args="curListType, myShowList" />
+<%namespace file="/inc_defs.mako" import="renderQualityPill" />
 
 <div id="${('container', 'container-anime')[curListType == 'Anime']}" class="show-grid clearfix">
     <div class="posterview">

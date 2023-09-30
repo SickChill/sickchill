@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill import oldbeard
 %>
@@ -28,7 +28,7 @@
                                         ${_('Select the folder you wish to save your backup file to')}:
                                     </div>
                                     <div class="col-md-12">
-                                        <input type="text" name="backupDir" id="backupDir" class="form-control input-sm input350" autocapitalize="off"  title="Backup directory"/>
+                                        <input type="text" name="backupDir" id="backupDir" class="form-control input-sm input350" autocapitalize="off"  title="Backup directory" />
                                         <input class="btn btn-inline" type="button" value="Backup" id="Backup" />
                                     </div>
                                 </div>
@@ -57,7 +57,7 @@
                                         ${_('Select the backup file you wish to restore')}:
                                     </div>
                                     <div class="col-md-12">
-                                        <input type="text" name="backupFile" id="backupFile" class="form-control input-sm input350" autocapitalize="off"  title="Backup directory"/>
+                                        <input type="text" name="backupFile" id="backupFile" class="form-control input-sm input350" autocapitalize="off"  title="Backup directory" />
                                         <input class="btn btn-inline" type="button" value="${_('Restore')}" id="Restore" />
                                     </div>
                                 </div>
@@ -72,4 +72,4 @@
 </%block>
 
 <!-- Disable save button -->
-<%block name="saveButton"/>
+<%block name="saveButton" />

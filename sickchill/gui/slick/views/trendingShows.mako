@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard.helpers import anon_url
@@ -27,7 +27,7 @@
                             <a class="trakt-image" href="${anon_url(show_url)}" target="_blank">
                                 <img alt="" class="trakt-image" src="" data-src-indexer-id="${cur_show['indexer_id']}"
                                      data-src-cache="${static_url('cache/' + cur_show['image_path'], include_version=True)}"
-                                     height="273px" width="186px"/>
+                                     height="273px" width="186px" />
                             </a>
                         </div>
 

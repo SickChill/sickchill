@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     import datetime
     from urllib.parse import quote
@@ -22,8 +22,8 @@
 </%block>
 
 <%block name="content">
-    <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
-    <%namespace file="/inc_defs.mako" import="renderStatusPill"/>
+    <%namespace file="/inc_defs.mako" import="renderQualityPill" />
+    <%namespace file="/inc_defs.mako" import="renderStatusPill" />
     <div class="show-header row">
         <div class="col-md-12">
 
@@ -150,7 +150,7 @@
                                     <a href="${anon_url('https://trakt.tv/shows/', show.imdb_id)}" rel="noreferrer" target="_blank" title="https://trakt.tv/shows/${show.imdb_id}"><span class="displayshow-icon-trakt"></span></a>
                                 % endif
                                 <a href="${anon_url(show.idxr.show_url, show.indexerid)}" target="_blank"
-                                   title="${show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;"/></a>
+                                   title="${show.idxr.show_url + str(show.indexerid)}"><img alt="${show.idxr.name}" src="${static_url(show.idxr.icon)}" style="margin-top: -1px; vertical-align:middle;" /></a>
                                 % if xem_numbering or xem_absolute_numbering:
                                     <a href="${anon_url('http://thexem.info/search?q=', show.name)}" rel="noreferrer" target="_blank" title="http://thexem.info/search?q-${show.name}"><span class="displayshow-icon-xem"></span></a>
                                 % endif
@@ -272,7 +272,7 @@
                                             <% info_flag = subtitles.code_from_code(show.lang) if show.lang else '' %>
                                             <tr>
                                                 <td class="showLegend">${_('Info Language')}:</td>
-                                                <td><img src="${static_url('images/subtitles/flags/' + info_flag + '.png') }" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${static_url('images/flags/unknown.png')}';"/></td>
+                                                <td><img src="${static_url('images/subtitles/flags/' + info_flag + '.png') }" width="16" height="11" alt="${show.lang}" title="${show.lang}" onError="this.onerror=null;this.src='${static_url('images/flags/unknown.png')}';" /></td>
                                             </tr>
                                             % if settings.USE_SUBTITLES:
                                                 <tr>
@@ -474,15 +474,15 @@
                                                 <input type="checkbox" class="epCheck" id="${epStr}" name="${epStr}" />
                                             % endif
                                         </td>
-                                        <td align="center">
+                                        <td class="text-center">
                                             <img src="${static_url('images/' + ("nfo-no.gif", "nfo.gif")[bool(epResult["hasnfo"])])}"
                                                                 alt="${("N", "Y")[bool(epResult["hasnfo"])]}" width="23" height="11" />
                                         </td>
-                                        <td align="center">
+                                        <td class="text-center">
                                             <img src="${static_url('images/' + ("tbn-no.gif", "tbn.gif")[bool(epResult["hastbn"])])}"
                                                  alt="${("N", "Y")[bool(epResult["hastbn"])]}" width="23" height="11" />
                                         </td>
-                                        <td align="center" class="episode">
+                                        <td class="text-center "episode">
                                             <%
                                                 text = str(epResult['episode'])
                                                 if epLoc:
@@ -490,8 +490,8 @@
                                             %>
                                         ${text}
                                         </td>
-                                        <td align="center">${epResult["absolute_number"]}</td>
-                                        <td align="center">
+                                        <td class="text-center">${epResult["absolute_number"]}</td>
+                                        <td class="text-center">
                                             <input type="text" placeholder="${str(default_season) + 'x' + str(default_episode)}" size="6" maxlength="8"
                                                    class="sceneSeasonXEpisode form-control input-scene" data-for-season="${epResult["season"]}" data-for-episode="${epResult["episode"]}"
                                                    id="sceneSeasonXEpisode_${show.indexerid}_${epResult["season"]}_${epResult["episode"]}"
@@ -503,7 +503,7 @@
                                                 % endif
                                                    style="padding: 0; text-align: center; max-width: 60px;" autocapitalize="off" />
                                         </td>
-                                        <td align="center">
+                                        <td class="text-center">
                                             <input type="text" placeholder="${str(default_absolute_number)}" size="6" maxlength="8"
                                                    class="sceneAbsolute form-control input-scene" data-for-absolute="${epResult["absolute_number"]}"
                                                    id="sceneAbsolute_${show.indexerid}_${epResult["absolute_number"]}"
@@ -554,14 +554,14 @@
                                                 <a href="${filename}">${_('Download')}</a>
                                             % endif
                                         </td>
-                                        <td class="col-play" align="center">
+                                        <td class="col-play text-center">
                                             <a class="play-on-kodi${(' hidden', '')[bool(epResult['location'] and settings.USE_KODI and settings.KODI_HOST)]}"
                                                href="playOnKodi?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"
                                             >
                                                 <span class="displayshow-play-icon-kodi" title="KODI"></span>
                                             </a>
                                         </td>
-                                        <td class="col-subtitles" align="center">
+                                        <td class="col-subtitles text-center">
                                             % for flag in (epResult["subtitles"] or '').split(','):
                                                 % if flag.strip():
                                                     % if flag != 'und':

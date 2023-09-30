@@ -1,4 +1,4 @@
-<%inherit file="main.mako"/>
+<%inherit file="main.mako" />
 <%!
     import os
     import datetime
@@ -24,11 +24,11 @@
                 <div class="col-md-12">
                     <div id="config-components">
                         <ul>
-                            <%block name="tabs"/>
+                            <%block name="tabs" />
                         </ul>
                         <div id="config">
                             <div id="config-components">
-                                <%block name="pages"/>
+                                <%block name="pages" />
                             </div>
                         </div>
                     </div>
@@ -53,4 +53,3 @@
         </div>
     </div>
 </%block>
-

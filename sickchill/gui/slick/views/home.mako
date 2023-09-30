@@ -1,14 +1,14 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
 %>
 <%block name="metas">
-    <meta data-var="max_download_count" data-content="${max_download_count}"/>
+    <meta data-var="max_download_count" data-content="${max_download_count}" />
 </%block>
 
 <%block name="content">
 
-    <%include file="/inc_home_menu.mako"/>
+    <%include file="/inc_home_menu.mako" />
 
      % if settings.ANIME_SPLIT_HOME:
          % if settings.ANIME_SPLIT_HOME_IN_TABS:
@@ -39,7 +39,7 @@
                                          % endif
                                          <div class="row">
                                              <div class="col-md-12">
-                                                 <%include file="/inc_home_show_list.mako" args="curListType=curListType, myShowList=curShowlist[1]"/>
+                                                 <%include file="/inc_home_show_list.mako" args="curListType=curListType, myShowList=curShowlist[1]" />
                                              </div>
                                          </div>
                                      </div>
@@ -61,7 +61,7 @@
                 % for curShowlist in sortedShowLists:
                     <div class="row">
                         <div class="col-md-12">
-                            <%include file="/inc_home_show_list.mako" args="curListType=curShowlist[0], myShowList=curShowlist[1]"/>
+                            <%include file="/inc_home_show_list.mako" args="curListType=curShowlist[0], myShowList=curShowlist[1]" />
                         </div>
                     </div>
                 % endfor

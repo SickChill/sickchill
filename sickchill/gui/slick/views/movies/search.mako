@@ -1,4 +1,4 @@
-<%inherit file="../layouts/config.mako"/>
+<%inherit file="../layouts/config.mako" />
 <%block name="css">
 </%block>
 <%block name="scripts">
@@ -26,7 +26,7 @@
                     <form method="post">
                         <div class="form-group">
                             <label for="query">${_('Query')}</label>
-                            <input type="text" name="query" id="query" class="form-control input-sm input350" aria-describedby="queryHelp" autocapitalize="off" title="${_('Query')}" value="${query}"/>
+                            <input type="text" name="query" id="query" class="form-control input-sm input350" aria-describedby="queryHelp" autocapitalize="off" title="${_('Query')}" value="${query}" />
                             <small id="queryHelp" class="form-text text-muted">${_('This can be a search string or a movie id from tmdb or imdb')}</small>
                         </div>
                         <div class="form-group">

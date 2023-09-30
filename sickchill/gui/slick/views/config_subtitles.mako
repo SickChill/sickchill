@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill.oldbeard import subtitles
     from sickchill.oldbeard.filters import hide
@@ -58,7 +58,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_subtitles">
+                        <div id="content_use_subtitles" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -67,7 +67,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="text" id="subtitles_languages"
                                            name="subtitles_languages"
-                                           autocapitalize="off"/>
+                                           autocapitalize="off" />
                                 </div>
                             </div>
 
@@ -104,7 +104,7 @@
                                         <div class="col-md-12">
                                             <input type="number" name="subtitles_finder_frequency"
                                                    value="${settings.SUBTITLES_FINDER_FREQUENCY}" min="1"
-                                                   step="1" class="form-control input-sm input75" title="Frequency"/>
+                                                   step="1" class="form-control input-sm input75" title="Frequency" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -238,7 +238,7 @@
                                         <div class="col-md-12">
                                             <input type="text" name="subtitles_extra_scripts"
                                                    value="${'|'.join(settings.SUBTITLES_EXTRA_SCRIPTS)}"
-                                                   class="form-control input-sm input350" autocapitalize="off"/>
+                                                   class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -306,7 +306,7 @@
                                     % endfor
                                 </ul>
                                 <input type="hidden" name="service_order" id="service_order"
-                                       value="${' '.join(['%s:%d' % (x['name'], x['enabled']) for x in subtitles.sorted_service_list()])}"/>
+                                       value="${' '.join(['%s:%d' % (x['name'], x['enabled']) for x in subtitles.sorted_service_list()])}" />
                             </div>
                         </div>
 
@@ -351,7 +351,7 @@
                                                    id="${curService['name']}_user"
                                                    value="${providerLoginDict[curService['name']]['user']}"
                                                    class="form-control input-sm input300" autocapitalize="off"
-                                                   autocomplete="no" title="Username"/>
+                                                   autocomplete="no" title="Username" />
                                         </div>
                                     </div>
                                 </div>

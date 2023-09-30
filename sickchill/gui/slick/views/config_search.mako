@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard.filters import hide
@@ -52,7 +52,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_download_propers">
+                            <div id="content_download_propers" hidden>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -77,7 +77,7 @@
                                         <div class="col-md-12">
                                             <input type="text" name="flaresolverr_uri" value="${settings.FLARESOLVERR_URI}"
                                             id="flaresolverr_uri"
-                                            class="form-control input-sm input350" autocapitalize="off"/>
+                                            class="form-control input-sm input350" autocapitalize="off" />
                                             <label for="flaresolverr_uri">${_('the URL of your flaresolverr server.  Example:  http://localhost:8191/v1')}</label>
                                         </div>
                                     </div>
@@ -103,7 +103,7 @@
                                         <div class="col-md-12">
                                             <input type="number" min="1" step="1" name="backlog_days"
                                                    value="${settings.BACKLOG_DAYS}" class="form-control input-sm input75"
-                                                   autocapitalize="off" id="backlog_days"/>
+                                                   autocapitalize="off" id="backlog_days" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -123,7 +123,7 @@
                                         <div class="col-md-12">
                                             <input type="number" min="720" step="60" name="backlog_frequency"
                                                    value="${settings.BACKLOG_FREQUENCY}" class="form-control input-sm input75"
-                                                   id="backlog_frequency" autocapitalize="off"/>
+                                                   id="backlog_frequency" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -143,7 +143,7 @@
                                         <div class="col-md-12">
                                             <input type="number" min="10" step="1" name="dailysearch_frequency"
                                                    id="dailysearch_frequency" value="${settings.DAILYSEARCH_FREQUENCY}"
-                                                   class="form-control input-sm input75" autocapitalize="off"/>
+                                                   class="form-control input-sm input75" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -162,7 +162,7 @@
                                         <div class="col-md-12">
                                             <input type="number" min="1" step="1" name="cache_retention"
                                                    value="${settings.CACHE_RETENTION}" class="form-control input-sm input75"
-                                                   autocapitalize="off" id="cache_retention"/>
+                                                   autocapitalize="off" id="cache_retention" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -180,7 +180,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="ignore_words" value="${settings.IGNORE_WORDS}"
-                                                   id="ignore_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                                   id="ignore_words" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -199,7 +199,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="prefer_words" value="${settings.PREFER_WORDS}"
-                                                   id="prefer_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                                   id="prefer_words" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -218,7 +218,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="require_words" value="${settings.REQUIRE_WORDS}"
-                                                   id="require_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                                   id="require_words" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -237,7 +237,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="ignored_subs_list" value="${settings.IGNORED_SUBS_LIST}"
-                                                   class="form-control input-sm input350" autocapitalize="off"/>
+                                                   class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -280,7 +280,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_use_failed_downloads">
+                            <div id="content_use_failed_downloads" hidden>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -304,7 +304,7 @@
 
                             </div>
 
-                            <div id="content_backlog_missing_only">
+                            <div id="content_backlog_missing_only" hidden>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -339,7 +339,7 @@
                                             <div class="col-md-12">
                                                 <input type="number" min="5" step="5" name="show_skip_older"
                                                        value="${settings.SHOW_SKIP_OLDER}" class="form-control input-sm input75"
-                                                       autocapitalize="off" id="show_skip_older"/>
+                                                       autocapitalize="off" id="show_skip_older" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -387,7 +387,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_use_nzbs">
+                            <div id="content_use_nzbs" hidden>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Usenet retention')}</label>
@@ -397,7 +397,7 @@
                                             <div class="col-md-12">
                                                 <input type="number" min="1" step="1" name="usenet_retention"
                                                        value="${settings.USENET_RETENTION}" class="form-control input-sm input75"
-                                                       id="usenet_retention" autocapitalize="off"/>
+                                                       id="usenet_retention" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -430,7 +430,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" id="sab_host" name="sab_host" value="${settings.SAB_HOST}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -450,7 +450,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_username" id="sab_username"
                                                            value="${settings.SAB_USERNAME}" class="form-control input-sm input200"
-                                                           autocapitalize="off" autocomplete="no"/>
+                                                           autocapitalize="off" autocomplete="no" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -512,7 +512,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category" id="sab_category"
                                                            value="${settings.SAB_CATEGORY}" class="form-control input-sm input200"
-                                                           autocapitalize="off"/>
+                                                           autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -532,7 +532,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category_backlog" id="sab_category_backlog"
                                                            value="${settings.SAB_CATEGORY_BACKLOG}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -552,7 +552,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category_anime" id="sab_category_anime"
                                                            value="${settings.SAB_CATEGORY_ANIME}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -574,7 +574,7 @@
                                                     <input type="text" name="sab_category_anime_backlog"
                                                            id="sab_category_anime_backlog"
                                                            value="${settings.SAB_CATEGORY_ANIME_BACKLOG}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -608,7 +608,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzb_dir" id="nzb_dir" value="${settings.NZB_DIR}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -650,7 +650,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_host" id="nzbget_host"
                                                            value="${settings.NZBGET_HOST}" class="form-control input-sm input350"
-                                                           autocapitalize="off"/>
+                                                           autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -675,7 +675,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_username" value="${settings.NZBGET_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
-                                                           id="nzbget_username" autocomplete="no"/>
+                                                           id="nzbget_username" autocomplete="no" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -716,7 +716,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category" id="nzbget_category"
                                                            value="${settings.NZBGET_CATEGORY}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -736,7 +736,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category_backlog" id="nzbget_category_backlog"
                                                            value="${settings.NZBGET_CATEGORY_BACKLOG}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -756,7 +756,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category_anime" id="nzbget_category_anime"
                                                            value="${settings.NZBGET_CATEGORY_ANIME}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -777,7 +777,7 @@
                                                     <input type="text" name="nzbget_category_anime_backlog"
                                                            id="nzbget_category_anime_backlog"
                                                            value="${settings.NZBGET_CATEGORY_ANIME_BACKLOG}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -825,7 +825,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="syno_dsm_host" id="syno_dsm_host"
                                                            value="${settings.SYNOLOGY_DSM_HOST}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -846,7 +846,7 @@
                                                     <input type="text" name="syno_dsm_user" id="syno_dsm_user"
                                                            value="${settings.SYNOLOGY_DSM_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
-                                                           autocomplete="no"/>
+                                                           autocomplete="no" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -887,7 +887,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="syno_dsm_path" id="syno_dsm_path"
                                                            value="${settings.SYNOLOGY_DSM_PATH}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -912,8 +912,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input class="btn test-button" type="button" value="Test SABnzbd" id="testSABnzbd"/>
-                                        <input type="button" value="Test DSM" id="testDSM" class="btn test-button"/>
+                                        <input class="btn test-button" type="button" value="Test SABnzbd" id="testSABnzbd" />
+                                        <input type="button" value="Test DSM" id="testDSM" class="btn test-button" />
                                         <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                                     </div>
                                 </div>
@@ -948,7 +948,7 @@
                                     <label for="use_torrents">${_('enable torrent search providers')}</label>
                                 </div>
                             </div>
-                            <div id="content_use_torrents">
+                            <div id="content_use_torrents" hidden>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Trackers list')}</label>
@@ -957,7 +957,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="text" name="trackers_list" value="${settings.TRACKERS_LIST}"
-                                                       class="form-control input-sm input350" autocapitalize="off"/>
+                                                       class="form-control input-sm input350" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -991,7 +991,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_dir" id="torrent_dir"
                                                            value="${settings.TORRENT_DIR}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1016,7 +1016,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_host" id="torrent_host" value="${settings.TORRENT_HOST}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1035,7 +1035,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_rpcurl" id="torrent_rpcurl"
                                                            value="${settings.TORRENT_RPCURL}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1079,7 +1079,7 @@
                                                     <input type="text" name="torrent_username" id="torrent_username"
                                                            value="${settings.TORRENT_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
-                                                           autocomplete="no"/>
+                                                           autocomplete="no" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1098,7 +1098,7 @@
                                                 <div class="col-md-12">
                                                     <input
                                                         type="password" name="torrent_password" id="torrent_password" value="${settings.TORRENT_PASSWORD|hide}"
-                                                        class="form-control input-sm input200" autocomplete="no" autocapitalize="off"/>
+                                                        class="form-control input-sm input200" autocomplete="no" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1118,7 +1118,7 @@
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_label" id="torrent_label"
                                                                value="${settings.TORRENT_LABEL}"
-                                                               class="form-control input-sm input200" autocapitalize="off"/>
+                                                               class="form-control input-sm input200" autocapitalize="off" />
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -1144,7 +1144,7 @@
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_label_anime" id="torrent_label_anime"
                                                                value="${settings.TORRENT_LABEL_ANIME}"
-                                                               class="form-control input-sm input200" autocapitalize="off"/>
+                                                               class="form-control input-sm input200" autocapitalize="off" />
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -1170,7 +1170,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_path" id="torrent_path" value="${settings.TORRENT_PATH}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1195,7 +1195,7 @@
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_path_incomplete" id="torrent_path_incomplete"
                                                                value="${settings.TORRENT_PATH_INCOMPLETE}"
-                                                               class="form-control input-sm input350" autocapitalize="off"/>
+                                                               class="form-control input-sm input350" autocapitalize="off" />
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -1216,7 +1216,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="number" step="1" name="torrent_seed_time" id="torrent_seed_time"
-                                                           value="${settings.TORRENT_SEED_TIME}" class="form-control input-sm input100"/>
+                                                           value="${settings.TORRENT_SEED_TIME}" class="form-control input-sm input100" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1269,7 +1269,7 @@
 
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input class="btn test-button" type="button" value="${_('Test Connection')}" id="test_torrent"/>
+                                            <input class="btn test-button" type="button" value="${_('Test Connection')}" id="test_torrent" />
                                             <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                                         </div>
                                     </div>

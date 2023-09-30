@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard.filters import hide
@@ -37,7 +37,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_anidb">
+                        <div id="content_use_anidb" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -49,7 +49,7 @@
                                             <input type="text" name="anidb_username" id="anidb_username"
                                                    value="${settings.ANIDB_USERNAME}"
                                                    class="form-control input-sm input350 pull-left" autocapitalize="off"
-                                                   autocomplete="no" title="Username"/>
+                                                   autocomplete="no" title="Username" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -115,14 +115,14 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="split_home"
-                                       id="split_home" ${('', 'checked="checked"')[bool(settings.ANIME_SPLIT_HOME)]} title="Split"/>
+                                       id="split_home" ${('', 'checked="checked"')[bool(settings.ANIME_SPLIT_HOME)]} title="Split" />
                                 <label for="split_home">${_('separate anime and normal shows in groups')}</label>
                             </div>
                         </div>
                     </fieldset>
                 </div>
 
-                <div id="content_split_home">
+                <div id="content_split_home" hidden>
                     <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
                         <fieldset class="component-group-list">
                             <div class="field-pair row">
@@ -131,7 +131,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <input type="checkbox" name="split_home_in_tabs"
-                                           id="split_home_in_tabs" ${('', 'checked="checked"')[bool(settings.ANIME_SPLIT_HOME_IN_TABS)]} title="Split in tabs"/>
+                                           id="split_home_in_tabs" ${('', 'checked="checked"')[bool(settings.ANIME_SPLIT_HOME_IN_TABS)]} title="Split in tabs" />
                                     <label for="split_home_in_tabs">${_('use tabs for when splitting show lists')}</label>
                                 </div>
                             </div>

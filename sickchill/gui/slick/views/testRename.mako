@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
     from sickchill.helper.common import try_int
@@ -42,13 +42,13 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <input type="checkbox" class="seriesCheck" id="select-all" title="Check"/>
+            <input type="checkbox" class="seriesCheck" id="select-all" title="Check" />
             <label for="select-all">${_('select all')}</label>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
+            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success" />
             <a href="${scRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
                 ${_('Cancel Rename')}
             </a>
@@ -92,7 +92,7 @@
                                 <tr class="season-${current_season} ${('wanted', 'good')[location == new_location]} seasonstyle">
                                     <td class="col-checkbox">
                                         % if location != new_location:
-                                            <input type="checkbox" class="epCheck" id="${episode_object.x_format}" name="${episode_object.x_format}" title="Episode check"/>
+                                            <input type="checkbox" class="epCheck" id="${episode_object.x_format}" name="${episode_object.x_format}" title="Episode check" />
                                         % endif
                                     </td>
                                     <td align="center" valign="top" class="nowrap">${episode_object.dash_format}</td>
@@ -112,7 +112,7 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
+            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success" />
             <a href="${scRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
                 ${_('Cancel Rename')}
             </a>

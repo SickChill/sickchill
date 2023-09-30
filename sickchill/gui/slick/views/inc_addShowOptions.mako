@@ -9,7 +9,7 @@
         </div>
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
             <% anyQualities, bestQualities = Quality.splitQuality(settings.QUALITY_DEFAULT) %>
-            <%include file="/inc_qualityChooser.mako"/>
+            <%include file="/inc_qualityChooser.mako" />
         </div>
     </div>
     <br>
@@ -99,7 +99,7 @@
 
     % if enable_anime_options:
         <% import sickchill.oldbeard.blackandwhitelist %>
-        <%include file="/inc_blackwhitelist.mako"/>
+        <%include file="/inc_blackwhitelist.mako" />
     % else:
         <input type="hidden" name="anime" id="anime" value="0" />
     % endif

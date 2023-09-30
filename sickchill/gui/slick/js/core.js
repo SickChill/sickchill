@@ -195,9 +195,9 @@ const SICKCHILL = {
             // hack alert: if we don't have a touchscreen, and we are already hovering the mouse, then click should link instead of toggle
             if ((navigator.maxTouchPoints || 0) < 2) {
                 $('.dropdown-toggle').on('click', function () {
-                    const $this = $(this);
-                    if ($this.attr('aria-expanded') === 'true') {
-                        window.location.href = $this.attr('href');
+                    const element = $(this);
+                    if (element.prop('ariaEpanded') === 'true') {
+                        window.location.href = element.prop('href');
                     }
                 });
             }
@@ -227,29 +227,33 @@ const SICKCHILL = {
             }
 
             $(document.body).on('click', 'a[data-no-redirect]', event => {
-                const element = $(event.currentTarget).preventDefault();
-                $.get(element.attr('href'));
+                event.preventDefault();
+                const element = $(event.currentTarget);
+                $.get(element.prop('href'));
 
                 return false;
             });
 
-            $(document.body).on('click', '.bulkCheck', event => {
-                const element = $(event.currentTarget);
-                const whichBulkCheck = element.attr('id');
+            $(document.body).on('change', '.bulkCheck', event => {
+                const parent = event.currentTarget;
+                let childrenClass = '.' + parent.id + ':visible';
 
-                $('.' + whichBulkCheck + ':visible').each(function () {
-                    $(this).prop('checked', element.is(':checked'));
+                $(childrenClass).each(function () {
+                    this.checked = parent.checked;
                 });
             });
 
-            $('.enabler').each(function () {
-                if (!$(this).is(':checked')) {
-                    $('#content_' + $(this).attr('id')).hide();
-                }
+            $('.bulkCheck').on('click', function () {
+                let parent = this;
+                let subItemsClass = '.' + this.id + ':visible';
+
+                $(subItemsClass).each(function () {
+                    this.checked = parent.checked;
+                });
             });
 
             $('.enabler').on('change', function () {
-                if ($(this).is(':checked')) {
+                if (this.checked) {
                     $('#content_' + $(this).attr('id')).fadeIn('fast', 'linear');
                 } else {
                     $('#content_' + $(this).attr('id')).fadeOut('fast', 'linear');
@@ -264,7 +268,6 @@ const SICKCHILL = {
                     $('#customQuality').show();
                     return;
                 }
-
                 $('#customQuality').hide();
 
                 $('#anyQualities').find('option').each(function () {
@@ -316,7 +319,7 @@ const SICKCHILL = {
             $('#config-components').tabs();
 
             $('.viewIf').on('click', function () {
-                if ($(this).is(':checked')) {
+                if (this.checked) {
                     $('.hide_if_' + $(this).attr('id')).css('display', 'none');
                     $('.show_if_' + $(this).attr('id')).fadeIn('fast', 'linear');
                 } else {
@@ -327,10 +330,10 @@ const SICKCHILL = {
 
             $('.datePresets').on('click', function () {
                 let def = $('#date_presets').val();
-                if ($(this).is(':checked') && def === '%x') {
+                if (this.checked && def === '%x') {
                     def = '%a, %b %d, %Y';
                     $('#date_use_system_default').html('1');
-                } else if (!$(this).is(':checked') && $('#date_use_system_default').html() === '1') {
+                } else if (!this.checked && $('#date_use_system_default').html() === '1') {
                     def = '%x';
                 }
 
@@ -374,10 +377,9 @@ const SICKCHILL = {
                 $.get(scRoot + '/config/general/generateApiKey', data => {
                     if (data.error !== undefined) {
                         notifyModal(data.error);
-                        return;
+                    } else {
+                        $('#api_key').val(data);
                     }
-
-                    $('#api_key').val(data);
                 });
             });
 
@@ -1128,12 +1130,12 @@ const SICKCHILL = {
                     pushbullet.devices = $.parseJSON(data).devices;
                     pushbullet.currentDevice = $('#pushbullet_device').val();
                     $('#pushbullet_device_list').html('');
-                    for (let i = 0; i < pushbullet.devices.length; i++) {
-                        if (pushbullet.devices[i].active === true) {
-                            if (pushbullet.currentDevice === pushbullet.devices[i].iden) {
-                                $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '" selected>' + pushbullet.devices[i].nickname + '</option>');
+                    for (let device = 0; device < pushbullet.devices.length; device++) {
+                        if (pushbullet.devices[device].active === true) {
+                            if (pushbullet.currentDevice === pushbullet.devices[device].iden) {
+                                $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[device].iden + '" selected>' + pushbullet.devices[device].nickname + '</option>');
                             } else {
-                                $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[i].iden + '">' + pushbullet.devices[i].nickname + '</option>');
+                                $('#pushbullet_device_list').append('<option value="' + pushbullet.devices[device].iden + '">' + pushbullet.devices[device].nickname + '</option>');
                             }
                         }
                     }
@@ -1214,14 +1216,14 @@ const SICKCHILL = {
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
                     // TODO: Why is this not just sent as json to begin with?
-                    const _list = [];
-                    for (const _show in list) {
-                        if (Object.prototype.hasOwnProperty.call(list, _show) && _show.charAt(0) !== '_') {
-                            _list.push(list[_show]);
+                    const notifyList = [];
+                    for (const listKey in list) {
+                        if (Object.prototype.hasOwnProperty.call(list, listKey) && listKey.charAt(0) !== '_') {
+                            notifyList.push(list[listKey]);
                         }
                     }
 
-                    const sortedList = _list.sort((a, b) => {
+                    const sortedList = notifyList.sort((a, b) => {
                         if (a.name < b.name) {
                             return -1;
                         }
@@ -1233,9 +1235,9 @@ const SICKCHILL = {
                         return 0;
                     });
                     let html = '<option value="-1">-- Select --</option>';
-                    for (const _show in sortedList) {
-                        if (Object.prototype.hasOwnProperty.call(sortedList, _show) && sortedList[_show].id && sortedList[_show].name) {
-                            html += '<option value="' + sortedList[_show].id + '">' + $('<div>').text(sortedList[_show].name).html() + '</option>';
+                    for (const sortedListKey in sortedList) {
+                        if (Object.prototype.hasOwnProperty.call(sortedList, sortedListKey) && sortedList[sortedListKey].id && sortedList[sortedListKey].name) {
+                            html += '<option value="' + sortedList[sortedListKey].id + '">' + $('<div>').text(sortedList[sortedListKey].name).html() + '</option>';
                         }
                     }
 
@@ -1279,7 +1281,7 @@ const SICKCHILL = {
 
             // Show instructions for plex when enabled
             $('#use_plex_server').on('click', function () {
-                if ($(this).is(':checked')) {
+                if (this.checked) {
                     $('.plexinfo').removeClass('hide');
                 } else {
                     $('.plexinfo').addClass('hide');
@@ -1293,7 +1295,7 @@ const SICKCHILL = {
 
             // http://stackoverflow.com/questions/2219924/idiomatic-jquery-delayed-event-only-after-a-short-pause-in-typing-e-g-timew
             const typewatch = (function () {
-                let timer = 0;
+                let timer;
                 return function (callback, ms) {
                     clearTimeout(timer);
                     timer = setTimeout(callback, ms);
@@ -1515,34 +1517,34 @@ const SICKCHILL = {
                     anime_type: example.animeType, // eslint-disable-line camelcase
                 }, data => {
                     let info;
-                    const $namingAnimePatternInput = $('#naming_anime_pattern');
+                    const namingAnimePatternInput = $('#naming_anime_pattern');
                     if (data === 'invalid') {
                         info = _('This pattern is invalid.');
-                        $namingAnimePatternInput.qtip('option', {
+                        namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
-                        $namingAnimePatternInput.qtip('toggle', true);
-                        $namingAnimePatternInput.css('background-color', '#FFDDDD');
+                        namingAnimePatternInput.qtip('toggle', true);
+                        namingAnimePatternInput.css('background-color', '#FFDDDD');
                     } else if (data === 'seasonfolders') {
                         info = _('This pattern would be invalid without the folders, using it will force "Season Folders" on for all shows.');
-                        $namingAnimePatternInput.qtip('option', {
+                        namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-red',
                         });
-                        $namingAnimePatternInput.qtip('toggle', true);
-                        $namingAnimePatternInput.css('background-color', '#FFFFDD');
+                        namingAnimePatternInput.qtip('toggle', true);
+                        namingAnimePatternInput.css('background-color', '#FFFFDD');
                     } else {
                         info = _('This pattern is valid.');
-                        $namingAnimePatternInput.qtip('option', {
+                        namingAnimePatternInput.qtip('option', {
                             'content.text': info,
                             'style.classes': 'qtip-rounded qtip-shadow qtip-green',
                         });
-                        $namingAnimePatternInput.qtip('toggle', false);
-                        $namingAnimePatternInput.css('background-color', '#FFFFFF');
+                        namingAnimePatternInput.qtip('toggle', false);
+                        namingAnimePatternInput.css('background-color', '#FFFFFF');
                     }
 
-                    $namingAnimePatternInput.attr('title', info);
+                    namingAnimePatternInput.attr('title', info);
                 });
             }
 
@@ -1727,7 +1729,18 @@ const SICKCHILL = {
                     const seasonAllPoster = $('#' + generatorName + '_season_all_poster').is(':checked');
                     const seasonAllBanner = $('#' + generatorName + '_season_all_banner').is(':checked');
 
-                    configArray.push(showMetadata ? '1' : '0', episodeMetadata ? '1' : '0', fanart ? '1' : '0', poster ? '1' : '0', banner ? '1' : '0', episodeThumbnails ? '1' : '0', seasonPosters ? '1' : '0', seasonBanners ? '1' : '0', seasonAllPoster ? '1' : '0', seasonAllBanner ? '1' : '0');
+                    configArray.push(
+                        showMetadata ? '1' : '0',
+                        episodeMetadata ? '1' : '0',
+                        fanart ? '1' : '0',
+                        poster ? '1' : '0',
+                        banner ? '1' : '0',
+                        episodeThumbnails ? '1' : '0',
+                        seasonPosters ? '1' : '0',
+                        seasonBanners ? '1' : '0',
+                        seasonAllPoster ? '1' : '0',
+                        seasonAllBanner ? '1' : '0'
+                    );
 
                     let curNumber = 0;
                     for (const element of configArray) {
@@ -2876,7 +2889,7 @@ const SICKCHILL = {
 
             // Initially show/hide all the rows according to the checkboxes
             $('#checkboxControls input').each(function () {
-                const status = $(this).is(':checked');
+                const status = this.checked;
                 $('tr.' + $(this).attr('id')).each(function () {
                     if (status) {
                         $(this).show();
@@ -2917,21 +2930,13 @@ const SICKCHILL = {
                 const showId = $('#showID').val();
                 const indexer = $('#indexer').val();
 
-                if (sceneSeason === '') {
-                    sceneSeason = null;
-                }
-
-                if (sceneEpisode === '') {
-                    sceneEpisode = null;
-                }
-
                 $.getJSON(scRoot + '/home/setSceneNumbering', {
                     show: showId,
                     indexer,
                     forSeason,
                     forEpisode,
-                    sceneSeason,
-                    sceneEpisode,
+                    sceneSeason: sceneSeason === '' ? null : sceneSeason,
+                    sceneEpisode: sceneEpisode === '' ? null : sceneEpisode,
                 }, data => {
                     // Set the values we get back
                     if (data.sceneSeason === null || data.sceneEpisode === null) {
@@ -2954,15 +2959,11 @@ const SICKCHILL = {
                 const showId = $('#showID').val();
                 const indexer = $('#indexer').val();
 
-                if (sceneAbsolute === '') {
-                    sceneAbsolute = null;
-                }
-
                 $.getJSON(scRoot + '/home/setSceneNumbering', {
                     show: showId,
                     indexer,
                     forAbsolute,
-                    sceneAbsolute,
+                    sceneAbsolute: sceneAbsolute === '' ? null : sceneAbsolute,
                 },
                 data => {
                     // Set the values we get back
@@ -3002,7 +3003,7 @@ const SICKCHILL = {
 
                 let sceneSeason = null;
                 let sceneEpisode = null;
-                let isValid = false;
+                let isValid;
                 if (m) {
                     sceneSeason = m[1];
                     sceneEpisode = m[2];
@@ -3252,7 +3253,7 @@ const SICKCHILL = {
             $.makeSubtitleRow = function (indexerId, season, episode, name, subtitles, checked) { // eslint-disable-line max-params
                 let row = '';
                 row += '<tr class="good show-' + indexerId + '">';
-                row += '<td align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
+                row += '<td class="text-center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
                 row += '<td style="width: 2%;">' + season + 'x' + episode + '</td>';
                 if (subtitles.length > 0) {
                     row += '<td style="width: 8%;">';
@@ -3285,6 +3286,7 @@ const SICKCHILL = {
 
             $('#massUpdateTable:has(tbody tr)').tablesorter({
                 sortList: [[1, 0]],
+                widthFixed: true,
                 textExtraction: {
                     2(node) { // Network
                         return ($(node).find('img').attr('alt') || 'unknown');
@@ -3354,8 +3356,6 @@ const SICKCHILL = {
                     filter_hideFilters: false, // eslint-disable-line camelcase
                     filter_ignoreCase: true, // eslint-disable-line camelcase
                     filter_reset: '.resetsorting', // eslint-disable-line camelcase
-                    widthFixed: true,
-
                 },
             });
             $('#popover').popover({
@@ -3367,91 +3367,34 @@ const SICKCHILL = {
                 $.tablesorter.columnSelector.attachTo($('#massUpdateTable'), '#popover-target');
             });
 
-            $('.submitMassUpdate').on('click', () => {
-                let submit = false;
+            $('.submitMassUpdate').on('click', event, function () {
+                event.preventDefault();
 
-                const form = $('<form />', {action: scRoot + '/manage/massUpdate', method: 'post'});
+                const form = $('[name="massUpdateForm"]');
+                const deleteInputs = $('.deleteCheck:checked');
 
-                $('.updateCheck').each(function () {
-                    if (this.checked === true) {
-                        form.append($('<input />', {name: 'toUpdate', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                        submit = true;
-                    }
-                });
-
-                $('.refreshCheck').each(function () {
-                    if (this.checked === true) {
-                        form.append($('<input />', {name: 'toRefresh', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                        submit = true;
-                    }
-                });
-
-                $('.renameCheck').each(function () {
-                    if (this.checked === true) {
-                        form.append($('<input />', {name: 'toRename', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                        submit = true;
-                    }
-                });
-
-                $('.subtitleCheck').each(function () {
-                    if (this.checked === true) {
-                        form.append($('<input />', {name: 'toSubtitle', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                        submit = true;
-                    }
-                });
-
-                $('.removeCheck').each(function () {
-                    if (this.checked === true) {
-                        form.append($('<input />', {name: 'toRemove', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                        submit = true;
-                    }
-                });
-
-                $('.editCheck').each(function () {
-                    if (this.checked === true) {
-                        form.append($('<input />', {name: 'edit_shows', type: 'hidden', value: $(this).attr('id').split('-')[1]}));
-                        submit = true;
-                    }
-                });
-
-                const deleteArray = [];
-                $('.deleteCheck').each(function () {
-                    if (this.checked === true) {
-                        deleteArray.push($(this).attr('id').split('-')[1]);
-                    }
-                });
-
-                if (deleteArray.length > 0) {
-                    submit = false;
+                if (deleteInputs.length > 0) {
                     $.confirm({
                         title: 'Delete Shows',
-                        text: 'You have selected to delete ' + deleteArray.length + ' show(s).  Are you sure you wish to continue? All files will be removed from your system.',
-                        confirmButton: 'Yes',
-                        cancelButton: 'Cancel',
-                        dialogClass: 'modal-dialog',
-                        post: false,
-                        confirm() {
-                            for (const deleteItem of deleteArray) {
-                                form.append($('<input />', {name: 'toDelete', type: 'hidden', value: deleteItem}));
-                            }
-
-                            form.appendTo('body');
+                        text: 'You have selected to delete ' + deleteInputs.length + ' show(s).  Are you sure you wish to continue? All files will be removed from your system.',
+                        confirm: function () {
+                            form.submit();
+                        },
+                        cancel: function () {
+                            $('.deleteCheck:checked').prop('checked', false);
                             form.submit();
                         },
                     });
-                }
-
-                if (submit === true) {
-                    form.appendTo('body');
+                } else {
                     form.submit();
                 }
             });
         },
         backlogOverview() {
             $('#pickShow').on('change', event => {
-                const id = $(event.currentTarget).val();
-                if (id) {
-                    $('html,body').animate({scrollTop: $('#show-' + id).offset().top - 25}, 'slow');
+                const showid = $(event.currentTarget).val();
+                if (showid) {
+                    $('html,body').animate({scrollTop: $('#show-' + showid).offset().top - 25}, 'slow');
                 }
             });
         },
@@ -3545,7 +3488,7 @@ const SICKCHILL = {
         episodeStatuses() {
             $('.allCheck').on('click', function () {
                 const indexerId = $(this).attr('id').split('-')[1];
-                $('.' + indexerId + '-epcheck').prop('checked', $(this).is(':checked'));
+                $('.' + indexerId + '-epcheck').prop('checked', this.checked);
             });
 
             $('.get_more_eps').on('click', function () {
@@ -3600,7 +3543,7 @@ const SICKCHILL = {
         subtitleMissed() {
             $('.allCheck').on('click', function () {
                 const indexerId = $(this).attr('id').split('-')[1];
-                $('.' + indexerId + '-epcheck').prop('checked', $(this).is(':checked'));
+                $('.' + indexerId + '-epcheck').prop('checked', this.checked);
             });
 
             $('.get_more_eps').on('click', function () {
@@ -3756,10 +3699,6 @@ const SICKCHILL = {
                 $.confirm({
                     title: 'Remove Logs',
                     text: 'You have selected to remove ' + removeCount + ' download history log(s).<br /><br />This cannot be undone.<br />Are you sure you wish to continue?',
-                    confirmButton: 'Yes',
-                    cancelButton: 'Cancel',
-                    dialogClass: 'modal-dialog',
-                    post: false,
                     confirm() {
                         const url = scRoot + '/history/removeHistory';
                         const parameters = 'toRemove=' + removeArray.join('|');

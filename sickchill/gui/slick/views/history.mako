@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     import os.path
     import datetime
@@ -15,7 +15,7 @@
     from operator import itemgetter
 %>
 <%block name="content">
-    <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+    <%namespace file="/inc_defs.mako" import="renderQualityPill" />
     <div class="row">
         <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 pull-right">
             <div class="pull-right">
@@ -102,7 +102,7 @@
                                             % if provider is not None:
                                                 <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" class="align-middle text-center" /> <span class="align-middle text-center">${provider.name}</span>
                                             % else:
-                                                <img src="${static_url('images/providers/missing.png')}" width="16" height="16" class="align-middle text-center" title="missing provider"/> <span class="align-middle text-center">${_('Missing Provider')}</span>
+                                                <img src="${static_url('images/providers/missing.png')}" width="16" height="16" class="align-middle text-center" title="missing provider" /> <span class="align-middle text-center">${_('Missing Provider')}</span>
                                             % endif
                                         % else:
                                             <img src="${static_url('images/subtitles/' + hItem['provider'] + '.png')}" width="16" height="16" class="align-middle text-center" /> <span class="align-middle text-center text-capitalize">${hItem['provider']}</span>
@@ -162,10 +162,10 @@
                                                 <% provider = providers.getProviderClass(GenericProvider.make_id(action['provider'])) %>
                                                 % if provider is not None:
                                                     <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16"
-                                                         class="align-middle text-center" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action['resource'])}"/>
+                                                         class="align-middle text-center" alt="${provider.name}" style="cursor: help;" title="${provider.name}: ${os.path.basename(action['resource'])}" />
                                                 % else:
                                                     <img src="${static_url('images/providers/missing.png')}" width="16" height="16"
-                                                         class="align-middle text-center"  alt="${_('missing provider')}" title="${_('missing provider')}"/>
+                                                         class="align-middle text-center"  alt="${_('missing provider')}" title="${_('missing provider')}" />
                                                 % endif
                                             % endif
                                         % endfor
@@ -188,7 +188,7 @@
                                                 <% curStatus, curQuality = Quality.splitCompositeStatus(int(action['action'])) %>
                                                 % if curStatus == SUBTITLED:
                                                     <img src="${static_url('images/subtitles/' + action['provider'] + '.png')}" width="16" height="16"
-                                                         class="align-middle text-center text-capitalize" alt="${action['provider']}" title="${action['provider']}: ${os.path.basename(action['resource'])}"/>
+                                                         class="align-middle text-center text-capitalize" alt="${action['provider']}" title="${action['provider']}: ${os.path.basename(action['resource'])}" />
                                                     <span class="align-middle text-center"> / </span>
                                                     <img width="16" height="11" style="vertical-align:middle !important;" src="${static_url('images/subtitles/flags/' + action['resource'] + '.png') }" onError="this.onerror=null;this.src='${ static_url('images/flags/unknown.png')}';">
                                                     &nbsp;

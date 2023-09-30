@@ -361,11 +361,11 @@ class Manage(Home, WebRoot):
     def massEdit(self):
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
-        edit_shows = self.get_body_arguments("edit_shows")
+        edit = self.get_body_arguments("edit")
 
         show_list = []
         show_names = []
-        for show_id in edit_shows:
+        for show_id in edit:
             show_object = Show.find(settings.showList, show_id)
             if show_object:
                 show_list.append(show_object)
@@ -476,7 +476,7 @@ class Manage(Home, WebRoot):
         require_words_value = None
 
         return t.render(
-            edit_show_list=edit_shows,
+            edit_list=edit,
             show_names=show_names,
             default_ep_status_value=default_ep_status_value,
             paused_value=paused_value,
@@ -511,7 +511,7 @@ class Manage(Home, WebRoot):
         air_by_date = self.get_body_argument("air_by_date", None)
         any_qualities = self.get_body_arguments("anyQualities")
         best_qualities = self.get_body_arguments("bestQualities")
-        edit_shows = self.get_body_arguments("edit_shows")
+        edit = self.get_body_arguments("edit")
         mass_ignore_words = self.get_body_argument("mass_ignore_words", None)
         mass_prefer_words = self.get_body_argument("mass_prefer_words", None)
         mass_require_words = self.get_body_argument("mass_require_words", None)
@@ -527,7 +527,7 @@ class Manage(Home, WebRoot):
                 root_dir_map[old_root] = new_root
 
         errors = []
-        for current_show in edit_shows:
+        for current_show in edit:
             current_show_errors = []
             show_object = Show.find(settings.showList, current_show)
             if not show_object:
@@ -611,14 +611,14 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self):
-        to_update = self.get_body_arguments("toUpdate")
-        to_refresh = self.get_body_arguments("toRefresh")
-        to_rename = self.get_body_arguments("toRename")
-        to_subtitle = self.get_body_arguments("toSubtitle")
-        to_delete = self.get_body_arguments("toDelete")
-        to_remove = self.get_body_arguments("toRemove")
-        to_metadata = self.get_body_arguments("toMetadata")
-        edit_shows = self.get_body_arguments("edit_shows")
+        update = self.get_body_arguments("update")
+        refresh = self.get_body_arguments("refresh")
+        rename = self.get_body_arguments("rename")
+        subtitle = self.get_body_arguments("subtitle")
+        delete = self.get_body_arguments("delete")
+        remove = self.get_body_arguments("remove")
+        metadata = self.get_body_arguments("metadata")
+        edit = self.get_body_arguments("edit")
 
         errors = []
         refreshes = []
@@ -626,7 +626,7 @@ class Manage(Home, WebRoot):
         renames = []
         subtitles = []
 
-        for curShowID in set(to_update + to_refresh + to_rename + to_subtitle + to_delete + to_remove + to_metadata):
+        for curShowID in set(update + refresh + rename + subtitle + delete + remove + metadata):
             if curShowID == "":
                 continue
 
@@ -634,17 +634,17 @@ class Manage(Home, WebRoot):
             if not show_object:
                 continue
 
-            if curShowID in to_delete:
+            if curShowID in delete:
                 settings.showQueueScheduler.action.remove_show(show_object, True)
                 # don't do anything else if it's being deleted
                 continue
 
-            if curShowID in to_remove:
+            if curShowID in remove:
                 settings.showQueueScheduler.action.remove_show(show_object)
                 # don't do anything else if it's being removed
                 continue
 
-            if curShowID in to_update:
+            if curShowID in update:
                 try:
                     settings.showQueueScheduler.action.update_show(show_object, True)
                     updates.append(show_object.name)
@@ -652,18 +652,18 @@ class Manage(Home, WebRoot):
                     errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
 
             # don't bother refreshing shows that were updated anyway
-            if curShowID in to_refresh and curShowID not in to_update:
+            if curShowID in refresh and curShowID not in update:
                 try:
                     settings.showQueueScheduler.action.refresh_show(show_object, force=True)
                     refreshes.append(show_object.name)
                 except CantRefreshShowException as error:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))
 
-            if curShowID in to_rename:
+            if curShowID in rename:
                 settings.showQueueScheduler.action.rename_show_episodes(show_object)
                 renames.append(show_object.name)
 
-            if curShowID in to_subtitle:
+            if curShowID in subtitle:
                 settings.showQueueScheduler.action.download_subtitles(show_object)
                 subtitles.append(show_object.name)
 
@@ -695,7 +695,7 @@ class Manage(Home, WebRoot):
         if updates + refreshes + renames + subtitles:
             ui.notifications.message(_("The following actions were queued") + ":", message_detail)
 
-        if edit_shows:
+        if edit:
             return self.massEdit()
 
         return self.redirect("/manage/")

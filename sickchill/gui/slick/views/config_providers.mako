@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill.oldbeard import providers
     from sickchill import settings
@@ -92,7 +92,7 @@
                                        target="_blank">
                                         <img src="${static_url('images/providers/' + curProvider.image_name())}"
                                             alt="${curProvider.name}" title="${curProvider.name}" width="16"
-                                            height="16" style="vertical-align:middle;"/>
+                                            height="16" style="vertical-align:middle;" />
                                     </a>
                                     <label for="enable_${curName}" style="vertical-align:middle;">${curProvider.name}</label>
                                     ${('<span class="red-text">*</span>', '')[curProvider.can_backlog]}
@@ -161,7 +161,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="text" id="${curNewznabProvider.get_id("_url")}"
                                                    value="${curNewznabProvider.url}" class="form-control input-sm input350"
-                                                   disabled autocapitalize="off"/>
+                                                   disabled autocapitalize="off" />
                                         </div>
                                     </div>
 
@@ -173,7 +173,7 @@
                                             <input type="text" id="${curNewznabProvider.get_id("_hash")}"
                                                    value="${curNewznabProvider.key}"
                                                    newznab_name="${curNewznabProvider.get_id("_hash")}"
-                                                   class="newznab_key form-control input-sm input350" autocapitalize="off"/>
+                                                   class="newznab_key form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                 % endif
@@ -273,7 +273,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="text" name="${curNzbProvider.get_id("_username")}"
                                                    value="${curNzbProvider.username}" class="form-control input-sm input350"
-                                                   autocapitalize="off" autocomplete="no"/>
+                                                   autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                 % endif
@@ -286,7 +286,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="text" name="${curNzbProvider.get_id("_api_key")}"
                                                    value="${curNzbProvider.api_key}" class="form-control input-sm input350"
-                                                   autocapitalize="off"/>
+                                                   autocapitalize="off" />
                                         </div>
                                     </div>
                                 % endif
@@ -388,7 +388,7 @@
                                             <input type="text" name="${curTorrentProvider.get_id("_custom_url")}"
                                                    id="${curTorrentProvider.get_id("_custom_url")}"
                                                    value="${curTorrentProvider.custom_url}"
-                                                   class="form-control input-sm input350" autocapitalize="off"/>
+                                                   class="form-control input-sm input350" autocapitalize="off" />
                                             <label for="${curTorrentProvider.get_id("_custom_url")}">${_('the URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/')}</label>
                                         </div>
                                     </div>
@@ -403,7 +403,7 @@
                                             <input type="text" name="${curTorrentProvider.get_id("_api_key")}"
                                                    id="${curTorrentProvider.get_id("_api_key")}"
                                                    value="${curTorrentProvider.api_key}" class="form-control input-sm input350"
-                                                   autocapitalize="off"/>
+                                                   autocapitalize="off" />
                                         </div>
                                     </div>
                                 % endif
@@ -417,7 +417,7 @@
                                             <input type="text" name="${curTorrentProvider.get_id("_digest")}"
                                                    id="${curTorrentProvider.get_id("_digest")}"
                                                    value="${curTorrentProvider.digest}" class="form-control input-sm input350"
-                                                   autocapitalize="off"/>
+                                                   autocapitalize="off" />
                                         </div>
                                     </div>
                                 % endif
@@ -430,7 +430,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="text" name="${curTorrentProvider.get_id("_hash")}"
                                                    id="${curTorrentProvider.get_id("_hash")}" value="${curTorrentProvider.hash}"
-                                                   class="form-control input-sm input350" autocapitalize="off"/>
+                                                   class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                 % endif
@@ -444,7 +444,7 @@
                                             <input type="text" name="${curTorrentProvider.get_id("_username")}"
                                                    id="${curTorrentProvider.get_id("_username")}"
                                                    value="${curTorrentProvider.username}" class="form-control input-sm input350"
-                                                   autocapitalize="off" autocomplete="no"/>
+                                                   autocapitalize="off" autocomplete="no" />
                                         </div>
                                     </div>
                                 % endif
@@ -531,7 +531,7 @@
                                                 <div class="col-md-12">
                                                     <input type="number" min="-1" step="0.1" name="${curTorrentProvider.get_id("_ratio")}"
                                                            id="${curTorrentProvider.get_id("_ratio")}" value="${curTorrentProvider.ratio or 0}"
-                                                           class="form-control input-sm input75"/>
+                                                           class="form-control input-sm input75" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -551,7 +551,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="number" min="0" step="1" name="${curTorrentProvider.get_id("_minseed")}"
                                                    id="${curTorrentProvider.get_id("_minseed")}"
-                                                    value="${curTorrentProvider.minseed}" class="form-control input-sm input75"/>
+                                                    value="${curTorrentProvider.minseed}" class="form-control input-sm input75" />
                                         </div>
                                     </div>
                                 % endif
@@ -565,7 +565,7 @@
                                             <input type="number" min="0" step="1" name="${curTorrentProvider.get_id("_minleech")}"
                                                    id="${curTorrentProvider.get_id("_minleech")}"
                                                     value="${curTorrentProvider.minleech}"
-                                                   class="form-control input-sm input75"/>
+                                                   class="form-control input-sm input75" />
                                         </div>
                                     </div>
                                 % endif
@@ -788,7 +788,7 @@
                                     <label class="component-title">${_('Select provider')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="hidden" name="newznab_string" id="newznab_string"/>
+                                    <input type="hidden" name="newznab_string" id="newznab_string" />
                                     <select id="editANewznabProvider" class="form-control input-sm input200">
                                         <option value="addNewznab">${_('-- add new provider --')}</option>
                                     </select>
@@ -803,7 +803,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="text" id="newznab_name" class="form-control input-sm input200"
-                                               autocapitalize="off" title="Provider name"/>
+                                               autocapitalize="off" title="Provider name" />
                                     </div>
                                 </div>
 
@@ -813,7 +813,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="text" id="newznab_url" class="form-control input-sm input350"
-                                               autocapitalize="off" title="Provider url"/>
+                                               autocapitalize="off" title="Provider url" />
                                     </div>
                                 </div>
                                 <div class="field-pair row">
@@ -863,10 +863,10 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div id="newznab_add_div">
-                                            <input class="btn newznab_save" type="button" id="newznab_add" value="${_('Add')}"/>
+                                            <input class="btn newznab_save" type="button" id="newznab_add" value="${_('Add')}" />
                                         </div>
                                         <div id="newznab_update_div" style="display: none;">
-                                            <input class="btn btn-danger newznab_delete" type="button" id="newznab_delete" value="${_('Delete')}"/>
+                                            <input class="btn btn-danger newznab_delete" type="button" id="newznab_delete" value="${_('Delete')}" />
                                         </div>
                                     </div>
                                 </div>
@@ -897,7 +897,7 @@
                                     <label class="component-title">${_('Select provider')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="hidden" name="torrent_rss_string" id="torrent_rss_string"/>
+                                    <input type="hidden" name="torrent_rss_string" id="torrent_rss_string" />
                                     <select id="editATorrentRssProvider" class="form-control input-sm input200">
                                         <option value="addTorrentRss">${_('-- add new provider --')}</option>
                                     </select>
@@ -911,7 +911,7 @@
                                         <label class="component-title">${_('Provider name')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="text" id="torrentrss_name" class="form-control input-sm input200" autocapitalize="off"/>
+                                        <input type="text" id="torrentrss_name" class="form-control input-sm input200" autocapitalize="off" />
                                     </div>
                                 </div>
                                 <div class="field-pair row">
@@ -919,7 +919,7 @@
                                         <label class="component-title">${_('RSS URL')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="text" id="torrentrss_url" class="form-control input-sm input350" autocapitalize="off"/>
+                                        <input type="text" id="torrentrss_url" class="form-control input-sm input350" autocapitalize="off" />
                                     </div>
                                 </div>
                                 <div class="field-pair row">
@@ -929,7 +929,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="text" id="torrentrss_cookies" class="form-control input-sm input350" autocapitalize="off"/>
+                                                <input type="text" id="torrentrss_cookies" class="form-control input-sm input350" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -946,7 +946,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="text" id="torrentrss_titleTAG" class="form-control input-sm input200" value="title" autocapitalize="off"/>
+                                                <input type="text" id="torrentrss_titleTAG" class="form-control input-sm input200" value="title" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -960,10 +960,10 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div id="torrentrss_add_div">
-                                            <input type="button" class="btn torrentrss_save" id="torrentrss_add" value="${_('Add')}"/>
+                                            <input type="button" class="btn torrentrss_save" id="torrentrss_add" value="${_('Add')}" />
                                         </div>
                                         <div id="torrentrss_update_div" style="display: none;">
-                                            <input type="button" class="btn btn-danger torrentrss_delete" id="torrentrss_delete" value="${_('Delete')}"/>
+                                            <input type="button" class="btn btn-danger torrentrss_delete" id="torrentrss_delete" value="${_('Delete')}" />
                                         </div>
                                     </div>
                                 </div>

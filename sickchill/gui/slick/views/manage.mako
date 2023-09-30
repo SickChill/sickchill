@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from operator import attrgetter
     from sickchill import settings
@@ -6,7 +6,7 @@
 %>
 
 <%block name="content">
-    <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+    <%namespace file="/inc_defs.mako" import="renderQualityPill" />
 
     <form name="massUpdateForm" method="post" action="massUpdate">
 
@@ -47,7 +47,7 @@
                             <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('S. folders')}</th>
                             <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Paused')}</th>
                             <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Subtitle')}</th>
-                            <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap"data-placeholder="${_('All')}">${_('Default Status')}</th>
+                            <th class="col-legend col-shrink filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Default Status')}</th>
                             <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Status')}</th>
                             <th class="col-legend filter-select filter-onlyAvail text-nowrap" data-placeholder="${_('All')}">${_('Root dir')}</th>
 
@@ -81,14 +81,14 @@
                         </thead>
                         <tbody>
                             % for curShow in sorted(settings.showList, key=lambda mbr: attrgetter('sort_name')(mbr)):
-                            <%
-                                if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
-                                    continue
-                            %>
+                                <%
+                                    if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
+                                        continue
+                                %>
                                 <tr>
                                     <td class="text-center">
                                         <label for="edit-${curShow.indexerid}" class="sr-only">${_('Edit')} ${curShow.name}</label>
-                                        <input type="checkbox" class="editCheck" id="edit-${curShow.indexerid}" />
+                                        <input type="checkbox" class="editCheck" name="edit" value="${curShow.indexerid}" id="edit-${curShow.indexerid}" />
                                     </td>
                                     <td class="tvShow text-nowrap"><a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a></td>
                                     <td class="text-center">
@@ -113,47 +113,59 @@
                                     <td class="text-center">
                                         <% disabled = settings.showQueueScheduler.action.is_being_updated(curShow) or settings.showQueueScheduler.action.is_in_update_queue(curShow) %>
                                         <label for="update-${curShow.indexerid}" class="sr-only">${_('Update')} ${curShow.name}</label>
-                                        <input type="checkbox" class="updateCheck" id="update-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                        <input type="checkbox" class="updateCheck" name="update" value="${curShow.indexerid}" id="update-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
                                     </td>
 
                                     <td class="text-center">
                                         <% disabled = settings.showQueueScheduler.action.is_being_refreshed(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow) %>
                                         <label for="refresh-${curShow.indexerid}" class="sr-only">${_('Refresh')} ${curShow.name}</label>
-                                        <input type="checkbox" class="refreshCheck" id="refresh-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                        <input type="checkbox" class="refreshCheck" name="refresh" value="${curShow.indexerid}" id="refresh-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
                                     </td>
 
                                     <td class="text-center">
                                         <% disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) %>
                                         <label for="rename-${curShow.indexerid}" class="sr-only">${_('Rename')} ${curShow.name}</label>
-                                        <input type="checkbox" class="renameCheck" id="rename-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                        <input type="checkbox" class="renameCheck" name="rename" value="${curShow.indexerid}" id="rename-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
                                     </td>
 
                                     % if settings.USE_SUBTITLES:
                                         <td class="text-center">
                                             <% disabled = not curShow.subtitles or settings.showQueueScheduler.action.is_being_subtitled(curShow) or settings.showQueueScheduler.action.is_in_subtitle_queue(curShow) %>
                                             <label for="subtitle-${curShow.indexerid}" class="sr-only">${_('Subtitle')} ${curShow.name}</label>
-                                            <input type="checkbox" class="subtitleCheck" id="subtitle-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                            <input type="checkbox" class="subtitleCheck" name="subtitle" value="${curShow.indexerid}" id="subtitle-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
                                         </td>
                                     % endif
 
                                     <td class="text-center">
-                                        <% disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow) %>
+                                        <%
+                                            disabled = any([
+                                                settings.showQueueScheduler.action.is_being_renamed(curShow),
+                                                settings.showQueueScheduler.action.is_in_rename_queue(curShow),
+                                                settings.showQueueScheduler.action.is_in_refresh_queue(curShow)
+                                            ])
+                                        %>
                                         <label for="delete-${curShow.indexerid}" class="sr-only">${_('Delete')} ${curShow.name}</label>
-                                        <input type="checkbox" class="confirm deleteCheck" id="delete-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                        <input type="checkbox" class="confirm deleteCheck" name="delete" value="${curShow.indexerid}" id="delete-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
                                     </td>
 
                                     <td class="text-center">
-                                        <% disabled = settings.showQueueScheduler.action.is_being_renamed(curShow) or settings.showQueueScheduler.action.is_in_rename_queue(curShow) or settings.showQueueScheduler.action.is_in_refresh_queue(curShow) %>
+                                        <%
+                                            disabled = any([
+                                                settings.showQueueScheduler.action.is_being_renamed(curShow),
+                                                settings.showQueueScheduler.action.is_in_rename_queue(curShow),
+                                                settings.showQueueScheduler.action.is_in_refresh_queue(curShow)
+                                            ])
+                                        %>
                                         <label for="remove-${curShow.indexerid}" class="sr-only">${_('Remove')} ${curShow.name}</label>
-                                        <input type="checkbox" class="removeCheck" id="remove-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
+                                        <input type="checkbox" class="removeCheck" name="remove" value="${curShow.indexerid}" id="remove-${curShow.indexerid}" ${("", "disabled")[disabled]}/>
                                     </td>
                                 </tr>
                             % endfor
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <td rowspan="1" colspan="${(18, 19)[bool(settings.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
-                            </tr>
+                        <tr>
+                            <td rowspan="1" colspan="${(18, 19)[bool(settings.USE_SUBTITLES)]}" class="align-right alt"><input class="btn pull-right submitMassUpdate" type="button" value="${_('Submit')}" /></td>
+                        </tr>
                         </tfoot>
                     </table>
                 </div>

@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     import json
     from urllib.parse import urljoin
@@ -28,10 +28,10 @@
 <%block name="navbar">
     <li class="btn-group navbar-btn navbar-toggle" data-toggle="buttons">
         <label class="btn btn-primary">
-            <input autocomplete="off" id="option-profile" type="checkbox"/> ${_('Profile')}
+            <input autocomplete="off" id="option-profile" type="checkbox" /> ${_('Profile')}
         </label>
         <label class="btn btn-primary">
-            <input autocomplete="off" id="option-jsonp" type="checkbox"/> ${_('JSONP')}
+            <input autocomplete="off" id="option-jsonp" type="checkbox" /> ${_('JSONP')}
         </label>
     </li>
 </%block>
@@ -235,13 +235,13 @@
                     </select>
                 % endif
             % elif parameter == 'tvdbid':
-                <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}"/>
+                <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}" />
             % elif type == 'int':
                 % if parameter not in ('episode', 'season'):
-                    <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}"/>
+                    <input class="form-control" name="${parameter}" placeholder="${parameter}" type="number" data-command="${command}" />
                 % endif
             % elif type == 'string':
-                <input class="form-control" name="${parameter}" placeholder="${parameter}" type="text" data-command="${command}"/>
+                <input class="form-control" name="${parameter}" placeholder="${parameter}" type="text" data-command="${command}" />
             % endif
         % endfor
     </div>

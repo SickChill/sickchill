@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
      from sickchill import settings
 %>
@@ -23,15 +23,15 @@
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="col-md-2">
-                                        <input type="text" name="share_name_${i}" id="share_name_${i}"/>
+                                        <input type="text" name="share_name_${i}" id="share_name_${i}" />
                                         <label for="share_name_${i}">${_('Share label')}</label>
                                     </div>
                                     <div class="col-md-2 col-md-offset-1">
-                                        <input type="text" name="share_server_${i}" id="share_server_${i}"/>
+                                        <input type="text" name="share_server_${i}" id="share_server_${i}" />
                                         <label for="share_server_${i}">${_('Hostname or IP')}</label>
                                     </div>
                                     <div class="col-md-2 col-md-offset-1">
-                                        <input type="text" name="share_path_${i}" id="share_path_${i}"/>
+                                        <input type="text" name="share_path_${i}" id="share_path_${i}" />
                                         <label for="share_path_${i}">${_('Share path')}</label>
                                     </div>
                                 </div>

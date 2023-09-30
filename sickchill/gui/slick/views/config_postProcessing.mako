@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     import os.path
     import datetime
@@ -107,7 +107,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="number" min="10" step="1" name="autopostprocessor_frequency" id="autopostprocessor_frequency" value="${settings.AUTOPOSTPROCESSOR_FREQUENCY}" class="form-control input-sm input75" title="autopostprocessor_frequency"/>
+                                        <input type="number" min="10" step="1" name="autopostprocessor_frequency" id="autopostprocessor_frequency" value="${settings.AUTOPOSTPROCESSOR_FREQUENCY}" class="form-control input-sm input75" title="autopostprocessor_frequency" />
                                     </div>
                                 </div>
                                 <div class="row">
@@ -135,7 +135,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="sync_files" id="sync_files" value="${settings.SYNC_FILES}" class="form-control input-sm input350" autocapitalize="off" title="sync_files"/>
+                                        <input type="text" name="sync_files" id="sync_files" value="${settings.SYNC_FILES}" class="form-control input-sm input350" autocapitalize="off" title="sync_files" />
                                     </div>
                                 </div>
                                 <div class="row">
@@ -302,7 +302,7 @@
                                     % endif
                                 </div>
                             </div>
-                            <div id="content_unpack">
+                            <div id="content_unpack" hidden>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                         <label class="component-title">${_('Unpack Directory')}</label>
@@ -448,7 +448,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="extra_scripts" value="${'|'.join(settings.EXTRA_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off"  title="extra_script"/>
+                                        <input type="text" name="extra_scripts" value="${'|'.join(settings.EXTRA_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off"  title="extra_script" />
                                     </div>
                                 </div>
                                 <div class="row">
@@ -500,14 +500,14 @@
                             </div>
                         </div>
 
-                        <div id="content_name_presets">
+                        <div id="content_name_presets" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12"></div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="naming_pattern" id="naming_pattern" value="${settings.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off" title="naming_pattern"/>
+                                            <input type="text" name="naming_pattern" id="naming_pattern" value="${settings.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off" title="naming_pattern" />
                                             <span class="displayshow-icon-legend" id="show_naming_key" title="${_('Toggle Naming Legend')}" class="legend"></span>
                                         </div>
                                     </div>
@@ -780,7 +780,7 @@
                             </div>
                         </div>
 
-                        <div id="content_naming_custom_abd">
+                        <div id="content_naming_custom_abd" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -808,7 +808,7 @@
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12"></div>
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                         <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${settings.NAMING_ABD_PATTERN}"
-                                               class="form-control input-sm input350" autocapitalize="off" title="naming_abd_pattern"/>
+                                               class="form-control input-sm input350" autocapitalize="off" title="naming_abd_pattern" />
                                         <span class="displayshow-icon-legend" id="show_naming_abd_key" title="${_('Toggle ABD Naming Legend')}" class="legend"></span>
                                     </div>
                                 </div>
@@ -981,7 +981,7 @@
                             </div>
                         </div>
 
-                        <div id="content_naming_custom_sports">
+                        <div id="content_naming_custom_sports" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -1182,7 +1182,7 @@
                             </div>
                         </div>
 
-                        <div id="content_naming_custom_anime">
+                        <div id="content_naming_custom_anime" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">

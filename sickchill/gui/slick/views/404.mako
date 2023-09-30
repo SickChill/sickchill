@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%block name="content">
     <h1 class="header">${header}</h1>
     <div class="col-lg-12 text-center">

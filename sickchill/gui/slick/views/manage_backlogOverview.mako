@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     import datetime
     from sickchill import settings
@@ -89,8 +89,8 @@
                                     continue
                             %>
                             <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
-                                <td class="tableleft" align="center">${whichStr}</td>
-                                <td class="tableright" align="center" class="nowrap">
+                                <td class="tableleft text-center">${whichStr}</td>
+                                <td class="tableright text-center nowrap">
                                     ${curResult["name"]}
                                 </td>
                                 <td>

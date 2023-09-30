@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     import datetime
     import time
@@ -17,7 +17,7 @@
 </%block>
 
 <%block name="content">
-    <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+    <%namespace file="/inc_defs.mako" import="renderQualityPill" />
     <div class="row">
         <div class="col-md-12">
             <div class="pull-right key">
@@ -181,19 +181,19 @@
                                     <td>
                                         % if cur_result['description']:
                                             <img alt="" src="${static_url('images/info32.png')}" height="16" width="16" class="plotInfo"
-                                                 id="plot_info_${'{}_{}_{}'.format(cur_result['showid'], cur_result['season'], cur_result['episode'])}"/>
+                                                 id="plot_info_${'{}_{}_{}'.format(cur_result['showid'], cur_result['season'], cur_result['episode'])}" />
                                         % else:
-                                            <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone"/>
+                                            <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone" />
                                         % endif
                                         ${cur_result['name']}
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         ${cur_result['network']}
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         ${run_time}min
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         ${renderQualityPill(cur_result['quality'], showTitle=True)}
                                     </td>
                                     <td align="center" style="vertical-align: middle;">
@@ -213,10 +213,10 @@
                                            rel="noreferrer" target="_blank"
                                            title="${show_indexer.show_url(cur_indexer)}${cur_result['showid']}">
                                             <img alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
-                                                 src="${static_url(show_indexer.icon(cur_indexer))}"/>
+                                                 src="${static_url(show_indexer.icon(cur_indexer))}" />
                                         </a>
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
                                            title="Manual Search" class="forceUpdate epSearch"
                                            id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}">
@@ -454,7 +454,7 @@
                                                rel="noreferrer" target="_blank"
                                                title="${show_indexer.show_url(cur_indexer)}"><img
                                                     alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
-                                                    src="${static_url(show_indexer.icon(cur_indexer))}"/>
+                                                    src="${static_url(show_indexer.icon(cur_indexer))}" />
                                             </a>
                                             <span>
                                                 <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
@@ -492,12 +492,12 @@
                                             % if cur_result['description']:
                                                 <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
                                                 <img class="ep_summaryTrigger" src="${static_url('images/plus.png')}" height="16" width="16" alt=""
-                                                     title="Toggle Summary"/>
+                                                     title="Toggle Summary" />
                                                 <div class="ep_summary">${cur_result['description']}</div>
                                             % else:
                                                 <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
                                                 <img class="ep_summaryTriggerNone" src="${static_url('images/plus.png')}" height="16" width="16"
-                                                     alt=""/>
+                                                     alt="" />
                                             % endif
                                         </div>
                                     </td>

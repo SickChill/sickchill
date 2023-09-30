@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill.oldbeard import common
 %>
@@ -9,8 +9,8 @@
 
 <%block name="pages">
     <form id="configForm" action="massEditSubmit" method="post" accept-charset="utf-8">
-        % for current_show in edit_show_list:
-            <input type="hidden" name="edit_shows" value="${current_show}" />
+        % for current_show in edit_list:
+            <input type="hidden" name="edit" value="${current_show}" />
         % endfor
 
         <div id="main">
@@ -273,7 +273,7 @@
                         </select>
                         <input type="text" id="edit_mass_ignore_words"
                                name="mass_ignore_words" value=""
-                               class="form-control input-sm input350" autocapitalize="off"/>
+                               class="form-control input-sm input350" autocapitalize="off" />
                         <label for="edit_mass_ignore_words">${_('Ignore words.')}</label>
                     </div>
                 </div>
@@ -290,7 +290,7 @@
                         </select>
                         <input type="text" id="edit_mass_prefer_words"
                                name="mass_prefer_words" value=""
-                               class="form-control input-sm input350" autocapitalize="off"/>
+                               class="form-control input-sm input350" autocapitalize="off" />
                         <label for="edit_mass_prefer_words">${_('Prefer words.')}</label>
                     </div>
                 </div>
@@ -307,7 +307,7 @@
                         </select>
                         <input type="text" id="edit_mass_require_words"
                                name="mass_require_words" value=""
-                               class="form-control input-sm input350" autocapitalize="off"/>
+                               class="form-control input-sm input350" autocapitalize="off" />
                         <label for="edit_mass_require_words">${_('Require words.')}</label>
                     </div>
                 </div>

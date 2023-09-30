@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard import common
@@ -78,10 +78,10 @@
                                         <span class="component-title">${_('Show Location')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="hidden" name="show" id="showID" value="${show.indexerid}"/>
+                                        <input type="hidden" name="show" id="showID" value="${show.indexerid}" />
                                         <input type="text" name="location" id="location" value="${show._location}"
                                                class="form-control input-sm input350"
-                                               autocapitalize="off" title="Location"/>
+                                               autocapitalize="off" title="Location" />
                                     </div>
                                 </div>
 
@@ -91,7 +91,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <% anyQualities, bestQualities = common.Quality.splitQuality(int(show.quality)) %>
-                                        <%include file="/inc_qualityChooser.mako"/>
+                                        <%include file="/inc_qualityChooser.mako" />
                                     </div>
                                 </div>
 
@@ -148,7 +148,7 @@
                                         <label for="subtitles">${_('search for subtitles')}</label>
                                     </div>
                                 </div>
-                                <div id="content_subtitles">
+                                <div id="content_subtitles" hidden>
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <span class="component-title">${_('Use SC Metadata')}</span>
@@ -165,7 +165,7 @@
                                         <span class="component-title">${_('Paused')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" id="paused" name="paused" ${('', 'checked="checked"')[show.paused == 1]}  title="paused"/>
+                                        <input type="checkbox" id="paused" name="paused" ${('', 'checked="checked"')[show.paused == 1]}  title="paused" />
                                         <label for="paused">${_('pause this show (SickChill will not download episodes)')}</label>
                                     </div>
                                 </div>
@@ -216,7 +216,7 @@
                                         % if show.is_anime:
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <%include file="/inc_blackwhitelist.mako"/>
+                                                    <%include file="/inc_blackwhitelist.mako" />
                                                 </div>
                                             </div>
                                         % endif
@@ -247,7 +247,7 @@
                                         <span class="component-title">${_('Season folders')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" id="season_folders" name="season_folders" ${('', 'checked="checked"')[show.season_folders == 1 or settings.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[bool(settings.NAMING_FORCE_FOLDERS)]} title="season_folders"/>
+                                        <input type="checkbox" id="season_folders" name="season_folders" ${('', 'checked="checked"')[show.season_folders == 1 or settings.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[bool(settings.NAMING_FORCE_FOLDERS)]} title="season_folders" />
                                         <label for="season_folders">${_('group episodes by season folder (uncheck to store in a single folder)')}</label>
                                     </div>
                                 </div>
@@ -304,7 +304,7 @@
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_ignore_words"
                                                        name="rls_ignore_words" value="${show.rls_ignore_words}"
-                                                       class="form-control input-sm input350" autocapitalize="off"/>
+                                                       class="form-control input-sm input350" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -330,7 +330,7 @@
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_prefer_words" name="rls_prefer_words"
                                                        value="${show.rls_prefer_words}" autocapitalize="off"
-                                                       class="form-control input-sm input350"/>
+                                                       class="form-control input-sm input350" />
                                                 <br/>
                                             </div>
                                         </div>
@@ -358,7 +358,7 @@
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_require_words" name="rls_require_words"
                                                        value="${show.rls_require_words}" autocapitalize="off"
-                                                       class="form-control input-sm input350"/>
+                                                       class="form-control input-sm input350" />
                                                 <br/>
                                             </div>
                                         </div>
@@ -383,7 +383,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="text" id="SceneName" class="form-control input-sm input250" autocapitalize="off"/>
+                                                <input type="text" id="SceneName" class="form-control input-sm input250" autocapitalize="off" />
                                                 <select id="SceneSeason" class="form-control input-sm" style="width: 95px">
                                                     % for season in range(0, len(seasonResults) + 1):
                                                         %if season == 0:
@@ -392,12 +392,12 @@
                                                         <option data-season="${season}">${_('Show') if season == -1 else _('Season ') + str(season)}</option>
                                                     %endfor
                                                 </select>
-                                                <input class="btn btn-inline" type="button" value="${_('Add')}" id="addSceneName"/>
+                                                <input class="btn btn-inline" type="button" value="${_('Add')}" id="addSceneName" />
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="hidden" id="exceptions" name="exceptions_list"/>
+                                                <input type="hidden" id="exceptions" name="exceptions_list" />
                                                 <select id="exceptions_list" multiple
                                                         style="height:200px;" class="form-control input350 exceptions_list" title="exceptions_list">
                                                     % for season in range(0, len(seasonResults) + 1):
@@ -418,7 +418,7 @@
                                                     % endfor
                                                 </select>
                                                 <div>
-                                                    <input id="removeSceneName" value="${_('Remove')}" class="btn float-left" type="button" style="margin-top: 10px;"/>
+                                                    <input id="removeSceneName" value="${_('Remove')}" class="btn float-left" type="button" style="margin-top: 10px;" />
                                                 </div>
                                             </div>
                                         </div>
@@ -462,7 +462,7 @@
                                         <input type="text" name="custom_name" id="custom_name" placeholder="${show.show_name}" value="${show.custom_name}"
                                                list="scene_exceptions"
                                                class="form-control input-sm input350"
-                                               autocapitalize="off" title="Name"/>
+                                               autocapitalize="off" title="Name" />
                                     </div>
 
                                     %if -1 in scene_exceptions:
@@ -483,7 +483,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="poster-container">
-                                                    <input type="hidden" name="poster"/>
+                                                    <input type="hidden" name="poster" />
                                                     <img src="${static_url(show.show_image_url('poster'))}"
                                                          data-image-type="poster"
                                                          class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
@@ -503,7 +503,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="banner-container">
-                                                    <input type="hidden" name="banner"/>
+                                                    <input type="hidden" name="banner" />
                                                     <img src="${static_url(show.show_image_url('banner'))}"
                                                          data-image-type="banner"
                                                          class="custom-image banner" alt="${_('Banner for')} ${show.name}"
@@ -523,7 +523,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="fanart-container">
-                                                    <input type="hidden" name="fanart"/>
+                                                    <input type="hidden" name="fanart" />
                                                     <img src="${static_url(show.show_image_url('fanart'))}"
                                                          data-image-type="fanart"
                                                          class="custom-image tvshowImg" alt="${_('Fanart for')} ${show.name}"

@@ -1,4 +1,4 @@
-<%inherit file="../layouts/main.mako"/>
+<%inherit file="../layouts/main.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard import subtitles
@@ -15,7 +15,7 @@
     <script type="text/javascript" src="${static_url('js/ratingTooltip.js')}"></script>
 </%block>
 <%block name="content">
-    <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+    <%namespace file="/inc_defs.mako" import="renderQualityPill" />
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="movie-title" data-moviename="${movie.name}">
             <h1 class="title" id="scene_exception_${movie.imdb_id}">${movie.name}</h1>
@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="poster-container">
-                    <img class="movieImg" src="${static_url('images/poster.png')}" data-src="${movie.imdb_data['base']['image']['url']}" alt="${_('Poster for')} ${movie.name}"/>
+                    <img class="movieImg" src="${static_url('images/poster.png')}" data-src="${movie.imdb_data['base']['image']['url']}" alt="${_('Poster for')} ${movie.name}" />
                 </div>
                 <div class="info-container">
                     <div class="row">
@@ -105,7 +105,7 @@
                                         <% info_flag = subtitles.code_from_code(movie.language) if movie.language else '' %>
                                         <tr>
                                             <td class="movieLegend">${_('Info Language')}:</td>
-                                            <td><img src="${static_url('images/subtitles/flags/' + info_flag + '.png') }" width="16" height="11" alt="${movie.language}" title="${movie.language}" onError="this.onerror=null;this.src='${static_url('images/flags/unknown.png')}';"/></td>
+                                            <td><img src="${static_url('images/subtitles/flags/' + info_flag + '.png') }" width="16" height="11" alt="${movie.language}" title="${movie.language}" onError="this.onerror=null;this.src='${static_url('images/flags/unknown.png')}';" /></td>
                                         </tr>
                                         % if settings.USE_SUBTITLES:
                                             <tr>

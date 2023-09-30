@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     import os
     import datetime
@@ -269,7 +269,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
-                                        <%include file="/inc_rootDirs.mako"/>
+                                        <%include file="/inc_rootDirs.mako" />
                                     </div>
                                 </div>
                             </div>
@@ -424,7 +424,7 @@
                                 <label for="sickchill_background">${_('use a custom image as background for SickChill')}</label>
                             </div>
                         </div>
-                        <div id="content_sickchill_background">
+                        <div id="content_sickchill_background" hidden>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Background Path')}</label>
@@ -454,7 +454,7 @@
                                 <label for="fanart_background">${_('on the show summary page')}</label>
                             </div>
                         </div>
-                        <div id="content_fanart_background">
+                        <div id="content_fanart_background" hidden>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Fanart transparency')}</label>
@@ -484,7 +484,7 @@
                                 <label for="custom_css">${_('use a custom .css file to style SickChill (for advanced users)')}</label>
                             </div>
                         </div>
-                        <div id="content_custom_css">
+                        <div id="content_custom_css" hidden>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Stylesheet File Path')}</label>
@@ -749,7 +749,7 @@
                                     <div class="col-md-12">
                                         <input
                                             type="password" name="web_password" id="web_password" value="${settings.WEB_PASSWORD|hide}"
-                                            class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
+                                            class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
                                     </div>
                                 </div>
                                 <div class="row">
@@ -808,7 +808,7 @@
                             </div>
                         </div>
 
-                        <div id="content_enable_https">
+                        <div id="content_enable_https" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">

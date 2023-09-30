@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%block name="metas">
     <meta data-var="scDefaultPage" data-content="${sbDefaultPage}">
 </%block>

@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     import re
     from sickchill import settings
@@ -41,7 +41,7 @@
                         </div>
 
                         <!-- content_use_kodi //-->
-                        <div id="content_use_kodi">
+                        <div id="content_use_kodi" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -217,7 +217,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_plex_server">
+                        <div id="content_use_plex_server" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -294,7 +294,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_plex_update_library">
+                            <div id="content_plex_update_library" hidden>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -365,7 +365,7 @@
                              </div>
                         </div>
 
-                        <div id="content_use_plex_client">
+                        <div id="content_use_plex_client" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -502,7 +502,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_emby">
+                        <div id="content_use_emby" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -570,7 +570,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_nmj">
+                        <div id="content_use_nmj" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -686,7 +686,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_nmjv2">
+                        <div id="content_use_nmjv2" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -840,7 +840,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_synoindex">
+                        <div id="content_use_synoindex" hidden>
                             <div class="row">
                                 <div class="col-md-12">
                                     <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
@@ -885,7 +885,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_synologynotifier">
+                        <div id="content_use_synologynotifier" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -960,7 +960,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_pytivo">
+                        <div id="content_use_pytivo" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1053,7 +1053,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_growl">
+                        <div id="content_use_growl" hidden>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
@@ -1167,7 +1167,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_prowl">
+                        <div id="content_use_prowl" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1320,7 +1320,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_libnotify">
+                        <div id="content_use_libnotify" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1395,7 +1395,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_pushover">
+                        <div id="content_use_pushover" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1590,7 +1590,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_boxcar2">
+                        <div id="content_use_boxcar2" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1683,7 +1683,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_pushalot">
+                        <div id="content_use_pushalot" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1776,7 +1776,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_pushbullet">
+                        <div id="content_use_pushbullet" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1910,7 +1910,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_freemobile">
+                        <div id="content_use_freemobile" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2021,7 +2021,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_telegram">
+                        <div id="content_use_telegram" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2137,7 +2137,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_join">
+                        <div id="content_use_join" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2252,7 +2252,7 @@
 ##                             </div>
 ##                         </div>
 ##
-##                         <div id="content_use_twilio">
+##                         <div id="content_use_twilio" hidden>
 ##
 ##                             <div class="field-pair row">
 ##                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2409,7 +2409,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_twitter">
+                        <div id="content_use_twitter" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2540,7 +2540,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_trakt">
+                        <div id="content_use_trakt" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2631,7 +2631,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_trakt_sync">
+                            <div id="content_trakt_sync" hidden>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2664,7 +2664,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_trakt_sync_watchlist">
+                            <div id="content_trakt_sync_watchlist" hidden>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2788,7 +2788,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_email">
+                        <div id="content_use_email" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -3000,7 +3000,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input id="email_show_save" class="btn" type="button" value="${_('Save for this show')}"/>
+                                            <input id="email_show_save" class="btn" type="button" value="${_('Save for this show')}" />
                                         </div>
                                     </div>
                                 </div>
@@ -3052,7 +3052,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_slack">
+                        <div id="content_use_slack" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -3148,7 +3148,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_mattermost">
+                        <div id="content_use_mattermost" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -3253,7 +3253,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_mattermostbot">
+                        <div id="content_use_mattermostbot" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -3374,7 +3374,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="content_use_rocketchat">
+                        <div id="content_use_rocketchat" hidden>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
@@ -3463,7 +3463,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_matrix">
+                        <div id="content_use_matrix" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -3584,7 +3584,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_discord">
+                        <div id="content_use_discord" hidden>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
