@@ -227,28 +227,19 @@ const SICKCHILL = {
             }
 
             $(document.body).on('click', 'a[data-no-redirect]', event => {
-                event.preventDefault();
                 const element = $(event.currentTarget);
+                element.preventDefault();
                 $.get(element.prop('href'));
 
                 return false;
             });
 
             $(document.body).on('change', '.bulkCheck', event => {
-                const parent = event.currentTarget;
-                let childrenClass = '.' + parent.id + ':visible';
+                const checkbox = event.currentTarget;
+                const childrenClass = '.' + checkbox.id + ':visible';
 
                 $(childrenClass).each(function () {
-                    this.checked = parent.checked;
-                });
-            });
-
-            $('.bulkCheck').on('click', function () {
-                let parent = this;
-                let subItemsClass = '.' + this.id + ':visible';
-
-                $(subItemsClass).each(function () {
-                    this.checked = parent.checked;
+                    this.checked = checkbox.checked;
                 });
             });
 
@@ -268,6 +259,7 @@ const SICKCHILL = {
                     $('#customQuality').show();
                     return;
                 }
+
                 $('#customQuality').hide();
 
                 $('#anyQualities').find('option').each(function () {
@@ -375,10 +367,10 @@ const SICKCHILL = {
 
             $('#generate_new_apikey').on('click', () => {
                 $.get(scRoot + '/config/general/generateApiKey', data => {
-                    if (data.error !== undefined) {
-                        notifyModal(data.error);
-                    } else {
+                    if (data.error === undefined) {
                         $('#api_key').val(data);
+                    } else {
+                        notifyModal(data.error);
                     }
                 });
             });
@@ -1215,7 +1207,7 @@ const SICKCHILL = {
                     }
 
                     // Convert the 'list' object to a js array of objects so that we can sort it
-                    // TODO: Why is this not just sent as json to begin with?
+                    // future: Why is this not just sent as json to begin with?
                     const notifyList = [];
                     for (const listKey in list) {
                         if (Object.prototype.hasOwnProperty.call(list, listKey) && listKey.charAt(0) !== '_') {
@@ -1739,7 +1731,7 @@ const SICKCHILL = {
                         seasonPosters ? '1' : '0',
                         seasonBanners ? '1' : '0',
                         seasonAllPoster ? '1' : '0',
-                        seasonAllBanner ? '1' : '0'
+                        seasonAllBanner ? '1' : '0',
                     );
 
                     let curNumber = 0;
@@ -3367,8 +3359,8 @@ const SICKCHILL = {
                 $.tablesorter.columnSelector.attachTo($('#massUpdateTable'), '#popover-target');
             });
 
-            $('.submitMassUpdate').on('click', event, function () {
-                event.preventDefault();
+            $('.submitMassUpdate').on('click', event => {
+                $(event.currentTarget).preventDefault();
 
                 const form = $('[name="massUpdateForm"]');
                 const deleteInputs = $('.deleteCheck:checked');
@@ -3377,10 +3369,10 @@ const SICKCHILL = {
                     $.confirm({
                         title: 'Delete Shows',
                         text: 'You have selected to delete ' + deleteInputs.length + ' show(s).  Are you sure you wish to continue? All files will be removed from your system.',
-                        confirm: function () {
+                        confirm() {
                             form.submit();
                         },
-                        cancel: function () {
+                        cancel() {
                             $('.deleteCheck:checked').prop('checked', false);
                             form.submit();
                         },
@@ -4180,7 +4172,7 @@ const SICKCHILL = {
                             const shows = [];
 
                             $.each(data.results, (index, object) => {
-                                // TODO: Results should be returned as json, and use attribute names rather than indexes and joining.
+                                // Future: Results should be returned as json, and use attribute names rather than indexes and joining.
                                 const whichSeries = object.join('|').replaceAll('"', '');
 
                                 const show = {
@@ -4342,7 +4334,7 @@ const SICKCHILL = {
             $('#rootDirStaticList').on('click', '.dir_check', loadContent);
 
             $('#tableDiv').on('click', '.showManage', event => {
-                event.preventDefault();
+                $(event.currentTarget).preventDefault();
                 $('#tabs').tabs('option', 'active', 0);
                 $('html,body').animate({scrollTop: 0}, 1000);
             });

@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 (function ($) {
     const imageTypeSizes = {
@@ -35,7 +35,7 @@ import _ from "lodash";
     let imagesContainer = null;
     let imageType = null;
     let currentRequest = null;
-    let showID = $('#showID').attr('value');
+    const showID = $('#showID').attr('value');
 
     function fetchImages() {
         imagesContainer.empty();
