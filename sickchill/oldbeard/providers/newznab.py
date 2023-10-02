@@ -17,7 +17,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
     Tested with: newznab, nzedb, spotweb, torznab
     """
 
-    def __init__(self, name, url, key="0", catIDs="5030,5040", search_mode="eponly", search_fallback=False, enable_daily=True, enable_backlog=False):
+    def __init__(self, name, url, key="0", catIDs="5030,5040", search_mode="episode", search_fallback=False, enable_daily=True, enable_backlog=False):
         super().__init__(name)
 
         self.url = url
@@ -177,11 +177,11 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
     def _get_default_providers():
         # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
         return (
-            "NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!"
-            + "NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|eponly|1|1|1!!!"
-            + "NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!"
-            + "Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!"
-            + "DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1"
+            "NZB.Cat|https://nzb.cat/||5030,5040,5010|0|episode|1|1|1!!!"
+            + "NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|episode|1|1|1!!!"
+            + "NZBGeek|https://api.nzbgeek.info/||5030,5040|0|episode|0|0|0!!!"
+            + "Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|episode|0|0|0!!!"
+            + "DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|episode|0|1|1"
         )
 
     def _check_auth(self):
@@ -222,7 +222,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
         enable_backlog = 0
         enable_daily = 0
         search_fallback = 0
-        search_mode = "eponly"
+        search_mode = "episode"
 
         try:
             values = config.split("|")
@@ -238,6 +238,11 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
         except ValueError:
             logger.exception("Skipping Newznab provider string: '{0}', incorrect format".format(config))
             return None
+
+        if search_mode == "sponly":
+            search_mode = "season"
+        elif search_mode == "eponly":
+            search_mode = "episode"
 
         new_provider = NewznabProvider(
             name,

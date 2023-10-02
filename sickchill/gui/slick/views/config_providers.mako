@@ -231,7 +231,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curNewznabProvider.get_id("_search_mode")}"
                                                            id="${curNewznabProvider.get_id("_search_mode_sponly")}"
-                                                           value="sponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="sponly"]}/>
+                                                           value="season" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="season"]}/>
                                                     <label for="${curNewznabProvider.get_id("_search_mode_sponly")}">${_('season packs only.')}</label>
                                                 </div>
                                             </div>
@@ -239,7 +239,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curNewznabProvider.get_id("_search_mode")}"
                                                            id="${curNewznabProvider.get_id("_search_mode_eponly")}"
-                                                           value="eponly" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="eponly"]}/>
+                                                           value="episode" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="episode"]}/>
                                                     <label for="${curNewznabProvider.get_id("_search_mode_eponly")}">${_('episodes only.')}</label>
                                                 </div>
                                             </div>
@@ -344,7 +344,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curNzbProvider.get_id("_search_mode")}"
                                                            id="${curNzbProvider.get_id("_search_mode_sponly")}"
-                                                           value="sponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="sponly"]}/>
+                                                           value="season" ${('', 'checked="checked"')[curNzbProvider.search_mode=="season"]}/>
                                                     <label for="${curNzbProvider.get_id("_search_mode_sponly")}">season packs only.</label>
                                                 </div>
                                             </div>
@@ -352,7 +352,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curNzbProvider.get_id("_search_mode")}"
                                                            id="${curNzbProvider.get_id("_search_mode_eponly")}"
-                                                           value="eponly" ${('', 'checked="checked"')[curNzbProvider.search_mode=="eponly"]}/>
+                                                           value="episode" ${('', 'checked="checked"')[curNzbProvider.search_mode=="episode"]}/>
                                                     <label for="${curNzbProvider.get_id("_search_mode_eponly")}">episodes only.</label>
                                                 </div>
                                             </div>
@@ -704,7 +704,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curTorrentProvider.get_id("_search_mode")}"
                                                            id="${curTorrentProvider.get_id("_search_mode_sponly")}"
-                                                           value="sponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="sponly"]}/>
+                                                           value="season" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="season"]}/>
                                                     <label for="${curTorrentProvider.get_id("_search_mode_sponly")}">season packs only.</label>
                                                 </div>
                                             </div>
@@ -712,7 +712,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curTorrentProvider.get_id("_search_mode")}"
                                                            id="${curTorrentProvider.get_id("_search_mode_eponly")}"
-                                                           value="eponly" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="eponly"]}/>
+                                                           value="episode" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="episode"]}/>
                                                     <label for="${curTorrentProvider.get_id("_search_mode_eponly")}">episodes only.</label>
                                                 </div>
                                             </div>

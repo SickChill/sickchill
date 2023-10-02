@@ -14,6 +14,7 @@ from xml.etree import ElementTree
 
 import imdb
 from imdb import Cinemagoer
+from typing_extensions import Union
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
@@ -247,7 +248,7 @@ class TVShow(object):
 
         return ep_list
 
-    def getEpisode(self, season=None, episode=None, ep_file=None, noCreate=False, absolute_number=None) -> "TVEpisode":
+    def getEpisode(self, season=None, episode=None, ep_file=None, noCreate=False, absolute_number=None) -> Union["TVEpisode", None]:
         season = try_int(season, None)
         episode = try_int(episode, None)
         absolute_number = try_int(absolute_number, None)
@@ -2028,9 +2029,9 @@ class TVEpisode(object):
         strings = []
         if not pattern:
             for p in patterns:
-                strings += [self._format_pattern(p)]
+                strings += [self.naming_pattern(p)]
             return strings
-        return self._format_pattern(pattern)
+        return self.naming_pattern(pattern)
 
     @property
     def pretty_name(self):
@@ -2042,11 +2043,11 @@ class TVEpisode(object):
         """
 
         if self.show.anime and not self.show.scene:
-            return self._format_pattern("%SN - %AB - %EN")
+            return self.naming_pattern("%SN - %AB - %EN")
         elif self.show.air_by_date:
-            return self._format_pattern("%SN - %AD - %EN")
+            return self.naming_pattern("%SN - %AD - %EN")
 
-        return self._format_pattern("%SN - S%0SE%0E - %EN")
+        return self.naming_pattern("%SN - S%0SE%0E - %EN")
 
     def _ep_name(self):
         """
@@ -2239,7 +2240,7 @@ class TVEpisode(object):
 
         return result_name
 
-    def _format_pattern(self, pattern=None, multi=None, anime_type=None):
+    def naming_pattern(self, pattern=None, multi=None, anime_type=None):
         """
         Manipulates an episode naming pattern and then fills the template in
         """
@@ -2437,7 +2438,7 @@ class TVEpisode(object):
         if len(name_groups) == 1:
             return ""
         else:
-            return self._format_pattern(os.sep.join(name_groups[:-1]), multi, anime_type)
+            return self.naming_pattern(os.sep.join(name_groups[:-1]), multi, anime_type)
 
     def formatted_filename(self, pattern=None, multi=None, anime_type=None):
         """
@@ -2458,7 +2459,7 @@ class TVEpisode(object):
         # split off the dirs only, if they exist
         name_groups = re.split(r"[\\/]", pattern)
 
-        return sanitize_filename(self._format_pattern(name_groups[-1], multi, anime_type))
+        return sanitize_filename(self.naming_pattern(name_groups[-1], multi, anime_type))
 
     def rename(self):
         """

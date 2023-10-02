@@ -1632,12 +1632,12 @@ class Home(WebRoot):
 
         cache_db_con = db.DBConnection("cache.db", row_type="dict")
         # show_object: TVShow = Show.find(settings.showList, show)
-        # sickchill.oldbeard.search.searchProviders(
+        # sickchill.oldbeard.search.search_providers(
         #     show_object,
         #     show_object.getEpisode(season=season, episode=episode or 1),
         #     downCurQuality=True,
-        #     manualSearch=True,
-        #     manual_snatch=('sponly', 'eponly')[episode is not None]
+        #     manual=True,
+        #     manual_snatch=('season', 'episode')[episode is not None]
         # )
 
         if episode is not None:
@@ -1693,7 +1693,7 @@ class Home(WebRoot):
         if isinstance(result, str):
             sickchill.logger.info(_("Could not snatch manually selected result: {result}").format(result=result))
         elif isinstance(result, sickchill.oldbeard.classes.SearchResult):
-            sickchill.oldbeard.search.snatchEpisode(result, SNATCHED_BEST)
+            sickchill.oldbeard.search.snatch_episode(result, SNATCHED_BEST)
 
         return self.redirect("/home/displayShow?show=" + show)
 

@@ -74,7 +74,8 @@ class History(object, metaclass=Singleton):
             "FROM history h, tv_shows s "
             "WHERE h.showid = s.indexer_id "
         )
-        filter_sql = "AND action in (" + ",".join(["?"] * len(actions)) + ") "
+        replacements = ",".join(["?"] * len(actions))
+        filter_sql = f"AND action IN ({replacements})"
         order_sql = "ORDER BY date DESC "
 
         if limit == 0:

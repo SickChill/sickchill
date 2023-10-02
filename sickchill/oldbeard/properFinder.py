@@ -12,7 +12,7 @@ from sickchill.show.History import History
 from . import db, helpers
 from .common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from .search import pickBestResult, snatchEpisode
+from .search import pick_best_result, snatch_episode
 
 
 class ProperFinder(object):
@@ -127,7 +127,7 @@ class ProperFinder(object):
             curProper.content = None
 
             # filter release
-            bestResult = pickBestResult(curProper, parse_result.show)
+            bestResult = pick_best_result(curProper, parse_result.show)
             if not bestResult:
                 logger.debug("Proper " + curProper.name + " were rejected by our release filters.")
                 continue
@@ -234,7 +234,7 @@ class ProperFinder(object):
                 result.content = curProper.content
 
                 # snatch it
-                snatchEpisode(result, SNATCHED_PROPER)
+                snatch_episode(result, SNATCHED_PROPER)
                 time.sleep(cpu_presets[settings.CPU_PRESET])
 
     @staticmethod

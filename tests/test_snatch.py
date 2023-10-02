@@ -124,7 +124,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
             episode.status = common.WANTED
             episode.saveToDB()
 
-        best_result = search.searchProviders(show, episode.episode, force_search)
+        best_result = search.search_providers(show, episode.episode, force_search)
         if not best_result:
             assert cur_data["b"] == best_result
 

@@ -141,15 +141,15 @@ class GenericProvider(object):
 
                 continue
 
-            if len(episodes) > 1 and search_mode == "sponly" and searched_scene_season == episode.scene_season:
+            if len(episodes) > 1 and search_mode == "season" and searched_scene_season == episode.scene_season:
                 continue
 
             search_strings = []
             searched_scene_season = episode.scene_season
 
-            if len(episodes) > 1 and search_mode == "sponly":
+            if len(episodes) > 1 and search_mode == "season":
                 search_strings = self.get_season_search_strings(episode)
-            elif search_mode == "eponly":
+            elif search_mode == "episode":
                 search_strings = self.get_episode_search_strings(episode)
 
             for search_string in search_strings:
@@ -199,7 +199,7 @@ class GenericProvider(object):
             actual_season = -1
 
             if not (show_object.air_by_date or show_object.sports):
-                if search_mode == "sponly":
+                if search_mode == "season":
                     if parse_result.episode_numbers:
                         logger.debug(f"This is supposed to be a season pack search but the result {title} is not a valid season pack, skipping it")
                         skip_release = True

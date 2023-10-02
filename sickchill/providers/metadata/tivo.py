@@ -133,11 +133,11 @@ class TIVOMetadata(generic.GenericMetadata):
         """
 
         if episode_object.show.anime and not episode_object.show.scene:
-            return episode_object._format_pattern("%AB - %EN")
+            return episode_object.naming_pattern("%AB - %EN")
         elif episode_object.show.air_by_date:
-            return episode_object._format_pattern("%AD - %EN")
+            return episode_object.naming_pattern("%AD - %EN")
 
-        return episode_object._format_pattern("S%0SE%0E - %EN")
+        return episode_object.naming_pattern("S%0SE%0E - %EN")
 
     def _ep_data(self, episode_object: "TVEpisode"):
         """

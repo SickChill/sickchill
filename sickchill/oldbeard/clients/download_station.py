@@ -122,12 +122,12 @@ class Client(GenericClient):
         """
         Determines which destination setting to use depending on result type
         """
-        if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
+        if result.result_type in (GenericProvider.NZB, GenericProvider.NZBDATA):
             destination = settings.SYNOLOGY_DSM_PATH.strip()
-        elif result.resultType == GenericProvider.TORRENT:
+        elif result.result_type == GenericProvider.TORRENT:
             destination = settings.TORRENT_PATH.strip()
         else:
-            raise AttributeError("Invalid result passed to client when getting destination: resultType {}".format(result.resultType))
+            raise AttributeError("Invalid result passed to client when getting destination: result_type {}".format(result.result_type))
 
         return re.sub(r"^/volume\d/", "", destination).lstrip("/")
 
@@ -137,9 +137,9 @@ class Client(GenericClient):
         params: :destination: DSM share name
         """
         destination = destination.strip()
-        if result.resultType in (GenericProvider.NZB, GenericProvider.NZBDATA):
+        if result.result_type in (GenericProvider.NZB, GenericProvider.NZBDATA):
             settings.SYNOLOGY_DSM_PATH = destination
-        elif result.resultType == GenericProvider.TORRENT:
+        elif result.result_type == GenericProvider.TORRENT:
             settings.TORRENT_PATH = destination
         else:
             raise AttributeError("Invalid result passed to client when setting destination")
@@ -163,7 +163,7 @@ class Client(GenericClient):
                 logger.info("Destination set to %s", self._get_destination(result))
             except (ValueError, KeyError, JSONDecodeError) as error:
                 logger.debug("Get DownloadStation default destination error: {0}".format(error))
-                logger.warning("Could not get share destination from DownloadStation for {}, please set it in the settings", result.resultType)
+                logger.warning("Could not get share destination from DownloadStation for {}, please set it in the settings", result.result_type)
                 raise
 
     def _add_torrent_uri(self, result):
@@ -197,7 +197,7 @@ class Client(GenericClient):
 
         data = self._task_post_data
 
-        result_type = result.resultType.replace("data", "")
+        result_type = result.result_type.replace("data", "")
         files = {result_type: (".".join([result.name, result_type]), result.content)}
 
         data["type"] = '"file"'
@@ -220,7 +220,7 @@ class Client(GenericClient):
             logger.warning("{0}: Authentication Failed".format(self.name))
             return False
 
-        if result.resultType == "nzb":
+        if result.result_type == "nzb":
             return self._add_torrent_uri(result)
-        elif result.resultType == "nzbdata":
+        elif result.result_type == "nzbdata":
             return self._add_torrent_file(result)

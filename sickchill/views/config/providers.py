@@ -142,7 +142,7 @@ class ConfigProviders(Config):
             newznab_provider_dict[current_id].catIDs = current_cat
             # a 0 in the key spot indicates that no key is needed
             newznab_provider_dict[current_id].needs_auth = current_key and current_key != "0"
-            newznab_provider_dict[current_id].search_mode = self.get_body_argument(current_id + "_search_mode", "eponly")
+            newznab_provider_dict[current_id].search_mode = self.get_body_argument(current_id + "_search_mode", "episode")
             newznab_provider_dict[current_id].search_fallback = config.checkbox_to_value(
                 self.get_body_argument(current_id + "search_fallback", 0), value_on=1, value_off=0
             )
@@ -246,7 +246,7 @@ class ConfigProviders(Config):
             current_provider.check_set_option(self, "subtitle", False, cast=config.checkbox_to_value)
 
             current_provider.check_set_option(self, "sorting", "seeders")
-            current_provider.check_set_option(self, "search_mode", "eponly")
+            current_provider.check_set_option(self, "search_mode", "episode")
 
             current_provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_int(x), -1))
 

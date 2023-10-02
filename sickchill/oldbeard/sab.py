@@ -42,11 +42,11 @@ def sendNZB(nzb):  # pylint:disable=too-many-return-statements, too-many-branche
     logger.info("Sending NZB to SABnzbd")
     url = urljoin(settings.SAB_HOST, "api")
 
-    if nzb.resultType == "nzb":
+    if nzb.result_type == "nzb":
         params["mode"] = "addurl"
         params["name"] = nzb.url
         jdata = helpers.getURL(url, params=params, session=session, returns="json", verify=False)
-    elif nzb.resultType == "nzbdata":
+    elif nzb.result_type == "nzbdata":
         params["mode"] = "addfile"
         multiPartParams = {"nzbfile": (nzb.name + ".nzb", nzb.extraInfo[0])}
         jdata = helpers.getURL(url, params=params, files=multiPartParams, session=session, returns="json", verify=False)

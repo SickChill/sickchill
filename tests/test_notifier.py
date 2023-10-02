@@ -98,8 +98,8 @@ class NotifierTests(conftest.SickChillTestDBCase):
         shows = self.legacy_shows + self.shows
         for show in shows:
             for episode in show.episodes:
-                ep_name = episode._format_pattern("%SN - %Sx%0E - %EN - ") + episode.quality
-                show_name = email_notifier._parseEp(ep_name)
+                ep_name = episode.naming_pattern("%SN - %Sx%0E - %EN - ") + episode.quality
+                show_name = email_notifier.parse_episode(ep_name)
                 recipients = email_notifier._generate_recipients(show_name)
                 self._debug_spew("- Email Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
                 for email in recipients:
@@ -189,7 +189,7 @@ class NotifierTests(conftest.SickChillTestDBCase):
         # Now, iterate through all shows using the Prowl API generation routines that are used in the notifier proper
         for show in self.shows:
             for episode in show.episodes:
-                ep_name = episode._format_pattern("%SN - %Sx%0E - %EN - ") + episode.quality
+                ep_name = episode.naming_pattern("%SN - %Sx%0E - %EN - ") + episode.quality
                 show_name = prowl_notifier._parse_episode(ep_name)
                 recipients = prowl_notifier._generate_recipients(show_name)
                 self._debug_spew("- Prowl Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")

@@ -48,7 +48,7 @@ class SearchResult(object):
         # content
         self.content = None
 
-        self.resultType = ""
+        self.result_type = ""
 
         self.priority = 0
 
@@ -103,7 +103,7 @@ class NZBSearchResult(SearchResult):
 
     def __init__(self, episodes):
         super().__init__(episodes)
-        self.resultType = "nzb"
+        self.result_type = "nzb"
 
 
 class NZBDataSearchResult(SearchResult):
@@ -113,7 +113,7 @@ class NZBDataSearchResult(SearchResult):
 
     def __init__(self, episodes):
         super().__init__(episodes)
-        self.resultType = "nzbdata"
+        self.result_type = "nzbdata"
 
 
 class TorrentSearchResult(SearchResult):
@@ -123,7 +123,7 @@ class TorrentSearchResult(SearchResult):
 
     def __init__(self, episodes):
         super().__init__(episodes)
-        self.resultType = "torrent"
+        self.result_type = "torrent"
 
 
 class Proper(object):

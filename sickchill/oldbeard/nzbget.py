@@ -73,7 +73,7 @@ def sendNZB(nzb, proper=False):
         dupescore += 10
 
     nzbcontent64 = None
-    if nzb.resultType == "nzbdata":
+    if nzb.result_type == "nzbdata":
         data = nzb.extraInfo[0]
         nzbcontent64 = standard_b64encode(data)
 
@@ -88,7 +88,7 @@ def sendNZB(nzb, proper=False):
             if nzbcontent64:
                 nzbget_result = nzbGetRPC.append(nzb.name + ".nzb", category, addToTop, nzbcontent64)
             else:
-                if nzb.resultType == "nzb":
+                if nzb.result_type == "nzb":
                     if not nzb.provider.login():
                         return False
 

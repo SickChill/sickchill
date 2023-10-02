@@ -728,7 +728,7 @@ class QueueItemRemove(ShowQueueItem):
         try:
             # TODO: episode_object is undefined here, so all of these will fail.
             # send notifications
-            # notifiers.notify_download(episode_object._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+            # notifiers.notify_download(episode_object.format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(self.show.name)
