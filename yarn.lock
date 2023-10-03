@@ -9535,10 +9535,10 @@ smart-buffer@^4.2.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
-snyk@^1.1223.0:
-  version "1.1228.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1228.0.tgz#2e438b45aae52ddd3f2037ad55df1a74c2444aa8"
-  integrity sha512-DLPcGazN+F7sR8v2ABCvsSLifOLoW1Episyu4De9Ho8x+EXgX8sTlbI9LkmL5dndY7bmWxaQ6w0qsvXZQNB4dA==
+snyk@^1.1229.0:
+  version "1.1229.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1229.0.tgz#b1daff85c17d9d516606c3d1749330e9715fe776"
+  integrity sha512-21gpDGHPa2tKPKUeKERlZV0V4VRYBez73o5Ghi9mBKoLaB4pW7/cQOAmXwMXJMKeZI+8TG4oksksubtZqyvFsA==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
@@ -11202,6 +11202,7 @@ workbox-window@7.0.0:
     workbox-core "7.0.0"
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
