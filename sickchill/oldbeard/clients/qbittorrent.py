@@ -30,7 +30,7 @@ class Client(GenericClient):
             return False
         return True
 
-    def testAuthentication(self):
+    def test_client_connection(self):
         try:
             if not self.api.is_logged_in:
                 self.api.auth_log_in()

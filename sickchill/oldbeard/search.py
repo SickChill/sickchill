@@ -35,10 +35,10 @@ def _download_result(result: "SearchResult"):
         return result_was_downloaded
 
     # nzbs/torrents with a URL can just be downloaded from the provider
-    if result.result_type in (GenericProvider.NZB, GenericProvider.TORRENT):
+    if result.is_torrent or result.is_nzb:
         result_was_downloaded = result_provider.download_result(result)
     # if it's an nzb data result
-    elif result.result_type == GenericProvider.NZBDATA:
+    elif result.is_nzbdata:
         # get the final file path to the nzb
         filename = os.path.join(settings.NZB_DIR, f"{result.name}.nzb")
         logger.info(f"Saving NZB to {filename}")
@@ -82,36 +82,8 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
 
     end_status = SNATCHED_PROPER if re.search(r"\b(proper|repack|real)\b", result.name, re.I) else end_status
 
-    # This is breaking the newznab protocol when expecting a torrent from the url and getting a magnet instead.
-    if result.url and "jackett_apikey" in result.url:
-        response = result.provider.get_url(result.url, allow_redirects=False, returns="response")
-        if response.next and response.next.url and response.next.url.startswith("magnet"):
-            result.url = response.next.url
-
-    torznab: bool = hasattr(result.provider, "torznab") and result.provider.torznab or "jackett" in result.url
-    torznab |= result.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", result.url)
-
-    if torznab or (result.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", result.url)):
-        result.result_type = GenericProvider.TORRENT
-
-    # NZBs can be sent straight to SAB or saved to disk
-    if result.result_type in (GenericProvider.NZB, GenericProvider.NZBDATA):
-        if settings.NZB_METHOD == "blackhole":
-            snatched_result = _download_result(result)
-        elif settings.NZB_METHOD == "sabnzbd":
-            snatched_result = sab.sendNZB(result)
-        elif settings.NZB_METHOD == "nzbget":
-            is_proper = True if end_status == SNATCHED_PROPER else False
-            snatched_result = nzbget.sendNZB(result, is_proper)
-        elif settings.NZB_METHOD == "download_station":
-            client = clients.getClientInstance(settings.NZB_METHOD)(settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
-            snatched_result = client.sendNZB(result)
-        else:
-            logger.exception(f"Unknown NZB action specified in config: {settings.NZB_METHOD}")
-            snatched_result = False
-
     # Torrents can be sent to clients or saved to disk
-    elif result.result_type == GenericProvider.TORRENT:
+    if result.is_torrent:
         # torrents are saved to disk when blackhole mode
         if settings.TORRENT_METHOD == "blackhole":
             snatched_result = _download_result(result)
@@ -125,8 +97,25 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
                 snatched_result = client.sendTORRENT(result)
             else:
                 logger.warning("Torrent file content is empty")
-                History().logFailed(result.episodes, result.name, result.provider)
+                # TODO: This is broken!!
+                # History().logFailed(result.episodes, result.name, result.provider)
+                # History().logFailed(result.episodes[0], result.name, result.provider.name)
                 snatched_result = False
+    # NZBs can be sent straight to SAB or saved to disk
+    elif result.is_nzb or result.is_nzbdata:
+        if settings.NZB_METHOD == "blackhole":
+            snatched_result = _download_result(result)
+        elif settings.NZB_METHOD == "sabnzbd":
+            snatched_result = sab.send_nzb(result)
+        elif settings.NZB_METHOD == "nzbget":
+            is_proper = True if end_status == SNATCHED_PROPER else False
+            snatched_result = nzbget.send_nzb(result, is_proper)
+        elif settings.NZB_METHOD == "download_station":
+            client = clients.getClientInstance(settings.NZB_METHOD)(settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
+            snatched_result = client.send_nzb(result)
+        else:
+            logger.exception(f"Unknown NZB action specified in config: {settings.NZB_METHOD}")
+            snatched_result = False
     else:
         logger.exception(f"Unknown result type, unable to download it ({result.result_type})")
         snatched_result = False
@@ -140,25 +129,25 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     # don't notify when we re-download an episode
     sql_l = []
     trakt_data = []
-    for curEpObj in result.episodes:
-        with curEpObj.lock:
+    for current_episode in result.episodes:
+        with current_episode.lock:
             if is_first_best_match(result):
-                curEpObj.status = Quality.compositeStatus(SNATCHED_BEST, result.quality)
+                current_episode.status = Quality.compositeStatus(SNATCHED_BEST, result.quality)
             else:
-                curEpObj.status = Quality.compositeStatus(end_status, result.quality)
+                current_episode.status = Quality.compositeStatus(end_status, result.quality)
 
-            sql_l.append(curEpObj.get_sql())
+            sql_l.append(current_episode.get_sql())
 
-        if curEpObj.status not in Quality.DOWNLOADED:
+        if current_episode.status not in Quality.DOWNLOADED:
             # noinspection PyBroadException
             try:
-                notifiers.notify_snatch(f"{curEpObj.naming_pattern('%SN - %Sx%0E - %EN - %QN')} from {result.provider.name}")
+                notifiers.notify_snatch(f"{current_episode.naming_pattern('%SN - %Sx%0E - %EN - %QN')} from {result.provider.name}")
             except Exception:
                 # Without this, when notification fail, it crashes the snatch thread and SC will
                 # keep snatching until notification is sent
                 logger.debug("Failed to send snatch notification")
 
-            trakt_data.append((curEpObj.season, curEpObj.episode))
+            trakt_data.append((current_episode.season, current_episode.episode))
 
     data = notifiers.trakt_notifier.trakt_episode_data_generate(trakt_data)
 
@@ -480,11 +469,11 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
 
             if search_results:
                 # make a list of all the results for this provider
-                for curEp in search_results:
-                    if curEp in found_results[curProvider.name]:
-                        found_results[curProvider.name][curEp] += search_results[curEp]
+                for current_episode in search_results:
+                    if current_episode in found_results[curProvider.name]:
+                        found_results[curProvider.name][current_episode] += search_results[current_episode]
                     else:
-                        found_results[curProvider.name][curEp] = search_results[curEp]
+                        found_results[curProvider.name][current_episode] = search_results[current_episode]
 
                 break
             elif search_count == 2 or not curProvider.search_fallback:
@@ -535,9 +524,9 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
 
             all_wanted = True
             some_wanted = False
-            for curEpNum in all_episodes:
+            for episode_number in all_episodes:
                 for season in (x.season for x in episodes):
-                    if not show.wantEpisode(season, curEpNum, season_quality, downCurQuality):
+                    if not show.wantEpisode(season, episode_number, season_quality, downCurQuality):
                         all_wanted = False
                     else:
                         some_wanted = True
@@ -546,9 +535,9 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             if all_wanted and best_season_result.quality == highest_quality_overall:
                 logger.info(f"Every ep in this season is needed, downloading the whole {best_season_result.provider.provider_type} {best_season_result.name}")
                 episode_objects = []
-                for curEpNum in all_episodes:
+                for episode_number in all_episodes:
                     for season in {x.season for x in episodes}:
-                        episode_objects.append(show.getEpisode(season, curEpNum))
+                        episode_objects.append(show.getEpisode(season, episode_number))
                 best_season_result.episodes = episode_objects
 
                 # Remove provider from thread name before return results
@@ -584,9 +573,9 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                         "Adding multi-ep result for full-season torrent. Set the episodes you don't want to 'don't download' in your torrent client if desired!"
                     )
                     episode_objects = []
-                    for curEpNum in all_episodes:
+                    for episode_number in all_episodes:
                         for season in {x.season for x in episodes}:
-                            episode_objects.append(show.getEpisode(season, curEpNum))
+                            episode_objects.append(show.getEpisode(season, episode_number))
                     best_season_result.episodes = episode_objects
 
                     if MULTI_EP_RESULT in found_results[curProvider.name]:
@@ -649,23 +638,23 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
 
         # of all the single ep results narrow it down to the best one for each episode
         final_results += set(multi_results.values())
-        for curEp in found_results[curProvider.name]:
-            if curEp in (MULTI_EP_RESULT, SEASON_RESULT):
+        for current_episode in found_results[curProvider.name]:
+            if current_episode in (MULTI_EP_RESULT, SEASON_RESULT):
                 continue
 
-            if not found_results[curProvider.name][curEp]:
+            if not found_results[curProvider.name][current_episode]:
                 continue
 
             # if all results were rejected move on to the next episode
-            best_result = pick_best_result(found_results[curProvider.name][curEp], show)
+            best_result = pick_best_result(found_results[curProvider.name][current_episode], show)
             if not best_result:
                 continue
 
             # add result if it's not a duplicate and
             found = False
             for i, result in enumerate(final_results):
-                for bestResultEp in best_result.episodes:
-                    if bestResultEp in result.episodes:
+                for best_result_episode in best_result.episodes:
+                    if best_result_episode in result.episodes:
                         if result.quality < best_result.quality:
                             final_results.pop(i)
                         else:

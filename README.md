@@ -47,7 +47,7 @@ Issue/Bug tracking, feature requests, support, and developer communication is mo
 * [Supported providers](https://github.com/SickChill/SickChill/wiki/SickChill-Search-Providers)
 * [News](https://github.com/SickChill/sickchill.github.io/blob/master/sickchill-news/news.md)
 * [Changelog](https://github.com/SickChill/SickChill/blob/master/CHANGES.md)
-* [Network Timezones](https://github.com/SickChill/sickchill.github.io/tree/master/sb_network_timezones)
+* [Network Timezones](https://github.com/SickChill/sickchill.github.io/tree/master/sc_network_timezones)
 * [Scene Exceptions](https://github.com/SickChill/sickchill.github.io/tree/master/scene_exceptions)
 
 ### Dependencies

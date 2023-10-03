@@ -465,12 +465,12 @@ def setup_github():
         sickchill.logger.error(_("Unable to set up GitHub properly. GitHub will not be available. Error: {error}").format(error=error))
 
 
-def choose_data_dir(program_dir):
+def choose_data_dir(program_dir) -> Path:
     old_data_dir = Path(program_dir).parent
     old_profile_path = Path.home().joinpath("sickchill")
     proper_data_dir = Path(appdirs.user_config_dir(appname="sickchill"))
     for location in [old_data_dir, old_profile_path, proper_data_dir]:
         for check in ["sickbeard.db", "sickchill.db", "config.ini"]:
             if location.joinpath(check).exists():
-                return location
-    return proper_data_dir
+                return location.resolve()
+    return proper_data_dir.resolve()

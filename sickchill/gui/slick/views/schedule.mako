@@ -5,7 +5,7 @@
     import re
 
     from sickchill.oldbeard.helpers import anon_url
-    from sickchill.oldbeard import sbdatetime
+    from sickchill.oldbeard import scdatetime
     from sickchill.oldbeard.common import Quality
     from sickchill import indexer as show_indexer, settings
 
@@ -24,9 +24,9 @@
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
-                    % if settings.COMING_EPS_DISPLAY_SNATCHED:
-                        <span class="listing-key listing-snatched">${_('Snatched')}</span>
-                    % endif
+                % if settings.COMING_EPS_DISPLAY_SNATCHED:
+                    <span class="listing-key listing-snatched">${_('Snatched')}</span>
+                % endif
                     <span class="listing-key listing-current">${_('Today')}</span>
                     <span class="listing-key listing-default">${_('Soon')}</span>
                     <span class="listing-key listing-toofar">${_('Later')}</span>
@@ -69,14 +69,14 @@
                     &nbsp;
                 </label>
                 % if layout != 'calendar':
-                <label>
-                    <span>${_('View Snatched')}:</span>
-                    <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
-                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected')[not bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
-                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected')[bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
-                    </select>
-                    &nbsp;
-                </label>
+                    <label>
+                        <span>${_('View Snatched')}:</span>
+                        <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
+                            <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected')[not bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
+                            <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected')[bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
+                        </select>
+                        &nbsp;
+                    </label>
                 % endif
                 <label>
                     <span>${_('Layout')}:</span>
@@ -119,47 +119,47 @@
 
                         <tbody style="text-shadow:none;">
                             % for cur_result in results:
-                                <%
-                                    cur_indexer = int(cur_result['indexer'])
-                                    run_time = cur_result['runtime']
-                                    snatched_status = int(cur_result['epstatus']) in SNATCHED
+                            <%
+                                cur_indexer = int(cur_result['indexer'])
+                                run_time = cur_result['runtime']
+                                snatched_status = int(cur_result['epstatus']) in SNATCHED
 
-                                    if int(cur_result['paused']) and not settings.COMING_EPS_DISPLAY_PAUSED:
+                                if int(cur_result['paused']) and not settings.COMING_EPS_DISPLAY_PAUSED:
+                                    continue
+
+                                if snatched_status and not settings.COMING_EPS_DISPLAY_SNATCHED:
+                                    continue
+
+                                cur_ep_airdate = cur_result['localtime'].date()
+                                cur_ep_enddate = cur_result['localtime']
+                                if run_time:
+                                    cur_ep_enddate += datetime.timedelta(minutes = run_time)
+
+                                if snatched_status:
+                                    if cur_result['location']:
                                         continue
-
-                                    if snatched_status and not settings.COMING_EPS_DISPLAY_SNATCHED:
-                                        continue
-
-                                    cur_ep_airdate = cur_result['localtime'].date()
-                                    cur_ep_enddate = cur_result['localtime']
-                                    if run_time:
-                                        cur_ep_enddate += datetime.timedelta(minutes = run_time)
-
-                                    if snatched_status:
-                                        if cur_result['location']:
-                                            continue
-                                        else:
-                                            show_div = 'listing-snatched'
-                                    elif cur_ep_enddate < today:
-                                        show_div = 'listing-overdue'
-                                    elif cur_ep_airdate >= next_week.date():
-                                        show_div = 'listing-toofar'
-                                    elif today.date() <= cur_ep_airdate < next_week.date():
-                                        if cur_ep_airdate == today.date():
-                                            show_div = 'listing-current'
-                                        else:
-                                            show_div = 'listing-default'
+                                    else:
+                                        show_div = 'listing-snatched'
+                                elif cur_ep_enddate < today:
+                                    show_div = 'listing-overdue'
+                                elif cur_ep_airdate >= next_week.date():
+                                    show_div = 'listing-toofar'
+                                elif today.date() <= cur_ep_airdate < next_week.date():
+                                    if cur_ep_airdate == today.date():
+                                        show_div = 'listing-current'
+                                    else:
+                                        show_div = 'listing-default'
                                 %>
                                 <tr class="${show_div}">
                                     <td align="center" nowrap="nowrap">
-                                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']) %>
-                                        <time datetime="${airDate.isoformat('T')}"
-                                              class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
+                                        <% air_date = scdatetime.scdatetime.convert_to_setting(cur_result['localtime']) %>
+                                        <time datetime="${air_date.isoformat('T')}"
+                                              class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
                                     </td>
                                     <td align="center" nowrap="nowrap">
-                                        <% ends = sbdatetime.sbdatetime.convert_to_setting(cur_ep_enddate) %>
+                                        <% ends = scdatetime.scdatetime.convert_to_setting(cur_ep_enddate) %>
                                         <time datetime="${ends.isoformat('T')}"
-                                              class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
+                                              class="date">${scdatetime.scdatetime.scfdatetime(ends)}</time>
                                     </td>
                                     <td class="tvShow">
                                         <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
@@ -266,7 +266,7 @@
                                         % if airday == day:
                                             % try:
                                                 <% day_has_show = True %>
-                                                <% airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).sbftime() %>
+                                                <% airtime = scdatetime.scdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).scftime() %>
                                                 % if settings.TRIM_ZERO:
                                                     <% airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE) %>
                                                 % endif
@@ -475,7 +475,7 @@
                                         <div class="clearfix">
                                             <span class="title">${_('Airs')}:</span>
                                             <span class="airdate">
-                                                ${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime'])}
+                                                ${scdatetime.scdatetime.scfdatetime(cur_result['localtime'])}
                                             </span>
                                             ${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
                                         </div>

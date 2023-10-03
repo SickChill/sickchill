@@ -4,11 +4,15 @@
 
 import re
 from json import JSONDecodeError
+from typing import TYPE_CHECKING
 from urllib.parse import unquote, urljoin
 
 from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
 from sickchill.providers.GenericProvider import GenericProvider
+
+if TYPE_CHECKING:
+    from sickchill.oldbeard.classes import SearchResult
 
 
 class Client(GenericClient):
@@ -118,33 +122,33 @@ class Client(GenericClient):
 
         return jdata.get("success")
 
-    def _get_destination(self, result):
+    def _get_destination(self, result: "SearchResult"):
         """
         Determines which destination setting to use depending on result type
         """
-        if result.result_type in (GenericProvider.NZB, GenericProvider.NZBDATA):
-            destination = settings.SYNOLOGY_DSM_PATH.strip()
-        elif result.result_type == GenericProvider.TORRENT:
+        if result.is_torrent:
             destination = settings.TORRENT_PATH.strip()
+        elif result.is_nzb or result.is_nzbdata:
+            destination = settings.SYNOLOGY_DSM_PATH.strip()
         else:
-            raise AttributeError("Invalid result passed to client when getting destination: result_type {}".format(result.result_type))
+            raise AttributeError(f"Invalid result passed to client when getting destination: result_type {result.result_type}")
 
         return re.sub(r"^/volume\d/", "", destination).lstrip("/")
 
-    def _set_destination(self, result, destination):
+    def _set_destination(self, result: "SearchResult", destination):
         """
         Determines which destination setting to use depending on result type and sets it to `destination`
         params: :destination: DSM share name
         """
         destination = destination.strip()
-        if result.result_type in (GenericProvider.NZB, GenericProvider.NZBDATA):
-            settings.SYNOLOGY_DSM_PATH = destination
-        elif result.result_type == GenericProvider.TORRENT:
+        if result.is_torrent:
             settings.TORRENT_PATH = destination
+        elif result.is_nzb or result.is_nzbdata:
+            settings.SYNOLOGY_DSM_PATH = destination
         else:
             raise AttributeError("Invalid result passed to client when setting destination")
 
-    def _check_destination(self, result):
+    def _check_destination(self, result: "SearchResult"):
         """
         If destination is not set in configuration, grab it from the API
         params: :result: an object subclassing oldbeard.classes.SearchResult
@@ -166,7 +170,7 @@ class Client(GenericClient):
                 logger.warning("Could not get share destination from DownloadStation for {}, please set it in the settings", result.result_type)
                 raise
 
-    def _add_torrent_uri(self, result):
+    def _add_torrent_uri(self, result: "SearchResult"):
         """
         Sends a magnet, Torrent url or NZB url to DownloadStation
         params: :result: an object subclassing oldbeard.classes.SearchResult
@@ -188,7 +192,7 @@ class Client(GenericClient):
         self._request(method="post", data=data)
         return self._check_response(data)
 
-    def _add_torrent_file(self, result):
+    def _add_torrent_file(self, result: "SearchResult"):
         """
         Sends a Torrent file or NZB file to DownloadStation
         params: :result: an object subclassing oldbeard.classes.SearchResult
@@ -209,7 +213,7 @@ class Client(GenericClient):
         self._request(method="post", data=data, files=files)
         return self._check_response(data)
 
-    def sendNZB(self, result):
+    def send_nzb(self, result: "SearchResult"):
         """
         Sends an NZB to DownloadStation
         params: :result: an object subclassing oldbeard.classes.SearchResult
@@ -220,7 +224,7 @@ class Client(GenericClient):
             logger.warning("{0}: Authentication Failed".format(self.name))
             return False
 
-        if result.result_type == "nzb":
+        if result.is_nzb:
             return self._add_torrent_uri(result)
-        elif result.result_type == "nzbdata":
+        elif result.is_nzbdata:
             return self._add_torrent_file(result)

@@ -2562,9 +2562,9 @@ class TVEpisode(object):
             airdatetime = network_timezones.parse_date_time(airdate_ordinal, self.show.airs, self.show.network)
 
             if settings.FILE_TIMESTAMP_TIMEZONE == "local":
-                airdatetime = airdatetime.astimezone(network_timezones.sb_timezone)
+                airdatetime = airdatetime.astimezone(network_timezones.sc_timezone)
 
-            filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=network_timezones.sb_timezone)
+            filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=network_timezones.sc_timezone)
 
             if filemtime != airdatetime:
                 airdatetime = airdatetime.timetuple()

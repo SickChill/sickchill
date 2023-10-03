@@ -3,7 +3,7 @@
     import datetime
     from urllib.parse import quote
     from sickchill import settings
-    from sickchill.oldbeard import subtitles, notifiers, sbdatetime, network_timezones, helpers
+    from sickchill.oldbeard import subtitles, notifiers, scdatetime, network_timezones, helpers
 
     from sickchill.oldbeard.common import SKIPPED, WANTED, UNAIRED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
     from sickchill.oldbeard.common import Quality, qualityPresets, statusStrings, Overview
@@ -533,11 +533,11 @@
                                             % if int(epResult['airdate']) > 1:
                                                 ## Lets do this exactly like ComingEpisodes and History
                                                 ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
-                                                <% airDate = datetime.datetime.fromordinal(epResult['airdate'] or 1) %>
-                                                % if airDate.year >= 1970 or show.network:
-                                                    <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
+                                                <% air_date = datetime.datetime.fromordinal(epResult['airdate'] or 1) %>
+                                                % if air_date.year >= 1970 or show.network:
+                                                    <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
                                                 % endif
-                                                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
+                                                <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
                                             % else:
                                                 Never
                                             % endif

@@ -1198,7 +1198,7 @@ def getURL(
     timeout=30,
     session: requests.Session = None,
     **kwargs,
-) -> Union[requests.Response, dict]:
+) -> Union[requests.Response, dict, str]:
     """
     Returns data retrieved from the url provider.
     """

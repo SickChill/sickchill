@@ -20,10 +20,11 @@ class TorrentProvider(GenericProvider):
     def find_propers(self, search_date=None):
         results = []
         db = DBConnection()
-        placeholders = ", ".join(["?"] * len(Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST))
+        status_quality_list = Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST
+        placeholders = ", ".join(["?"] * len(status_quality_list))
         sql_results = db.select(
             f"SELECT s.show_name, e.showid, e.season, e.episode, e.status, e.airdate FROM tv_episodes AS e INNER JOIN tv_shows AS s ON (e.showid = s.indexer_id) WHERE e.airdate >= ? AND e.status IN ({placeholders}) and e.is_proper = 0",
-            [search_date.toordinal(), *Quality.DOWNLOADED + Quality.SNATCHED + Quality.SNATCHED_BEST],
+            [search_date.toordinal(), *status_quality_list],
         )
 
         for result in sql_results or []:

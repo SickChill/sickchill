@@ -10,6 +10,7 @@ import sys
 import threading
 import time
 import traceback
+from pathlib import Path
 from typing import List, Union
 
 import sickchill.start
@@ -131,13 +132,13 @@ class SickChill:
             if self.console_logging:
                 sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
 
-        settings.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else settings.DATA_DIR
-        settings.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(settings.DATA_DIR, "config.ini")
+        settings.DATA_DIR = Path(args.datadir).resolve() if args.datadir else settings.DATA_DIR
+        settings.CONFIG_FILE = str(Path(args.config).resolve() if args.config else settings.DATA_DIR.joinpath("config.ini"))
 
         # Make sure that we can create the data dir
         if not os.access(settings.DATA_DIR, os.F_OK):
             try:
-                os.makedirs(settings.DATA_DIR, 0o744)
+                settings.DATA_DIR.mkdir(mode=0x0744, parents=True, exist_ok=True)
             except os.error:
                 raise SystemExit("Unable to create data directory: {}".format(settings.DATA_DIR))
 
