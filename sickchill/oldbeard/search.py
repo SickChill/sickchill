@@ -99,7 +99,7 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
                 logger.warning("Torrent file content is empty")
                 # TODO: This is broken!!
                 # History().logFailed(result.episodes, result.name, result.provider)
-                # History().logFailed(result.episodes[0], result.name, result.provider.name)
+                History().logFailed(result.episodes[0], result.name, result.provider.name)  # This one seems to work
                 snatched_result = False
     # NZBs can be sent straight to SAB or saved to disk
     elif result.is_nzb or result.is_nzbdata:
