@@ -68,7 +68,7 @@ class Client(GenericClient):
             logger.warning(_("Error while sending torrent: {error}".format(error=error)))
             return False
 
-    def testAuthentication(self):
+    def test_client_connection(self):
         try:
             self._get_auth()
 

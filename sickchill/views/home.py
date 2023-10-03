@@ -217,9 +217,9 @@ class Home(WebRoot):
         apikey = filters.unhide(settings.SAB_APIKEY, self.get_body_argument("apikey"))
 
         host = config.clean_url(self.get_body_argument("host"))
-        connection, accesMsg = sab.getSabAccesMethod(host)
+        connection, accesMsg = sab.get_sab_acces_method(host)
         if connection:
-            authed, authMsg = sab.testAuthentication(host, username, password, apikey)
+            authed, authMsg = sab.test_client_connection(host, username, password, apikey)
             if authed:
                 return _("Success. Connected and authenticated")
             else:
@@ -230,7 +230,7 @@ class Home(WebRoot):
     @staticmethod
     def __torrent_test(host, username, password, method):
         client = clients.getClientInstance(method)
-        result, message = client(host, username, password).testAuthentication()
+        result, message = client(host, username, password).test_client_connection()
         return message
 
     def testDSM(self):

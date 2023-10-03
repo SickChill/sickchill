@@ -1,7 +1,7 @@
 <%!
     from sickchill import settings
     import calendar
-    from sickchill.oldbeard import sbdatetime, network_timezones
+    from sickchill.oldbeard import scdatetime, network_timezones
     from sickchill.helper.common import pretty_file_size
     import os
     import re
@@ -94,9 +94,9 @@
                     download_stat_tip = _('Unaired')
 
                 if cur_airs_next:
-                    data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
+                    data_date = calendar.timegm(scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
 ##                 elif cur_airs_prev:
-##                     data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)).timetuple())
+##                     data_date = calendar.timegm(scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)).timetuple())
                 elif display_status:
                     if display_status.startswith('Continuing'):
                         data_date = '5000000000.0'
@@ -128,9 +128,9 @@
                     <div class="show-date">
                         % if cur_airs_next:
                             <%
-                            ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next,  curShow.airs, curShow.network))
+                            ldatetime = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next,  curShow.airs, curShow.network))
                             try:
-                                out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
+                                out = str(scdatetime.scdatetime.scfdate(ldatetime))
                             except (ValueError, OSError):
                                 out = _('Invalid date')
                                 pass

@@ -3,7 +3,7 @@
     import os.path
     import datetime
 
-    from sickchill.oldbeard import sbdatetime, providers
+    from sickchill.oldbeard import scdatetime, providers
 
     from sickchill.oldbeard.common import ARCHIVED, SNATCHED, FAILED, DOWNLOADED, SUBTITLED
     from sickchill.oldbeard.common import Quality, statusStrings
@@ -76,10 +76,10 @@
                                     <td class="text-center align-middle">
                                         <%
                                             # noinspection PyCallByClass
-                                            airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem['date']), History.date_format), show_seconds=True)
+                                            air_date = scdatetime.scdatetime.scfdatetime(datetime.datetime.strptime(str(hItem['date']), History.date_format), show_seconds=True)
                                             isoDate = datetime.datetime.strptime(str(hItem['date']), History.date_format).isoformat()
                                         %>
-                                        <time datetime="${isoDate}" class="date">${airDate}</time>
+                                        <time datetime="${isoDate}" class="date">${air_date}</time>
                                     </td>
                                     <td class="tvShow text-center align-middle col-md-3"<a href="${scRoot}/home/displayShow?show=${hItem['show_id']}#S${hItem['season']}E${hItem['episode']}">
                                         ${"{} - S{:02}E{:02}".format(hItem['show_name'], int(hItem['season']), int(hItem['episode']))} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem['resource'].lower() or "repack" in hItem['resource'].lower()]}
@@ -143,10 +143,10 @@
                                     <td class="text-center align-middle">
                                         <%
                                             # noinspection PyCallByClass
-                                            airDate = sbdatetime.sbdatetime.sbfdatetime(datetime.datetime.strptime(str(hItem['actions'][0]['time']), History.date_format), show_seconds=True)
+                                            air_date = scdatetime.scdatetime.scfdatetime(datetime.datetime.strptime(str(hItem['actions'][0]['time']), History.date_format), show_seconds=True)
                                             isoDate = datetime.datetime.strptime(str(hItem['actions'][0]['time']), History.date_format).isoformat('T')
                                         %>
-                                        <time datetime="${isoDate}" class="date">${airDate}</time>
+                                        <time datetime="${isoDate}" class="date">${air_date}</time>
                                     </td>
                                     <td class="tvShow align-middle text-center col-md-3">
                                         <span>

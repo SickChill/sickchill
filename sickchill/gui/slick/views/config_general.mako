@@ -6,7 +6,7 @@
     from sickchill import settings
     from sickchill.oldbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickchill.oldbeard.filters import hide
-    from sickchill.oldbeard.sbdatetime import sbdatetime, date_presets, time_presets
+    from sickchill.oldbeard.scdatetime import scdatetime, date_presets, time_presets
     from sickchill.oldbeard.helpers import anon_url, LOCALE_NAMES
     import sickchill
     import sickchill.init_helpers
@@ -602,7 +602,7 @@
                                     <div class="col-md-12">
                                         <select id="time_presets" name="time_preset" class="form-control input-sm input250">
                                             % for cur_preset in time_presets:
-                                                <option value="${cur_preset}" ${('', 'selected')[settings.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
+                                                <option value="${cur_preset}" ${('', 'selected')[settings.TIME_PRESET_W_SECONDS == cur_preset]}>${scdatetime.now().scftime(show_seconds=True,t_preset=cur_preset)}</option>
                                             % endfor
                                         </select>
                                     </div>

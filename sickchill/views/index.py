@@ -336,9 +336,9 @@ class WebRoot(WebHandler):
     def schedule(self):
         layout = self.get_query_argument("layout", settings.COMING_EPS_LAYOUT)
         next_week = datetime.date.today() + datetime.timedelta(days=7)
-        next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sb_timezone))
+        next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sc_timezone))
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, settings.COMING_EPS_SORT, False)
-        today = datetime.datetime.now().replace(tzinfo=network_timezones.sb_timezone)
+        today = datetime.datetime.now().replace(tzinfo=network_timezones.sc_timezone)
 
         # Allow local overriding of layout parameter
         if layout not in ("poster", "banner", "list", "calendar"):

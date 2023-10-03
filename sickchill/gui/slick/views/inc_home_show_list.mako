@@ -1,7 +1,7 @@
 <%!
     from sickchill import settings
     import calendar
-    from sickchill.oldbeard import sbdatetime, network_timezones
+    from sickchill.oldbeard import scdatetime, network_timezones
     from sickchill.helper.common import pretty_file_size
     import os
     import re
@@ -137,22 +137,22 @@
                             download_stat = download_stat + "+" + str(cur_snatched)
                             download_stat_tip = download_stat_tip + "&#013;" + _('Snatched') + ": " + str(cur_snatched)
 
-                        download_stat = download_stat + " / " + str(cur_total)
-                        download_stat_tip = download_stat_tip + "&#013;" + _('Total') + ": " + str(cur_total)
+                    download_stat = download_stat + " / " + str(cur_total)
+                    download_stat_tip = download_stat_tip + "&#013;" + _('Total') + ": " + str(cur_total)
 
-                        nom = cur_downloaded
-                        if cur_total:
+                    nom = cur_downloaded
+                    if cur_total:
                             progressbar_percent = nom * 100 / float(cur_total)
-                        else:
+                    else:
                             progressbar_percent = 100.0
                             download_stat_tip = _('Unaired')
                     %>
                     <tr>
                         % if cur_airs_next:
-                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
+                        <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>
                         % try:
                             <td class="text-center nowrap">
-                                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
+                                <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdate(air_date)}</time>
                             </td>
                         % except (ValueError, OSError):
                             <td class="text-center nowrap"></td>
@@ -162,10 +162,10 @@
                         % endif
 
                         % if cur_airs_prev:
-                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)) %>
+                        <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)) %>
                         % try:
                             <td class="text-center nowrap">
-                                <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdate(airDate)}</time>
+                                <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdate(air_date)}</time>
                             </td>
                         % except (ValueError, OSError):
                             <td class="text-center nowrap"></td>

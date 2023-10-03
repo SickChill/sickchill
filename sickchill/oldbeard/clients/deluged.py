@@ -101,7 +101,7 @@ class Client(GenericClient, DelugeBase):
         logger.debug(f"{self.name}: [{label}] label added to torrent")
         return True
 
-    def testAuthentication(self):
+    def test_client_connection(self):
         if self._get_auth() and self.client.daemon.info():
             return True, "Success: Connected and Authenticated"
         else:
