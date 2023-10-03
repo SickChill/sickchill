@@ -104,7 +104,7 @@ pyaes = "^1.6.1"
 optional = true
 
 [tool.poetry.group.frontend.dependencies]
-Flask = "^2.2.2"
+Flask = ">=2.2.2,<4.0.0"
 urllib3 = "<3.0.0"
 flask-sqlalchemy = "^3.0.3"
 
