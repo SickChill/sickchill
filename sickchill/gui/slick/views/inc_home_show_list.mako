@@ -100,7 +100,7 @@
                     </tr>
                 % endfor
                 % for curShow in myShowList:
-                    <%
+                <%
                     if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
                         continue
 
@@ -146,7 +146,7 @@
                     else:
                             progressbar_percent = 100.0
                             download_stat_tip = _('Unaired')
-                    %>
+                %>
                     <tr>
                         % if cur_airs_next:
                         <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)) %>

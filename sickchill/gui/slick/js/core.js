@@ -227,10 +227,8 @@ const SICKCHILL = {
             }
 
             $(document.body).on('click', 'a[data-no-redirect]', event => {
-                const element = $(event.currentTarget);
-                element.preventDefault();
-                $.get(element.prop('href'));
-
+                event.preventDefault();
+                $.get($(event.currentTarget).prop('href'));
                 return false;
             });
 
@@ -3360,7 +3358,7 @@ const SICKCHILL = {
             });
 
             $('.submitMassUpdate').on('click', event => {
-                $(event.currentTarget).preventDefault();
+                event.preventDefault();
 
                 const form = $('[name="massUpdateForm"]');
                 const deleteInputs = $('.deleteCheck:checked');
@@ -4332,12 +4330,6 @@ const SICKCHILL = {
             $('#rootDirText').on('change', rootDirsWorkaround);
 
             $('#rootDirStaticList').on('click', '.dir_check', loadContent);
-
-            $('#tableDiv').on('click', '.showManage', event => {
-                $(event.currentTarget).preventDefault();
-                $('#tabs').tabs('option', 'active', 0);
-                $('html,body').animate({scrollTop: 0}, 1000);
-            });
         },
         recommendedShows() {
             $('#recommendedShows').loadRemoteShows(
