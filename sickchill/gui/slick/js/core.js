@@ -240,13 +240,19 @@ const SICKCHILL = {
                     this.checked = checkbox.checked;
                 });
             });
-
-            $('.enabler').on('change', function () {
-                if (this.checked) {
-                    $('#content_' + $(this).attr('id')).fadeIn('fast', 'linear');
+            const fadeFunction = function (element) {
+                if (element.checked) {
+                    $('#content_' + $(element).attr('id')).fadeIn('fast', 'linear');
                 } else {
-                    $('#content_' + $(this).attr('id')).fadeOut('fast', 'linear');
+                    $('#content_' + $(element).attr('id')).fadeOut('fast', 'linear');
                 }
+            };
+            let enablers = $('.enabler');
+            enablers.on('change', function () {
+                fadeFunction(this);
+            });
+            enablers.each(function () {
+                fadeFunction(this);
             });
         },
         QualityChooser: {
@@ -2105,7 +2111,7 @@ const SICKCHILL = {
                 if ($('#service_order_list > #' + id).length === 0 && showService !== false) {
                     let toAdd = '';
                     toAdd += '<li class="ui-state-default" id="' + id + '"> ';
-                    toAdd += '<input type="checkbox" id="enable_' + id + '" class="service_enabler" CHECKED> ';
+                    toAdd += '<input type="checkbox" id="enable_' + id + '" class="service_enabler" checked> ';
                     toAdd += '<a href="' + anonURL + url + '" class="imgLink" target="_new">';
                     toAdd += '<img src="' + scRoot + '/images/services/newznab.gif" alt="' + name + '" width="16" height="16"></a> ';
                     toAdd += name + '</li>';
