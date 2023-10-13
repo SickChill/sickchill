@@ -377,16 +377,16 @@
 
                     % if cur_segment != cur_category:
                         <div>
-                        % if cur_category in ('snatched', 'missed', 'later'):
-                            <h2 class="day">${headers[cur_category]}</h2>
-                        % else:
-                            <h2 class="day">${this_day_name}
-                                % if cur_category == 'today':
-                                    <span style="font-size: 14px; vertical-align: top;">[${_('Today')}]</span>
-                                % endif
-                            </h2>
-                        % endif
-                        <% cur_segment = cur_category %>
+                            % if cur_category in ('snatched', 'missed', 'later'):
+                                <h2 class="day">${headers[cur_category]}</h2>
+                            % else:
+                                <h2 class="day">${this_day_name}
+                                    % if cur_category == 'today':
+                                        <span style="font-size: 14px; vertical-align: top;">[${_('Today')}]</span>
+                                    % endif
+                                </h2>
+                            % endif
+                            <% cur_segment = cur_category %>
                         </div>
                     % endif
 
@@ -465,9 +465,9 @@
                                                 </a>
                                             </span>
                                         </span>
-                                            <br/>
-                                            <br/>
-                                            <span class="title">${_('Next Episode')}:</span>
+                                        <br/>
+                                        <br/>
+                                        <span class="title">${_('Next Episode')}:</span>
                                         <span>
                                             ${'S{:02}E{:02} - {}'.format(int(cur_result['season']), int(cur_result['episode']), cur_result['name'])}
                                         </span>

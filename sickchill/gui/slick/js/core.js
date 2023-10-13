@@ -240,19 +240,12 @@ const SICKCHILL = {
                     this.checked = checkbox.checked;
                 });
             });
-            const fadeFunction = function (element) {
-                if (element.checked) {
-                    $('#content_' + $(element).attr('id')).fadeIn('fast', 'linear');
+            $('.enabler').on('change', function () {
+                if (this.checked) {
+                    $('#content_' + $(this).attr('id')).fadeIn('fast', 'linear');
                 } else {
-                    $('#content_' + $(element).attr('id')).fadeOut('fast', 'linear');
+                    $('#content_' + $(this).attr('id')).fadeOut('fast', 'linear');
                 }
-            };
-            let enablers = $('.enabler');
-            enablers.on('change', function () {
-                fadeFunction(this);
-            });
-            enablers.each(function () {
-                fadeFunction(this);
             });
         },
         QualityChooser: {

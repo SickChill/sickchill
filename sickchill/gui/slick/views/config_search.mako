@@ -36,7 +36,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="randomize_providers" id="randomize_providers"
-                                           class="enabler" ${('', 'checked="checked"')[bool(settings.RANDOMIZE_PROVIDERS)]}/>
+                                           class="enabler" ${checked(settings.RANDOMIZE_PROVIDERS)}/>
                                     <label for="randomize_providers">${_('randomize the provider search order instead of going in order of placement')}</label>
                                 </div>
                             </div>
@@ -47,12 +47,12 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="download_propers" id="download_propers"
-                                           class="enabler" ${('', 'checked="checked"')[bool(settings.DOWNLOAD_PROPERS)]}/>
+                                           class="enabler" ${checked(settings.DOWNLOAD_PROPERS)}/>
                                     <label for="download_propers">${_('replace original download with "Proper" or "Repack" if nuked')}</label>
                                 </div>
                             </div>
 
-                            <div id="content_download_propers" hidden>
+                            <div id="content_download_propers" ${hidden(settings.DOWNLOAD_PROPERS)}>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -256,7 +256,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="allow_high_priority"
-                                           id="allow_high_priority" ${('', 'checked="checked"')[bool(settings.ALLOW_HIGH_PRIORITY)]}/>
+                                           id="allow_high_priority" ${checked(settings.ALLOW_HIGH_PRIORITY)}/>
                                     <label for="allow_high_priority">${_('set downloads of recently aired episodes to high priority')}</label>
                                 </div>
                             </div>
@@ -268,7 +268,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input id="use_failed_downloads" type="checkbox" class="enabler"
-                                                   name="use_failed_downloads" ${('', 'checked="checked"')[bool(settings.USE_FAILED_DOWNLOADS)]} />
+                                                   name="use_failed_downloads" ${checked(settings.USE_FAILED_DOWNLOADS)} />
                                             <label for="use_failed_downloads">${_('use Failed Download Handling?')}</label>
                                         </div>
                                     </div>
@@ -280,7 +280,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_use_failed_downloads" hidden>
+                            <div id="content_use_failed_downloads" ${hidden(settings.USE_FAILED_DOWNLOADS)}>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -290,7 +290,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input id="delete_failed" type="checkbox"
-                                                       name="delete_failed" ${('', 'checked="checked"')[bool(settings.DELETE_FAILED)]}/>
+                                                       name="delete_failed" ${checked(settings.DELETE_FAILED)}/>
                                                 <label for="delete_failed">${_('delete files left over from a failed download?')}</label>
                                             </div>
                                         </div>
@@ -304,7 +304,7 @@
 
                             </div>
 
-                            <div id="content_backlog_missing_only" hidden>
+                            <div id="content_backlog_missing_only">
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -314,7 +314,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input id="backlog_missing_only" type="checkbox"
-                                                       name="backlog_missing_only" ${('', 'checked="checked"')[bool(settings.BACKLOG_MISSING_ONLY)]}/>
+                                                       name="backlog_missing_only" ${checked(settings.BACKLOG_MISSING_ONLY)}/>
                                                 <label for="backlog_missing_only">${_('restrict backlog searches to missing episodes only?')}</label>
                                             </div>
                                         </div>
@@ -382,12 +382,12 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="use_nzbs" class="enabler"
-                                           id="use_nzbs" ${('', 'checked="checked"')[bool(settings.USE_NZBS)]}/>
+                                           id="use_nzbs" ${checked(settings.USE_NZBS)}/>
                                     <label for="use_nzbs">${_('enable NZB search providers')}</label>
                                 </div>
                             </div>
 
-                            <div id="content_use_nzbs" hidden>
+                            <div id="content_use_nzbs" ${hidden(settings.USE_NZBS)}>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Usenet retention')}</label>
@@ -592,7 +592,7 @@
                                             </div>
                                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                                 <input type="checkbox" name="sab_forced" class="enabler"
-                                                       id="sab_forced" ${('', 'checked="checked"')[bool(settings.SAB_FORCED)]}/>
+                                                       id="sab_forced" ${checked(settings.SAB_FORCED)}/>
                                                 <label for="sab_forced">${_('enable to change priority from HIGH to FORCED')}</label>
                                             </div>
                                         </div>
@@ -630,7 +630,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input id="nzbget_use_https" type="checkbox" class="enabler"
-                                                           name="nzbget_use_https" ${('', 'checked="checked"')[bool(settings.NZBGET_USE_HTTPS)]}/>
+                                                           name="nzbget_use_https" ${checked(settings.NZBGET_USE_HTTPS)}/>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -944,11 +944,11 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="use_torrents" class="enabler"
-                                           id="use_torrents" ${('', 'checked="checked"')[bool(settings.USE_TORRENTS)]}/>
+                                           id="use_torrents" ${checked(settings.USE_TORRENTS)}/>
                                     <label for="use_torrents">${_('enable torrent search providers')}</label>
                                 </div>
                             </div>
-                            <div id="content_use_torrents" hidden>
+                            <div id="content_use_torrents" ${hidden(settings.USE_TORRENTS)}>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Trackers list')}</label>
@@ -1065,7 +1065,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="torrent_verify_cert" class="enabler"
-                                                   id="torrent_verify_cert" ${('', 'checked="checked"')[bool(settings.TORRENT_VERIFY_CERT)]}/>
+                                                   id="torrent_verify_cert" ${checked(settings.TORRENT_VERIFY_CERT)}/>
                                             <label for="torrent_verify_cert"></label>
                                         </div>
                                     </div>
@@ -1239,7 +1239,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="checkbox" name="torrent_paused" class="enabler"
-                                                           id="torrent_paused" ${('', 'checked="checked"')[bool(settings.TORRENT_PAUSED)]}/>
+                                                           id="torrent_paused" ${checked(settings.TORRENT_PAUSED)}/>
                                                     <label for="torrent_paused">${_('add torrent to client but do <b style="font-weight:900">not</b> start downloading')}</label>
                                                 </div>
                                             </div>
@@ -1254,7 +1254,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="checkbox" name="torrent_high_bandwidth" class="enabler"
-                                                           id="torrent_high_bandwidth" ${('', 'checked="checked"')[bool(settings.TORRENT_HIGH_BANDWIDTH)]}/>
+                                                           id="torrent_high_bandwidth" ${checked(settings.TORRENT_HIGH_BANDWIDTH)}/>
                                                     <label for="torrent_high_bandwidth">${_('use high bandwidth allocation if priority is high')}</label>
                                                 </div>
                                             </div>

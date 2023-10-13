@@ -22,6 +22,7 @@ def get_lookup():
             strict_undefined=settings.DEVELOPER or settings.DEBUG,
             #  format_exceptions=True,
             filesystem_checks=True,
+            imports=["from sickchill.oldbeard.filters import checked, disabled, hidden"],
         ),
     )
 

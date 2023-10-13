@@ -175,7 +175,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled="disabled" />
+                <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled />
                 % if provided_show_dir:
                     <input class="btn" type="button" id="skipShowButton" value="${_('Skip Show')}" />
                 % endif
