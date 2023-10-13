@@ -7,7 +7,7 @@
 <table id="addRootDirTable" class="sickchillTable tablesorter">
     <thead>
         <tr>
-            <th class="col-checkbox"><input type="checkbox" id="checkAll" checked=checked></th>
+            <th class="col-checkbox"><input type="checkbox" id="checkAll" checked></th>
             <th>${_('Directory')}</th>
             <th width="20%">${_('Show Name (tvshow.nfo)')}
             <th width="20%">${_('Indexer')}</th>
@@ -15,13 +15,13 @@
     </thead>
     <tbody>
         % for curDir in dirList:
-            <%
-                if curDir['added_already']:
-                    continue
+        <%
+            if curDir['added_already']:
+                continue
 
-                indexer = 0
-                show_id = curDir['dir']
-                if curDir['existing_info'][0]:
+            indexer = 0
+            show_id = curDir['dir']
+            if curDir['existing_info'][0]:
                     show_id = show_id + '|' + str(curDir['existing_info'][0]) + '|' + str(curDir['existing_info'][1])
                     indexer = curDir['existing_info'][2]
 
@@ -31,7 +31,7 @@
                     indexer = settings.INDEXER_DEFAULT
             %>
             <tr>
-                <td class="col-checkbox"><input type="checkbox" id="${show_id}" class="dirCheck" checked=checked></td>
+                <td class="col-checkbox"><input type="checkbox" id="${show_id}" class="dirCheck" checked></td>
                 <td><label for="${show_id}">${curDir['display_dir']}</label></td>
                 % if curDir['existing_info'][1] and indexer > 0:
                     <td>

@@ -53,12 +53,12 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox"
-                                       class="enabler" ${('', ' checked="checked"')[bool(settings.USE_SUBTITLES)]}
+                                       class="enabler" ${checked(settings.USE_SUBTITLES)}
                                        id="use_subtitles" name="use_subtitles" title="Use Subtitles">
                             </div>
                         </div>
 
-                        <div id="content_use_subtitles" hidden>
+                        <div id="content_use_subtitles" ${hidden(settings.USE_SUBTITLES)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -123,7 +123,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="checkbox"
-                                                   class="enabler" ${('', ' checked="checked"')[bool(settings.SUBTITLES_INCLUDE_SPECIALS)]}
+                                                   class="enabler" ${checked(settings.SUBTITLES_INCLUDE_SPECIALS)}
                                                    id="subtitles_include_specials" name="subtitles_include_specials">
                                             <label for="subtitles_include_specials">${_('include the show\'s specials when searching for subtitles?')}</label>
                                         </div>
@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="subtitles_history"
-                                           id="subtitles_history" ${('', 'checked="checked"')[bool(settings.SUBTITLES_HISTORY)]}/>
+                                           id="subtitles_history" ${checked(settings.SUBTITLES_HISTORY)}/>
                                     <label for="subtitles_history">${_('log downloaded Subtitle on History page?')}</label>
                                 </div>
                             </div>
@@ -171,7 +171,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="checkbox" name="subtitles_multi"
-                                                   id="subtitles_multi" ${('', 'checked="checked"')[bool(settings.SUBTITLES_MULTI)]}/>
+                                                   id="subtitles_multi" ${checked(settings.SUBTITLES_MULTI)}/>
                                             <label for="subtitles_multi">${_('append language codes to subtitle file names?')}</label>
                                         </div>
                                     </div>
@@ -191,7 +191,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="checkbox" name="subtitles_keep_only_wanted"
-                                                   id="subtitles_keep_only_wanted" ${('', 'checked="checked"')[bool(settings.SUBTITLES_KEEP_ONLY_WANTED)]}/>
+                                                   id="subtitles_keep_only_wanted" ${checked(settings.SUBTITLES_KEEP_ONLY_WANTED)}/>
                                             <label for="subtitles_keep_only_wanted">${_('enable to delete unwanted subtitle languages bundled with release')}</label>
                                         </div>
                                     </div>
@@ -206,7 +206,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="checkbox" name="embedded_subtitles_all"
-                                                   id="embedded_subtitles_all" ${('', 'checked="checked"')[bool(settings.EMBEDDED_SUBTITLES_ALL)]}/>
+                                                   id="embedded_subtitles_all" ${checked(settings.EMBEDDED_SUBTITLES_ALL)}/>
                                             <label for="embedded_subtitles_all">${_('ignore subtitles embedded inside video file?')}</label>
                                         </div>
                                     </div>
@@ -224,7 +224,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="subtitles_hearing_impaired"
-                                           id="subtitles_hearing_impaired" ${('', 'checked="checked"')[bool(settings.SUBTITLES_HEARING_IMPAIRED)]}/>
+                                           id="subtitles_hearing_impaired" ${checked(settings.SUBTITLES_HEARING_IMPAIRED)}/>
                                     <label for="subtitles_hearing_impaired">${_('download hearing impaired style subtitles?')}</label>
                                 </div>
                             </div>
@@ -294,7 +294,7 @@
                                     % for curService in subtitles.sorted_service_list():
                                         <li class="ui-state-default" id="${curService['name']}">
                                             <input type="checkbox" id="enable_${curService['name']}"
-                                                   class="service_enabler" ${('', 'checked="checked"')[curService['enabled'] is True]}/>
+                                                   class="service_enabler" ${checked(curService['enabled'] is True)}/>
                                             <a href="${anon_url(curService['url'])}" class="imgLink" target="_new">
                                                 <img src="${static_url('images/subtitles/' + curService['image'])}"
                                                      alt="${curService['url']}" title="${curService['url']}" width="16"

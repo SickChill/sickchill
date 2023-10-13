@@ -87,7 +87,7 @@
                                     curURL = curProvider.url
                             %>
                                 <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[curProvider.provider_type == GenericProvider.TORRENT]}" id="${curName}">
-                                    <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${('', 'checked="checked"')[curProvider.is_enabled]}/>
+                                    <input type="checkbox" id="enable_${curName}" class="provider_enabler" ${checked(curProvider.is_enabled)}/>
                                     <a href="${anon_url(curURL)}" class="imgLink" rel="noreferrer"
                                        target="_blank">
                                         <img src="${static_url('images/providers/' + curProvider.image_name())}"
@@ -186,8 +186,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNewznabProvider.get_id("_enable_daily")}"
                                                    id="${curNewznabProvider.get_id("_enable_daily")}"
-                                                   ${('', 'checked="checked"')[curNewznabProvider.daily_enabled]}
-                                                   ${('disabled', '')[curNewznabProvider.can_daily]}
+                                                   ${checked(curNewznabProvider.daily_enabled)} ${disabled(curNewznabProvider.can_daily)}
                                             />
                                             <label for="${curNewznabProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
                                             % if not curNewznabProvider.can_daily:
@@ -198,15 +197,15 @@
                                 % endif
 
                                 % if hasattr(curNewznabProvider, 'enable_backlog'):
-                                    <div class="field-pair row${(' hidden', '')[curNewznabProvider.supports_backlog]}">
+                                    <div class="field-pair row${hidden(curNewznabProvider.supports_backlog)}">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNewznabProvider.get_id("_enable_backlog")}"
                                                    id="${curNewznabProvider.get_id("_enable_backlog")}"
-                                                   ${('', 'checked="checked"')[curNewznabProvider.backlog_enabled]}
-                                                   ${('disabled', '')[curNewznabProvider.can_backlog]}
+                                                   ${checked(curNewznabProvider.backlog_enabled)}
+                                                   ${disabled(curNewznabProvider.can_backlog)}
                                             />
                                             <label for="${curNewznabProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
                                             % if not curNewznabProvider.can_backlog:
@@ -231,7 +230,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curNewznabProvider.get_id("_search_mode")}"
                                                            id="${curNewznabProvider.get_id("_search_mode_sponly")}"
-                                                           value="season" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="season"]}/>
+                                                           value="season" ${checked(curNewznabProvider.search_mode=="season")}/>
                                                     <label for="${curNewznabProvider.get_id("_search_mode_sponly")}">${_('season packs only.')}</label>
                                                 </div>
                                             </div>
@@ -239,7 +238,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curNewznabProvider.get_id("_search_mode")}"
                                                            id="${curNewznabProvider.get_id("_search_mode_eponly")}"
-                                                           value="episode" ${('', 'checked="checked"')[curNewznabProvider.search_mode=="episode"]}/>
+                                                           value="episode" ${checked(curNewznabProvider.search_mode=="episode")}/>
                                                     <label for="${curNewznabProvider.get_id("_search_mode_eponly")}">${_('episodes only.')}</label>
                                                 </div>
                                             </div>
@@ -254,7 +253,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNewznabProvider.get_id("_search_fallback")}"
-                                                   id="${curNewznabProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curNewznabProvider.search_fallback_enabled]}/>
+                                                   id="${curNewznabProvider.get_id("_search_fallback")}" ${checked(curNewznabProvider.search_fallback_enabled)}/>
                                             <label for="${curNewznabProvider.get_id("_search_fallback")}">${_('when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.')}</label>
                                         </div>
                                     </div>
@@ -299,8 +298,8 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNzbProvider.get_id("_enable_daily")}"
                                                    id="${curNzbProvider.get_id("_enable_daily")}"
-                                                   ${('', 'checked="checked"')[curNzbProvider.daily_enabled]}
-                                                   ${('disabled', '')[curNzbProvider.can_daily]}
+                                                   ${checked(curNzbProvider.daily_enabled)}
+                                                   ${disabled(curNzbProvider.can_daily)}
                                             />
                                             <label for="${curNzbProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
                                             % if not curNzbProvider.can_daily:
@@ -311,15 +310,15 @@
                                 % endif
 
                                 % if hasattr(curNzbProvider, 'enable_backlog'):
-                                    <div class="field-pair row${(' hidden', '')[curNzbProvider.supports_backlog]}">
+                                    <div class="field-pair row${hidden(curNzbProvider.supports_backlog)}">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNzbProvider.get_id("_enable_backlog")}"
                                                    id="${curNzbProvider.get_id("_enable_backlog")}"
-                                                   ${('', ' checked="checked"')[curNzbProvider.backlog_enabled]}
-                                                   ${('disabled', ' ')[curNzbProvider.can_backlog]}
+                                                   ${checked(curNzbProvider.backlog_enabled)}
+                                                   ${disabled(curNzbProvider.can_backlog)}
                                             />
                                             <label for="${curNzbProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
                                             % if not curNzbProvider.can_backlog:
@@ -344,7 +343,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curNzbProvider.get_id("_search_mode")}"
                                                            id="${curNzbProvider.get_id("_search_mode_sponly")}"
-                                                           value="season" ${('', 'checked="checked"')[curNzbProvider.search_mode=="season"]}/>
+                                                           value="season" ${checked(curNzbProvider.search_mode=="season")}/>
                                                     <label for="${curNzbProvider.get_id("_search_mode_sponly")}">season packs only.</label>
                                                 </div>
                                             </div>
@@ -352,7 +351,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curNzbProvider.get_id("_search_mode")}"
                                                            id="${curNzbProvider.get_id("_search_mode_eponly")}"
-                                                           value="episode" ${('', 'checked="checked"')[curNzbProvider.search_mode=="episode"]}/>
+                                                           value="episode" ${checked(curNzbProvider.search_mode=="episode")}/>
                                                     <label for="${curNzbProvider.get_id("_search_mode_eponly")}">episodes only.</label>
                                                 </div>
                                             </div>
@@ -367,7 +366,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curNzbProvider.get_id("_search_fallback")}"
-                                                   id="${curNzbProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curNzbProvider.search_fallback_enabled]}/>
+                                                   id="${curNzbProvider.get_id("_search_fallback")}" ${checked(curNzbProvider.search_fallback_enabled)}/>
                                             <label for="${curNzbProvider.get_id("_search_fallback")}">${_('when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.')}</label>
                                         </div>
                                     </div>
@@ -577,7 +576,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_confirmed")}"
-                                                   id="${curTorrentProvider.get_id("_confirmed")}" ${('', 'checked="checked"')[curTorrentProvider.confirmed]}/>
+                                                   id="${curTorrentProvider.get_id("_confirmed")}" ${checked(curTorrentProvider.confirmed)}/>
                                             <label for="${curTorrentProvider.get_id("_confirmed")}">${_('only download torrents from trusted or verified uploaders ?')}</label>
                                         </div>
                                     </div>
@@ -590,7 +589,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_ranked")}"
-                                                   id="${curTorrentProvider.get_id("_ranked")}" ${('', 'checked="checked"')[curTorrentProvider.ranked]} />
+                                                   id="${curTorrentProvider.get_id("_ranked")}" ${checked(curTorrentProvider.ranked)} />
                                             <label for="${curTorrentProvider.get_id("_ranked")}">${_('only download ranked torrents (trusted releases)')}</label>
                                         </div>
                                     </div>
@@ -603,7 +602,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_engrelease")}"
-                                                   id="${curTorrentProvider.get_id("_engrelease")}" ${('', 'checked="checked"')[curTorrentProvider.engrelease]} />
+                                                   id="${curTorrentProvider.get_id("_engrelease")}" ${checked(curTorrentProvider.engrelease)} />
                                             <label for="${curTorrentProvider.get_id("_engrelease")}">${_('only download english torrents, or torrents containing english subtitles')}</label>
                                         </div>
                                     </div>
@@ -616,7 +615,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_onlyspasearch")}"
-                                                   id="${curTorrentProvider.get_id("_onlyspasearch")}" ${('', 'checked="checked"')[curTorrentProvider.onlyspasearch]} />
+                                                   id="${curTorrentProvider.get_id("_onlyspasearch")}" ${checked(curTorrentProvider.onlyspasearch)} />
                                             <label for="${curTorrentProvider.get_id("_onlyspasearch")}">${_('ONLY search on this provider if show info is defined as "Spanish" (avoid provider\'s use for VOS shows)')}</label>
                                         </div>
                                     </div>
@@ -644,7 +643,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_freeleech")}"
-                                                   id="${curTorrentProvider.get_id("_freeleech")}" ${('', 'checked="checked"')[curTorrentProvider.freeleech]}/>
+                                                   id="${curTorrentProvider.get_id("_freeleech")}" ${checked(curTorrentProvider.freeleech)}/>
                                             <label for="${curTorrentProvider.get_id("_freeleech")}">${_('only download <b>"FreeLeech"</b> torrents.')}</label>
                                         </div>
                                     </div>
@@ -658,8 +657,8 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_enable_daily")}"
                                                    id="${curTorrentProvider.get_id("_enable_daily")}"
-                                                   ${('', 'checked="checked"')[curTorrentProvider.daily_enabled]}
-                                                   ${('disabled', ' ')[curTorrentProvider.can_daily]}
+                                                   ${checked(curTorrentProvider.daily_enabled)}
+                                                   ${disabled(not curTorrentProvider.can_daily)}
                                             />
                                             <label for="${curTorrentProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
                                             % if not curTorrentProvider.can_daily:
@@ -670,15 +669,15 @@
                                 % endif
 
                                 % if hasattr(curTorrentProvider, 'enable_backlog'):
-                                    <div class="field-pair row${(' hidden', '')[curTorrentProvider.supports_backlog]}">
+                                    <div class="field-pair row${hidden(curTorrentProvider.supports_backlog)}">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_enable_backlog")}"
                                                    id="${curTorrentProvider.get_id("_enable_backlog")}"
-                                                   ${('', 'checked="checked"')[curTorrentProvider.backlog_enabled]}
-                                                   ${('disabled', '')[curTorrentProvider.can_backlog]}
+                                                   ${checked(curTorrentProvider.backlog_enabled)}
+                                                   ${disabled(curTorrentProvider.can_backlog)}
                                             />
 
                                             <label for="${curTorrentProvider.get_id("_enable_backlog")}">${_('enable provider to perform backlog searches.')}</label>
@@ -704,7 +703,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curTorrentProvider.get_id("_search_mode")}"
                                                            id="${curTorrentProvider.get_id("_search_mode_sponly")}"
-                                                           value="season" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="season"]}/>
+                                                           value="season" ${checked(curTorrentProvider.search_mode=="season")}/>
                                                     <label for="${curTorrentProvider.get_id("_search_mode_sponly")}">season packs only.</label>
                                                 </div>
                                             </div>
@@ -712,7 +711,7 @@
                                                 <div class="col-md-12">
                                                     <input type="radio" name="${curTorrentProvider.get_id("_search_mode")}"
                                                            id="${curTorrentProvider.get_id("_search_mode_eponly")}"
-                                                           value="episode" ${('', 'checked="checked"')[curTorrentProvider.search_mode=="episode"]}/>
+                                                           value="episode" ${checked(curTorrentProvider.search_mode=="episode")}/>
                                                     <label for="${curTorrentProvider.get_id("_search_mode_eponly")}">episodes only.</label>
                                                 </div>
                                             </div>
@@ -727,7 +726,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_search_fallback")}"
-                                                   id="${curTorrentProvider.get_id("_search_fallback")}" ${('', 'checked="checked"')[curTorrentProvider.search_fallback_enabled]}/>
+                                                   id="${curTorrentProvider.get_id("_search_fallback")}" ${checked(curTorrentProvider.search_fallback_enabled)}/>
                                             <label for="${curTorrentProvider.get_id("_search_fallback")}">${_('when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.')}</label>
                                         </div>
                                     </div>
@@ -756,7 +755,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_subtitle")}"
-                                                   id="${curTorrentProvider.get_id("_subtitle")}" ${('', 'checked="checked"')[curTorrentProvider.subtitle]}/>
+                                                   id="${curTorrentProvider.get_id("_subtitle")}" ${checked(curTorrentProvider.subtitle)}/>
                                             <label for="${curTorrentProvider.get_id("_subtitle")}">${_('select torrent with Italian subtitle')}</label>
                                         </div>
                                     </div>
@@ -854,7 +853,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input class="btn newznab_cat_update" type="button" id="newznab_cat_update" value="${_('Update Categories')}" disabled="disabled" />
+                                                <input class="btn newznab_cat_update" type="button" id="newznab_cat_update" value="${_('Update Categories')}" disabled />
                                             </div>
                                         </div>
                                     </div>

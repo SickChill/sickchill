@@ -555,7 +555,7 @@
                                             % endif
                                         </td>
                                         <td class="col-play text-center">
-                                            <a class="play-on-kodi${(' hidden', '')[bool(epResult['location'] and settings.USE_KODI and settings.KODI_HOST)]}"
+                                            <a class="play-on-kodi ${hidden(epResult['location'] and settings.USE_KODI and settings.KODI_HOST)}"
                                                href="playOnKodi?show=${show.indexerid}&amp;season=${epResult["season"]}&amp;episode=${epResult["episode"]}"
                                             >
                                                 <span class="displayshow-play-icon-kodi" title="KODI"></span>
