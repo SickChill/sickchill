@@ -1,11 +1,13 @@
 name: Test release string
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       name:
         description: "string to check"
         type: string
+        default: "Show.Name.S01.E01"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
