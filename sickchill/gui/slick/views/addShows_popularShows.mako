@@ -19,7 +19,7 @@
                         <span>${_('Sort By')}:</span>
                         <select id="showsort" class="form-control form-control-inline input-sm" title="Show Sort">
                             <option value="name">${_('Name')}</option>
-                            <option value="original" selected>${_('Original')}</option>
+                            <option value="original">${_('Original')}</option>
                             <option value="rank" selected>${_('Rank')}</option>
                             <option value="votes">${_('Votes')}</option>
                             <option value="rating">% ${_('Rating')}</option>

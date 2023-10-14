@@ -43,7 +43,7 @@
                 <td class="text-center">
                     <select name="indexer">
                         % for index, curIndexer in sickchill.indexer:
-                            <option value="${index}" ${('', 'selected')[index == indexer]}>${curIndexer.name}</option>
+                            <option value="${index}" ${selected(index == indexer)}>${curIndexer.name}</option>
                         % endfor
                     </select>
                 </td>

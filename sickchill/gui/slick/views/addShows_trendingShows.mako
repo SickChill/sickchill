@@ -40,11 +40,7 @@
 
                 <select id="traktlistselection" class="form-control form-control-inline input-sm" title="Trakt List Selection">
                     % for trakt_option in trakt_options:
-                        % if traktList == trakt_option:
-                            <option value="${trakt_option}" selected>${trakt_options[trakt_option]}</option>
-                        % else:
-                            <option value="${trakt_option}">${trakt_options[trakt_option]}</option>
-                        % endif
+                        <option value="${trakt_option}" ${selected(traktList == trakt_option)}>${trakt_option}</option>
                     % endfor
                 </select>
             </div>

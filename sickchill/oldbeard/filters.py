@@ -6,19 +6,25 @@ def unhide(old, new):
     return (new, old)[new == "hidden_value"] or None
 
 
-def hidden(setting):
-    if setting:
+def hidden(condition: bool) -> str:
+    if condition:
         return ""
     return "hidden"
 
 
-def disabled(setting):
-    if setting:
+def disabled(condition: bool) -> str:
+    if condition:
         return ""
     return "disabled"
 
 
-def checked(setting):
-    if setting:
+def checked(condition: bool) -> str:
+    if condition:
         return "checked"
+    return ""
+
+
+def selected(condition: bool) -> str:
+    if condition:
+        return "selected"
     return ""

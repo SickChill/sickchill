@@ -41,7 +41,7 @@
     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
         <select name="defaultStatus" id="statusSelect" class="form-control form-control-inline input-sm" title="defaultStatus">
             % for curStatus in [SKIPPED, WANTED, IGNORED]:
-                <option value="${curStatus}" ${('', 'selected')[settings.STATUS_DEFAULT == curStatus]}>${statusStrings[curStatus]}</option>
+                <option value="${curStatus}" ${selected(settings.STATUS_DEFAULT == curStatus)}>${statusStrings[curStatus]}</option>
             % endfor
         </select>
     </div>
@@ -55,7 +55,7 @@
     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
         <select name="defaultStatusAfter" id="statusSelectAfter" class="form-control form-control-inline input-sm">
             % for curStatus in [SKIPPED, WANTED, IGNORED]:
-                <option value="${curStatus}" ${('', 'selected')[settings.STATUS_DEFAULT_AFTER == curStatus]}>${statusStrings[curStatus]}</option>
+                <option value="${curStatus}" ${selected(settings.STATUS_DEFAULT_AFTER == curStatus)}>${statusStrings[curStatus]}</option>
             % endfor
         </select>
     </div>

@@ -5,7 +5,7 @@
 
     from sickchill import settings
     from sickchill.oldbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
-    from sickchill.oldbeard.filters import hide, hidden, checked
+    from sickchill.oldbeard.filters import hide
     from sickchill.oldbeard.scdatetime import scdatetime, date_presets, time_presets
     from sickchill.oldbeard.helpers import anon_url, LOCALE_NAMES
     import sickchill
@@ -75,11 +75,11 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="default_page" name="default_page" class="form-control input-sm input150">
-                                            <option value="home" ${('', 'selected')[settings.DEFAULT_PAGE == 'home']}>${_('Shows')}</option>
-                                            <option value="schedule" ${('', 'selected')[settings.DEFAULT_PAGE == 'schedule']}>${_('Schedule')}</option>
-                                            <option value="history" ${('', 'selected')[settings.DEFAULT_PAGE == 'history']}>${_('History')}</option>
-                                            <option value="news" ${('', 'selected')[settings.DEFAULT_PAGE == 'news']}>${_('News')}</option>
-                                            <option value="IRC" ${('', 'selected')[settings.DEFAULT_PAGE == 'IRC']}>${_('IRC')}</option>
+                                            <option value="home" ${selected(settings.DEFAULT_PAGE == 'home')}>${_('Shows')}</option>
+                                            <option value="schedule" ${selected(settings.DEFAULT_PAGE == 'schedule')}>${_('Schedule')}</option>
+                                            <option value="history" ${selected(settings.DEFAULT_PAGE == 'history')}>${_('History')}</option>
+                                            <option value="news" ${selected(settings.DEFAULT_PAGE == 'news')}>${_('News')}</option>
+                                            <option value="IRC" ${selected(settings.DEFAULT_PAGE == 'IRC')}>${_('IRC')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -224,9 +224,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
-                                            <option value="0" ${('', 'selected')[settings.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
+                                            <option value="0" ${selected(settings.INDEXER_DEFAULT == 0)}>${_('All Indexers')}</option>
                                             % for indexer, instance in sickchill.indexer:
-                                                <option value="${indexer}" ${('', 'selected')[settings.INDEXER_DEFAULT == indexer]}>${instance.name}</option>
+                                                <option value="${indexer}" ${selected(settings.INDEXER_DEFAULT == indexer)}>${instance.name}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -378,9 +378,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="gui_language" name="gui_language" class="form-control input-sm input250">
-                                            <option value="" ${('', 'selected')[settings.GUI_LANG == ""]}>${_('System Language')}</option>
+                                            <option value="" ${selected(settings.GUI_LANG == "")}>${_('System Language')}</option>
                                             % for lang in [language for language in os.listdir(sickchill.init_helpers.locale_dir) if '_' in language]:
-                                                <option value="${lang}" ${('', 'selected')[settings.GUI_LANG == lang]}>${lang_name(lang)}</option>
+                                                <option value="${lang}" ${selected(settings.GUI_LANG == lang)}>${lang_name(lang)}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -401,8 +401,8 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="theme_name" name="theme_name" class="form-control input-sm input250">
-                                            <option value="dark" ${('', 'selected')[settings.THEME_NAME == 'dark']}>${_('Dark')}</option>
-                                            <option value="light" ${('', 'selected')[settings.THEME_NAME == 'light']}>${_('Light')}</option>
+                                            <option value="dark" ${selected(settings.THEME_NAME == 'dark')}>${_('Dark')}</option>
+                                            <option value="light" ${selected(settings.THEME_NAME == 'light')}>${_('Light')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -581,13 +581,13 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <select class="form-control input-sm input250 ${(' metadataDiv', '')[bool(settings.FUZZY_DATING)]}" id="date_presets${('_na', '')[bool(settings.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(settings.FUZZY_DATING)]}">
                                     % for cur_preset in date_presets:
-                                        <option value="${cur_preset}" ${('', 'selected')[settings.DATE_PRESET == cur_preset or ("%x" == settings.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+                                        <option value="${cur_preset}" ${selected(settings.DATE_PRESET == cur_preset or ("%x" == settings.DATE_PRESET and cur_preset == '%a, %b %d, %Y'))}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                     % endfor
                                 </select>
                                 <select class="form-control input-sm input250 ${(' metadataDiv', '')[not bool(settings.FUZZY_DATING)]}" id="date_presets${(' metadataDiv', '')[not bool(settings.FUZZY_DATING)]}" name="date_preset${('_na', '')[not bool(settings.FUZZY_DATING)]}">
-                                    <option value="%x" ${('', 'selected')[settings.DATE_PRESET == '%x']}>${_('Use System Default')}</option>
+                                    <option value="%x" ${selected(settings.DATE_PRESET == '%x')}>${_('Use System Default')}</option>
                                     % for cur_preset in date_presets:
-                                        <option value="${cur_preset}" ${('', 'selected')[settings.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+                                        <option value="${cur_preset}" ${selected(settings.DATE_PRESET == cur_preset)}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                     % endfor
                                 </select>
                             </div>
@@ -602,7 +602,7 @@
                                     <div class="col-md-12">
                                         <select id="time_presets" name="time_preset" class="form-control input-sm input250">
                                             % for cur_preset in time_presets:
-                                                <option value="${cur_preset}" ${('', 'selected')[settings.TIME_PRESET_W_SECONDS == cur_preset]}>${scdatetime.now().scftime(show_seconds=True,t_preset=cur_preset)}</option>
+                                                <option value="${cur_preset}" ${selected(settings.TIME_PRESET_W_SECONDS == cur_preset)}>${scdatetime.now().scftime(show_seconds=True,t_preset=cur_preset)}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -884,7 +884,7 @@
                                     <div class="col-md-12">
                                         <select id="cpu_presets" name="cpu_preset" class="form-control input-sm input250">
                                             % for cur_preset in cpu_presets:
-                                                <option value="${cur_preset}" ${('', 'selected')[settings.CPU_PRESET == cur_preset]}>${cur_preset.capitalize()}</option>
+                                                <option value="${cur_preset}" ${selected(settings.CPU_PRESET == cur_preset)}>${cur_preset.capitalize()}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -1114,13 +1114,13 @@
                                         % if not settings.SKIP_REMOVED_FILES:
                                             <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm input250" title="Default delete status">
                                                 % for defStatus in [SKIPPED, IGNORED, ARCHIVED]:
-                                                    <option value="${defStatus}" ${('', 'selected')[int(settings.EP_DEFAULT_DELETED_STATUS) == defStatus]}>${statusStrings[defStatus]}</option>
+                                                    <option value="${defStatus}" ${selected(int(settings.EP_DEFAULT_DELETED_STATUS) == defStatus)}>${statusStrings[defStatus]}</option>
                                                 % endfor
                                             </select>
                                         % else:
                                             <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm input250" title="Default delete status" disabled>
                                                 % for defStatus in [SKIPPED, IGNORED]:
-                                                    <option value="${defStatus}" ${('', 'selected')[settings.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
+                                                    <option value="${defStatus}" ${selected(settings.EP_DEFAULT_DELETED_STATUS == defStatus)}>${statusStrings[defStatus]}</option>
                                                 % endfor
                                             </select>
                                             <input type="hidden" name="ep_default_deleted_status" value="${settings.EP_DEFAULT_DELETED_STATUS}" />

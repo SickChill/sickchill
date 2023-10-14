@@ -1,7 +1,7 @@
 <%inherit file="/layouts/config.mako" />
 <%!
     from sickchill import settings
-    from sickchill.oldbeard.filters import hide, hidden, checked
+    from sickchill.oldbeard.filters import hide
     from sickchill.oldbeard.helpers import anon_url
 %>
 

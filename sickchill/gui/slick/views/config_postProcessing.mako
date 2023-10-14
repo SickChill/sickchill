@@ -7,7 +7,6 @@
     from sickchill.settings import unpackStrings
     from sickchill import settings
     from sickchill.oldbeard import naming
-    from sickchill.oldbeard.filters import hidden
 %>
 
 <%block name="tabs">
@@ -83,7 +82,7 @@
                                         <select name="process_method" id="process_method" class="form-control input-sm input350" title="process_method">
                                             <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link", 'symlink_reversed' : "Symbolic Link Reversed"} %>
                                             % for curAction in ('copy', 'move', 'hardlink', 'symlink', 'symlink_reversed'):
-                                                <option value="${curAction}" ${('', 'selected')[settings.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
+                                                <option value="${curAction}" ${selected(settings.PROCESS_METHOD == curAction)}>${process_method_text[curAction]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -254,7 +253,7 @@
                                     <div class="col-md-12">
                                         <select name="file_timestamp_timezone" id="file_timestamp_timezone" class="form-control input-sm input350">
                                             % for curTimezone in (_('local'), _('network')):
-                                                <option value="${curTimezone}" ${('', 'selected')[settings.FILE_TIMESTAMP_TIMEZONE == curTimezone]}>${curTimezone}</option>
+                                                <option value="${curTimezone}" ${selected(settings.FILE_TIMESTAMP_TIMEZONE == curTimezone)}>${curTimezone}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -282,7 +281,7 @@
                                         <div class="col-md-12">
                                             <select name="unpack" id="unpack" class="form-control input-sm input350 enabler" title="unpack">
                                                 % for value, description in unpackStrings.items():
-                                                    <option value="${value}" ${('', 'selected')[int(settings.UNPACK) == value]}>
+                                                    <option value="${value}" ${selected(int(settings.UNPACK) == value)}>
                                                         ${description}
                                                     </option>
                                                 % endfor
@@ -494,9 +493,9 @@
                                     % if cur_preset == settings.NAMING_PATTERN:
                                         <% is_custom = False %>
                                     % endif
-                                        <option id="${cur_preset}" ${('', 'selected')[settings.NAMING_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                        <option id="${cur_preset}" ${selected(settings.NAMING_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                     % endfor
-                                    <option id="${settings.NAMING_PATTERN}" ${('', 'selected')[bool(is_custom)]}>Custom...</option>
+                                    <option id="${settings.NAMING_PATTERN}" ${selected(bool(is_custom))}>Custom...</option>
                                 </select>
                             </div>
                         </div>
@@ -709,7 +708,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm input350" title="naming_multi_ep">
                                     % for cur_multi_ep in sorted(MULTI_EP_STRINGS.items(), key=lambda x: x[1]):
-                                        <option value="${cur_multi_ep[0]}" ${('', 'selected')[cur_multi_ep[0] == settings.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
+                                        <option value="${cur_multi_ep[0]}" ${selected(cur_multi_ep[0) == settings.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                     % endfor
                                 </select>
                             </div>
@@ -795,9 +794,9 @@
                                         % if cur_preset == settings.NAMING_ABD_PATTERN:
                                             <% is_abd_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected')[settings.NAMING_ABD_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${selected(settings.NAMING_ABD_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_ABD_PATTERN}" ${('', 'selected')[bool(is_abd_custom)]}>Custom...</option>
+                                        <option id="${settings.NAMING_ABD_PATTERN}" ${selected(bool(is_abd_custom))}>Custom...</option>
                                     </select>
                                 </div>
                             </div>
@@ -996,9 +995,9 @@
                                         % if cur_preset == settings.NAMING_SPORTS_PATTERN:
                                             <% is_sports_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected')[settings.NAMING_SPORTS_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${selected(settings.NAMING_SPORTS_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_SPORTS_PATTERN}" ${('', 'selected')[bool(is_sports_custom)]}>Custom...</option>
+                                        <option id="${settings.NAMING_SPORTS_PATTERN}" ${selected(bool(is_sports_custom))}>Custom...</option>
                                     </select>
                                 </div>
                             </div>
@@ -1197,9 +1196,9 @@
                                         % if cur_preset == settings.NAMING_ANIME_PATTERN:
                                             <% is_anime_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected')[cur_preset == settings.NAMING_ANIME_PATTERN]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${selected(cur_preset == settings.NAMING_ANIME_PATTERN)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_ANIME_PATTERN}" ${('', 'selected')[bool(is_anime_custom)]}>Custom...</option>
+                                        <option id="${settings.NAMING_ANIME_PATTERN}" ${selected(bool(is_anime_custom))}>Custom...</option>
                                     </select>
                                 </div>
                             </div>

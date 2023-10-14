@@ -62,7 +62,7 @@
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm input150">
                                             <% check_propers_interval_text = {'daily': _('24 hours'), '4h': _('4 hours'), '90m': _('90 mins'), '45m': _('45 mins'), '15m': _('15 mins')} %>
                                             % for curInterval in check_propers_interval_text:
-                                                <option value="${curInterval}" ${('', 'selected')[settings.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
+                                                <option value="${curInterval}" ${selected(settings.CHECK_PROPERS_INTERVAL == curInterval)}>${check_propers_interval_text[curInterval]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -415,7 +415,7 @@
                                         <select name="nzb_method" id="nzb_method" class="form-control input-sm input150" title="nzb_method">
                                             <% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget", 'download_station': "Synology DS"} %>
                                             % for curAction in ('blackhole', 'sabnzbd', 'nzbget', 'download_station'):
-                                                <option value="${curAction}" ${('', 'selected')[settings.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
+                                                <option value="${curAction}" ${selected(settings.NZB_METHOD == curAction)}>${nzb_method_text[curAction]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -796,12 +796,12 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <select name="nzbget_priority" id="nzbget_priority" class="form-control input-sm input200">
-                                                        <option value="-100" ${('', 'selected')[settings.NZBGET_PRIORITY == -100]}>${_('Very low')}</option>
-                                                        <option value="-50" ${('', 'selected')[settings.NZBGET_PRIORITY == -50]}>${_('Low')}</option>
-                                                        <option value="0" ${('', 'selected')[settings.NZBGET_PRIORITY == 0]}>${_('Normal')}</option>
-                                                        <option value="50" ${('', 'selected')[settings.NZBGET_PRIORITY == 50]}>${_('High')}</option>
-                                                        <option value="100" ${('', 'selected')[settings.NZBGET_PRIORITY == 100]}>${_('Very high')}</option>
-                                                        <option value="900" ${('', 'selected')[settings.NZBGET_PRIORITY == 900]}>${_('Force')}</option>
+                                                        <option value="-100" ${selected(settings.NZBGET_PRIORITY == -100)}>${_('Very low')}</option>
+                                                        <option value="-50" ${selected(settings.NZBGET_PRIORITY == -50)}>${_('Low')}</option>
+                                                        <option value="0" ${selected(settings.NZBGET_PRIORITY == 0)}>${_('Normal')}</option>
+                                                        <option value="50" ${selected(settings.NZBGET_PRIORITY == 50)}>${_('High')}</option>
+                                                        <option value="100" ${selected(settings.NZBGET_PRIORITY == 100)}>${_('Very high')}</option>
+                                                        <option value="900" ${selected(settings.NZBGET_PRIORITY == 900)}>${_('Force')}</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -976,7 +976,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="torrent_method" id="torrent_method" class="form-control input-sm input200" title="torrent_method">
                                             % for curAction, curTitle in getClientListDict().items():
-                                                <option value="${curAction}" ${('', 'selected')[settings.TORRENT_METHOD == curAction]}>${curTitle}</option>
+                                                <option value="${curAction}" ${selected(settings.TORRENT_METHOD == curAction)}>${curTitle}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -1054,7 +1054,7 @@
                                                 <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
                                                 % for authvalue, authname in http_authtype.items():
                                                     <option id="torrent_auth_type_value"
-                                                            value="${authvalue}" ${('', 'selected')[settings.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
+                                                            value="${authvalue}" ${selected(settings.TORRENT_AUTH_TYPE == authvalue)}>${authname}</option>
                                                 % endfor
                                             </select>
                                         </div>
