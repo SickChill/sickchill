@@ -97,7 +97,7 @@
                                 % try:
                                     % if int(curResult['airdate']) > 1:
                                     <% air_date = datetime.datetime.fromordinal(curResult['airdate']) %>
-                                    % if air_date > datetime.datetime.utcfromtimestamp(0) or curShow.network:
+                                    % if air_date > datetime.datetime.utcfromtimestamp(0) and curShow.network:
                                         <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
                                     % endif
                                         <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
