@@ -28,7 +28,7 @@
                         <select name="process_method" id="process_method" class="form-control form-control-inline input-sm" title="process method">
                             <% process_method_text = {'copy': _('Copy'), 'move': _('Move'), 'hardlink': _('Hard Link'), 'symlink' : _('Symbolic Link'), 'symlink_reversed' : _('Symbolic Link Reversed')} %>
                             % for curAction in process_method_text:
-                                <option value="${curAction}" ${('', 'selected')[settings.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
+                                <option value="${curAction}" ${selected(settings.PROCESS_METHOD == curAction)}>${process_method_text[curAction]}</option>
                             % endfor
                         </select>
                     </div>

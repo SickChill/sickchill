@@ -686,7 +686,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_nmjv2" ${hidden(settings.USE_NMJV2)}>
+                        <div id="content_use_nmjv2" ${hidden(settings.USE_NMJv2)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1271,11 +1271,11 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="prowl_priority" name="prowl_priority" class="form-control input-sm input250">
-                                                <option value="-2" ${('', 'selected')[settings.PROWL_PRIORITY == '-2']}>${_('Very Low')}</option>
-                                                <option value="-1" ${('', 'selected')[settings.PROWL_PRIORITY == '-1']}>${_('Moderate')}</option>
-                                                <option value="0" ${('', 'selected')[settings.PROWL_PRIORITY == '0']}>${_('Normal')}</option>
-                                                <option value="1" ${('', 'selected')[settings.PROWL_PRIORITY == '1']}>${_('High')}</option>
-                                                <option value="2" ${('', 'selected')[settings.PROWL_PRIORITY == '2']}>${_('Emergency')}</option>
+                                                <option value="-2" ${selected(settings.PROWL_PRIORITY == '-2')}>${_('Very Low')}</option>
+                                                <option value="-1" ${selected(settings.PROWL_PRIORITY == '-1')}>${_('Moderate')}</option>
+                                                <option value="0" ${selected(settings.PROWL_PRIORITY == '0')}>${_('Normal')}</option>
+                                                <option value="1" ${selected(settings.PROWL_PRIORITY == '1')}>${_('High')}</option>
+                                                <option value="2" ${selected(settings.PROWL_PRIORITY == '2')}>${_('Emergency')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1489,29 +1489,29 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="pushover_sound" name="pushover_sound" class="form-control input-sm input250">
-                                                <option value="pushover" ${('', 'selected')[settings.PUSHOVER_SOUND == 'pushover']}>${_('Pushover')}</option>
-                                                <option value="bike" ${('', 'selected')[settings.PUSHOVER_SOUND == 'bike']}>${_('Bike')}</option>
-                                                <option value="bugle" ${('', 'selected')[settings.PUSHOVER_SOUND == 'bugle']}>${_('Bugle')}</option>
-                                                <option value="cashregister" ${('', 'selected')[settings.PUSHOVER_SOUND == 'cashregister']}>${_('Cash Register')}</option>
-                                                <option value="classical" ${('', 'selected')[settings.PUSHOVER_SOUND == 'classical']}>${_('Classical')}</option>
-                                                <option value="cosmic" ${('', 'selected')[settings.PUSHOVER_SOUND == 'cosmic']}>${_('Cosmic')}</option>
-                                                <option value="falling" ${('', 'selected')[settings.PUSHOVER_SOUND == 'falling']}>${_('Falling')}</option>
-                                                <option value="gamelan" ${('', 'selected')[settings.PUSHOVER_SOUND == 'gamelan']}>${_('Gamelan')}</option>
-                                                <option value="incoming" ${('', 'selected')[settings.PUSHOVER_SOUND == 'incoming']}> ${_('Incoming')}</option>
-                                                <option value="intermission" ${('', 'selected')[settings.PUSHOVER_SOUND == 'intermission']}>${_('Intermission')}</option>
-                                                <option value="magic" ${('', 'selected')[settings.PUSHOVER_SOUND == 'magic']}>${_('Magic')}</option>
-                                                <option value="mechanical" ${('', 'selected')[settings.PUSHOVER_SOUND == 'mechanical']}>${_('Mechanical')}</option>
-                                                <option value="pianobar" ${('', 'selected')[settings.PUSHOVER_SOUND == 'pianobar']}>${_('Piano Bar')}</option>
-                                                <option value="siren" ${('', 'selected')[settings.PUSHOVER_SOUND == 'siren']}>${_('Siren')}</option>
-                                                <option value="spacealarm" ${('', 'selected')[settings.PUSHOVER_SOUND == 'spacealarm']}>${_('Space Alarm')}</option>
-                                                <option value="tugboat" ${('', 'selected')[settings.PUSHOVER_SOUND == 'tugboat']}>${_('Tug Boat')}</option>
-                                                <option value="alien" ${('', 'selected')[settings.PUSHOVER_SOUND == 'alien']}>${_('Alien Alarm (long)')}</option>
-                                                <option value="climb" ${('', 'selected')[settings.PUSHOVER_SOUND == 'climb']}>${_('Climb (long)')}</option>
-                                                <option value="persistent" ${('', 'selected')[settings.PUSHOVER_SOUND == 'persistent']}>${_('Persistent (long)')}</option>
-                                                <option value="echo" ${('', 'selected')[settings.PUSHOVER_SOUND == 'echo']}>${_('Pushover Echo (long)')}</option>
-                                                <option value="updown" ${('', 'selected')[settings.PUSHOVER_SOUND == 'updown']}>${_('Up Down (long)')}</option>
-                                                <option value="none" ${('', 'selected')[settings.PUSHOVER_SOUND == 'none']}>${_('None (silent)')}</option>
-                                                <option value="default" ${('', 'selected')[settings.PUSHOVER_SOUND == 'default']}>${_('Device specific')}</option>
+                                                <option value="pushover" ${selected(settings.PUSHOVER_SOUND == 'pushover')}>${_('Pushover')}</option>
+                                                <option value="bike" ${selected(settings.PUSHOVER_SOUND == 'bike')}>${_('Bike')}</option>
+                                                <option value="bugle" ${selected(settings.PUSHOVER_SOUND == 'bugle')}>${_('Bugle')}</option>
+                                                <option value="cashregister" ${selected(settings.PUSHOVER_SOUND == 'cashregister')}>${_('Cash Register')}</option>
+                                                <option value="classical" ${selected(settings.PUSHOVER_SOUND == 'classical')}>${_('Classical')}</option>
+                                                <option value="cosmic" ${selected(settings.PUSHOVER_SOUND == 'cosmic')}>${_('Cosmic')}</option>
+                                                <option value="falling" ${selected(settings.PUSHOVER_SOUND == 'falling')}>${_('Falling')}</option>
+                                                <option value="gamelan" ${selected(settings.PUSHOVER_SOUND == 'gamelan')}>${_('Gamelan')}</option>
+                                                <option value="incoming" ${selected(settings.PUSHOVER_SOUND == 'incoming')}> ${_('Incoming')}</option>
+                                                <option value="intermission" ${selected(settings.PUSHOVER_SOUND == 'intermission')}>${_('Intermission')}</option>
+                                                <option value="magic" ${selected(settings.PUSHOVER_SOUND == 'magic')}>${_('Magic')}</option>
+                                                <option value="mechanical" ${selected(settings.PUSHOVER_SOUND == 'mechanical')}>${_('Mechanical')}</option>
+                                                <option value="pianobar" ${selected(settings.PUSHOVER_SOUND == 'pianobar')}>${_('Piano Bar')}</option>
+                                                <option value="siren" ${selected(settings.PUSHOVER_SOUND == 'siren')}>${_('Siren')}</option>
+                                                <option value="spacealarm" ${selected(settings.PUSHOVER_SOUND == 'spacealarm')}>${_('Space Alarm')}</option>
+                                                <option value="tugboat" ${selected(settings.PUSHOVER_SOUND == 'tugboat')}>${_('Tug Boat')}</option>
+                                                <option value="alien" ${selected(settings.PUSHOVER_SOUND == 'alien')}>${_('Alien Alarm (long)')}</option>
+                                                <option value="climb" ${selected(settings.PUSHOVER_SOUND == 'climb')}>${_('Climb (long)')}</option>
+                                                <option value="persistent" ${selected(settings.PUSHOVER_SOUND == 'persistent')}>${_('Persistent (long)')}</option>
+                                                <option value="echo" ${selected(settings.PUSHOVER_SOUND == 'echo')}>${_('Pushover Echo (long)')}</option>
+                                                <option value="updown" ${selected(settings.PUSHOVER_SOUND == 'updown')}>${_('Up Down (long)')}</option>
+                                                <option value="none" ${selected(settings.PUSHOVER_SOUND == 'none')}>${_('None (silent)')}</option>
+                                                <option value="default" ${selected(settings.PUSHOVER_SOUND == 'default')}>${_('Device specific')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1531,11 +1531,11 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="pushover_priority" name="pushover_priority" class="form-control input-sm input250">
-                                            <option value="-2" ${('', 'selected')[settings.PUSHOVER_PRIORITY == '-2']}>${_('Very Low')}</option>
-                                            <option value="-1" ${('', 'selected')[settings.PUSHOVER_PRIORITY == '-1']}>${_('Moderate')}</option>
-                                            <option value="0" ${('', 'selected')[settings.PUSHOVER_PRIORITY == '0']}>${_('Normal')}</option>
-                                            <option value="1" ${('', 'selected')[settings.PUSHOVER_PRIORITY == '1']}>${_('High')}</option>
-                                            <option value="2" ${('', 'selected')[settings.PUSHOVER_PRIORITY == '2']}>${_('Emergency')}</option>
+                                            <option value="-2" ${selected(settings.PUSHOVER_PRIORITY == '-2')}>${_('Very Low')}</option>
+                                            <option value="-1" ${selected(settings.PUSHOVER_PRIORITY == '-1')}>${_('Moderate')}</option>
+                                            <option value="0" ${selected(settings.PUSHOVER_PRIORITY == '0')}>${_('Normal')}</option>
+                                            <option value="1" ${selected(settings.PUSHOVER_PRIORITY == '1')}>${_('High')}</option>
+                                            <option value="2" ${selected(settings.PUSHOVER_PRIORITY == '2')}>${_('Emergency')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -2615,7 +2615,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <select id="trakt_default_indexer" name="trakt_default_indexer" class="form-control input-sm input250" title="trakt_default_indexer">
                                         % for indexer, instance in sickchill.indexer:
-                                            <option value="${indexer}" ${('', 'selected')[settings.TRAKT_DEFAULT_INDEXER == indexer]}>${instance.name}</option>
+                                            <option value="${indexer}" ${selected(settings.TRAKT_DEFAULT_INDEXER == indexer)}>${instance.name}</option>
                                         % endfor
                                     </select>
                                 </div>
@@ -2674,8 +2674,8 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <select id="trakt_method_add" name="trakt_method_add" class="form-control input-sm input250">
-                                                    <option value="0" ${('', 'selected')[settings.TRAKT_METHOD_ADD == 0]}>${_('Skip All')}</option>
-                                                    <option value="1" ${('', 'selected')[settings.TRAKT_METHOD_ADD == 1]}>${_('Download Pilot Only')}</option>
+                                                    <option value="0" ${selected(settings.TRAKT_METHOD_ADD == 0)}>${_('Skip All')}</option>
+                                                    <option value="1" ${selected(settings.TRAKT_METHOD_ADD == 1)}>${_('Download Pilot Only')}</option>
                                                     <option value="2" ${('', 'selected')[settings.TRAKT_METHOD_ADD == 2]}>${_('Get whole show')}</option>
                                                 </select>
                                             </div>
