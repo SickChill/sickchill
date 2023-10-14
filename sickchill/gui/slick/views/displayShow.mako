@@ -530,17 +530,19 @@
                                             % endif
                                         </td>
                                         <td class="col-airdate">
-                                            % if int(epResult['airdate']) > 1:
-                                                ## Lets do this exactly like ComingEpisodes and History
-                                                ## Avoid issues with dateutil's _isdst on Windows but still provide air dates
-                                                <% air_date = datetime.datetime.fromordinal(epResult['airdate'] or 1) %>
-                                                % if air_date.year >= 1970 or show.network:
-                                                    <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
+                                            % try:
+                                                % if int(epResult['airdate']) > 1:
+                                                    <% air_date = datetime.datetime.fromordinal(epResult['airdate']) %>
+                                                    % if air_date > datetime.datetime.utcfromtimestamp(0) and show.network:
+                                                        <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(epResult['airdate'], show.airs, show.network)) %>
+                                                    % endif
+                                                    <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
+                                                % else:
+                                                    Never
                                                 % endif
-                                                <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
-                                            % else:
-                                                Never
-                                            % endif
+                                            % except:
+                                                Unknown
+                                            % endtry
                                         </td>
                                         <td class="col-download">
                                             % if settings.DOWNLOAD_URL and epResult['location']:

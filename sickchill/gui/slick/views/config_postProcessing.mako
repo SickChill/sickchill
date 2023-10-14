@@ -495,7 +495,7 @@
                                     % endif
                                         <option id="${cur_preset}" ${selected(settings.NAMING_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                     % endfor
-                                    <option id="${settings.NAMING_PATTERN}" ${selected(bool(is_custom))}>Custom...</option>
+                                    <option id="${settings.NAMING_PATTERN}" ${selected(is_custom)}>Custom...</option>
                                 </select>
                             </div>
                         </div>
@@ -796,7 +796,7 @@
                                         % endif
                                             <option id="${cur_preset}" ${selected(settings.NAMING_ABD_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_ABD_PATTERN}" ${selected(bool(is_abd_custom))}>Custom...</option>
+                                        <option id="${settings.NAMING_ABD_PATTERN}" ${selected(is_abd_custom)}>Custom...</option>
                                     </select>
                                 </div>
                             </div>
@@ -997,7 +997,7 @@
                                         % endif
                                             <option id="${cur_preset}" ${selected(settings.NAMING_SPORTS_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_SPORTS_PATTERN}" ${selected(bool(is_sports_custom))}>Custom...</option>
+                                        <option id="${settings.NAMING_SPORTS_PATTERN}" ${selected(is_sports_custom)}>Custom...</option>
                                     </select>
                                 </div>
                             </div>
@@ -1198,7 +1198,7 @@
                                         % endif
                                             <option id="${cur_preset}" ${selected(cur_preset == settings.NAMING_ANIME_PATTERN)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_ANIME_PATTERN}" ${selected(bool(is_anime_custom))}>Custom...</option>
+                                        <option id="${settings.NAMING_ANIME_PATTERN}" ${selected(is_anime_custom)}>Custom...</option>
                                     </select>
                                 </div>
                             </div>
