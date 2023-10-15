@@ -7,7 +7,7 @@ on:
       name:
         description: "string to check"
         type: string
-        default: "Show.Name S01E01"
+        default: "Show.Name.S01E01.HDTV.h265-SICKCHILL"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
@@ -16,6 +16,9 @@ concurrency:
 defaults:
   run:
     shell: bash
+
+env:
+  TEST_STRING: ${{ github.event.inputs.name || 'Show.Name.S01E01.HDTV.h265-SICKCHILL' }}
 
 jobs:
   Parse:
@@ -55,4 +58,4 @@ jobs:
     -
       name: Test string
       run: |
-        poetry run python -c "from sickchill.oldbeard.name_parser.parser import NameParser; parser = NameParser(); print(str(parser._parse_string("${{ github.event.inputs.name }}")));"
+        poetry run python -c "from sickchill.oldbeard.name_parser.parser import NameParser; parser = NameParser(); print(str(parser._parse_string("${{ env.TEST_STRING }}")));"
