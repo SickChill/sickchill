@@ -55,4 +55,4 @@ jobs:
     -
       name: Test string
       run: |
-        poetry run python -c "from sickchill.oldeard.name_parser.parser import NameParser; parser = NameParser(); print(str(parser._parse_string("${{ github.event.inputs.name }}")));"
+        poetry run python -c "from sickchill.oldbeard.name_parser.parser import NameParser; parser = NameParser(); print(str(parser._parse_string("${{ github.event.inputs.name }}")));"
