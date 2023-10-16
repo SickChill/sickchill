@@ -51,7 +51,7 @@
             $.each(data, (i, entry) => {
                 if (typeof entry === 'string') {
                     createImage(entry);
-                } else if (entry.hasOwnProperty('thumb') && entry.hasOwnProperty('image')) {
+                } else {
                     createImage(entry.image, entry.thumb);
                 }
             });
@@ -68,11 +68,11 @@
 
     function createImage(imageSrc, thumbSrc) {
         const image = $('<img alt="' + $('#showID').attr('value') + ' ' + imageType + '"/>')
-        .attr('data-image-type', imageSelectorDialog.data('image-type'))
-        .addClass('image-selector-item').on('click', ev => {
-            $('.image-selector-item-selected').removeClass('image-selector-item-selected');
-            $(ev.target).addClass('image-selector-item-selected');
-        });
+            .attr('data-image-type', imageSelectorDialog.data('image-type'))
+            .addClass('image-selector-item').on('click', ev => {
+                $('.image-selector-item-selected').removeClass('image-selector-item-selected');
+                $(ev.target).addClass('image-selector-item-selected');
+            });
 
         const wrapUrl = new URL(scRoot + '/imageSelector/url_wrap/', location.href);
         if (thumbSrc) {
