@@ -1711,7 +1711,7 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.3.tgz#dd249cef80c6fff2ba6a0d4e5beca913e04e25f8"
   integrity sha512-ZYFzrvyWUNhaPomn80dsMNgMeXxNWZBdkuG/hWlUvXvbdUH8ZERNBGXnU87McuGcWDsyzX2aChCv/SVN348k3A==
 
-"@types/node@*":
+"@types/node@*", "@types/node@^20.8.3":
   version "20.8.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.6.tgz#0dbd4ebcc82ad0128df05d0e6f57e05359ee47fa"
   integrity sha512-eWO4K2Ji70QzKUqRy6oyJWUeB7+g2cRagT3T/nxYibYcT4y2BDL8lqolRXjTHmkZCdJfIPaY73KbJAZmcryxTQ==
@@ -1796,7 +1796,7 @@
   resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.4.tgz#2b38784cd16957d3782e8e2b31c03bc1d13b4d65"
   integrity sha512-IDaobHimLQhjwsQ/NMwRVfa/yL7L/wriQPMhw1ZJall0KX6E1oxk29XMDeilW5qTIg5aoiqf5Udy8U/51aNoQQ==
 
-"@types/vinyl@^2.0.4", "@types/vinyl@^2.0.7":
+"@types/vinyl@^2.0.4", "@types/vinyl@^2.0.7", "@types/vinyl@^2.0.8":
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/@types/vinyl/-/vinyl-2.0.8.tgz#a944157b80cf615437aa952131e87efe8a9646cd"
   integrity sha512-bls3EAsYVnVoPKoqgFC4Rtq7Kzte4MCk8xMA9UEPPVncJFsov9FJWYj0uxqJRwNEi9b4i4zX13FydaDrhadmHg==
@@ -7123,6 +7123,16 @@ mem-fs@^3.0.0:
     vinyl "^3.0.0"
     vinyl-file "^5.0.0"
 
+mem-fs@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/mem-fs/-/mem-fs-4.0.0.tgz#045e6aba448efed6cd6ca3be7c3e0c6c37f4aaed"
+  integrity sha512-GCt8Xh5cRZ1ep45A8T+NlUYCPHzSj5JG2Xo7CA4Z8ISZ8Ovw0UQhQGt+J/z2xk7M3F9F4X9ZjSYk9UYlLLy4Wg==
+  dependencies:
+    "@types/node" "^20.8.3"
+    "@types/vinyl" "^2.0.8"
+    vinyl "^3.0.0"
+    vinyl-file "^5.0.0"
+
 mem@^9.0.2:
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/mem/-/mem-9.0.2.tgz#bbc2d40be045afe30749681e8f5d554cee0c0354"
@@ -11207,6 +11217,7 @@ workbox-window@7.0.0:
     workbox-core "7.0.0"
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
