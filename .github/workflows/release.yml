@@ -18,7 +18,7 @@ concurrency:
 jobs:
   Release:
     runs-on: ubuntu-22.04
-    if: github.event.workflow_run.conclusion == 'success' && github.actor == 'miigotu'
+    if: github.event.workflow_run.conclusion == "success" && github.actor == "miigotu"
     steps:
       - name: Install Poetry
         uses: snok/install-poetry@v1.3.2
@@ -36,8 +36,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
-          cache: 'poetry'
+          python-version: "3.x"
+          cache: "poetry"
+          cache-dependency-path: pyproject.toml
       - name: Bump version
         run: |
           poetry install
