@@ -116,29 +116,20 @@
                         cur_airs_next = show_stat[curShow.indexerid]['ep_airs_next']
                         cur_airs_prev = show_stat[curShow.indexerid]['ep_airs_prev']
 
-                        cur_snatched = show_stat[curShow.indexerid]['ep_snatched']
-                        if not cur_snatched:
-                            cur_snatched = 0
-
-                        cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded']
-                        if not cur_downloaded:
-                            cur_downloaded = 0
-
-                        cur_total = show_stat[curShow.indexerid]['ep_total']
-                        if not cur_total:
-                            cur_total = 0
-
+                        cur_snatched = show_stat[curShow.indexerid]['ep_snatched'] or 0
+                        cur_downloaded = show_stat[curShow.indexerid]['ep_downloaded'] or 0
+                        cur_total = show_stat[curShow.indexerid]['ep_total'] or 0
                         show_size = show_stat[curShow.indexerid]['show_size']
 
                         download_stat = str(cur_downloaded)
                         download_stat_tip = _('Downloaded') + ": " + str(cur_downloaded)
 
                         if cur_snatched:
-                            download_stat = download_stat + "+" + str(cur_snatched)
-                            download_stat_tip = download_stat_tip + "&#013;" + _('Snatched') + ": " + str(cur_snatched)
+                            download_stat += "+" + str(cur_snatched)
+                            download_stat_tip += "&#013;" + _('Snatched') + ": " + str(cur_snatched)
 
-                    download_stat = download_stat + " / " + str(cur_total)
-                    download_stat_tip = download_stat_tip + "&#013;" + _('Total') + ": " + str(cur_total)
+                    download_stat += " / " + str(cur_total)
+                    download_stat_tip += "&#013;" + _('Total') + ": " + str(cur_total)
 
                     nom = cur_downloaded
                     if cur_total:
