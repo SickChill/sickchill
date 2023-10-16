@@ -1944,7 +1944,7 @@ const SICKCHILL = {
                     } else if (selectedProvider.toLowerCase() === 'rtorrent') {
                         client = 'rTorrent';
                         $('#host_desc_torrent').html(_('URL to your rTorrent client (e.g. scgi://localhost:5000 <br> '
-                                                        + 'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
+                            + 'or https://localhost/rutorrent/plugins/httprpc/action.php)'));
                         $('#torrent_verify_cert_option').show();
                         $('#torrent_auth_type_option').show();
                     } else if (selectedProvider.toLowerCase() === 'qbittorrent') {
@@ -3047,12 +3047,12 @@ const SICKCHILL = {
                 html: true, // Required if content has HTML
                 content: '<div id="popover-target"></div>',
             })
-            // Bootstrap popover event triggered when the popover opens
-            .on('shown.bs.popover', () => {
-                $('.displayShowTable').each((index, item) => {
-                    $.tablesorter.columnSelector.attachTo(item, '#popover-target');
+                // Bootstrap popover event triggered when the popover opens
+                .on('shown.bs.popover', () => {
+                    $('.displayShowTable').each((index, item) => {
+                        $.tablesorter.columnSelector.attachTo(item, '#popover-target');
+                    });
                 });
-            });
 
             // Moved and rewritten this from displayShow. This changes the button when clicked for collapsing/expanding the
             // Season to Show Episodes or Hide Episodes.

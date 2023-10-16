@@ -151,7 +151,7 @@ jobs:
         name: Coverage
         run: poetry run poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
   Test-Docker:
-    needs: [Environment, Test]
+    needs: [ Environment, Test ]
     runs-on: ubuntu-22.04
     steps:
       - name: Restore environment files
@@ -185,13 +185,13 @@ jobs:
           docker run -d --rm -p 8081:8081 --name ${{ env.DOCKER_CONTAINER_NAME }} ${{ env.DOCKER_TEST_TAG }}
           echo "Waiting ${{ env.SLEEP }} seconds for the container to start..." && sleep ${{ env.SLEEP }}
           echo "Checking if container is alive..."
-          [ $(curl http://0.0.0.0:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || (echo "Faile" && exit 1)
+          [ $(curl http://0.0.0.0:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || (echo "Failed" && exit 1)
           echo "Checking if we have a working home page..."
-          [ $(curl http://0.0.0.0:8081 -s) ~='site-notification-modal' ] && echo "Success!" || (echo "Faile" && exit 1)
+          [ $(curl http://0.0.0.0:8081 -s) == *"site-notification-modal"* ] && echo "Success!" || (echo "Failed" && exit 1)
           echo "Stopping and removing container..."
           docker stop ${{ env.DOCKER_CONTAINER_NAME }}
   Deploy:
-    needs: [Environment, Test, Test-Docker]
+    needs: [ Environment, Test, Test-Docker ]
     runs-on: ubuntu-22.04
     steps:
       - name: Set up QEMU
