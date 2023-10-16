@@ -81,7 +81,7 @@
                                         %>
                                         <time datetime="${isoDate}" class="date">${air_date}</time>
                                     </td>
-                                    <td class="tvShow text-center align-middle col-md-3"<a href="${scRoot}/home/displayShow?show=${hItem['show_id']}#S${hItem['season']}E${hItem['episode']}">
+                                    <td class="tvShow text-center align-middle col-md-3"><a href="${scRoot}/home/displayShow?show=${hItem['show_id']}#S${hItem['season']}E${hItem['episode']}">
                                         ${"{} - S{:02}E{:02}".format(hItem['show_name'], int(hItem['season']), int(hItem['episode']))} ${('', '<span class="quality Proper">Proper</span>')["proper" in hItem['resource'].lower() or "repack" in hItem['resource'].lower()]}
                                     </a></td>
                                     <td class="text-center align-middle" ${('', 'class="subtitles_column"')[curStatus == SUBTITLED]}>

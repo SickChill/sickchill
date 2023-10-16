@@ -11,7 +11,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -24,38 +24,30 @@ jobs:
   Parse:
     runs-on: ubuntu-latest
     steps:
-    -
-      name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
-        persist-credentials: false
-    -
-      name: Install Poetry
-      uses: snok/install-poetry@v1.3.2
-      with:
-        virtualenvs-path: .venv
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-        installer-parallel: false
-    -
-      name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-        cache: "poetry"
-        cache-dependency-path: pyproject.toml
-        check-latest: true
-    -
-      name: Install python dependency tools
-      run: |
-        poetry run pip install --upgrade setuptools wheel
-        poetry run pip install --upgrade pytest-github-actions-annotate-failures
-    -
-      name: Install sickchill
-      run: |
-        poetry install --no-interaction --with dev --with speedups
-    -
-      name: Test string
-      run: |
-        poetry run python -c "from sickchill.oldbeard.name_parser.parser import NameParser; parser = NameParser(); print(str(parser._parse_string('${{ env.TEST_STRING }}')));"
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.3.2
+        with:
+          virtualenvs-path: .venv
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: false
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "poetry"
+      - name: Install python dependency tools
+        run: |
+          poetry run pip install --upgrade setuptools wheel
+          poetry run pip install --upgrade pytest-github-actions-annotate-failures
+      - name: Install sickchill
+        run: |
+          poetry install --no-interaction
+      - name: Test string
+        run: |
+          poetry run sickchill --test-name ${{ env.TEST_STRING }}

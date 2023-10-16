@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 (function ($) {
     const imageTypeSizes = {
         poster: {
@@ -35,7 +33,6 @@ import _ from 'lodash';
     let imagesContainer = null;
     let imageType = null;
     let currentRequest = null;
-    const showID = $('#showID').attr('value');
 
     function fetchImages() {
         imagesContainer.empty();
@@ -47,14 +44,14 @@ import _ from 'lodash';
         imageSelectorDialog.dialog('option', 'dialogClass', 'browserDialog busy');
 
         currentRequest = $.getJSON(scRoot + '/imageSelector/', {
-            show: showID,
+            show: $('#showID').attr('value'),
             imageType,
             provider: $('#images-provider').val(),
         }, data => {
             $.each(data, (i, entry) => {
                 if (typeof entry === 'string') {
                     createImage(entry);
-                } else {
+                } else if (entry.hasOwnProperty('thumb') && entry.hasOwnProperty('image')) {
                     createImage(entry.image, entry.thumb);
                 }
             });
@@ -70,13 +67,12 @@ import _ from 'lodash';
     }
 
     function createImage(imageSrc, thumbSrc) {
-        const image = $('<img alt="' + showID + ' ' + imageType + '"/>')
-            .attr('data-image-type', imageSelectorDialog.data('image-type'))
-            .attr('alt', showID + ' ' + imageType)
-            .addClass('image-selector-item').on('click', ev => {
-                $('.image-selector-item-selected').removeClass('image-selector-item-selected');
-                $(ev.target).addClass('image-selector-item-selected');
-            });
+        const image = $('<img alt="' + $('#showID').attr('value') + ' ' + imageType + '"/>')
+        .attr('data-image-type', imageSelectorDialog.data('image-type'))
+        .addClass('image-selector-item').on('click', ev => {
+            $('.image-selector-item-selected').removeClass('image-selector-item-selected');
+            $(ev.target).addClass('image-selector-item-selected');
+        });
 
         const wrapUrl = new URL(scRoot + '/imageSelector/url_wrap/', location.href);
         if (thumbSrc) {
@@ -94,6 +90,7 @@ import _ from 'lodash';
     $.fn.nImageSelector = function (imageSelectorElement) {
         const field = $(this);
         const margin = 80;
+        const minimumWidth = 650;
         imageType = field.data('image-type');
 
         imageSelectorDialog = imageSelectorElement.dialog({
@@ -103,7 +100,7 @@ import _ from 'lodash';
             },
             title: _('Choose Image'),
             position: {my: 'center top', at: 'center top+60', of: window},
-            minWidth: Math.min($(document).width() - margin, 650),
+            minWidth: Math.min($(document).width() - margin, minimumWidth),
             height: Math.min($(document).height() - margin, $(window).height() - margin),
             maxHeight: Math.min($(document).height() - margin, $(window).height() - margin),
             maxWidth: $(document).width() - margin,

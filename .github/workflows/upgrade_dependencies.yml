@@ -11,18 +11,18 @@ concurrency:
 jobs:
   depends:
     strategy:
+      matrix:
+        os: [ ubuntu-latest ]
       fail-fast: true
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         if: success() && !env.ACT
         uses: actions/checkout@v4
         with:
           ref: 'develop'
           token: ${{ secrets.PAT }}
-      -
-        name: Install Poetry
+      - name: Install Poetry
         uses: snok/install-poetry@v1.3.2
         with:
           version: 1.2.0
@@ -30,29 +30,23 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: false
-      -
-        name: Set up Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
-          check-latest: true
+          python-version: "3.11"
           cache: 'poetry'
-          cache-dependency-path: pyproject.toml
-      -
-        name: Set up Node
+      - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: '16.x'
           cache: 'npm'
       - name: Install yarn
         run: npm install -g yarn
-      -
-        name: Run
+      - name: Run
         run: |
           pip install poethepoet
           poe depup
-      -
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Update poetry (python) and yarn (npm) dependencies
           commit_options: '--no-verify --signoff'

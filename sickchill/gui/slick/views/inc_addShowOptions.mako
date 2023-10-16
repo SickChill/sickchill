@@ -27,7 +27,7 @@
             <span class="component-title">${_('Use SC Metadata')}</span>
         </div>
         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-            <input type="checkbox" id="subtitles_sc_metadata" name="subtitles_sc_metadata"  />
+            <input type="checkbox" id="subtitles_sc_metadata" name="subtitles_sc_metadata" />
             <label for="subtitles_sc_metadata">${_('use SickChill metadata when searching for subtitle, <br />this will override the autodiscovered metadata')}</label>
         </div>
     </div>
@@ -107,7 +107,9 @@
 <div class="field-pair row">
     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
             <span class="component-title">
-                <input class="btn btn-inline" type="button" id="saveDefaultsButton" value="${_('Save as default')}" disabled />
+                <button type="button" class="btn btn-inline" id="saveDefaultsButton" disabled>
+                    ${_('Save as default')}
+                </button>
             </span>
     </div>
     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">

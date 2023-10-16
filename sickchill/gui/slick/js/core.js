@@ -196,7 +196,7 @@ const SICKCHILL = {
             if ((navigator.maxTouchPoints || 0) < 2) {
                 $('.dropdown-toggle').on('click', function () {
                     const element = $(this);
-                    if (element.prop('ariaEpanded') === 'true') {
+                    if (element.prop('ariaExpanded') === 'true') {
                         window.location.href = element.prop('href');
                     }
                 });
@@ -3048,11 +3048,11 @@ const SICKCHILL = {
                 content: '<div id="popover-target"></div>',
             })
             // Bootstrap popover event triggered when the popover opens
-                .on('shown.bs.popover', () => {
-                    $('.displayShowTable').each((index, item) => {
-                        $.tablesorter.columnSelector.attachTo(item, '#popover-target');
-                    });
+            .on('shown.bs.popover', () => {
+                $('.displayShowTable').each((index, item) => {
+                    $.tablesorter.columnSelector.attachTo(item, '#popover-target');
                 });
+            });
 
             // Moved and rewritten this from displayShow. This changes the button when clicked for collapsing/expanding the
             // Season to Show Episodes or Hide Episodes.

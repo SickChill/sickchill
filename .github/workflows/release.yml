@@ -20,8 +20,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.event.workflow_run.conclusion == 'success' && github.actor == 'miigotu'
     steps:
-      -
-        name: Install Poetry
+      - name: Install Poetry
         uses: snok/install-poetry@v1.3.2
         with:
           version: 1.2.0
@@ -29,27 +28,22 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: false
-      -
-        name: Checkout SickChill
+      - name: Checkout SickChill
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           path: sickchill
-      -
-        name: Set up Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
           cache: 'poetry'
-          check-latest: true
-      -
-        name: Bump version
+      - name: Bump version
         run: |
           poetry install
           # Set release version to todays date
           # debchange with gbd-change with new version
-      -
-        name: Publish
+      - name: Publish
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}

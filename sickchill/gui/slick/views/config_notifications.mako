@@ -2676,7 +2676,7 @@
                                                 <select id="trakt_method_add" name="trakt_method_add" class="form-control input-sm input250">
                                                     <option value="0" ${selected(settings.TRAKT_METHOD_ADD == 0)}>${_('Skip All')}</option>
                                                     <option value="1" ${selected(settings.TRAKT_METHOD_ADD == 1)}>${_('Download Pilot Only')}</option>
-                                                    <option value="2" ${('', 'selected')[settings.TRAKT_METHOD_ADD == 2]}>${_('Get whole show')}</option>
+                                                    <option value="2" ${selected(settings.TRAKT_METHOD_ADD == 2)}>${_('Get whole show')}</option>
                                                 </select>
                                             </div>
                                         </div>

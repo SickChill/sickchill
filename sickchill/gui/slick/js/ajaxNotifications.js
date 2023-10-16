@@ -31,7 +31,7 @@ function displayPNotify(type, title, message, id) {
         width: '340px',
         destroy: true,
     });
-    console.log('sent pnotify with tag: ' + notice.options.desktop.tag);
+    // console.log('sent pnotify with tag: ' + notice.options.desktop.tag);
 }
 
 let notificationTimer;
