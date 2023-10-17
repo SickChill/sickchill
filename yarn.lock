@@ -1608,7 +1608,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/ejs@^3.1.2":
+"@types/ejs@^3.1.3":
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/@types/ejs/-/ejs-3.1.3.tgz#ad91d1dd6e24fb60bbf96c534bce58b95eef9b57"
   integrity sha512-mv5T/JI/bu+pbfz1o+TLl1NF0NIBbjS0Vl6Ppz1YY9DkXfzZT0lelXpfS5i3ZS3U/p90it7uERQpBvLYoK8e4A==
@@ -1723,7 +1723,7 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.14.9.tgz#bc43c990c3c9be7281868bbc7b8fdd6e2b57adfa"
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
 
-"@types/node@^18.15.11":
+"@types/node@^18.18.5":
   version "18.18.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.18.5.tgz#afc0fd975df946d6e1add5bbf98264225b212244"
   integrity sha512-4slmbtwV59ZxitY4ixUZdy1uRLf9eSIvBWPQxNjhHYWEtn0FryfKpyS2cvADYXTayWdKEIsJengncrVvkI4I6A==
@@ -2637,7 +2637,7 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-binaryextensions@^4.15.0, binaryextensions@^4.16.0:
+binaryextensions@^4.15.0, binaryextensions@^4.16.0, binaryextensions@^4.18.0:
   version "4.18.0"
   resolved "https://registry.yarnpkg.com/binaryextensions/-/binaryextensions-4.18.0.tgz#22aeada2d14de062c60e8ca59a504a5636a76ceb"
   integrity sha512-PQu3Kyv9dM4FnwB7XGj1+HucW+ShvJzJqjuw1JkKVs1mWdwOKVcRjOi+pV9X52A0tNvrPCsPkbFFQb+wE1EAXw==
@@ -7068,23 +7068,23 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
 
-mem-fs-editor@^10.0.3:
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/mem-fs-editor/-/mem-fs-editor-10.0.3.tgz#c9e85443d484e51ddfb160cf2999cd42b3687fae"
-  integrity sha512-EfE+MKDgfplq6wtS0mRP/4hKNBLfVqc1dhnNEIJRQS9neTCAI3SkHQDToh9fvp02QtICiyGVR1/jJPFE7AFIpQ==
+mem-fs-editor@^11.0.0:
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/mem-fs-editor/-/mem-fs-editor-11.0.0.tgz#ae8398a16584106f19a97a5e156dc5cdd5193103"
+  integrity sha512-D9+DPIDohRxYUO95vR3RxJZUNkCmehOHqIoJVm9OxChMadCsNdiTB1nuU4zaHJonUMASYdfKN2USxnB9z0ccXg==
   dependencies:
-    "@types/ejs" "^3.1.2"
-    binaryextensions "^4.16.0"
+    "@types/ejs" "^3.1.3"
+    "@types/node" "^18.18.5"
+    binaryextensions "^4.18.0"
     commondir "^1.0.1"
     deep-extend "^0.6.0"
     ejs "^3.1.9"
-    globby "^13.1.4"
+    globby "^13.2.2"
     isbinaryfile "^5.0.0"
-    mem-fs "^3.0.0"
-    minimatch "^9.0.0"
+    minimatch "^9.0.3"
     multimatch "^6.0.0"
     normalize-path "^3.0.0"
-    textextensions "^5.13.0"
+    textextensions "^5.16.0"
     vinyl "^3.0.0"
 
 "mem-fs-editor@^8.1.2 || ^9.0.0", mem-fs-editor@^9.0.0:
@@ -7112,16 +7112,6 @@ mem-fs-editor@^10.0.3:
     "@types/vinyl" "^2.0.4"
     vinyl "^2.0.1"
     vinyl-file "^3.0.0"
-
-mem-fs@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/mem-fs/-/mem-fs-3.0.0.tgz#f5778688baa33ec6067fe7e21ac4c988c2400b7c"
-  integrity sha512-ORIMUgVVaKTsruUnt8qka8CD0T05mQnW5m7OZ/JtyUcfXKZ5vvHNf34CHvfbpd+WYm+6iWXKS5MvO6zhjJWlrg==
-  dependencies:
-    "@types/node" "^18.15.11"
-    "@types/vinyl" "^2.0.7"
-    vinyl "^3.0.0"
-    vinyl-file "^5.0.0"
 
 mem-fs@^4.0.0:
   version "4.0.0"
@@ -7290,7 +7280,7 @@ minimatch@^7.2.0:
   dependencies:
     brace-expansion "^2.0.1"
 
-minimatch@^9.0.0, minimatch@^9.0.1:
+minimatch@^9.0.0, minimatch@^9.0.1, minimatch@^9.0.3:
   version "9.0.3"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.3.tgz#a6e00c3de44c3a542bfaae70abfc22420a6da825"
   integrity sha512-RHiac9mvaRw0x3AYRgDC1CxAP7HTcNrrECeA8YYJeWnpo+2Q5CegtZjaotWTWxDG3UeGA1coE05iH1mPjT/2mg==
@@ -10208,7 +10198,7 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
-textextensions@^5.12.0, textextensions@^5.13.0:
+textextensions@^5.12.0, textextensions@^5.13.0, textextensions@^5.16.0:
   version "5.16.0"
   resolved "https://registry.yarnpkg.com/textextensions/-/textextensions-5.16.0.tgz#57dd60c305019bba321e848b1fdf0f99bfa59ec1"
   integrity sha512-7D/r3s6uPZyU//MCYrX6I14nzauDwJ5CxazouuRGNuvSCihW87ufN6VLoROLCrHg6FblLuJrT6N2BVaPVzqElw==
