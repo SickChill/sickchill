@@ -187,7 +187,7 @@ jobs:
           echo "Checking if container is alive..."
           [ $(curl http://0.0.0.0:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || (echo "Failed" && exit 1)
           echo "Checking if we have a working home page..."
-          [[ $(curl http://0.0.0.0:8081 -s) == *"site-notification-modal"* ]] && echo "Success!" || (echo "Failed" && exit 1)
+          curl http://0.0.0.0:8081 -s | grep -q "site-notification-modal" && echo "Success!" || (echo "Failed" && exit 1)
           echo "Stopping and removing container..."
           docker stop ${{ env.DOCKER_CONTAINER_NAME }}
   Deploy:
