@@ -60,7 +60,7 @@
     "load-grunt-tasks": "^5.1.0",
     "lodash": "^4.17.15",
     "mem-fs": "^4.0.0",
-    "mem-fs-editor": "^10.0.3",
+    "mem-fs-editor": "^11.0.0",
     "mini-css-extract-plugin": "^2.6.1",
     "sass": "^1.55.0",
     "sass-loader": "^13.1.0",
