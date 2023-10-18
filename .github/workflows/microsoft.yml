@@ -1,0 +1,25 @@
+name: M$ Lint Pull Request
+on:
+  push:
+    branches: [ develop, main, master ]
+  pull_request:
+    branches: [ develop, main, master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  microsoft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: lint and test
+        uses: microsoft/action-python@0.7.0
+        with:
+          black: true
+          bandit: true
+          pylint: true
+          pyright: true
+          flake8: true
+          testing: true
