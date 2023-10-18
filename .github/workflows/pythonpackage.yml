@@ -267,3 +267,9 @@ jobs:
         with:
           name: armv7
           path: /tmp/sickchill-wheels/linux_arm_v7
+  complete:
+    name: Packaging tests completed
+    runs-on: [ ubuntu-latest ]
+    needs: [ Environment, Test, Test-Docker, Deploy ]
+    steps:
+      - run: echo "Success!"
