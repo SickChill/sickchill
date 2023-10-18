@@ -22,4 +22,4 @@ jobs:
           pylint: true
           pyright: true
           flake8: true
-          testing: true
+          pytest: true
