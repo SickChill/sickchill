@@ -31,10 +31,10 @@
                                 <li><a href="#tabs-2">${_('Customize Options')}</a></li>
                             </ul>
                             <div id="tabs-1" class="existingtabs">
-                                    <%include file="/inc_rootDirs.mako" />
+                                <%include file="/inc_rootDirs.mako" />
                             </div>
                             <div id="tabs-2" class="existingtabs">
-                                    <%include file="/inc_addShowOptions.mako" />
+                                <%include file="/inc_addShowOptions.mako" />
                             </div>
                         </div>
                         <br>
