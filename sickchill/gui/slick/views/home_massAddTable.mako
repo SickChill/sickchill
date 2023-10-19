@@ -15,20 +15,20 @@
     </thead>
     <tbody>
         % for curDir in dirList:
-        <%
-            if curDir['added_already']:
-                continue
+            <%
+                if curDir['added_already']:
+                    continue
 
-            indexer = 0
-            show_id = curDir['dir']
-            if curDir['existing_info'][0]:
+                indexer = 0
+                show_id = curDir['dir']
+                if curDir['existing_info'][0]:
                     show_id = show_id + '|' + str(curDir['existing_info'][0]) + '|' + str(curDir['existing_info'][1])
                     indexer = curDir['existing_info'][2]
 
-                if curDir['existing_info'][0]:
-                    indexer = curDir['existing_info'][2]
-                elif settings.INDEXER_DEFAULT > 0:
-                    indexer = settings.INDEXER_DEFAULT
+                    if curDir['existing_info'][0]:
+                        indexer = curDir['existing_info'][2]
+                    elif settings.INDEXER_DEFAULT > 0:
+                        indexer = settings.INDEXER_DEFAULT
             %>
             <tr>
                 <td class="col-checkbox"><input type="checkbox" id="${show_id}" class="dirCheck" checked></td>
