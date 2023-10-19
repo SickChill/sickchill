@@ -131,7 +131,7 @@
                         <legend class="legendStep">#4 ${_('Customize options')}</legend>
                         <div class="row stepDiv">
                             <div class="col-md-12">
-                                    <%include file="/inc_addShowOptions.mako" />
+                                <%include file="/inc_addShowOptions.mako" />
                             </div>
                         </div>
 
