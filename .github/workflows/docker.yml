@@ -1,0 +1,78 @@
+name: Docker
+
+on:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: false
+
+env:
+  SLEEP: 60
+  DOCKER_BUILDKIT: '1'
+  DOCKER_TEST_TAG: sickchill/sickchill:test
+  DOCKER_CONTAINER_NAME: sickchill_test
+  TARGET_PLATFORMS: "linux/amd64,linux/arm64"
+  CRYPTOGRAPHY_DONT_BUILD_RUST: 1
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  setup:
+    name: Set up Docker Environment
+    runs-on: ubuntu-latest
+    outputs:
+      docker_tags: ${{ steps.docker.outputs.tags }}
+      docker_labels: ${{ steps.docker.outputs.labels }}
+    steps:
+      - name: Cache environment files
+        uses: actions/cache@v3
+        with:
+          path: /tmp/buildkitd.toml
+          key: ${{ github.workflow }}-environment
+      - name: Create buildkitd config
+        run: |
+          echo 'experimantal = true' > /tmp/buildkitd.toml
+          echo 'debug = true' >> /tmp/buildkitd.toml
+          echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
+          # echo '[worker.oci]' >> /tmp/buildkitd.toml
+          # echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
+          cat /tmp/buildkitd.toml
+      - name: Docker meta
+        id: docker
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ github.repository }}
+            ghcr.io/${{ github.repository }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/sickchill/sickchill
+            org.opencontainers.image.url=https://sickchill.github.io
+            org.opencontainers.image.licenses=GPL-3.0+
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.run_id }},event=push
+            type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.sha }},event=push
+            type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
+            type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
+            type=edge,branch=develop
+            type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+            type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+      - name: Restore environment files
+        uses: actions/cache@v3
+        with:
+          path: /tmp/buildkitd.toml
+          key: ${{ github.workflow }}-environment
+          restore-keys: ${{ github.workflow }}-environment
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          config: /tmp/buildkitd.toml
