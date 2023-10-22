@@ -72,6 +72,7 @@ providers = RegistrableExtensionManager(
         "nebulance = oldbeard.providers.nebulance:NebulanceProvider",
         "torrentday = oldbeard.providers.torrentday:TorrentDayProvider",
         "torrentleech = oldbeard.providers.torrentleech:TorrentLeechProvider",
+        "zamunda = oldbeard.providers.zamunda:ZamundaProvider",
     ],
 )
 

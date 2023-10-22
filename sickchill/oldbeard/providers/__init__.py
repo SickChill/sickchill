@@ -60,6 +60,7 @@ from sickchill.oldbeard.providers import (
     tvchaosuk,
     xthor,
     yggtorrent,
+    zamunda,
 )
 from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
@@ -123,6 +124,7 @@ __all__ = [
     "tvchaosuk",
     "xthor",
     "yggtorrent",
+    "zamunda",
 ]
 
 broken_providers = [
