@@ -708,7 +708,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm input350" title="naming_multi_ep">
                                     % for cur_multi_ep in sorted(MULTI_EP_STRINGS.items(), key=lambda x: x[1]):
-                                        <option value="${cur_multi_ep[0]}" ${selected(cur_multi_ep[0) == settings.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
+                                        <option value="${cur_multi_ep[0]}" ${selected(cur_multi_ep[0]) == settings.NAMING_MULTI_EP}>${cur_multi_ep[1]}</option>
                                     % endfor
                                 </select>
                             </div>
