@@ -106,6 +106,7 @@ jobs:
         uses: 5yutan5/setup-poetry-env@v1.1.0
         with:
           python-version: ${{ matrix.python-version }}
+          python-cache-dependency-path: pyproject.toml
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
         name: Set up Node
         uses: actions/setup-node@v3

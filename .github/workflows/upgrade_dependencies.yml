@@ -25,6 +25,7 @@ jobs:
         uses: 5yutan5/setup-poetry-env@v1.1.0
         with:
           python-version: ${{ matrix.python-version }}
+          python-cache-dependency-path: pyproject.toml
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
