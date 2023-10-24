@@ -31,11 +31,13 @@ jobs:
       - name: Install Poetry
         uses: miigotu/install-poetry@bash-windows
         with:
-          version: 1.2.0
           virtualenvs-path: .venv
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: false
+      - name: Activate venv
+        run:
+          source $VENV
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
