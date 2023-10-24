@@ -23,7 +23,7 @@
                     <span>${_('Limit')}:</span>
                     <select name="history_limit" id="history_limit" class="form-control form-control-inline input-sm" title="Limit">
                         % for val in [10, 25, 50, 100, 250, 500, 750, 1000, 0]:
-                            <option value="${val}}" ${selected(limit == val)}>${(val, _("All"))[val == 0]}</option>
+                            <option value="${val}" ${selected(limit == val)}>${(val, _("All"))[val == 0]}</option>
                         % endfor
                     </select>
                     &nbsp
