@@ -28,14 +28,10 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Install poetry
-        uses: Gr1N/setup-poetry@v8
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Poetry env
+        uses: 5yutan5/setup-poetry-env@v1.1.0
         with:
-          python-version: "3.11"
-          cache: "poetry"
-          cache-dependency-path: pyproject.toml
+          python-version: ${{ matrix.python-version }}
       - name: Install python dependency tools
         run: |
           poetry run pip install --upgrade setuptools wheel

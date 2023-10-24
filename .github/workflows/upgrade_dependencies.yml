@@ -21,14 +21,10 @@ jobs:
         with:
           ref: "develop"
           token: ${{ secrets.PAT }}
-      - name: Install poetry
-        uses: Gr1N/setup-poetry@v8
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Poetry
+        uses: 5yutan5/setup-poetry-env@v1.1.0
         with:
-          python-version: "3.11"
-          cache: "poetry"
-          cache-dependency-path: pyproject.toml
+          python-version: ${{ matrix.python-version }}
       - name: Set up Node
         uses: actions/setup-node@v3
         with:

@@ -102,14 +102,10 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           format: diff
-      - name: Install poetry
-        uses: Gr1N/setup-poetry@v8
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Setup Poetry
+        uses: 5yutan5/setup-poetry-env@v1.1.0
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "poetry"
-          cache-dependency-path: pyproject.toml
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
         name: Set up Node
         uses: actions/setup-node@v3
