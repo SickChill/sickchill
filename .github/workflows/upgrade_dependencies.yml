@@ -17,7 +17,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        if: success() && !env.ACT
         uses: actions/checkout@v4
         with:
           ref: "develop"
@@ -46,7 +45,9 @@ jobs:
         run: |
           pip install poethepoet
           poe depup
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - if: success() && !env.ACT
+        name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Update poetry (python) and yarn (npm) dependencies
           commit_options: "--no-verify --signoff"

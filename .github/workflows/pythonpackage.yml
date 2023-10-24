@@ -92,13 +92,12 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     steps:
-      - if: success() && !env.ACT
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           persist-credentials: false
-      - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10' && !env.ACT
+      - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == '3.10'
         name: Lint shell scripts
         uses: ludeeus/action-shellcheck@master
         with:
