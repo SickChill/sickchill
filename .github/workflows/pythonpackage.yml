@@ -102,16 +102,8 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           format: diff
-      - name: Install Poetry
-        uses: miigotu/install-poetry@bash-windows
-        with:
-          virtualenvs-path: .venv
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: false
-      - name: Activate venv
-        run:
-          source $VENV
+      - name: Install poetry
+        uses: Gr1N/setup-poetry@v8
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:

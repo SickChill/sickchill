@@ -20,16 +20,8 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.event.workflow_run.conclusion == "success" && github.actor == "miigotu"
     steps:
-      - name: Install Poetry
-        uses: miigotu/install-poetry@bash-windows
-        with:
-          virtualenvs-path: .venv
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: false
-      - name: Activate venv
-        run:
-          source $VENV
+      - name: Install poetry
+        uses: Gr1N/setup-poetry@v8
       - name: Checkout SickChill
         uses: actions/checkout@v4
         with:
