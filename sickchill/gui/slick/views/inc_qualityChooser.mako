@@ -11,7 +11,6 @@ else:
 
 anyQualities, bestQualities = Quality.splitQuality(__quality)
 overall_quality = Quality.combineQualities(anyQualities, bestQualities)
-selected = None
 %>
 
 <div class="row">

@@ -32,11 +32,7 @@
                     <span> ${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm">
                         % for layout in ['compact', 'detailed']:
-                            % if layout == settings.HISTORY_LAYOUT:
-                                <option class="text-capitalize" value="${scRoot}/setHistoryLayout/?layout=${layout}" selected>${_(layout)}</option>
-                            % else:
-                                <option class="text-capitalize" value="${scRoot}/setHistoryLayout/?layout=${layout}">${_(layout)}</option>
-                            % endif
+                            <option class="text-capitalize" value="${scRoot}/setHistoryLayout/?layout=${layout}" ${selected(layout == settings.HISTORY_LAYOUT)}>${_(layout)}</option>
                         % endfor
                     </select>
                 </label>
@@ -56,18 +52,18 @@
                 <table id="historyTable" class="sickchillTable tablesorter">
                     % if settings.HISTORY_LAYOUT == 'detailed':
                         <thead>
-                            <tr>
-                                <th class="nowrap">${_('Time')}</th>
-                                <th>${_('Episode')}</th>
-                                <th>${_('Action')}</th>
-                                <th>${_('Provider')}</th>
-                                <th>${_('Quality')}</th>
-                                <th class="col-checkbox"><input type="checkbox" class="bulkCheck" id="removeCheck" aria-label="column check" /></th>
-                            </tr>
+                        <tr>
+                            <th class="nowrap">${_('Time')}</th>
+                            <th>${_('Episode')}</th>
+                            <th>${_('Action')}</th>
+                            <th>${_('Provider')}</th>
+                            <th>${_('Quality')}</th>
+                            <th class="col-checkbox"><input type="checkbox" class="bulkCheck" id="removeCheck" aria-label="column check" /></th>
+                        </tr>
                         </thead>
                         <tbody>
                             % for hItem in historyResults:
-                            <% curStatus, curQuality = Quality.splitCompositeStatus(int(hItem['action'])) %>
+                                <% curStatus, curQuality = Quality.splitCompositeStatus(int(hItem['action'])) %>
                                 <tr>
                                     <td class="text-center align-middle">
                                         <%
@@ -115,23 +111,23 @@
                             % endfor
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <th class="nowrap" colspan="6">&nbsp;</th>
-                            </tr>
+                        <tr>
+                            <th class="nowrap" colspan="6">&nbsp;</th>
+                        </tr>
                         </tfoot>
                     % else:
                         <thead>
-                            <tr>
-                                <th class="nowrap">${_('Time')}</th>
-                                <th>${_('Episode')}</th>
-                                <th>${_('Snatched')}</th>
-                                <th>${_('Downloaded')}</th>
-                                % if settings.USE_SUBTITLES:
-                                    <th>${_('Subtitled')}</th>
-                                % endif
-                                <th>${_('Quality')}</th>
-                                <th class="col-checkbox" class="text-center align-middle"><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
-                            </tr>
+                        <tr>
+                            <th class="nowrap">${_('Time')}</th>
+                            <th>${_('Episode')}</th>
+                            <th>${_('Snatched')}</th>
+                            <th>${_('Downloaded')}</th>
+                            % if settings.USE_SUBTITLES:
+                                <th>${_('Subtitled')}</th>
+                            % endif
+                            <th>${_('Quality')}</th>
+                            <th class="col-checkbox" class="text-center align-middle"><input type="checkbox" class="bulkCheck" id="removeCheck" /></th>
+                        </tr>
                         </thead>
                         <tbody>
                             % for hItem in compactResults:
@@ -204,9 +200,9 @@
                             % endfor
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <th class="nowrap" colspan="${('6', '7')[settings.USE_SUBTITLES]}">&nbsp;</th>
-                            </tr>
+                        <tr>
+                            <th class="nowrap" colspan="${('6', '7')[settings.USE_SUBTITLES]}">&nbsp;</th>
+                        </tr>
                         </tfoot>
                     % endif
                 </table>

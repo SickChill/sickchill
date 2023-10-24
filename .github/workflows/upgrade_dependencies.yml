@@ -23,9 +23,8 @@ jobs:
           ref: "develop"
           token: ${{ secrets.PAT }}
       - name: Install Poetry
-        uses: snok/install-poetry@v1.3.2
+        uses: miigotu/install-poetry@bash-windows
         with:
-          version: 1.2.0
           virtualenvs-path: .venv
           virtualenvs-create: true
           virtualenvs-in-project: true
