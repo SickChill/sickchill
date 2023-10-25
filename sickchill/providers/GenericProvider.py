@@ -1,3 +1,4 @@
+import copy
 import re
 from base64 import b16encode, b32decode
 from datetime import datetime
@@ -5,7 +6,9 @@ from itertools import chain
 from os.path import join
 from random import shuffle
 from typing import Callable
+from urllib.parse import urljoin
 
+import validators
 from requests.structures import CaseInsensitiveDict
 from requests.utils import add_dict_to_cookiejar
 
@@ -40,6 +43,9 @@ class GenericProvider(object):
     }
 
     def __init__(self, name):
+        self.__original_url = None
+        self.__original_urls = None
+
         self.name = name
 
         self.anime_only = False
@@ -579,8 +585,52 @@ class GenericProvider(object):
                 value = view.get_query_argument(self.get_id("_" + option), default=default)
             if view.request.method == "POST":
                 value = view.get_body_argument(self.get_id("_" + option), default=default)
+            else:
+                raise AttributeError("We currently only work with GET and POST requests")
 
             if unhide:
                 value = filters.unhide(getattr(self, option), value)
 
             return setattr(self, option, cast(value))
+
+    @staticmethod
+    def valid_url(url):
+        try:
+            valid = validators.url(url)
+        except validators.utils.ValidationError:
+            valid = False
+
+        return valid is True
+
+    @classmethod
+    def invalid_url(cls, url):
+        return not cls.valid_url(url)
+
+    def check_and_update_urls(self):
+        if hasattr(self, "custom_url") and self.custom_url:
+            if self.invalid_url(self.custom_url):
+                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
+                return False
+
+            if not (hasattr(self, "custom_url"), hasattr(self, "url") and hasattr(self, "urls")):
+                # if we don't have these attributes, we cant figure out how to update these magically
+                return False
+
+            if not self.__original_url:
+                # make sure we keep a clean copy of the original base url, in case they reset the custom url
+                self.__original_url = self.url
+
+            if not self.__original_urls:
+                # make sure we keep a clean copy of the original urls, in case they reset the custom url
+                self.__original_urls = copy.deepcopy(self.urls)
+
+            for url in self.__original_urls:
+                # update each url in our urls to have the correct proxy url
+                self.urls[url] = urljoin(self.custom_url, self.__original_urls[url].split(self.__original_url)[1])
+        else:
+            # custom_url removed/reset, set urls back to defaults
+            if hasattr(self, "__original_urls"):
+                self.urls = copy.deepcopy(self.__original_urls)
+            if hasattr(self, "__original_url"):
+                self.url = self.__original_url
+        return True

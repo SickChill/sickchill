@@ -276,7 +276,7 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         try:
             for epObj in self.segment:
-                History().markFailed(epObj)
+                History().mark_failed(epObj)
                 logger.info(f"Beginning failed download search for: [{epObj.pretty_name}]")
 
             # If it is wanted, self.downCurQuality doesn't matter

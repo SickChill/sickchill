@@ -3410,7 +3410,7 @@ const SICKCHILL = {
                     return false;
                 }
 
-                $.post(scRoot + '/manage/failedDownloads', {toRemove: removeArray}, () => {
+                $.post(scRoot + '/manage/failedDownloads', {remove: removeArray}, () => {
                     location.reload(true);
                 });
             });
@@ -3689,9 +3689,7 @@ const SICKCHILL = {
                     title: 'Remove Logs',
                     text: 'You have selected to remove ' + removeCount + ' download history log(s).<br /><br />This cannot be undone.<br />Are you sure you wish to continue?',
                     confirm() {
-                        const url = scRoot + '/history/removeHistory';
-                        const parameters = 'toRemove=' + removeArray.join('|');
-                        $.post(url, parameters, () => {
+                        $.post(scRoot + '/history/removeHistory', {items: removeArray}, () => {
                             location.reload(true);
                         });
                     },

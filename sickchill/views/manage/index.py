@@ -701,7 +701,7 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def failedDownloads(self):
-        to_remove = self.get_body_arguments("toRemove")
+        remove = self.get_body_arguments("remove")
         limit = self.get_argument("limit", "100")
         failed_db_con = db.DBConnection("failed.db")
 
@@ -710,10 +710,10 @@ class Manage(Home, WebRoot):
         else:
             sql_results = failed_db_con.select("SELECT * FROM failed LIMIT ?", [limit])
 
-        for release in to_remove:
+        for release in remove:
             failed_db_con.action("DELETE FROM failed WHERE failed.release = ?", [release])
 
-        if to_remove:
+        if remove:
             return self.redirect("/manage/failedDownloads/")
 
         t = PageTemplate(rh=self, filename="manage_failedDownloads.mako")

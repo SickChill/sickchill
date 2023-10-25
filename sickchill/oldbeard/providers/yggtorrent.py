@@ -38,9 +38,9 @@ class Provider(TorrentProvider):
         if custom and not new_url:
             return True
 
-        if validators.url(new_url) != True:
+        if self.invalid_url(new_url):
             if custom:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
             else:
                 logger.debug("Url changing has failed!")
 
@@ -148,7 +148,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                             title, seeders, leechers
                                         )
                                     )

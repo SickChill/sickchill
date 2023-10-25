@@ -405,9 +405,7 @@ class Home(WebRoot):
         avatar = self.get_query_argument("avatar")
         tts = self.get_query_argument("tts")
 
-        import validators
-
-        if validators.url(webhook) != True:
+        if GenericProvider.invalid_url(webhook):
             return _("Invalid URL for webhook")
 
         result = notifiers.discord_notifier.test_notify(webhook, name, avatar, tts)

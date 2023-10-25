@@ -78,13 +78,13 @@ class History(WebRoot):
             action="index",
         )
 
-    def removeHistory(self, toRemove=None):
-        logsToRemove = []
-        for logItem in toRemove.split("|"):
-            info = logItem.split(",")
-            logsToRemove.append({"dates": info[0].split("$"), "show_id": info[1], "season": info[2], "episode": info[3]})
+    def removeHistory(self):
+        log_items = []
+        for item in self.get_body_arguments("items"):
+            info = item.split(",")
+            log_items.append({"dates": info[0].split("$"), "show_id": info[1], "season": info[2], "episode": info[3]})
 
-        self.history.remove(logsToRemove)
+        self.history.remove(log_items)
 
         ui.notifications.message(_("Selected history entries removed"))
 

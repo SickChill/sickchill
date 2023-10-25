@@ -32,8 +32,8 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
             return results
 
         if self.custom_url:
-            if validators.url(self.custom_url) != True:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+            if self.invalid_url(self.custom_url):
+                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
                 return results
 
         for mode in search_strings:

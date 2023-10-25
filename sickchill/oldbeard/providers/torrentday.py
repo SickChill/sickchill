@@ -54,8 +54,8 @@ class Provider(TorrentProvider):
             login_params = {"username": self.username, "password": self.password, "submit.x": 0, "submit.y": 0}
             login_url = self.urls["login"]
             if self.custom_url:
-                if validators.url(self.custom_url) != True:
-                    logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                if self.invalid_url(self.custom_url):
+                    logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
                     return False
 
                 login_url = urljoin(self.custom_url, self.urls["login"].split(self.url)[1])
@@ -84,8 +84,8 @@ class Provider(TorrentProvider):
         search_url = self.urls["search"]
         download_url = self.urls["download"]
         if self.custom_url:
-            if validators.url(self.custom_url) != True:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+            if self.invalid_url(self.custom_url):
+                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
                 return results
 
             search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
@@ -128,7 +128,9 @@ class Provider(TorrentProvider):
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != "RSS":
                             logger.debug(
-                                "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
+                                    title, seeders, leechers
+                                )
                             )
                         continue
 

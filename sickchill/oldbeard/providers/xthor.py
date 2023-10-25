@@ -78,7 +78,9 @@ class Provider(TorrentProvider):
                         leechers = torrent.get("leechers")
                         if not seeders and mode != "RSS":
                             logger.debug(
-                                "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
+                                    title, seeders, leechers
+                                )
                             )
                             continue
 
