@@ -1095,9 +1095,9 @@ class PostProcessor(object):
                 sql_l.append(cur_ep.get_sql())
 
         # Just want to keep this consistent for failed handling right now
-        releaseName = show_name_helpers.determine_release_name(self.folder_path, self.release_name)
-        if releaseName:
-            self.history.logSuccess(releaseName)
+        release_name = show_name_helpers.determine_release_name(self.folder_path, self.release_name)
+        if release_name:
+            self.history.log_success(release_name)
         else:
             self._log(_("Warning: Couldn't find release in snatch history"), logger.INFO)
 
@@ -1186,7 +1186,7 @@ class PostProcessor(object):
             logger.info(_("Could not create/update meta files. Continuing with postProcessing..."))
 
         # log it to history
-        self.history.logDownload(episode_object, self.directory, new_ep_quality, self.release_group, new_ep_version)
+        self.history.log_download(episode_object, self.directory, new_ep_quality, self.release_group, new_ep_version)
 
         # If any notification fails, don't stop postProcessor
         try:

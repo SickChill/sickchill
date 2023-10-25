@@ -45,7 +45,7 @@ class Provider(TorrentProvider):
                 search_params["s"] = search_string
 
                 if self.custom_url:
-                    if validators.url(self.custom_url) != True:
+                    if self.invalid_url(self.custom_url):
                         logger.warning("Invalid custom url set, please check your settings")
                         return results
                     search_url = self.custom_url

@@ -834,7 +834,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         providers.check_enabled_providers()
 
         if not os.path.isfile(settings.CONFIG_FILE):
-            logger.debug("Unable to find '" + settings.CONFIG_FILE + "', all settings will be default!")
+            logger.debug(f"Unable to find ${settings.CONFIG_FILE}, all settings will be default!")
             save_config()
 
         # initialize the main SC database
@@ -1069,7 +1069,7 @@ def sig_handler(signum=None, frame=None):
     # noinspection PyUnusedLocal
     frame_ = frame
     if not isinstance(signum, type(None)):
-        logger.info("Signal {0:d} caught, saving and exiting...".format(int(signum)))
+        logger.info(f"Signal {signum} caught, saving and exiting...")
         Shutdown.stop(settings.PID)
 
 

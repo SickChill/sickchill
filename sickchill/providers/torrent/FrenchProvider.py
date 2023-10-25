@@ -71,7 +71,7 @@ class FrenchTorrentProvider(TorrentProvider):
     def _get_provider_url(self):
         if self._recheck_url:
             if self.custom_url:
-                if validators.url(self.custom_url):
+                if self.valid_url(self.custom_url):
                     self._used_url = self.custom_url
                 else:
                     logger.warning("Invalid custom url set, please check your settings")

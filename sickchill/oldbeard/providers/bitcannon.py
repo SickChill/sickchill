@@ -24,7 +24,7 @@ class Provider(TorrentProvider):
 
         url = "http://localhost:3000/"
         if self.custom_url:
-            if validators.url(self.custom_url) != True:
+            if self.invalid_url(self.custom_url):
                 logger.warning("Invalid custom url set, please check your settings")
                 return results
             url = self.custom_url

@@ -36,7 +36,7 @@ class RSSTorrentMixin:
 
     @classmethod
     def check_link(cls, link, url):
-        return urlparse(link).netloc == urlparse(url).netloc or validators.url(link) == True or link.startswith("magnet")
+        return urlparse(link).netloc == urlparse(url).netloc or validators.url(link) is True or link.startswith("magnet")
 
     @classmethod
     def parse_feed_item(cls, item, url, size_units=None):

@@ -269,7 +269,7 @@ def download_subtitles(episode, force_lang=None):
         sickchill.oldbeard.helpers.chmodAsParent(subtitle_path)
         sickchill.oldbeard.helpers.fixSetGroupID(subtitle_path)
 
-        History().logSubtitle(
+        History().log_subtitle(
             episode.show.indexerid, episode.season, episode.episode, episode.status, subtitle, log_scores(subtitle, video, user_score=user_score)
         )
 

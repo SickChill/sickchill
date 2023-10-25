@@ -98,8 +98,8 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
             else:
                 logger.warning("Torrent file content is empty")
                 # TODO: This is broken!!
-                # History().logFailed(result.episodes, result.name, result.provider)
-                History().logFailed(result.episodes[0], result.name, result.provider.name)  # This one seems to work
+                # History().log_failed(result.episodes, result.name, result.provider)
+                History().log_failed(result.episodes[0], result.name, result.provider.name)  # This one seems to work
                 snatched_result = False
     # NZBs can be sent straight to SAB or saved to disk
     elif result.is_nzb or result.is_nzbdata:
@@ -124,7 +124,7 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
         return False
 
     ui.notifications.message("Episode snatched", result.name)
-    History().logSnatch(result)
+    History().log_snatch(result)
 
     # don't notify when we re-download an episode
     sql_l = []
@@ -202,7 +202,7 @@ def pick_best_result(results, show):
             continue
 
         if hasattr(result, "size"):
-            if settings.USE_FAILED_DOWNLOADS and History().hasFailed(result.name, result.size, result.provider.name):
+            if settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name, result.size, result.provider.name):
                 logger.info(f"{result.name} has previously failed, rejecting it")
                 continue
 
