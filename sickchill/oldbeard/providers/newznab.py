@@ -258,7 +258,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         return new_provider
 
-    def search(self, search_strings, age=0, episode_object=None):
+    def search(self, search_strings, episode_object=None):
         """
         Searches indexer using the params in search_strings, either for latest releases, or a string/id search
         Returns: list of results in dict form

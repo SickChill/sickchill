@@ -29,7 +29,7 @@ class Provider(TorrentProvider):
         # Cache
         self.cache = tvcache.TVCache(self, search_params={"RSS": ["0day"]})
 
-    def search(self, search_strings, age=0, episode_object=None):
+    def search(self, search_strings, episode_object=None):
         results = []
 
         search_params = {"out": "json", "filter": 2101, "showmagnets": "on", "num": 50}

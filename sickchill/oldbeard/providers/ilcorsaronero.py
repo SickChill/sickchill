@@ -173,7 +173,7 @@ class Provider(TorrentProvider):
             hash=info_hash, title=quote_plus(title), trackers="http://tracker.tntvillage.scambioetico.org:2710/announce"
         )
 
-    def search(self, search_params, age=0, episode_object=None):
+    def search(self, search_params, episode_object=None):
         results = []
 
         for mode in search_params:

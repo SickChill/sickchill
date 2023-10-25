@@ -45,7 +45,7 @@ class Provider(TorrentProvider):
         self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
-    def search(self, search_strings, age=0, episode_object=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         if not self.login():
             return results

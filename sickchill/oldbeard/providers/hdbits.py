@@ -49,7 +49,7 @@ class Provider(TorrentProvider):
 
         return title, url
 
-    def search(self, search_params, age=0, episode_object=None):
+    def search(self, search_params, episode_object=None):
         # FIXME
         results = []
 

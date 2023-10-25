@@ -56,7 +56,7 @@ class Provider(TorrentProvider):
                 logger.warning("Failed to login, check your cookies")
                 return False
 
-    def search(self, search_params, age=0, episode_object=None):
+    def search(self, search_params, episode_object=None):
         results = []
         if not self.login():
             return results

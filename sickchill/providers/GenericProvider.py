@@ -401,7 +401,7 @@ class GenericProvider(object):
     def login(self):
         return True
 
-    def search(self, search_params, age=0, episode_object=None):
+    def search(self, search_params, episode_object=None):
         return []
 
     def _get_result(self, episodes):

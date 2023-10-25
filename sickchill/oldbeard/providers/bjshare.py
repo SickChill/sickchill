@@ -54,13 +54,12 @@ class Provider(TorrentProvider):
         # until they or the source from where they get that info fix it...
         self.absolute_numbering = ["One Piece", "Boruto: Naruto Next Generations"]
 
-    def search(self, search_strings, age=0, episode_object=None):
+    def search(self, search_strings, episode_object=None):
         """
         Search a provider and parse the results.
 
         :param search_strings: A dict with mode (key) and the search value (value)
-        :param age: Not used
-        :param episode_object: Informations about the episode being searched (when not RSS)
+        :param episode_object: Information about the episode being searched (when not RSS)
 
         :returns: A list of search results (structure)
         """

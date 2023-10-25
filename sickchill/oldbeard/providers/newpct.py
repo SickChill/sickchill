@@ -19,7 +19,7 @@ class Provider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, min_time=20)
 
-    def search(self, search_strings, age=0, episode_object=None):
+    def search(self, search_strings, episode_object=None):
         """
         Search query:
         http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
