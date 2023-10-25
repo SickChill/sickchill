@@ -3,28 +3,40 @@ updates:
   - package-ecosystem: pip
     directory: "/"
     target-branch: develop
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
     schedule:
-      interval: daily
-    allow:
-      dependency-type: all
+      interval: weekly
+    assignees:
+      - "miigotu"
   - package-ecosystem: github-actions
     directory: "/"
     target-branch: develop
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
     schedule:
-      interval: daily
-    allow:
-      dependency-type: all
+      interval: weekly
+    assignees:
+      - "miigotu"
   - package-ecosystem: docker
     directory: "/"
     target-branch: develop
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
     schedule:
-      interval: daily
-    allow:
-      dependency-type: all
+      interval: weekly
+    assignees:
+      - "miigotu"
   - package-ecosystem: npm
     directory: "/"
     target-branch: develop
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "-"
     schedule:
-      interval: daily
-    allow:
-      dependency-type: all
+      interval: weekly
+    assignees:
+      - "miigotu"
