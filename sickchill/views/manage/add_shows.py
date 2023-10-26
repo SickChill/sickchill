@@ -314,6 +314,19 @@ class AddShows(Home):
         t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
         try:
             popular_shows = imdb_popular.fetch_popular_shows()
+
+            popular_shows = {
+                show for show in popular_shows
+                if show.getID() and show.getID().strip("tt") not in {
+                    show.imdb_id.strip("tt")
+                    for show in settings.showList
+                    if show.imdb_id
+                }
+            }
+            for show in popular_shows:
+                show.setdefault('rating', '0.0')
+                show.setdefault('votes', '0')
+
             imdb_exception = None
         except Exception as error:
             logger.warning(f"Could not get popular shows: {error}")

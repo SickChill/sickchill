@@ -12,6 +12,7 @@ from sickchill.oldbeard.classes import SearchResult
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow
     from sickchill.oldbeard.subtitles import Scores
+    from sickchill.providers.GenericProvider import GenericProvider
 
 from sickchill.helper.common import remove_extension, try_int
 from sickchill.helper.exceptions import EpisodeNotFoundException
@@ -23,8 +24,8 @@ class History(object, metaclass=Singleton):
     date_format = "%Y%m%d%H%M%S"
 
     def __init__(self):
-        self.db: DBConnection = DBConnection()  # DataSource: sickchill.db
-        self.failed_db: DBConnection = DBConnection("failed.db")  # DataSource: failed.db
+        self.db: DBConnection = DBConnection()
+        self.failed_db: DBConnection = DBConnection("failed.db")
 
         self.trim()
 
@@ -35,15 +36,15 @@ class History(object, metaclass=Singleton):
         """
         query = ""
 
+        params = []
         for item in items:
             if query:
                 query += " OR "
 
-            query += "(date IN ({0}) AND showid = {1} " "AND season = {2} AND episode = {3})".format(
-                ",".join(item["dates"]), item["show_id"], item["season"], item["episode"]
-            )
+            query += "(date IN (?) AND showid = ? AND season = ? AND episode = ?)"
+            params.extend([",".join(item["dates"]), item["show_id"], item["season"], item["episode"]])
 
-        self.db.action("DELETE FROM history WHERE " + query)
+        self.db.action("DELETE FROM history WHERE " + query, params)
 
     def clear(self):
         """
@@ -76,7 +77,7 @@ class History(object, metaclass=Singleton):
             "SELECT action, date, episode, provider, h.quality, resource, season, show_name, showid "
             "FROM history h, tv_shows s "
             "WHERE h.showid = s.indexer_id "
-        )
+        )  # DataSource: sickchill.db
         replacements = ",".join(["?"] * len(actions))
         filter_sql = f"AND action IN ({replacements})"
         order_sql = "ORDER BY date DESC "
@@ -119,7 +120,7 @@ class History(object, metaclass=Singleton):
         if settings.USE_FAILED_DOWNLOADS:
             self.failed_db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
 
-    def _logHistoryItem(self, action: int, showid: int, season: int, episode: int, quality: int, resource: str, provider, version=-1):
+    def _log_history_item(self, action: int, showid: int, season: int, episode: int, quality: int, resource: str, provider, version=-1):
         """
         Insert a history item in DB
 
@@ -132,6 +133,7 @@ class History(object, metaclass=Singleton):
         :param provider: provider used
         :param version: tracked version of file (defaults to -1)
         """
+        # DataSource: sickchill.db
         return self.db.action(
             "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [action, datetime.today().strftime(self.date_format), showid, season, episode, quality, resource, provider, version],
@@ -143,15 +145,15 @@ class History(object, metaclass=Singleton):
 
         :param result: search result object
         """
-        providerClass = result.provider
+        provider_class: "GenericProvider" = result.provider
         show: "TVShow" = result.episodes[0].show
-        if providerClass:
-            provider = providerClass.name
+        if provider_class:
+            provider = provider_class.name
         else:
             provider = "unknown"
 
         for episode in result.episodes:
-            self._logHistoryItem(
+            self._log_history_item(
                 Quality.compositeStatus(SNATCHED, result.quality),
                 episode.show.indexerid,
                 episode.season,
@@ -186,7 +188,7 @@ class History(object, metaclass=Singleton):
         :param group: Release group
         :param version: Version of file (defaults to -1)
         """
-        self._logHistoryItem(episode.status, episode.show.indexerid, episode.season, episode.episode, quality, filename, group or -1, version)
+        self._log_history_item(episode.status, episode.show.indexerid, episode.season, episode.episode, quality, filename, group or -1, version)
 
     def log_subtitle(self, show: int, season: int, episode: int, status: int, subtitle: subliminal.subtitle.Subtitle, scores: "Scores"):
         """
@@ -197,14 +199,14 @@ class History(object, metaclass=Singleton):
         :param episode: Show episode
         :param status: Status of download
         :param subtitle: Result object
-        # :param scores: Scores named tuple
+        :param scores: Scores named tuple
         """
         if settings.SUBTITLES_HISTORY:
             logger.debug(
                 f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores.res}/{scores.percent}% (min={scores.min}/{scores.min_percent})"
             )
             status, quality = Quality.splitCompositeStatus(status)
-            self._logHistoryItem(
+            self._log_history_item(
                 Quality.compositeStatus(SUBTITLED, quality), show, season, episode, quality, subtitle.language.opensubtitles, subtitle.provider_name
             )
 
@@ -218,7 +220,7 @@ class History(object, metaclass=Singleton):
         """
 
         status, quality = Quality.splitCompositeStatus(episode_object.status)
-        self._logHistoryItem(
+        self._log_history_item(
             Quality.compositeStatus(FAILED, quality), episode_object.show.indexerid, episode_object.season, episode_object.episode, quality, release, provider
         )
 

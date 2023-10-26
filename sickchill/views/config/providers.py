@@ -33,12 +33,12 @@ class ConfigProviders(Config):
 
         provider_dict = {x.get_id(): x for x in settings.newznab_provider_list}
 
-        current_id = GenericProvider.make_id(name)
+        provider_id = GenericProvider.make_id(name)
 
-        if current_id in provider_dict:
+        if provider_id in provider_dict:
             return json.dumps({"error": "Provider Name already exists as " + name})
         else:
-            return json.dumps({"success": current_id})
+            return json.dumps({"success": provider_id})
 
     @staticmethod
     def getNewznabCategories(name, url, key):
@@ -121,47 +121,49 @@ class ConfigProviders(Config):
         torrent_rss_string = self.get_body_argument("torrent_rss_string", default="")
         provider_order = self.get_body_argument("provider_order", default="")
 
+        print(provider_order)
+
         for current_newznab_string in newznab_string.split("!!!"):
             if not current_newznab_string:
                 continue
 
-            current_name, current_url, current_key, current_cat = current_newznab_string.split("|")
-            current_url = config.clean_url(current_url)
-            current_id = GenericProvider.make_id(current_name)
+            name, url, key, categories = current_newznab_string.split("|")
+            url = config.clean_url(url)
+            provider_id = GenericProvider.make_id(name)
 
             # if it does not already exist then add it
-            if current_id not in newznab_provider_dict:
-                new_provider = NewznabProvider(current_name, current_url, key=current_key, catIDs=current_cat)
+            if provider_id not in newznab_provider_dict:
+                new_provider = NewznabProvider(name, url, key=key, categories=categories)
                 settings.newznab_provider_list.append(new_provider)
-                newznab_provider_dict[current_id] = new_provider
+                newznab_provider_dict[provider_id] = new_provider
 
             # set all params
-            newznab_provider_dict[current_id].name = current_name
-            newznab_provider_dict[current_id].url = current_url
-            newznab_provider_dict[current_id].key = current_key
-            newznab_provider_dict[current_id].catIDs = current_cat
+            newznab_provider_dict[provider_id].name = name
+            newznab_provider_dict[provider_id].url = url
+            newznab_provider_dict[provider_id].key = key
+            newznab_provider_dict[provider_id].categories = categories
             # a 0 in the key spot indicates that no key is needed
-            newznab_provider_dict[current_id].needs_auth = current_key and current_key != "0"
-            newznab_provider_dict[current_id].search_mode = self.get_body_argument(current_id + "_search_mode", "episode")
-            newznab_provider_dict[current_id].search_fallback = config.checkbox_to_value(
-                self.get_body_argument(current_id + "search_fallback", 0), value_on=1, value_off=0
+            newznab_provider_dict[provider_id].needs_auth = key and key != "0"
+            newznab_provider_dict[provider_id].search_mode = self.get_body_argument(provider_id + "_search_mode", "episode")
+            newznab_provider_dict[provider_id].search_fallback = config.checkbox_to_value(
+                self.get_body_argument(provider_id + "search_fallback", 0), value_on=1, value_off=0
             )
-            newznab_provider_dict[current_id].enable_daily = config.checkbox_to_value(
-                self.get_body_argument(current_id + "enable_daily", 0), value_on=1, value_off=0
+            newznab_provider_dict[provider_id].enable_daily = config.checkbox_to_value(
+                self.get_body_argument(provider_id + "enable_daily", 0), value_on=1, value_off=0
             )
-            newznab_provider_dict[current_id].enable_backlog = config.checkbox_to_value(
-                self.get_body_argument(current_id + "enable_backlog", 0), value_on=1, value_off=0
+            newznab_provider_dict[provider_id].enable_backlog = config.checkbox_to_value(
+                self.get_body_argument(provider_id + "enable_backlog", 0), value_on=1, value_off=0
             )
 
             # mark it finished
-            finished_names.append(current_id)
+            finished_names.append(provider_id)
 
         # delete anything that is in the list that was not processed just now
         if newznab_string:
-            for current_provider in settings.newznab_provider_list:
-                if current_provider.get_id() not in finished_names:
-                    settings.newznab_provider_list.remove(current_provider)
-                    del newznab_provider_dict[current_provider.get_id()]
+            for provider in settings.newznab_provider_list:
+                if provider.get_id() not in finished_names:
+                    settings.newznab_provider_list.remove(provider)
+                    del newznab_provider_dict[provider.get_id()]
 
         torrent_rss_provider_dict = {x.get_id(): x for x in settings.torrent_rss_provider_list}
 
@@ -172,83 +174,84 @@ class ConfigProviders(Config):
                 if not current_torrent_rss_provider_string:
                     continue
 
-                current_name, current_url, current_cookies, current_title_tag = current_torrent_rss_provider_string.split("|")
-                current_url = config.clean_url(current_url)
-                current_id = GenericProvider.make_id(current_name)
+                name, url, current_cookies, current_title_tag = current_torrent_rss_provider_string.split("|")
+                url = config.clean_url(url)
+                provider_id = GenericProvider.make_id(name)
 
                 # if it does not already exist then create it
-                if current_id not in torrent_rss_provider_dict:
-                    new_provider = TorrentRssProvider(current_name, current_url, current_cookies, current_title_tag)
+                if provider_id not in torrent_rss_provider_dict:
+                    new_provider = TorrentRssProvider(name, url, current_cookies, current_title_tag)
                     settings.torrent_rss_provider_list.append(new_provider)
-                    torrent_rss_provider_dict[current_id] = new_provider
+                    torrent_rss_provider_dict[provider_id] = new_provider
 
                 # update values
-                torrent_rss_provider_dict[current_id].name = current_name
-                torrent_rss_provider_dict[current_id].url = current_url
-                torrent_rss_provider_dict[current_id].cookies = current_cookies
-                torrent_rss_provider_dict[current_id].current_title_tag = current_title_tag
+                torrent_rss_provider_dict[provider_id].name = name
+                torrent_rss_provider_dict[provider_id].url = url
+                torrent_rss_provider_dict[provider_id].cookies = current_cookies
+                torrent_rss_provider_dict[provider_id].current_title_tag = current_title_tag
 
                 # mark it finished
-                finished_names.append(current_id)
+                finished_names.append(provider_id)
 
         # delete anything that is in the list that was not processed just now
         if torrent_rss_string:
-            for current_provider in settings.torrent_rss_provider_list:
-                if current_provider.get_id() not in finished_names:
-                    settings.torrent_rss_provider_list.remove(current_provider)
-                    del torrent_rss_provider_dict[current_provider.get_id()]
+            for provider in settings.torrent_rss_provider_list:
+                if provider.get_id() not in finished_names:
+                    settings.torrent_rss_provider_list.remove(provider)
+                    del torrent_rss_provider_dict[provider.get_id()]
 
         # do the enable/disable
         enabled_provider_list = []
         disabled_provider_list = []
-        for current_id, current_enabled in (current_provider_string.split(":") for current_provider_string in provider_order.split()):
-            current_enabled = bool(try_int(current_enabled))
 
-            current_provider_object = [x for x in sickchill.oldbeard.providers.sorted_provider_list() if x.get_id() == current_id and hasattr(x, "enabled")]
+        for provider_id, enabled in (provider.split(":") for provider in provider_order.split()):
+            enabled = bool(try_int(enabled))
+
+            current_provider_object = [x for x in sickchill.oldbeard.providers.sorted_provider_list() if x.get_id() == provider_id and hasattr(x, "enabled")]
 
             if current_provider_object:
-                current_provider_object[0].enabled = current_enabled
+                current_provider_object[0].enabled = enabled
 
-            if current_enabled:
-                enabled_provider_list.append(current_id)
+            if enabled:
+                enabled_provider_list.append(provider_id)
             else:
-                disabled_provider_list.append(current_id)
+                disabled_provider_list.append(provider_id)
 
-            if current_id in newznab_provider_dict:
-                newznab_provider_dict[current_id].enabled = current_enabled
-            elif current_id in torrent_rss_provider_dict:
-                torrent_rss_provider_dict[current_id].enabled = current_enabled
+            if provider_id in newznab_provider_dict:
+                newznab_provider_dict[provider_id].enabled = enabled
+            elif provider_id in torrent_rss_provider_dict:
+                torrent_rss_provider_dict[provider_id].enabled = enabled
 
         # dynamically load provider settings
-        for current_provider in sickchill.oldbeard.providers.sorted_provider_list():
-            current_provider.check_set_option(self, "custom_url")
-            current_provider.check_set_option(self, "cookies")
+        for provider in sickchill.oldbeard.providers.sorted_provider_list():
+            provider.check_set_option(self, "custom_url")
+            provider.check_set_option(self, "cookies")
 
-            current_provider.check_set_option(self, "minseed", 0, int)
-            current_provider.check_set_option(self, "minleech", 0, int)
-            current_provider.check_set_option(self, "cat", 0, int)
-            current_provider.check_set_option(self, "digest", None)
-            current_provider.check_set_option(self, "hash", None)
-            current_provider.check_set_option(self, "api_key", None, unhide=True)
-            current_provider.check_set_option(self, "username", None, unhide=True)
-            current_provider.check_set_option(self, "password", None, unhide=True)
-            current_provider.check_set_option(self, "passkey", None, unhide=True)
-            current_provider.check_set_option(self, "pin", None, unhide=True)
+            provider.check_set_option(self, "minseed", 0, int)
+            provider.check_set_option(self, "minleech", 0, int)
+            provider.check_set_option(self, "cat", 0, int)
+            provider.check_set_option(self, "digest", None)
+            provider.check_set_option(self, "hash", None)
+            provider.check_set_option(self, "api_key", None, unhide=True)
+            provider.check_set_option(self, "username", None, unhide=True)
+            provider.check_set_option(self, "password", None, unhide=True)
+            provider.check_set_option(self, "passkey", None, unhide=True)
+            provider.check_set_option(self, "pin", None, unhide=True)
 
-            current_provider.check_set_option(self, "confirmed", False, cast=config.checkbox_to_value)
-            current_provider.check_set_option(self, "ranked", False, cast=config.checkbox_to_value)
-            current_provider.check_set_option(self, "engrelease", False, cast=config.checkbox_to_value)
-            current_provider.check_set_option(self, "onlyspasearch", False, cast=config.checkbox_to_value)
-            current_provider.check_set_option(self, "freeleech", False, cast=config.checkbox_to_value)
-            current_provider.check_set_option(self, "search_fallback", False, cast=config.checkbox_to_value)
-            current_provider.check_set_option(self, "enable_daily", False, cast=config.checkbox_to_value)  # fix can_daily
-            current_provider.check_set_option(self, "enable_backlog", False, cast=config.checkbox_to_value)  # fix can_backlog
-            current_provider.check_set_option(self, "subtitle", False, cast=config.checkbox_to_value)
+            provider.check_set_option(self, "confirmed", False, cast=config.checkbox_to_value)
+            provider.check_set_option(self, "ranked", False, cast=config.checkbox_to_value)
+            provider.check_set_option(self, "engrelease", False, cast=config.checkbox_to_value)
+            provider.check_set_option(self, "onlyspasearch", False, cast=config.checkbox_to_value)
+            provider.check_set_option(self, "freeleech", False, cast=config.checkbox_to_value)
+            provider.check_set_option(self, "search_fallback", False, cast=config.checkbox_to_value)
+            provider.check_set_option(self, "enable_daily", False, cast=config.checkbox_to_value)  # fix can_daily
+            provider.check_set_option(self, "enable_backlog", False, cast=config.checkbox_to_value)  # fix can_backlog
+            provider.check_set_option(self, "subtitle", False, cast=config.checkbox_to_value)
 
-            current_provider.check_set_option(self, "sorting", "seeders")
-            current_provider.check_set_option(self, "search_mode", "episode")
+            provider.check_set_option(self, "sorting", "seeders")
+            provider.check_set_option(self, "search_mode", "episode")
 
-            current_provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_int(x), -1))
+            provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_int(x), -1))
 
         settings.NEWZNAB_DATA = "!!!".join([x.config_string() for x in settings.newznab_provider_list])
         settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list

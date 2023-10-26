@@ -950,7 +950,7 @@ class TVShow(object):
         action = ("delete", "trash")[settings.TRASH_REMOVE_SHOW]
 
         # remove self from show list
-        settings.showList = [x for x in settings.showList if int(x.indexerid) != self.indexerid]
+        settings.showList.remove(self)
 
         # clear the cache
         image_cache_dir = os.path.join(settings.CACHE_DIR, "images")

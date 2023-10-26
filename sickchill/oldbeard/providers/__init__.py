@@ -132,9 +132,10 @@ broken_providers = [
 ]
 
 
-def sorted_provider_list(randomize=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, NZBProvider, GenericProvider]]:
-    initialList = settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list
-    provider_dict = {x.get_id(): x for x in initialList}
+def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, NZBProvider, GenericProvider]]:
+    initial_list = settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list
+
+    provider_dict = {x.get_id(): x for x in initial_list}
 
     new_provider_list = []
 
@@ -145,13 +146,16 @@ def sorted_provider_list(randomize=False) -> List[Union[TorrentProvider, NZBProv
 
     # add all enabled providers first
     for current_module in provider_dict:
-        if provider_dict[current_module] not in new_provider_list and provider_dict[current_module].is_enabled:
+        if current_module not in new_provider_list and provider_dict[current_module].is_enabled:
             new_provider_list.append(provider_dict[current_module])
 
     # add any modules that are missing from that list
     for current_module in provider_dict:
         if provider_dict[current_module] not in new_provider_list:
             new_provider_list.append(provider_dict[current_module])
+
+    if only_enabled:
+        new_provider_list = [provider for provider in new_provider_list if (provider.provider_type == GenericProvider.TORRENT and settings.USE_TORRENTS) or (provider.provider_type == GenericProvider.NZB and settings.USE_NZBS)]
 
     if randomize:
         shuffle(new_provider_list)

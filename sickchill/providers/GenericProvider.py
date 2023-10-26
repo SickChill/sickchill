@@ -606,31 +606,35 @@ class GenericProvider(object):
     def invalid_url(cls, url):
         return not cls.valid_url(url)
 
+    def __store_original_urls(self):
+        if not self.__original_url:
+            # make sure we keep a clean copy of the original base url, in case they reset the custom url
+            self.__original_url = self.url
+
+        if not self.__original_urls:
+            # make sure we keep a clean copy of the original urls, in case they reset the custom url
+            self.__original_urls = copy.deepcopy(self.urls)
+
+    def __restore_original_urls(self):
+        # custom_url removed/reset, set urls back to defaults
+        if hasattr(self, "__original_urls"):
+            self.urls = copy.deepcopy(self.__original_urls)
+        if hasattr(self, "__original_url"):
+            self.url = self.__original_url
+
     def check_and_update_urls(self):
-        if hasattr(self, "custom_url") and self.custom_url:
-            if self.invalid_url(self.custom_url):
-                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
-                return False
+        has_custom_url = False
+        custom_url_valid = True
+        if self.has_option("custom_url") and self.has_option(self, "url") and self.has_option(self, "urls"):
+            has_custom_url = bool(self.custom_url)
+            custom_url_valid = self.valid_url(self.custom_url)
+            if has_custom_url and custom_url_valid:
+                self.__store_original_urls()
 
-            if not (hasattr(self, "custom_url"), hasattr(self, "url") and hasattr(self, "urls")):
-                # if we don't have these attributes, we cant figure out how to update these magically
-                return False
+                for url in self.__original_urls:
+                    # update each url in our urls to have the correct proxy url
+                    self.urls[url] = urljoin(self.custom_url, self.__original_urls[url].split(self.__original_url)[1])
+            else:
+                self.__restore_original_urls()
 
-            if not self.__original_url:
-                # make sure we keep a clean copy of the original base url, in case they reset the custom url
-                self.__original_url = self.url
-
-            if not self.__original_urls:
-                # make sure we keep a clean copy of the original urls, in case they reset the custom url
-                self.__original_urls = copy.deepcopy(self.urls)
-
-            for url in self.__original_urls:
-                # update each url in our urls to have the correct proxy url
-                self.urls[url] = urljoin(self.custom_url, self.__original_urls[url].split(self.__original_url)[1])
-        else:
-            # custom_url removed/reset, set urls back to defaults
-            if hasattr(self, "__original_urls"):
-                self.urls = copy.deepcopy(self.__original_urls)
-            if hasattr(self, "__original_url"):
-                self.url = self.__original_url
-        return True
+        return (True, custom_url_valid)[has_custom_url]

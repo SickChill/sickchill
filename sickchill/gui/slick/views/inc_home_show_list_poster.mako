@@ -1,6 +1,7 @@
 <%!
     from sickchill import settings
     import calendar
+    from sickchill.oldbeard.filters import filter_shows_being_removed
     from sickchill.oldbeard import scdatetime, network_timezones
     from sickchill.helper.common import pretty_file_size
     import os
@@ -45,23 +46,20 @@
                 </div>
             </div>
         % endfor
-        % for curShow in myShowList:
-            <%
-                if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
-                    continue
+        % for curShow in filter_shows_being_removed(myShowList):
+        <%
+            cur_airs_next = ''
+            cur_snatched = 0
+            cur_downloaded = 0
+            cur_total = 0
+            download_stat_tip = ''
+            display_status = curShow.status
 
-                cur_airs_next = ''
-                cur_snatched = 0
-                cur_downloaded = 0
-                cur_total = 0
-                download_stat_tip = ''
-                display_status = curShow.status
-
-                if display_status:
-                    if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
-                        display_status = 'Continuing'
-                    elif re.search(r'(?i)(?:nded)', curShow.status):
-                        display_status = 'Ended'
+            if display_status:
+                if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
+                    display_status = 'Continuing'
+                elif re.search(r'(?i)(?:nded)', curShow.status):
+                    display_status = 'Ended'
 
                 if curShow.paused:
                     display_status = _(display_status) + ' ' + _('Paused')
@@ -95,8 +93,8 @@
 
                 if cur_airs_next:
                     data_date = calendar.timegm(scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
-##                 elif cur_airs_prev:
-##                     data_date = calendar.timegm(scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)).timetuple())
+                    # elif cur_airs_prev:
+                    #     data_date = calendar.timegm(scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)).timetuple())
                 elif display_status:
                     if display_status.startswith('Continuing'):
                         data_date = '5000000000.0'

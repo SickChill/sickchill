@@ -35,11 +35,11 @@ class Provider(TorrentProvider):
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             if mode != "RSS":
-                if not (self.show and self.show.imdb_id):
+                if not (episode_object and episode_object.show and episode_object.show.imdb_id):
                     continue
 
-                search_params["imdb_id"] = self.show.imdb_id.strip("tt")
-                logger.debug("Search string: {}".format(self.show.imdb_id))
+                search_params["imdb_id"] = episode_object.show.imdb_id.strip("tt")
+                logger.debug("Search string: {}".format(episode_object.show.imdb_id))
             else:
                 search_params.pop("imdb_id")
 
@@ -56,6 +56,7 @@ class Provider(TorrentProvider):
                     if not all([title, info_hash]):
                         continue
 
+                    self.get_id()
                     link = result[("magnet_url", "torrent_url")[settings.TORRENT_METHOD == "blackhole"]]
 
                     seeders = result["seeds"]
