@@ -658,7 +658,7 @@
                                             <input type="checkbox" name="${curTorrentProvider.get_id("_enable_daily")}"
                                                    id="${curTorrentProvider.get_id("_enable_daily")}"
                                                    ${checked(curTorrentProvider.daily_enabled)}
-                                                   ${disabled(not curTorrentProvider.can_daily)}
+                                                   ${disabled(curTorrentProvider.can_daily)}
                                             />
                                             <label for="${curTorrentProvider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
                                             % if not curTorrentProvider.can_daily:
