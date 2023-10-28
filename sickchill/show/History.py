@@ -24,8 +24,8 @@ class History(object, metaclass=Singleton):
     date_format = "%Y%m%d%H%M%S"
 
     def __init__(self):
-        self.db: DBConnection = DBConnection()
-        self.failed_db: DBConnection = DBConnection("failed.db")
+self.db: DBConnection = DBConnection()  # DataSource: sickchill.db
+self.failed_db: DBConnection = DBConnection("failed.db")  # DataSource: failed.db
 
         self.trim()
 
