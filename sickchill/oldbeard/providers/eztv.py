@@ -56,7 +56,6 @@ class Provider(TorrentProvider):
                     if not all([title, info_hash]):
                         continue
 
-                    self.get_id()
                     link = result[("magnet_url", "torrent_url")[settings.TORRENT_METHOD == "blackhole"]]
 
                     seeders = result["seeds"]

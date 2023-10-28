@@ -625,7 +625,7 @@ class GenericProvider(object):
     def check_and_update_urls(self):
         has_custom_url = False
         custom_url_valid = True
-        if self.has_option("custom_url") and self.has_option(self, "url") and self.has_option(self, "urls"):
+        if hasattr(self, "custom_url") and self.has_option("url") and self.has_option("urls"):
             has_custom_url = bool(self.custom_url)
             custom_url_valid = self.valid_url(self.custom_url)
             if has_custom_url and custom_url_valid:
