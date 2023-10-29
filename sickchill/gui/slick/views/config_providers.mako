@@ -197,7 +197,7 @@
                                 % endif
 
                                 % if hasattr(curNewznabProvider, 'enable_backlog'):
-                                    <div class="field-pair row${hidden(curNewznabProvider.supports_backlog)}">
+                                    <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
@@ -310,7 +310,7 @@
                                 % endif
 
                                 % if hasattr(curNzbProvider, 'enable_backlog'):
-                                    <div class="field-pair row${hidden(curNzbProvider.supports_backlog)}">
+                                    <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
@@ -669,7 +669,7 @@
                                 % endif
 
                                 % if hasattr(curTorrentProvider, 'enable_backlog'):
-                                    <div class="field-pair row${hidden(curTorrentProvider.supports_backlog)}">
+                                    <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
