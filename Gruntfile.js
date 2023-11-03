@@ -589,7 +589,6 @@ module.exports = function(grunt) {
         });
 
         if (contents) {
-            contents.re
             grunt.file.write(file, contents.replace(/\n*$/, '\n'));
             return true;
         } else {
