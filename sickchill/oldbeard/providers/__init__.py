@@ -156,7 +156,12 @@ def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[Torr
             new_provider_list.append(module)
 
     if only_enabled:
-        new_provider_list = [module for module in new_provider_list if (module.provider_type == GenericProvider.TORRENT and settings.USE_TORRENTS) or (module.provider_type == GenericProvider.NZB and settings.USE_NZBS)]
+        new_provider_list = [
+            module
+            for module in new_provider_list
+            if (module.provider_type == GenericProvider.TORRENT and settings.USE_TORRENTS)
+            or (module.provider_type == GenericProvider.NZB and settings.USE_NZBS)
+        ]
 
     if randomize:
         shuffle(new_provider_list)

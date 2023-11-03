@@ -50,10 +50,10 @@ class GenericProvider(object):
 
         self.anime_only = False
         self.bt_cache_urls = [
-            # 'http://torcache.net/torrent/{torrent_hash}.torrent',
-            # 'http://torrentproject.se/torrent/{torrent_hash}.torrent',
-            "http://thetorrent.org/torrent/{torrent_hash}.torrent",
-            # 'http://btdig.com/torrent/{torrent_hash}.torrent',
+            # "http://torcache.net/torrent/{torrent_hash}.torrent",
+            # "http://torrentproject.se/torrent/{torrent_hash}.torrent",
+            # "http://thetorrent.org/torrent/{torrent_hash}.torrent",
+            # "http://btdig.com/torrent/{torrent_hash}.torrent",
             ("https://torrage.info/download?h={torrent_hash}", "https://torrage.info/torrent.php?h={torrent_hash}"),
             "https://itorrents.org/torrent/{torrent_hash}.torrent?title={torrent_name}",
         ]
@@ -387,7 +387,7 @@ class GenericProvider(object):
         if not name:
             return ""
 
-        return re.sub(r"[^\w\d_]", "_", str(name).strip().lower())
+        return re.sub(r"[^\w_]", "_", str(name).strip().lower())
 
     def search_rss(self, episodes):
         return self.cache.find_needed_episodes(episodes)
@@ -499,7 +499,7 @@ class GenericProvider(object):
     @staticmethod
     def hash_from_magnet(magnet):
         try:
-            torrent_hash = re.findall(r"urn:btih:([\w]{32,40})", magnet)[0].upper()
+            torrent_hash = re.findall(r"urn:btih:(\w{32,40})", magnet)[0].upper()
             if len(torrent_hash) == 32:
                 torrent_hash = b16encode(b32decode(torrent_hash)).upper()
             return torrent_hash
@@ -557,7 +557,7 @@ class GenericProvider(object):
     def add_cookies_from_ui(self):
         """
         Adds the cookies configured from UI to the providers requests session
-        :return: A tuple with the the (success result, and a descriptive message in str)
+        :return: A tuple with the result (success result, and a descriptive message in str)
         """
 
         # This is the generic attribute used to manually add cookies for provider authentication
