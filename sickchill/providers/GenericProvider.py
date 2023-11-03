@@ -183,7 +183,7 @@ class GenericProvider(object):
             items_list = list(chain(*[v for (k_, v) in sorted(items.items(), reverse=True)]))
             items_list += unknown_items
 
-        cl = []
+        cache_list = []
 
         for item in items_list:
             title, url = self._get_title_and_url(item)
@@ -264,10 +264,10 @@ class GenericProvider(object):
 
             logger.debug(f"Adding item from search to cache: {title}")
 
-            ci = self.cache._add_cache_entry(title, url, size, seeders, leechers, parse_result=parse_result)
+            cache_item = self.cache.add_cache_entry(title, url, size, seeders, leechers, parse_result=parse_result)
 
-            if ci is not None:
-                cl.append(ci)
+            if cache_item is not None:
+                cache_list.append(cache_item)
 
             if skip_release:
                 continue
@@ -314,10 +314,10 @@ class GenericProvider(object):
             else:
                 results[episode_number].append(result)
 
-        if cl:
+        if cache_list:
             # Access to a protected member of a client class
-            cache_db = self.cache._get_db()
-            cache_db.mass_upsert("results", cl)
+            cache_db = self.cache.get_db()
+            cache_db.mass_upsert("results", cache_list)
 
         return results
 
@@ -336,6 +336,7 @@ class GenericProvider(object):
 
         return result
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def get_url_hook(response, **kwargs_):
         if response:
@@ -498,6 +499,7 @@ class GenericProvider(object):
 
     @staticmethod
     def hash_from_magnet(magnet):
+        # noinspection PyBroadException
         try:
             torrent_hash = re.findall(r"urn:btih:(\w{32,40})", magnet)[0].upper()
             if len(torrent_hash) == 32:
@@ -521,6 +523,7 @@ class GenericProvider(object):
             if not torrent_hash:
                 return urls, filename
 
+            # noinspection PyBroadException
             try:
                 torrent_name = re.findall("dn=([^&]+)", result.url)[0]
             except Exception:
@@ -583,7 +586,7 @@ class GenericProvider(object):
         if hasattr(self, option):
             if view.request.method == "GET":
                 value = view.get_query_argument(self.get_id("_" + option), default=default)
-            if view.request.method == "POST":
+            elif view.request.method == "POST":
                 value = view.get_body_argument(self.get_id("_" + option), default=default)
             else:
                 raise AttributeError("We currently only work with GET and POST requests")

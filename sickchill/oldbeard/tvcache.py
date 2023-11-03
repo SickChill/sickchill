@@ -183,7 +183,7 @@ class TVCache(RSSTorrentMixin):
         self.min_time = kwargs.pop("min_time", 10)
         self.search_params = kwargs.pop("search_params", dict(RSS=[""]))
 
-    def _get_db(self):
+    def get_db(self):
         # init provider database if not done already
         if not provider_cache_db.get("instance"):
             provider_cache_db["instance"] = CacheDBConnection()
@@ -192,7 +192,7 @@ class TVCache(RSSTorrentMixin):
 
     def _clear_cache(self):
         if self.should_clear_cache():
-            cache_db_con = self._get_db()
+            cache_db_con = self.get_db()
             cache_db_con.trim(self.provider_id)
 
     def _get_seeders_and_leechers(self, item):
@@ -231,7 +231,7 @@ class TVCache(RSSTorrentMixin):
                         cl.append(ci)
 
                 if cl:
-                    cache_db_con = self._get_db()
+                    cache_db_con = self.get_db()
                     cache_db_con.mass_upsert("results", cl)
 
         except AuthException as error:
@@ -263,7 +263,7 @@ class TVCache(RSSTorrentMixin):
             url = self._translate_link_url(url)
 
             # logger.debug("Attempting to add item to cache: " + title)
-            return self._add_cache_entry(title, url, size, seeders, leechers)
+            return self.add_cache_entry(title, url, size, seeders, leechers)
 
         else:
             logger.debug("The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable")
@@ -272,7 +272,7 @@ class TVCache(RSSTorrentMixin):
 
     @property
     def last_update(self):
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.provider_id])
 
         if sql_results:
@@ -286,7 +286,7 @@ class TVCache(RSSTorrentMixin):
 
     @property
     def last_search(self):
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.provider_id])
 
         if sql_results:
@@ -307,7 +307,7 @@ class TVCache(RSSTorrentMixin):
         if not to_date:
             to_date = datetime.datetime.today()
 
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         cache_db_con.upsert("lastUpdate", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
 
     def set_last_search(self, to_date=None):
@@ -319,7 +319,7 @@ class TVCache(RSSTorrentMixin):
         if not to_date:
             to_date = datetime.datetime.today()
 
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         cache_db_con.upsert("lastSearch", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
 
     def should_update(self):
@@ -337,7 +337,7 @@ class TVCache(RSSTorrentMixin):
 
         return True
 
-    def _add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
+    def add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
         # check if we passed in a parsed result or should we try and create one
         if not parse_result:
             # create show_obj from indexer_id if available
@@ -399,7 +399,7 @@ class TVCache(RSSTorrentMixin):
         return needed_eps.get(episode, [])
 
     def list_propers(self, date=None):
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         sql = "SELECT * FROM results WHERE provider = ? AND name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
         # Add specific provider proper_strings also, like REAL, RERIP, etc.
         if hasattr(self.provider, "proper_strings"):
@@ -423,7 +423,7 @@ class TVCache(RSSTorrentMixin):
         needed_eps = {}
         cl = []
 
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         if not episode:
             sql_results = cache_db_con.select("SELECT * FROM results WHERE provider = ?", [self.provider_id])
         elif not isinstance(episode, list):
