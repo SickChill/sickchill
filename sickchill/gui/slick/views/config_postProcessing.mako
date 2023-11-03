@@ -186,7 +186,7 @@
                             </div>
                         </div>
 
-                        <div class="field-pair row" id="content_move_associated_files" ${hidden(settings.MOVE_ASSOCIATED_FILES)}>
+                        <div class="field-pair row" id="content_move_associated_files" ${selected(settings.MOVE_ASSOCIATED_FILES)}>
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                 <label class="component-title">${_('Rename .nfo file')}</label>
                             </div>
@@ -194,9 +194,6 @@
                                 <input type="checkbox" name="nfo_rename" id="nfo_rename" ${checked(settings.NFO_RENAME)}/>
                                 <label for="nfo_rename">${_('rename the original .nfo file to .nfo-orig to avoid conflicts?')}</label>
                             </div>
-                        </div>
-
-                        <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                 <label class="component-title">${_('Associated file extensions')}</label>
                             </div>

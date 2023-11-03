@@ -247,7 +247,7 @@
                                         <span class="component-title">${_('Season folders')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" id="season_folders" name="season_folders" title="season_folders" ${checked(show.season_folders or settings.NAMING_FORCE_FOLDERS)} ${disabled(settings.NAMING_FORCE_FOLDERS)} />
+                                        <input type="checkbox" id="season_folders" name="season_folders" title="season_folders" ${checked(show.season_folders or settings.NAMING_FORCE_FOLDERS)} ${disabled(not settings.NAMING_FORCE_FOLDERS)} />
                                         <label for="season_folders">${_('group episodes by season folder (uncheck to store in a single folder)')}</label>
                                     </div>
                                 </div>

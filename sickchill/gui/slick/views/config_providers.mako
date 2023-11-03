@@ -173,7 +173,7 @@
                                 % endif
 
                                 % if provider.has_option('enable_backlog'):
-                                    <div class="field-pair row${hidden(provider.supports_backlog)}">
+                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
@@ -271,7 +271,7 @@
                                 % endif
 
                                 % if provider.has_option('enable_backlog'):
-                                    <div class="field-pair row${hidden(provider.supports_backlog)}">
+                                    <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
@@ -568,7 +568,7 @@
                                             <label class="component-title">${_('Enable daily searches')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="checkbox" name="${provider.get_id("_enable_daily")}" ${checked(provider.daily_enabled)} ${disabled(not provider.can_daily)} />
+                                            <input type="checkbox" name="${provider.get_id("_enable_daily")}" ${checked(provider.daily_enabled)} ${disabled(provider.can_daily)} />
                                             <label for="${provider.get_id("_enable_daily")}">${_('enable provider to perform daily searches.')}</label>
                                             % if not provider.can_daily:
                                               <p class="note"><span class="red-text">${_('Daily search is currently not working on this provider')}</span></p>
@@ -578,7 +578,7 @@
                                 % endif
 
                                 % if provider.has_option('enable_backlog'):
-                                    <div class="field-pair row${hidden(provider.supports_backlog)}">
+                                    <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
                                         </div>
