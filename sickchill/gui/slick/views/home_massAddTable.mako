@@ -6,19 +6,16 @@
 
 <table id="addRootDirTable" class="sickchillTable tablesorter">
     <thead>
-        <tr>
-            <th class="col-checkbox"><input type="checkbox" id="checkAll" checked></th>
-            <th>${_('Directory')}</th>
-            <th width="20%">${_('Show Name (tvshow.nfo)')}
-            <th width="20%">${_('Indexer')}</th>
-        </tr>
+    <tr>
+        <th class="col-checkbox"><input type="checkbox" id="checkAll" checked></th>
+        <th>${_('Directory')}</th>
+        <th width="20%">${_('Show Name (tvshow.nfo)')}
+        <th width="20%">${_('Indexer')}</th>
+    </tr>
     </thead>
     <tbody>
-        % for curDir in dirList:
+        % for curDir in filter(lambda x: x["added_already"], dirList):
             <%
-                if curDir['added_already']:
-                    continue
-
                 indexer = 0
                 show_id = curDir['dir']
                 if curDir['existing_info'][0]:

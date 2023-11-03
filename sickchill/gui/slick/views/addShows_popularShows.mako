@@ -45,7 +45,6 @@
             </div>
         </div>
         <div class="row">
-            <% imdb_tt = {show.imdb_id for show in settings.showList if show.imdb_id} %>
             <div id="popularShows">
                 <div id="container">
                     % if not popular_shows:
@@ -56,18 +55,6 @@
                         </div>
                     % else:
                         % for current_result in popular_shows:
-                            % if not current_result.getID():
-                                <% continue %>
-                            % endif
-
-                            <% current_imdb_id = 'tt' + current_result.getID() %>
-                            % if current_imdb_id in imdb_tt:
-                                <% continue %>
-                            % endif
-
-                            <% current_result.setdefault('rating', '0.0') %>
-                            <% current_result.setdefault('votes', '0') %>
-
                             <div class="trakt_show" data-name="${current_result['title']}" data-rating="${current_result['rating']}"
                                  data-votes="${str(current_result['votes']).replace(',', '')}" data-rank="${current_result['popular tv 100 rank']}">
                                 <div class="traktContainer">

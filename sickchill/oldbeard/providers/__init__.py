@@ -132,26 +132,36 @@ broken_providers = [
 ]
 
 
-def sorted_provider_list(randomize=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, NZBProvider, GenericProvider]]:
-    initialList = settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list
-    provider_dict = {x.get_id(): x for x in initialList}
+def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, NZBProvider, GenericProvider]]:
+    provider_types = List[Union[GenericProvider, TorrentProvider, NZBProvider, TorrentRssProvider]]
+    initial_list: provider_types = settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list
 
-    new_provider_list = []
+    provider_dict = {x.get_id(): x for x in initial_list}
+
+    new_provider_list: provider_types = []
 
     # add all modules in the priority list, in order
-    for current_module in settings.PROVIDER_ORDER:
-        if current_module in provider_dict:
-            new_provider_list.append(provider_dict[current_module])
+    for provider_id in settings.PROVIDER_ORDER:
+        if provider_id in provider_dict:
+            new_provider_list.append(provider_dict[provider_id])
 
     # add all enabled providers first
-    for current_module in provider_dict:
-        if provider_dict[current_module] not in new_provider_list and provider_dict[current_module].is_enabled:
-            new_provider_list.append(provider_dict[current_module])
+    for module in provider_dict.values():
+        if module not in new_provider_list and module.is_active:
+            new_provider_list.append(module)
 
     # add any modules that are missing from that list
-    for current_module in provider_dict:
-        if provider_dict[current_module] not in new_provider_list:
-            new_provider_list.append(provider_dict[current_module])
+    for module in provider_dict.values():
+        if module not in new_provider_list:
+            new_provider_list.append(module)
+
+    if only_enabled:
+        new_provider_list = [
+            module
+            for module in new_provider_list
+            if (module.provider_type == GenericProvider.TORRENT and settings.USE_TORRENTS)
+            or (module.provider_type == GenericProvider.NZB and settings.USE_NZBS)
+        ]
 
     if randomize:
         shuffle(new_provider_list)

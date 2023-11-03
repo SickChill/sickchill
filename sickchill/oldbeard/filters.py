@@ -1,3 +1,6 @@
+from sickchill import settings
+
+
 def hide(value):
     return "hidden_value" if value else ""
 
@@ -28,3 +31,11 @@ def selected(condition: bool) -> str:
     if condition:
         return "selected"
     return ""
+
+
+def filter_shows_being_removed(show_list):
+    return {
+        show
+        for show in show_list
+        if not (settings.showQueueScheduler.action.is_in_remove_queue(show) or settings.showQueueScheduler.action.is_being_removed(show))
+    }

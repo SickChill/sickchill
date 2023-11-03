@@ -907,7 +907,7 @@ class ConfigMigrator(object):
             1: "Custom naming",
             2: "Sync backup number with version number",
             3: "Rename omgwtfnzb variables",
-            4: "Add newznab catIDs",
+            4: "Add newznab categories",
             5: "Metadata update",
             6: "Convert from XBMC to new KODI variables",
             7: "Use version 2 for password encryption",
@@ -1071,7 +1071,7 @@ class ConfigMigrator(object):
         settings.OMGWTFNZBS_USERNAME = check_setting_str(self.config_obj, "omgwtfnzbs", "omgwtfnzbs_uid")
         settings.OMGWTFNZBS_APIKEY = check_setting_str(self.config_obj, "omgwtfnzbs", "omgwtfnzbs_key")
 
-    # Migration v4: Add default newznab catIDs
+    # Migration v4: Add default newznab categories
     def _migrate_v4(self):
         """Update newznab providers so that the category IDs can be set independently via the config"""
 
@@ -1092,11 +1092,11 @@ class ConfigMigrator(object):
                     key = "0"
 
                 if name == "NZBs.org":
-                    catIDs = "5030,5040,5060,5070,5090"
+                    categories = "5030,5040,5060,5070,5090"
                 else:
-                    catIDs = "5030,5040,5060"
+                    categories = "5030,5040,5060"
 
-                cur_provider_data_list = [name, url, key, catIDs, enabled]
+                cur_provider_data_list = [name, url, key, categories, enabled]
                 new_newznab_data.append("|".join(cur_provider_data_list))
 
             settings.NEWZNAB_DATA = "!!!".join(new_newznab_data)
