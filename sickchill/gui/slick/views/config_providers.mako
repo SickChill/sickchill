@@ -223,7 +223,7 @@
                                             <input type="checkbox" name="${provider.get_id("_search_fallback")}" id="${provider.get_id("_search_fallback")}" ${checked(provider.search_fallback_enabled)}/>
                                             <label for="${provider.get_id("_search_fallback")}">
                                                 ${_('when searching for a complete season depending on search mode you may return no results, this helps by restarting the search using the opposite search mode.')}
-                                            ss</label>
+                                            </label>
                                         </div>
                                     </div>
                                 % endif
