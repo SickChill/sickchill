@@ -31,7 +31,7 @@ jobs:
       - name: Setup Poetry env
         uses: 5yutan5/setup-poetry-env@v1.1.0
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           python-cache-dependency-path: pyproject.toml
       - name: Install python dependency tools
         run: |
