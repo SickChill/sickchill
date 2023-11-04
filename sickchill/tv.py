@@ -14,7 +14,7 @@ from xml.etree import ElementTree
 
 import imdb
 from imdb import Cinemagoer
-from typing_extensions import Union
+from typing import Union
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 

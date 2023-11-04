@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from urllib.parse import splitport
+from urllib.parse import urlparse
 
 import qbittorrentapi
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class Client(GenericClient):
     def __init__(self, host: str = None, username: str = None, password: str = None):
         super().__init__("qBittorrent", host, username, password)
-        self.host, self.port = splitport(self.host or settings.TORRENT_HOST)
+        self.host, self.port = urlparse(self.host or settings.TORRENT_HOST)
         self.api = qbittorrentapi.Client(
             host=self.host,
             port=self.port or None,
