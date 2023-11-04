@@ -1,20 +1,20 @@
-from flask import render_template
+from flask import Blueprint, render_template
 
 from sickchill import logger, settings
 
+blueprint = Blueprint("shows", __name__, template_folder="templates", static_folder="static", url_prefix="/shows")
+
 # from sickchill.tv import TVEpisode, TVShow
 
-from .. import shows_blueprint
 
-
-@shows_blueprint.route("/")
+@blueprint.route("/")
 def shows():
     logger.info("Loading shows page")
     logger.debug(f"Shows: {settings.showList}")
     return render_template("shows.html", shows=settings.showList)
 
 
-@shows_blueprint.route("/show/")
+@blueprint.route("/show/")
 def show():
     logger.info("Loading show details page")
     logger.debug(f"Shows: {settings.showList}")

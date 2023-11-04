@@ -6,11 +6,27 @@ import threading
 
 from flask import Flask
 
-from .config import config_blueprint
-from .shows import shows_blueprint
-from .movies import movies_blueprint
+from .config import blueprint as config_blueprint
+from .movies import blueprint as movies_blueprint
+from .shows import blueprint as shows_blueprint
 
-from .utils import logger
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['wsgi']
+    }
+})
 
 
 class FlaskServer(threading.Thread):
@@ -18,6 +34,7 @@ class FlaskServer(threading.Thread):
 
     def __init__(self, host, port):
         super().__init__(name="FLASK")
+        self.app = None
         self.host = host
         self.port = port
         self.daemon = True
@@ -26,13 +43,13 @@ class FlaskServer(threading.Thread):
     def run(self):
         """Run the flask server"""
         self.app = Flask("SickFlask", template_folder="frontend/templates", static_folder="frontend/static", static_url_path="/static")
-        self.app.config.from_object("frontend.app.DevelopmentConfig")
+        self.app.config.from_object(DevelopmentConfig)
 
         self.app.register_blueprint(config_blueprint)
         self.app.register_blueprint(shows_blueprint)
         self.app.register_blueprint(movies_blueprint)
         routes = "\n\t\t".join(f"{rule}" for rule in self.app.url_map.iter_rules())
-        logger.debug(f"{self.app.name} Route:\n\t\t{routes}")
+        self.app.logger.debug(f"{self.app.name} Route:\n\t\t{routes}")
 
         self.app.run(host=self.host, port=self.port, use_reloader=False)
 

@@ -59,9 +59,9 @@ let configurations = Object.assign({}, config, {
         config: ['./config.jsx'],
     },
     output: {
-        path: path.resolve(__dirname, 'frontend', 'static', 'config', 'js'),
+        path: path.resolve(__dirname, 'frontend', 'config', 'static'),
         filename: '[name].js',
-        publicPath: path.resolve('static', 'config')
+        publicPath: path.resolve('static')
     },
 });
 let shows = Object.assign({}, config, {
@@ -72,9 +72,9 @@ let shows = Object.assign({}, config, {
         show: ['./show.jsx'],
     },
     output: {
-        path: path.resolve(__dirname, 'frontend', 'static', 'shows', 'js'),
+        path: path.resolve(__dirname, 'frontend', 'shows', 'static'),
         filename: '[name].js',
-        publicPath: path.resolve('static', 'shows')
+        publicPath: path.resolve('static')
     },
 });
 
@@ -86,9 +86,9 @@ let movies = Object.assign({}, config, {
         movie: ['./movie.jsx'],
     },
     output: {
-        path: path.resolve(__dirname, 'frontend', 'static', 'movies', 'js'),
+        path: path.resolve(__dirname, 'frontend', 'movies', 'static'),
         filename: '[name].js',
-        publicPath: path.resolve('static', 'movies')
+        publicPath: path.resolve('static')
     },
 });
 
