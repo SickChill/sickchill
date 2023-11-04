@@ -9,7 +9,6 @@ from urllib.parse import unquote, urljoin
 
 from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
-from sickchill.providers.GenericProvider import GenericProvider
 
 if TYPE_CHECKING:
     from sickchill.oldbeard.classes import SearchResult
