@@ -4,8 +4,6 @@ import urllib
 from collections import OrderedDict
 from urllib.parse import urljoin
 
-import validators
-
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache

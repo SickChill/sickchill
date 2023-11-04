@@ -1,6 +1,5 @@
 from urllib.parse import urljoin
 
-import validators
 from markdown2 import _slugify as slugify
 
 from sickchill import logger

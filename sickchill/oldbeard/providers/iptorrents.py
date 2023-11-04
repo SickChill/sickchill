@@ -2,7 +2,6 @@ import re
 import traceback
 from urllib.parse import urljoin
 
-import validators
 from requests.utils import dict_from_cookiejar
 
 from sickchill import logger

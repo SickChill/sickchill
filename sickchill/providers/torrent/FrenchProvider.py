@@ -1,8 +1,6 @@
 import re
 from urllib.parse import urljoin
 
-import validators
-
 from sickchill import logger, settings
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser

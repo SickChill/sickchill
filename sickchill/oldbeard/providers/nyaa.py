@@ -1,7 +1,5 @@
 import traceback
 
-import validators
-
 from sickchill import logger
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
