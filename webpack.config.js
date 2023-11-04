@@ -98,8 +98,7 @@ module.exports = () => {
     for (const item of outputs) {
         if (item.mode === 'production') {
             const serviceWorker = new GenerateSW();
-            // noinspection JSCheckFunctionSignatures
-            item.plugins.push(serviceWorker);
+            item.plugins = [...item.plugins, serviceWorker];
         }
     }
 
