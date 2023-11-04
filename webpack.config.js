@@ -8,7 +8,7 @@ const {GenerateSW} = require("workbox-webpack-plugin");
 const stylesHandler = MiniCssExtractPlugin.loader;
 
 const config = {
-    mode: process.env.NODE_ENV || 'development',
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     resolve: {
         extensions: ['.js', '.jsx', '.css']
     },
