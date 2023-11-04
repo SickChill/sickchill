@@ -9,12 +9,12 @@ import time
 import traceback
 from pathlib import Path
 from sqlite3 import OperationalError
+from typing import Union
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
 import imdb
 from imdb import Cinemagoer
-from typing_extensions import Union
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
