@@ -1,24 +1,23 @@
-const path = require("path");
-
-// const CopyPlugin = require("copy-webpack-plugin");
-// const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const {GenerateSW} = require("workbox-webpack-plugin");
+const path = require('path');
+// const CopyPlugin = require('copy-webpack-plugin');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const {GenerateSW} = require('workbox-webpack-plugin');
 
 const stylesHandler = MiniCssExtractPlugin.loader;
 
 const config = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     resolve: {
-        extensions: ['.js', '.jsx', '.css']
+        extensions: ['.js', '.jsx', '.css'],
     },
     devServer: {
         open: true,
-        host: "localhost",
+        host: 'localhost',
     },
     plugins: [
         // new HtmlWebpackPlugin({
-        //     template: "shows.html",
+        //     template: 'shows.html',
         //     inject: false
         //
         // }),
@@ -34,26 +33,26 @@ const config = {
         rules: [
             {
                 test: /\.(?:js|jsx)$/i,
-                loader: "babel-loader",
+                loader: 'babel-loader',
             },
             {
                 test: /\.css$/i,
-                use: [stylesHandler, "css-loader"],
+                use: [stylesHandler, 'css-loader'],
             },
             {
                 test: /\.s[ac]ss$/i,
-                use: [stylesHandler, "css-loader", "sass-loader"],
+                use: [stylesHandler, 'css-loader', 'sass-loader'],
             },
             {
                 test: /\.(?:eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-                type: "asset",
+                type: 'asset',
             },
         ],
     },
 };
 
-let configurations = JSON.parse(JSON.stringify(config));
-Object.assign(configurations, {
+const configurations = {
+    ...config,
     name: 'config',
     context: path.resolve(__dirname, 'frontend', 'config', 'src', 'js'),
     entry: {
@@ -62,12 +61,11 @@ Object.assign(configurations, {
     output: {
         path: path.resolve(__dirname, 'frontend', 'config', 'static'),
         filename: '[name].js',
-        publicPath: path.resolve('static')
+        publicPath: path.resolve('static'),
     },
-});
-
-let shows = JSON.parse(JSON.stringify(config));
-Object.assign(shows, {
+};
+const shows = {
+    ...config,
     name: 'shows',
     context: path.resolve(__dirname, 'frontend', 'shows', 'src', 'js'),
     entry: {
@@ -77,12 +75,11 @@ Object.assign(shows, {
     output: {
         path: path.resolve(__dirname, 'frontend', 'shows', 'static'),
         filename: '[name].js',
-        publicPath: path.resolve('static')
+        publicPath: path.resolve('static'),
     },
-});
-
-let movies = JSON.parse(JSON.stringify(config));
-Object.assign(movies, {
+};
+const movies = {
+    ...config,
     name: 'movies',
     context: path.resolve(__dirname, 'frontend', 'movies', 'src', 'js'),
     entry: {
@@ -92,18 +89,19 @@ Object.assign(movies, {
     output: {
         path: path.resolve(__dirname, 'frontend', 'movies', 'static'),
         filename: '[name].js',
-        publicPath: path.resolve('static')
+        publicPath: path.resolve('static'),
     },
-});
+};
 
 module.exports = () => {
     const outputs = [configurations, shows, movies];
-    for (let item of outputs) {
-        if (item.mode === "production") {
-            let serviceWorker = new GenerateSW();
+    for (const item of outputs) {
+        if (item.mode === 'production') {
+            const serviceWorker = new GenerateSW();
             // noinspection JSCheckFunctionSignatures
             item.plugins.push(serviceWorker);
         }
     }
+
     return outputs;
 };
