@@ -128,6 +128,9 @@
       "sickchill/gui/slick/js/lib/*",
       "tests/js/index.js",
       "frontend/static/*",
+      "frontend/movies/static/",
+      "frontend/shows/static/",
+      "frontend/config/static/",
       "webpack.config.js"
     ]
   }
