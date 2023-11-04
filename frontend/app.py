@@ -3,6 +3,7 @@ This is the global flask application under which all web interfaces for sickchil
 """
 
 import threading
+from logging.config import dictConfig
 
 from flask import Flask
 
@@ -10,23 +11,18 @@ from .config import blueprint as config_blueprint
 from .movies import blueprint as movies_blueprint
 from .shows import blueprint as shows_blueprint
 
-from logging.config import dictConfig
-
-dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'DEBUG',
-        'handlers': ['wsgi']
+dictConfig(
+    {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            }
+        },
+        "handlers": {"wsgi": {"class": "logging.StreamHandler", "stream": "ext://flask.logging.wsgi_errors_stream", "formatter": "default"}},
+        "root": {"level": "DEBUG", "handlers": ["wsgi"]},
     }
-})
+)
 
 
 class FlaskServer(threading.Thread):

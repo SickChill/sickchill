@@ -52,7 +52,8 @@ const config = {
     },
 };
 
-let configurations = Object.assign({}, config, {
+let configurations = JSON.parse(JSON.stringify(config));
+Object.assign(configurations, {
     name: 'config',
     context: path.resolve(__dirname, 'frontend', 'config', 'src', 'js'),
     entry: {
@@ -64,7 +65,9 @@ let configurations = Object.assign({}, config, {
         publicPath: path.resolve('static')
     },
 });
-let shows = Object.assign({}, config, {
+
+let shows = JSON.parse(JSON.stringify(config));
+Object.assign(shows, {
     name: 'shows',
     context: path.resolve(__dirname, 'frontend', 'shows', 'src', 'js'),
     entry: {
@@ -78,7 +81,8 @@ let shows = Object.assign({}, config, {
     },
 });
 
-let movies = Object.assign({}, config, {
+let movies = JSON.parse(JSON.stringify(config));
+Object.assign(movies, {
     name: 'movies',
     context: path.resolve(__dirname, 'frontend', 'movies', 'src', 'js'),
     entry: {
