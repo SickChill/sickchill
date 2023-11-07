@@ -203,7 +203,7 @@ $(document).ready(() => {
         }
 
         refreshRootDirs();
-        $.get(scRoot + '/config/general/saveRootDirs', {
+        $.post(scRoot + '/config/general/saveRootDirs', {
             rootDirString: $('#rootDirText').val(),
         });
     });
@@ -214,7 +214,7 @@ $(document).ready(() => {
         }
 
         refreshRootDirs();
-        $.get(scRoot + '/config/general/saveRootDirs', {
+        $.post(scRoot + '/config/general/saveRootDirs', {
             rootDirString: $('#rootDirText').val(),
         });
     });
