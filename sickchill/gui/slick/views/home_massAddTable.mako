@@ -14,7 +14,7 @@
     </tr>
     </thead>
     <tbody>
-        % for curDir in filter(lambda x: x["added_already"], dirList):
+        % for curDir in filter(lambda x: not x["added_already"], dirList):
             <%
                 indexer = 0
                 show_id = curDir['dir']
