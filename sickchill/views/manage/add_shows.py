@@ -456,7 +456,6 @@ class AddShows(Home):
 
         # grab our list of other dirs if given
         other_shows = self.get_arguments("other_shows")
-        whichSeries = self.get_argument("whichSeries")
         fullShowPath = self.get_argument("fullShowPath", default=None)
 
         def finishAddShow():
@@ -474,6 +473,9 @@ class AddShows(Home):
         # if we're skipping then behave accordingly
         if skipShow:
             return finishAddShow()
+        else:
+            whichSeries = self.get_argument("whichSeries")
+
 
         # sanity check on our inputs
         if (not rootDir and not fullShowPath) or not whichSeries:
