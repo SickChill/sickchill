@@ -476,7 +476,6 @@ class AddShows(Home):
         else:
             whichSeries = self.get_argument("whichSeries")
 
-
         # sanity check on our inputs
         if (not rootDir and not fullShowPath) or not whichSeries:
             return _("Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}").format(
