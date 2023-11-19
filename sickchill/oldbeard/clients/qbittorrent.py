@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 
 import qbittorrentapi
 
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -43,7 +43,7 @@ class Client(GenericClient):
     @staticmethod
     def __torrent_args(result: "TorrentSearchResult"):
         return dict(
-            save_path=settings.TORRENT_DIR or None,
+            save_path=None,
             category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[result.show.is_anime] or settings.TORRENT_LABEL,
             is_paused=settings.TORRENT_PAUSED,
         )
@@ -52,6 +52,7 @@ class Client(GenericClient):
         return self.api.torrents_add(urls=[result.url], **self.__torrent_args(result))
 
     def _add_torrent_file(self, result: "TorrentSearchResult"):
+        logger.info(f"Posted as file with {self.__torrent_args(result)}")
         return self.api.torrents_add(torrent_files=[result.content], **self.__torrent_args(result))
 
     def _set_torrent_priority(self, result: "TorrentSearchResult"):
