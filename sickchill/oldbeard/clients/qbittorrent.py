@@ -49,10 +49,11 @@ class Client(GenericClient):
         )
 
     def _add_torrent_uri(self, result: "TorrentSearchResult"):
+        logger.debug(f"Posted as url with {self.__torrent_args(result)}")
         return self.api.torrents_add(urls=[result.url], **self.__torrent_args(result))
 
     def _add_torrent_file(self, result: "TorrentSearchResult"):
-        logger.info(f"Posted as file with {self.__torrent_args(result)}")
+        logger.debug(f"Posted as file with {self.__torrent_args(result)}")
         return self.api.torrents_add(torrent_files=[result.content], **self.__torrent_args(result))
 
     def _set_torrent_priority(self, result: "TorrentSearchResult"):
