@@ -107,7 +107,7 @@ class Client(GenericClient):
         try:
             jdata = self.response.json()
         except (ValueError, AttributeError):
-            logger.info("Could not convert response to json, check the host:port: {0!r}".format(self.response))
+            logger.debug("Could not convert response to json, check the host:port: {0!r}".format(self.response))
             return False
 
         if not jdata.get("success"):
@@ -115,9 +115,9 @@ class Client(GenericClient):
             api_method = (data or {}).get("method", "login")
             log_string = self.error_map.get(api_method).get(error_code, None)
             if not log_string:
-                logger.info(jdata)
+                logger.debug(jdata)
             else:
-                logger.info("{0}".format(log_string))
+                logger.debug(f"{log_string}")
 
         return jdata.get("success")
 
@@ -187,7 +187,7 @@ class Client(GenericClient):
         data["create_list"] = "false"
         data["destination"] = self._get_destination(result)
 
-        logger.info('Posted as url with {} destination "{}"'.format(data["api"], data["destination"]))
+        logger.debug(f"Posted as file with {data['api']} destination {data['destination']}")
         self._request(method="post", data=data)
         return self._check_response(data)
 
@@ -208,7 +208,7 @@ class Client(GenericClient):
         data["create_list"] = "false"
         data["destination"] = f'"{self._get_destination(result)}"'
 
-        logger.info("Posted as file with {} destination {}".format(data["api"], data["destination"]))
+        logger.debg(f"Posted as file with {data['api']} destination {data['destination']}")
         self._request(method="post", data=data, files=files)
         return self._check_response(data)
 
