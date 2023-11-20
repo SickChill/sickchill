@@ -1951,6 +1951,7 @@ const SICKCHILL = {
                         client = 'qBittorrent';
                         $('#torrent_path_option').show();
                         $('#torrent_path_option').find('.fileBrowser').show();
+                        $('#torrent_path_incomplete_option').show();
                         $('#label_warning_qbittorrent').show();
                         $('#label_anime_warning_qbittorrent').show();
                         $('#torrent_verify_cert_option').show();

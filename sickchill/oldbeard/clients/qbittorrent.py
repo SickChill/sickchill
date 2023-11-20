@@ -44,6 +44,7 @@ class Client(GenericClient):
     def __torrent_args(result: "TorrentSearchResult"):
         return dict(
             save_path=settings.TORRENT_PATH or None,
+            download_path=settings.TORRENT_PATH_INCOMPLETE or None,
             category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[result.show.is_anime] or settings.TORRENT_LABEL,
             is_paused=settings.TORRENT_PAUSED,
         )
