@@ -107,7 +107,7 @@ class Client(GenericClient):
         try:
             jdata = self.response.json()
         except (ValueError, AttributeError):
-            logger.debug("Could not convert response to json, check the host:port: {0!r}".format(self.response))
+            logger.info("Could not convert response to json, check the host:port: {0!r}".format(self.response))
             return False
 
         if not jdata.get("success"):
