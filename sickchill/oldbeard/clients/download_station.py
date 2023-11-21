@@ -208,7 +208,7 @@ class Client(GenericClient):
         data["create_list"] = "false"
         data["destination"] = f'"{self._get_destination(result)}"'
 
-        logger.debg(f"Posted as file with {data['api']} destination {data['destination']}")
+        logger.debug(f"Posted as file with {data['api']} destination {data['destination']}")
         self._request(method="post", data=data, files=files)
         return self._check_response(data)
 
