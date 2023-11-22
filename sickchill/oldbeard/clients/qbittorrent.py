@@ -41,23 +41,38 @@ class Client(GenericClient):
         return True, "Success: Connected and Authenticated"
 
     @staticmethod
-    def __torrent_args(result: "TorrentSearchResult"):
+    def __torrent_args(result: "TorrentSearchResult") -> dict:
         return dict(
             save_path=settings.TORRENT_PATH or None,
             download_path=settings.TORRENT_PATH_INCOMPLETE or None,
             category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[result.show.is_anime] or settings.TORRENT_LABEL,
             is_paused=settings.TORRENT_PAUSED,
+            ratio_limit=float(result.ratio) or None,
+            seeding_time_limit=(None, 3600 * int(settings.TORRENT_SEED_TIME))[bool(settings.TORRENT_SEED_TIME)]
+            tags=("sickchill", "sickchill-anime")[result.show.is_anime]
         )
 
+    def __add_trackers(result: "TorrentSearchResult"):
+        if settings.TRACKERS_LIST and result.provider.public:
+            trackers = list({x.strip() for x in settings.TRACKERS_LIST.split(",") if x.strip()})
+            if trackers:
+                logger.debug(f"Adding trackers to public torrent")
+                return self.api.torrents_add_trackers(torrent_hash=result.hash.lower(), urls=trackers)
+            
     def _add_torrent_uri(self, result: "TorrentSearchResult"):
-        logger.debug(f"Posted as url with {self.__torrent_args(result)}")
-        return self.api.torrents_add(urls=[result.url], **self.__torrent_args(result))
+        logger.debug(f"Posting as url with {self.__torrent_args(result)}")
+        action = self.api.torrents_add(urls=[result.url], **self.__torrent_args(result))
+        self.__add_trackers(result)
+        return action
+        
 
     def _add_torrent_file(self, result: "TorrentSearchResult"):
-        logger.debug(f"Posted as file with {self.__torrent_args(result)}")
-        return self.api.torrents_add(torrent_files=[result.content], **self.__torrent_args(result))
+        logger.debug(f"Posting as file with {self.__torrent_args(result)}")
+        action = self.api.torrents_add(torrent_files=[result.content], **self.__torrent_args(result))
+        self.__add_trackers(result)
+        return action
 
     def _set_torrent_priority(self, result: "TorrentSearchResult"):
         if not self.api.app_preferences().get("queueing_enabled"):
             return True
-        return (self.api.torrents_decrease_priority, self.api.torrents_increase_priority)[result.priority == 1](result.hash.lower)
+        return (self.api.torrents_decrease_priority, self.api.torrents_increase_priority)[result.priority == 1](result.hash.lower())
