@@ -48,23 +48,22 @@ class Client(GenericClient):
             category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[result.show.is_anime] or settings.TORRENT_LABEL,
             is_paused=settings.TORRENT_PAUSED,
             ratio_limit=(None, float(result.ratio))[float(result.ratio) > 0],
-            seeding_time_limit=(None, 3600 * int(settings.TORRENT_SEED_TIME))[int(settings.TORRENT_SEED_TIME) > 0]
-            tags=("sickchill", "sickchill-anime")[result.show.is_anime]
+            seeding_time_limit=(None, 3600 * int(settings.TORRENT_SEED_TIME))[int(settings.TORRENT_SEED_TIME) > 0],
+            tags=("sickchill", "sickchill-anime")[result.show.is_anime],
         )
 
-    def __add_trackers(result: "TorrentSearchResult"):
+    def __add_trackers(self, result: "TorrentSearchResult"):
         if settings.TRACKERS_LIST and result.provider.public:
             trackers = list({x.strip() for x in settings.TRACKERS_LIST.split(",") if x.strip()})
             if trackers:
                 logger.debug(f"Adding trackers to public torrent")
                 return self.api.torrents_add_trackers(torrent_hash=result.hash.lower(), urls=trackers)
-            
+
     def _add_torrent_uri(self, result: "TorrentSearchResult"):
         logger.debug(f"Posting as url with {self.__torrent_args(result)}")
         action = self.api.torrents_add(urls=[result.url], **self.__torrent_args(result))
         self.__add_trackers(result)
         return action
-        
 
     def _add_torrent_file(self, result: "TorrentSearchResult"):
         logger.debug(f"Posting as file with {self.__torrent_args(result)}")
