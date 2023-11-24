@@ -1949,7 +1949,11 @@ const SICKCHILL = {
                         $('#torrent_auth_type_option').show();
                     } else if (selectedProvider.toLowerCase() === 'qbittorrent') {
                         client = 'qBittorrent';
-                        $('#torrent_path_option').hide();
+                        $('#torrent_path_option').show();
+                        $('#torrent_path_option').find('.fileBrowser').show();
+                        $('#torrent_path_incomplete_option').show();
+                        $('#torrent_seed_time_label').text(_('Stop seeding after'));
+                        $('#torrent_seed_time_option').show();
                         $('#label_warning_qbittorrent').show();
                         $('#label_anime_warning_qbittorrent').show();
                         $('#torrent_verify_cert_option').show();
