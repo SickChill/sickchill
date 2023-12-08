@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard.filters import hide
@@ -19,8 +19,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-anime" title="AniDB"></span>
-                        <h3><a href="${anon_url('http://anidb.info')}"
-                               onclick="window.open(this.href, '_blank'); return false;">AniDB</a></h3>
+                        <h3><a href="${anon_url('http://anidb.info')}" target="_blank" rel="noreferrer">AniDB</a></h3>
                         <p>${_('AniDB is non-profit database of anime information that is freely open to the public')}</p>
                     </div>
                 </div>
@@ -33,12 +32,12 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="use_anidb"
-                                       id="use_anidb" ${('', 'checked="checked"')[bool(settings.USE_ANIDB)]} />
+                                       id="use_anidb" ${checked(settings.USE_ANIDB)} />
                                 <label for="use_anidb">${_('should SickChill use data from AniDB?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_anidb">
+                        <div id="content_use_anidb" ${hidden(settings.USE_ANIDB)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -50,7 +49,7 @@
                                             <input type="text" name="anidb_username" id="anidb_username"
                                                    value="${settings.ANIDB_USERNAME}"
                                                    class="form-control input-sm input350 pull-left" autocapitalize="off"
-                                                   autocomplete="no" title="Username"/>
+                                                   autocomplete="no" title="Username" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -88,7 +87,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 component-desc">
                                     <input type="checkbox" name="anidb_use_mylist"
-                                           id="anidb_use_mylist" ${('', 'checked="checked"')[bool(settings.ANIDB_USE_MYLIST)]}/>
+                                           id="anidb_use_mylist" ${checked(settings.ANIDB_USE_MYLIST)}/>
                                     <label for="anidb_use_mylist">${_('do you want to add the PostProcessed episodes to the MyList?')}</label>
                                 </div>
                             </div>
@@ -116,14 +115,14 @@
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <input type="checkbox" class="enabler" name="split_home"
-                                       id="split_home" ${('', 'checked="checked"')[bool(settings.ANIME_SPLIT_HOME)]} title="Split"/>
+                                       id="split_home" ${checked(settings.ANIME_SPLIT_HOME)} title="Split" />
                                 <label for="split_home">${_('separate anime and normal shows in groups')}</label>
                             </div>
                         </div>
                     </fieldset>
                 </div>
 
-                <div id="content_split_home">
+                <div id="content_split_home" ${hidden(settings.ANIME_SPLIT_HOME)}>
                     <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
                         <fieldset class="component-group-list">
                             <div class="field-pair row">
@@ -132,7 +131,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <input type="checkbox" name="split_home_in_tabs"
-                                           id="split_home_in_tabs" ${('', 'checked="checked"')[bool(settings.ANIME_SPLIT_HOME_IN_TABS)]} title="Split in tabs"/>
+                                           id="split_home_in_tabs" ${checked(settings.ANIME_SPLIT_HOME_IN_TABS)} title="Split in tabs" />
                                     <label for="split_home_in_tabs">${_('use tabs for when splitting show lists')}</label>
                                 </div>
                             </div>

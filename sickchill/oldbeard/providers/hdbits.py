@@ -35,12 +35,12 @@ class Provider(TorrentProvider):
 
         return True
 
-    def get_season_search_strings(self, ep_obj):
-        season_search_string = [self.make_post_data_JSON(show=ep_obj.show, season=ep_obj)]
+    def get_season_search_strings(self, episode_object):
+        season_search_string = [self.make_post_data_JSON(show=episode_object.show, season=episode_object)]
         return season_search_string
 
-    def get_episode_search_strings(self, ep_obj, add_string=""):
-        episode_search_string = [self.make_post_data_JSON(show=ep_obj.show, episode=ep_obj)]
+    def get_episode_search_strings(self, episode_object, add_string=""):
+        episode_search_string = [self.make_post_data_JSON(show=episode_object.show, episode=episode_object)]
         return episode_search_string
 
     def _get_title_and_url(self, item):
@@ -49,7 +49,7 @@ class Provider(TorrentProvider):
 
         return title, url
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, episode_object=None):
         # FIXME
         results = []
 
@@ -100,7 +100,7 @@ class Provider(TorrentProvider):
             # TV Category
         }
 
-        if episode:
+        if episode is not None:
             if show.air_by_date:
                 post_data["tvdb"] = {"id": show.indexerid, "episode": str(episode.airdate).replace("-", "|")}
             elif show.sports:
@@ -110,7 +110,7 @@ class Provider(TorrentProvider):
             else:
                 post_data["tvdb"] = {"id": show.indexerid, "season": episode.scene_season, "episode": episode.scene_episode}
 
-        if season:
+        if season is not None:
             if show.air_by_date or show.sports:
                 post_data["tvdb"] = {
                     "id": show.indexerid,

@@ -242,7 +242,7 @@ class Provider(TorrentProvider):
         if int(episodes[0]["count"]) == len(parse_result.episode_numbers):
             return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, episode_object=None):
         results = []
         if not self.login():
             return results
@@ -348,7 +348,7 @@ class Provider(TorrentProvider):
                                 if seeders < self.minseed or leechers < self.minleech:
                                     if mode != "RSS":
                                         logger.debug(
-                                            "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                            _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                                 title, seeders, leechers
                                             )
                                         )

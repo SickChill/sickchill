@@ -1,10 +1,16 @@
 import datetime
+import re
 import sys
+from typing import List, TYPE_CHECKING, Union
 
 import sickchill
 from sickchill.helper.common import dateTimeFormat
 
 from .common import Quality
+
+if TYPE_CHECKING:
+    from ..providers.GenericProvider import GenericProvider
+    from ..tv import TVEpisode, TVShow
 
 
 class SearchResult(object):
@@ -13,44 +19,46 @@ class SearchResult(object):
     """
 
     def __init__(self, episodes):
-        self.provider = None
+        self.provider: Union["GenericProvider", None] = None
 
         # release show object
-        self.show = None
+        self.show: Union["TVShow", None] = None
 
         # URL to the NZB/torrent file
-        self.url = ""
+        self.url: str = ""
 
         # used by some providers to store extra info associated with the result
         self.extraInfo = []
 
         # list of TVEpisode objects that this result is associated with
-        self.episodes = episodes
+        self.episodes: List["TVEpisode"] = episodes
 
         # quality of the release
         self.quality = Quality.UNKNOWN
 
         # release name
-        self.name = ""
+        self.name: str = ""
 
         # size of the release (-1 = n/a)
-        self.size = -1
+        self.size: int = -1
 
         # release group
-        self.release_group = ""
+        self.release_group: str = ""
 
         # version
-        self.version = -1
+        self.version: int = -1
 
         # hash
-        self.hash = None
+        self.hash: str = ""
 
         # content
         self.content = None
 
-        self.resultType = ""
+        self.result_type: str = ""
 
-        self.priority = 0
+        self.priority: int = 0
+
+        self.__checked_url: bool = False
 
     def from_json(self, result_dict):
         self.name = result_dict.get("name")
@@ -63,7 +71,7 @@ class SearchResult(object):
 
     @classmethod
     def make_result(cls, result_dict):
-        show = sickchill.show.Show.Show._validate_indexer_id(result_dict.get("indexerid"))
+        show = sickchill.show.Show.Show.validate_indexer_id(result_dict.get("indexerid"))
         if not show[1]:
             return show[0]
 
@@ -74,6 +82,39 @@ class SearchResult(object):
         result.show = show
 
         return result
+
+    def __check_url(self):
+        if not self.__checked_url and self.url and "jackett_apikey" in self.url:
+            response = self.provider.get_url(self.url, allow_redirects=False, returns="response")
+            if response.next and response.next.url and response.next.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", self.url):
+                self.url = response.next.url
+        self.__checked_url = True
+
+    @property
+    def __check_torznab(self):
+        torznab: bool = hasattr(self.provider, "torznab") and self.provider.torznab
+        torznab |= self.url and "jackett" in self.url
+        torznab |= self.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", self.url)
+        return torznab
+
+    @property
+    def is_torrent(self):
+        self.__check_url()
+        if self.__check_torznab:
+            return True
+        return self.result_type == "torrent"
+
+    @property
+    def is_nzb(self):
+        if self.is_torrent:
+            return False
+        return self.result_type == "nzb"
+
+    @property
+    def is_nzbdata(self):
+        if self.is_torrent:
+            return False
+        return self.result_type == "nzbdata"
 
     def __str__(self):
         if self.provider is None:
@@ -103,7 +144,7 @@ class NZBSearchResult(SearchResult):
 
     def __init__(self, episodes):
         super().__init__(episodes)
-        self.resultType = "nzb"
+        self.result_type = "nzb"
 
 
 class NZBDataSearchResult(SearchResult):
@@ -113,17 +154,17 @@ class NZBDataSearchResult(SearchResult):
 
     def __init__(self, episodes):
         super().__init__(episodes)
-        self.resultType = "nzbdata"
+        self.result_type = "nzbdata"
 
 
 class TorrentSearchResult(SearchResult):
     """
-    Torrent result with an URL to the torrent
+    Torrent result with a URL to the torrent
     """
 
     def __init__(self, episodes):
         super().__init__(episodes)
-        self.resultType = "torrent"
+        self.result_type = "torrent"
 
 
 class Proper(object):

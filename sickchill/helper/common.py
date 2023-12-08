@@ -399,12 +399,13 @@ def episode_num(season=None, episode=None, **kwargs):
 
     numbering = kwargs.pop("numbering", "standard")
 
-    if numbering == "standard":
-        if season is not None and episode:
-            return "S{0:0>2}E{1:02}".format(season, episode)
-    elif numbering == "absolute":
-        if not (season and episode) and (season or episode):
-            return "{0:0>3}".format(season or episode)
+    if season or episode:
+        if numbering == "standard":
+            if season is not None and episode is not None:
+                return f"S{season:02}E{episode:02}"
+        elif numbering == "absolute":
+            if episode is None:
+                return f"{season:03}"
 
 
 def setup_github():
@@ -464,12 +465,12 @@ def setup_github():
         sickchill.logger.error(_("Unable to set up GitHub properly. GitHub will not be available. Error: {error}").format(error=error))
 
 
-def choose_data_dir(program_dir):
+def choose_data_dir(program_dir) -> Path:
     old_data_dir = Path(program_dir).parent
     old_profile_path = Path.home().joinpath("sickchill")
     proper_data_dir = Path(appdirs.user_config_dir(appname="sickchill"))
     for location in [old_data_dir, old_profile_path, proper_data_dir]:
         for check in ["sickbeard.db", "sickchill.db", "config.ini"]:
             if location.joinpath(check).exists():
-                return location
-    return proper_data_dir
+                return location.resolve()
+    return proper_data_dir.resolve()

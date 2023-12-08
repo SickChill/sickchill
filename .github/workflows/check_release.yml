@@ -1,0 +1,45 @@
+name: Test release string
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: "string to check"
+        type: string
+        default: "Show.Name.S01E01.HDTV.h265-SICKCHILL"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TEST_STRING: ${{ github.event.inputs.name || 'Show.Name.S01E01.HDTV.h265-SICKCHILL' }}
+
+jobs:
+  Parse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Setup Poetry env
+        uses: 5yutan5/setup-poetry-env@v1.1.0
+        with:
+          python-version: "3.11"
+          python-cache-dependency-path: pyproject.toml
+      - name: Install python dependency tools
+        run: |
+          poetry run pip install --upgrade setuptools wheel
+          poetry run pip install --upgrade pytest-github-actions-annotate-failures
+      - name: Install sickchill
+        run: |
+          poetry install --no-interaction
+      - name: Test string
+        run: |
+          poetry run sickchill --test-name ${{ env.TEST_STRING }}

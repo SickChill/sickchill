@@ -1,5 +1,6 @@
 import sys
 from random import shuffle
+from typing import List, Union
 
 import sickchill.oldbeard.helpers
 from sickchill import settings
@@ -59,7 +60,13 @@ from sickchill.oldbeard.providers import (
     tvchaosuk,
     xthor,
     yggtorrent,
+    zamunda,
 )
+from sickchill.oldbeard.providers.newznab import NewznabProvider
+from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.nzb.NZBProvider import NZBProvider
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 __all__ = [
     "abnormal",
@@ -117,6 +124,7 @@ __all__ = [
     "tvchaosuk",
     "xthor",
     "yggtorrent",
+    "zamunda",
 ]
 
 broken_providers = [
@@ -124,31 +132,41 @@ broken_providers = [
 ]
 
 
-def sortedProviderList(randomize=False):
-    initialList = settings.providerList + settings.newznabProviderList + settings.torrentRssProviderList
-    providerDict = {x.get_id(): x for x in initialList}
+def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, NZBProvider, GenericProvider]]:
+    provider_types = List[Union[GenericProvider, TorrentProvider, NZBProvider, TorrentRssProvider]]
+    initial_list: provider_types = settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list
 
-    newList = []
+    provider_dict = {x.get_id(): x for x in initial_list}
+
+    new_provider_list: provider_types = []
 
     # add all modules in the priority list, in order
-    for curModule in settings.PROVIDER_ORDER:
-        if curModule in providerDict:
-            newList.append(providerDict[curModule])
+    for provider_id in settings.PROVIDER_ORDER:
+        if provider_id in provider_dict:
+            new_provider_list.append(provider_dict[provider_id])
 
     # add all enabled providers first
-    for curModule in providerDict:
-        if providerDict[curModule] not in newList and providerDict[curModule].is_enabled:
-            newList.append(providerDict[curModule])
+    for module in provider_dict.values():
+        if module not in new_provider_list and module.is_active:
+            new_provider_list.append(module)
 
     # add any modules that are missing from that list
-    for curModule in providerDict:
-        if providerDict[curModule] not in newList:
-            newList.append(providerDict[curModule])
+    for module in provider_dict.values():
+        if module not in new_provider_list:
+            new_provider_list.append(module)
+
+    if only_enabled:
+        new_provider_list = [
+            module
+            for module in new_provider_list
+            if (module.provider_type == GenericProvider.TORRENT and settings.USE_TORRENTS)
+            or (module.provider_type == GenericProvider.NZB and settings.USE_NZBS)
+        ]
 
     if randomize:
-        shuffle(newList)
+        shuffle(new_provider_list)
 
-    return newList
+    return new_provider_list
 
 
 def makeProviderList():
@@ -166,18 +184,18 @@ def getProviderModule(name):
 
 
 def getProviderClass(provider_id):
-    providerMatch = [x for x in settings.providerList + settings.newznabProviderList + settings.torrentRssProviderList if x and x.get_id() == provider_id]
+    provider_match = [x for x in settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list if x and x.get_id() == provider_id]
 
-    if len(providerMatch) != 1:
+    if len(provider_match) != 1:
         return None
     else:
-        return providerMatch[0]
+        return provider_match[0]
 
 
 def check_enabled_providers():
     if not settings.DEVELOPER:
         backlog_enabled, daily_enabled = False, False
-        for provider in sortedProviderList():
+        for provider in sorted_provider_list():
             if provider.is_active:
                 if provider.enable_daily and provider.can_daily:
                     daily_enabled = True

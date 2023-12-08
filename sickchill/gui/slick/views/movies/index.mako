@@ -1,4 +1,4 @@
-<%inherit file="../layouts/main.mako"/>
+<%inherit file="../layouts/main.mako" />
 <%block name="css">
 </%block>
 <%block name="scripts">
@@ -10,7 +10,7 @@
             <div class="movie-container">
                 <div class="movie-image">
                     <a href="${reverse_url('movies-details', 'details', movie.slug)}">
-                        <img alt="" class="movie-image" src="${static_url("images/poster.png")}" data-src="${movie.imdb_data['base']['image']['url']}" />
+                        <img alt="" class="movie-image" src="${static_url('images/poster.png')}" data-src="${movie.imdb_data['base']['image']['url']}" />
                     </a>
                 </div>
 

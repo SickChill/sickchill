@@ -4,6 +4,7 @@ import re
 import uuid
 from functools import reduce
 from os import path
+from typing import List
 
 from sickchill.helper import video_screen_size
 from sickchill.init_helpers import get_current_version, setup_gettext
@@ -222,7 +223,7 @@ class Quality(object):
         return any_quality | (best_quality << 16)
 
     @staticmethod
-    def splitQuality(quality):
+    def splitQuality(quality) -> (List[int], List[int]):
         if quality is None:
             quality = Quality.NONE
         allowed_qualities = []

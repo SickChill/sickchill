@@ -32,7 +32,7 @@ class Notifier(object):
         title: The title of the notification (optional)
         """
         if settings.USE_EMAIL and settings.EMAIL_NOTIFY_ONSNATCH:
-            show = self._parseEp(ep_name)
+            show = self.parse_episode(ep_name)
             to = self._generate_recipients(show)
             if not to:
                 logger.debug("Skipping email notify because there are no configured recipients")
@@ -86,7 +86,7 @@ class Notifier(object):
         title: The title of the notification (optional)
         """
         if settings.USE_EMAIL and settings.EMAIL_NOTIFY_ONDOWNLOAD:
-            show = self._parseEp(ep_name)
+            show = self.parse_episode(ep_name)
             to = self._generate_recipients(show)
             if not to:
                 logger.debug("Skipping email notify because there are no configured recipients")
@@ -140,7 +140,7 @@ class Notifier(object):
         title: The title of the notification (optional)
         """
         if settings.USE_EMAIL and settings.EMAIL_NOTIFY_ONPOSTPROCESS:
-            show = self._parseEp(ep_name)
+            show = self.parse_episode(ep_name)
             to = self._generate_recipients(show)
             if not to:
                 logger.debug("Skipping email notify because there are no configured recipients")
@@ -194,7 +194,7 @@ class Notifier(object):
         lang: Subtitle language wanted
         """
         if settings.USE_EMAIL and settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD:
-            show = self._parseEp(ep_name)
+            show = self.parse_episode(ep_name)
             to = self._generate_recipients(show)
             if not to:
                 logger.debug("Skipping email notify because there are no configured recipients")
@@ -386,7 +386,7 @@ class Notifier(object):
             return False
 
     @staticmethod
-    def _parseEp(ep_name):
+    def parse_episode(ep_name):
         sep = " - "
         titles = ep_name.split(sep)
         logger.debug("TITLES: {0}".format(titles))

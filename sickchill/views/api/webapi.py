@@ -17,7 +17,7 @@ from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size
 from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
 from sickchill.init_helpers import get_current_version
-from sickchill.oldbeard import classes, db, helpers, network_timezones, sbdatetime, search_queue, ui
+from sickchill.oldbeard import classes, db, helpers, network_timezones, scdatetime, search_queue, ui
 from sickchill.oldbeard.common import (
     ARCHIVED,
     DOWNLOADED,
@@ -73,7 +73,8 @@ class ApiHandler(RequestHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "content-type")
         self.set_header("Access-Control-Allow-Methods", "GET")
-        # self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.set_header("X-Robots-Tag", "noindex")
+        # self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
 
     def get(self, *args, **kwargs):
         # kwargs = self.request.arguments
@@ -757,8 +758,8 @@ class CMDEpisode(ApiCall):
 
         # convert stuff to human form
         if try_int(episode["airdate"], 1) > 693595:  # 1900
-            episode["airdate"] = sbdatetime.sbdatetime.sbfdate(
-                sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(int(episode["airdate"]), show_obj.airs, show_obj.network)),
+            episode["airdate"] = scdatetime.scdatetime.scfdate(
+                scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(int(episode["airdate"]), show_obj.airs, show_obj.network)),
                 d_preset=dateFormat,
             )
         else:
@@ -799,12 +800,12 @@ class CMDEpisodeSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = show_obj.getEpisode(self.s, self.e)
-        if isinstance(ep_obj, str):
+        episode_object = show_obj.getEpisode(self.s, self.e)
+        if isinstance(episode_object, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.ManualSearchQueueItem(show_obj, ep_obj)
+        ep_queue_item = search_queue.ManualSearchQueueItem(show_obj, episode_object)
         settings.searchQueueScheduler.action.add_item(ep_queue_item)  # @UndefinedVariable
 
         # wait until the queue item tells us whether it worked or not
@@ -813,7 +814,7 @@ class CMDEpisodeSearch(ApiCall):
 
         # return the correct json value
         if ep_queue_item.success:
-            status, quality = Quality.splitCompositeStatus(ep_obj.status)
+            status, quality = Quality.splitCompositeStatus(episode_object.status)
             # TODO: split quality and status?
             return _responds(RESULT_SUCCESS, {"quality": get_quality_string(quality)}, "Snatched (" + get_quality_string(quality) + ")")
 
@@ -938,10 +939,10 @@ class CMDEpisodeSetStatus(ApiCall):
         self.status = status_to_code(self.status)
 
         if self.e:
-            ep_obj = show_obj.getEpisode(self.s, self.e)
-            if not ep_obj:
+            episode_object = show_obj.getEpisode(self.s, self.e)
+            if not episode_object:
                 return _responds(RESULT_FAILURE, msg="Episode not found")
-            ep_list = [ep_obj]
+            ep_list = [episode_object]
         else:
             # get all episode numbers from self, season
             ep_list = show_obj.getAllEpisodes(season=self.s)
@@ -955,42 +956,44 @@ class CMDEpisodeSetStatus(ApiCall):
         segments = {}
 
         sql_l = []
-        for ep_obj in ep_list:
-            with ep_obj.lock:
+        for episode_object in ep_list:
+            with episode_object.lock:
                 if self.status == WANTED:
                     # figure out what episodes are wanted so we can backlog them
-                    if ep_obj.season in segments:
-                        segments[ep_obj.season].append(ep_obj)
+                    if episode_object.season in segments:
+                        segments[episode_object.season].append(episode_object)
                     else:
-                        segments[ep_obj.season] = [ep_obj]
+                        segments[episode_object.season] = [episode_object]
 
                 # don't let them mess up UN-AIRED episodes
-                if ep_obj.status == UNAIRED:
+                if episode_object.status == UNAIRED:
                     # noinspection PyPep8
                     if (
                         self.e is not None
                     ):  # setting the status of an un-aired is only considered a failure if we directly wanted this episode, but is ignored on a season request
-                        ep_results.append(_ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status because it is UN-AIRED"))
+                        ep_results.append(_ep_result(RESULT_FAILURE, episode_object, "Refusing to change status because it is UN-AIRED"))
                         failure = True
                     continue
 
                 if self.status == FAILED and not settings.USE_FAILED_DOWNLOADS:
-                    ep_results.append(_ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status to FAILED because failed download handling is disabled"))
+                    ep_results.append(
+                        _ep_result(RESULT_FAILURE, episode_object, "Refusing to change status to FAILED because failed download handling is disabled")
+                    )
                     failure = True
                     continue
 
                 # allow the user to force setting the status for an already downloaded episode
-                if ep_obj.status in Quality.DOWNLOADED + Quality.ARCHIVED and not self.force:
-                    ep_results.append(_ep_result(RESULT_FAILURE, ep_obj, "Refusing to change status because it is already marked as DOWNLOADED"))
+                if episode_object.status in Quality.DOWNLOADED + Quality.ARCHIVED and not self.force:
+                    ep_results.append(_ep_result(RESULT_FAILURE, episode_object, "Refusing to change status because it is already marked as DOWNLOADED"))
                     failure = True
                     continue
 
-                ep_obj.status = self.status
-                sql_l.append(ep_obj.get_sql())
+                episode_object.status = self.status
+                sql_l.append(episode_object.get_sql())
 
                 if self.status == WANTED:
                     start_backlog = True
-                ep_results.append(_ep_result(RESULT_SUCCESS, ep_obj))
+                ep_results.append(_ep_result(RESULT_SUCCESS, episode_object))
 
         if sql_l:
             main_db_con = db.DBConnection()
@@ -1040,13 +1043,13 @@ class CMDSubtitleSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        ep_obj = show_obj.getEpisode(self.s, self.e)
-        if isinstance(ep_obj, str):
+        episode_object = show_obj.getEpisode(self.s, self.e)
+        if isinstance(episode_object, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
         # noinspection PyBroadException
         try:
-            new_subtitles = ep_obj.download_subtitles()
+            new_subtitles = episode_object.download_subtitles()
         except Exception:
             return _responds(RESULT_FAILURE, msg="Unable to find subtitles")
 
@@ -1940,11 +1943,11 @@ class CMDShow(ApiCall):
         show_dict["status"] = show_obj.status
 
         if try_int(show_obj.nextaired, 1) > 693595:
-            dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
+            dt_episode_airs = scdatetime.scdatetime.convert_to_setting(
                 network_timezones.parse_date_time(show_obj.nextaired, show_dict["airs"], show_dict["network"])
             )
-            show_dict["airs"] = sbdatetime.sbdatetime.sbftime(dt_episode_airs, t_preset=timeFormat).lstrip("0").replace(" 0", " ")
-            show_dict["next_ep_airdate"] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
+            show_dict["airs"] = scdatetime.scdatetime.scftime(dt_episode_airs, t_preset=timeFormat).lstrip("0").replace(" 0", " ")
+            show_dict["next_ep_airdate"] = scdatetime.scdatetime.scfdate(dt_episode_airs, d_preset=dateFormat)
         else:
             show_dict["next_ep_airdate"] = ""
 
@@ -2507,8 +2510,8 @@ class CMDShowSeasons(ApiCall):
                 row["status"] = statusStrings_bare[status]
                 row["quality"] = get_quality_string(quality)
                 if try_int(row["airdate"], 1) > 693595:  # 1900
-                    dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(row["airdate"], sho_obj.airs, sho_obj.network))
-                    row["airdate"] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
+                    dt_episode_airs = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(row["airdate"], sho_obj.airs, sho_obj.network))
+                    row["airdate"] = scdatetime.scdatetime.scfdate(dt_episode_airs, d_preset=dateFormat)
                 else:
                     row["airdate"] = "Never"
                 cur_season = int(row["season"])
@@ -2534,8 +2537,8 @@ class CMDShowSeasons(ApiCall):
                 row["status"] = statusStrings_bare[status]
                 row["quality"] = get_quality_string(quality)
                 if try_int(row["airdate"], 1) > 693595:  # 1900
-                    dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(row["airdate"], sho_obj.airs, sho_obj.network))
-                    row["airdate"] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
+                    dt_episode_airs = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(row["airdate"], sho_obj.airs, sho_obj.network))
+                    row["airdate"] = scdatetime.scdatetime.scfdate(dt_episode_airs, d_preset=dateFormat)
                 else:
                     row["airdate"] = "Never"
                 if cur_episode not in seasons:
@@ -2715,7 +2718,7 @@ class CMDShowUpdate(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         try:
-            settings.showQueueScheduler.action.update_show(show_obj, True)  # @UndefinedVariable
+            settings.showQueueScheduler.action.update_show(show_obj, True)
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as error:
             logger.debug("API::Unable to update show: {0}".format(error))
@@ -2761,10 +2764,10 @@ class CMDShows(ApiCall):
             }
 
             if try_int(curShow.nextaired, 1) > 693595:  # 1900
-                dt_episode_airs = sbdatetime.sbdatetime.convert_to_setting(
+                dt_episode_airs = scdatetime.scdatetime.convert_to_setting(
                     network_timezones.parse_date_time(curShow.nextaired, curShow.airs, show_dict["network"])
                 )
-                show_dict["next_ep_airdate"] = sbdatetime.sbdatetime.sbfdate(dt_episode_airs, d_preset=dateFormat)
+                show_dict["next_ep_airdate"] = scdatetime.scdatetime.scfdate(dt_episode_airs, d_preset=dateFormat)
             else:
                 show_dict["next_ep_airdate"] = ""
 

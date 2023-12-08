@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard.filters import hide
@@ -36,7 +36,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="randomize_providers" id="randomize_providers"
-                                           class="enabler" ${('', 'checked="checked"')[bool(settings.RANDOMIZE_PROVIDERS)]}/>
+                                           class="enabler" ${checked(settings.RANDOMIZE_PROVIDERS)}/>
                                     <label for="randomize_providers">${_('randomize the provider search order instead of going in order of placement')}</label>
                                 </div>
                             </div>
@@ -47,12 +47,12 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="download_propers" id="download_propers"
-                                           class="enabler" ${('', 'checked="checked"')[bool(settings.DOWNLOAD_PROPERS)]}/>
+                                           class="enabler" ${checked(settings.DOWNLOAD_PROPERS)}/>
                                     <label for="download_propers">${_('replace original download with "Proper" or "Repack" if nuked')}</label>
                                 </div>
                             </div>
 
-                            <div id="content_download_propers">
+                            <div id="content_download_propers" ${hidden(settings.DOWNLOAD_PROPERS)}>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -62,7 +62,7 @@
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm input150">
                                             <% check_propers_interval_text = {'daily': _('24 hours'), '4h': _('4 hours'), '90m': _('90 mins'), '45m': _('45 mins'), '15m': _('15 mins')} %>
                                             % for curInterval in check_propers_interval_text:
-                                                <option value="${curInterval}" ${('', 'selected="selected"')[settings.CHECK_PROPERS_INTERVAL == curInterval]}>${check_propers_interval_text[curInterval]}</option>
+                                                <option value="${curInterval}" ${selected(settings.CHECK_PROPERS_INTERVAL == curInterval)}>${check_propers_interval_text[curInterval]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -77,7 +77,7 @@
                                         <div class="col-md-12">
                                             <input type="text" name="flaresolverr_uri" value="${settings.FLARESOLVERR_URI}"
                                             id="flaresolverr_uri"
-                                            class="form-control input-sm input350" autocapitalize="off"/>
+                                            class="form-control input-sm input350" autocapitalize="off" />
                                             <label for="flaresolverr_uri">${_('the URL of your flaresolverr server.  Example:  http://localhost:8191/v1')}</label>
                                         </div>
                                     </div>
@@ -103,7 +103,7 @@
                                         <div class="col-md-12">
                                             <input type="number" min="1" step="1" name="backlog_days"
                                                    value="${settings.BACKLOG_DAYS}" class="form-control input-sm input75"
-                                                   autocapitalize="off" id="backlog_days"/>
+                                                   autocapitalize="off" id="backlog_days" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -123,7 +123,7 @@
                                         <div class="col-md-12">
                                             <input type="number" min="720" step="60" name="backlog_frequency"
                                                    value="${settings.BACKLOG_FREQUENCY}" class="form-control input-sm input75"
-                                                   id="backlog_frequency" autocapitalize="off"/>
+                                                   id="backlog_frequency" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -143,7 +143,7 @@
                                         <div class="col-md-12">
                                             <input type="number" min="10" step="1" name="dailysearch_frequency"
                                                    id="dailysearch_frequency" value="${settings.DAILYSEARCH_FREQUENCY}"
-                                                   class="form-control input-sm input75" autocapitalize="off"/>
+                                                   class="form-control input-sm input75" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -162,7 +162,7 @@
                                         <div class="col-md-12">
                                             <input type="number" min="1" step="1" name="cache_retention"
                                                    value="${settings.CACHE_RETENTION}" class="form-control input-sm input75"
-                                                   autocapitalize="off" id="cache_retention"/>
+                                                   autocapitalize="off" id="cache_retention" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -180,7 +180,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="ignore_words" value="${settings.IGNORE_WORDS}"
-                                                   id="ignore_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                                   id="ignore_words" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -199,7 +199,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="prefer_words" value="${settings.PREFER_WORDS}"
-                                                   id="prefer_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                                   id="prefer_words" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -218,7 +218,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="require_words" value="${settings.REQUIRE_WORDS}"
-                                                   id="require_words" class="form-control input-sm input350" autocapitalize="off"/>
+                                                   id="require_words" class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -237,7 +237,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="ignored_subs_list" value="${settings.IGNORED_SUBS_LIST}"
-                                                   class="form-control input-sm input350" autocapitalize="off"/>
+                                                   class="form-control input-sm input350" autocapitalize="off" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -256,7 +256,7 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="allow_high_priority"
-                                           id="allow_high_priority" ${('', 'checked="checked"')[bool(settings.ALLOW_HIGH_PRIORITY)]}/>
+                                           id="allow_high_priority" ${checked(settings.ALLOW_HIGH_PRIORITY)}/>
                                     <label for="allow_high_priority">${_('set downloads of recently aired episodes to high priority')}</label>
                                 </div>
                             </div>
@@ -268,7 +268,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input id="use_failed_downloads" type="checkbox" class="enabler"
-                                                   name="use_failed_downloads" ${('', 'checked="checked"')[bool(settings.USE_FAILED_DOWNLOADS)]} />
+                                                   name="use_failed_downloads" ${checked(settings.USE_FAILED_DOWNLOADS)} />
                                             <label for="use_failed_downloads">${_('use Failed Download Handling?')}</label>
                                         </div>
                                     </div>
@@ -280,7 +280,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_use_failed_downloads">
+                            <div id="content_use_failed_downloads" ${hidden(settings.USE_FAILED_DOWNLOADS)}>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -290,7 +290,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input id="delete_failed" type="checkbox"
-                                                       name="delete_failed" ${('', 'checked="checked"')[bool(settings.DELETE_FAILED)]}/>
+                                                       name="delete_failed" ${checked(settings.DELETE_FAILED)}/>
                                                 <label for="delete_failed">${_('delete files left over from a failed download?')}</label>
                                             </div>
                                         </div>
@@ -314,13 +314,42 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input id="backlog_missing_only" type="checkbox"
-                                                       name="backlog_missing_only" ${('', 'checked="checked"')[bool(settings.BACKLOG_MISSING_ONLY)]}/>
+                                                       name="backlog_missing_only" ${checked(settings.BACKLOG_MISSING_ONLY)}/>
                                                 <label for="backlog_missing_only">${_('restrict backlog searches to missing episodes only?')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label><b>${_('note')}:</b> ${_('if enabled, this ignores episodes that are not preferred qualities')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div id="show_skip_age">
+
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Episode Skipped if older than')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="number" min="5" step="5" name="show_skip_older"
+                                                       value="${settings.SHOW_SKIP_OLDER}" class="form-control input-sm input75"
+                                                       autocapitalize="off" id="show_skip_older" />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="show_skip_older">${_('number of day(s) since aired, older episodes set to Skipped')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label><b>${_('note')}:</b> ${_('set Zero(0) to disabled, default: 30 days')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -353,12 +382,12 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="use_nzbs" class="enabler"
-                                           id="use_nzbs" ${('', 'checked="checked"')[bool(settings.USE_NZBS)]}/>
+                                           id="use_nzbs" ${checked(settings.USE_NZBS)}/>
                                     <label for="use_nzbs">${_('enable NZB search providers')}</label>
                                 </div>
                             </div>
 
-                            <div id="content_use_nzbs">
+                            <div id="content_use_nzbs" ${hidden(settings.USE_NZBS)}>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Usenet retention')}</label>
@@ -368,7 +397,7 @@
                                             <div class="col-md-12">
                                                 <input type="number" min="1" step="1" name="usenet_retention"
                                                        value="${settings.USENET_RETENTION}" class="form-control input-sm input75"
-                                                       id="usenet_retention" autocapitalize="off"/>
+                                                       id="usenet_retention" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -386,7 +415,7 @@
                                         <select name="nzb_method" id="nzb_method" class="form-control input-sm input150" title="nzb_method">
                                             <% nzb_method_text = {'blackhole': "Black hole", 'sabnzbd': "SABnzbd", 'nzbget': "NZBget", 'download_station': "Synology DS"} %>
                                             % for curAction in ('blackhole', 'sabnzbd', 'nzbget', 'download_station'):
-                                                <option value="${curAction}" ${('', 'selected="selected"')[settings.NZB_METHOD == curAction]}>${nzb_method_text[curAction]}</option>
+                                                <option value="${curAction}" ${selected(settings.NZB_METHOD == curAction)}>${nzb_method_text[curAction]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -401,7 +430,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" id="sab_host" name="sab_host" value="${settings.SAB_HOST}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -421,7 +450,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_username" id="sab_username"
                                                            value="${settings.SAB_USERNAME}" class="form-control input-sm input200"
-                                                           autocapitalize="off" autocomplete="no"/>
+                                                           autocapitalize="off" autocomplete="no" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -483,7 +512,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category" id="sab_category"
                                                            value="${settings.SAB_CATEGORY}" class="form-control input-sm input200"
-                                                           autocapitalize="off"/>
+                                                           autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -503,7 +532,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category_backlog" id="sab_category_backlog"
                                                            value="${settings.SAB_CATEGORY_BACKLOG}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -523,7 +552,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="sab_category_anime" id="sab_category_anime"
                                                            value="${settings.SAB_CATEGORY_ANIME}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -545,7 +574,7 @@
                                                     <input type="text" name="sab_category_anime_backlog"
                                                            id="sab_category_anime_backlog"
                                                            value="${settings.SAB_CATEGORY_ANIME_BACKLOG}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -563,7 +592,7 @@
                                             </div>
                                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                                 <input type="checkbox" name="sab_forced" class="enabler"
-                                                       id="sab_forced" ${('', 'checked="checked"')[bool(settings.SAB_FORCED)]}/>
+                                                       id="sab_forced" ${checked(settings.SAB_FORCED)}/>
                                                 <label for="sab_forced">${_('enable to change priority from HIGH to FORCED')}</label>
                                             </div>
                                         </div>
@@ -579,7 +608,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzb_dir" id="nzb_dir" value="${settings.NZB_DIR}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -601,7 +630,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input id="nzbget_use_https" type="checkbox" class="enabler"
-                                                           name="nzbget_use_https" ${('', 'checked="checked"')[bool(settings.NZBGET_USE_HTTPS)]}/>
+                                                           name="nzbget_use_https" ${checked(settings.NZBGET_USE_HTTPS)}/>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -621,7 +650,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_host" id="nzbget_host"
                                                            value="${settings.NZBGET_HOST}" class="form-control input-sm input350"
-                                                           autocapitalize="off"/>
+                                                           autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -646,7 +675,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_username" value="${settings.NZBGET_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
-                                                           id="nzbget_username" autocomplete="no"/>
+                                                           id="nzbget_username" autocomplete="no" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -687,7 +716,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category" id="nzbget_category"
                                                            value="${settings.NZBGET_CATEGORY}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -707,7 +736,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category_backlog" id="nzbget_category_backlog"
                                                            value="${settings.NZBGET_CATEGORY_BACKLOG}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -727,7 +756,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="nzbget_category_anime" id="nzbget_category_anime"
                                                            value="${settings.NZBGET_CATEGORY_ANIME}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -748,7 +777,7 @@
                                                     <input type="text" name="nzbget_category_anime_backlog"
                                                            id="nzbget_category_anime_backlog"
                                                            value="${settings.NZBGET_CATEGORY_ANIME_BACKLOG}"
-                                                           class="form-control input-sm input200" autocapitalize="off"/>
+                                                           class="form-control input-sm input200" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -767,12 +796,12 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <select name="nzbget_priority" id="nzbget_priority" class="form-control input-sm input200">
-                                                        <option value="-100" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == -100]}>${_('Very low')}</option>
-                                                        <option value="-50" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == -50]}>${_('Low')}</option>
-                                                        <option value="0" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == 0]}>${_('Normal')}</option>
-                                                        <option value="50" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == 50]}>${_('High')}</option>
-                                                        <option value="100" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == 100]}>${_('Very high')}</option>
-                                                        <option value="900" ${('', 'selected="selected"')[settings.NZBGET_PRIORITY == 900]}>${_('Force')}</option>
+                                                        <option value="-100" ${selected(settings.NZBGET_PRIORITY == -100)}>${_('Very low')}</option>
+                                                        <option value="-50" ${selected(settings.NZBGET_PRIORITY == -50)}>${_('Low')}</option>
+                                                        <option value="0" ${selected(settings.NZBGET_PRIORITY == 0)}>${_('Normal')}</option>
+                                                        <option value="50" ${selected(settings.NZBGET_PRIORITY == 50)}>${_('High')}</option>
+                                                        <option value="100" ${selected(settings.NZBGET_PRIORITY == 100)}>${_('Very high')}</option>
+                                                        <option value="900" ${selected(settings.NZBGET_PRIORITY == 900)}>${_('Force')}</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -796,7 +825,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="syno_dsm_host" id="syno_dsm_host"
                                                            value="${settings.SYNOLOGY_DSM_HOST}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -817,7 +846,7 @@
                                                     <input type="text" name="syno_dsm_user" id="syno_dsm_user"
                                                            value="${settings.SYNOLOGY_DSM_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
-                                                           autocomplete="no"/>
+                                                           autocomplete="no" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -858,7 +887,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="syno_dsm_path" id="syno_dsm_path"
                                                            value="${settings.SYNOLOGY_DSM_PATH}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -883,9 +912,9 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input class="btn test-button" type="button" value="Test SABnzbd" id="testSABnzbd"/>
-                                        <input type="button" value="Test DSM" id="testDSM" class="btn test-button"/>
-                                        <input type="submit" class="btn config_submitter" value="${_('Save Changes')}"/>
+                                        <input class="btn test-button" type="button" value="Test SABnzbd" id="testSABnzbd" />
+                                        <input type="button" value="Test DSM" id="testDSM" class="btn test-button" />
+                                        <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                                     </div>
                                 </div>
 
@@ -915,11 +944,11 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="use_torrents" class="enabler"
-                                           id="use_torrents" ${('', 'checked="checked"')[bool(settings.USE_TORRENTS)]}/>
+                                           id="use_torrents" ${checked(settings.USE_TORRENTS)}/>
                                     <label for="use_torrents">${_('enable torrent search providers')}</label>
                                 </div>
                             </div>
-                            <div id="content_use_torrents">
+                            <div id="content_use_torrents" ${hidden(settings.USE_TORRENTS)}>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Trackers list')}</label>
@@ -928,7 +957,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="text" name="trackers_list" value="${settings.TRACKERS_LIST}"
-                                                       class="form-control input-sm input350" autocapitalize="off"/>
+                                                       class="form-control input-sm input350" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -947,7 +976,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="torrent_method" id="torrent_method" class="form-control input-sm input200" title="torrent_method">
                                             % for curAction, curTitle in getClientListDict().items():
-                                                <option value="${curAction}" ${('', 'selected="selected"')[settings.TORRENT_METHOD == curAction]}>${curTitle}</option>
+                                                <option value="${curAction}" ${selected(settings.TORRENT_METHOD == curAction)}>${curTitle}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -962,7 +991,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_dir" id="torrent_dir"
                                                            value="${settings.TORRENT_DIR}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -974,7 +1003,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="submit" class="btn config_submitter" value="${_('Save Changes')}"/>
+                                            <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                                         </div>
                                     </div>
                                 </div>
@@ -987,7 +1016,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_host" id="torrent_host" value="${settings.TORRENT_HOST}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1006,7 +1035,7 @@
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_rpcurl" id="torrent_rpcurl"
                                                            value="${settings.TORRENT_RPCURL}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1025,7 +1054,7 @@
                                                 <% http_authtype = {'none': "None", 'basic': "Basic", 'digest': "Digest"} %>
                                                 % for authvalue, authname in http_authtype.items():
                                                     <option id="torrent_auth_type_value"
-                                                            value="${authvalue}" ${('', 'selected="selected"')[settings.TORRENT_AUTH_TYPE == authvalue]}>${authname}</option>
+                                                            value="${authvalue}" ${selected(settings.TORRENT_AUTH_TYPE == authvalue)}>${authname}</option>
                                                 % endfor
                                             </select>
                                         </div>
@@ -1036,7 +1065,7 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="checkbox" name="torrent_verify_cert" class="enabler"
-                                                   id="torrent_verify_cert" ${('', 'checked="checked"')[bool(settings.TORRENT_VERIFY_CERT)]}/>
+                                                   id="torrent_verify_cert" ${checked(settings.TORRENT_VERIFY_CERT)}/>
                                             <label for="torrent_verify_cert"></label>
                                         </div>
                                     </div>
@@ -1050,7 +1079,7 @@
                                                     <input type="text" name="torrent_username" id="torrent_username"
                                                            value="${settings.TORRENT_USERNAME}"
                                                            class="form-control input-sm input200" autocapitalize="off"
-                                                           autocomplete="no"/>
+                                                           autocomplete="no" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1069,7 +1098,7 @@
                                                 <div class="col-md-12">
                                                     <input
                                                         type="password" name="torrent_password" id="torrent_password" value="${settings.TORRENT_PASSWORD|hide}"
-                                                        class="form-control input-sm input200" autocomplete="no" autocapitalize="off"/>
+                                                        class="form-control input-sm input200" autocomplete="no" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1089,7 +1118,7 @@
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_label" id="torrent_label"
                                                                value="${settings.TORRENT_LABEL}"
-                                                               class="form-control input-sm input200" autocapitalize="off"/>
+                                                               class="form-control input-sm input200" autocapitalize="off" />
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -1115,7 +1144,7 @@
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_label_anime" id="torrent_label_anime"
                                                                value="${settings.TORRENT_LABEL_ANIME}"
-                                                               class="form-control input-sm input200" autocapitalize="off"/>
+                                                               class="form-control input-sm input200" autocapitalize="off" />
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -1141,7 +1170,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="text" name="torrent_path" id="torrent_path" value="${settings.TORRENT_PATH}"
-                                                           class="form-control input-sm input350" autocapitalize="off"/>
+                                                           class="form-control input-sm input350" autocapitalize="off" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1166,7 +1195,7 @@
                                                     <div class="col-md-12">
                                                         <input type="text" name="torrent_path_incomplete" id="torrent_path_incomplete"
                                                                value="${settings.TORRENT_PATH_INCOMPLETE}"
-                                                               class="form-control input-sm input350" autocapitalize="off"/>
+                                                               class="form-control input-sm input350" autocapitalize="off" />
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -1187,7 +1216,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="number" step="1" name="torrent_seed_time" id="torrent_seed_time"
-                                                           value="${settings.TORRENT_SEED_TIME}" class="form-control input-sm input100"/>
+                                                           value="${settings.TORRENT_SEED_TIME}" class="form-control input-sm input100" />
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -1210,7 +1239,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="checkbox" name="torrent_paused" class="enabler"
-                                                           id="torrent_paused" ${('', 'checked="checked"')[bool(settings.TORRENT_PAUSED)]}/>
+                                                           id="torrent_paused" ${checked(settings.TORRENT_PAUSED)}/>
                                                     <label for="torrent_paused">${_('add torrent to client but do <b style="font-weight:900">not</b> start downloading')}</label>
                                                 </div>
                                             </div>
@@ -1225,7 +1254,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <input type="checkbox" name="torrent_high_bandwidth" class="enabler"
-                                                           id="torrent_high_bandwidth" ${('', 'checked="checked"')[bool(settings.TORRENT_HIGH_BANDWIDTH)]}/>
+                                                           id="torrent_high_bandwidth" ${checked(settings.TORRENT_HIGH_BANDWIDTH)}/>
                                                     <label for="torrent_high_bandwidth">${_('use high bandwidth allocation if priority is high')}</label>
                                                 </div>
                                             </div>
@@ -1240,8 +1269,8 @@
 
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input class="btn test-button" type="button" value="${_('Test Connection')}" id="test_torrent"/>
-                                            <input type="submit" class="btn config_submitter" value="${_('Save Changes')}"/>
+                                            <input class="btn test-button" type="button" value="${_('Test Connection')}" id="test_torrent" />
+                                            <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                                         </div>
                                     </div>
 

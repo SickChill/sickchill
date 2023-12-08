@@ -17,7 +17,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
     Tested with: newznab, nzedb, spotweb, torznab
     """
 
-    def __init__(self, name, url, key="0", catIDs="5030,5040", search_mode="eponly", search_fallback=False, enable_daily=True, enable_backlog=False):
+    def __init__(self, name, url, key="0", categories="5030,5040", search_mode="episode", search_fallback=False, enable_daily=True, enable_backlog=False):
         super().__init__(name)
 
         self.url = url
@@ -32,7 +32,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
         self.needs_auth = self.key != "0"
         self.public = not self.needs_auth
 
-        self.catIDs = catIDs if catIDs else "5030,5040"
+        self.categories = categories if categories else "5030,5040"
 
         self.default = False
 
@@ -45,11 +45,11 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll newznab providers every 30 minutes max
 
-    def configStr(self):
+    def config_string(self):
         """
         Generates a '|' delimited string of instance attributes, for saving to config.ini
         """
-        return f"{self.name}|{self.url}|{self.key}|{self.catIDs}|{self.enabled:d}|{self.search_mode}|{self.search_fallback:d}|{self.enable_daily:d}|{self.enable_backlog:d}"
+        return f"{self.name}|{self.url}|{self.key}|{self.categories}|{self.enabled:d}|{self.search_mode}|{self.search_fallback:d}|{self.enable_daily:d}|{self.enable_backlog:d}"
 
     @staticmethod
     def providers_list(data):
@@ -83,8 +83,8 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 providers_dict[default.name].search_fallback = default.search_fallback
                 providers_dict[default.name].enable_daily = default.enable_daily
                 providers_dict[default.name].enable_backlog = default.enable_backlog
-                providers_dict[default.name].catIDs = (
-                    ",".join([x for x in providers_dict[default.name].catIDs.split(",") if 5000 <= try_int(x) <= 5999]) or default.catIDs
+                providers_dict[default.name].categories = (
+                    ",".join([x for x in providers_dict[default.name].categories.split(",") if 5000 <= try_int(x) <= 5999]) or default.categories
                 )
 
         return [x for x in providers_list if x]
@@ -175,13 +175,13 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
     @staticmethod
     def _get_default_providers():
-        # name|url|key|catIDs|enabled|search_mode|search_fallback|enable_daily|enable_backlog
+        # name|url|key|categories|enabled|search_mode|search_fallback|enable_daily|enable_backlog
         return (
-            "NZB.Cat|https://nzb.cat/||5030,5040,5010|0|eponly|1|1|1!!!"
-            + "NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|eponly|1|1|1!!!"
-            + "NZBGeek|https://api.nzbgeek.info/||5030,5040|0|eponly|0|0|0!!!"
-            + "Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|eponly|0|0|0!!!"
-            + "DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|eponly|0|1|1"
+            "NZB.Cat|https://nzb.cat/||5030,5040,5010|0|episode|1|1|1!!!"
+            + "NZBFinder.ws|https://nzbfinder.ws/||5030,5040,5010,5045|0|episode|1|1|1!!!"
+            + "NZBGeek|https://api.nzbgeek.info/||5030,5040|0|episode|0|0|0!!!"
+            + "Usenet-Crawler|https://www.usenet-crawler.com/||5030,5040|0|episode|0|0|0!!!"
+            + "DOGnzb|https://api.dognzb.cr/||5030,5040,5060,5070|0|episode|0|1|1"
         )
 
     def _check_auth(self):
@@ -222,7 +222,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
         enable_backlog = 0
         enable_daily = 0
         search_fallback = 0
-        search_mode = "eponly"
+        search_mode = "episode"
 
         try:
             values = config.split("|")
@@ -239,11 +239,16 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
             logger.exception("Skipping Newznab provider string: '{0}', incorrect format".format(config))
             return None
 
+        if search_mode == "sponly":
+            search_mode = "season"
+        elif search_mode == "eponly":
+            search_mode = "episode"
+
         new_provider = NewznabProvider(
             name,
             url,
             key=key,
-            catIDs=category_ids,
+            categories=category_ids,
             search_mode=search_mode,
             search_fallback=search_fallback,
             enable_daily=enable_daily,
@@ -253,7 +258,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         return new_provider
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         """
         Searches indexer using the params in search_strings, either for latest releases, or a string/id search
         Returns: list of results in dict form
@@ -274,7 +279,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 "t": ("search", "tvsearch")[bool(self.use_tv_search)],
                 "limit": 100,
                 "offset": 0,
-                "cat": self.catIDs.strip(", ") or "5030,5040",
+                "cat": self.categories.strip(", ") or "5030,5040",
                 "maxage": settings.USENET_RETENTION,
             }
 
@@ -284,18 +289,18 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
             if mode != "RSS":
                 if self.use_tv_search:
                     if "tvdbid" in str(self.cap_tv_search):
-                        search_params["tvdbid"] = ep_obj.show.indexerid
+                        search_params["tvdbid"] = episode_object.show.indexerid
 
-                    if ep_obj.show.air_by_date or ep_obj.show.sports:
-                        # date_str = str(ep_obj.airdate)
+                    if episode_object.show.air_by_date or episode_object.show.sports:
+                        # date_str = str(episode_object.airdate)
                         # search_params['season'] = date_str.partition('-')[0]
                         # search_params['ep'] = date_str.partition('-')[2].replace('-', '/')
-                        search_params["q"] = str(ep_obj.airdate)
-                    elif ep_obj.show.is_anime:
-                        search_params["ep"] = ep_obj.absolute_number
+                        search_params["q"] = str(episode_object.airdate)
+                    elif episode_object.show.is_anime:
+                        search_params["ep"] = episode_object.absolute_number
                     else:
-                        search_params["season"] = ep_obj.scene_season
-                        search_params["ep"] = ep_obj.scene_episode
+                        search_params["season"] = episode_object.scene_season
+                        search_params["ep"] = episode_object.scene_episode
 
                 if mode == "Season":
                     search_params.pop("ep", "")

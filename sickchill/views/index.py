@@ -12,8 +12,6 @@ from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
 from tornado.concurrent import run_on_executor
-from tornado.escape import utf8, xhtml_escape
-from tornado.gen import coroutine
 from tornado.web import authenticated, HTTPError, RequestHandler
 
 import sickchill.start
@@ -22,7 +20,7 @@ from sickchill.init_helpers import check_installed, locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
 
-from ..oldbeard import db, helpers, network_timezones, ui
+from ..oldbeard import config, db, helpers, network_timezones, ui
 from .api.webapi import function_mapper
 from .common import PageTemplate
 
@@ -43,8 +41,9 @@ class BaseHandler(RequestHandler):
         super().initialize()
         self.startTime = time.time()
 
-    # def set_default_headers(self):
-    #     self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+    def set_default_headers(self):
+        self.set_header("X-Robots-Tag", "noindex")
+        # self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
 
     def write_error(self, status_code, **kwargs):
         # handle 404 http errors
@@ -104,7 +103,7 @@ class BaseHandler(RequestHandler):
             assert isinstance(status, int)
             assert 300 <= status <= 399
         self.set_status(status)
-        self.set_header("Location", urljoin(utf8(self.request.uri), utf8(url)))
+        self.set_header("Location", urljoin(self.request.uri, url))
 
     def get_current_user(self):
         if isinstance(self, UI):
@@ -150,15 +149,31 @@ class WebHandler(BaseHandler):
         self.executor = ThreadPoolExecutor(thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
 
     @authenticated
-    @coroutine
-    def get(self, route, *args, **kwargs):
+    async def get(self, route, *args, **kwargs):
         try:
+            # logger.debug(f"Call for {route} with {args} and {kwargs}")
             # logger.debug(f"Call for {route} with args [{self.request.arguments}]")
+
             # route -> method obj
             route = route.strip("/").replace(".", "_").replace("-", "_") or "index"
-            method = getattr(self, route)
+            # logger.debug(f"Route: {route}")
+            if hasattr(self, route):
+                method = getattr(self, route)
+            else:
+                message = ("404", "Could not find the page you requested")
+                ui.notifications.error(*message)
+                logger.info(", ".join(message))
+                helpers.add_site_message(", ".join(message), tag=message[0], level="danger")
+                return self.redirect("/home/")
 
-            results = yield self.async_call(method)
+            from inspect import signature
+
+            sig = signature(method)
+            if settings.DEVELOPER:
+                if len(sig.parameters):
+                    logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
+
+            results = await self.async_call(method, len(sig.parameters))
 
             self.finish(results)
 
@@ -167,19 +182,34 @@ class WebHandler(BaseHandler):
             raise HTTPError(404)
 
     @run_on_executor
-    def async_call(self, function):
+    def async_call(self, function, needs_params):
         try:
-            # TODO: Make all routes use get_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
+            # TODO: Make all routes use get_*_argument so we can take advantage of tornado's argument sanitization, separate post and get, and get rid of this
+            # TODO: Until the new web interface is ready, we should also make each route asynchronous and yield back the result.
             # nonsense loop so we can just yield the method directly
-            # raise Exception('Raising from async_call')
-            kwargs = self.request.arguments
-            for arg, value in kwargs.items():
-                if len(value) == 1:
-                    kwargs[arg] = xhtml_escape(value[0])
-                elif isinstance(value, str):
-                    kwargs[arg] = xhtml_escape(value)
+
+            if not needs_params:
+                return function()
+
+            if self.request.method == "POST":
+                get_argument = self.get_body_argument
+                get_arguments = self.get_body_arguments
+            elif self.request.method == "GET":
+                get_argument = self.get_query_argument
+                get_arguments = self.get_query_arguments
+            else:
+                get_argument = self.get_argument
+                get_arguments = self.get_arguments
+
+            kwargs = {}
+            for arg, value in self.request.arguments.items():
+                if isinstance(value, str):
+                    kwargs[arg] = get_argument(arg)
                 elif isinstance(value, list):
-                    kwargs[arg] = [xhtml_escape(v) for v in value]
+                    if len(value) == 1:
+                        kwargs[arg] = get_argument(arg)
+                    else:
+                        kwargs[arg] = get_arguments(arg)
                 else:
                     raise Exception
             return function(**kwargs)
@@ -196,6 +226,8 @@ class WebHandler(BaseHandler):
 class WebRoot(WebHandler):
     def print_traceback(self, error, *args, **kwargs):
         logger.info(f"A mako error occurred: {error}")
+        logger.debug(traceback.format_exc())
+        logger.debug(f"args: {args}, kwargs: {kwargs}")
         t = PageTemplate(rh=self, filename="500.mako")
         kwargs["backtrace"] = RichTraceback(error=error)
         return t.render(*args, **kwargs)
@@ -243,7 +275,7 @@ class WebRoot(WebHandler):
 
     def setPosterSortBy(self):
         sort = self.get_query_argument("sort")
-        if sort not in ("name", "date", "network", "progress"):
+        if sort not in ("name", "date", "network", "progress", "status"):
             sort = "name"
 
         settings.POSTER_SORTBY = sort
@@ -304,9 +336,9 @@ class WebRoot(WebHandler):
     def schedule(self):
         layout = self.get_query_argument("layout", settings.COMING_EPS_LAYOUT)
         next_week = datetime.date.today() + datetime.timedelta(days=7)
-        next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sb_timezone))
+        next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sc_timezone))
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, settings.COMING_EPS_SORT, False)
-        today = datetime.datetime.now().replace(tzinfo=network_timezones.sb_timezone)
+        today = datetime.datetime.now().replace(tzinfo=network_timezones.sc_timezone)
 
         # Allow local overriding of layout parameter
         if layout not in ("poster", "banner", "list", "calendar"):
@@ -341,8 +373,18 @@ class UI(WebRoot):
             self.set_status(204)  # "No Content"
             return None
 
-    @staticmethod
-    def add_message():
+    def add_message(self):
+        title = self.get_argument("title")
+        message = self.get_argument("message")
+        success = config.checkbox_to_value(self.get_argument("success"))
+
+        if title and message:
+            if success:
+                ui.notifications.message(title, message)
+            else:
+                ui.notifications.error(title, message)
+            return
+
         ui.notifications.message(_("Test 1"), _("This is test number 1"))
         ui.notifications.error(_("Test 2"), _("This is test number 2"))
 

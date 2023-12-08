@@ -37,41 +37,36 @@ class Provider(TorrentProvider):
 
         return True
 
-    def _check_auth_from_data(self, parsed_json):
-        if parsed_json is None:
+    def _check_auth_from_data(self, data):
+        if data is None:
             return self._check_auth()
 
-        if "api-error" in parsed_json:
-            logger.debug("Incorrect authentication credentials: {0}".format(parsed_json["api-error"]))
-            raise AuthException("Your authentication credentials for " + self.name + " are incorrect, check your config.")
+        if "api-error" in data:
+            logger.debug(_("Incorrect authentication credentials: {0}").format(data["api-error"]))
+            raise AuthException(_("Your authentication credentials for {0} are incorrect, check your config.").format(self.name))
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):  # pylint:disable=too-many-locals
+    def search(self, search_params, episode_object=None):
         self._check_auth()
 
         results = []
-        params = {}
-        apikey = self.api_key
-
-        # age in seconds
-        if age:
-            params["age"] = "<=" + str(int(age))
 
         if search_params:
-            params.update(search_params)
-            logger.debug("Search string: {0}".format(search_params))
+            logger.debug(_("Search string: {0}").format(search_params))
+        else:
+            # age in seconds
+            search_params = {"age": f"<={4 * 24 * 60 * 60}"}
 
-        parsed_json = self._api_call(apikey, params)
-        if not parsed_json:
+        data = self._api_call(search_params)
+        if not data:
             logger.debug("No data returned from provider")
             return results
 
-        if self._check_auth_from_data(parsed_json):
-            if "torrents" in parsed_json:
-                found_torrents = parsed_json["torrents"]
-            else:
-                found_torrents = {}
+        found = {}
+        if self._check_auth_from_data(data):
+            if "torrents" in data:
+                found = data["torrents"]
 
             # We got something, we know the API sends max 1000 results at a time.
             # See if there are more than 1000 results for our query, if not we
@@ -80,37 +75,34 @@ class Provider(TorrentProvider):
             max_pages = 150
             results_per_page = 1000
 
-            if "results" in parsed_json and int(parsed_json["results"]) >= results_per_page:
-                pages_needed = int(math.ceil(int(parsed_json["results"]) / results_per_page))
+            if "results" in data and int(data["results"]) >= results_per_page:
+                pages_needed = int(math.ceil(int(data["results"]) / results_per_page))
                 if pages_needed > max_pages:
                     pages_needed = max_pages
 
                 # +1 because range(1,4) = 1, 2, 3
                 for page in range(1, pages_needed + 1):
-                    parsed_json = self._api_call(apikey, params, results_per_page, page * results_per_page)
+                    data = self._api_call(search_params, results_per_page, page * results_per_page)
                     # Note that this these are individual requests and might time out individually. This would result in 'gaps'
                     # in the results. There is no way to fix this though.
-                    if "torrents" in parsed_json:
-                        found_torrents.update(parsed_json["torrents"])
+                    if "torrents" in data:
+                        found.update(data["torrents"])
 
-            for _, torrent_info in found_torrents.items():
+            for keys, torrent_info in found.items():
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
                     logger.debug("Found result: {0} ".format(title))
                     results.append(torrent_info)
 
-        # FIXME SORT RESULTS
-        return results
+        return sorted(results, key=lambda x: self._get_seeders_and_leechers(x)[0], reverse=True)
 
-    def _api_call(self, apikey, params=None, results_per_page=1000, offset=0):
-        server = jsonrpclib.Server(self.urls["base_url"])
-        parsed_json = {}
+    def _api_call(self, params=None, results_per_page=1000, offset=0) -> dict:
+        data = {}
 
         try:
-            parsed_json = server.getTorrents(apikey, params or {}, int(results_per_page), int(offset))
+            data = jsonrpclib.Server(self.urls["base_url"]).getTorrents(self.api_key, params or {}, int(results_per_page), int(offset))
             time.sleep(cpu_presets[settings.CPU_PRESET])
-
         except jsonrpclib.jsonrpc.ProtocolError as error:
             if error == (-32001, "Invalid API Key"):
                 logger.warning("The API key you provided was rejected because it is invalid. Check your provider configuration.")
@@ -118,8 +110,8 @@ class Provider(TorrentProvider):
                 logger.warning("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
             else:
                 logger.exception(f"JSON-RPC protocol error while accessing provider. Error: {error} ")
-            parsed_json = {"api-error": f"{error}"}
-            return parsed_json
+            data = {"api-error": f"{error}"}
+            return data
 
         except socket.timeout:
             logger.warning("Timeout while accessing provider")
@@ -129,117 +121,97 @@ class Provider(TorrentProvider):
             logger.warning(f"Socket error while accessing provider. Error: {error}")
 
         except Exception as error:
-            errorstring = f"{error}"
-            if errorstring.startswith("<") and errorstring.endswith(">"):
-                errorstring = errorstring[1:-1]
-            logger.warning(f"Unknown error while accessing provider. Error: {errorstring}")
+            logger.warning(f"Unknown error while accessing provider. Error: {error}")
 
-        return parsed_json
+        return data
 
-    def _get_title_and_url(self, parsed_json):
+    def _get_seeders_and_leechers(self, item):
+        try:
+            return item.get("Seeders", -1), item.get("Leechers", -1)
+        except AttributeError:
+            return -1, -1
+
+    def _get_title_and_url(self, data):
         # The BTN API gives a lot of information in response,
         # however SickChill is built mostly around Scene or
         # release names, which is why we are using them here.
-
-        if "ReleaseName" in parsed_json and parsed_json["ReleaseName"]:
-            title = parsed_json["ReleaseName"]
-            append = ""
-            if "Resolution" in parsed_json and parsed_json["Resolution"].lower() not in title.lower():
-                append += parsed_json["Resolution"]
-            if "Source" in parsed_json and parsed_json["Source"].lower() not in title.lower():
-                append += parsed_json["Source"]
-            if "Codec" in parsed_json and parsed_json["Codec"].lower() not in title.lower():
-                append += parsed_json["Codec"]
-
+        release_name = data.get("ReleaseName")
+        if release_name:
+            title = release_name
+            append = ".".join(
+                f"{part}" for part in (data.get("Resolution"), data.get("Source"), data.get("Codec")) if part and part.lower() not in release_name.lower()
+            )
             if append:
                 title += " [" + append + "]"
 
         else:
             # If we don't have a release name we need to get creative
-            title = ""
-            if "Series" in parsed_json:
-                title += parsed_json["Series"]
-            if "GroupName" in parsed_json:
-                title += "." + parsed_json["GroupName"] if title else parsed_json["GroupName"]
-            if "Resolution" in parsed_json:
-                title += "." + parsed_json["Resolution"] if title else parsed_json["Resolution"]
-            if "Source" in parsed_json:
-                title += "." + parsed_json["Source"] if title else parsed_json["Source"]
-            if "Codec" in parsed_json:
-                title += "." + parsed_json["Codec"] if title else parsed_json["Codec"]
-            if title:
-                title = title.replace(" ", ".")
+            title = (
+                ".".join(
+                    f"{part}"
+                    for part in (
+                        data.get("Series"),
+                        data.get("GroupName"),
+                        data.get("Resolution"),
+                        data.get("Source"),
+                        data.get("Codec"),
+                    )
+                    if part
+                )
+                .replace(" ", ".")
+                .replace("..", ".")
+            )
 
-        url = None
-        if "DownloadURL" in parsed_json:
-            url = parsed_json["DownloadURL"]
-            if url:
-                # unescaped / is valid in JSON, but it can be escaped
-                url = url.replace("\\/", "/")
+        return title, data.get("DownloadURL", "").replace("\\/", "/") or None
 
-        return title, url
-
-    def get_season_search_strings(self, ep_obj):
+    @staticmethod
+    def __add_tvdb_or_name(params, episode):
         search_params = []
-        current_params = {"category": "Season"}
-
-        # Search for entire seasons: no need to do special things for air by date or sports shows
-        if ep_obj.show.air_by_date or ep_obj.show.sports:
-            # Search for the year of the air by date show
-            current_params["name"] = str(ep_obj.airdate).split("-")[0]
+        if episode.show.indexer == 1:
+            params["tvdb"] = episode.show.indexerid
+            search_params.append(params)
         else:
-            # BTN uses the same format for both Anime and TV
-            current_params["name"] = "Season " + str(ep_obj.scene_season)
-
-        # search
-        if ep_obj.show.indexer == 1:
-            current_params["tvdb"] = ep_obj.show.indexerid
-            search_params.append(current_params)
-        else:
-            name_exceptions = list(set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
+            name_exceptions = list(set(scene_exceptions.get_scene_exceptions(episode.show.indexerid) + [episode.show.name]))
             for name in name_exceptions:
                 # Search by name if we don't have tvdb id
-                current_params["series"] = sanitizeSceneName(name)
-                search_params.append(current_params)
+                params["series"] = sanitizeSceneName(name)
+                search_params.append(params)
 
         return search_params
 
-    def get_episode_search_strings(self, ep_obj, add_string=""):
-        if not ep_obj:
+    def get_season_search_strings(self, episode_object):
+        search_params = {"category": "Season"}
+
+        # Search for entire seasons: no need to do special things for air by date or sports shows
+        if episode_object.show.air_by_date or episode_object.show.sports:
+            # Search for the year of the air by date show
+            search_params["name"] = str(episode_object.airdate).split("-")[0]
+        else:
+            # BTN uses the same format for both Anime and TV
+            search_params["name"] = "Season " + str(episode_object.scene_season)
+
+        return self.__add_tvdb_or_name(search_params, episode_object)
+
+    def get_episode_search_strings(self, episode_object, add_string=""):
+        if not episode_object:
             return [{}]
 
-        to_return = []
         search_params = {"category": "Episode"}
 
         # episode
-        if ep_obj.show.air_by_date or ep_obj.show.sports:
-            date_str = str(ep_obj.airdate)
+        if episode_object.show.air_by_date or episode_object.show.sports:
+            date_str = str(episode_object.airdate)
 
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
             search_params["name"] = date_str.replace("-", ".")
         else:
             # BTN uses the same format for both Anime and TV
-            # Do a general name search for the episode, formatted like SXXEYY
-            search_params["name"] = "{ep}".format(ep=episode_num(ep_obj.scene_season, ep_obj.scene_episode))
+            # Do a general name search for the episode
+            search_params["name"] = episode_num(episode_object.scene_season, episode_object.scene_episode)
 
         # search
-        if ep_obj.show.indexer == 1:
-            search_params["tvdb"] = ep_obj.show.indexerid
-            to_return.append(search_params)
-        else:
-            # add new query string for every exception
-            name_exceptions = list(set(scene_exceptions.get_scene_exceptions(ep_obj.show.indexerid) + [ep_obj.show.name]))
-            for cur_exception in name_exceptions:
-                search_params["series"] = sanitizeSceneName(cur_exception)
-                to_return.append(search_params)
-
-        return to_return
-
-    def _do_general_search(self, search_string):
-        # 'search' looks as broad is it can find. Can contain episode overview and title for example,
-        # use with caution!
-        return self.search({"search": search_string})
+        return self.__add_tvdb_or_name(search_params, episode_object)
 
     def find_propers(self, search_date=None):
         results = []
@@ -247,7 +219,7 @@ class Provider(TorrentProvider):
         search_terms = ["%.proper.%", "%.repack.%"]
 
         for term in search_terms:
-            for item in self.search({"release": term}, age=4 * 24 * 60 * 60):
+            for item in self.search({"release": term}):
                 if item["Time"]:
                     try:
                         result_date = datetime.fromtimestamp(float(item["Time"]))
@@ -264,18 +236,4 @@ class Provider(TorrentProvider):
 
 class BTNCache(tvcache.TVCache):
     def _get_rss_data(self):
-        # Get the torrents uploaded since last check.
-        seconds_since_last_update = math.ceil(time.time() - time.mktime(self.last_update.timetuple()))
-
-        # default to 15 minutes
-        seconds_minTime = self.min_time * 60
-        if seconds_since_last_update < seconds_minTime:
-            seconds_since_last_update = seconds_minTime
-
-        # Set maximum to 24 hours (24 * 60 * 60 = 86400 seconds) of "RSS" data search, older things will need to be done through backlog
-        if seconds_since_last_update > 86400:
-            logger.debug("The last known successful update was more than 24 hours ago, only trying to fetch the last 24 hours!")
-            seconds_since_last_update = 86400
-
-        self.search_params = None  # BTN cache does not use search params
-        return {"entries": self.provider.search(search_params=self.search_params, age=seconds_since_last_update)}
+        return {"entries": self.provider.search(search_params=None)}

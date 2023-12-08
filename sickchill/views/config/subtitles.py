@@ -14,7 +14,7 @@ from . import Config
 @Route("/config/subtitles(/?.*)", name="config:subtitles")
 class ConfigSubtitles(Config):
     @addslash
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="config_subtitles.mako")
 
         return t.render(

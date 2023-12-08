@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%block name="content">
 <div id="addShowPortal">
     <div class="row">
@@ -12,7 +12,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url("addShows/newShow/", include_version=False)}" id="btnNewShow" class="btn btn-large">
+            <a href="${static_url('addShows/newShow/', include_version=False)}" id="btnNewShow" class="btn btn-large">
                 <div class="button"><div class="add-list-icon-addnewshow"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add New Show')}</h3>
@@ -24,7 +24,7 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url("addShows/trendingShows/?traktList=anticipated", include_version=False)}" id="btnNewShow" class="btn btn-large">
+            <a href="${static_url('addShows/trendingShows/?traktList=anticipated', include_version=False)}" id="btnNewShow" class="btn btn-large">
                 <div class="button"><div class="add-list-icon-addtrakt"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add From Trakt Lists')}</h3>
@@ -34,9 +34,10 @@
         </div>
     </div>
     <br/>
+    % if 0:
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url("addShows/popularShows/", include_version=False)}" id="btnNewShow" class="btn btn-large">
+            <a href="${static_url('addShows/popularShows/', include_version=False)}" id="btnNewShow" class="btn btn-large">
                 <div class="button"><div class="add-list-icon-addimdb"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add From IMDB\'s Popular Shows')}</h3>
@@ -48,7 +49,7 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url("addShows/favoriteShows/", include_version=False)}" id="btnNewShow" class="btn btn-large btn-block">
+            <a href="${static_url('addShows/favoriteShows/', include_version=False)}" id="btnNewShow" class="btn btn-large btn-block">
                 <div class="button"><div class="add-list-icon-addtvdb"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add From TVDB\'s Favorited Shows')}</h3>
@@ -58,9 +59,10 @@
         </div>
     </div>
     <br/>
+    % endif
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url("addShows/existingShows/", include_version=False)}" id="btnExistingShow" class="btn btn-large">
+            <a href="${static_url('addShows/existingShows/', include_version=False)}" id="btnExistingShow" class="btn btn-large">
                 <div class="button"><div class="add-list-icon-addexistingshow"></div></div>
                 <div class="buttontext">
                     <h3>${_('Add Existing Shows')}</h3>

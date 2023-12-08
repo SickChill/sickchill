@@ -1,7 +1,7 @@
 import datetime
-import os.path
+from pathlib import Path
 
-from sickchill import logger
+from sickchill import logger, settings
 from sickchill.helper.common import episode_num
 from sickchill.oldbeard import common, db, helpers
 
@@ -15,7 +15,11 @@ class MainSanityCheck(db.DBSanityCheck):
         self.fix_duplicate_shows()
         self.fix_duplicate_episodes()
         self.fix_orphan_episodes()
-        self.fix_unaired_episodes()
+        # This is setting future skipped episodes to unaired, lets keep them skipped so people can pre-skip episodes.
+        # Also, this potentially sets skipped episodes back to unaired if the airdate was temporarily incorrectly set by thetvdb
+        # Then when the airdate is fixed, it is reset to wanted, even if a file exists, causing a re-download to occur.
+        # self.fix_unaired_episodes()
+
         self.fix_episode_statuses()
         self.fix_invalid_airdates()
         self.fix_show_nfo_lang()
@@ -32,7 +36,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
         for archivedEp in sql_results:
             fixed_status = common.Quality.compositeStatus(common.ARCHIVED, common.Quality.UNKNOWN)
-            existing = archivedEp["location"] and os.path.exists(archivedEp["location"])
+            existing = archivedEp["location"] and Path(archivedEp["location"]).exists()
             if existing:
                 quality = common.Quality.nameQuality(archivedEp["location"])
                 fixed_status = common.Quality.compositeStatus(common.ARCHIVED, quality)
@@ -40,7 +44,7 @@ class MainSanityCheck(db.DBSanityCheck):
             old_status = common.statusStrings[common.ARCHIVED]
             new_status = common.statusStrings[fixed_status]
             archived_episode = archivedEp["showid"]
-            ep = episode_num(archivedEp["season"])
+            ep = episode_num(archivedEp["season"], archivedEp["episode"])
             episode_id = archivedEp["episode_id"]
             location = archivedEp["location"] or "unknown location"
             result = ("NOT FOUND", "EXISTS")[bool(existing)]
@@ -106,10 +110,8 @@ class MainSanityCheck(db.DBSanityCheck):
                 self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [current_episode_id])
 
     def fix_orphan_episodes(self):
-        sql_results = self.connection.select(
-            "SELECT episode_id, showid, tv_shows.indexer_id FROM tv_episodes "
-            "LEFT JOIN tv_shows ON tv_episodes.showid=tv_shows.indexer_id WHERE tv_shows.indexer_id is NULL"
-        )
+        # If the episode has no showid, it is never displayed and is not linked to a show.
+        sql_results = self.connection.select("SELECT episode_id, showid FROM tv_episodes WHERE showid is NULL")
 
         for cur_orphan in sql_results:
             current_episode_id = cur_orphan["episode_id"]
@@ -122,7 +124,7 @@ class MainSanityCheck(db.DBSanityCheck):
                 )
             )
             logger.info(_("Deleting orphan episode with episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
-            self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ?", [current_episode_id])
+            self.connection.action("DELETE FROM tv_episodes WHERE episode_id = ? AND showid IS NULL", [current_episode_id])
 
     def fix_missing_table_indexes(self):
         if not self.connection.select("PRAGMA index_info('idx_indexer_id')"):
@@ -150,6 +152,7 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("CREATE INDEX idx_sta_epi_sta_air ON tv_episodes (season, episode, status, airdate)")
 
     def fix_unaired_episodes(self):
+        assert False, "This fix is disabled!"
         current_date = datetime.date.today()
         sql_results = self.connection.select(
             "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
@@ -162,19 +165,38 @@ class MainSanityCheck(db.DBSanityCheck):
             self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNAIRED, current_episode_id])
 
     def fix_episode_statuses(self):
-        sql_results = self.connection.select("SELECT episode_id, showid FROM tv_episodes WHERE status IS NULL")
+        sql_results = self.connection.select("SELECT episode_id, showid, location FROM tv_episodes WHERE status IS NULL")
         for cur_ep in sql_results:
-            current_episode_id = cur_ep["episode_id"]
-            current_show_id = cur_ep["showid"]
-            logger.debug(
+            # If there is no location, use default_status_after rather than unknown
+            fixed_status = settings.STATUS_DEFAULT_AFTER
+
+            # if we hqve a location, set it to skipped, so it is not re-downloaded
+            existing = cur_ep["location"] and Path(cur_ep["location"]).exists()
+            if existing:
+                # Try to figure out the quality from the location
+                quality = common.Quality.nameQuality(cur_ep["location"])
+                if quality == common.Quality.UNKNOWN:
+                    # We never want to set unknown if we have a location
+                    quality = settings.STATUS_DEFAULT_AFTER
+
+                fixed_status = common.Quality.compositeStatus(common.DOWNLOADED, quality)
+
+            new_status = common.statusStrings[fixed_status]
+            show = cur_ep["showid"]
+            ep = episode_num(cur_ep["season"], cur_ep["episode"])
+            episode_id = cur_ep["episode_id"]
+            location = cur_ep["location"] or "unknown location"
+            result = ("NOT FOUND", "EXISTS")[bool(existing)]
+
+            logger.info(
                 _(
-                    "MALFORMED episode status detected! episode_id: {current_episode_id} showid: {current_show_id}".format(
-                        current_episode_id=current_episode_id, current_show_id=current_show_id
+                    "MALFORMED episode status detected! Changing episode status from NULL to {new_status} for {show}: {ep} at {location} (File {result})".format(
+                        new_status=new_status, show=show, ep=ep, location=location, result=result
                     )
                 )
             )
-            logger.info(_("Fixing malformed episode status with episode_id: {current_episode_id}".format(current_episode_id=current_episode_id)))
-            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [common.UNKNOWN, current_episode_id])
+
+            self.connection.action("UPDATE tv_episodes SET status = ? WHERE episode_id = ?", [fixed_status, episode_id])
 
     def fix_invalid_airdates(self):
         sql_results = self.connection.select("SELECT episode_id, showid FROM tv_episodes WHERE airdate >= ? OR airdate < 1", [datetime.date.max.toordinal()])

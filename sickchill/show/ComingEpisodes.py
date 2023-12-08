@@ -7,7 +7,7 @@ from sickchill.helper.quality import get_quality_string
 from sickchill.oldbeard.common import Quality, UNAIRED, WANTED
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.network_timezones import parse_date_time
-from sickchill.oldbeard.sbdatetime import sbdatetime
+from sickchill.oldbeard.scdatetime import scdatetime
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
 
@@ -97,7 +97,7 @@ class ComingEpisodes(object):
                 results = db.select(*sql_i)
 
         for index, item in enumerate(results):
-            results[index]["localtime"] = sbdatetime.convert_to_setting(parse_date_time(item["airdate"], item["airs"], item["network"]))
+            results[index]["localtime"] = scdatetime.convert_to_setting(parse_date_time(item["airdate"], item["airs"], item["network"]))
             results[index]["snatchedsort"] = int(not results[index]["epstatus"] in SNATCHED)
 
         results.sort(key=ComingEpisodes.sorts[sort])
@@ -135,13 +135,15 @@ class ComingEpisodes(object):
                 result["network"] = ""
 
             result["quality"] = get_quality_string(result["quality"])
-            result["airs"] = sbdatetime.sbftime(result["localtime"], t_preset=timeFormat).lstrip("0").replace(" 0", " ")
+            result["airs"] = scdatetime.scftime(result["localtime"], t_preset=timeFormat).lstrip("0").replace(" 0", " ")
             result["weekday"] = 1 + result["localtime"].weekday()
             result["tvdbid"] = result["indexer_id"]
-            result["airdate"] = sbdatetime.sbfdate(result["localtime"], d_preset=dateFormat)
+            result["airdate"] = scdatetime.scfdate(result["localtime"], d_preset=dateFormat)
             result["localtime"] = result["localtime"].toordinal()
 
             grouped_results[category].append(result)
+        else:
+            return []
 
         return grouped_results
 

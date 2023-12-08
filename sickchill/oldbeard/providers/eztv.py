@@ -25,7 +25,7 @@ class Provider(TorrentProvider):
         # Cache
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll ThePirateBay every 30 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         search_params = {"imdb_id": None, "page": 1, "limit": 100}
 
@@ -35,11 +35,11 @@ class Provider(TorrentProvider):
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             if mode != "RSS":
-                if not (self.show and self.show.imdb_id):
+                if not (episode_object and episode_object.show and episode_object.show.imdb_id):
                     continue
 
-                search_params["imdb_id"] = self.show.imdb_id.strip("tt")
-                logger.debug("Search string: {}".format(self.show.imdb_id))
+                search_params["imdb_id"] = episode_object.show.imdb_id.strip("tt")
+                logger.debug("Search string: {}".format(episode_object.show.imdb_id))
             else:
                 search_params.pop("imdb_id")
 
@@ -65,7 +65,9 @@ class Provider(TorrentProvider):
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != "RSS":
                             logger.debug(
-                                "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
+                                    title, seeders, leechers
+                                )
                             )
                         continue
 

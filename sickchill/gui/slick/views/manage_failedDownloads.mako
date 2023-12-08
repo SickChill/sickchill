@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill.oldbeard import providers
     from sickchill.providers.GenericProvider import GenericProvider
@@ -10,10 +10,10 @@
                 <label>
                     <span>${_('Limit')}:</span>
                     <select name="limit" id="limit" class="form-control form-control-inline input-sm" title="limit">
-                        <option value="100" ${('', 'selected="selected"')[limit == '100']}>${_('100')}</option>
-                        <option value="250" ${('', 'selected="selected"')[limit == '250']}>${_('250')}</option>
-                        <option value="500" ${('', 'selected="selected"')[limit == '500']}>${_('500')}</option>
-                        <option value="0" ${('', 'selected="selected"')[limit == '0']}>${_('All')}</option>
+                        <option value="100" ${selected(limit == '100')}>${_('100')}</option>
+                        <option value="250" ${selected(limit == '250')}>${_('250')}</option>
+                        <option value="500" ${selected(limit == '500')}>${_('500')}</option>
+                        <option value="0" ${selected(limit == '0')}>${_('All')}</option>
                     </select>
                 </label>
             </div>
@@ -52,22 +52,22 @@
                                 <td>
                                     <% provider = providers.getProviderClass(GenericProvider.make_id(hItem["provider"])) %>
                                     % if provider is not None:
-                                        <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" alt="${provider.name}" title="${provider.name}"/>
+                                        <img src="${static_url('images/providers/' + provider.image_name())}" width="16" height="16" alt="${provider.name}" title="${provider.name}" />
                                     % else:
-                                        <img src="${static_url('images/providers/missing.png')}" width="16" height="16" alt="Missing provider" title="Missing provider"/>
+                                        <img src="${static_url('images/providers/missing.png')}" width="16" height="16" alt="Missing provider" title="Missing provider" />
                                     % endif
                                 </td>
                                 <td>
-                                    <span>&nbsp;${hItem["release"]}</span>
+                                    <span>&nbsp;${hItem['release']}</span>
                                 </td>
-                                <td align="center">
+                                <td class="text-center">
                                     % if hItem["size"] != -1:
                                         ${round(hItem["size"] / 10e+5, 2)} MB
                                     % else:
                                         <i>${_("Unknown")}</i>
                                     % endif
                                 </td>
-                                <td align="center">
+                                <td class="text-center">
                                     <input type="checkbox" class="removeCheck" id="remove-${hItem["release"] | u}" />
                                 </td>
                             </tr>

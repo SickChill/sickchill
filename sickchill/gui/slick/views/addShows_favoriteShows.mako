@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
@@ -17,7 +17,7 @@
                         <span>${_('Sort By')}:</span>
                         <select id="showsort" class="form-control form-control-inline input-sm" title="Show Sort">
                             <option value="name">${_('Name')}</option>
-                            <option value="original" selected="selected">${_('Original')}</option>
+                            <option value="original" selected>${_('Original')}</option>
                             <option value="votes">${_('Votes')}</option>
                             <option value="rating">% ${_('Rating')}</option>
                             <option value="rating_votes">% ${_('Rating > Votes')}</option>
@@ -27,7 +27,7 @@
                     <label>
                         <span>${_('Sort Order')}:</span>
                         <select id="showsortdirection" class="form-control form-control-inline input-sm" title="Show Sort Direction">
-                            <option value="asc" selected="selected">${_('Asc')}</option>
+                            <option value="asc" selected>${_('Asc')}</option>
                             <option value="desc">${_('Desc')}</option>
                         </select>
                     </label>
@@ -48,15 +48,15 @@
                     <div class="form-group">
                         <label for="tvdb_user">${_('TVDB Username')}</label>
                         <input class="form-control" title="${_('TVDB Username')}" name="tvdb_user"
-                               type="text" value="${settings.TVDB_USER or ''}" autocomplete="off"/>
+                               type="text" value="${settings.TVDB_USER or ''}" autocomplete="off" />
                     </div>
                     <div class="form-group">
                         <label for="password">${_('TVDB User Key')}</label>
                         <input class="form-control" title="${_('TVDB User Key')}" name="tvdb_user_key"
-                               type="password" value="${settings.TVDB_USER_KEY|hide}" autocomplete="off"/>
+                               type="password" value="${settings.TVDB_USER_KEY|hide}" autocomplete="off" />
                     </div>
                     <div class="form-group">
-                        <input class="btn btn-default pull-right" name="submit" type="submit" value="${_('Submit')}"/>
+                        <input class="btn btn-default pull-right" name="submit" type="submit" value="${_('Submit')}" />
                     </div>
                 </form>
             </div>
@@ -83,7 +83,7 @@
                                     <div class="trakt-image">
                                         <a class="trakt-image" href="${anon_url('https://thetvdb.com/series/' + cur_result.slug)}" target="_blank">
                                             <img alt="" class="trakt-image" src="${scRoot}/cache/images/favorites/${cur_result.id}"
-                                                 height="273px" width="186px"/>
+                                                 height="273px" width="186px" />
                                         </a>
                                     </div>
 

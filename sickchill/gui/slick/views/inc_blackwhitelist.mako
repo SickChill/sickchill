@@ -1,6 +1,6 @@
 <div id="blackwhitelist">
-    <input type="hidden" name="whitelist" id="whitelist"/>
-    <input type="hidden" name="blacklist" id="blacklist"/>
+    <input type="hidden" name="whitelist" id="whitelist" />
+    <input type="hidden" name="blacklist" id="blacklist" />
 
     <div class="row">
         <div class="col-md-12">
@@ -37,7 +37,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <input class="btn" id="removeW" value="${_('Remove')}" type="button"/>
+                            <input class="btn" id="removeW" value="${_('Remove')}" type="button" />
                         </div>
                     </div>
                 </div>
@@ -60,8 +60,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <input class="btn" id="addW" value="${_('Add to Whitelist')}" type="button"/>
-                            <input class="btn" id="addB" value="${_('Add to Blacklist')}" type="button"/>
+                            <input class="btn" id="addW" value="${_('Add to Whitelist')}" type="button" />
+                            <input class="btn" id="addB" value="${_('Add to Blacklist')}" type="button" />
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <input class="btn" id="removeB" value="${_('Remove')}" type="button"/>
+                            <input class="btn" id="removeB" value="${_('Remove')}" type="button" />
                         </div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <input type="text" id="addToPoolText" class="form-control input-sm form-control-inline" autocapitalize="off"  title="addToPoolText"/>
+                    <input type="text" id="addToPoolText" class="form-control input-sm form-control-inline" autocapitalize="off"  title="addToPoolText" />
                     <input class="btn" type="button" value="${_('Add to Whitelist')}" id="addToWhite">
                     <input class="btn" type="button" value="${_('Add to Blacklist')}" id="addToBlack">
                 </div>

@@ -116,6 +116,7 @@ DELETE_FAILED = False
 DELETE_NON_ASSOCIATED_FILES = False
 DELRARCONTENTS = False
 DEVELOPER = False
+DISABLE_UPDATER = False
 DISCORD_AVATAR_URL = "https://raw.githubusercontent.com/SickChill/SickChill/master/sickchill/gui/slick/images/sickchill-sc.png"
 DISCORD_NAME = "SickChill"
 DISCORD_NOTIFY_DOWNLOAD = None
@@ -259,7 +260,7 @@ NEWZBIN = False
 NEWZBIN_PASSWORD = None
 NEWZBIN_USERNAME = None
 NEWZNAB_DATA = None
-newznabProviderList = []
+newznab_provider_list = []
 NFO_RENAME = True
 NMA_API = None
 NMA_NOTIFY_ONDOWNLOAD = False
@@ -394,6 +395,20 @@ SLACK_NOTIFY_DOWNLOAD = None
 SLACK_NOTIFY_SNATCH = None
 SLACK_NOTIFY_SUBTITLEDOWNLOAD = None
 SLACK_WEBHOOK = None
+MATTERMOST_ICON_EMOJI = None
+MATTERMOST_NOTIFY_DOWNLOAD = None
+MATTERMOST_NOTIFY_SNATCH = None
+MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD = None
+MATTERMOST_WEBHOOK = None
+MATTERMOST_USERNAME = None
+MATTERMOSTBOT_ICON_EMOJI = None
+MATTERMOSTBOT_AUTHOR = None
+MATTERMOSTBOT_NOTIFY_DOWNLOAD = None
+MATTERMOSTBOT_NOTIFY_SNATCH = None
+MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD = None
+MATTERMOSTBOT_URL = None
+MATTERMOSTBOT_TOKEN = None
+MATTERMOSTBOT_CHANNEL = None
 SOCKET_TIMEOUT = None
 SORT_ARTICLE = False
 GRAMMAR_ARTICLES = "the|a|an"
@@ -450,7 +465,7 @@ TORRENT_RPCURL = "transmission"
 TORRENT_SEED_TIME = None
 TORRENT_USERNAME = None
 TORRENT_VERIFY_CERT = False
-torrentRssProviderList = []
+torrent_rss_provider_list = []
 TRACKERS_LIST = "udp://coppersurfer.tk:6969/announce,udp://open.demonii.com:1337,"
 TRACKERS_LIST += "udp://9.rarbg.to:2710/announce"
 TRACKERS_LIST += "udp://exodus.desync.com:6969,udp://9.rarbg.me:2710/announce,"
@@ -535,6 +550,8 @@ USE_PUSHOVER = False
 USE_PYTIVO = False
 USE_ROCKETCHAT = False
 USE_SLACK = False
+USE_MATTERMOST = False
+USE_MATTERMOSTBOT = False
 USE_SUBTITLES = False
 USE_SYNOINDEX = False
 USE_SYNOLOGYNOTIFIER = False
@@ -545,6 +562,7 @@ USE_TWILIO = False
 USE_TWITTER = False
 USENET_RETENTION = None
 CACHE_RETENTION = 30
+SHOW_SKIP_OLDER = 30
 VERSION_NOTIFY = False
 versionCheckScheduler = None
 WEB_COOKIE_SECRET = None
@@ -562,8 +580,9 @@ movie_list: "MovieList" = None
 
 
 def get_backlog_cycle_time():
-    cycletime = DAILYSEARCH_FREQUENCY * 2 + 7
-    return max([cycletime, 720])
+    # backlog timer multiple of daily frequency and ensure multiple per mako 'step="60"'
+    cycle_time = ((DAILYSEARCH_FREQUENCY * 2) // 60) * 60
+    return max([cycle_time, 720])
 
 
 unpackStrings = NumDict(

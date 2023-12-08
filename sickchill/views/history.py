@@ -15,12 +15,12 @@ class History(WebRoot):
         super().initialize()
         self.history = HistoryTool()
 
-    def index(self, limit=None):
-        settings.HISTORY_LIMIT = limit = try_int(limit or settings.HISTORY_LIMIT or 100, 100)
+    def index(self):
+        settings.HISTORY_LIMIT = try_int(self.get_query_argument("limit", default=100), 100)
         sickchill.start.save_config()
 
         compact = []
-        data = self.history.get(limit)
+        data = self.history.get(settings.HISTORY_LIMIT)
 
         for row in data:
             action = {"action": row["action"], "provider": row["provider"], "resource": row["resource"], "time": row["date"]}
@@ -42,6 +42,7 @@ class History(WebRoot):
                     "season": row["season"],
                     "show_id": row["show_id"],
                     "show_name": row["show_name"],
+                    "provider": row["provider"],
                 }
 
                 compact.append(history)
@@ -68,7 +69,7 @@ class History(WebRoot):
         return t.render(
             historyResults=data,
             compactResults=compact,
-            limit=limit,
+            limit=settings.HISTORY_LIMIT,
             submenu=submenu,
             title=_("History"),
             header=_("History"),
@@ -77,13 +78,13 @@ class History(WebRoot):
             action="index",
         )
 
-    def removeHistory(self, toRemove=None):
-        logsToRemove = []
-        for logItem in toRemove.split("|"):
-            info = logItem.split(",")
-            logsToRemove.append({"dates": info[0].split("$"), "show_id": info[1], "season": info[2], "episode": info[3]})
+    def removeHistory(self):
+        log_items = []
+        for item in self.get_body_arguments("items"):
+            info = item.split(",")
+            log_items.append({"dates": info[0].split("$"), "show_id": info[1], "season": info[2], "episode": info[3]})
 
-        self.history.remove(logsToRemove)
+        self.history.remove(log_items)
 
         ui.notifications.message(_("Selected history entries removed"))
 

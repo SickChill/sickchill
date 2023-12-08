@@ -134,10 +134,10 @@ def allPossibleShowNames(show, season=-1):
 
 
 def determine_release_name(directory=None, release_name=None):
-    """Determine a release name from an nzb and/or folder name"""
+    """Determine a release name from a nzb file and/or folder name"""
 
     if release_name is not None:
-        if validators.url(release_name) == True:
+        if validators.url(release_name) is True:
             logger.info(_("Downloader returned a download url rather than a release name"))
             return release_name
 

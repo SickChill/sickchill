@@ -9,24 +9,24 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./js/show.jsx":
-/*!*********************!*\
-  !*** ./js/show.jsx ***!
-  \*********************/
+/***/ "./config.jsx":
+/*!********************!*\
+  !*** ./config.jsx ***!
+  \********************/
 /***/ (() => {
 
-eval("\n\n//# sourceURL=webpack:///./js/show.jsx?");
+eval("\n\n//# sourceURL=webpack:///./config.jsx?");
 
 /***/ })
 
 /******/ 	});
 /************************************************************************/
-/******/
+/******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
 /******/ 	var __webpack_exports__ = {};
-/******/ 	__webpack_modules__["./js/show.jsx"]();
-/******/
+/******/ 	__webpack_modules__["./config.jsx"]();
+/******/ 	
 /******/ })()
 ;

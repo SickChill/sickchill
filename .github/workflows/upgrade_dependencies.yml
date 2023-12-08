@@ -1,7 +1,7 @@
-name: 'Upgrade poetry and yarn dependencies'
+name: "Upgrade poetry and yarn dependencies"
 on:
   schedule:
-    - cron: '30 2 * * *'
+    - cron: "30 2 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -11,51 +11,38 @@ concurrency:
 jobs:
   depends:
     strategy:
+      matrix:
+        os: [ ubuntu-latest ]
       fail-fast: true
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     steps:
-      -
-        name: Checkout
-        if: success() && !env.ACT
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          ref: 'develop'
+          ref: "develop"
           token: ${{ secrets.PAT }}
-      -
-        name: Install Poetry
-        uses: snok/install-poetry@v1.3.2
+      - name: Setup Poetry
+        uses: 5yutan5/setup-poetry-env@v1.1.0
         with:
-          version: 1.2.0
-          virtualenvs-path: .venv
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: false
-      -
-        name: Set up Python
-        uses: actions/setup-python@v4
+          python-version: ${{ matrix.python-version }}
+          python-cache-dependency-path: pyproject.toml
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: 3.9
-          check-latest: true
-          cache: 'poetry'
-          cache-dependency-path: pyproject.toml
-      -
-        name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-          cache: 'npm'
+          node-version: "20.x"
+          cache: "npm"
       - name: Install yarn
         run: npm install -g yarn
-      -
-        name: Run
+      - name: Run
         run: |
           pip install poethepoet
           poe depup
-      -
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - if: success() && !env.ACT
+        name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Update poetry (python) and yarn (npm) dependencies
-          commit_options: '--no-verify --signoff'
+          commit_options: "--no-verify --signoff"
 
           file_pattern: package.json yarn.lock pyproject.toml
 
@@ -64,7 +51,7 @@ jobs:
           commit_user_email: miigotu@gmail.com
           commit_author: miigotu <miigotu@gmail.com>
 
-          push_options: '--force'
+          push_options: "--force"
           disable_globbing: true
           # skip_fetch: true
-          add_options: '-u'
+          add_options: "-u"

@@ -96,12 +96,9 @@ venv
 # diffs
 /*.diff
 
-/genchanges.sh
 /Downloads
 
 **/*.so
-lib[23]/bin
-lib[23]/.libs_cffi_backend
 lib[23]/bin
 lib[23]/.libs_cffi_backend
 lib[23]/cffi.libs

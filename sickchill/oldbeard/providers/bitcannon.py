@@ -1,7 +1,5 @@
 from urllib.parse import urljoin
 
-import validators
-
 from sickchill import logger
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
@@ -19,19 +17,19 @@ class Provider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, search_params={"RSS": ["tv", "anime"]})
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
 
         url = "http://localhost:3000/"
         if self.custom_url:
-            if validators.url(self.custom_url) != True:
+            if self.invalid_url(self.custom_url):
                 logger.warning("Invalid custom url set, please check your settings")
                 return results
             url = self.custom_url
 
         search_params = {}
 
-        anime = ep_obj and ep_obj.show and ep_obj.show.anime
+        anime = episode_object and episode_object.show and episode_object.show.anime
         search_params["category"] = ("tv", "anime")[bool(anime)]
 
         if self.api_key:

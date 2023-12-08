@@ -5,7 +5,6 @@ import re
 from urllib import parse
 
 import rarfile
-from tornado.escape import xhtml_unescape
 
 import sickchill.start
 from sickchill import logger, settings
@@ -533,22 +532,21 @@ def change_process_automatically(process_automatically):
     return True
 
 
-def change_log_dir(log_dir):
+def change_log_dir(log_dir: str = ""):
     """
     Change logs directory
 
     :param log_dir: New logs directory
     :return: True on success, False on failure
     """
-    if log_dir == "":
-        settings.LOG_DIR = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
-        return True
+    if log_dir in ("", None):
+        log_dir = os.path.normpath(os.path.join(settings.DATA_DIR, "Logs"))
 
     if os.path.normpath(settings.LOG_DIR) != os.path.normpath(log_dir):
         if helpers.makeDir(os.path.normpath(log_dir)) and os.access(os.path.normpath(log_dir), os.W_OK):
             settings.LOG_DIR = os.path.normpath(log_dir)
-            logger.info(_("Changed logs folder to {directory} sickchill must be restarted for changes de take effect").format(directory=log_dir))
-
+            logger.info(_("Changed logs folder to {directory} and restarting logging").format(directory=log_dir))
+            logger.restart(change_log_dir=True)
         else:
             return False
 
@@ -634,7 +632,7 @@ def clean_url(url):
     """
 
     if url and url.strip():
-        url = xhtml_unescape(url.strip())
+        url = url.strip()
 
         if "://" not in url:
             url = "//" + url
@@ -897,7 +895,7 @@ class ConfigMigrator(object):
     def __init__(self, config_obj):
         """
         Initializes a config migrator that can take the config from the version indicated in the config
-        file up to the version required by SB
+        file up to the version required by SC
         """
 
         self.config_obj = config_obj
@@ -909,7 +907,7 @@ class ConfigMigrator(object):
             1: "Custom naming",
             2: "Sync backup number with version number",
             3: "Rename omgwtfnzb variables",
-            4: "Add newznab catIDs",
+            4: "Add newznab categories",
             5: "Metadata update",
             6: "Convert from XBMC to new KODI variables",
             7: "Use version 2 for password encryption",
@@ -922,7 +920,7 @@ class ConfigMigrator(object):
 
     def migrate_config(self):
         """
-        Calls each successive migration until the config is the same version as SB expects
+        Calls each successive migration until the config is the same version as SC expects
         """
 
         if self.config_version > self.expected_config_version:
@@ -1073,7 +1071,7 @@ class ConfigMigrator(object):
         settings.OMGWTFNZBS_USERNAME = check_setting_str(self.config_obj, "omgwtfnzbs", "omgwtfnzbs_uid")
         settings.OMGWTFNZBS_APIKEY = check_setting_str(self.config_obj, "omgwtfnzbs", "omgwtfnzbs_key")
 
-    # Migration v4: Add default newznab catIDs
+    # Migration v4: Add default newznab categories
     def _migrate_v4(self):
         """Update newznab providers so that the category IDs can be set independently via the config"""
 
@@ -1094,11 +1092,11 @@ class ConfigMigrator(object):
                     key = "0"
 
                 if name == "NZBs.org":
-                    catIDs = "5030,5040,5060,5070,5090"
+                    categories = "5030,5040,5060,5070,5090"
                 else:
-                    catIDs = "5030,5040,5060"
+                    categories = "5030,5040,5060"
 
-                cur_provider_data_list = [name, url, key, catIDs, enabled]
+                cur_provider_data_list = [name, url, key, categories, enabled]
                 new_newznab_data.append("|".join(cur_provider_data_list))
 
             settings.NEWZNAB_DATA = "!!!".join(new_newznab_data)

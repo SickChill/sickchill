@@ -10,7 +10,7 @@ class Provider(FrenchTorrentProvider):
     def __init__(self):
         super().__init__("Torrent9", "https://ww1.torrent9.re")
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         for mode in search_strings:
             items = []

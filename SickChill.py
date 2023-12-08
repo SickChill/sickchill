@@ -10,6 +10,8 @@ import sys
 import threading
 import time
 import traceback
+from pathlib import Path
+from typing import List, Union
 
 import sickchill.start
 
@@ -22,6 +24,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import choose_data_dir
 from sickchill.init_helpers import check_installed, get_current_version, remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
+from sickchill.oldbeard.name_parser.parser import NameParser, ParseResult
 
 setup_gettext()
 
@@ -42,7 +45,7 @@ from sickchill.oldbeard import db, name_cache, network_timezones
 from sickchill.oldbeard.event_queue import Events
 from sickchill.tv import TVShow
 from sickchill.update_manager import PipUpdateManager
-from sickchill.views.server_settings import SRWebServer
+from sickchill.views.server_settings import SCWebServer
 
 # http://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime("20110101", "%Y%m%d")
@@ -102,13 +105,25 @@ class SickChill:
 
         args = SickChillArgumentParser(settings.DATA_DIR).parse_args()
 
-        if args.force_update:
+        # Add methods here when you want to perform an action and exit, without starting the webserver
+        if args.subparser_name == "test-name" and args.name:
+            results = []
+            for parser in args.parser.lower().split(","):
+                result = self.test_name(args.name, parser if parser != "all" else "")
+                results.append(result)
+                parser_name = parser or "all"
+                sys.stdout.write(f"{parser_name}: {result}\n")
+            sys.exit(int(not any(results)))
+
+        if args.no_update:
+            settings.DISABLE_UPDATER = True
+        elif args.force_update:
             result = self.force_update()
             sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 
         settings.NO_RESIZE = args.noresize
         self.console_logging = not (hasattr(sys, "frozen") or args.quiet or args.daemon)
-        self.no_launch = args.nolaunch or args.daemon
+        self.no_launch = args.nolaunch or args.daemon or args.debug
         self.forced_port = args.port
         self.run_as_daemon = args.daemon and platform.system() != "Windows"
 
@@ -117,13 +132,13 @@ class SickChill:
             if self.console_logging:
                 sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
 
-        settings.DATA_DIR = os.path.abspath(args.datadir) if args.datadir else settings.DATA_DIR
-        settings.CONFIG_FILE = os.path.abspath(args.config) if args.config else os.path.join(settings.DATA_DIR, "config.ini")
+        settings.DATA_DIR = Path(args.datadir).resolve() if args.datadir else settings.DATA_DIR
+        settings.CONFIG_FILE = str(Path(args.config).resolve() if args.config else settings.DATA_DIR.joinpath("config.ini"))
 
         # Make sure that we can create the data dir
         if not os.access(settings.DATA_DIR, os.F_OK):
             try:
-                os.makedirs(settings.DATA_DIR, 0o744)
+                settings.DATA_DIR.mkdir(mode=0x0744, parents=True, exist_ok=True)
             except os.error:
                 raise SystemExit("Unable to create data directory: {}".format(settings.DATA_DIR))
 
@@ -154,7 +169,9 @@ class SickChill:
         settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
 
         # Initialize the config and our threads
-        sickchill.start.initialize(consoleLogging=self.console_logging)
+        sickchill.start.initialize(
+            console_logging=self.console_logging, debug=args.debug, dbdebug=args.dbdebug, disable_file_logging=args.no_file_logging or args.debug
+        )
 
         # Get PID
         settings.PID = os.getpid()
@@ -169,7 +186,7 @@ class SickChill:
         if settings.DEVELOPER:
             settings.movie_list = MovieList()
 
-        web_options = {}
+        web_options = {"debug": args.debug}
         if self.forced_port:
             logger.info("Forcing web server to port {port}".format(port=self.forced_port))
             self.start_port = self.forced_port
@@ -182,7 +199,7 @@ class SickChill:
             self.start_port = settings.WEB_PORT
 
         # start web server
-        self.web_server = SRWebServer(web_options)
+        self.web_server = SCWebServer(web_options)
         self.web_server.start()
 
         if args.flask and FlaskServer:
@@ -337,6 +354,10 @@ class SickChill:
 
         print("Successfully updated to the latest pip release. You may now run SickChill normally.")
         return True
+
+    @staticmethod
+    def test_name(name: str, parse_method="") -> List[Union[ParseResult, None]]:
+        return NameParser(parse_method=parse_method)._parse_string(name)
 
 
 def main():

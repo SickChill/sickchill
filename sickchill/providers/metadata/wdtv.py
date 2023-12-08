@@ -88,15 +88,15 @@ class WDTVMetadata(generic.GenericMetadata):
         pass
 
     @staticmethod
-    def get_episode_thumb_path(ep_obj):
+    def get_episode_thumb_path(episode_object):
         """
         Returns the path where the episode thumbnail should be stored. Defaults to
         the same path as the episode file but with a .metathumb extension.
 
-        ep_obj: a TVEpisode instance for which to create the thumbnail
+        episode_object: a TVEpisode instance for which to create the thumbnail
         """
-        if os.path.isfile(ep_obj.location):
-            tbn_filename = replace_extension(ep_obj.location, "metathumb")
+        if os.path.isfile(episode_object.location):
+            tbn_filename = replace_extension(episode_object.location, "metathumb")
         else:
             return None
 
@@ -139,110 +139,112 @@ class WDTVMetadata(generic.GenericMetadata):
 
         return os.path.join(show_obj.location, season_dir, "folder.jpg")
 
-    def _ep_data(self, ep_obj):
+    def _ep_data(self, episode_object):
         """
         Creates an elementTree XML structure for a WDTV style episode.xml
         and returns the resulting data object.
 
-        ep_obj: a TVShow instance to create the NFO for
+        episode_object: a TVShow instance to create the NFO for
         """
 
-        eps_to_write = [ep_obj] + ep_obj.relatedEps
+        episodes_to_write = [episode_object] + episode_object.related_episodes
 
-        myShow = ep_obj.idxr.series_from_episode(ep_obj)
+        indexer_show = episode_object.idxr.series_from_episode(episode_object)
 
-        rootNode = ElementTree.Element("details")
+        root_node = ElementTree.Element("details")
 
         # write an WDTV XML containing info for all matching episodes
-        for curEpToWrite in eps_to_write:
-            myEp = curEpToWrite.idxr.episode(curEpToWrite)
-            if not myEp:
+        for current_episode in episodes_to_write:
+            indexer_episode = current_episode.idxr.episode(current_episode)
+            if not indexer_episode:
                 logger.info(
                     "Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
-                    "has it been removed? Should I delete from db?".format(curEpToWrite.season, curEpToWrite.episode, curEpToWrite.show.name, ep_obj.idxr.name)
+                    "has it been removed? Should I delete from db?".format(
+                        current_episode.season, current_episode.episode, current_episode.show.name, episode_object.idxr.name
+                    )
                 )
                 return None
 
-            if ep_obj.airdate != datetime.date.min and not myEp.get("firstAired"):
-                myEp["firstAired"] = str(ep_obj.airdate)
+            if episode_object.airdate != datetime.date.min and not indexer_episode.get("firstAired"):
+                indexer_episode["firstAired"] = str(episode_object.airdate)
 
-            if not (myEp.get("episodeName") and myEp.get("firstAired")):
+            if not (indexer_episode.get("episodeName") and indexer_episode.get("firstAired")):
                 return None
 
-            if len(eps_to_write) > 1:
-                episode = ElementTree.SubElement(rootNode, "details")
+            if len(episodes_to_write) > 1:
+                episode_element = ElementTree.SubElement(root_node, "details")
             else:
-                episode = rootNode
+                episode_element = root_node
 
-            if myEp.get("id"):
-                episodeID = ElementTree.SubElement(episode, "id")
-                episodeID.text = str(myEp["id"])
+            if indexer_episode.get("id"):
+                id_element = ElementTree.SubElement(episode_element, "id")
+                id_element.text = str(indexer_episode["id"])
 
-            title = ElementTree.SubElement(episode, "title")
-            title.text = ep_obj.pretty_name
+            title_element = ElementTree.SubElement(episode_element, "title")
+            title_element.text = episode_object.pretty_name
 
-            if getattr(myShow, "seriesName", None):
-                seriesName = ElementTree.SubElement(episode, "series_name")
-                seriesName.text = myShow.seriesName
+            if getattr(indexer_show, "seriesName", None):
+                series_name_element = ElementTree.SubElement(episode_element, "series_name")
+                series_name_element.text = indexer_show.seriesName
 
-            if curEpToWrite.name:
-                episodeName = ElementTree.SubElement(episode, "episode_name")
-                episodeName.text = curEpToWrite.name
+            if current_episode.name:
+                episode_name_element = ElementTree.SubElement(episode_element, "episode_name")
+                episode_name_element.text = current_episode.name
 
-            seasonNumber = ElementTree.SubElement(episode, "season_number")
-            seasonNumber.text = str(curEpToWrite.season)
+            season_number_element = ElementTree.SubElement(episode_element, "season_number")
+            season_number_element.text = str(current_episode.season)
 
-            episodeNum = ElementTree.SubElement(episode, "episode_number")
-            episodeNum.text = str(curEpToWrite.episode)
+            episode_number_element = ElementTree.SubElement(episode_element, "episode_number")
+            episode_number_element.text = str(current_episode.episode)
 
-            firstAired = ElementTree.SubElement(episode, "firstAired")
+            first_aired_element = ElementTree.SubElement(episode_element, "firstAired")
 
-            if curEpToWrite.airdate != datetime.date.min:
-                firstAired.text = str(curEpToWrite.airdate)
+            if current_episode.airdate != datetime.date.min:
+                first_aired_element.text = str(current_episode.airdate)
 
-            if getattr(myShow, "firstAired", None):
+            if getattr(indexer_show, "firstAired", None):
                 try:
-                    year_text = str(datetime.datetime.strptime(myShow.firstAired, dateFormat).year)
+                    year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).year)
                     if year_text:
-                        year = ElementTree.SubElement(episode, "year")
-                        year.text = year_text
+                        year_element = ElementTree.SubElement(episode_element, "year")
+                        year_element.text = year_text
                 except Exception:
                     pass
 
-            if curEpToWrite.season != 0 and getattr(myShow, "runtime", None):
-                runtime = ElementTree.SubElement(episode, "runtime")
-                runtime.text = myShow.runtime
+            if current_episode.season != 0 and getattr(indexer_show, "runtime", None):
+                runtime_element = ElementTree.SubElement(episode_element, "runtime")
+                runtime_element.text = indexer_show.runtime
 
-            if getattr(myShow, "genre", None):
-                genre = ElementTree.SubElement(episode, "genre")
-                genre.text = " / ".join(myShow.genre)
+            if getattr(indexer_show, "genre", None):
+                genre_element = ElementTree.SubElement(episode_element, "genre")
+                genre_element.text = " / ".join(indexer_show.genre)
 
-            if myEp.get("directors") and isinstance(myEp["directors"], list):
-                for director in myEp["directors"]:
-                    director_element = ElementTree.SubElement(episode, "director")
+            if indexer_episode.get("directors") and isinstance(indexer_episode["directors"], list):
+                for director in indexer_episode["directors"]:
+                    director_element = ElementTree.SubElement(episode_element, "director")
                     director_element.text = director
 
-            data = ep_obj.idxr.actors(myShow)
+            data = episode_object.idxr.actors(indexer_show)
             for actor in data:
                 if not ("name" in actor and actor["name"].strip()):
                     continue
 
-                cur_actor = ElementTree.SubElement(episode, "actor")
+                actor_element = ElementTree.SubElement(episode_element, "actor")
 
-                cur_actor_name = ElementTree.SubElement(cur_actor, "name")
-                cur_actor_name.text = actor["name"]
+                actor_name_element = ElementTree.SubElement(actor_element, "name")
+                actor_name_element.text = actor["name"]
 
                 if "role" in actor and actor["role"].strip():
-                    cur_actor_role = ElementTree.SubElement(cur_actor, "role")
-                    cur_actor_role.text = actor["role"].strip()
+                    actor_role_element = ElementTree.SubElement(actor_element, "role")
+                    actor_role_element.text = actor["role"].strip()
 
-            if curEpToWrite.description:
-                overview = ElementTree.SubElement(episode, "overview")
-                overview.text = curEpToWrite.description
+            if current_episode.description:
+                overview_element = ElementTree.SubElement(episode_element, "overview")
+                overview_element.text = current_episode.description
 
             # Make it purdy
-            helpers.indentXML(rootNode)
-            data = ElementTree.ElementTree(rootNode)
+            helpers.indentXML(root_node)
+            data = ElementTree.ElementTree(root_node)
 
         return data
 

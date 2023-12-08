@@ -88,7 +88,7 @@ class SearchTest(conftest.SickChillTestDBCase):
         :return:
         """
 
-        for provider in sickchill.oldbeard.providers.sortedProviderList():
+        for provider in sickchill.oldbeard.providers.sorted_provider_list():
             provider.get_url = self._fake_get_url
             provider.is_active = self._fake_is_active
 
@@ -124,7 +124,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
             episode.status = common.WANTED
             episode.saveToDB()
 
-        best_result = search.searchProviders(show, episode.episode, force_search)
+        best_result = search.search_providers(show, episode.episode, force_search)
         if not best_result:
             assert cur_data["b"] == best_result
 

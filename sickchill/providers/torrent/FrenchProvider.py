@@ -1,8 +1,6 @@
 import re
 from urllib.parse import urljoin
 
-import validators
-
 from sickchill import logger, settings
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
@@ -71,7 +69,7 @@ class FrenchTorrentProvider(TorrentProvider):
     def _get_provider_url(self):
         if self._recheck_url:
             if self.custom_url:
-                if validators.url(self.custom_url):
+                if self.valid_url(self.custom_url):
                     self._used_url = self.custom_url
                 else:
                     logger.warning("Invalid custom url set, please check your settings")

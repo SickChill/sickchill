@@ -7,7 +7,7 @@ from operator import attrgetter
 from threading import Lock
 from typing import TYPE_CHECKING
 
-import dateutil.parser
+from dateutil.parser import parse
 
 import sickchill
 from sickchill import logger
@@ -148,14 +148,17 @@ class NameParser(object):
                     assert re.sub(r"[^\d]*", "", air_date) not in excluded_shows
 
                     # noinspection PyUnresolvedReferences
-                    check = dateutil.parser.parse(air_date, fuzzy_with_tokens=True)[0].date()
-                    # Make sure a 20th century date isn't returned as a 21st century date
-                    # 1 Year into the future (No releases should be coming out a year ahead of time, that's just insane)
-                    if check > check.today() and (check - check.today()).days // 365 > 1:
-                        check = check.replace(year=check.year - 100)
+                    try:
+                        check = parse(air_date, fuzzy_with_tokens=True)[0].date()
+                        # Make sure a 20th century date isn't returned as a 21st century date
+                        # 1 Year into the future (No releases should be coming out a year ahead of time, that's just insane)
+                        if check > check.today() and (check - check.today()).days // 365 > 1:
+                            check = check.replace(year=check.year - 100)
 
-                    result.air_date = check
-                    result.score += 1
+                        result.air_date = check
+                        result.score += 1
+                    except:
+                        continue
                 except Exception as error:
                     logger.debug(error)
                     continue

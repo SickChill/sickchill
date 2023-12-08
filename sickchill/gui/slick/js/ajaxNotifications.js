@@ -1,38 +1,61 @@
 const test = false;
 
-PNotify.prototype.options.addclass = 'stack-bottomright';
-PNotify.prototype.options.buttons.closer_hover = !1; // eslint-disable-line camelcase
-PNotify.prototype.options.delay = 5000;
-PNotify.prototype.options.hide = !0;
-PNotify.prototype.options.history = !1;
-PNotify.prototype.options.shadow = !1;
-PNotify.prototype.options.stack = {dir1: 'up', dir2: 'left', firstpos1: 25, firstpos2: 25};
-PNotify.prototype.options.styling = 'bootstrap3';
-PNotify.prototype.options.width = '340px';
-PNotify.desktop.permission();
-PNotify.prototype.options.desktop = {desktop: !0, icon: scRoot + '/images/ico/favicon-196.png'};
-
 function displayPNotify(type, title, message, id) {
-    new PNotify({ // eslint-disable-line no-new
+    PNotify.desktop.permission();
+    const notice = new PNotify({
         desktop: {
             tag: id,
+            desktop: true,
+            fallback: true,
+            menu: true,
+            icon: scRoot + '/images/ico/favicon-196.png',
+        },
+        nonblock: {
+            nonblock: true,
         },
         type,
         title,
-        text: message.replace(/<br[\s/]*(?:\s[^>]*)?>/gi, '\n')
-            .replace(/<\/?b(?:\s[^>]*)?>/gi, '*')
-            .replace(/<i(?:\s[^>]*)?>/gi, '[').replace(/<\/i>/gi, ']')
-            .replace(/<(?:\/?ul|\/li)(?:\s[^>]*)?>/gi, '').replace(/<li(?:\s[^>]*)?>/gi, '\n* '),
+        text: message.replaceAll(/<br[\s/]*(?:\s[^>]*)?>/gi, '\n')
+            .replaceAll(/<\/?b(?:\s[^>]*)?>/gi, '*')
+            .replaceAll(/<i(?:\s[^>]*)?>/gi, '[').replaceAll(/<\/i>/gi, ']')
+            .replaceAll(/<(?:\/?ul|\/li)(?:\s[^>]*)?>/gi, '').replaceAll(/<li(?:\s[^>]*)?>/gi, '\n* '),
+        maxonscreen: 5,
+        addclass: 'stack-bottomright',
+        closer_hover: true, // eslint-disable-line camelcase
+        delay: 8000,
+        hide: true,
+        history: true,
+        shadow: true,
+        stack: {dir1: 'up', dir2: 'left', firstpos1: 25, firstpos2: 25},
+        styling: 'fontawesome',
+        width: '340px',
+        destroy: true,
     });
+    if (test === true) {
+        console.log('sent pnotify with tag: ' + notice.options.desktop.tag);
+    }
 }
+
+let notificationTimer;
+const notificationDown = {
+    type: 'error',
+    title: 'offline',
+    message: 'sickchill is restarting or is not running',
+};
 
 function checkNotifications() {
     $.getJSON(scRoot + '/ui/get_messages', data => {
         $.each(data, (name, data) => {
             displayPNotify(data.type, data.title, data.message, data.hash);
         });
-    });
-    setTimeout(checkNotifications, 3000);
+    })
+        .fail(() => {
+            displayPNotify(notificationDown.type, notificationDown.title, notificationDown.message, 'offline-notice');
+            clearTimeout(notificationTimer);
+        })
+        .done(() => {
+            notificationTimer = setTimeout(checkNotifications, 3000);
+        });
 }
 
 $(document).ready(() => {

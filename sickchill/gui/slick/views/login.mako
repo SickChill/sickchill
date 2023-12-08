@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill.oldbeard.helpers import is_ip_local
     from sickchill import oldbeard, logger, settings
@@ -46,7 +46,7 @@
                                 <div class="form-group">
                                     <label for="username">${_('Username')}</label>
                                     <input class="form-control" title="${_('Username')}" name="username" type="text"
-                                           placeholder="${_('Username')}" autocomplete="off"/>
+                                           placeholder="${_('Username')}" autocomplete="off" />
                                 </div>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                                 <div class="form-group">
                                     <label for="password">${_('Password')}</label>
                                     <input class="form-control" title="${_('Password')}" name="password" type="password"
-                                           placeholder="${_('Password')}" autocomplete="off"/>
+                                           placeholder="${_('Password')}" autocomplete="off" />
                                 </div>
                             </div>
                         </div>
@@ -63,9 +63,9 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="remember_me" title="${_('for 30 days')}">
-                                        <input class="inlay" id="remember_me" name="remember_me" type="checkbox" value="1" checked="checked"/>&nbsp;${_('Remember me')}
+                                        <input class="inlay" id="remember_me" name="remember_me" type="checkbox" value="1" checked="checked" />&nbsp;${_('Remember me')}
                                     </label>
-                                    <input class="btn btn-default pull-right" name="submit" type="submit" value="${_('Login')}"/>
+                                    <input class="btn btn-default pull-right" name="submit" type="submit" value="${_('Login')}" />
                                 </div>
                             </div>
                         </div>

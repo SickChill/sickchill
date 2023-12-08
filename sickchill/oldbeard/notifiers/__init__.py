@@ -11,6 +11,8 @@ from sickchill.oldbeard.notifiers import (  # twilio_notify,
     kodi,
     libnotify,
     matrix,
+    mattermost,
+    mattermostbot,
     nmj,
     nmjv2,
     plex,
@@ -55,6 +57,8 @@ twitter_notifier = tweet.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()
+mattermost_notifier = mattermost.Notifier()
+mattermostbot_notifier = mattermostbot.Notifier()
 rocketchat_notifier = rocketchat.Notifier()
 matrix_notifier = matrix.Notifier()
 discord_notifier = discord.Notifier()
@@ -81,6 +85,8 @@ notifiers = [
     trakt_notifier,
     email_notifier,
     slack_notifier,
+    mattermost_notifier,
+    mattermostbot_notifier,
     rocketchat_notifier,
     matrix_notifier,
     discord_notifier,

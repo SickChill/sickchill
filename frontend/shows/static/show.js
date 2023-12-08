@@ -10,23 +10,23 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./js/shows.jsx":
-/*!**********************!*\
-  !*** ./js/shows.jsx ***!
-  \**********************/
+/***/ "./show.jsx":
+/*!******************!*\
+  !*** ./show.jsx ***!
+  \******************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ \"../../node_modules/bootstrap/dist/css/bootstrap.min.css\");\n\n\n//# sourceURL=webpack:///./js/shows.jsx?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ \"../../../../node_modules/bootstrap/dist/css/bootstrap.min.css\");\n\n\n//# sourceURL=webpack:///./show.jsx?");
 
 /***/ }),
 
-/***/ "../../node_modules/bootstrap/dist/css/bootstrap.min.css":
-/*!***************************************************************!*\
-  !*** ../../node_modules/bootstrap/dist/css/bootstrap.min.css ***!
-  \***************************************************************/
+/***/ "../../../../node_modules/bootstrap/dist/css/bootstrap.min.css":
+/*!*********************************************************************!*\
+  !*** ../../../../node_modules/bootstrap/dist/css/bootstrap.min.css ***!
+  \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack:///../../node_modules/bootstrap/dist/css/bootstrap.min.css?");
+eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack:///../../../../node_modules/bootstrap/dist/css/bootstrap.min.css?");
 
 /***/ })
 
@@ -34,7 +34,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -48,14 +48,14 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
@@ -67,13 +67,13 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	})();
-/******/
+/******/ 	
 /************************************************************************/
-/******/
+/******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./js/shows.jsx");
-/******/
+/******/ 	var __webpack_exports__ = __webpack_require__("./show.jsx");
+/******/ 	
 /******/ })()
 ;

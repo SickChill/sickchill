@@ -19,6 +19,9 @@ class NotifierTests(conftest.SickChillTestDBCase):
     Test notifiers
     """
 
+    shows = []
+    legacy_shows = []
+
     @classmethod
     def setUpClass(cls):
         num_legacy_shows = 3
@@ -84,19 +87,19 @@ class NotifierTests(conftest.SickChillTestDBCase):
         test_emails = "email-4@address.com,email5@address.org,email_6@address.tv"
 
         for show in self.legacy_shows:
-            showid = self._get_showid_by_showname(show.show_name)
-            self.mydb.action("UPDATE tv_shows SET notify_list = ? WHERE show_id = ?", [legacy_test_emails, showid])
+            indexer_id = self._get_indexer_id_by_showname(show.show_name)
+            self.mydb.action("UPDATE tv_shows SET notify_list = ? WHERE indexer_id = ?", [legacy_test_emails, indexer_id])
 
         for show in self.shows:
-            showid = self._get_showid_by_showname(show.show_name)
-            Home.saveShowNotifyList(show=showid, emails=test_emails)
+            indexer_id = self._get_indexer_id_by_showname(show.show_name)
+            Home.saveShowNotifyList(show=indexer_id, emails=test_emails)
 
         # Now, iterate through all shows using the email list generation routines that are used in the notifier proper
         shows = self.legacy_shows + self.shows
         for show in shows:
             for episode in show.episodes:
-                ep_name = episode._format_pattern("%SN - %Sx%0E - %EN - ") + episode.quality
-                show_name = email_notifier._parseEp(ep_name)
+                ep_name = episode.naming_pattern("%SN - %Sx%0E - %EN - ") + episode.quality
+                show_name = email_notifier.parse_episode(ep_name)
                 recipients = email_notifier._generate_recipients(show_name)
                 self._debug_spew("- Email Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
                 for email in recipients:
@@ -180,13 +183,13 @@ class NotifierTests(conftest.SickChillTestDBCase):
         test_prowl_apis = "11111111111111111111,22222222222222222222"
 
         for show in self.shows:
-            showid = self._get_showid_by_showname(show.show_name)
-            Home.saveShowNotifyList(show=showid, prowlAPIs=test_prowl_apis)
+            indexer_id = self._get_indexer_id_by_showname(show.show_name)
+            Home.saveShowNotifyList(show=indexer_id, prowlAPIs=test_prowl_apis)
 
         # Now, iterate through all shows using the Prowl API generation routines that are used in the notifier proper
         for show in self.shows:
             for episode in show.episodes:
-                ep_name = episode._format_pattern("%SN - %Sx%0E - %EN - ") + episode.quality
+                ep_name = episode.naming_pattern("%SN - %Sx%0E - %EN - ") + episode.quality
                 show_name = prowl_notifier._parse_episode(ep_name)
                 recipients = prowl_notifier._generate_recipients(show_name)
                 self._debug_spew("- Prowl Notifications for " + show.name + " (episode: " + episode.name + ") will be sent to:")
@@ -270,7 +273,7 @@ class NotifierTests(conftest.SickChillTestDBCase):
         if __name__ == "__main__" and text is not None:
             print(text)
 
-    def _get_showid_by_showname(self, showname):
+    def _get_indexer_id_by_showname(self, showname):
         """
         Get show ID by show name
 
@@ -278,9 +281,9 @@ class NotifierTests(conftest.SickChillTestDBCase):
         :return:
         """
         if showname is not None:
-            rows = self.mydb.select("SELECT show_id FROM tv_shows WHERE show_name = ?", [showname])
+            rows = self.mydb.select("SELECT indexer_id FROM tv_shows WHERE show_name = ?", [showname])
             if len(rows) == 1:
-                return rows[0]["show_id"]
+                return rows[0]["indexer_id"]
         return -1
 
 

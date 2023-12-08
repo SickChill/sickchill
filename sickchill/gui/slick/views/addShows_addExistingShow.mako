@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%block name="scripts">
     <script type="text/javascript" src="${static_url('js/plotTooltip.js')}"></script>
     <script type="text/javascript" src="${static_url('js/blackwhite.js')}"></script>
@@ -31,10 +31,10 @@
                                 <li><a href="#tabs-2">${_('Customize Options')}</a></li>
                             </ul>
                             <div id="tabs-1" class="existingtabs">
-                                    <%include file="/inc_rootDirs.mako"/>
+                                <%include file="/inc_rootDirs.mako" />
                             </div>
                             <div id="tabs-2" class="existingtabs">
-                                    <%include file="/inc_addShowOptions.mako"/>
+                                <%include file="/inc_addShowOptions.mako" />
                             </div>
                         </div>
                         <br>
