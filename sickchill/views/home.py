@@ -316,6 +316,17 @@ class Home(WebRoot):
         else:
             return _("Error sending Pushover notification")
 
+    def testGotify(self):
+        host = self.get_body_argument("host")
+        host = config.clean_url(host)
+        authorization_token = self.get_body_argument("authorizationToken")
+        result, message = notifiers.gotify_notifier.test_notify(host, authorization_token)
+        logger.debug(f"Gotify result: {result} {message}")
+        if result:
+            return _("Gotify notification succeeded. Check your Gotify clients to make sure it worked.")
+        else:
+            return _("Error sending Gotify notification. {message}".format(message=message))
+
     @staticmethod
     def twitterStep1():
         # noinspection PyProtectedMember

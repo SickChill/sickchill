@@ -172,6 +172,12 @@ class ConfigNotifications(Config):
         pushbullet_device_list=None,
         pushbullet_channel_list=None,
         pushbullet_channel=None,
+        use_gotify=None,
+        gotify_notify_onsnatch=None,
+        gotify_notify_ondownload=None,
+        gotify_notify_onsubtitledownload=None,
+        gotify_host=None,
+        gotify_authorizationtoken=None,
         use_email=None,
         email_notify_onsnatch=None,
         email_notify_ondownload=None,
@@ -453,6 +459,13 @@ class ConfigNotifications(Config):
         settings.PUSHBULLET_API = pushbullet_api
         settings.PUSHBULLET_DEVICE = pushbullet_device_list
         settings.PUSHBULLET_CHANNEL = pushbullet_channel_list or ""
+
+        settings.USE_GOTIFY = config.checkbox_to_value(use_gotify)
+        settings.GOTIFY_NOTIFY_ONSNATCH = config.checkbox_to_value(gotify_notify_onsnatch)
+        settings.GOTIFY_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(gotify_notify_ondownload)
+        settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(gotify_notify_onsubtitledownload)
+        settings.GOTIFY_HOST = gotify_host
+        settings.GOTIFY_AUTHORIZATIONTOKEN = gotify_authorizationtoken
 
         sickchill.start.save_config()
 

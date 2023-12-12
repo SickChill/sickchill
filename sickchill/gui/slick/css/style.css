@@ -2073,6 +2073,11 @@ div.metadataDiv .disabled {
     background-size: 32px;
 }
 
+.icon-notifiers-gotify {
+    background: url("../images/Gotify.png");
+    background-size: 32px;
+}
+
 .icon-notifiers-kodi {
     background-position: 0 0;
 }

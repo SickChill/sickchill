@@ -73,6 +73,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         check_section(settings.CFG, "Slack")
         check_section(settings.CFG, "RocketChat")
         check_section(settings.CFG, "Discord")
+        check_section(settings.CFG, "Gotify")
 
         # Need to be before any passwords
         settings.ENCRYPTION_VERSION = check_setting_int(settings.CFG, "General", "encryption_version", min_val=0, max_val=2)
@@ -654,6 +655,13 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.PUSHBULLET_API = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_api", censor_log=True)
         settings.PUSHBULLET_DEVICE = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_device")
         settings.PUSHBULLET_CHANNEL = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_channel")
+
+        settings.USE_GOTIFY = check_setting_bool(settings.CFG, "Gotify", "use_gotify")
+        settings.GOTIFY_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_onsnatch")
+        settings.GOTIFY_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_ondownload")
+        settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_onsubtitledownload")
+        settings.GOTIFY_HOST = check_setting_str(settings.CFG, "Gotify", "gotify_host", censor_log=True)
+        settings.GOTIFY_AUTHORIZATIONTOKEN = check_setting_str(settings.CFG, "Gotify", "gotify_authorizationtoken", censor_log=True)
 
         settings.USE_EMAIL = check_setting_bool(settings.CFG, "Email", "use_email")
         settings.EMAIL_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Email", "email_notify_onsnatch")
@@ -1580,6 +1588,14 @@ def save_config():
                 "pushbullet_api": settings.PUSHBULLET_API,
                 "pushbullet_device": settings.PUSHBULLET_DEVICE,
                 "pushbullet_channel": settings.PUSHBULLET_CHANNEL,
+            },
+            "Gotify": {
+                "use_gotify": int(settings.USE_GOTIFY),
+                "gotify_notify_onsnatch": int(settings.GOTIFY_NOTIFY_ONSNATCH),
+                "gotify_notify_ondownload": int(settings.GOTIFY_NOTIFY_ONDOWNLOAD),
+                "gotify_notify_onsubtitledownload": int(settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD),
+                "gotify_host": settings.GOTIFY_HOST,
+                "gotify_authorizationtoken": settings.GOTIFY_AUTHORIZATIONTOKEN,
             },
             "Email": {
                 "use_email": int(settings.USE_EMAIL),
