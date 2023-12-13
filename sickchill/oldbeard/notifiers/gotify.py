@@ -46,7 +46,7 @@ class Notifier(object):
         :param token: Gotify authorization token
         :return: True if the message succeeded, False otherwise and error
         """
-        logger.debug("Gotify in use with authorization token: {0}".format(token))
+        logger.debug("Gotify in use with authorization token.")
         headers = CaseInsensitiveDict({"Content-Type": "application/json"})
         try:
             r = requests.post(
