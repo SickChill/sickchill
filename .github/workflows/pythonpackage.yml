@@ -243,17 +243,17 @@ jobs:
         run: |
           ls -R /tmp/sickchill-wheels
       - name: Upload linux/amd64 wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: amd64
           path: /tmp/sickchill-wheels/linux_amd64
       - name: Upload linux/arm64 wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: arm64
           path: /tmp/sickchill-wheels/linux_arm64
       - name: Upload linux/arm/v7 wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: armv7
           path: /tmp/sickchill-wheels/linux_arm_v7
