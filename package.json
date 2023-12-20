@@ -55,7 +55,7 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-exec": "^3.0.0",
     "grunt-po2json": "git+https://github.com/rockykitamura/grunt-po2json.git",
-    "html-webpack-plugin": "^5.5.0",
+    "html-webpack-plugin": "^5.6.0",
     "jquery": "^3.2.1",
     "load-grunt-tasks": "^5.1.0",
     "lodash": "^4.17.15",
