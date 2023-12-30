@@ -6,6 +6,7 @@ from sickchill.oldbeard.notifiers import (  # twilio_notify,
     emailnotify,
     emby,
     freemobile,
+    gotify,
     growl,
     join,
     kodi,
@@ -28,7 +29,6 @@ from sickchill.oldbeard.notifiers import (  # twilio_notify,
     telegram,
     trakt,
     tweet,
-    gotify,
 )
 
 # home theater / nas
