@@ -79,14 +79,6 @@ class BaseHandler(RequestHandler):
                                </html>""".format(error, error, trace_info, request_info, settings.WEB_ROOT))
 
     def redirect(self, url, permanent=False, status=None):
-        """
-        Sends a redirect to the given (optionally relative) URL.
-        NOTE: Removed self.finish
-        If the `status` argument is specified, that value is used as the
-        HTTP status code; otherwise either 301 (permanent) or 302
-        (temporary) is chosen based on the `permanent` argument.
-        The default is 302 (temporary).
-        """
         if not url.startswith(settings.WEB_ROOT):
             url = settings.WEB_ROOT + url
 
