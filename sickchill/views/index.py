@@ -171,7 +171,7 @@ class WebHandler(BaseHandler):
 
             results = await self.async_call(method, len(sig.parameters))
 
-            self.finish(results)
+            await self.finish(results)
 
         except AttributeError:
             logger.debug('Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()))
@@ -241,7 +241,7 @@ class WebRoot(WebHandler):
         shows = sorted(settings.showList, key=lambda mbr: attrgetter("sort_name")(mbr))
         episodes = {}
 
-        results = main_db_con.select("SELECT episode, season, showid " "FROM tv_episodes " "ORDER BY season ASC, episode ASC")
+        results = main_db_con.select("SELECT episode, season, showid " "FROM tv_episodes " "ORDER BY season, episode")
 
         for result in results:
             if result["showid"] not in episodes:
