@@ -1,6 +1,7 @@
 """
 Episode tagger to extract information from episodes
 """
+
 import re
 
 from sickchill.helper.common import try_int

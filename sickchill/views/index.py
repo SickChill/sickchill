@@ -65,8 +65,7 @@ class BaseHandler(RequestHandler):
             error = exc_info[1]
 
             self.set_header("Content-Type", "text/html")
-            return self.finish(
-                """<html>
+            return self.finish("""<html>
                                  <title>{0}</title>
                                  <body>
                                     <h2>Error</h2>
@@ -77,10 +76,7 @@ class BaseHandler(RequestHandler):
                                     <p>{3}</p>
                                     <button onclick="window.location='{4}/errorlogs/';">View Log(Errors)</button>
                                  </body>
-                               </html>""".format(
-                    error, error, trace_info, request_info, settings.WEB_ROOT
-                )
-            )
+                               </html>""".format(error, error, trace_info, request_info, settings.WEB_ROOT))
 
     def redirect(self, url, permanent=False, status=None):
         """Sends a redirect to the given (optionally relative) URL.
