@@ -2224,6 +2224,117 @@
                 </div>
             </div>
 
+            <div class="config-group-divider"></div>
+
+            <!-- /gotify component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-gotify" title="${_('Gotify')}"></span>
+                        <h3><a href="${anon_url('https://gotify.net')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Gotify</a></h3>
+                        <p>${_('Gotify is a self-hosted push notification service.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" class="enabler" name="use_gotify" id="use_gotify" ${('', 'checked="checked"')[bool(settings.USE_GOTIFY)]}/>
+                                <label for="use_gotify">${_('send Gotify notifications?')}</label>
+                            </div>
+                        </div>
+
+                        <div id="content_use_gotify">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="gotify_notify_onsnatch" id="gotify_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.GOTIFY_NOTIFY_ONSNATCH)]}/>
+                                    <label for="gotify_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="gotify_notify_ondownload" id="gotify_notify_ondownload" ${('', 'checked="checked"')[bool(settings.GOTIFY_NOTIFY_ONDOWNLOAD)]}/>
+                                    <label for="gotify_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="gotify_notify_onsubtitledownload" id="gotify_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <label for="gotify_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Gotify Host:Port')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="gotify_host" id="gotify_host" value="${settings.GOTIFY_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="gotify_host">${_('host running Gotify (e.g. https://gotify.example.com:8081)')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Gotify token')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="gotify_authorizationtoken" id="gotify_authorizationtoken" value="${settings.GOTIFY_AUTHORIZATIONTOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="gotify_authorizationtoken">${_('Authorization token of your Gotify account')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testGotify-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input type="button" class="btn" value="Test Gotify" id="testGotify" />
+                                    <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
 ##             <div class="config-group-divider"></div>
 
 ##             <!-- /twilio component-group //-->
