@@ -1080,36 +1080,36 @@ const SICKCHILL = {
             });
 
             $('#testGotify').on('click', function () {
-              const gotify = {};
-              gotify.host = $.trim($('#gotify_host').val());
-              gotify.authToken = $.trim($('#gotify_authorizationtoken').val());
-              if (!gotify.host || !gotify.authToken) {
-                $('#testGotify-result').html(_('Please fill out the necessary fields above.'));
-                if (gotify.host) {
-                  $('#gotify_host').removeClass('warning');
-                } else {
-                  $('#gotify_host').addClass('warning');
+                const gotify = {};
+                gotify.host = $.trim($('#gotify_host').val());
+                gotify.authToken = $.trim($('#gotify_authorizationtoken').val());
+                if (!gotify.host || !gotify.authToken) {
+                    $('#testGotify-result').html(_('Please fill out the necessary fields above.'));
+                    if (gotify.host) {
+                        $('#gotify_host').removeClass('warning');
+                    } else {
+                        $('#gotify_host').addClass('warning');
+                    }
+
+                    if (gotify.authToken) {
+                        $('#gotify_authorizationtoken').removeClass('warning');
+                    } else {
+                        $('#gotify_authorizationtoken').addClass('warning');
+                    }
+
+                    return;
                 }
 
-                if (gotify.authToken) {
-                  $('#gotify_authorizationtoken').removeClass('warning');
-                } else {
-                  $('#gotify_authorizationtoken').addClass('warning');
-                }
-
-                return;
-              }
-
-              $('#gotify_host,#gotify_authorizationtoken').removeClass('warning');
-              $(this).prop('disabled', true);
-              $('#testGotify-result').html(loading);
-              $.post(scRoot + '/home/testGotify', {
-                host: gotify.host,
-                authorizationToken: gotify.authToken,
-              }).done(data => {
-                $('#testGotify-result').html(data);
-                $('#testGotify').prop('disabled', false);
-              });
+                $('#gotify_host,#gotify_authorizationtoken').removeClass('warning');
+                $(this).prop('disabled', true);
+                $('#testGotify-result').html(loading);
+                $.post(scRoot + '/home/testGotify', {
+                    host: gotify.host,
+                    authorizationToken: gotify.authToken,
+                }).done(data => {
+                    $('#testGotify-result').html(data);
+                    $('#testGotify').prop('disabled', false);
+                });
             });
 
             $('#testPushbullet').on('click', function () {
