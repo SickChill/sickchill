@@ -1,3 +1,5 @@
+const { getMeta } = require('/sickchill/gui/slick/js/core');
+
 const test = require('ava');
 
 test('getMeta', t => {
