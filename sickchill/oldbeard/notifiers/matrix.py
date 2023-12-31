@@ -15,7 +15,9 @@ class Notifier(object):
             message = """<body>
                         <h3>SickChill Notification - Snatched</h3>
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>
-                        <h5>Powered by SickChill.</h5></body>""".format(show[0], show[1], show[2], show[3])
+                        <h5>Powered by SickChill.</h5></body>""".format(
+                show[0], show[1], show[2], show[3]
+            )
             self._notify_matrix(message)
 
     def notify_download(self, ep_name):
@@ -26,7 +28,9 @@ class Notifier(object):
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p><p>Quality: <b>{3}</b></p>
                         <h5 style="margin-top: 2.5em; padding: .7em 0;
                         color: #777; border-top: #BBB solid 1px;">
-                        Powered by SickChill.</h5></body>""".format(show[0], show[1], show[2], show[3])
+                        Powered by SickChill.</h5></body>""".format(
+                show[0], show[1], show[2], show[3]
+            )
             self._notify_matrix(message)
 
     def notify_subtitle_download(self, ep_name, lang):
@@ -36,7 +40,9 @@ class Notifier(object):
                         <h3>SickChill Notification - Subtitle Downloaded</h3>
                         <p>Show: <b>{0}</b></p><p>Episode Number: <b>{1}</b></p><p>Episode: <b>{2}</b></p></p>
                         <p>Language: <b>{3}</b></p>
-                        <h5>Powered by SickChill.</h5></body>""".format(show[0], show[1], show[2], lang)
+                        <h5>Powered by SickChill.</h5></body>""".format(
+                show[0], show[1], show[2], lang
+            )
             self._notify_matrix(message)
 
     def notify_update(self, new_version="??"):

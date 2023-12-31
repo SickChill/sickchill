@@ -57,14 +57,16 @@ class Provider(TorrentProvider):
             data = self.get_url(self.script_url)
             if js2py:
                 context = js2py.EvalJs()
-                context.execute("""
+                context.execute(
+                    """
                     escape = function(text){pyimport urllib; return urllib.parse.quote(text)};
                     unescape = function(text){pyimport urllib; return urllib.parse.unquote(text)};
                     encodeURI = function(text){pyimport urllib; return urllib.parse.quote(text, safe='~@#$&()*!+=:;,.?/\\'')};
                     decodeURI = unescape;
                     encodeURIComponent = function(text){pyimport urllib; return urllib.parse.quote(text, safe='~()*!.\\'')};
                     decodeURIComponent = unescape;
-                    """)
+                    """
+                )
 
                 context.execute(data)
                 return context.print_trackers()
