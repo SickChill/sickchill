@@ -62,7 +62,7 @@
     "mem-fs": "^4.0.0",
     "mem-fs-editor": "^11.0.0",
     "mini-css-extract-plugin": "^2.6.1",
-    "sass": "^1.69.5",
+    "sass": "^1.69.7",
     "sass-loader": "^13.3.3",
     "snyk": "^1.1266.0",
     "style-loader": "^3.3.1",
