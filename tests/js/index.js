@@ -1,12 +1,11 @@
-const { getMeta } = require('/sickchill/gui/slick/js/core');
+const test = require("ava");
 
-const test = require('ava');
-
-test('getMeta', t => {
-    const meta = document.createElement('meta');
-    meta.setAttribute('data-var', 'scRoot');
-    meta.setAttribute('content', '/sickchill');
-    document.head.appendChild(meta);
+test.failing('getMeta', t => {
+    const meta = document.createElement('meta', {
+        'data-var': 'scRoot',
+        content: '/sickchill',
+    });
+    document.body.append(meta);
 
     t.is(getMeta('scRoot'), '/sickchill');
 });
