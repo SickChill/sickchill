@@ -207,7 +207,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.ANON_REDIRECT = check_setting_str(settings.CFG, "General", "anon_redirect", settings.DEFAULT_ANON_REDIRECT)
         if settings.ANON_REDIRECT == "disabled" or not settings.ANON_REDIRECT.endswith("?"):
             settings.ANON_REDIRECT = ""
-        if settings.ANON_REDIRECT == "http://dereferer.org/?":
+        if settings.ANON_REDIRECT in ("http://dereferer.org/?", "https://anonym.to/?"):
             settings.ANON_REDIRECT = settings.DEFAULT_ANON_REDIRECT
 
         settings.PROXY_SETTING = check_setting_str(settings.CFG, "General", "proxy_setting")
