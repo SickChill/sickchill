@@ -40,7 +40,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-unicorn": "^50.0.1",
-    "esm": "^3.2.25",
     "grunt": "^1.5.2",
     "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
     "grunt-bower-task": "^0.6.1",
@@ -78,7 +77,6 @@
   },
   "ava": {
     "require": [
-      "esm",
       "./tests/js/helpers/setup-browser-env.js"
     ],
     "files": [
