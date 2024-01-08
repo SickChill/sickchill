@@ -93,7 +93,7 @@ class SearchResult(object):
     @property
     def __check_torznab(self):
         torznab: bool = hasattr(self.provider, "torznab") and self.provider.torznab
-        torznab |= self.url and "jackett" in self.url
+        torznab |= bool(self.url) and "jackett" in self.url
         torznab |= self.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", self.url)
         return torznab
 
