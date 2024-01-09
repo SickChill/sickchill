@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sickchill"
-version = "2024.1.8-2"
+version = "2024.1.8-3"
 description = 'Automatic Video Library Manager for TV Shows'
 license = "GPL-3.0-or-later"
 
