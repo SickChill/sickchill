@@ -45,7 +45,7 @@ class Manage(Home, WebRoot):
         return json.dumps(result)
 
     def episodeStatuses(self):
-        which_status = self.get_body_argument("whichStatus", None)
+        which_status = self.get_query_argument("whichStatus", None)
         if which_status:
             status_list = [int(which_status)]
             if status_list[0] == SNATCHED:
