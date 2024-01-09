@@ -6,11 +6,14 @@ from sickchill.oldbeard.notifiers import (  # twilio_notify,
     emailnotify,
     emby,
     freemobile,
+    gotify,
     growl,
     join,
     kodi,
     libnotify,
     matrix,
+    mattermost,
+    mattermostbot,
     nmj,
     nmjv2,
     plex,
@@ -49,12 +52,16 @@ pushbullet_notifier = pushbullet.Notifier()
 freemobile_notifier = freemobile.Notifier()
 telegram_notifier = telegram.Notifier()
 join_notifier = join.Notifier()
+gotify_notifier = gotify.Notifier()
+
 # social
 twitter_notifier = tweet.Notifier()
 # twilio_notifier = twilio_notify.Notifier()
 trakt_notifier = trakt.Notifier()
 email_notifier = emailnotify.Notifier()
 slack_notifier = slack.Notifier()
+mattermost_notifier = mattermost.Notifier()
+mattermostbot_notifier = mattermostbot.Notifier()
 rocketchat_notifier = rocketchat.Notifier()
 matrix_notifier = matrix.Notifier()
 discord_notifier = discord.Notifier()
@@ -81,10 +88,13 @@ notifiers = [
     trakt_notifier,
     email_notifier,
     slack_notifier,
+    mattermost_notifier,
+    mattermostbot_notifier,
     rocketchat_notifier,
     matrix_notifier,
     discord_notifier,
     join_notifier,
+    gotify_notifier,
 ]
 
 

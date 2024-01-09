@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     import re
     from sickchill import settings
@@ -24,7 +24,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-kodi" title="KODI"></span>
-                        <h3><a href="${anon_url('http://kodi.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">KODI</a></h3>
+                        <h3><a href="${anon_url('http://kodi.tv/')}" rel="noreferrer" target="_blank">KODI</a></h3>
                         <p>${_('A free and open source cross-platform media center and home entertainment system software with a 10-foot user interface designed for the living-room TV.')}</p>
                     </div>
                 </div>
@@ -35,20 +35,20 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_kodi" id="use_kodi" ${('', 'checked="checked"')[bool(settings.USE_KODI)]}/>
+                                <input type="checkbox" class="enabler" name="use_kodi" id="use_kodi" ${checked(settings.USE_KODI)}/>
                                 <label for="use_kodi">${_('send KODI commands?')}</label>
                             </div>
                         </div>
 
                         <!-- content_use_kodi //-->
-                        <div id="content_use_kodi">
+                        <div id="content_use_kodi" ${hidden(settings.USE_KODI)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Always on')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_always_on" id="kodi_always_on" ${('', 'checked="checked"')[bool(settings.KODI_ALWAYS_ON)]}/>
+                                    <input type="checkbox" name="kodi_always_on" id="kodi_always_on" ${checked(settings.KODI_ALWAYS_ON)}/>
                                     <label for="kodi_always_on">${_('log errors when unreachable?')}</label>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.KODI_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="kodi_notify_onsnatch" id="kodi_notify_onsnatch" ${checked(settings.KODI_NOTIFY_ONSNATCH)}/>
                                     <label for="kodi_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -68,7 +68,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" ${('', 'checked="checked"')[bool(settings.KODI_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="kodi_notify_ondownload" id="kodi_notify_ondownload" ${checked(settings.KODI_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="kodi_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi_notify_onsubtitledownload" ${checked(settings.KODI_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="kodi_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -88,7 +88,7 @@
                                     <label class="component-title">${_('Update library')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_library" id="kodi_update_library" ${('', 'checked="checked"')[bool(settings.KODI_UPDATE_LIBRARY)]}/>
+                                    <input type="checkbox" name="kodi_update_library" id="kodi_update_library" ${checked(settings.KODI_UPDATE_LIBRARY)}/>
                                     <label for="kodi_update_library">${_('update KODI library when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -98,7 +98,7 @@
                                     <label class="component-title">${_('Full library update')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_full" id="kodi_update_full" ${('', 'checked="checked"')[bool(settings.KODI_UPDATE_FULL)]}/>
+                                    <input type="checkbox" name="kodi_update_full" id="kodi_update_full" ${checked(settings.KODI_UPDATE_FULL)}/>
                                     <label for="kodi_update_full">${_('perform a full library update if update per-show fails?')}</label>
                                 </div>
                             </div>
@@ -108,7 +108,7 @@
                                     <label class="component-title">${_('Only update first host')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="kodi_update_onlyfirst" id="kodi_update_onlyfirst" ${('', 'checked="checked"')[bool(settings.KODI_UPDATE_ONLYFIRST)]}/>
+                                    <input type="checkbox" name="kodi_update_onlyfirst" id="kodi_update_onlyfirst" ${checked(settings.KODI_UPDATE_ONLYFIRST)}/>
                                     <label for="kodi_update_onlyfirst">${_('only send library updates to the first active host?')}</label>
                                 </div>
                             </div>
@@ -199,7 +199,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-plex" title="Plex Media Server"></span>
-                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Media Server</a></h3>
+                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" target="_blank">Plex Media Server</a></h3>
                         <p>${_('Experience your media on a visually stunning, easy to use interface on your Mac connected to your TV. Your media library has never looked this good!')}</p>
                         <p class="plexinfo hide">${_('For sending notifications to Plex Home Theater (PHT) clients, use the KODI notifier with port <b>3005</b>.')}</p>
                     </div>
@@ -212,12 +212,12 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_plex_server" id="use_plex_server" ${('', 'checked="checked"')[bool(settings.USE_PLEX_SERVER)]}/>
+                                <input type="checkbox" class="enabler" name="use_plex_server" id="use_plex_server" ${checked(settings.USE_PLEX_SERVER)}/>
                                 <label for="use_plex_server">${_('send Plex Media Server library updates?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_plex_server">
+                        <div id="content_use_plex_server" ${hidden(settings.USE_PLEX_SERVER)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -236,7 +236,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <span class="component-desc">(<a href="${anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                                            <span class="component-desc">(<a href="${anon_url('https://support.plex.tv/hc/en-us/articles/204059436-Finding-your-account-token-X-Plex-Token')}" rel="noreferrer" target="_blank">
                                                 <u>Finding your account token</u></a>)
                                             </span>
                                         </div>
@@ -289,12 +289,12 @@
                                     <label class="component-title">${_('Update Library')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" ${('', 'checked="checked"')[bool(settings.PLEX_UPDATE_LIBRARY)]}/>
+                                    <input type="checkbox" class="enabler" name="plex_update_library" id="plex_update_library" ${checked(settings.PLEX_UPDATE_LIBRARY)}/>
                                     <label for="plex_update_library">${_('update Plex Media Server library when a download finishes')}</label>
                                 </div>
                             </div>
 
-                            <div id="content_plex_update_library">
+                            <div id="content_plex_update_library" ${hidden(settings.PLEX_UPDATE_LIBRARY)}>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -319,7 +319,7 @@
                                         <label class="component-title">${_('HTTPS')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="plex_server_https" id="plex_server_https" ${('', 'checked="checked"')[bool(settings.PLEX_SERVER_HTTPS)]}/>
+                                        <input type="checkbox" name="plex_server_https" id="plex_server_https" ${checked(settings.PLEX_SERVER_HTTPS)}/>
                                         <label for="plex_server_https">${_('use https for plex media server requests?')}</label>
                                     </div>
                                 </div>
@@ -349,7 +349,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-plexth" title="${_('Plex Home Theater')}"></span>
-                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Plex Home Theater</a></h3>
+                        <h3><a href="${anon_url('http://www.plexapp.com/')}" rel="noreferrer" target="_blank">Plex Home Theater</a></h3>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -360,19 +360,19 @@
                                  <label class="component-title">${_('Enable')}</label>
                              </div>
                              <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                 <input type="checkbox" class="enabler" name="use_plex_client" id="use_plex_client" ${('', 'checked="checked"')[bool(settings.USE_PLEX_CLIENT)]}/>
+                                 <input type="checkbox" class="enabler" name="use_plex_client" id="use_plex_client" ${checked(settings.USE_PLEX_CLIENT)}/>
                                  <label for="use_plex_client">${_('send Plex Home Theater notifications?')}</label>
                              </div>
                         </div>
 
-                        <div id="content_use_plex_client">
+                        <div id="content_use_plex_client" ${hidden(settings.USE_PLEX_CLIENT)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_onsnatch" id="plex_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PLEX_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="plex_notify_onsnatch" id="plex_notify_onsnatch" ${checked(settings.PLEX_NOTIFY_ONSNATCH)}/>
                                     <label for="plex_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -382,7 +382,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_ondownload" id="plex_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PLEX_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="plex_notify_ondownload" id="plex_notify_ondownload" ${checked(settings.PLEX_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="plex_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -392,7 +392,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="plex_notify_onsubtitledownload" id="plex_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="plex_notify_onsubtitledownload" id="plex_notify_onsubtitledownload" ${checked(settings.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="plex_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -485,7 +485,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-emby" title="${_('Emby')}"></span>
-                        <h3><a href="${anon_url('http://emby.media/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Emby</a></h3>
+                        <h3><a href="${anon_url('http://emby.media/')}" rel="noreferrer" target="_blank">Emby</a></h3>
                         <p>${_('A home media server built using other popular open source technologies.')}</p>
                     </div>
                 </div>
@@ -497,12 +497,12 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_emby" id="use_emby" ${('', 'checked="checked"')[bool(settings.USE_EMBY)]} />
+                                <input type="checkbox" class="enabler" name="use_emby" id="use_emby" ${checked(settings.USE_EMBY)} />
                                 <label for="use_emby">${_('send update commands to Emby?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_emby">
+                        <div id="content_use_emby" ${hidden(settings.USE_EMBY)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -553,7 +553,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-nmj" title="${_('Networked Media Jukebox')}"></span>
-                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">NMJ</a></h3>
+                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" target="_blank">NMJ</a></h3>
                         <p>${_('The Networked Media Jukebox, or NMJ, is the official media jukebox interface made available for the Popcorn Hour 200-series.')}</p>
                     </div>
                 </div>
@@ -565,12 +565,12 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_nmj" id="use_nmj" ${('', 'checked="checked"')[bool(settings.USE_NMJ)]}/>
+                                <input type="checkbox" class="enabler" name="use_nmj" id="use_nmj" ${checked(settings.USE_NMJ)}/>
                                 <label for="use_nmj">${_('send update commands to NMJ?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_nmj">
+                        <div id="content_use_nmj" ${hidden(settings.USE_NMJ)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -669,7 +669,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-nmj" title="${_('Networked Media Jukebox v2')}"></span>
-                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">NMJv2</a></h3>
+                        <h3><a href="${anon_url('http://www.popcornhour.com/')}" rel="noreferrer" target="_blank">NMJv2</a></h3>
                         <p>${_('The Networked Media Jukebox, or NMJv2, is the official media jukebox interface made available for the Popcorn Hour 300 & 400-series.')}</p>
                     </div>
                 </div>
@@ -681,12 +681,12 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_nmjv2" id="use_nmjv2" ${('', 'checked="checked"')[bool(settings.USE_NMJv2)]}/>
+                                <input type="checkbox" class="enabler" name="use_nmjv2" id="use_nmjv2" ${checked(settings.USE_NMJv2)}/>
                                 <label for="use_nmjv2">${_('send update commands to NMJv2?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_nmjv2">
+                        <div id="content_use_nmjv2" ${hidden(settings.USE_NMJv2)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -713,13 +713,13 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="radio" NAME="nmjv2_dbloc" VALUE="local" id="NMJV2_DBLOC_A" ${('', 'checked="checked"')[settings.NMJv2_DBLOC == 'local']}/>
+                                            <input type="radio" NAME="nmjv2_dbloc" VALUE="local" id="NMJV2_DBLOC_A" ${checked(settings.NMJv2_DBLOC == 'local')}/>
                                             <label for="NMJV2_DBLOC_A">PCH Local Media</label>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" ${('', 'checked="checked"')[settings.NMJv2_DBLOC == 'network']}/>
+                                            <input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" ${checked(settings.NMJv2_DBLOC == 'network')}/>
                                             <label for="NMJV2_DBLOC_B">PCH Network Media</label>
                                         </div>
                                     </div>
@@ -813,7 +813,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-syno1" title="${_('Synology')}"></span>
-                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology</a></h3>
+                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" target="_blank">Synology</a></h3>
                         <p>${_('The Synology DiskStation NAS.')}</p>
                         <p>${_('Synology Indexer is the daemon running on the Synology NAS to build its media database.')}</p>
                     </div>
@@ -828,7 +828,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" ${('', 'checked="checked"')[bool(settings.USE_SYNOINDEX)]}/>
+                                        <input type="checkbox" class="enabler" name="use_synoindex" id="use_synoindex" ${checked(settings.USE_SYNOINDEX)}/>
                                         <label for="use_synoindex">${_('send Synology notifications?')}</label>
                                     </div>
                                 </div>
@@ -840,7 +840,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_synoindex">
+                        <div id="content_use_synoindex" ${hidden(settings.USE_SYNOINDEX)}>
                             <div class="row">
                                 <div class="col-md-12">
                                     <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
@@ -859,7 +859,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-syno2" title="${_('Synology Indexer')}"></span>
-                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Synology Notifier</a></h3>
+                        <h3><a href="${anon_url('http://synology.com/')}" rel="noreferrer" target="_blank">Synology Notifier</a></h3>
                         <p>${_('Synology Notifier is the notification system of Synology DSM')}</p>
                     </div>
                 </div>
@@ -873,7 +873,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_synologynotifier" id="use_synologynotifier" ${('', 'checked="checked"')[bool(settings.USE_SYNOLOGYNOTIFIER)]}/>
+                                        <input type="checkbox" class="enabler" name="use_synologynotifier" id="use_synologynotifier" ${checked(settings.USE_SYNOLOGYNOTIFIER)}/>
                                         <label for="use_synologynotifier">${_('send notifications to the Synology Notifier?')}</label>
                                     </div>
                                 </div>
@@ -885,14 +885,14 @@
                             </div>
                         </div>
 
-                        <div id="content_use_synologynotifier">
+                        <div id="content_use_synologynotifier" ${hidden(settings.USE_SYNOLOGYNOTIFIER)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier_notify_onsnatch" ${checked(settings.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH)}/>
                                     <label for="synologynotifier_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -902,7 +902,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" ${('', 'checked="checked"')[bool(settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier_notify_ondownload" ${checked(settings.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="synologynotifier_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -912,7 +912,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier_notify_onsubtitledownload" ${checked(settings.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="synologynotifier_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -934,7 +934,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pytivo" title="${_('pyTivo')}"></span>
-                        <h3><a href="${anon_url('http://pytivo.sourceforge.net/wiki/index.php/PyTivo')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">pyTivo</a></h3>
+                        <h3><a href="${anon_url('http://pytivo.sourceforge.net/wiki/index.php/PyTivo')}" rel="noreferrer" target="_blank">pyTivo</a></h3>
                         <p>${_('pyTivo is both an HMO and GoBack server. This notifier will load the completed downloads to your Tivo.')}</p>
                     </div>
                 </div>
@@ -948,7 +948,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_pytivo" id="use_pytivo" ${('', 'checked="checked"')[bool(settings.USE_PYTIVO)]}/>
+                                        <input type="checkbox" class="enabler" name="use_pytivo" id="use_pytivo" ${checked(settings.USE_PYTIVO)}/>
                                         <label for="use_pytivo">${_('send notifications to pyTivo?')}</label>
                                     </div>
                                 </div>
@@ -960,7 +960,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_pytivo">
+                        <div id="content_use_pytivo" ${hidden(settings.USE_PYTIVO)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -1037,7 +1037,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-growl" title="${_('Growl')}"></span>
-                        <h3><a href="${anon_url('http://growl.info/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Growl</a></h3>
+                        <h3><a href="${anon_url('http://growl.info/')}" rel="noreferrer" target="_blank">Growl</a></h3>
                         <p>${_('A cross-platform unobtrusive global notification system.')}</p>
                     </div>
                 </div>
@@ -1048,18 +1048,18 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${('', 'checked="checked"')[bool(settings.USE_GROWL)]}/>
+                                <input type="checkbox" class="enabler" name="use_growl" id="use_growl" ${checked(settings.USE_GROWL)}/>
                                 <label for="use_growl">${_('send Growl notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_growl">
+                        <div id="content_use_growl" ${hidden(settings.USE_GROWL)}>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.GROWL_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="growl_notify_onsnatch" id="growl_notify_onsnatch" ${checked(settings.GROWL_NOTIFY_ONSNATCH)}/>
                                     <label for="growl_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1068,7 +1068,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" ${('', 'checked="checked"')[bool(settings.GROWL_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="growl_notify_ondownload" id="growl_notify_ondownload" ${checked(settings.GROWL_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="growl_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1077,7 +1077,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="growl_notify_onsubtitledownload" id="growl_notify_onsubtitledownload" ${checked(settings.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="growl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1149,7 +1149,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-prowl" title="${_('Prowl')}"></span>
-                        <h3><a href="${anon_url('http://www.prowlapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Prowl</a></h3>
+                        <h3><a href="${anon_url('http://www.prowlapp.com/')}" rel="noreferrer" target="_blank">Prowl</a></h3>
                         <p>${_('A Growl client for iOS.')}</p>
                     </div>
                 </div>
@@ -1162,19 +1162,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_prowl" id="use_prowl" ${('', 'checked="checked"')[bool(settings.USE_PROWL)]}/>
+                                <input type="checkbox" class="enabler" name="use_prowl" id="use_prowl" ${checked(settings.USE_PROWL)}/>
                                 <label for="use_prowl">${_('send Prowl notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_prowl">
+                        <div id="content_use_prowl" ${hidden(settings.USE_PROWL)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PROWL_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="prowl_notify_onsnatch" id="prowl_notify_onsnatch" ${checked(settings.PROWL_NOTIFY_ONSNATCH)}/>
                                     <label for="prowl_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1184,7 +1184,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PROWL_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="prowl_notify_ondownload" id="prowl_notify_ondownload" ${checked(settings.PROWL_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="prowl_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1194,7 +1194,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl_notify_onsubtitledownload" ${checked(settings.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="prowl_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1221,7 +1221,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label for="prowl_api">${_('''Prowl API(s) listed here, separated by commas if applicable, will<br> receive notifications for <b>all</b> shows. Your Prowl API key is available at:''')}
-                                                <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">
+                                                <a href="${anon_url('https://www.prowlapp.com/api_settings.php')}" rel="noreferrer" target="_blank">
                                                          https://www.prowlapp.com/api_settings.php
                                                 </a><br>
                                                 ${_('(this field may be blank except when testing.)')}
@@ -1271,11 +1271,11 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="prowl_priority" name="prowl_priority" class="form-control input-sm input250">
-                                                <option value="-2" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '-2']}>${_('Very Low')}</option>
-                                                <option value="-1" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '-1']}>${_('Moderate')}</option>
-                                                <option value="0" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '0']}>${_('Normal')}</option>
-                                                <option value="1" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '1']}>${_('High')}</option>
-                                                <option value="2" ${('', 'selected="selected"')[settings.PROWL_PRIORITY == '2']}>${_('Emergency')}</option>
+                                                <option value="-2" ${selected(settings.PROWL_PRIORITY == '-2')}>${_('Very Low')}</option>
+                                                <option value="-1" ${selected(settings.PROWL_PRIORITY == '-1')}>${_('Moderate')}</option>
+                                                <option value="0" ${selected(settings.PROWL_PRIORITY == '0')}>${_('Normal')}</option>
+                                                <option value="1" ${selected(settings.PROWL_PRIORITY == '1')}>${_('High')}</option>
+                                                <option value="2" ${selected(settings.PROWL_PRIORITY == '2')}>${_('Emergency')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1302,7 +1302,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-libnotify" title="${_('Libnotify')}"></span>
-                        <h3><a href="${anon_url('http://library.gnome.org/devel/libnotify/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Libnotify</a></h3>
+                        <h3><a href="${anon_url('http://library.gnome.org/devel/libnotify/')}" rel="noreferrer" target="_blank">Libnotify</a></h3>
                         <p>${_('The standard desktop notification API for Linux/*nix systems.  This notifier will only function if the pynotify module is installed (Ubuntu/Debian package <a href="apt:python-notify">python-notify</a>).')}</p>
                     </div>
                 </div>
@@ -1315,19 +1315,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" ${('', 'checked="checked"')[bool(settings.USE_LIBNOTIFY)]}/>
+                                <input type="checkbox" class="enabler" name="use_libnotify" id="use_libnotify" ${checked(settings.USE_LIBNOTIFY)}/>
                                 <label for="use_libnotify">${_('send Libnotify notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_libnotify">
+                        <div id="content_use_libnotify" ${hidden(settings.USE_LIBNOTIFY)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.LIBNOTIFY_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify_notify_onsnatch" ${checked(settings.LIBNOTIFY_NOTIFY_ONSNATCH)}/>
                                     <label for="libnotify_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1337,7 +1337,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" ${('', 'checked="checked"')[bool(settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="libnotify_notify_ondownload" id="libnotify_notify_ondownload" ${checked(settings.LIBNOTIFY_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="libnotify_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1347,7 +1347,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify_notify_onsubtitledownload" ${checked(settings.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="libnotify_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1377,7 +1377,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushover" title="${_('Pushover')}"></span>
-                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushover</a></h3>
+                        <h3><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" target="_blank">Pushover</a></h3>
                         <p>${_('Pushover makes it easy to send real-time notifications to your Android and iOS devices.')}</p>
                     </div>
                 </div>
@@ -1390,19 +1390,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_pushover" id="use_pushover" ${('', 'checked="checked"')[bool(settings.USE_PUSHOVER)]}/>
+                                <input type="checkbox" class="enabler" name="use_pushover" id="use_pushover" ${checked(settings.USE_PUSHOVER)}/>
                                 <label for="use_pushover">${_('send Pushover notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_pushover">
+                        <div id="content_use_pushover" ${hidden(settings.USE_PUSHOVER)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PUSHOVER_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="pushover_notify_onsnatch" id="pushover_notify_onsnatch" ${checked(settings.PUSHOVER_NOTIFY_ONSNATCH)}/>
                                     <label for="pushover_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1412,7 +1412,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PUSHOVER_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushover_notify_ondownload" id="pushover_notify_ondownload" ${checked(settings.PUSHOVER_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="pushover_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1422,7 +1422,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover_notify_onsubtitledownload" ${checked(settings.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="pushover_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1457,7 +1457,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
+                                            <label for="pushover_apikey"><a href="${anon_url('https://pushover.net/apps/clone/sickchill')}" rel="noreferrer" target="_blank"><b>${_('click here')}</b></a>${_(' to create a Pushover API key')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1489,29 +1489,29 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="pushover_sound" name="pushover_sound" class="form-control input-sm input250">
-                                                <option value="pushover" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'pushover']}>${_('Pushover')}</option>
-                                                <option value="bike" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'bike']}>${_('Bike')}</option>
-                                                <option value="bugle" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'bugle']}>${_('Bugle')}</option>
-                                                <option value="cashregister" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'cashregister']}>${_('Cash Register')}</option>
-                                                <option value="classical" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'classical']}>${_('Classical')}</option>
-                                                <option value="cosmic" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'cosmic']}>${_('Cosmic')}</option>
-                                                <option value="falling" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'falling']}>${_('Falling')}</option>
-                                                <option value="gamelan" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'gamelan']}>${_('Gamelan')}</option>
-                                                <option value="incoming" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'incoming']}> ${_('Incoming')}</option>
-                                                <option value="intermission" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'intermission']}>${_('Intermission')}</option>
-                                                <option value="magic" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'magic']}>${_('Magic')}</option>
-                                                <option value="mechanical" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'mechanical']}>${_('Mechanical')}</option>
-                                                <option value="pianobar" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'pianobar']}>${_('Piano Bar')}</option>
-                                                <option value="siren" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'siren']}>${_('Siren')}</option>
-                                                <option value="spacealarm" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'spacealarm']}>${_('Space Alarm')}</option>
-                                                <option value="tugboat" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'tugboat']}>${_('Tug Boat')}</option>
-                                                <option value="alien" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'alien']}>${_('Alien Alarm (long)')}</option>
-                                                <option value="climb" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'climb']}>${_('Climb (long)')}</option>
-                                                <option value="persistent" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'persistent']}>${_('Persistent (long)')}</option>
-                                                <option value="echo" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'echo']}>${_('Pushover Echo (long)')}</option>
-                                                <option value="updown" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'updown']}>${_('Up Down (long)')}</option>
-                                                <option value="none" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'none']}>${_('None (silent)')}</option>
-                                                <option value="default" ${('', 'selected="selected"')[settings.PUSHOVER_SOUND == 'default']}>${_('Device specific')}</option>
+                                                <option value="pushover" ${selected(settings.PUSHOVER_SOUND == 'pushover')}>${_('Pushover')}</option>
+                                                <option value="bike" ${selected(settings.PUSHOVER_SOUND == 'bike')}>${_('Bike')}</option>
+                                                <option value="bugle" ${selected(settings.PUSHOVER_SOUND == 'bugle')}>${_('Bugle')}</option>
+                                                <option value="cashregister" ${selected(settings.PUSHOVER_SOUND == 'cashregister')}>${_('Cash Register')}</option>
+                                                <option value="classical" ${selected(settings.PUSHOVER_SOUND == 'classical')}>${_('Classical')}</option>
+                                                <option value="cosmic" ${selected(settings.PUSHOVER_SOUND == 'cosmic')}>${_('Cosmic')}</option>
+                                                <option value="falling" ${selected(settings.PUSHOVER_SOUND == 'falling')}>${_('Falling')}</option>
+                                                <option value="gamelan" ${selected(settings.PUSHOVER_SOUND == 'gamelan')}>${_('Gamelan')}</option>
+                                                <option value="incoming" ${selected(settings.PUSHOVER_SOUND == 'incoming')}> ${_('Incoming')}</option>
+                                                <option value="intermission" ${selected(settings.PUSHOVER_SOUND == 'intermission')}>${_('Intermission')}</option>
+                                                <option value="magic" ${selected(settings.PUSHOVER_SOUND == 'magic')}>${_('Magic')}</option>
+                                                <option value="mechanical" ${selected(settings.PUSHOVER_SOUND == 'mechanical')}>${_('Mechanical')}</option>
+                                                <option value="pianobar" ${selected(settings.PUSHOVER_SOUND == 'pianobar')}>${_('Piano Bar')}</option>
+                                                <option value="siren" ${selected(settings.PUSHOVER_SOUND == 'siren')}>${_('Siren')}</option>
+                                                <option value="spacealarm" ${selected(settings.PUSHOVER_SOUND == 'spacealarm')}>${_('Space Alarm')}</option>
+                                                <option value="tugboat" ${selected(settings.PUSHOVER_SOUND == 'tugboat')}>${_('Tug Boat')}</option>
+                                                <option value="alien" ${selected(settings.PUSHOVER_SOUND == 'alien')}>${_('Alien Alarm (long)')}</option>
+                                                <option value="climb" ${selected(settings.PUSHOVER_SOUND == 'climb')}>${_('Climb (long)')}</option>
+                                                <option value="persistent" ${selected(settings.PUSHOVER_SOUND == 'persistent')}>${_('Persistent (long)')}</option>
+                                                <option value="echo" ${selected(settings.PUSHOVER_SOUND == 'echo')}>${_('Pushover Echo (long)')}</option>
+                                                <option value="updown" ${selected(settings.PUSHOVER_SOUND == 'updown')}>${_('Up Down (long)')}</option>
+                                                <option value="none" ${selected(settings.PUSHOVER_SOUND == 'none')}>${_('None (silent)')}</option>
+                                                <option value="default" ${selected(settings.PUSHOVER_SOUND == 'default')}>${_('Device specific')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1531,11 +1531,11 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <select id="pushover_priority" name="pushover_priority" class="form-control input-sm input250">
-                                            <option value="-2" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '-2']}>${_('Very Low')}</option>
-                                            <option value="-1" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '-1']}>${_('Moderate')}</option>
-                                            <option value="0" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '0']}>${_('Normal')}</option>
-                                            <option value="1" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '1']}>${_('High')}</option>
-                                            <option value="2" ${('', 'selected="selected"')[settings.PUSHOVER_PRIORITY == '2']}>${_('Emergency')}</option>
+                                            <option value="-2" ${selected(settings.PUSHOVER_PRIORITY == '-2')}>${_('Very Low')}</option>
+                                            <option value="-1" ${selected(settings.PUSHOVER_PRIORITY == '-1')}>${_('Moderate')}</option>
+                                            <option value="0" ${selected(settings.PUSHOVER_PRIORITY == '0')}>${_('Normal')}</option>
+                                            <option value="1" ${selected(settings.PUSHOVER_PRIORITY == '1')}>${_('High')}</option>
+                                            <option value="2" ${selected(settings.PUSHOVER_PRIORITY == '2')}>${_('Emergency')}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1572,7 +1572,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-boxcar2" title="${_('Boxcar 2')}"></span>
-                        <h3><a href="${anon_url('https://new.boxcar.io/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Boxcar 2</a></h3>
+                        <h3><a href="${anon_url('https://new.boxcar.io/')}" rel="noreferrer" target="_blank">Boxcar 2</a></h3>
                         <p>${_('Read your messages where and when you want them!')}</p>
                     </div>
                 </div>
@@ -1585,19 +1585,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" ${('', 'checked="checked"')[bool(settings.USE_BOXCAR2)]}/>
+                                <input type="checkbox" class="enabler" name="use_boxcar2" id="use_boxcar2" ${checked(settings.USE_BOXCAR2)}/>
                                 <label for="use_boxcar2">${_('send Boxcar notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_boxcar2">
+                        <div id="content_use_boxcar2" ${hidden(settings.USE_BOXCAR2)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.BOXCAR2_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="boxcar2_notify_onsnatch" id="boxcar2_notify_onsnatch" ${checked(settings.BOXCAR2_NOTIFY_ONSNATCH)}/>
                                     <label for="boxcar2_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1607,7 +1607,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" ${('', 'checked="checked"')[bool(settings.BOXCAR2_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="boxcar2_notify_ondownload" id="boxcar2_notify_ondownload" ${checked(settings.BOXCAR2_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="boxcar2_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1617,7 +1617,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="boxcar2_notify_onsubtitledownload" id="boxcar2_notify_onsubtitledownload" ${checked(settings.BOXCAR2_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="boxcar2_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1665,7 +1665,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushalot" title="${_('Pushalot')}"></span>
-                        <h3><a href="${anon_url('https://pushalot.com')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushalot</a></h3>
+                        <h3><a href="${anon_url('https://pushalot.com')}" rel="noreferrer" target="_blank">Pushalot</a></h3>
                         <p>${_('Pushalot is a platform for receiving custom push notifications to connected devices running Windows Phone or Windows 8.')}</p>
                     </div>
                 </div>
@@ -1678,19 +1678,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_pushalot" id="use_pushalot" ${('', 'checked="checked"')[bool(settings.USE_PUSHALOT)]}/>
+                                <input type="checkbox" class="enabler" name="use_pushalot" id="use_pushalot" ${checked(settings.USE_PUSHALOT)}/>
                                 <label for="use_pushalot">${_('send Pushalot notifications ?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_pushalot">
+                        <div id="content_use_pushalot" ${hidden(settings.USE_PUSHALOT)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PUSHALOT_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot_notify_onsnatch" ${checked(settings.PUSHALOT_NOTIFY_ONSNATCH)}/>
                                     <label for="pushalot_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1700,7 +1700,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PUSHALOT_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushalot_notify_ondownload" id="pushalot_notify_ondownload" ${checked(settings.PUSHALOT_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="pushalot_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1710,7 +1710,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot_notify_onsubtitledownload" ${checked(settings.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="pushalot_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1758,7 +1758,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-pushbullet" title="${_('Pushbullet')}"></span>
-                        <h3><a href="${anon_url('https://www.pushbullet.com')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Pushbullet</a></h3>
+                        <h3><a href="${anon_url('https://www.pushbullet.com')}" rel="noreferrer" target="_blank">Pushbullet</a></h3>
                         <p>${_('Pushbullet is a platform for receiving custom push notifications to connected devices running Android/iOS and desktop browsers such as Chrome, Firefox or Opera.')}</p>
                     </div>
                 </div>
@@ -1771,19 +1771,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_pushbullet" id="use_pushbullet" ${('', 'checked="checked"')[bool(settings.USE_PUSHBULLET)]}/>
+                                <input type="checkbox" class="enabler" name="use_pushbullet" id="use_pushbullet" ${checked(settings.USE_PUSHBULLET)}/>
                                 <label for="use_pushbullet">${_('send Pushbullet notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_pushbullet">
+                        <div id="content_use_pushbullet" ${hidden(settings.USE_PUSHBULLET)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.PUSHBULLET_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet_notify_onsnatch" ${checked(settings.PUSHBULLET_NOTIFY_ONSNATCH)}/>
                                     <label for="pushbullet_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1793,7 +1793,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" ${('', 'checked="checked"')[bool(settings.PUSHBULLET_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet_notify_ondownload" ${checked(settings.PUSHBULLET_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="pushbullet_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1803,7 +1803,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet_notify_onsubtitledownload" ${checked(settings.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="pushbullet_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -1892,7 +1892,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-freemobile" title="${_('Free Mobile')}"></span>
-                        <h3><a href="${anon_url('http://mobile.free.fr/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Free Mobile</a></h3>
+                        <h3><a href="${anon_url('http://mobile.free.fr/')}" rel="noreferrer" target="_blank">Free Mobile</a></h3>
                         <p>${_('Free Mobile is a famous French cellular network provider.<br> It provides to their customer a free SMS API.')}</p>
                     </div>
                 </div>
@@ -1905,19 +1905,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" ${('', 'checked="checked"')[bool(settings.USE_FREEMOBILE)]}/>
+                                <input type="checkbox" class="enabler" name="use_freemobile" id="use_freemobile" ${checked(settings.USE_FREEMOBILE)}/>
                                 <label for="use_freemobile">${_('send SMS notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_freemobile">
+                        <div id="content_use_freemobile" ${hidden(settings.USE_FREEMOBILE)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.FREEMOBILE_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="freemobile_notify_onsnatch" id="freemobile_notify_onsnatch" ${checked(settings.FREEMOBILE_NOTIFY_ONSNATCH)}/>
                                     <label for="freemobile_notify_onsnatch">${_('send a SMS when a download starts?')}</label>
                                 </div>
                             </div>
@@ -1927,7 +1927,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" ${('', 'checked="checked"')[bool(settings.FREEMOBILE_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="freemobile_notify_ondownload" id="freemobile_notify_ondownload" ${checked(settings.FREEMOBILE_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="freemobile_notify_ondownload">${_('send a SMS when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -1937,7 +1937,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="freemobile_notify_onsubtitledownload" id="freemobile_notify_onsubtitledownload" ${checked(settings.FREEMOBILE_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="freemobile_notify_onsubtitledownload">${_('send a SMS when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2003,7 +2003,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-telegram" title="${_('Telegram')}"></span>
-                        <h3><a href="${anon_url('https://telegram.org/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">${_('Telegram')}</a></h3>
+                        <h3><a href="${anon_url('https://telegram.org/')}" rel="noreferrer" target="_blank">${_('Telegram')}</a></h3>
                         <p>${_('Telegram is a cloud-based instant messaging service.')}</p>
                     </div>
                 </div>
@@ -2016,19 +2016,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_telegram" id="use_telegram" ${('', 'checked="checked"')[bool(settings.USE_TELEGRAM)]}/>
+                                <input type="checkbox" class="enabler" name="use_telegram" id="use_telegram" ${checked(settings.USE_TELEGRAM)}/>
                                 <label for="use_telegram">${_('send Telegram notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_telegram">
+                        <div id="content_use_telegram" ${hidden(settings.USE_TELEGRAM)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.TELEGRAM_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="telegram_notify_onsnatch" id="telegram_notify_onsnatch" ${checked(settings.TELEGRAM_NOTIFY_ONSNATCH)}/>
                                     <label for="telegram_notify_onsnatch">${_('send a message when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2038,7 +2038,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${('', 'checked="checked"')[bool(settings.TELEGRAM_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="telegram_notify_ondownload" id="telegram_notify_ondownload" ${checked(settings.TELEGRAM_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="telegram_notify_ondownload">${_('send a message when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2048,7 +2048,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram_notify_onsubtitledownload" ${checked(settings.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="telegram_notify_onsubtitledownload">${_('send a message when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2119,7 +2119,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-join" title="${_('Join')}"></span>
-                        <h3><a href="${anon_url('http://joaoapps.com/join/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">${_('Join')}</a></h3>
+                        <h3><a href="${anon_url('http://joaoapps.com/join/')}" rel="noreferrer" target="_blank">${_('Join')}</a></h3>
                         <p>${_('Join all of your devices together!')}</p>
                     </div>
                 </div>
@@ -2132,19 +2132,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_join" id="use_join" ${('', 'checked="checked"')[bool(settings.USE_JOIN)]}/>
+                                <input type="checkbox" class="enabler" name="use_join" id="use_join" ${checked(settings.USE_JOIN)}/>
                                 <label for="use_join">${_('send Join notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_join">
+                        <div id="content_use_join" ${hidden(settings.USE_JOIN)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_onsnatch" id="telegram_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.JOIN_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="join_notify_onsnatch" id="join_notify_onsnatch" ${checked(settings.JOIN_NOTIFY_ONSNATCH)}/>
                                     <label for="join_notify_onsnatch">${_('send a message when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2154,7 +2154,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_ondownload" id="join_notify_ondownload" ${('', 'checked="checked"')[bool(settings.JOIN_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="join_notify_ondownload" id="join_notify_ondownload" ${checked(settings.JOIN_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="join_notify_ondownload">${_('send a message when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2164,7 +2164,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="join_notify_onsubtitledownload" id="join_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="join_notify_onsubtitledownload" id="join_notify_onsubtitledownload" ${checked(settings.JOIN_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="join_notify_onsubtitledownload">${_('send a message when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2199,7 +2199,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="join_apikey"><a href="${anon_url('https://joaoapps.com/join/web')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>${_('click here')}</b></a>${_(' to create a Join API key')}</label>
+                                            <label for="join_apikey"><a href="${anon_url('https://joaoapps.com/join/web')}" rel="noreferrer" target="_blank"><b>${_('click here')}</b></a>${_(' to create a Join API key')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -2224,6 +2224,117 @@
                 </div>
             </div>
 
+            <div class="config-group-divider"></div>
+
+            <!-- /gotify component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-gotify" title="${_('Gotify')}"></span>
+                        <h3><a href="${anon_url('https://gotify.net')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Gotify</a></h3>
+                        <p>${_('Gotify is a self-hosted push notification service.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" class="enabler" name="use_gotify" id="use_gotify" ${('', 'checked="checked"')[bool(settings.USE_GOTIFY)]}/>
+                                <label for="use_gotify">${_('send Gotify notifications?')}</label>
+                            </div>
+                        </div>
+
+                        <div id="content_use_gotify">
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="gotify_notify_onsnatch" id="gotify_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.GOTIFY_NOTIFY_ONSNATCH)]}/>
+                                    <label for="gotify_notify_onsnatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="gotify_notify_ondownload" id="gotify_notify_ondownload" ${('', 'checked="checked"')[bool(settings.GOTIFY_NOTIFY_ONDOWNLOAD)]}/>
+                                    <label for="gotify_notify_ondownload">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="gotify_notify_onsubtitledownload" id="gotify_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <label for="gotify_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Gotify Host:Port')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="gotify_host" id="gotify_host" value="${settings.GOTIFY_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="gotify_host">${_('host running Gotify (e.g. https://gotify.example.com:8081)')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Gotify token')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="gotify_authorizationtoken" id="gotify_authorizationtoken" value="${settings.GOTIFY_AUTHORIZATIONTOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="gotify_authorizationtoken">${_('Authorization token of your Gotify account')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testGotify-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input type="button" class="btn" value="Test Gotify" id="testGotify" />
+                                    <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
 ##             <div class="config-group-divider"></div>
 
 ##             <!-- /twilio component-group //-->
@@ -2231,7 +2342,7 @@
 ##                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
 ##                     <div class="component-group-desc">
 ##                         <span class="icon-notifiers-twilio" title="${_('Twilio')}"></span>
-##                         <h3><a href="${anon_url('http://www.twilio.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twilio</a></h3>
+##                         <h3><a href="${anon_url('http://www.twilio.com/')}" rel="noreferrer" target="_blank">Twilio</a></h3>
 ##                         <p>${_('Twilio is a webservice API that allows you to communicate directly with a mobile number. This notifier will send a text directly to your mobile device.')}</p>
 ##                     </div>
 ##                 </div>
@@ -2245,21 +2356,21 @@
 ##                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
 ##                                 <div class="row">
 ##                                     <div class="col-md-12">
-##                                         <input type="checkbox" class="enabler" name="use_twilio" id="use_twilio" ${('', 'checked="checked"')[bool(settings.USE_TWILIO)]}/>
+##                                         <input type="checkbox" class="enabler" name="use_twilio" id="use_twilio" ${checked(settings.USE_TWILIO)}/>
 ##                                         <label for="use_twilio">${_('should SickChill text your mobile device?')}</label>
 ##                                     </div>
 ##                                 </div>
 ##                             </div>
 ##                         </div>
 ##
-##                         <div id="content_use_twilio">
+##                         <div id="content_use_twilio" ${hidden(settings.USE_TWILIO)}>
 ##
 ##                             <div class="field-pair row">
 ##                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
 ##                                     <label class="component-title">${_('Notify on snatch')}</label>
 ##                                 </div>
 ##                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-##                                     <input type="checkbox" name="twilio_notify_onsnatch" id="twilio_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.TWILIO_NOTIFY_ONSNATCH)]}/>
+##                                     <input type="checkbox" name="twilio_notify_onsnatch" id="twilio_notify_onsnatch" ${checked(settings.TWILIO_NOTIFY_ONSNATCH)}/>
 ##                                     <label for="twilio_notify_onsnatch">${_('send a notification when a download starts?')}</label>
 ##                                 </div>
 ##                             </div>
@@ -2269,7 +2380,7 @@
 ##                                     <label class="component-title">${_('Notify on download')}</label>
 ##                                 </div>
 ##                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-##                                     <input type="checkbox" name="twilio_notify_ondownload" id="twilio_notify_ondownload" ${('', 'checked="checked"')[bool(settings.TWILIO_NOTIFY_ONDOWNLOAD)]}/>
+##                                     <input type="checkbox" name="twilio_notify_ondownload" id="twilio_notify_ondownload" ${checked(settings.TWILIO_NOTIFY_ONDOWNLOAD)}/>
 ##                                     <label for="twilio_notify_ondownload">${_('send a notification when a download finishes?')}</label>
 ##                                 </div>
 ##                             </div>
@@ -2279,7 +2390,7 @@
 ##                                     <label class="component-title">${_('Notify on subtitle download')}</label>
 ##                                 </div>
 ##                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-##                                     <input type="checkbox" name="twilio_notify_onsubtitledownload" id="twilio_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+##                                     <input type="checkbox" name="twilio_notify_onsubtitledownload" id="twilio_notify_onsubtitledownload" ${checked(settings.TWILIO_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
 ##                                     <label for="twilio_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
 ##                                 </div>
 ##                             </div>
@@ -2383,7 +2494,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-twitter" title="${_('Twitter')}"></span>
-                        <h3><a href="${anon_url('http://www.twitter.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Twitter</a></h3>
+                        <h3><a href="${anon_url('http://www.twitter.com/')}" rel="noreferrer" target="_blank">Twitter</a></h3>
                         <p>${_('A social networking and microblogging service, enabling its users to send and read other users\' messages called tweets.')}</p>
                     </div>
                 </div>
@@ -2397,7 +2508,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${('', 'checked="checked"')[bool(settings.USE_TWITTER)]}/>
+                                        <input type="checkbox" class="enabler" name="use_twitter" id="use_twitter" ${checked(settings.USE_TWITTER)}/>
                                         <label for="use_twitter">${_('should SickChill post tweets on Twitter?')}</label>
                                     </div>
                                 </div>
@@ -2409,14 +2520,14 @@
                             </div>
                         </div>
 
-                        <div id="content_use_twitter">
+                        <div id="content_use_twitter" ${hidden(settings.USE_TWITTER)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_onsnatch" id="twitter_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.TWITTER_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="twitter_notify_onsnatch" id="twitter_notify_onsnatch" ${checked(settings.TWITTER_NOTIFY_ONSNATCH)}/>
                                     <label for="twitter_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2426,7 +2537,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_ondownload" id="twitter_notify_ondownload" ${('', 'checked="checked"')[bool(settings.TWITTER_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="twitter_notify_ondownload" id="twitter_notify_ondownload" ${checked(settings.TWITTER_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="twitter_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2436,7 +2547,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_notify_onsubtitledownload" id="twitter_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="twitter_notify_onsubtitledownload" id="twitter_notify_onsubtitledownload" ${checked(settings.TWITTER_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="twitter_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2446,7 +2557,7 @@
                                     <label class="component-title">${_('send direct message')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="twitter_usedm" id="twitter_usedm" ${('', 'checked="checked"')[bool(settings.TWITTER_USEDM)]}/>
+                                    <input type="checkbox" name="twitter_usedm" id="twitter_usedm" ${checked(settings.TWITTER_USEDM)}/>
                                     <label for="twitter_usedm">${_('send a notification via Direct Message, not via status update')}</label>
                                 </div>
                             </div>
@@ -2523,7 +2634,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-trakt" title="${_('Trakt')}"></span>
-                        <h3><a href="${anon_url('http://trakt.tv/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Trakt</a></h3>
+                        <h3><a href="${anon_url('http://trakt.tv/')}" rel="noreferrer" target="_blank">Trakt</a></h3>
                         <p>${_('Trakt helps keep a record of what TV shows and movies you are watching. Based on your favorites, Trakt recommends additional shows and movies you\'ll enjoy!')}</p>
                     </div>
                 </div>
@@ -2535,12 +2646,12 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_trakt" id="use_trakt" ${('', 'checked="checked"')[bool(settings.USE_TRAKT)]}/>
+                                <input type="checkbox" class="enabler" name="use_trakt" id="use_trakt" ${checked(settings.USE_TRAKT)}/>
                                 <label for="use_trakt">${_('send Trakt.tv notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_trakt">
+                        <div id="content_use_trakt" ${hidden(settings.USE_TRAKT)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2615,7 +2726,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <select id="trakt_default_indexer" name="trakt_default_indexer" class="form-control input-sm input250" title="trakt_default_indexer">
                                         % for indexer, instance in sickchill.indexer:
-                                            <option value="${indexer}" ${('', 'selected="selected"')[settings.TRAKT_DEFAULT_INDEXER == indexer]}>${instance.name}</option>
+                                            <option value="${indexer}" ${selected(settings.TRAKT_DEFAULT_INDEXER == indexer)}>${instance.name}</option>
                                         % endfor
                                     </select>
                                 </div>
@@ -2626,19 +2737,19 @@
                                     <label class="component-title">${_('Sync libraries')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" ${('', 'checked="checked"')[bool(settings.TRAKT_SYNC)]}/>
+                                    <input type="checkbox" class="enabler" name="trakt_sync" id="trakt_sync" ${checked(settings.TRAKT_SYNC)}/>
                                     <label for="trakt_sync">${_('sync your SickChill show library with your trakt show library.')}</label>
                                 </div>
                             </div>
 
-                            <div id="content_trakt_sync">
+                            <div id="content_trakt_sync" ${hidden(settings.TRAKT_SYNC)}>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Remove Episodes From Collection')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" ${('', 'checked="checked"')[bool(settings.TRAKT_SYNC_REMOVE)]}/>
+                                        <input type="checkbox" name="trakt_sync_remove" id="trakt_sync_remove" ${checked(settings.TRAKT_SYNC_REMOVE)}/>
                                         <label for="trakt_sync_remove">${_('remove an episode from your Trakt Collection if it is not in your SickChill Library.')}</label>
                                     </div>
                                 </div>
@@ -2652,7 +2763,7 @@
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" ${('', 'checked="checked"')[bool(settings.TRAKT_SYNC_WATCHLIST)]}/>
+                                            <input type="checkbox" class="enabler" name="trakt_sync_watchlist" id="trakt_sync_watchlist" ${checked(settings.TRAKT_SYNC_WATCHLIST)}/>
                                             <label for="trakt_sync_watchlist">${_('sync your SickChill show watchlist with your trakt show watchlist (either Show and Episode).')}</label>
                                         </div>
                                     </div>
@@ -2664,7 +2775,7 @@
                                 </div>
                             </div>
 
-                            <div id="content_trakt_sync_watchlist">
+                            <div id="content_trakt_sync_watchlist" ${hidden(settings.TRAKT_SYNC_WATCHLIST)}>
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2674,9 +2785,9 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <select id="trakt_method_add" name="trakt_method_add" class="form-control input-sm input250">
-                                                    <option value="0" ${('', 'selected="selected"')[settings.TRAKT_METHOD_ADD == 0]}>${_('Skip All')}</option>
-                                                    <option value="1" ${('', 'selected="selected"')[settings.TRAKT_METHOD_ADD == 1]}>${_('Download Pilot Only')}</option>
-                                                    <option value="2" ${('', 'selected="selected"')[settings.TRAKT_METHOD_ADD == 2]}>${_('Get whole show')}</option>
+                                                    <option value="0" ${selected(settings.TRAKT_METHOD_ADD == 0)}>${_('Skip All')}</option>
+                                                    <option value="1" ${selected(settings.TRAKT_METHOD_ADD == 1)}>${_('Download Pilot Only')}</option>
+                                                    <option value="2" ${selected(settings.TRAKT_METHOD_ADD == 2)}>${_('Get whole show')}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -2693,7 +2804,7 @@
                                         <label class="component-title">${_('Remove episode')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_remove_watchlist" id="trakt_remove_watchlist" ${('', 'checked="checked"')[bool(settings.TRAKT_REMOVE_WATCHLIST)]}/>
+                                        <input type="checkbox" name="trakt_remove_watchlist" id="trakt_remove_watchlist" ${checked(settings.TRAKT_REMOVE_WATCHLIST)}/>
                                         <label for="trakt_remove_watchlist">${_('remove an episode from your watchlist after it is downloaded.')}</label>
                                     </div>
                                 </div>
@@ -2703,7 +2814,7 @@
                                         <label class="component-title">${_('Remove series')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" ${('', 'checked="checked"')[bool(settings.TRAKT_REMOVE_SERIESLIST)]}/>
+                                        <input type="checkbox" name="trakt_remove_serieslist" id="trakt_remove_serieslist" ${checked(settings.TRAKT_REMOVE_SERIESLIST)}/>
                                         <label for="trakt_remove_serieslist">${_('remove the whole series from your watchlist after any download.')}</label>
                                     </div>
                                 </div>
@@ -2713,7 +2824,7 @@
                                         <label class="component-title">${_('Remove watched show')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_remove_show_from_sickchill" id="trakt_remove_show_from_sickchill" ${('', 'checked="checked"')[bool(settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL)]}/>
+                                        <input type="checkbox" name="trakt_remove_show_from_sickchill" id="trakt_remove_show_from_sickchill" ${checked(settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL)}/>
                                         <label for="trakt_remove_show_from_sickchill">${_('remove the show from sickchill if it\'s ended and completely watched')}</label>
                                     </div>
                                 </div>
@@ -2723,7 +2834,7 @@
                                         <label class="component-title">${_('Start paused')}</label>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" ${('', 'checked="checked"')[bool(settings.TRAKT_START_PAUSED)]}/>
+                                        <input type="checkbox" name="trakt_start_paused" id="trakt_start_paused" ${checked(settings.TRAKT_START_PAUSED)}/>
                                         <label for="trakt_start_paused">${_('shows grabbed from your trakt watchlist start paused.')}</label>
                                     </div>
                                 </div>
@@ -2772,7 +2883,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-email" title="${_('Email')}"></span>
-                        <h3><a href="${anon_url('http://en.wikipedia.org/wiki/Comparison_of_webmail_providers')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Email</a></h3>
+                        <h3><a href="${anon_url('http://en.wikipedia.org/wiki/Comparison_of_webmail_providers')}" rel="noreferrer" target="_blank">Email</a></h3>
                         <p>${_('Allows configuration of email notifications on a per show basis.')}</p>
                     </div>
                 </div>
@@ -2783,19 +2894,19 @@
                                 <label class="component-title">${_('Enable')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="use_email" id="use_email" ${('', 'checked="checked"')[bool(settings.USE_EMAIL)]}/>
+                                <input type="checkbox" class="enabler" name="use_email" id="use_email" ${checked(settings.USE_EMAIL)}/>
                                 <label for="use_email">${_('send email notifications?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_use_email">
+                        <div id="content_use_email" ${hidden(settings.USE_EMAIL)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${('', 'checked="checked"')[bool(settings.EMAIL_NOTIFY_ONSNATCH)]}/>
+                                    <input type="checkbox" name="email_notify_onsnatch" id="email_notify_onsnatch" ${checked(settings.EMAIL_NOTIFY_ONSNATCH)}/>
                                     <label for="email_notify_onsnatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -2805,7 +2916,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${('', 'checked="checked"')[bool(settings.EMAIL_NOTIFY_ONDOWNLOAD)]}/>
+                                    <input type="checkbox" name="email_notify_ondownload" id="email_notify_ondownload" ${checked(settings.EMAIL_NOTIFY_ONDOWNLOAD)}/>
                                     <label for="email_notify_ondownload">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -2815,7 +2926,7 @@
                                     <label class="component-title">${_('Notify on postprocess')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onpostprocess" id="email_notify_onpostprocess" ${('', 'checked="checked"')[bool(settings.EMAIL_NOTIFY_ONPOSTPROCESS)]}/>
+                                    <input type="checkbox" name="email_notify_onpostprocess" id="email_notify_onpostprocess" ${checked(settings.EMAIL_NOTIFY_ONPOSTPROCESS)}/>
                                     <label for="email_notify_onpostprocess">${_('send a notification when a postprocessing finishes?')}</label>
                                 </div>
                             </div>
@@ -2825,7 +2936,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" ${('', 'checked="checked"')[bool(settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="email_notify_onsubtitledownload" id="email_notify_onsubtitledownload" ${checked(settings.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD)}/>
                                     <label for="email_notify_onsubtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -2889,7 +3000,7 @@
                                     <label class="component-title">${_('Use TLS')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="email_tls" id="email_tls" ${('', 'checked="checked"')[bool(settings.EMAIL_TLS)]}/>
+                                    <input type="checkbox" name="email_tls" id="email_tls" ${checked(settings.EMAIL_TLS)}/>
                                     <label for="email_tls">${_('check to use TLS encryption.')}</label>
                                 </div>
                             </div>
@@ -3000,7 +3111,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input id="email_show_save" class="btn" type="button" value="${_('Save for this show')}"/>
+                                            <input id="email_show_save" class="btn" type="button" value="${_('Save for this show')}" />
                                         </div>
                                     </div>
                                 </div>
@@ -3031,7 +3142,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-slack" title="${_('Slack')}"></span>
-                        <h3><a href="${anon_url('http://www.slack.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Slack</a></h3>
+                        <h3><a href="${anon_url('http://www.slack.com/')}" rel="noreferrer" target="_blank">Slack</a></h3>
                         <p>${_('Slack brings all your communication together in one place. It\'s real-time messaging, archiving and search for modern teams.')}</p>
                     </div>
                 </div>
@@ -3045,21 +3156,21 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_slack" id="use_slack" ${('', 'checked="checked"')[bool(settings.USE_SLACK)]}/>
+                                        <input type="checkbox" class="enabler" name="use_slack" id="use_slack" ${checked(settings.USE_SLACK)}/>
                                         <label for="use_slack">${_('should SickChill post messages on Slack?')}</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="content_use_slack">
+                        <div id="content_use_slack" ${hidden(settings.USE_SLACK)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_snatch" id="slack_notify_snatch" ${('', 'checked="checked"')[bool(settings.SLACK_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="slack_notify_snatch" id="slack_notify_snatch" ${checked(settings.SLACK_NOTIFY_SNATCH)}/>
                                     <label for="slack_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3069,7 +3180,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_download" id="slack_notify_download" ${('', 'checked="checked"')[bool(settings.SLACK_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="slack_notify_download" id="slack_notify_download" ${checked(settings.SLACK_NOTIFY_DOWNLOAD)}/>
                                     <label for="slack_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3079,7 +3190,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="slack_notify_subtitledownload" id="clack_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="slack_notify_subtitledownload" id="slack_notify_subtitledownload" ${checked(settings.SLACK_NOTIFY_SUBTITLEDOWNLOAD)}/>
                                     <label for="slack_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3122,12 +3233,240 @@
 
             <div class="config-group-divider"></div>
 
+            <!-- /mattermost component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-matters" title="${_('Mattermost')}"></span>
+                        <h3><a href="${anon_url('http://www.mattermost.com/')}" rel="noreferrer" target="_blank">Mattermost Webhook</a></h3>
+                        <p>${_('Secure collaboration for technical teams. Give operational and engineering teams the workspace they need to collaborate securely and effectively.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_mattermost" id="use_mattermost" ${checked(settings.USE_MATTERMOST)}/>
+                                        <label for="use_mattermost">${_('should SickChill post messages on Mattermost?')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_mattermost" ${hidden(settings.USE_MATTERMOST)}>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermost_notify_snatch" id="mattermost_notify_snatch" ${checked(settings.MATTERMOST_NOTIFY_SNATCH)}/>
+                                    <label for="mattermost_notify_snatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermost_notify_download" id="mattermost_notify_download" ${checked(settings.MATTERMOST_NOTIFY_DOWNLOAD)}/>
+                                    <label for="mattermost_notify_download">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermost_notify_subtitledownload" id="mattermost_notify_subtitledownload" ${checked(settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD)}/>
+                                    <label for="mattermost_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermost_webhook" class="component-title">${_('Mattermost Incoming Webhook')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermost_webhook" id="mattermost_webhook" value="${settings.MATTERMOST_WEBHOOK}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermost_username" class="component-title">${_('Mattermost Username')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermost_username" id="mattermost_username" value="${settings.MATTERMOST_USERNAME}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermost_icon_emoji" class="component-title">${_('Mattermost Icon Emoji')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermost_icon_emoji" id="mattermost_icon_emoji" value="${settings.MATTERMOST_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testMattermost-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test Mattermost" id="testMattermost" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="config-group-divider"></div>
+
+            <!-- /mattermostbot component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-matters" title="${_('MattermostBot')}"></span>
+                        <h3><a href="${anon_url('http://www.mattermost.com/')}" rel="noreferrer" target="_blank">Mattermost Bot</a></h3>
+                        <p>${_('Secure collaboration for technical teams. Give operational and engineering teams the workspace they need to collaborate securely and effectively.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="checkbox" class="enabler" name="use_mattermostbot" id="use_mattermostbot" ${checked(settings.USE_MATTERMOSTBOT)}/>
+                                        <label for="use_mattermostbot">${_('should SickChill post messages on Mattermost Bot?')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content_use_mattermostbot" ${hidden(settings.USE_MATTERMOSTBOT)}>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on snatch')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermostbot_notify_snatch" id="mattermostbot_notify_snatch" ${checked(settings.MATTERMOSTBOT_NOTIFY_SNATCH)}/>
+                                    <label for="mattermostbot_notify_snatch">${_('send a notification when a download starts?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermostbot_notify_download" id="mattermostbot_notify_download" ${checked(settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD)}/>
+                                    <label for="mattermostbot_notify_download">${_('send a notification when a download finishes?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Notify on subtitle download')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="mattermostbot_notify_subtitledownload" id="mattermostbot_notify_subtitledownload" ${checked(settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD)}/>
+                                    <label for="mattermostbot_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_url" class="component-title">${_('Mattermost Base URL')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_url" id="mattermostbot_url" value="${settings.MATTERMOSTBOT_URL}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_author" class="component-title">${_('Mattermost Author Name')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_author" id="mattermostbot_author" value="${settings.MATTERMOSTBOT_AUTHOR}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_token" class="component-title">${_('Mattermost Bot Token')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_token" id="mattermostbot_token" value="${settings.MATTERMOSTBOT_TOKEN}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_channel" class="component-title">${_('Mattermost Bot Channel ID')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_channel" id="mattermostbot_channel" value="${settings.MATTERMOSTBOT_CHANNEL}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="mattermostbot_icon_emoji" class="component-title">${_('Mattermost Bot Icon Emoji')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="mattermostbot_icon_emoji" id="mattermostbot_icon_emoji" value="${settings.MATTERMOSTBOT_ICON_EMOJI}" class="form-control input-sm input350" autocapitalize="off" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testMattermostBot-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input  class="btn" type="button" value="Test Mattermost Bot" id="testMattermostBot" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="config-group-divider"></div>
+
             <!-- /Rocket.Chat component-group //-->
             <div class="row">
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-rocketchat" title="${_('Rocket.Chat')}"></span>
-                        <h3><a href="${anon_url('http://rocket.chat/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Rocket.Chat</a></h3>
+                        <h3><a href="${anon_url('http://rocket.chat/')}" rel="noreferrer" target="_blank">Rocket.Chat</a></h3>
                         <p>${_('Rocket.Chat is free, unlimited and open source chat software solution.')}</p>
                     </div>
                 </div>
@@ -3140,19 +3479,19 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_rocketchat" id="use_rocketchat" ${('', 'checked="checked"')[bool(settings.USE_ROCKETCHAT)]}/>
+                                        <input type="checkbox" class="enabler" name="use_rocketchat" id="use_rocketchat" ${checked(settings.USE_ROCKETCHAT)}/>
                                         <label for="use_rocketchat">${_('should SickChill post messages on Rocket.Chat?')}</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="content_use_rocketchat">
+                        <div id="content_use_rocketchat" ${hidden(settings.USE_ROCKETCHAT)}>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_snatch" id="rocketchat_notify_snatch" ${('', 'checked="checked"')[bool(settings.ROCKETCHAT_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_snatch" id="rocketchat_notify_snatch" ${checked(settings.ROCKETCHAT_NOTIFY_SNATCH)}/>
                                     <label for="rocketchat_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3161,7 +3500,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_download" id="rocketchat_notify_download" ${('', 'checked="checked"')[bool(settings.ROCKETCHAT_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_download" id="rocketchat_notify_download" ${checked(settings.ROCKETCHAT_NOTIFY_DOWNLOAD)}/>
                                     <label for="rocketchat_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3170,7 +3509,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="rocketchat_notify_subtitledownload" id="rocketchat_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="rocketchat_notify_subtitledownload" id="rocketchat_notify_subtitledownload" ${checked(settings.ROCKETCHAT_NOTIFY_SUBTITLEDOWNLOAD)}/>
                                     <label for="rocketchat_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3214,7 +3553,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-matrix" title="${_('Matrix')}"></span>
-                        <h3><a href="${anon_url('http://www.matrix.org/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Matrix</a></h3>
+                        <h3><a href="${anon_url('http://www.matrix.org/')}" rel="noreferrer" target="_blank">Matrix</a></h3>
                         <p>${_('Matrix is an open fabric for communication that anyone can participate in.')}</p>
                     </div>
                 </div>
@@ -3228,21 +3567,21 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_matrix" id="use_matrix" ${('', 'checked="checked"')[bool(settings.USE_MATRIX)]}/>
+                                        <input type="checkbox" class="enabler" name="use_matrix" id="use_matrix" ${checked(settings.USE_MATRIX)}/>
                                         <label for="use_matrix">${_('should SickChill post messages on Matrix?')}</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="content_use_matrix">
+                        <div id="content_use_matrix" ${hidden(settings.USE_MATRIX)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_snatch" id="matrix_notify_snatch" ${('', 'checked="checked"')[bool(settings.MATRIX_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="matrix_notify_snatch" id="matrix_notify_snatch" ${checked(settings.MATRIX_NOTIFY_SNATCH)}/>
                                     <label for="matrix_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3252,7 +3591,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_download" id="matrix_notify_download" ${('', 'checked="checked"')[bool(settings.MATRIX_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="matrix_notify_download" id="matrix_notify_download" ${checked(settings.MATRIX_NOTIFY_DOWNLOAD)}/>
                                     <label for="matrix_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3262,7 +3601,7 @@
                                     <label class="component-title">${_('Notify on subtitle download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="matrix_notify_subtitledownload" id="matrix_notify_subtitledownload" ${('', 'checked="checked"')[bool(settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD)]}/>
+                                    <input type="checkbox" name="matrix_notify_subtitledownload" id="matrix_notify_subtitledownload" ${checked(settings.MATRIX_NOTIFY_SUBTITLEDOWNLOAD)}/>
                                     <label for="matrix_notify_subtitledownload">${_('send a notification when subtitles are downloaded?')}</label>
                                 </div>
                             </div>
@@ -3335,7 +3674,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <span class="icon-notifiers-discord" title="${_('Discord')}"></span>
-                        <h3><a href="${anon_url('https://discordapp.com/')}" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Discord</a></h3>
+                        <h3><a href="${anon_url('https://discordapp.com/')}" rel="noreferrer" target="_blank">Discord</a></h3>
                         <p>${_('All-in-one voice and text chat for gamers that\'s free, secure, and works on both your desktop and phone.')}</p>
                     </div>
                 </div>
@@ -3349,21 +3688,21 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" class="enabler" name="use_discord" id="use_discord" ${('', 'checked="checked"')[bool(settings.USE_DISCORD)]}/>
+                                        <input type="checkbox" class="enabler" name="use_discord" id="use_discord" ${checked(settings.USE_DISCORD)}/>
                                         <label for="use_discord">${_('Should SickChill post messages on Discord?')}</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="content_use_discord">
+                        <div id="content_use_discord" ${hidden(settings.USE_DISCORD)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Notify on snatch')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_notify_snatch" id="discord_notify_snatch" ${('', 'checked="checked"')[bool(settings.DISCORD_NOTIFY_SNATCH)]}/>
+                                    <input type="checkbox" name="discord_notify_snatch" id="discord_notify_snatch" ${checked(settings.DISCORD_NOTIFY_SNATCH)}/>
                                     <label for="discord_notify_snatch">${_('send a notification when a download starts?')}</label>
                                 </div>
                             </div>
@@ -3373,7 +3712,7 @@
                                     <label class="component-title">${_('Notify on download')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_notify_download" id="discord_notify_download" ${('', 'checked="checked"')[bool(settings.DISCORD_NOTIFY_DOWNLOAD)]}/>
+                                    <input type="checkbox" name="discord_notify_download" id="discord_notify_download" ${checked(settings.DISCORD_NOTIFY_DOWNLOAD)}/>
                                     <label for="discord_notify_download">${_('send a notification when a download finishes?')}</label>
                                 </div>
                             </div>
@@ -3404,7 +3743,7 @@
                                       <input type="text" name="discord_name" id="discord_name" value="${settings.DISCORD_NAME}" class="form-control input-sm input350" autocapitalize="off" />
                                     </div>
                                     <div class="col-md-12">
-                                      <label for="discord_name">${_('Must use Bot Name. Blank no longer valid and will fail')}</label>
+                                      <label for="discord_name">${_('Must use Bot Name. Blank no longer valid and will fail. Click Save before Test.')}</label>
                                     </div>
                                   </div>
                                 </div>
@@ -3431,7 +3770,7 @@
                                     <label class="component-title">${_('Discord TTS')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_tts" id="discord_tts" ${('', 'checked="checked"')[bool(settings.DISCORD_TTS)]}/>
+                                    <input type="checkbox" name="discord_tts" id="discord_tts" ${checked(settings.DISCORD_TTS)}/>
                                     <label for="discord_tts">${_('Send notifications using text-to-speech')}</label>
                                 </div>
                             </div>

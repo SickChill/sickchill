@@ -32,7 +32,7 @@ class Provider(TorrentProvider):
         # Cache
         self.cache = tvcache.TVCache(self, min_time=10)  # Only poll Danishbits every 10 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         if not self.login():
             return results

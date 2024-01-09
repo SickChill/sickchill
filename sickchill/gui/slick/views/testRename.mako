@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
     from sickchill.helper.common import try_int
@@ -42,13 +42,13 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <input type="checkbox" class="seriesCheck" id="select-all" title="Check"/>
+            <input type="checkbox" class="seriesCheck" id="select-all" title="Check" />
             <label for="select-all">${_('select all')}</label>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
+            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success" />
             <a href="${scRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
                 ${_('Cancel Rename')}
             </a>
@@ -77,32 +77,27 @@
                             <tbody>
                             % for current_episode in sorted(show.episodes[current_season], reverse=True):
                                 <%
-                                    ep_obj = show.episodes[current_season][current_episode]
-                                    if not (ep_obj and ep_obj._location):
+                                    episode_object = show.episodes[current_season][current_episode]
+                                    if not (episode_object and episode_object._location):
                                         continue
 
-                                    epStr = str(ep_obj.season) + "x" + str(ep_obj.episode)
-
-                                    epList = sorted([ep_obj.episode] + [x.episode for x in ep_obj.relatedEps])
-                                    if ep_obj.episode != min(epList):
+                                    episode_list = episode_object.sorted_episode_list
+                                    if episode_object.episode != min(episode_list):
                                         continue
 
-                                    if len(epList) > 1:
-                                        epList = [min(epList), max(epList)]
-
-                                    curLoc = ep_obj.location[len(show._location)+1:]
-                                    curExt = curLoc.split('.')[-1]
-                                    newLoc = ep_obj.proper_path() + '.' + curExt
+                                    location = episode_object.location[len(show._location)+1:]
+                                    extension = location.split('.')[-1]
+                                    new_location = episode_object.proper_path() + '.' + extension
                                 %>
-                                <tr class="season-${current_season} ${('wanted', 'good')[curLoc == newLoc]} seasonstyle">
+                                <tr class="season-${current_season} ${('wanted', 'good')[location == new_location]} seasonstyle">
                                     <td class="col-checkbox">
-                                        % if curLoc != newLoc:
-                                            <input type="checkbox" class="epCheck" id="${epStr}" name="${epStr}"  title="Episode check"/>
+                                        % if location != new_location:
+                                            <input type="checkbox" class="epCheck" id="${episode_object.x_format}" name="${episode_object.x_format}" title="Episode check" />
                                         % endif
                                     </td>
-                                    <td align="center" valign="top" class="nowrap">${"-".join(map(str, epList))}</td>
-                                    <td width="50%" class="col-name">${curLoc}</td>
-                                    <td width="50%" class="col-name">${newLoc}</td>
+                                    <td align="center" valign="top" class="nowrap">${episode_object.dash_format}</td>
+                                    <td width="50%" class="col-name">${location}</td>
+                                    <td width="50%" class="col-name">${new_location}</td>
 
                                 </tr>
                             % endfor
@@ -117,7 +112,7 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success"/>
+            <input type="submit" value="${_('Rename Selected')}" class="btn btn-success" />
             <a href="${scRoot}/home/displayShow?show=${show.indexerid}" class="btn btn-danger">
                 ${_('Cancel Rename')}
             </a>

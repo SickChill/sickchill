@@ -25,7 +25,7 @@ class Show(object):
          - the show object that was deleted, if it exists, ``None`` otherwise
         """
 
-        error, show = Show._validate_indexer_id(indexer_id)
+        error, show = Show.validate_indexer_id(indexer_id)
 
         if error is not None:
             return error, show
@@ -151,7 +151,7 @@ class Show(object):
          - the show object that was updated, if it exists, ``None`` otherwise
         """
 
-        error, show = Show._validate_indexer_id(indexer_id)
+        error, show = Show.validate_indexer_id(indexer_id)
 
         if error is not None:
             return error, show
@@ -176,7 +176,7 @@ class Show(object):
          - the show object that was refreshed, if it exists, ``None`` otherwise
         """
 
-        error, show = Show._validate_indexer_id(indexer_id)
+        error, show = Show.validate_indexer_id(indexer_id)
 
         if error is not None:
             return error, show
@@ -189,7 +189,7 @@ class Show(object):
         return None, show
 
     @staticmethod
-    def _validate_indexer_id(indexer_id):
+    def validate_indexer_id(indexer_id):
         """
         Check that the provided indexer_id is valid and corresponds with a known show
         :param indexer_id: The indexer id to check

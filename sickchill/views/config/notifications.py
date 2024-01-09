@@ -15,7 +15,7 @@ from . import Config
 @Route("/config/notifications(/?.*)", name="config:notifications")
 class ConfigNotifications(Config):
     @addslash
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="config_notifications.mako")
 
         return t.render(
@@ -172,6 +172,12 @@ class ConfigNotifications(Config):
         pushbullet_device_list=None,
         pushbullet_channel_list=None,
         pushbullet_channel=None,
+        use_gotify=None,
+        gotify_notify_onsnatch=None,
+        gotify_notify_ondownload=None,
+        gotify_notify_onsubtitledownload=None,
+        gotify_host=None,
+        gotify_authorizationtoken=None,
         use_email=None,
         email_notify_onsnatch=None,
         email_notify_ondownload=None,
@@ -193,6 +199,22 @@ class ConfigNotifications(Config):
         slack_notify_subtitledownload=None,
         slack_webhook=None,
         slack_icon_emoji=None,
+        use_mattermost=False,
+        mattermost_notify_snatch=None,
+        mattermost_notify_download=None,
+        mattermost_notify_subtitledownload=None,
+        mattermost_webhook=None,
+        mattermost_username=None,
+        mattermost_icon_emoji=None,
+        use_mattermostbot=False,
+        mattermostbot_notify_snatch=None,
+        mattermostbot_notify_download=None,
+        mattermostbot_notify_subtitledownload=None,
+        mattermostbot_url=None,
+        mattermostbot_author=None,
+        mattermostbot_token=None,
+        mattermostbot_channel=None,
+        mattermostbot_icon_emoji=None,
         use_rocketchat=False,
         rocketchat_notify_snatch=None,
         rocketchat_notify_download=None,
@@ -307,6 +329,24 @@ class ConfigNotifications(Config):
         settings.SLACK_WEBHOOK = slack_webhook
         settings.SLACK_ICON_EMOJI = slack_icon_emoji
 
+        settings.USE_MATTERMOST = config.checkbox_to_value(use_mattermost)
+        settings.MATTERMOST_NOTIFY_SNATCH = config.checkbox_to_value(mattermost_notify_snatch)
+        settings.MATTERMOST_NOTIFY_DOWNLOAD = config.checkbox_to_value(mattermost_notify_download)
+        settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(mattermost_notify_subtitledownload)
+        settings.MATTERMOST_WEBHOOK = mattermost_webhook
+        settings.MATTERMOST_USERNAME = mattermost_username
+        settings.MATTERMOST_ICON_EMOJI = mattermost_icon_emoji
+
+        settings.USE_MATTERMOSTBOT = config.checkbox_to_value(use_mattermostbot)
+        settings.MATTERMOSTBOT_NOTIFY_SNATCH = config.checkbox_to_value(mattermostbot_notify_snatch)
+        settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD = config.checkbox_to_value(mattermostbot_notify_download)
+        settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(mattermostbot_notify_subtitledownload)
+        settings.MATTERMOSTBOT_URL = mattermostbot_url
+        settings.MATTERMOSTBOT_AUTHOR = mattermostbot_author
+        settings.MATTERMOSTBOT_TOKEN = mattermostbot_token
+        settings.MATTERMOSTBOT_CHANNEL = mattermostbot_channel
+        settings.MATTERMOSTBOT_ICON_EMOJI = mattermostbot_icon_emoji
+
         settings.USE_ROCKETCHAT = config.checkbox_to_value(use_rocketchat)
         settings.ROCKETCHAT_NOTIFY_SNATCH = config.checkbox_to_value(rocketchat_notify_snatch)
         settings.ROCKETCHAT_NOTIFY_DOWNLOAD = config.checkbox_to_value(rocketchat_notify_download)
@@ -419,6 +459,13 @@ class ConfigNotifications(Config):
         settings.PUSHBULLET_API = pushbullet_api
         settings.PUSHBULLET_DEVICE = pushbullet_device_list
         settings.PUSHBULLET_CHANNEL = pushbullet_channel_list or ""
+
+        settings.USE_GOTIFY = config.checkbox_to_value(use_gotify)
+        settings.GOTIFY_NOTIFY_ONSNATCH = config.checkbox_to_value(gotify_notify_onsnatch)
+        settings.GOTIFY_NOTIFY_ONDOWNLOAD = config.checkbox_to_value(gotify_notify_ondownload)
+        settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = config.checkbox_to_value(gotify_notify_onsubtitledownload)
+        settings.GOTIFY_HOST = gotify_host
+        settings.GOTIFY_AUTHORIZATIONTOKEN = gotify_authorizationtoken
 
         sickchill.start.save_config()
 

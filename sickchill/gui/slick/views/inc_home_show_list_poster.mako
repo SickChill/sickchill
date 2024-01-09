@@ -1,13 +1,14 @@
 <%!
     from sickchill import settings
     import calendar
-    from sickchill.oldbeard import sbdatetime, network_timezones
+    from sickchill.oldbeard.filters import filter_shows_being_removed
+    from sickchill.oldbeard import scdatetime, network_timezones
     from sickchill.helper.common import pretty_file_size
     import os
     import re
 %>
-<%page args="curListType, myShowList"/>
-<%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+<%page args="curListType, myShowList" />
+<%namespace file="/inc_defs.mako" import="renderQualityPill" />
 
 <div id="${('container', 'container-anime')[curListType == 'Anime']}" class="show-grid clearfix">
     <div class="posterview">
@@ -16,7 +17,7 @@
             <div class="show-container" data-name="${loading_show.sort_name}"
                  data-date="1" data-network="0" data-progress="0" data-progress-total="0" data-status="Loading">
                 <div class="show-image">
-                    <img alt="" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="${static_url("images/poster.png")}"
+                    <img alt="${loading_show.sort_name}" title="${loading_show.name}" class="show-image" style="border-bottom: 1px solid #111;" src="${static_url('images/poster.png')}"
                          data-src="${static_url(loading_show.show_image_url('poster_thumb'))}" />
                 </div>
                 <div class="show-information">
@@ -31,7 +32,7 @@
                                 </td>
                                 <td class="show-table">
                                     <span title="${loading_show.network}">
-                                        <img class="show-network-image" src="${static_url("images/network/nonetwork.png")}"
+                                        <img class="show-network-image" src="${static_url('images/network/nonetwork.png')}"
                                              data-src="${static_url(loading_show.network_image_url)}"
                                              alt="${loading_show.network}" title="${loading_show.network}" />
                                     </span>
@@ -45,23 +46,20 @@
                 </div>
             </div>
         % endfor
-        % for curShow in myShowList:
-            <%
-                if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
-                    continue
+        % for curShow in filter_shows_being_removed(myShowList):
+        <%
+            cur_airs_next = ''
+            cur_snatched = 0
+            cur_downloaded = 0
+            cur_total = 0
+            download_stat_tip = ''
+            display_status = curShow.status
 
-                cur_airs_next = ''
-                cur_snatched = 0
-                cur_downloaded = 0
-                cur_total = 0
-                download_stat_tip = ''
-                display_status = curShow.status
-
-                if display_status:
-                    if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
-                        display_status = 'Continuing'
-                    elif re.search(r'(?i)(?:nded)', curShow.status):
-                        display_status = 'Ended'
+            if display_status:
+                if re.search(r'(?i)(?:new|returning)\s*series', curShow.status):
+                    display_status = 'Continuing'
+                elif re.search(r'(?i)(?:nded)', curShow.status):
+                    display_status = 'Ended'
 
                 if curShow.paused:
                     display_status = _(display_status) + ' ' + _('Paused')
@@ -94,9 +92,9 @@
                     download_stat_tip = _('Unaired')
 
                 if cur_airs_next:
-                    data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
-##                 elif cur_airs_prev:
-##                     data_date = calendar.timegm(sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)).timetuple())
+                    data_date = calendar.timegm(scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next, curShow.airs, curShow.network)).timetuple())
+                    # elif cur_airs_prev:
+                    #     data_date = calendar.timegm(scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_prev, curShow.airs, curShow.network)).timetuple())
                 elif display_status:
                     if display_status.startswith('Continuing'):
                         data_date = '5000000000.0'
@@ -113,7 +111,7 @@
                  data-progress="${int(progressbar_percent)}" data-progress-total="${cur_total}" data-status="${curShow.status}">
                 <div class="show-image">
                     <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">
-                        <img alt="" class="show-image" src="${static_url("images/poster.png")}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
+                        <img alt="${static_url(curShow.sort_name)}" class="show-image" src="${static_url('images/poster.png')}" data-src="${static_url(curShow.show_image_url('poster_thumb'))}" />
                     </a>
                 </div>
 
@@ -128,9 +126,9 @@
                     <div class="show-date">
                         % if cur_airs_next:
                             <%
-                            ldatetime = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next,  curShow.airs, curShow.network))
+                            ldatetime = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_airs_next,  curShow.airs, curShow.network))
                             try:
-                                out = str(sbdatetime.sbdatetime.sbfdate(ldatetime))
+                                out = str(scdatetime.scdatetime.scfdate(ldatetime))
                             except (ValueError, OSError):
                                 out = _('Invalid date')
                                 pass

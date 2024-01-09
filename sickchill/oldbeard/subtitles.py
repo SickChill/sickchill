@@ -269,7 +269,7 @@ def download_subtitles(episode, force_lang=None):
         sickchill.oldbeard.helpers.chmodAsParent(subtitle_path)
         sickchill.oldbeard.helpers.fixSetGroupID(subtitle_path)
 
-        History().logSubtitle(
+        History().log_subtitle(
             episode.show.indexerid, episode.season, episode.episode, episode.status, subtitle, log_scores(subtitle, video, user_score=user_score)
         )
 
@@ -315,7 +315,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
             embedded_subtitles = bool(not settings.EMBEDDED_SUBTITLES_ALL and video_path.endswith(".mkv"))
 
         # Let sickchill add more information to video file, based on the metadata.
-        if episode:
+        if episode is not None:
             refine_video(video, episode)
 
         subliminal.refine(video, embedded_subtitles=embedded_subtitles)
@@ -538,14 +538,14 @@ def refine_video(video, episode):
         try:
             if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
                 setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
-            elif episode.show.subtitles_sr_metadata and get_attr_value(episode, metadata_mapping[name]):
+            elif episode.show.subtitles_sc_metadata and get_attr_value(episode, metadata_mapping[name]):
                 setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
         except AttributeError:
             logger.debug("Unable to set {}.{} from episode.{} attribute".format(type(video), name, metadata_mapping[name]))
 
     # Set quality from metadata
     status, quality = Quality.splitCompositeStatus(episode.status)
-    if not video.source or episode.show.subtitles_sr_metadata:
+    if not video.source or episode.show.subtitles_sc_metadata:
         if quality & Quality.ANYHDTV:
             video.source = Quality.combinedQualityStrings.get(Quality.ANYHDTV)
         elif quality & Quality.ANYWEBDL:
@@ -553,7 +553,7 @@ def refine_video(video, episode):
         elif quality & Quality.ANYBLURAY:
             video.source = Quality.combinedQualityStrings.get(Quality.ANYBLURAY)
 
-    if not video.resolution or episode.show.subtitles_sr_metadata:
+    if not video.resolution or episode.show.subtitles_sc_metadata:
         if quality & (Quality.HDTV | Quality.HDWEBDL | Quality.HDBLURAY):
             video.resolution = "720p"
         elif quality & Quality.RAWHDTV:

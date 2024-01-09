@@ -234,7 +234,7 @@ class GenericClient(object):
 
         return r_code
 
-    def testAuthentication(self):
+    def test_client_connection(self):
         """
         Tests the parameters the user has provided in the ui to see if they are correct
         """

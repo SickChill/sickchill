@@ -51,7 +51,7 @@ class Provider(TorrentProvider):
             "password": self.password,
         }
 
-        # Yay lets add another request to the process since they are unreasonable.
+        # Yay, lets add another request to the process since they are unreasonable.
         response = self.get_url(self.url, returns="text")
         with BS4Parser(response, "html5lib") as html:
             form = html.find("form", id="loginform")
@@ -69,7 +69,7 @@ class Provider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         if not self.login():
             return results
@@ -156,7 +156,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                             title, seeders, leechers
                                         )
                                     )

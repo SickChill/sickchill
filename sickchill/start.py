@@ -43,7 +43,7 @@ from .providers import metadata
 from .system.Shutdown import Shutdown
 
 
-def initialize(consoleLogging=True):
+def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool = False, disable_file_logging: bool = False) -> bool:
     with settings.INIT_LOCK:
         if settings.__INITIALIZED__:
             return False
@@ -73,6 +73,7 @@ def initialize(consoleLogging=True):
         check_section(settings.CFG, "Slack")
         check_section(settings.CFG, "RocketChat")
         check_section(settings.CFG, "Discord")
+        check_section(settings.CFG, "Gotify")
 
         # Need to be before any passwords
         settings.ENCRYPTION_VERSION = check_setting_int(settings.CFG, "General", "encryption_version", min_val=0, max_val=2)
@@ -84,8 +85,8 @@ def initialize(consoleLogging=True):
         settings.DEVELOPER = check_setting_bool(settings.CFG, "General", "developer")
 
         # debugging
-        settings.DEBUG = check_setting_bool(settings.CFG, "General", "debug")
-        settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug")
+        settings.DEBUG = check_setting_bool(settings.CFG, "General", "debug") or debug
+        settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug") or dbdebug
 
         settings.DEFAULT_PAGE = check_setting_str(settings.CFG, "General", "default_page", "home")
         if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
@@ -97,14 +98,14 @@ def initialize(consoleLogging=True):
 
         if settings.LOG_SIZE > 100:
             settings.LOG_SIZE = 10.0
-        fileLogging = True
+        file_logging = not disable_file_logging
 
-        if not helpers.makeDir(settings.LOG_DIR) or not os.access(settings.LOG_DIR, os.W_OK):
+        if file_logging and not (helpers.makeDir(settings.LOG_DIR) and os.access(settings.LOG_DIR, os.W_OK)):
             sys.stderr.write("!!! No log folder or log folder not writable, logging to console only!\n")
-            fileLogging = False
+            file_logging = False
 
         # init logging
-        logger.init_logging(console_logging=consoleLogging, file_logging=fileLogging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
+        logger.init_logging(console_logging=console_logging, file_logging=file_logging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
 
         # Initializes oldbeard.gh
         setup_github()
@@ -120,10 +121,10 @@ def initialize(consoleLogging=True):
 
         # Check if we need to perform a restore of the cache folder
         try:
-            restoreDir = os.path.join(settings.DATA_DIR, "restore")
-            if os.path.exists(restoreDir) and os.path.exists(os.path.join(restoreDir, "cache")):
+            restore_dir = os.path.join(settings.DATA_DIR, "restore")
+            if os.path.exists(restore_dir) and os.path.exists(os.path.join(restore_dir, "cache")):
 
-                def restoreCache(srcDir, dstDir):
+                def restore_cache(srcDir, dstDir):
                     def path_leaf(path):
                         head, tail = os.path.split(path)
                         return tail or os.path.basename(head)
@@ -139,7 +140,7 @@ def initialize(consoleLogging=True):
                     except Exception as er:
                         logger.exception(f"Restore: restoring cache failed: {er}")
 
-                restoreCache(os.path.join(restoreDir, "cache"), settings.CACHE_DIR)
+                restore_cache(os.path.join(restore_dir, "cache"), settings.CACHE_DIR)
         except Exception as error:
             logger.exception(f"Restore: restoring cache failed: {error}")
         finally:
@@ -567,6 +568,24 @@ def initialize(consoleLogging=True):
         settings.SLACK_WEBHOOK = check_setting_str(settings.CFG, "Slack", "slack_webhook")
         settings.SLACK_ICON_EMOJI = check_setting_str(settings.CFG, "Slack", "slack_icon_emoji")
 
+        settings.USE_MATTERMOST = check_setting_bool(settings.CFG, "Mattermost", "use_mattermost")
+        settings.MATTERMOST_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_snatch")
+        settings.MATTERMOST_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_download")
+        settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Mattermost", "mattermost_notify_subtitledownload")
+        settings.MATTERMOST_WEBHOOK = check_setting_str(settings.CFG, "Mattermost", "mattermost_webhook")
+        settings.MATTERMOST_USERNAME = check_setting_str(settings.CFG, "Mattermost", "mattermost_username")
+        settings.MATTERMOST_ICON_EMOJI = check_setting_str(settings.CFG, "Mattermost", "mattermost_icon_emoji")
+
+        settings.USE_MATTERMOSTBOT = check_setting_bool(settings.CFG, "MattermostBot", "use_mattermostbot")
+        settings.MATTERMOSTBOT_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_snatch")
+        settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_download")
+        settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "MattermostBot", "mattermostbot_notify_subtitledownload")
+        settings.MATTERMOSTBOT_URL = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_url")
+        settings.MATTERMOSTBOT_TOKEN = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_token")
+        settings.MATTERMOSTBOT_CHANNEL = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_channel")
+        settings.MATTERMOSTBOT_ICON_EMOJI = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_icon_emoji")
+        settings.MATTERMOSTBOT_AUTHOR = check_setting_str(settings.CFG, "MattermostBot", "mattermostbot_author")
+
         settings.USE_ROCKETCHAT = check_setting_bool(settings.CFG, "RocketChat", "use_rocketchat")
         settings.ROCKETCHAT_NOTIFY_SNATCH = check_setting_bool(settings.CFG, "RocketChat", "rocketchat_notify_snatch")
         settings.ROCKETCHAT_NOTIFY_DOWNLOAD = check_setting_bool(settings.CFG, "RocketChat", "rocketchat_notify_download")
@@ -636,6 +655,13 @@ def initialize(consoleLogging=True):
         settings.PUSHBULLET_API = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_api", censor_log=True)
         settings.PUSHBULLET_DEVICE = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_device")
         settings.PUSHBULLET_CHANNEL = check_setting_str(settings.CFG, "Pushbullet", "pushbullet_channel")
+
+        settings.USE_GOTIFY = check_setting_bool(settings.CFG, "Gotify", "use_gotify")
+        settings.GOTIFY_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_onsnatch")
+        settings.GOTIFY_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_ondownload")
+        settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD = check_setting_bool(settings.CFG, "Gotify", "gotify_notify_onsubtitledownload")
+        settings.GOTIFY_HOST = check_setting_str(settings.CFG, "Gotify", "gotify_host", censor_log=True)
+        settings.GOTIFY_AUTHORIZATIONTOKEN = check_setting_str(settings.CFG, "Gotify", "gotify_authorizationtoken", censor_log=True)
 
         settings.USE_EMAIL = check_setting_bool(settings.CFG, "Email", "use_email")
         settings.EMAIL_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Email", "email_notify_onsnatch")
@@ -748,83 +774,78 @@ def initialize(consoleLogging=True):
         settings.providerList = providers.makeProviderList()
 
         settings.NEWZNAB_DATA = check_setting_str(settings.CFG, "Newznab", "newznab_data")
-        settings.newznabProviderList = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
+        settings.newznab_provider_list = NewznabProvider.providers_list(settings.NEWZNAB_DATA)
 
         TORRENTRSS_DATA = check_setting_str(settings.CFG, "TorrentRss", "torrentrss_data")
-        settings.torrentRssProviderList = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
+        settings.torrent_rss_provider_list = TorrentRssProvider.providers_list(TORRENTRSS_DATA)
 
         # dynamically load provider settings
-        for curProvider in providers.sortedProviderList():
+        for curProvider in providers.sorted_provider_list():
             curProvider.enabled = (curProvider.can_daily or curProvider.can_backlog) and check_setting_bool(
                 settings.CFG, curProvider.get_id().upper(), curProvider.get_id()
             )
-            if hasattr(curProvider, "custom_url"):
+            if curProvider.has_option("custom_url"):
                 curProvider.custom_url = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_custom_url"), "", censor_log=True)
-            if hasattr(curProvider, "api_key"):
+            if curProvider.has_option("api_key"):
                 curProvider.api_key = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_api_key"), censor_log=True)
-            if hasattr(curProvider, "hash"):
+            if curProvider.has_option("hash"):
                 curProvider.hash = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_hash"), censor_log=True)
-            if hasattr(curProvider, "digest"):
+            if curProvider.has_option("digest"):
                 curProvider.digest = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_digest"), censor_log=True)
-            if hasattr(curProvider, "username"):
+            if curProvider.has_option("username"):
                 curProvider.username = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_username"), censor_log=True)
-            if hasattr(curProvider, "password"):
+            if curProvider.has_option("password"):
                 curProvider.password = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_password"), censor_log=True)
-            if hasattr(curProvider, "passkey"):
+            if curProvider.has_option("passkey"):
                 curProvider.passkey = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_passkey"), censor_log=True)
-            if hasattr(curProvider, "pin"):
+            if curProvider.has_option("pin"):
                 curProvider.pin = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_pin"), censor_log=True)
-            if hasattr(curProvider, "confirmed"):
+            if curProvider.has_option("confirmed"):
                 curProvider.confirmed = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_confirmed"), True)
-            if hasattr(curProvider, "ranked"):
+            if curProvider.has_option("ranked"):
                 curProvider.ranked = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_ranked"), True)
-            if hasattr(curProvider, "engrelease"):
+            if curProvider.has_option("engrelease"):
                 curProvider.engrelease = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_engrelease"))
-            if hasattr(curProvider, "onlyspasearch"):
+            if curProvider.has_option("onlyspasearch"):
                 curProvider.onlyspasearch = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_onlyspasearch"))
-            if hasattr(curProvider, "sorting"):
+            if curProvider.has_option("sorting"):
                 curProvider.sorting = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_sorting"), "seeders")
-            if hasattr(curProvider, "options"):
+            if curProvider.has_option("options"):
                 curProvider.options = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_options"), "")
-            if hasattr(curProvider, "ratio"):
+            if curProvider.has_option("ratio"):
                 curProvider.ratio = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_ratio"), "")
-            if hasattr(curProvider, "minseed"):
+            if curProvider.has_option("minseed"):
                 curProvider.minseed = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_minseed"), 1, min_val=0)
-            if hasattr(curProvider, "minleech"):
+            if curProvider.has_option("minleech"):
                 curProvider.minleech = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_minleech"), 0, min_val=0)
-            if hasattr(curProvider, "freeleech"):
+            if curProvider.has_option("freeleech"):
                 curProvider.freeleech = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_freeleech"))
-            if hasattr(curProvider, "search_mode"):
-                curProvider.search_mode = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_search_mode"), "eponly")
-            if hasattr(curProvider, "search_fallback"):
+            if curProvider.has_option("search_mode"):
+                curProvider.search_mode = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_search_mode"), "episode")
+            if curProvider.has_option("search_fallback"):
                 curProvider.search_fallback = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_search_fallback"))
-            if hasattr(curProvider, "enable_daily"):
+            if curProvider.has_option("enable_daily"):
                 curProvider.enable_daily = curProvider.can_daily and check_setting_bool(
                     settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_enable_daily"), True
                 )
-            if hasattr(curProvider, "enable_backlog"):
+            if curProvider.has_option("enable_backlog"):
                 curProvider.enable_backlog = curProvider.can_backlog and check_setting_bool(
                     settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_enable_backlog"), curProvider.can_backlog
                 )
-            if hasattr(curProvider, "cat"):
+            if curProvider.has_option("cat"):
                 curProvider.cat = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cat"), 0)
-            if hasattr(curProvider, "subtitle"):
+            if curProvider.has_option("subtitle"):
                 curProvider.subtitle = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_subtitle"))
-            if hasattr(curProvider, "cookies"):
+            if curProvider.has_option("cookies"):
                 curProvider.cookies = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cookies"), censor_log=True)
-
-        message = _(
-            'SickChill support, discussions, bug reports, feature requests, and all other communication is now on <a href="https://discord.gg/FXre9qkHwE">discord (click here)</a> or can be found in the menu under tools>discord. Code and releases will remain on GitHub!'
-        )
-        helpers.add_site_message(message, tag="discord_support", level="success")
 
         providers.check_enabled_providers()
 
         if not os.path.isfile(settings.CONFIG_FILE):
-            logger.debug("Unable to find '" + settings.CONFIG_FILE + "', all settings will be default!")
+            logger.debug(f"Unable to find ${settings.CONFIG_FILE}, all settings will be default!")
             save_config()
 
-        # initialize the main SB database
+        # initialize the main SC database
         main_db_con = db.DBConnection()
         db.upgrade_database(main_db_con, main.InitialSchema)
 
@@ -1056,7 +1077,7 @@ def sig_handler(signum=None, frame=None):
     # noinspection PyUnusedLocal
     frame_ = frame
     if not isinstance(signum, type(None)):
-        logger.info("Signal {0:d} caught, saving and exiting...".format(int(signum)))
+        logger.info(f"Signal {signum} caught, saving and exiting...")
         Shutdown.stop(settings.PID)
 
 
@@ -1076,58 +1097,58 @@ def save_config():
 
     # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
-    for curProvider in providers.sortedProviderList():
+    for curProvider in providers.sorted_provider_list():
         new_config[curProvider.get_id().upper()] = {}
         new_config[curProvider.get_id().upper()][curProvider.get_id()] = int(curProvider.enabled)
-        if hasattr(curProvider, "custom_url"):
+        if curProvider.has_option("custom_url"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_custom_url")] = curProvider.custom_url
-        if hasattr(curProvider, "digest"):
+        if curProvider.has_option("digest"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_digest")] = curProvider.digest
-        if hasattr(curProvider, "hash"):
+        if curProvider.has_option("hash"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_hash")] = curProvider.hash
-        if hasattr(curProvider, "api_key"):
+        if curProvider.has_option("api_key"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_api_key")] = curProvider.api_key
-        if hasattr(curProvider, "username"):
+        if curProvider.has_option("username"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_username")] = curProvider.username
-        if hasattr(curProvider, "password"):
+        if curProvider.has_option("password"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_password")] = helpers.encrypt(curProvider.password, settings.ENCRYPTION_VERSION)
-        if hasattr(curProvider, "passkey"):
+        if curProvider.has_option("passkey"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_passkey")] = curProvider.passkey
-        if hasattr(curProvider, "pin"):
+        if curProvider.has_option("pin"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_pin")] = curProvider.pin
-        if hasattr(curProvider, "confirmed"):
+        if curProvider.has_option("confirmed"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_confirmed")] = int(curProvider.confirmed)
-        if hasattr(curProvider, "ranked"):
+        if curProvider.has_option("ranked"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_ranked")] = int(curProvider.ranked)
-        if hasattr(curProvider, "engrelease"):
+        if curProvider.has_option("engrelease"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_engrelease")] = int(curProvider.engrelease)
-        if hasattr(curProvider, "onlyspasearch"):
+        if curProvider.has_option("onlyspasearch"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_onlyspasearch")] = int(curProvider.onlyspasearch)
-        if hasattr(curProvider, "sorting"):
+        if curProvider.has_option("sorting"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_sorting")] = curProvider.sorting
-        if hasattr(curProvider, "ratio"):
+        if curProvider.has_option("ratio"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_ratio")] = curProvider.ratio
-        if hasattr(curProvider, "minseed"):
+        if curProvider.has_option("minseed"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_minseed")] = int(curProvider.minseed)
-        if hasattr(curProvider, "minleech"):
+        if curProvider.has_option("minleech"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_minleech")] = int(curProvider.minleech)
-        if hasattr(curProvider, "options"):
+        if curProvider.has_option("options"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_options")] = curProvider.options
-        if hasattr(curProvider, "freeleech"):
+        if curProvider.has_option("freeleech"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_freeleech")] = int(curProvider.freeleech)
-        if hasattr(curProvider, "search_mode"):
+        if curProvider.has_option("search_mode"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_search_mode")] = curProvider.search_mode
-        if hasattr(curProvider, "search_fallback"):
+        if curProvider.has_option("search_fallback"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_search_fallback")] = int(curProvider.search_fallback)
-        if hasattr(curProvider, "enable_daily"):
+        if curProvider.has_option("enable_daily"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_enable_daily")] = int(curProvider.enable_daily and curProvider.can_daily)
-        if hasattr(curProvider, "enable_backlog"):
+        if curProvider.has_option("enable_backlog"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_enable_backlog")] = int(curProvider.enable_backlog and curProvider.can_backlog)
-        if hasattr(curProvider, "cat"):
+        if curProvider.has_option("cat"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_cat")] = int(curProvider.cat)
-        if hasattr(curProvider, "subtitle"):
+        if curProvider.has_option("subtitle"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_subtitle")] = int(curProvider.subtitle)
-        if hasattr(curProvider, "cookies"):
+        if curProvider.has_option("cookies"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_cookies")] = curProvider.cookies
 
     new_config.update(
@@ -1470,6 +1491,26 @@ def save_config():
                 "slack_webhook": settings.SLACK_WEBHOOK,
                 "slack_icon_emoji": settings.SLACK_ICON_EMOJI,
             },
+            "Mattermost": {
+                "use_mattermost": int(settings.USE_MATTERMOST),
+                "mattermost_notify_snatch": int(settings.MATTERMOST_NOTIFY_SNATCH),
+                "mattermost_notify_download": int(settings.MATTERMOST_NOTIFY_DOWNLOAD),
+                "mattermost_notify_subtitledownload": int(settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD),
+                "mattermost_username": settings.MATTERMOST_USERNAME,
+                "mattermost_webhook": settings.MATTERMOST_WEBHOOK,
+                "mattermost_icon_emoji": settings.MATTERMOST_ICON_EMOJI,
+            },
+            "MattermostBot": {
+                "use_mattermostbot": int(settings.USE_MATTERMOSTBOT),
+                "mattermostbot_notify_snatch": int(settings.MATTERMOSTBOT_NOTIFY_SNATCH),
+                "mattermostbot_notify_download": int(settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD),
+                "mattermostbot_notify_subtitledownload": int(settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD),
+                "mattermostbot_token": settings.MATTERMOSTBOT_TOKEN,
+                "mattermostbot_channel": settings.MATTERMOSTBOT_CHANNEL,
+                "mattermostbot_url": settings.MATTERMOSTBOT_URL,
+                "mattermostbot_icon_emoji": settings.MATTERMOSTBOT_ICON_EMOJI,
+                "mattermostbot_author": settings.MATTERMOSTBOT_AUTHOR,
+            },
             "RocketChat": {
                 "use_rocketchat": int(settings.USE_ROCKETCHAT),
                 "rocketchat_notify_snatch": int(settings.ROCKETCHAT_NOTIFY_SNATCH),
@@ -1548,6 +1589,14 @@ def save_config():
                 "pushbullet_device": settings.PUSHBULLET_DEVICE,
                 "pushbullet_channel": settings.PUSHBULLET_CHANNEL,
             },
+            "Gotify": {
+                "use_gotify": int(settings.USE_GOTIFY),
+                "gotify_notify_onsnatch": int(settings.GOTIFY_NOTIFY_ONSNATCH),
+                "gotify_notify_ondownload": int(settings.GOTIFY_NOTIFY_ONDOWNLOAD),
+                "gotify_notify_onsubtitledownload": int(settings.GOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD),
+                "gotify_host": settings.GOTIFY_HOST,
+                "gotify_authorizationtoken": settings.GOTIFY_AUTHORIZATIONTOKEN,
+            },
             "Email": {
                 "use_email": int(settings.USE_EMAIL),
                 "email_notify_onsnatch": int(settings.EMAIL_NOTIFY_ONSNATCH),
@@ -1564,7 +1613,7 @@ def save_config():
                 "email_subject": settings.EMAIL_SUBJECT,
             },
             "Newznab": {"newznab_data": settings.NEWZNAB_DATA},
-            "TorrentRss": {"torrentrss_data": "!!!".join([x.configStr() for x in settings.torrentRssProviderList])},
+            "TorrentRss": {"torrentrss_data": "!!!".join([x.config_string() for x in settings.torrent_rss_provider_list])},
             "GUI": {
                 "gui_name": settings.GUI_NAME,
                 "language": settings.GUI_LANG,

@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     import os
     import datetime
@@ -6,7 +6,7 @@
     from sickchill import settings
     from sickchill.oldbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
     from sickchill.oldbeard.filters import hide
-    from sickchill.oldbeard.sbdatetime import sbdatetime, date_presets, time_presets
+    from sickchill.oldbeard.scdatetime import scdatetime, date_presets, time_presets
     from sickchill.oldbeard.helpers import anon_url, LOCALE_NAMES
     import sickchill
     import sickchill.init_helpers
@@ -62,7 +62,7 @@
                                 <label class="component-title">${_('Launch browser')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="launch_browser" id="launch_browser" ${('', 'checked="checked"')[bool(settings.LAUNCH_BROWSER)]}/>
+                                <input type="checkbox" name="launch_browser" id="launch_browser" ${checked(settings.LAUNCH_BROWSER)}/>
                                 <label for="launch_browser">${_('open the SickChill home page on startup')}</label>
                             </div>
                         </div>
@@ -75,11 +75,11 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="default_page" name="default_page" class="form-control input-sm input150">
-                                            <option value="home" ${('', 'selected="selected"')[settings.DEFAULT_PAGE == 'home']}>${_('Shows')}</option>
-                                            <option value="schedule" ${('', 'selected="selected"')[settings.DEFAULT_PAGE == 'schedule']}>${_('Schedule')}</option>
-                                            <option value="history" ${('', 'selected="selected"')[settings.DEFAULT_PAGE == 'history']}>${_('History')}</option>
-                                            <option value="news" ${('', 'selected="selected"')[settings.DEFAULT_PAGE == 'news']}>${_('News')}</option>
-                                            <option value="IRC" ${('', 'selected="selected"')[settings.DEFAULT_PAGE == 'IRC']}>${_('IRC')}</option>
+                                            <option value="home" ${selected(settings.DEFAULT_PAGE == 'home')}>${_('Shows')}</option>
+                                            <option value="schedule" ${selected(settings.DEFAULT_PAGE == 'schedule')}>${_('Schedule')}</option>
+                                            <option value="history" ${selected(settings.DEFAULT_PAGE == 'history')}>${_('History')}</option>
+                                            <option value="news" ${selected(settings.DEFAULT_PAGE == 'news')}>${_('News')}</option>
+                                            <option value="IRC" ${selected(settings.DEFAULT_PAGE == 'IRC')}>${_('IRC')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -98,7 +98,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="no_lgmargin" id="no_lgmargin" ${('', 'checked="checked"')[bool(settings.NO_LGMARGIN)]}/>
+                                        <input type="checkbox" name="no_lgmargin" id="no_lgmargin" ${checked(settings.NO_LGMARGIN)}/>
                                         <label for="no_lgmargin">${_('No side margins on large screens')}</label>
                                     </div>
                                 </div>
@@ -108,7 +108,7 @@
                         ## Fix
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Choose hour to update shows')}</label>
+                                <label class="component-title">${_('Hour to update shows')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
@@ -131,18 +131,44 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Days to wait before updating paused and ended shows')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input class="form-control input-sm input75" type="number" name="ended_shows_update_interval" id="ended_shows_update_interval" min="-1" max="365"
+                                               value="${settings.ENDED_SHOWS_UPDATE_INTERVAL}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="ended_shows_update_interval">
+                                            ${_('Paused and Ended shows will only be updated after this many days have passed, if there is an update for the show')}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('note')}:</b>&nbsp;${_('Default 7, daily 0, never -1')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Send to trash for actions')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="trash_remove_show" id="trash_remove_show" ${('', 'checked="checked"')[bool(settings.TRASH_REMOVE_SHOW)]}/>
+                                        <input type="checkbox" name="trash_remove_show" id="trash_remove_show" ${checked(settings.TRASH_REMOVE_SHOW)}/>
                                         <label for="trash_remove_show">${_('when using show "Remove" and delete files')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="trash_rotate_logs" id="trash_rotate_logs" ${('', 'checked="checked"')[bool(settings.TRASH_ROTATE_LOGS)]}/>
+                                        <input type="checkbox" name="trash_rotate_logs" id="trash_rotate_logs" ${checked(settings.TRASH_ROTATE_LOGS)}/>
                                         <label for="trash_rotate_logs">${_('on scheduled deletes of the oldest log files')}</label>
                                     </div>
                                 </div>
@@ -198,9 +224,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
-                                            <option value="0" ${('', 'selected="selected"')[settings.INDEXER_DEFAULT == 0]}>${_('All Indexers')}</option>
+                                            <option value="0" ${selected(settings.INDEXER_DEFAULT == 0)}>${_('All Indexers')}</option>
                                             % for indexer, instance in sickchill.indexer:
-                                                <option value="${indexer}" ${('', 'selected="selected"')[settings.INDEXER_DEFAULT == indexer]}>${instance.name}</option>
+                                                <option value="${indexer}" ${selected(settings.INDEXER_DEFAULT == indexer)}>${instance.name}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -243,7 +269,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
-                                        <%include file="/inc_rootDirs.mako"/>
+                                        <%include file="/inc_rootDirs.mako" />
                                     </div>
                                 </div>
                             </div>
@@ -277,7 +303,7 @@
                                 <label class="component-title">${_('Check software updates')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="version_notify" id="version_notify" ${('', 'checked="checked"')[bool(settings.VERSION_NOTIFY)]}/>
+                                <input type="checkbox" name="version_notify" id="version_notify" ${checked(settings.VERSION_NOTIFY)}/>
                                 <label for="version_notify">${_('''and display notifications when updates are available. Checks are run on startup and at the frequency set below*''')}</label>
                             </div>
                         </div>
@@ -287,7 +313,7 @@
                                 <label class="component-title">${_('Automatically update')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="auto_update" id="auto_update" ${('', 'checked="checked"')[bool(settings.AUTO_UPDATE)]}/>
+                                <input type="checkbox" name="auto_update" id="auto_update" ${checked(settings.AUTO_UPDATE)}/>
                                 <label for="auto_update">${_('''fetch and install software updates. Updates are run on startup and in the background at the frequency set below*''')}</label>
                             </div>
                         </div>
@@ -315,7 +341,7 @@
                                 <label class="component-title">${_('Notify on software update')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="notify_on_update" id="notify_on_update" ${('', 'checked="checked"')[bool(settings.NOTIFY_ON_UPDATE)]}/>
+                                <input type="checkbox" name="notify_on_update" id="notify_on_update" ${checked(settings.NOTIFY_ON_UPDATE)}/>
                                 <label for="notify_on_update">${_('send a message to all enabled notifiers when SickChill has been updated')}</label>
                             </div>
                         </div>
@@ -352,9 +378,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="gui_language" name="gui_language" class="form-control input-sm input250">
-                                            <option value="" ${('', 'selected="selected"')[settings.GUI_LANG == ""]}>${_('System Language')}</option>
+                                            <option value="" ${selected(settings.GUI_LANG == "")}>${_('System Language')}</option>
                                             % for lang in [language for language in os.listdir(sickchill.init_helpers.locale_dir) if '_' in language]:
-                                                <option value="${lang}" ${('', 'selected="selected"')[settings.GUI_LANG == lang]}>${lang_name(lang)}</option>
+                                                <option value="${lang}" ${selected(settings.GUI_LANG == lang)}>${lang_name(lang)}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -375,8 +401,8 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <select id="theme_name" name="theme_name" class="form-control input-sm input250">
-                                            <option value="dark" ${('', 'selected="selected"')[settings.THEME_NAME == 'dark']}>${_('Dark')}</option>
-                                            <option value="light" ${('', 'selected="selected"')[settings.THEME_NAME == 'light']}>${_('Light')}</option>
+                                            <option value="dark" ${selected(settings.THEME_NAME == 'dark')}>${_('Dark')}</option>
+                                            <option value="light" ${selected(settings.THEME_NAME == 'light')}>${_('Light')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -394,11 +420,11 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" class="enabler" name="sickchill_background" id="sickchill_background"
-                                    ${('', 'checked="checked"')[bool(settings.SICKCHILL_BACKGROUND)]} />
+                                    ${checked(settings.SICKCHILL_BACKGROUND)} />
                                 <label for="sickchill_background">${_('use a custom image as background for SickChill')}</label>
                             </div>
                         </div>
-                        <div id="content_sickchill_background">
+                        <div id="content_sickchill_background" ${hidden(settings.SICKCHILL_BACKGROUND)}>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Background Path')}</label>
@@ -424,11 +450,11 @@
                                 <label class="component-title">${_('Show fanart in the background')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" class="enabler" name="fanart_background" id="fanart_background" ${('', 'checked="checked"')[bool(settings.FANART_BACKGROUND)]}>
+                                <input type="checkbox" class="enabler" name="fanart_background" id="fanart_background" ${checked(settings.FANART_BACKGROUND)}>
                                 <label for="fanart_background">${_('on the show summary page')}</label>
                             </div>
                         </div>
-                        <div id="content_fanart_background">
+                        <div id="content_fanart_background" ${hidden(settings.FANART_BACKGROUND)}>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Fanart transparency')}</label>
@@ -454,11 +480,11 @@
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" class="enabler" name="custom_css" id="custom_css"
-                                    ${('', 'checked="checked"')[bool(settings.CUSTOM_CSS)]} />
+                                    ${checked(settings.CUSTOM_CSS)} />
                                 <label for="custom_css">${_('use a custom .css file to style SickChill (for advanced users)')}</label>
                             </div>
                         </div>
-                        <div id="content_custom_css">
+                        <div id="content_custom_css" ${hidden(settings.CUSTOM_CSS)}>
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <label class="component-title">${_('Stylesheet File Path')}</label>
@@ -484,29 +510,8 @@
                                 <label class="component-title">${_('Show all seasons')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${('', 'checked="checked"')[bool(settings.DISPLAY_ALL_SEASONS)]}>
+                                <input type="checkbox" name="display_all_seasons" id="display_all_seasons" ${checked(settings.DISPLAY_ALL_SEASONS)}>
                                 <label for="display_all_seasons">${_('on the show summary page')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Days to wait before updating ended shows')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input class="form-control input-sm input75" type="number" name="ended_shows_update_interval" id="ended_shows_update_interval" min="-1" max="365"
-                                               value="${settings.ENDED_SHOWS_UPDATE_INTERVAL}">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="ended_shows_update_interval">
-                                            ${_('Ended shows will only be updated after this many days have passed, if there is an update for the show')}
-                                        </label>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -515,7 +520,7 @@
                                 <label class="component-title">${_('Sort with "The", "A", "An"')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="sort_article" id="sort_article" ${('', 'checked="checked"')[bool(settings.SORT_ARTICLE)]}/>
+                                <input type="checkbox" name="sort_article" id="sort_article" ${checked(settings.SORT_ARTICLE)}/>
                                 <label for="sort_article">${_('include articles ("The", "A", "An") when sorting show lists')}</label>
                             </div>
                         </div>
@@ -554,7 +559,7 @@
                                 <label class="component-title">${_('Display fuzzy dates')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" ${('', 'checked="checked"')[bool(settings.FUZZY_DATING)]}/>
+                                <input type="checkbox" name="fuzzy_dating" id="fuzzy_dating" class="viewIf datePresets" ${checked(settings.FUZZY_DATING)}/>
                                 <label for="fuzzy_dating">${_('move absolute dates into tooltips and display e.g. "Last Thu", "On Tue"')}</label>
                             </div>
                         </div>
@@ -564,7 +569,7 @@
                                 <label class="component-title">${_('Trim zero padding')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="trim_zero" id="trim_zero" ${('', 'checked="checked"')[bool(settings.TRIM_ZERO)]}/>
+                                <input type="checkbox" name="trim_zero" id="trim_zero" ${checked(settings.TRIM_ZERO)} />
                                 <label for="trim_zero">${_('remove the leading number "0" shown on hour of day, and date of month')}</label>
                             </div>
                         </div>
@@ -576,13 +581,13 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <select class="form-control input-sm input250 ${(' metadataDiv', '')[bool(settings.FUZZY_DATING)]}" id="date_presets${('_na', '')[bool(settings.FUZZY_DATING)]}" name="date_preset${('_na', '')[bool(settings.FUZZY_DATING)]}">
                                     % for cur_preset in date_presets:
-                                        <option value="${cur_preset}" ${('', 'selected="selected"')[settings.DATE_PRESET == cur_preset or ("%x" == settings.DATE_PRESET and cur_preset == '%a, %b %d, %Y')]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+                                        <option value="${cur_preset}" ${selected(settings.DATE_PRESET == cur_preset or ("%x" == settings.DATE_PRESET and cur_preset == '%a, %b %d, %Y'))}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                     % endfor
                                 </select>
                                 <select class="form-control input-sm input250 ${(' metadataDiv', '')[not bool(settings.FUZZY_DATING)]}" id="date_presets${(' metadataDiv', '')[not bool(settings.FUZZY_DATING)]}" name="date_preset${('_na', '')[not bool(settings.FUZZY_DATING)]}">
-                                    <option value="%x" ${('', 'selected="selected"')[settings.DATE_PRESET == '%x']}>${_('Use System Default')}</option>
+                                    <option value="%x" ${selected(settings.DATE_PRESET == '%x')}>${_('Use System Default')}</option>
                                     % for cur_preset in date_presets:
-                                        <option value="${cur_preset}" ${('', 'selected="selected"')[settings.DATE_PRESET == cur_preset]}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
+                                        <option value="${cur_preset}" ${selected(settings.DATE_PRESET == cur_preset)}>${datetime.datetime(datetime.datetime.now().year, 12, 31, 14, 30, 47).strftime(cur_preset)}</option>
                                     % endfor
                                 </select>
                             </div>
@@ -597,7 +602,7 @@
                                     <div class="col-md-12">
                                         <select id="time_presets" name="time_preset" class="form-control input-sm input250">
                                             % for cur_preset in time_presets:
-                                                <option value="${cur_preset}" ${('', 'selected="selected"')[settings.TIME_PRESET_W_SECONDS == cur_preset]}>${sbdatetime.now().sbftime(show_seconds=True, t_preset=cur_preset)}</option>
+                                                <option value="${cur_preset}" ${selected(settings.TIME_PRESET_W_SECONDS == cur_preset)}>${scdatetime.now().scftime(show_seconds=True,t_preset=cur_preset)}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -617,13 +622,13 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input style="margin-top: 2px !important;" type="radio" name="timezone_display" id="local" value="local" ${('', 'checked="checked"')[settings.TIMEZONE_DISPLAY == "local"]} >
+                                        <input style="margin-top: 2px !important;" type="radio" name="timezone_display" id="local" value="local" ${checked(settings.TIMEZONE_DISPLAY == "local")} >
                                         <label for="local" class="space-right">${_('Local')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input style="margin-top: 2px !important;" type="radio" name="timezone_display" id="network" value="network" ${('', 'checked="checked"')[settings.TIMEZONE_DISPLAY == "network"]} />
+                                        <input style="margin-top: 2px !important;" type="radio" name="timezone_display" id="network" value="network" ${checked(settings.TIMEZONE_DISPLAY == "network")} />
                                         <label for="network">${_('Network')}</label>
                                     </div>
                                 </div>
@@ -701,7 +706,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label>${_('you can try all the features of the API')} <a href="${static_url("apibuilder/", include_version=False)}">${_('here')}</a></label>
+                                        <label>${_('you can try all the features of the API')} <a href="${static_url('apibuilder/', include_version=False)}">${_('here')}</a></label>
                                     </div>
                                 </div>
                             </div>
@@ -712,7 +717,7 @@
                                 <label class="component-title">${_('HTTP logs')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="web_log" id="web_log" ${('', 'checked="checked"')[settings.WEB_LOG]}/>
+                                <input type="checkbox" name="web_log" id="web_log" ${checked(settings.WEB_LOG)}/>
                                 <label>${_('enable logs from the internal Tornado web server')}</label>
                             </div>
                         </div>
@@ -744,7 +749,7 @@
                                     <div class="col-md-12">
                                         <input
                                             type="password" name="web_password" id="web_password" value="${settings.WEB_PASSWORD|hide}"
-                                            class="form-control input-sm input300" autocomplete="no" autocapitalize="off"/>
+                                            class="form-control input-sm input300" autocomplete="no" autocapitalize="off" />
                                     </div>
                                 </div>
                                 <div class="row">
@@ -778,7 +783,7 @@
                                 <label class="component-title">${_('Notify on login')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="notify_on_login" class="enabler" id="notify_on_login" ${('', 'checked="checked"')[bool(settings.NOTIFY_ON_LOGIN)]}/>
+                                <input type="checkbox" name="notify_on_login" class="enabler" id="notify_on_login" ${checked(settings.NOTIFY_ON_LOGIN)}/>
                                 <label for="notify_on_login">${_('enable to be notified when a new login happens in webserver')}</label>
                             </div>
                         </div>
@@ -788,7 +793,7 @@
                                 <label class="component-title">${_('Listen on IPv6')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="web_ipv6" id="web_ipv6" ${('', 'checked="checked"')[settings.WEB_IPV6]}/>
+                                <input type="checkbox" name="web_ipv6" id="web_ipv6" ${checked(settings.WEB_IPV6)}/>
                                 <label for="web_ipv6">${_('attempt binding to any available IPv6 address')}</label>
                             </div>
                         </div>
@@ -798,12 +803,12 @@
                                 <label class="component-title">${_('Enable HTTPS')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="enable_https" class="enabler" id="enable_https" ${('', 'checked="checked"')[bool(settings.ENABLE_HTTPS)]}/>
+                                <input type="checkbox" name="enable_https" class="enabler" id="enable_https" ${checked(settings.ENABLE_HTTPS)}/>
                                 <label for="enable_https">${_('enable access to the web interface using a HTTPS address')}</label>
                             </div>
                         </div>
 
-                        <div id="content_enable_https">
+                        <div id="content_enable_https" ${hidden(settings.ENABLE_HTTPS)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -834,7 +839,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${('', 'checked="checked"')[bool(settings.HANDLE_REVERSE_PROXY)]}/>
+                                        <input type="checkbox" name="handle_reverse_proxy" id="handle_reverse_proxy" ${checked(settings.HANDLE_REVERSE_PROXY)}/>
                                         <label for="handle_reverse_proxy">${_('accept the following reverse proxy headers (advanced)...')}</label>
                                     </div>
                                 </div>
@@ -879,7 +884,7 @@
                                     <div class="col-md-12">
                                         <select id="cpu_presets" name="cpu_preset" class="form-control input-sm input250">
                                             % for cur_preset in cpu_presets:
-                                                <option value="${cur_preset}" ${('', 'selected="selected"')[settings.CPU_PRESET == cur_preset]}>${cur_preset.capitalize()}</option>
+                                                <option value="${cur_preset}" ${selected(settings.CPU_PRESET == cur_preset)}>${cur_preset.capitalize()}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -938,8 +943,18 @@
                                 <label class="component-title">${_('Enable debug')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="debug" id="debug" ${('', 'checked="checked"')[bool(settings.DEBUG)]}/>
+                                <input type="checkbox" name="debug" id="debug" ${checked(settings.DEBUG)}/>
                                 <label for="debug">${_('enable debug logs')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable database debug')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" name="dbdebug" id="dbdebug" ${checked(settings.DBDEBUG)}/>
+                                <label for="dbdebug">${_('enable database debug logs')}</label>
                             </div>
                         </div>
 
@@ -948,7 +963,7 @@
                                 <label class="component-title">${_('Notify on Errors')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="notify_on_logged_error" id="notify_on_logged_error" ${('', 'checked="checked"')[bool(settings.NOTIFY_ON_LOGGED_ERROR)]}/>
+                                <input type="checkbox" name="notify_on_logged_error" id="notify_on_logged_error" ${checked(settings.NOTIFY_ON_LOGGED_ERROR)}/>
                                 <label for="notify_on_logged_error">${_('send logged errors to notifiers')}</label>
                             </div>
                         </div>
@@ -958,7 +973,7 @@
                                 <label class="component-title">${_('Verify SSL Certs')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="ssl_verify" id="ssl_verify" ${('', 'checked="checked"')[bool(settings.SSL_VERIFY)]}/>
+                                <input type="checkbox" name="ssl_verify" id="ssl_verify" ${checked(settings.SSL_VERIFY)}/>
                                 <label for="ssl_verify">${_('verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))')}</label>
                             </div>
                         </div>
@@ -970,7 +985,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="no_restart" id="no_restart" ${('', 'checked="checked"')[bool(settings.NO_RESTART)]}/>
+                                        <input type="checkbox" name="no_restart" id="no_restart" ${checked(settings.NO_RESTART)}/>
                                         <label for="no_restart">${_('only shutdown when restarting SC')}</label>
                                     </div>
                                 </div>
@@ -989,7 +1004,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="encryption_version" id="encryption_version" ${('', 'checked="checked"')[bool(settings.ENCRYPTION_VERSION)]}/>
+                                        <input type="checkbox" name="encryption_version" id="encryption_version" ${checked(settings.ENCRYPTION_VERSION)}/>
                                         <label for="encryption_version">${_('in the <code>config.ini</code> file')}</label>
                                     </div>
                                 </div>
@@ -1009,7 +1024,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" ${('', 'checked="checked"')[bool(settings.CALENDAR_UNPROTECTED)]}/>
+                                        <input type="checkbox" name="calendar_unprotected" id="calendar_unprotected" ${checked(settings.CALENDAR_UNPROTECTED)}/>
                                         <label for="calendar_unprotected">${_('allow subscribing to the calendar without user and password')}</label>
                                     </div>
                                 </div>
@@ -1026,7 +1041,7 @@
                                 <label class="component-title">${_('Google Calendar Icons')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="calendar_icons" id="calendar_icons" ${('', 'checked="checked"')[bool(settings.CALENDAR_ICONS)]}/>
+                                <input type="checkbox" name="calendar_icons" id="calendar_icons" ${checked(settings.CALENDAR_ICONS)}/>
                                 <label for="calendar_icons">${_('show an icon next to exported calendar events in Google Calendar')}</label>
                             </div>
                         </div>
@@ -1048,7 +1063,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${('', 'checked="checked"')[bool(settings.PROXY_INDEXERS)]}/>
+                                        <input type="checkbox" name="proxy_indexers" id="proxy_indexers" ${checked(settings.PROXY_INDEXERS)}/>
                                         <label for="proxy_indexers">${_('also use global proxy setting for indexers (tvdb, xem, anidb, etc.)')}</label>
                                     </div>
 
@@ -1063,7 +1078,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${('', 'checked="checked"')[bool(settings.SKIP_REMOVED_FILES)]}/>
+                                        <input type="checkbox" name="skip_removed_files" id="skip_removed_files" ${checked(settings.SKIP_REMOVED_FILES)}/>
                                         <label for="skip_removed_files">${_('skip detection of removed files')}</label>
                                     </div>
                                 </div>
@@ -1082,7 +1097,7 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="ignore_broken_symlinks" id="ignore_broken_symlinks" ${('', 'checked="checked"')[bool(settings.IGNORE_BROKEN_SYMLINKS)]}/>
+                                        <input type="checkbox" name="ignore_broken_symlinks" id="ignore_broken_symlinks" ${checked(settings.IGNORE_BROKEN_SYMLINKS)}/>
                                         <label for="ignore_broken_symlinks">${_('If checked, broken symbolic links warnings generated when calculating show size will be logged as debug')}</label>
                                     </div>
                                 </div>
@@ -1099,13 +1114,13 @@
                                         % if not settings.SKIP_REMOVED_FILES:
                                             <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm input250" title="Default delete status">
                                                 % for defStatus in [SKIPPED, IGNORED, ARCHIVED]:
-                                                    <option value="${defStatus}" ${('', 'selected="selected"')[int(settings.EP_DEFAULT_DELETED_STATUS) == defStatus]}>${statusStrings[defStatus]}</option>
+                                                    <option value="${defStatus}" ${selected(int(settings.EP_DEFAULT_DELETED_STATUS) == defStatus)}>${statusStrings[defStatus]}</option>
                                                 % endfor
                                             </select>
                                         % else:
-                                            <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm input250" disabled="disabled" title="Default delete status">
+                                            <select name="ep_default_deleted_status" id="ep_default_deleted_status" class="form-control input-sm input250" title="Default delete status" disabled>
                                                 % for defStatus in [SKIPPED, IGNORED]:
-                                                    <option value="${defStatus}" ${('', 'selected="selected"')[settings.EP_DEFAULT_DELETED_STATUS == defStatus]}>${statusStrings[defStatus]}</option>
+                                                    <option value="${defStatus}" ${selected(settings.EP_DEFAULT_DELETED_STATUS == defStatus)}>${statusStrings[defStatus]}</option>
                                                 % endfor
                                             </select>
                                             <input type="hidden" name="ep_default_deleted_status" value="${settings.EP_DEFAULT_DELETED_STATUS}" />

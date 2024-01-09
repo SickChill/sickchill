@@ -30,17 +30,17 @@ fi
 ## Don't edit this file!
 ## Edit user configuation in /etc/default/sickchill to change
 ##
-## SR_USER=         #$RUN_AS, username to run sickchill under, the default is sickchill
-## SR_GROUP=        #$RUN_GROUP, group to run sickchill under, the default is sickchill
-## SR_HOME=         #$APP_PATH, the location of SickChill.py, the default is /opt/sickchill
-## SR_DATA=         #$DATA_DIR, the location of sickchill.db, cache, logs, the default is /opt/sickchill
-## SR_PIDFILE=      #$PID_FILE, the location of sickchill.pid, the default is /var/run/sickchill/sickchill.pid
+## SC_USER=         #$RUN_AS, username to run sickchill under, the default is sickchill
+## SC_GROUP=        #$RUN_GROUP, group to run sickchill under, the default is sickchill
+## SC_HOME=         #$APP_PATH, the location of SickChill.py, the default is /opt/sickchill
+## SC_DATA=         #$DATA_DIR, the location of sickchill.db, cache, logs, the default is /opt/sickchill
+## SC_PIDFILE=      #$PID_FILE, the location of sickchill.pid, the default is /var/run/sickchill/sickchill.pid
 ## PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python3
-## SR_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickchill, i.e. " --config=/home/sickchill/config.ini"
+## SC_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickchill, i.e. " --config=/home/sickchill/config.ini"
 ## SSD_OPTS=        #$EXTRA_SSD_OPTS, extra start-stop-daemon option like " --group=users"
 ##
 ## EXAMPLE if want to run as different user
-## add SR_USER=username to /etc/default/sickchill
+## add SC_USER=username to /etc/default/sickchill
 ## otherwise default sickchill is used
 
 # Script name
@@ -51,25 +51,25 @@ DESC=SickChill
 
 ## The defaults
 # Run as username
-RUN_AS=${SR_USER-sickchill}
+RUN_AS=${SC_USER-sickchill}
 
 # Run as group
-RUN_GROUP=${SR_GROUP-sickchill}
+RUN_GROUP=${SC_GROUP-sickchill}
 
-# Path to app SR_HOME=path_to_app_SickChill.py
-APP_PATH=${SR_HOME-/opt/sickchill}
+# Path to app SC_HOME=path_to_app_SickChill.py
+APP_PATH=${SC_HOME-/opt/sickchill}
 
 # Data directory where sickchill.db, cache and logs are stored
-DATA_DIR=${SR_DATA-/opt/sickchill}
+DATA_DIR=${SC_DATA-/opt/sickchill}
 
 # Path to store PID file
-PID_FILE=${SR_PIDFILE-/var/run/sickchill/sickchill.pid}
+PID_FILE=${SC_PIDFILE-/var/run/sickchill/sickchill.pid}
 
 # path to python bin
 DAEMON=${PYTHON_BIN-/usr/bin/python3}
 
-# Extra daemon option like: SR_OPTS=" --config=/home/sickchill/config.ini"
-EXTRA_DAEMON_OPTS=${SR_OPTS-}
+# Extra daemon option like: SC_OPTS=" --config=/home/sickchill/config.ini"
+EXTRA_DAEMON_OPTS=${SC_OPTS-}
 
 # Extra start-stop-daemon option like START_OPTS=" --group=users"
 EXTRA_SSD_OPTS=${SSD_OPTS-}

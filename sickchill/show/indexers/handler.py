@@ -154,6 +154,9 @@ class ShowIndexer(object):
         return self.indexers[show.indexer].episode(show, season, episode, **kwargs)
 
     def series_poster_url_by_id(self, indexerid, language=None, indexer=None, thumb=False):
+        if not indexerid:
+            return ""
+
         class __TVShow(object):
             def __init__(self, __indexerid, __language, __indexer):
                 self.indexerid = __indexerid

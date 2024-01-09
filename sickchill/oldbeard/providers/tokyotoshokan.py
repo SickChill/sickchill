@@ -22,7 +22,7 @@ class Provider(TorrentProvider):
         self.urls = {"search": self.url + "search.php", "rss": self.url + "rss.php"}
         self.cache = tvcache.TVCache(self, min_time=15)  # only poll TokyoToshokan every 15 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         if self.show and not self.show.is_anime:
             return results
@@ -77,7 +77,7 @@ class Provider(TorrentProvider):
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
                                 logger.debug(
-                                    "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                    _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                         title, seeders, leechers
                                     )
                                 )

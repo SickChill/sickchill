@@ -68,7 +68,8 @@ ENV RUSTUP_IO_THREADS 1
 ENV CARGO_TERM_VERBOSE "true"
 ENV CARGO "$CARGO_HOME/bin/cargo"
 
-RUN --security=insecure curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sed 's#/proc/self/exe#$SHELL#g' | sh -s -- -y --profile minimal --default-toolchain nightly
+# hadolint ignore=SC2215
+RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
 
 ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
 
@@ -80,6 +81,7 @@ WORKDIR /sickchill
 COPY . /sickchill/
 
 # https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
+# hadolint ignore=SC2215,SC1089
 RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
   pip install --upgrade "sickchill[speedups]"; \
 else \

@@ -104,6 +104,8 @@ class Logger(object):
             logging.getLogger("sqlalchemy.engine"),
             logging.getLogger("sqlalchemy.pool"),
             logging.getLogger("sqlalchemy.dialect"),
+            logging.getLogger("imdbpy"),
+            logging.getLogger("imdbpy.parser.s3"),
         ]
 
         self.console_logging = False
@@ -148,7 +150,7 @@ class Logger(object):
         for logger in self.loggers:
             if logger.name in ("subliminal", "tornado.access", "tornado.general", "imdbpy.parser.http.piculet"):
                 logger.setLevel("CRITICAL")
-            elif logger.name.startswith("sqlalchemy") and not self.database_logging:
+            elif (logger.name.startswith("sqlalchemy") or logger.name.startswith("imdb")) and not self.database_logging:
                 logger.setLevel("WARNING")
             else:
                 logger.setLevel(log_level)
@@ -172,27 +174,38 @@ class Logger(object):
             for logger in self.loggers:
                 logger.addHandler(rfh)
 
-    def set_level(self):
+    def restart(self, change_log_dir: bool = False):
         """
         Sets the logging level for root and all of our loggers
         """
+        if self.debug_logging == settings.DEBUG and self.database_logging == settings.DBDEBUG and not change_log_dir:
+            return
+
         self.debug_logging = settings.DEBUG
         self.database_logging = settings.DBDEBUG
 
-        level = DB if self.database_logging else DEBUG if self.debug_logging else INFO
-        for logger in self.loggers:
-            if logger.name in ("subliminal", "tornado.access", "tornado.general"):
-                logger.setLevel("CRITICAL")
-            else:
-                logger.setLevel(level)
-                for handler in logger.handlers:
-                    handler.setLevel(level)
+        if not change_log_dir:
+            self.logger.info(f"Changing DEBUG to {settings.DEBUG} and DATABASE DEBUG to {settings.DBDEBUG}")
 
-    @staticmethod
-    def shutdown():
+        # Set these back to None, so they are reset on init
+        global log_file
+        self.log_file = None
+        log_file = self.log_file
+
+        self.close_and_remove_handlers()
+        self.init_logging(self.console_logging, self.file_logging, self.debug_logging, self.database_logging)
+
+    def close_and_remove_handlers(self):
+        for logger in self.loggers:
+            for handler in logger.handlers[:]:
+                handler.close()
+                logger.removeHandler(handler)
+
+    def shutdown(self):
         """
         Shut down the logger
         """
+        self.close_and_remove_handlers()
         logging.shutdown()
 
     def log_error_and_exit(self, error_msg, *args, **kwargs):
@@ -489,5 +502,5 @@ def database(msg, *args, **kwargs):
 
 submit_errors = Wrapper.instance.submit_errors
 init_logging = Wrapper.instance.init_logging
-set_level = Wrapper.instance.set_level
+restart = Wrapper.instance.restart
 shutdown = Wrapper.instance.shutdown

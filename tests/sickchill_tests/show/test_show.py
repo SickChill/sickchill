@@ -106,7 +106,7 @@ class ShowTests(unittest.TestCase):
         )
 
         for index, indexer_id in enumerate(indexer_id_list):
-            assert Show._validate_indexer_id(indexer_id) == results_list[index]
+            assert Show.validate_indexer_id(indexer_id) == results_list[index]
 
 
 class TestTVShow(TVShow):

@@ -1,7 +1,5 @@
 import traceback
 
-import validators
-
 from sickchill import logger
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
@@ -26,14 +24,14 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         self.size_units = ["BYTES", "KIB", "MIB", "GIB", "TIB", "PIB"]
         self.cache = tvcache.TVCache(self, min_time=20)  # only poll Nyaa every 20 minutes max
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         if self.show and not self.show.is_anime:
             return results
 
         if self.custom_url:
-            if validators.url(self.custom_url) != True:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+            if self.invalid_url(self.custom_url):
+                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
                 return results
 
         for mode in search_strings:

@@ -167,9 +167,9 @@ def get_scene_exception_by_name_multiple(show_name):
     return [(None, None)]
 
 
-def retrieve_exceptions():  # pylint:disable=too-many-locals, too-many-branches
+def retrieve_exceptions():
     """
-    Looks up the exceptions on github, parses them into a dict, and inserts them into the
+    Looks up the exceptions on GitHub, parses them into a dict, and inserts them into the
     scene_exceptions table in cache.db. Also clears the scene name cache.
     """
     # SC exceptions

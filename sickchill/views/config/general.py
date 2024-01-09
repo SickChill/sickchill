@@ -28,48 +28,26 @@ class ConfigGeneral(Config):
     def generateApiKey():
         return helpers.generateApiKey()
 
-    @staticmethod
-    def saveRootDirs(rootDirString=None):
-        settings.ROOT_DIRS = rootDirString
+    def saveRootDirs(self):
+        settings.ROOT_DIRS = self.get_body_argument("rootDirString")
 
-    @staticmethod
-    def saveAddShowDefaults(
-        defaultStatus,
-        anyQualities,
-        bestQualities,
-        defaultSeasonFolders,
-        whitelist,
-        blacklist,
-        subtitles=False,
-        anime=False,
-        scene=False,
-        defaultStatusAfter=WANTED,
-    ):
-        if anyQualities:
-            anyQualities = anyQualities.split(",")
-        else:
-            anyQualities = []
+    def saveAddShowDefaults(self):
+        anyQualities = [int(quality) for quality in self.get_body_arguments("anyQualities[]")]
+        bestQualities = [int(quality) for quality in self.get_body_arguments("bestQualities[]")]
 
-        if bestQualities:
-            bestQualities = bestQualities.split(",")
-        else:
-            bestQualities = []
+        settings.QUALITY_DEFAULT = Quality.combineQualities(anyQualities, bestQualities)
 
-        newQuality = Quality.combineQualities([int(quality) for quality in anyQualities], [int(quality) for quality in bestQualities])
+        settings.STATUS_DEFAULT = int(self.get_body_argument("defaultStatus", settings.STATUS_DEFAULT_AFTER))
+        settings.STATUS_DEFAULT_AFTER = int(self.get_body_argument("defaultStatusAfter", settings.STATUS_DEFAULT_AFTER))
 
-        settings.WHITELIST_DEFAULT = whitelist
-        settings.BLACKLIST_DEFAULT = blacklist
+        settings.WHITELIST_DEFAULT = self.get_body_arguments("whitelist")
+        settings.BLACKLIST_DEFAULT = self.get_body_arguments("blacklist")
 
-        settings.STATUS_DEFAULT = int(defaultStatus)
-        settings.STATUS_DEFAULT_AFTER = int(defaultStatusAfter)
-        settings.QUALITY_DEFAULT = int(newQuality)
+        settings.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(self.get_body_argument("defaultSeasonFolders", settings.SEASON_FOLDERS_DEFAULT))
+        settings.SUBTITLES_DEFAULT = config.checkbox_to_value(self.get_body_argument("subtitles", settings.SUBTITLES_DEFAULT))
+        settings.ANIME_DEFAULT = config.checkbox_to_value(self.get_body_argument("anime", settings.ANIME_DEFAULT))
+        settings.SCENE_DEFAULT = config.checkbox_to_value(self.get_body_argument("scene", settings.SCENE_DEFAULT))
 
-        settings.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(defaultSeasonFolders)
-        settings.SUBTITLES_DEFAULT = config.checkbox_to_value(subtitles)
-
-        settings.ANIME_DEFAULT = config.checkbox_to_value(anime)
-
-        settings.SCENE_DEFAULT = config.checkbox_to_value(scene)
         sickchill.start.save_config()
 
         ui.notifications.message(_("Saved Defaults"), _('Your "add show" defaults have been set to your current selections.'))
@@ -112,7 +90,8 @@ class ConfigGeneral(Config):
         anon_redirect=None,
         calendar_unprotected=None,
         calendar_icons=None,
-        debug=None,
+        debug=False,
+        dbdebug=False,
         notify_on_logged_error=None,
         ssl_verify=None,
         no_restart=None,
@@ -139,7 +118,7 @@ class ConfigGeneral(Config):
         gui_language=None,
         ignore_broken_symlinks=None,
         ended_shows_update_interval=None,
-        log_dir=None,
+        log_dir="",
     ):
         results = []
 
@@ -190,8 +169,10 @@ class ConfigGeneral(Config):
         settings.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)
         settings.NO_RESTART = config.checkbox_to_value(no_restart)
         settings.DEBUG = config.checkbox_to_value(debug)
+        settings.DBDEBUG = config.checkbox_to_value(dbdebug)
+        logger.restart()
+
         settings.NOTIFY_ON_LOGGED_ERROR = config.checkbox_to_value(notify_on_logged_error)
-        logger.set_level()
 
         settings.SSL_VERIFY = config.checkbox_to_value(ssl_verify)
         helpers.set_opener(settings.SSL_VERIFY)

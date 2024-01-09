@@ -22,6 +22,7 @@ def get_lookup():
             strict_undefined=settings.DEVELOPER or settings.DEBUG,
             #  format_exceptions=True,
             filesystem_checks=True,
+            imports=["from sickchill.oldbeard.filters import checked, disabled, hidden, selected"],
         ),
     )
 
@@ -41,7 +42,7 @@ class PageTemplate(Template):
         self.context["sbHttpsEnabled"] = settings.ENABLE_HTTPS
         self.context["sbHandleReverseProxy"] = settings.HANDLE_REVERSE_PROXY
         self.context["sbDefaultPage"] = settings.DEFAULT_PAGE
-        self.context["srLogin"] = rh.get_current_user()
+        self.context["scLogin"] = rh.get_current_user()
         self.context["sbStartTime"] = rh.startTime
         self.context["static_url"] = rh.static_url
         self.context["reverse_url"] = rh.reverse_url
@@ -62,7 +63,7 @@ class PageTemplate(Template):
 
         self.context["numErrors"] = len(classes.ErrorViewer.errors)
         self.context["numWarnings"] = len(classes.WarningViewer.errors)
-        self.context["sbPID"] = str(settings.PID)
+        self.context["scPID"] = str(settings.PID)
 
         self.context["title"] = "FixME"
         self.context["header"] = "FixME"
@@ -85,7 +86,7 @@ class PageTemplate(Template):
                 raise Exception("This is a test Exception")
             return self.template.render_unicode(*args, **context)
         except Exception as error:
-            logger.info(f"A mako error occurred: {error}")
+            logger.info(f"A mako render error occurred: {error}")
             context["title"] = "500"
             context["header"] = _("Mako Error")
             context["backtrace"] = RichTraceback(error=error)

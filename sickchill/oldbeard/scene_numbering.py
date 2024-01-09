@@ -444,12 +444,12 @@ def get_xem_absolute_numbering_for_show(indexer_id, indexer):
     )
 
     for row in rows:
-        __absolute_number = row["absolute_number"]
-        __scene_absolute_number = row["scene_absolute_number"]
-        if not (__absolute_number and __scene_absolute_number):
+        absolute_number = row["absolute_number"]
+        scene_absolute_number = row["scene_absolute_number"]
+        if not (absolute_number and scene_absolute_number):
             continue
 
-        result[int(__absolute_number)] = int(__scene_absolute_number)
+        result[int(absolute_number)] = int(scene_absolute_number)
 
     return result
 
@@ -486,7 +486,7 @@ def xem_refresh(indexer_id, indexer, force=False):
 
         try:
             # XEM MAP URL
-            url = f"http://thexem.info/map/havemap?origin={sickchill.indexer.slug(indexer)}"
+            url = f"https://thexem.info/map/havemap?origin={sickchill.indexer.slug(indexer)}"
             parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
             if (
                 not parsed_json
@@ -498,7 +498,7 @@ def xem_refresh(indexer_id, indexer, force=False):
                 return
 
             # XEM API URL
-            url = f"http://thexem.info/map/all?id={indexer_id}&origin={sickchill.indexer.slug(indexer)}&destination=scene"
+            url = f"https://thexem.info/map/all?id={indexer_id}&origin={sickchill.indexer.slug(indexer)}&destination=scene"
 
             parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
             if not parsed_json or "result" not in parsed_json or "success" not in parsed_json["result"]:

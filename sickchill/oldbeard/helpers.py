@@ -28,7 +28,7 @@ import certifi
 import ifaddr
 import requests
 import urllib3.exceptions
-from cacheyou import CacheControl
+from cachecontrol import CacheControl
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 from urllib3 import disable_warnings
@@ -1198,7 +1198,7 @@ def getURL(
     timeout=30,
     session: requests.Session = None,
     **kwargs,
-) -> Union[requests.Response, dict]:
+) -> Union[requests.Response, dict, str]:
     """
     Returns data retrieved from the url provider.
     """
@@ -1662,46 +1662,30 @@ def is_file_locked(checkfile, write_check=False):
     return False
 
 
-def tvdbid_from_remote_id(indexer_id, indexer):  # pylint:disable=too-many-return-statements
+def tvdbid_from_remote_id(indexer_id: str, indexer: str):  # pylint:disable=too-many-return-statements
     session = make_session()
     tvdb_id = ""
-    if indexer == "IMDB":
-        url = f"https://www.thetvdb.com/api/GetSeriesByRemoteID.php?imdbid={indexer_id}"
-        data = getURL(url, session=session, returns="content")
-        if data is None:
-            return tvdb_id
-        try:
-            tree = ElementTree.fromstring(data)
-            for show in tree.iter("Series"):
-                tvdb_id = show.findtext("seriesid")
 
-        except SyntaxError:
-            pass
+    indeder = indexer.upper()
+    if indexer in ("IMDB", "ZAP2IT"):
+        if indexer == "IMDB":
+            indexer += "ID"
 
-        return tvdb_id
-    elif indexer == "ZAP2IT":
-        url = f"https://www.thetvdb.com/api/GetSeriesByRemoteID.php?zap2it={indexer_id}"
-        data = getURL(url, session=session, returns="content")
-        if data is None:
-            return tvdb_id
-        try:
-            tree = ElementTree.fromstring(data)
-            for show in tree.iter("Series"):
-                tvdb_id = show.findtext("seriesid")
-
-        except SyntaxError:
-            pass
-
-        return tvdb_id
+        data = getURL(f"https://www.thetvdb.com/api/GetSeriesByRemoteID.php?{indexer.lower()}={indexer_id}", session=session, returns="content")
+        if data:
+            try:
+                tvdb_id = ElementTree.fromstring(data).find("Series").findtext("seriesid")
+            except (SyntaxError, IndexError, ValueError):
+                pass
     elif indexer == "TVMAZE":
-        url = f"https://api.tvmaze.com/shows/{indexer_id}"
-        data = getURL(url, session=session, returns="json")
-        if data is None:
-            return tvdb_id
-        tvdb_id = data["externals"]["thetvdb"]
-        return tvdb_id
-    else:
-        return tvdb_id
+        data = getURL(f"https://api.tvmaze.com/shows/{indexer_id}", session=session, returns="json")
+        if data:
+            try:
+                tvdb_id = data["externals"]["thetvdb"]
+            except (SyntaxError, IndexError, ValueError):
+                pass
+
+    return tvdb_id
 
 
 def is_ip_local(ip):

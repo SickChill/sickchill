@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard.helpers import anon_url
@@ -13,7 +13,7 @@
     <li><a href="#core-component-group1">${_('Add New Show')}</a></li>
 </%block>
 
-<%block name="saveButton"/>
+<%block name="saveButton" />
 
 <%block name="pages">
     <div id="core-component-group1" class="tab-pane active component-group">
@@ -24,16 +24,16 @@
                     <legend class="legendStep">#1 ${_('Search for a Show')}</legend>
                     <div class="row stepDiv">
                         <div class="col-md-12">
-                            <input type="hidden" id="indexer_timeout" value="${settings.INDEXER_TIMEOUT}"/>
+                            <input type="hidden" id="indexer_timeout" value="${settings.INDEXER_TIMEOUT}" />
 
                             % if use_provided_info:
                                 <label>${_('Show retrieved from existing metadata')}:
                                     <a href="${anon_url(show_indexer.show_url(provided_indexer), provided_indexer_id)}">${provided_indexer_name}</a>
                                 </label>
-                                <input type="hidden" id="indexerLang" name="indexerLang" value="en"/>
-                                <input type="hidden" id="whichSeries" name="whichSeries" value="${provided_indexer_id}"/>
-                                <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}"/>
-                                <input type="hidden" id="providedName" value="${provided_indexer_name}"/>
+                                <input type="hidden" id="indexerLang" name="indexerLang" value="en" />
+                                <input type="hidden" id="whichSeries" name="whichSeries" value="${provided_indexer_id}" />
+                                <input type="hidden" id="providedIndexer" name="providedIndexer" value="${provided_indexer}" />
+                                <input type="hidden" id="providedName" value="${provided_indexer_name}" />
                             % else:
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -90,9 +90,9 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select name="providedIndexer" id="providedIndexer"
                                                 class="form-control form-control-inline input-sm">
-                                            <option value="0" ${('', 'selected="selected"')[provided_indexer == 0]}>${_('All Indexers')}</option>
+                                            <option value="0" ${selected(provided_indexer == 0)}>${_('All Indexers')}</option>
                                             % for index, indexer in show_indexer:
-                                                <option value="${index}" ${('', 'selected="selected"')[provided_indexer == index]}>
+                                                <option value="${index}" ${selected(provided_indexer == index)}>
                                                     ${indexer.name}
                                                 </option>
                                             % endfor
@@ -102,7 +102,7 @@
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <span class="component-title">
-                                            <input class="btn btn-inline" type="button" id="search-button" value="${_('Search')}"/>
+                                            <input class="btn btn-inline" type="button" id="search-button" value="${_('Search')}" />
                                         </span>
                                     </div>
                                 </div>
@@ -120,10 +120,10 @@
                                     <b style="font-size: 15px;">${provided_show_dir}</b>
                                     <br>
                                     <input type="hidden" id="fullShowPath" name="fullShowPath"
-                                           value="${provided_show_dir}"/>
+                                           value="${provided_show_dir}" />
                                     <br/>
                                 % else:
-                                    <%include file="/inc_rootDirs.mako"/>
+                                    <%include file="/inc_rootDirs.mako" />
                                 % endif
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                         <legend class="legendStep">#4 ${_('Customize options')}</legend>
                         <div class="row stepDiv">
                             <div class="col-md-12">
-                                    <%include file="/inc_addShowOptions.mako"/>
+                                <%include file="/inc_addShowOptions.mako" />
                             </div>
                         </div>
 
@@ -166,18 +166,18 @@
                         </div>
 
                         % for curNextDir in other_shows:
-                            <input type="hidden" name="other_shows" value="${curNextDir}"/>
+                            <input type="hidden" name="other_shows" value="${curNextDir}" />
                         % endfor
-                        <input type="hidden" name="skipShow" id="skipShow"/>
+                        <input type="hidden" name="skipShow" id="skipShow" />
                     </div>
                 </form>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled="disabled"/>
+                <input class="btn" type="button" id="addShowButton" value="${_('Add Show')}" disabled />
                 % if provided_show_dir:
-                    <input class="btn" type="button" id="skipShowButton" value="${_('Skip Show')}"/>
+                    <input class="btn" type="button" id="skipShowButton" value="${_('Skip Show')}" />
                 % endif
             </div>
         </div>

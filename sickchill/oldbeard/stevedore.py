@@ -72,6 +72,7 @@ providers = RegistrableExtensionManager(
         "nebulance = oldbeard.providers.nebulance:NebulanceProvider",
         "torrentday = oldbeard.providers.torrentday:TorrentDayProvider",
         "torrentleech = oldbeard.providers.torrentleech:TorrentLeechProvider",
+        "zamunda = oldbeard.providers.zamunda:ZamundaProvider",
     ],
 )
 
@@ -111,6 +112,8 @@ notifiers = RegistrableExtensionManager(
         "discord = oldbeard.notifiers.discord:Notifier",
         "freemobile = oldbeard.notifiers.freemobile:Notifier",
         "slack = oldbeard.notifiers.slack:Notifier",
+        "mattermost = oldbeard.notifiers.mattermost:Notifier",
+        "mattermostbot = oldbeard.notifiers.mattermostbot:Notifier",
         "matrix = oldbeard.notifiers.matrix:Notifier",
         "synoindex = oldbeard.notifiers.synoindex:Notifier",
         "kodi = oldbeard.notifiers.kodi:Notifier",

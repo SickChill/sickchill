@@ -2,9 +2,11 @@ import datetime
 import functools
 import locale
 
+import timeago
+
 from sickchill import settings
 
-from .network_timezones import sb_timezone
+from .network_timezones import sc_timezone
 
 date_presets = (
     "%Y-%m-%d",
@@ -82,7 +84,7 @@ class static_or_instance(object):
 
 
 # subclass datetime.datetime to add function to display custom date and time formats
-class sbdatetime(datetime.datetime):
+class scdatetime(datetime.datetime):
     has_locale = True
     en_US_norm = locale.normalize("en_US.utf-8")
 
@@ -90,18 +92,16 @@ class sbdatetime(datetime.datetime):
     def convert_to_setting(self, dt=None):
         try:
             if settings.TIMEZONE_DISPLAY == "local":
-                return dt.astimezone(sb_timezone) if self is None else self.astimezone(sb_timezone)
+                return dt.astimezone(sc_timezone) if self is None else self.astimezone(sc_timezone)
             else:
                 return self if self else dt
         except Exception:
             return self if self else dt
 
-    # display Time in SickChill Format
     @static_or_instance
-    def sbftime(self, dt=None, show_seconds=False, t_preset=None):
+    def scftime(self, dt=None, show_seconds=False, t_preset=None):
         """
         Display time in SC format
-        TODO: Rename this to srftime
 
         :param dt: datetime object
         :param show_seconds: Boolean, show seconds
@@ -115,14 +115,14 @@ class sbdatetime(datetime.datetime):
             pass
 
         try:
-            if sbdatetime.has_locale:
+            if scdatetime.has_locale:
                 locale.setlocale(locale.LC_TIME, "en_US")
         except Exception:
             try:
-                if sbdatetime.has_locale:
-                    locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
+                if scdatetime.has_locale:
+                    locale.setlocale(locale.LC_TIME, scdatetime.en_US_norm)
             except Exception:
-                sbdatetime.has_locale = False
+                scdatetime.has_locale = False
 
         strt = ""
         try:
@@ -143,19 +143,18 @@ class sbdatetime(datetime.datetime):
                     strt = self.strftime(settings.TIME_PRESET)
         finally:
             try:
-                if sbdatetime.has_locale:
+                if scdatetime.has_locale:
                     locale.setlocale(locale.LC_TIME, "")
             except Exception:
-                sbdatetime.has_locale = False
+                scdatetime.has_locale = False
 
         return strt
 
     # display Date in SickChill Format
     @static_or_instance
-    def sbfdate(self, dt=None, d_preset=None):
+    def scfdate(self, dt=None, d_preset=None):
         """
         Display date in SC format
-        TODO: Rename this to srfdate
 
         :param dt: datetime object
         :param d_preset: Preset date format
@@ -193,10 +192,9 @@ class sbdatetime(datetime.datetime):
 
     # display Datetime in SickChill Format
     @static_or_instance
-    def sbfdatetime(self, dt=None, show_seconds=False, d_preset=None, t_preset=None):
+    def scfdatetime(self, dt=None, show_seconds=False, d_preset=None, t_preset=None):
         """
         Show datetime in SC format
-        TODO: Rename this to srfdatetime
 
         :param dt: datetime object
         :param show_seconds: Boolean, show seconds as well
@@ -219,14 +217,14 @@ class sbdatetime(datetime.datetime):
                     else:
                         strd = dt.strftime(settings.DATE_PRESET)
                     try:
-                        if sbdatetime.has_locale:
+                        if scdatetime.has_locale:
                             locale.setlocale(locale.LC_TIME, "en_US")
                     except Exception:
                         try:
-                            if sbdatetime.has_locale:
-                                locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
+                            if scdatetime.has_locale:
+                                locale.setlocale(locale.LC_TIME, scdatetime.en_US_norm)
                         except Exception:
-                            sbdatetime.has_locale = False
+                            scdatetime.has_locale = False
                     if t_preset is not None:
                         strd += ", " + dt.strftime(t_preset)
                     elif show_seconds:
@@ -239,14 +237,14 @@ class sbdatetime(datetime.datetime):
                 else:
                     strd = self.strftime(settings.DATE_PRESET)
                 try:
-                    if sbdatetime.has_locale:
+                    if scdatetime.has_locale:
                         locale.setlocale(locale.LC_TIME, "en_US")
                 except Exception:
                     try:
-                        if sbdatetime.has_locale:
-                            locale.setlocale(locale.LC_TIME, sbdatetime.en_US_norm)
+                        if scdatetime.has_locale:
+                            locale.setlocale(locale.LC_TIME, scdatetime.en_US_norm)
                     except Exception:
-                        sbdatetime.has_locale = False
+                        scdatetime.has_locale = False
                 if t_preset is not None:
                     strd += ", " + self.strftime(t_preset)
                 elif show_seconds:
@@ -257,9 +255,21 @@ class sbdatetime(datetime.datetime):
             strd = "UNK"
         finally:
             try:
-                if sbdatetime.has_locale:
+                if scdatetime.has_locale:
                     locale.setlocale(locale.LC_TIME, "")
             except Exception:
-                sbdatetime.has_locale = False
+                scdatetime.has_locale = False
 
         return strd
+
+
+def sctimeago(date: datetime, base: bool = False) -> str:
+    """return a timeago string using sickchill timezone data"""
+    if base:
+        tz = datetime.timezone
+        now = datetime.datetime.now()
+    else:
+        tz = sc_timezone
+        now = scdatetime.now()
+
+    return timeago.format(date, now, tz)

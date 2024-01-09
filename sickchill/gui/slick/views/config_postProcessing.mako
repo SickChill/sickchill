@@ -1,4 +1,4 @@
-<%inherit file="/layouts/config.mako"/>
+<%inherit file="/layouts/config.mako" />
 <%!
     import os.path
     import datetime
@@ -37,7 +37,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="process_automatically" id="process_automatically" ${('', 'checked="checked"')[bool(settings.PROCESS_AUTOMATICALLY)]}/>
+                                        <input type="checkbox" name="process_automatically" id="process_automatically" ${checked(settings.PROCESS_AUTOMATICALLY)}/>
                                         <label for="process_automatically">${_('enable the automatic post processor to scan and process any files in your Post Processing Dir')}?</label>
                                     </div>
                                 </div>
@@ -82,7 +82,7 @@
                                         <select name="process_method" id="process_method" class="form-control input-sm input350" title="process_method">
                                             <% process_method_text = {'copy': "Copy", 'move': "Move", 'hardlink': "Hard Link", 'symlink' : "Symbolic Link", 'symlink_reversed' : "Symbolic Link Reversed"} %>
                                             % for curAction in ('copy', 'move', 'hardlink', 'symlink', 'symlink_reversed'):
-                                                <option value="${curAction}" ${('', 'selected="selected"')[settings.PROCESS_METHOD == curAction]}>${process_method_text[curAction]}</option>
+                                                <option value="${curAction}" ${selected(settings.PROCESS_METHOD == curAction)}>${process_method_text[curAction]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -107,7 +107,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="number" min="10" step="1" name="autopostprocessor_frequency" id="autopostprocessor_frequency" value="${settings.AUTOPOSTPROCESSOR_FREQUENCY}" class="form-control input-sm input75" title="autopostprocessor_frequency"/>
+                                        <input type="number" min="10" step="1" name="autopostprocessor_frequency" id="autopostprocessor_frequency" value="${settings.AUTOPOSTPROCESSOR_FREQUENCY}" class="form-control input-sm input75" title="autopostprocessor_frequency" />
                                     </div>
                                 </div>
                                 <div class="row">
@@ -123,7 +123,7 @@
                                 <label class="component-title">${_('Postpone post processing')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" ${('', 'checked="checked"')[bool(settings.POSTPONE_IF_SYNC_FILES)]}/>
+                                <input type="checkbox" name="postpone_if_sync_files" id="postpone_if_sync_files" ${checked(settings.POSTPONE_IF_SYNC_FILES)}/>
                                 <label for="postpone_if_sync_files">${_('wait to process a folder if sync files are present.')}</label>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="sync_files" id="sync_files" value="${settings.SYNC_FILES}" class="form-control input-sm input350" autocapitalize="off" title="sync_files"/>
+                                        <input type="text" name="sync_files" id="sync_files" value="${settings.SYNC_FILES}" class="form-control input-sm input350" autocapitalize="off" title="sync_files" />
                                     </div>
                                 </div>
                                 <div class="row">
@@ -151,7 +151,7 @@
                                 <label class="component-title">${_('Rename Episodes')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" name="rename_episodes" id="rename_episodes" ${('', 'checked="checked"')[bool(settings.RENAME_EPISODES)]}/>
+                                <input type="checkbox" name="rename_episodes" id="rename_episodes" ${checked(settings.RENAME_EPISODES)}/>
                                 <label for="rename_episodes">${_('rename episode using the Episode Naming settings?')}</label>
                             </div>
                         </div>
@@ -161,7 +161,7 @@
                                 <label class="component-title">${_('Create missing show directories')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" name="create_missing_show_dirs" id="create_missing_show_dirs" ${('', 'checked="checked"')[bool(settings.CREATE_MISSING_SHOW_DIRS)]}/>
+                                <input type="checkbox" name="create_missing_show_dirs" id="create_missing_show_dirs" ${checked(settings.CREATE_MISSING_SHOW_DIRS)}/>
                                 <label for="create_missing_show_dirs">${_('create missing show directories when they get deleted')}</label>
                             </div>
                         </div>
@@ -171,7 +171,7 @@
                                 <label class="component-title">${_('Add shows without directory')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" name="add_shows_wo_dir" id="add_shows_wo_dir" ${('', 'checked="checked"')[bool(settings.ADD_SHOWS_WO_DIR)]}/>
+                                <input type="checkbox" name="add_shows_wo_dir" id="add_shows_wo_dir" ${checked(settings.ADD_SHOWS_WO_DIR)}/>
                                 <label for="add_shows_wo_dir">${_('add shows without creating a directory (not recommended)')}</label>
                             </div>
                         </div>
@@ -181,22 +181,19 @@
                                 <label class="component-title">${_('Move associated files')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" class="enabler" name="move_associated_files" id="move_associated_files" ${('', 'checked="checked"')[bool(settings.MOVE_ASSOCIATED_FILES)]}/>
+                                <input type="checkbox" class="enabler" name="move_associated_files" id="move_associated_files" ${checked(settings.MOVE_ASSOCIATED_FILES)}/>
                                 <label for="move_associated_files">${_('move associated (srt/srr/sfv/etc) files while post processing?')}</label>
                             </div>
                         </div>
 
-                        <div class="field-pair row" id="content_move_associated_files">
+                        <div class="field-pair row" id="content_move_associated_files" ${selected(settings.MOVE_ASSOCIATED_FILES)}>
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                 <label class="component-title">${_('Rename .nfo file')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" name="nfo_rename" id="nfo_rename" ${('', 'checked="checked"')[bool(settings.NFO_RENAME)]}/>
+                                <input type="checkbox" name="nfo_rename" id="nfo_rename" ${checked(settings.NFO_RENAME)}/>
                                 <label for="nfo_rename">${_('rename the original .nfo file to .nfo-orig to avoid conflicts?')}</label>
                             </div>
-                        </div>
-
-                        <div class="field-pair row">
                             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                 <label class="component-title">${_('Associated file extensions')}</label>
                             </div>
@@ -220,7 +217,7 @@
                                 <label class="component-title">${_('Delete non associated files')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" name="delete_non_associated_files" id="delete_non_associated_files" ${('', 'checked="checked"')[bool(settings.DELETE_NON_ASSOCIATED_FILES)]}/>
+                                <input type="checkbox" name="delete_non_associated_files" id="delete_non_associated_files" ${checked(settings.DELETE_NON_ASSOCIATED_FILES)}/>
                                 <label for="delete_non_associated_files">${_('delete non associated files while post processing?')}</label>
                             </div>
                         </div>
@@ -232,7 +229,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${('', 'checked="checked"')[bool(settings.AIRDATE_EPISODES)]}/>
+                                        <input type="checkbox" name="airdate_episodes" id="airdate_episodes" ${checked(settings.AIRDATE_EPISODES)}/>
                                         <label for="airdate_episodes">${_('set last modified file date to the date that the episode aired?')}</label>
                                     </div>
                                 </div>
@@ -253,7 +250,7 @@
                                     <div class="col-md-12">
                                         <select name="file_timestamp_timezone" id="file_timestamp_timezone" class="form-control input-sm input350">
                                             % for curTimezone in (_('local'), _('network')):
-                                                <option value="${curTimezone}" ${('', 'selected="selected"')[settings.FILE_TIMESTAMP_TIMEZONE == curTimezone]}>${curTimezone}</option>
+                                                <option value="${curTimezone}" ${selected(settings.FILE_TIMESTAMP_TIMEZONE == curTimezone)}>${curTimezone}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -279,12 +276,12 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <select name="unpack" id="unpack" class="form-control input-sm input350" title="unpack">
-                                              % for value, description in unpackStrings.items():
-                                                <option value="${value}" ${('', 'selected="selected"')[int(settings.UNPACK) == value]}>
-                                                    ${description}
-                                                </option>
-                                              % endfor
+                                            <select name="unpack" id="unpack" class="form-control input-sm input350 enabler" title="unpack">
+                                                % for value, description in unpackStrings.items():
+                                                    <option value="${value}" ${selected(int(settings.UNPACK) == value)}>
+                                                        ${description}
+                                                    </option>
+                                                % endfor
                                             </select>
                                         </div>
                                     </div>
@@ -302,7 +299,7 @@
                                     % endif
                                 </div>
                             </div>
-                            <div id="content_unpack">
+                            <div id="content_unpack" ${hidden(settings.UNPACK)}>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
                                         <label class="component-title">${_('Unpack Directory')}</label>
@@ -366,7 +363,7 @@
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${('', 'checked="checked"')[bool(settings.DELRARCONTENTS)]}/>
+                                                <input type="checkbox" name="del_rar_contents" id="del_rar_contents" ${checked(settings.DELRARCONTENTS)}/>
                                                 <label for="del_rar_contents">${_('delete content of RAR files, even if Process Method not set to move?')}</label>
                                             </div>
                                         </div>
@@ -387,7 +384,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="no_delete" id="no_delete" ${('', 'checked="checked"')[bool(settings.NO_DELETE)]}/>
+                                        <input type="checkbox" name="no_delete" id="no_delete" ${checked(settings.NO_DELETE)}/>
                                         <label for="no_delete">${_('leave empty folders when Post Processing?')}</label>
                                     </div>
                                 </div>
@@ -408,15 +405,15 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input type="checkbox" name="processor_follow_symlinks" id="processor_follow_symlinks"
-                                            ${('', 'checked="checked"')[bool(settings.PROCESSOR_FOLLOW_SYMLINKS)]}/>
+                                            ${checked(settings.PROCESSOR_FOLLOW_SYMLINKS)}/>
                                         <label for="processor_follow_symlinks">${_('follow down symbolic links in download directory?')}</label>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label><b>${_('warning')}:</b>&nbsp;${_('<b>EXPERTS ONLY.</b><br>'
-                                                'Enable only if you know what <b>circular symbolic links</b> are,<br>'
-                                                'and can <b>verify that you have none</b>.')}</label>
+                                        'Enable only if you know what <b>circular symbolic links</b> are,<br>'
+                                        'and can <b>verify that you have none</b>.')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -429,7 +426,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" name="use_icacls" id="use_icacls" ${('', 'checked="checked"')[bool(settings.USE_ICACLS)]}/>
+                                        <input type="checkbox" name="use_icacls" id="use_icacls" ${checked(settings.USE_ICACLS)}/>
                                         <label for="use_icacls">${_('Windows only')}</label>
                                     </div>
                                 </div>
@@ -448,7 +445,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="extra_scripts" value="${'|'.join(settings.EXTRA_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off"  title="extra_script"/>
+                                        <input type="text" name="extra_scripts" value="${'|'.join(settings.EXTRA_SCRIPTS)}" class="form-control input-sm input350" autocapitalize="off"  title="extra_script" />
                                     </div>
                                 </div>
                                 <div class="row">
@@ -493,9 +490,9 @@
                                     % if cur_preset == settings.NAMING_PATTERN:
                                         <% is_custom = False %>
                                     % endif
-                                        <option id="${cur_preset}" ${('', 'selected="selected"')[settings.NAMING_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                        <option id="${cur_preset}" ${selected(settings.NAMING_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                     % endfor
-                                    <option id="${settings.NAMING_PATTERN}" ${('', 'selected="selected"')[bool(is_custom)]}>Custom...</option>
+                                    <option id="${settings.NAMING_PATTERN}" ${selected(is_custom)}>Custom...</option>
                                 </select>
                             </div>
                         </div>
@@ -507,7 +504,7 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="naming_pattern" id="naming_pattern" value="${settings.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off" title="naming_pattern"/>
+                                            <input type="text" name="naming_pattern" id="naming_pattern" value="${settings.NAMING_PATTERN}" class="form-control input-sm input350" autocapitalize="off" title="naming_pattern" />
                                             <span class="displayshow-icon-legend" id="show_naming_key" title="${_('Toggle Naming Legend')}" class="legend"></span>
                                         </div>
                                     </div>
@@ -708,7 +705,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <select id="naming_multi_ep" name="naming_multi_ep" class="form-control input-sm input350" title="naming_multi_ep">
                                     % for cur_multi_ep in sorted(MULTI_EP_STRINGS.items(), key=lambda x: x[1]):
-                                        <option value="${cur_multi_ep[0]}" ${('', 'selected="selected"')[cur_multi_ep[0] == settings.NAMING_MULTI_EP]}>${cur_multi_ep[1]}</option>
+                                        <option value="${cur_multi_ep[0]}" ${selected(cur_multi_ep[0] == settings.NAMING_MULTI_EP)}>${cur_multi_ep[1]}</option>
                                     % endfor
                                 </select>
                             </div>
@@ -744,7 +741,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" id="naming_strip_year"  name="naming_strip_year" ${('', 'checked="checked"')[bool(settings.NAMING_STRIP_YEAR)]}/>
+                                        <input type="checkbox" id="naming_strip_year"  name="naming_strip_year" ${checked(settings.NAMING_STRIP_YEAR)}/>
                                         <label for="naming_strip_year">${_('remove the TV show\'s year when renaming the file?')}</label>
                                     </div>
                                 </div>
@@ -763,7 +760,7 @@
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="checkbox" id="naming_no_brackets"  name="naming_no_brackets" ${('', 'checked="checked"')[bool(settings.NAMING_NO_BRACKETS)]}/>
+                                        <input type="checkbox" id="naming_no_brackets"  name="naming_no_brackets" ${checked(settings.NAMING_NO_BRACKETS)}/>
                                         <label for="naming_no_brackets">${_('No brackets on the TV show\'s year when renaming the file?')}</label>
                                     </div>
                                 </div>
@@ -775,12 +772,12 @@
                                 <label class="component-title">${_('Custom Air-By-Date')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" class="enabler" id="naming_custom_abd" name="naming_custom_abd" ${('', 'checked="checked"')[bool(settings.NAMING_CUSTOM_ABD)]}/>
+                                <input type="checkbox" class="enabler" id="naming_custom_abd" name="naming_custom_abd" ${checked(settings.NAMING_CUSTOM_ABD)}/>
                                 <label for="naming_custom_abd">${_('name air-by-date shows differently than regular shows?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_naming_custom_abd">
+                        <div id="content_naming_custom_abd" ${hidden(settings.NAMING_CUSTOM_ABD)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -794,9 +791,9 @@
                                         % if cur_preset == settings.NAMING_ABD_PATTERN:
                                             <% is_abd_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected="selected"')[settings.NAMING_ABD_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${selected(settings.NAMING_ABD_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_ABD_PATTERN}" ${('', 'selected="selected"')[bool(is_abd_custom)]}>Custom...</option>
+                                        <option id="${settings.NAMING_ABD_PATTERN}" ${selected(is_abd_custom)}>Custom...</option>
                                     </select>
                                 </div>
                             </div>
@@ -808,7 +805,7 @@
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12"></div>
                                     <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                         <input type="text" name="naming_abd_pattern" id="naming_abd_pattern" value="${settings.NAMING_ABD_PATTERN}"
-                                               class="form-control input-sm input350" autocapitalize="off" title="naming_abd_pattern"/>
+                                               class="form-control input-sm input350" autocapitalize="off" title="naming_abd_pattern" />
                                         <span class="displayshow-icon-legend" id="show_naming_abd_key" title="${_('Toggle ABD Naming Legend')}" class="legend"></span>
                                     </div>
                                 </div>
@@ -976,12 +973,12 @@
                                 <label class="component-title">${_('Custom Sports')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" class="enabler" id="naming_custom_sports" name="naming_custom_sports" ${('', 'checked="checked"')[bool(settings.NAMING_CUSTOM_SPORTS)]}/>
+                                <input type="checkbox" class="enabler" id="naming_custom_sports" name="naming_custom_sports" ${checked(settings.NAMING_CUSTOM_SPORTS)}/>
                                 <label for="naming_custom_sports" class="component-desc">${_('name sports shows differently than regular shows?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_naming_custom_sports">
+                        <div id="content_naming_custom_sports" ${hidden(settings.NAMING_CUSTOM_SPORTS)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -995,9 +992,9 @@
                                         % if cur_preset == settings.NAMING_SPORTS_PATTERN:
                                             <% is_sports_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected="selected"')[settings.NAMING_SPORTS_PATTERN == cur_preset]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${selected(settings.NAMING_SPORTS_PATTERN == cur_preset)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_SPORTS_PATTERN}" ${('', 'selected="selected"')[bool(is_sports_custom)]}>Custom...</option>
+                                        <option id="${settings.NAMING_SPORTS_PATTERN}" ${selected(is_sports_custom)}>Custom...</option>
                                     </select>
                                 </div>
                             </div>
@@ -1177,12 +1174,12 @@
                                 <label class="component-title">${_('Custom Anime')}</label>
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <input type="checkbox" class="enabler" id="naming_custom_anime" name="naming_custom_anime" ${('', 'checked="checked"')[bool(settings.NAMING_CUSTOM_ANIME)]}/>
+                                <input type="checkbox" class="enabler" id="naming_custom_anime" name="naming_custom_anime" ${checked(settings.NAMING_CUSTOM_ANIME)}/>
                                 <label for="naming_custom_anime">${_('name anime shows differently than regular shows?')}</label>
                             </div>
                         </div>
 
-                        <div id="content_naming_custom_anime">
+                        <div id="content_naming_custom_anime" ${hidden(settings.NAMING_CUSTOM_ANIME)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -1196,9 +1193,9 @@
                                         % if cur_preset == settings.NAMING_ANIME_PATTERN:
                                             <% is_anime_custom = False %>
                                         % endif
-                                            <option id="${cur_preset}" ${('', 'selected="selected"')[cur_preset == settings.NAMING_ANIME_PATTERN]}>${os.path.join(tmp['dir'], tmp['name'])}</option>
+                                            <option id="${cur_preset}" ${selected(cur_preset == settings.NAMING_ANIME_PATTERN)}>${os.path.join(tmp['dir'], tmp['name'])}</option>
                                         % endfor
-                                        <option id="${settings.NAMING_ANIME_PATTERN}" ${('', 'selected="selected"')[bool(is_anime_custom)]}>Custom...</option>
+                                        <option id="${settings.NAMING_ANIME_PATTERN}" ${selected(is_anime_custom)}>Custom...</option>
                                     </select>
                                 </div>
                             </div>
@@ -1360,7 +1357,7 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <select id="naming_anime_multi_ep" name="naming_anime_multi_ep" class="form-control input-sm input350" title="naming_anime_multi_ep">
                                         % for cur_multi_ep in sorted(MULTI_EP_STRINGS.items(), key=lambda x: x[1]):
-                                            <option value="${cur_multi_ep[0]}" ${('', 'selected="selected" class="selected"')[cur_multi_ep[0] == settings.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
+                                            <option value="${cur_multi_ep[0]}" ${('', 'class="selected" selected')[cur_multi_ep[0] == settings.NAMING_ANIME_MULTI_EP]}>${cur_multi_ep[1]}</option>
                                         % endfor
                                     </select>
                                 </div>
@@ -1397,7 +1394,7 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="radio" name="naming_anime" id="naming_anime" value="1" ${('', 'checked="checked"')[settings.NAMING_ANIME == 1]}/>
+                                            <input type="radio" name="naming_anime" id="naming_anime" value="1" ${checked(settings.NAMING_ANIME == 1)}/>
                                             <label for="naming_anime">${_('add the absolute number to the season/episode format?')}</label>
                                         </div>
                                     </div>
@@ -1416,7 +1413,7 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="radio" name="naming_anime" id="naming_anime_only" value="2" ${('', 'checked="checked"')[settings.NAMING_ANIME == 2]}/>
+                                            <input type="radio" name="naming_anime" id="naming_anime_only" value="2" ${checked(settings.NAMING_ANIME == 2)}/>
                                             <label for="naming_anime_only">${_('replace season/episode format with absolute number')}</label>
                                         </div>
                                     </div>
@@ -1435,7 +1432,7 @@
                                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="radio" name="naming_anime" id="naming_anime_none" value="3" ${('', 'checked="checked"')[settings.NAMING_ANIME in (3, None)]}/>
+                                            <input type="radio" name="naming_anime" id="naming_anime_none" value="3" ${checked(settings.NAMING_ANIME in (3, None))}/>
                                             <label for="naming_anime_none">${_('don\'t include the absolute number')}</label>
                                         </div>
                                     </div>
@@ -1509,61 +1506,61 @@
                                         <div class="metadata_options_wrapper input350">
                                             <div class="metadata_options">
                                                 <label for="${cur_id}_show_metadata">
-                                                    <input type="checkbox" class="metadata_checkbox" id="${cur_id}_show_metadata" ${('', 'checked="checked"')[bool(cur_metadata_inst.show_metadata)]}/>
+                                                    <input type="checkbox" class="metadata_checkbox" id="${cur_id}_show_metadata" ${checked(cur_metadata_inst.show_metadata)}/>
                                                     &nbsp;Show Metadata
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_show_metadata">${cur_metadata_inst.eg_show_metadata}</span>
                                                 </label>
                                                 <label for="${cur_id}_episode_metadata">
-                                                    <input type="checkbox" class="metadata_checkbox" id="${cur_id}_episode_metadata" ${('', 'checked="checked"')[bool(cur_metadata_inst.episode_metadata)]}/>
+                                                    <input type="checkbox" class="metadata_checkbox" id="${cur_id}_episode_metadata" ${checked(cur_metadata_inst.episode_metadata)}/>
                                                     &nbsp;Episode Metadata
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_episode_metadata">${cur_metadata_inst.eg_episode_metadata}</span>
                                                 </label>
                                                 <label for="${cur_id}_fanart">
-                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_fanart" ${('', 'checked="checked"')[bool(cur_metadata_inst.fanart)]}/>
+                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_fanart" ${checked(cur_metadata_inst.fanart)}/>
                                                     &nbsp;Show Fanart
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_fanart">${cur_metadata_inst.eg_fanart}</span>
                                                 </label>
                                                 <label for="${cur_id}_poster">
-                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_poster" ${('', 'checked="checked"')[bool(cur_metadata_inst.poster)]}/>
+                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_poster" ${checked(cur_metadata_inst.poster)}/>
                                                     &nbsp;Show Poster
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_poster">${cur_metadata_inst.eg_poster}</span>
                                                 </label>
                                                 <label for="${cur_id}_banner">
-                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_banner" ${('', 'checked="checked"')[bool(cur_metadata_inst.banner)]}/>
+                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_banner" ${checked(cur_metadata_inst.banner)}/>
                                                     &nbsp;Show Banner
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_banner">${cur_metadata_inst.eg_banner}</span>
                                                 </label>
                                                 <label for="${cur_id}_episode_thumbnails">
-                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_episode_thumbnails" ${('', 'checked="checked"')[bool(cur_metadata_inst.episode_thumbnails)]}/>
+                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_episode_thumbnails" ${checked(cur_metadata_inst.episode_thumbnails)}/>
                                                     &nbsp;Episode Thumbnails
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_episode_thumbnails">${cur_metadata_inst.eg_episode_thumbnails}</span>
                                                 </label>
                                                 <label for="${cur_id}_season_posters">
-                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_posters" ${('', 'checked="checked"')[bool(cur_metadata_inst.season_posters)]}/>
+                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_posters" ${checked(cur_metadata_inst.season_posters)}/>
                                                     &nbsp;Season Posters
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_season_posters">${cur_metadata_inst.eg_season_posters}</span>
                                                 </label>
                                                 <label for="${cur_id}_season_banners">
-                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_banners" ${('', 'checked="checked"')[bool(cur_metadata_inst.season_banners)]}/>
+                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_banners" ${checked(cur_metadata_inst.season_banners)}/>
                                                     &nbsp;Season Banners
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_season_banners">${cur_metadata_inst.eg_season_banners}</span>
                                                 </label>
                                                 <label for="${cur_id}_season_all_poster">
-                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_poster" ${('', 'checked="checked"')[bool(cur_metadata_inst.season_all_poster)]}/>
+                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_poster" ${checked(cur_metadata_inst.season_all_poster)}/>
                                                     &nbsp;Season All Poster
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_season_all_poster">${cur_metadata_inst.eg_season_all_poster}</span>
                                                 </label>
                                                 <label for="${cur_id}_season_all_banner">
-                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_banner" ${('', 'checked="checked"')[bool(cur_metadata_inst.season_all_banner)]}/>
+                                                    <input type="checkbox" class="float-left metadata_checkbox" id="${cur_id}_season_all_banner" ${checked(cur_metadata_inst.season_all_banner)}/>
                                                     &nbsp;Season All Banner
                                                     <br/>
                                                     &nbsp;<span id="${cur_id}_eg_season_all_banner">${cur_metadata_inst.eg_season_all_banner}</span>

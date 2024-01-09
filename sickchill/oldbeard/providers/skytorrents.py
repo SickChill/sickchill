@@ -1,7 +1,5 @@
 from urllib.parse import urljoin
 
-import validators
-
 from sickchill import logger
 from sickchill.helper.common import try_int
 from sickchill.oldbeard import tvcache
@@ -27,7 +25,7 @@ class Provider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, search_params={"RSS": [""]})
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         for mode in search_strings:
             items = []
@@ -38,8 +36,8 @@ class Provider(TorrentProvider):
 
                 search_url = (self.urls["search"], self.urls["rss"])[mode == "RSS"]
                 if self.custom_url:
-                    if validators.url(self.custom_url) != True:
-                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                    if self.invalid_url(self.custom_url):
+                        logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
@@ -71,7 +69,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                             title, seeders, leechers
                                         )
                                     )

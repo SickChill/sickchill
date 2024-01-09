@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
 %>
@@ -31,7 +31,7 @@
     <div class="row">
         <div class="col-md-12">
             <h3>${_('Find Propers Search')}:</h3>
-            <a class="btn ${('disabled', '')[settings.DOWNLOAD_PROPERS]}" href="${scRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
+            <a class="btn ${disabled(settings.DOWNLOAD_PROPERS)}" href="${scRoot}/manage/manageSearches/forceFindPropers"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
             ${(_('Not in progress'), _('In Progress'))[findPropersStatus] if settings.DOWNLOAD_PROPERS else _('Propers search disabled')}
         </div>
     </div>
@@ -39,7 +39,7 @@
     <div class="row">
         <div class="col-md-12">
             <h3>${_('Subtitle Search')}:</h3>
-            <a class="btn ${('disabled', '')[settings.USE_SUBTITLES]}" href="${scRoot}/manage/manageSearches/forceSubtitlesFinder"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
+            <a class="btn ${disabled(settings.USE_SUBTITLES)}" href="${scRoot}/manage/manageSearches/forceSubtitlesFinder"><i class="icon-exclamation-sign"></i> ${_('Force')}</a>
             ${(_('Not in progress'), _('In Progress'))[subtitlesFinderStatus] if settings.USE_SUBTITLES else _('Subtitle search disabled')}
         </div>
     </div>
@@ -47,7 +47,7 @@
     <div class="row">
         <div class="col-md-12">
             <h3>${_('Auto Post Processor')}:</h3>
-            <a class="btn ${('disabled', '')[settings.PROCESS_AUTOMATICALLY]}" href="${scRoot}/manage/manageSearches/forceAutoPostProcess">
+            <a class="btn ${disabled(settings.PROCESS_AUTOMATICALLY)}" href="${scRoot}/manage/manageSearches/forceAutoPostProcess">
                 <i class="icon-exclamation-sign"></i> ${_('Force')}
             </a>
             ${(_('Not in progress'), _('In Progress'))[autoPostProcessorStatus] if settings.PROCESS_AUTOMATICALLY else _('Auto Post Processor disabled')}

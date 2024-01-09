@@ -58,7 +58,7 @@ class ImageSelector(Home):
         @return: redirect
         """
         url = self.get_query_argument("url")
-        regex = r"^https?://(artworks.thetvdb.com|assets.fanart.tv|image.tmdb.org)/.*"
+        regex = r"^https?://(artworks\.thetvdb\.com|assets\.fanart\.tv|image\.tmdb\.org)/.*"
         if not re.match(regex, url):
             return self.write_error(404)
 

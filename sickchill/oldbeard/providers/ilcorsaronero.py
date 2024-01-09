@@ -173,7 +173,7 @@ class Provider(TorrentProvider):
             hash=info_hash, title=quote_plus(title), trackers="http://tracker.tntvillage.scambioetico.org:2710/announce"
         )
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, episode_object=None):
         results = []
 
         for mode in search_params:
@@ -273,7 +273,7 @@ class Provider(TorrentProvider):
                                 # Filter unseeded torrent
                                 if seeders < self.minseed or leechers < self.minleech:
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                             title, seeders, leechers
                                         )
                                     )

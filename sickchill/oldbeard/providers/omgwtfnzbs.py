@@ -49,7 +49,7 @@ class Provider(NZBProvider):
     def _get_size(self, item):
         return try_int(item["sizebytes"], -1)
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         if not self._check_auth():
             return results

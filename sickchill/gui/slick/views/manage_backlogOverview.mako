@@ -1,8 +1,8 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     import datetime
     from sickchill import settings
-    from sickchill.oldbeard import sbdatetime, network_timezones
+    from sickchill.oldbeard import scdatetime, network_timezones
     from sickchill.oldbeard.common import WANTED, SNATCHED, SNATCHED_PROPER, SNATCHED_BEST, Overview, Quality
     from sickchill.helper.common import episode_num
 %>
@@ -80,33 +80,33 @@
                         <tr class="seasoncols"><th>${_('Episode')}</th><th>${_('Name')}</th><th class="nowrap">${_('Airdate')}</th></tr>
 
                         % for curResult in showSQLResults[curShow.indexerid]:
-                            <%
-                                whichStr = episode_num(curResult['season'], curResult['episode']) or episode_num(curResult['season'], curResult['episode'], numbering='absolute')
-                                if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
-                                    continue
+                        <%
+                            whichStr = episode_num(curResult['season'], curResult['episode']) or episode_num(curResult['season'], curResult['episode'], numbering='absolute')
+                            if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
+                                continue
 
-                                if not showQualSnatched(curShow) and showCats[curShow.indexerid][whichStr] == Overview.SNATCHED:
-                                    continue
-                            %>
+                            if not showQualSnatched(curShow) and showCats[curShow.indexerid][whichStr] == Overview.SNATCHED:
+                                continue
+                        %>
                             <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
-                                <td class="tableleft" align="center">${whichStr}</td>
-                                <td class="tableright" align="center" class="nowrap">
+                                <td class="tableleft text-center">${whichStr}</td>
+                                <td class="tableright text-center nowrap">
                                     ${curResult["name"]}
                                 </td>
                                 <td>
-                                    % try:
-                                        % if int(curResult['airdate']) > 1:
-                                            <% airDate = datetime.datetime.fromordinal(curResult['airdate']) %>
-                                            % if airDate > datetime.datetime.utcfromtimestamp(0) or curShow.network:
-                                                <% airDate = sbdatetime.sbdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
-                                            % endif
-                                            <time datetime="${airDate.isoformat('T')}" class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
-                                        % else:
-                                            Never
-                                        % endif
-                                    % except:
-                                        Unknown
-                                    % endtry
+                                % try:
+                                    % if int(curResult['airdate']) > 1:
+                                    <% air_date = datetime.datetime.fromordinal(curResult['airdate']) %>
+                                    % if air_date > datetime.datetime.utcfromtimestamp(0) and curShow.network:
+                                        <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
+                                    % endif
+                                        <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
+                                    % else:
+                                        Never
+                                    % endif
+                                % except:
+                                    Unknown
+                                % endtry
                                 </td>
                             </tr>
                         % endfor

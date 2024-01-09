@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: "27 10 * * 4"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     name: Analyze
@@ -24,21 +28,30 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
+        uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql.yml
           queries: +security-and-quality
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
+#  gitguardian:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: GitGuardian scan
+#        uses: GitGuardian/ggshield-action@v1.19.1
+#        env:
+#          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+#          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+#          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+#          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+#          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}

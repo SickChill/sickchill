@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     import timeago
     from datetime import datetime
@@ -19,8 +19,8 @@
                         <span>${_('Sort By')}:</span>
                         <select id="showsort" class="form-control form-control-inline input-sm" title="Show Sort">
                             <option value="name">${_('Name')}</option>
-                            <option value="original" selected="selected">${_('Original')}</option>
-                            <option value="rank" selected="selected">${_('Rank')}</option>
+                            <option value="original">${_('Original')}</option>
+                            <option value="rank" selected>${_('Rank')}</option>
                             <option value="votes">${_('Votes')}</option>
                             <option value="rating">% ${_('Rating')}</option>
                             <option value="rating_votes">% ${_('Rating > Votes')}</option>
@@ -30,7 +30,7 @@
                     <label>
                         <span>${_('Sort Order')}:</span>
                         <select id="showsortdirection" class="form-control form-control-inline input-sm" title="Show Sort Direction">
-                            <option value="asc" selected="selected">${_('Asc')}</option>
+                            <option value="asc" selected>${_('Asc')}</option>
                             <option value="desc">${_('Desc')}</option>
                         </select>
                     </label>
@@ -45,7 +45,6 @@
             </div>
         </div>
         <div class="row">
-            <% imdb_tt = {show.imdb_id for show in settings.showList if show.imdb_id} %>
             <div id="popularShows">
                 <div id="container">
                     % if not popular_shows:
@@ -56,25 +55,13 @@
                         </div>
                     % else:
                         % for current_result in popular_shows:
-                            % if not current_result.getID():
-                                <% continue %>
-                            % endif
-
-                            <% current_imdb_id = 'tt' + current_result.getID() %>
-                            % if current_imdb_id in imdb_tt:
-                                <% continue %>
-                            % endif
-
-                            <% current_result.setdefault('rating', '0.0') %>
-                            <% current_result.setdefault('votes', '0') %>
-
                             <div class="trakt_show" data-name="${current_result['title']}" data-rating="${current_result['rating']}"
                                  data-votes="${str(current_result['votes']).replace(',', '')}" data-rank="${current_result['popular tv 100 rank']}">
                                 <div class="traktContainer">
                                     <div class="trakt-image">
                                         <a class="trakt-image" href="${anon_url(imdb_url(current_result))}" target="_blank">
-                                            <img alt="" class="trakt-image" src="${current_result.get_fullsizeURL() or static_url("images/poster.png")}"
-                                                 height="273px" width="186px" onerror="this.src='${static_url("images/poster.png")}'"/>
+                                            <img alt="" class="trakt-image" src="${current_result.get_fullsizeURL() or static_url('images/poster.png')}"
+                                                 height="273px" width="186px" onerror="this.src='${static_url('images/poster.png')}'" />
                                         </a>
                                     </div>
 

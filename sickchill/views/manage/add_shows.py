@@ -4,10 +4,8 @@ import os
 import re
 import traceback
 from operator import itemgetter
-from urllib.parse import unquote_plus
 
 import dateutil.parser
-from tornado.escape import xhtml_unescape
 from tornado.web import HTTPError
 
 import sickchill
@@ -21,6 +19,7 @@ from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
+from sickchill.tv import TVShow
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
@@ -28,23 +27,20 @@ from sickchill.views.routes import Route
 
 @Route("/addShows(/?.*)", name="addShows")
 class AddShows(Home):
-    def index(self, *args_, **kwargs_):
+    def index(self):
         t = PageTemplate(rh=self, filename="addShows.mako")
         return t.render(title=_("Add Shows"), header=_("Add Shows"), topmenu="home", controller="addShows", action="index")
 
-    @staticmethod
-    def sanitizeFileName(name):
-        return sanitize_filename(name)
+    def sanitizeFileName(self):
+        return sanitize_filename(self.get_body_argument("name"))
 
     def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
-        if not lang or lang == "null":
-            lang = settings.INDEXER_DEFAULT_LANGUAGE
-
-        search_term = xhtml_unescape(search_term)
-
-        search_terms = [search_term]
+        search_terms = [self.get_body_argument("search_term")]  # get_arguments to make this a list of terms, we can probably add advanced searching here.
+        lang = self.get_body_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE)
+        indexer = int(self.get_body_argument("indexer", default=settings.INDEXER_DEFAULT))
+        exact = config.checkbox_to_value(self.get_body_argument("exact"))
 
         # If search term ends with what looks like a year, enclose it in ()
         matches = re.match(r"^(.+ |)([12][0-9]{3})$", search_term)
@@ -110,15 +106,9 @@ class AddShows(Home):
 
     def massAddTable(self, rootDir=None):
         t = PageTemplate(rh=self, filename="home_massAddTable.mako")
-
-        if not rootDir:
+        root_dirs = self.get_arguments("rootDir")
+        if not root_dirs:
             return _("No folders selected.")
-        elif not isinstance(rootDir, list):
-            root_dirs = [rootDir]
-        else:
-            root_dirs = rootDir
-
-        root_dirs = [unquote_plus(xhtml_unescape(x)) for x in root_dirs]
 
         if settings.ROOT_DIRS:
             default_index = int(settings.ROOT_DIRS.split("|")[0])
@@ -197,17 +187,14 @@ class AddShows(Home):
         else:
             use_provided_info = False
 
-        # use the given show_dir for the indexer search if available
-        if not show_dir:
-            if search_string:
-                default_show_name = search_string
-            else:
-                default_show_name = ""
-
-        elif not show_name:
-            default_show_name = re.sub(r" \(\d{4}\)", "", os.path.basename(os.path.normpath(show_dir)).replace(".", " "))
-        else:
+        if show_name:
             default_show_name = show_name
+        elif show_dir:
+            default_show_name = re.sub(r" \(\d{4}\)", "", os.path.basename(os.path.normpath(show_dir)).replace(".", " "))
+        elif search_string:
+            default_show_name = search_string
+        else:
+            default_show_name = ""
 
         # carry a list of other dirs if given
         if not other_shows:
@@ -229,8 +216,8 @@ class AddShows(Home):
             provided_indexer_id=provided_indexer_id,
             provided_indexer_name=provided_indexer_name,
             provided_indexer=provided_indexer,
-            whitelist=settings.WHITELIST_DEFAULT.split(","),
-            blacklist=settings.BLACKLIST_DEFAULT.split(","),
+            whitelist=settings.WHITELIST_DEFAULT,
+            blacklist=settings.BLACKLIST_DEFAULT,
             groups=[],
             title=_("New Show"),
             header=_("New Show"),
@@ -239,39 +226,38 @@ class AddShows(Home):
             action="newShow",
         )
 
-    def trendingShows(self, traktList=None):
+    def trendingShows(self):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
-        if not traktList:
-            traktList = ""
+
+        traktList = self.get_argument("traktList", default="anticipated")
+
+        trakt_options = {
+            "anticipated": _("Most Anticipated Shows"),
+            "newshow": _("New Shows"),
+            "newseason": _("Season Premieres"),
+            "trending": _("Trending Shows"),
+            "popular": _("Popular Shows"),
+            "watched": _("Most Watched Shows"),
+            "played": _("Most Played Shows"),
+            "collected": _("Most Collected Shows"),
+        }
+        if settings.TRAKT_ACCESS_TOKEN:
+            trakt_options["recommended"] = _("Recommended Shows")
 
         traktList = traktList.lower()
 
-        if traktList == "trending":
-            page_title = _("Trending Shows")
-        elif traktList == "popular":
-            page_title = _("Popular Shows")
-        elif traktList == "anticipated":
-            page_title = _("Most Anticipated Shows")
-        elif traktList == "collected":
-            page_title = _("Most Collected Shows")
-        elif traktList == "watched":
-            page_title = _("Most Watched Shows")
-        elif traktList == "played":
-            page_title = _("Most Played Shows")
-        elif traktList == "recommended":
-            page_title = _("Recommended Shows")
-        elif traktList == "newshow":
-            page_title = _("New Shows")
-        elif traktList == "newseason":
-            page_title = _("Season Premieres")
-        else:
-            page_title = _("Most Anticipated Shows")
-
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
-        return t.render(title=page_title, header=page_title, enable_anime_options=False, traktList=traktList, controller="addShows", action="trendingShows")
+        return t.render(
+            title=trakt_options[traktList],
+            header=trakt_options[traktList],
+            traktList=traktList,
+            trakt_options=trakt_options,
+            controller="addShows",
+            action="trendingShows",
+        )
 
     def getTrendingShows(self, traktList=None):
         """
@@ -313,8 +299,8 @@ class AddShows(Home):
 
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
-    @staticmethod
-    def getTrendingShowImage(indexerId):
+    def getTrendingShowImage(self):
+        indexerId = self.get_body_argument("indexerId")
         image_url = sickchill.indexer.series_poster_url_by_id(indexerId)
         if image_url:
             image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexerId))
@@ -328,6 +314,16 @@ class AddShows(Home):
         t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
         try:
             popular_shows = imdb_popular.fetch_popular_shows()
+
+            popular_shows = {
+                show
+                for show in popular_shows
+                if show.getID() and show.getID().strip("tt") not in {show.imdb_id.strip("tt") for show in settings.showList if show.imdb_id}
+            }
+            for show in popular_shows:
+                show.setdefault("rating", "0.0")
+                show.setdefault("votes", "0")
+
             imdb_exception = None
         except Exception as error:
             logger.warning(f"Could not get popular shows: {error}")
@@ -401,130 +397,33 @@ class AddShows(Home):
             enable_anime_options=False, title=_("Existing Show"), header=_("Existing Show"), topmenu="home", controller="addShows", action="addExistingShow"
         )
 
-    # noinspection PyUnusedLocal
-    def addShowByID(
-        self,
-        indexer_id,
-        show_name,
-        indexer="TVDB",
-        which_series=None,
-        indexer_lang=None,
-        root_dir=None,
-        default_status=None,
-        quality_preset=None,
-        any_qualities=None,
-        best_qualities=None,
-        season_folders=None,
-        subtitles=None,
-        full_show_path=None,
-        other_shows=None,
-        skip_show=None,
-        provided_indexer=None,
-        anime=None,
-        scene=None,
-        blacklist=None,
-        whitelist=None,
-        default_status_after=None,
-        default_season_folders=None,
-        configure_show_options=None,
-    ):
+    def addShowByID(self):
+        indexer_id = self.get_query_argument("indexer_id")
+        show_name = self.get_query_argument("show_name")
+        indexer = self.get_query_argument("indexer", default="TVDB")
+
+        def add_error(existing: TVShow = None) -> None:
+            title = f"Unable to add {show_name}"
+
+            message = f"Could not add {show_name} with {indexer}:{indexer_id}. We were unable to locate the tvdb id at this time."
+            if existing:
+                message = f"{existing.name} with {existing.indexerid} is already in your show list."
+
+            logger.info(" ".join([title, message]))
+            ui.notifications.error(title, message)
+
+            return self.redirect("/home/")
+
         if indexer != "TVDB":
             indexer_id = helpers.tvdbid_from_remote_id(indexer_id, indexer.upper())
             if not indexer_id:
-                logger.info("Unable to to find tvdb ID to add {0}".format(show_name))
-                ui.notifications.error(
-                    "Unable to add {0}".format(show_name), "Could not add {0}.  We were unable to locate the tvdb id at this time.".format(show_name)
-                )
-                return
+                return add_error()
 
-        indexer_id = try_int(indexer_id)
+        existing = Show.find(settings.showList, indexer_id)
+        if try_int(indexer_id) <= 0 or existing:
+            return add_error(existing)
 
-        if indexer_id <= 0 or Show.find(settings.showList, indexer_id):
-            return
-
-        # Sanitize the parameter anyQualities and bestQualities. As these would normally be passed as lists
-        any_qualities = any_qualities.split(",") if any_qualities else []
-        best_qualities = best_qualities.split(",") if best_qualities else []
-
-        # If configure_show_options is enabled let's use the provided settings
-        if config.checkbox_to_value(configure_show_options):
-            # prepare the inputs for passing along
-            scene = config.checkbox_to_value(scene)
-            anime = config.checkbox_to_value(anime)
-            season_folders = config.checkbox_to_value(season_folders)
-            subtitles = config.checkbox_to_value(subtitles)
-
-            if whitelist:
-                whitelist = short_group_names(whitelist)
-            if blacklist:
-                blacklist = short_group_names(blacklist)
-
-            if not any_qualities:
-                any_qualities = []
-
-            if not best_qualities or try_int(quality_preset, None):
-                best_qualities = []
-
-            if not isinstance(any_qualities, list):
-                any_qualities = [any_qualities]
-
-            if not isinstance(best_qualities, list):
-                best_qualities = [best_qualities]
-
-            quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
-
-            location = root_dir
-
-        else:
-            default_status = settings.STATUS_DEFAULT
-            quality = settings.QUALITY_DEFAULT
-            season_folders = settings.SEASON_FOLDERS_DEFAULT
-            subtitles = settings.SUBTITLES_DEFAULT
-            anime = settings.ANIME_DEFAULT
-            scene = settings.SCENE_DEFAULT
-            default_status_after = settings.STATUS_DEFAULT_AFTER
-
-            if settings.ROOT_DIRS:
-                root_dirs = settings.ROOT_DIRS.split("|")
-                location = root_dirs[int(root_dirs[0]) + 1]
-            else:
-                location = None
-
-        if not location:
-            logger.info("There was an error creating the show, no root directory setting found")
-            return _("No root directories setup, please go back and add one.")
-
-        show_name = sickchill.indexer[1].get_series_by_id(indexer_id, indexer_lang).seriesName
-        show_dir = None
-
-        if not show_name:
-            ui.notifications.error(_("Unable to add show"))
-            return self.redirect("/home/")
-
-        # add the show
-        settings.showQueueScheduler.action.add_show(
-            indexer=1,
-            indexer_id=indexer_id,
-            showDir=show_dir,
-            default_status=default_status,
-            quality=quality,
-            season_folders=season_folders,
-            lang=indexer_lang,
-            subtitles=subtitles,
-            subtitles_sr_metadata=None,
-            anime=anime,
-            scene=scene,
-            paused=None,
-            blacklist=blacklist,
-            whitelist=whitelist,
-            default_status_after=default_status_after,
-            root_dir=location,
-        )
-
-        ui.notifications.message(_("Show added"), _("Adding the specified show {show_name}").format(show_name=show_name))
-
-        # done adding show
-        return self.redirect("/home/")
+        return self.newShow("|".join([str(1), "", indexer_id, ""]), [], search_string=show_name)
 
     def addNewShow(
         self,
@@ -537,15 +436,15 @@ class AddShows(Home):
         bestQualities=None,
         season_folders=None,
         subtitles=None,
-        subtitles_sr_metadata=None,
+        subtitles_sc_metadata=None,
         fullShowPath=None,
         other_shows=None,
         skipShow=None,
         providedIndexer=None,
         anime=None,
         scene=None,
-        blacklist=None,
-        whitelist=None,
+        blacklist=[],
+        whitelist=[],
         defaultStatusAfter=None,
     ):
         """
@@ -553,14 +452,11 @@ class AddShows(Home):
         provided then it forwards back to newShow, if not it goes to /home.
         """
 
-        if not indexerLang:
-            indexerLang = settings.INDEXER_DEFAULT_LANGUAGE
+        indexerLang = self.get_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE)
 
         # grab our list of other dirs if given
-        if not other_shows:
-            other_shows = []
-        elif not isinstance(other_shows, list):
-            other_shows = [other_shows]
+        other_shows = self.get_arguments("other_shows")
+        fullShowPath = self.get_argument("fullShowPath", default=None)
 
         def finishAddShow():
             # if there are no extra shows then go home
@@ -568,15 +464,17 @@ class AddShows(Home):
                 return self.redirect("/home/")
 
             # peel off the next one
-            next_show_dir = other_shows[0]
-            rest_of_show_dirs = other_shows[1:]
+            next_show = other_shows[0]
+            remaining_shows = other_shows[1:]
 
             # go to add the next show
-            return self.newShow(next_show_dir, rest_of_show_dirs)
+            return self.newShow(next_show, remaining_shows)
 
         # if we're skipping then behave accordingly
         if skipShow:
             return finishAddShow()
+        else:
+            whichSeries = self.get_argument("whichSeries")
 
         # sanity check on our inputs
         if (not rootDir and not fullShowPath) or not whichSeries:
@@ -595,19 +493,16 @@ class AddShows(Home):
             indexer = int(series_pieces[1])
             indexer_id = int(series_pieces[3])
             # Show name was sent in UTF-8 in the form
-            show_name = xhtml_unescape(series_pieces[4])
+            show_name = series_pieces[4]
         else:
             # if no indexer was provided use the default indexer set in General settings
-            if not providedIndexer:
-                providedIndexer = settings.INDEXER_DEFAULT
-
-            indexer = int(providedIndexer)
+            indexer = int(self.get_argument("providedIndexer", default=settings.INDEXER_DEFAULT))
             indexer_id = int(whichSeries)
-            show_name = os.path.basename(os.path.normpath(xhtml_unescape(fullShowPath)))
+            show_name = os.path.basename(os.path.normpath(fullShowPath))
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
         if fullShowPath:
-            show_dir = os.path.normpath(xhtml_unescape(fullShowPath))
+            show_dir = os.path.normpath(fullShowPath)
             extra_check_dir = show_dir
         else:
             folder_name = show_name
@@ -620,8 +515,8 @@ class AddShows(Home):
                 except (TypeError, ValueError):
                     logger.info(_("Could not append the show year folder for the show: {0}").format(folder_name))
 
-            show_dir = os.path.join(rootDir, sanitize_filename(xhtml_unescape(folder_name)))
-            extra_check_dir = os.path.join(rootDir, sanitize_filename(xhtml_unescape(show_name)))
+            show_dir = os.path.join(rootDir, sanitize_filename(folder_name))
+            extra_check_dir = os.path.join(rootDir, sanitize_filename(show_name))
 
         # blanket policy - if the dir exists you should have used "add existing show" numbnuts
         if (os.path.isdir(show_dir) or os.path.isdir(extra_check_dir)) and not fullShowPath:
@@ -646,7 +541,7 @@ class AddShows(Home):
         anime = config.checkbox_to_value(anime)
         season_folders = config.checkbox_to_value(season_folders)
         subtitles = config.checkbox_to_value(subtitles)
-        subtitles_sr_metadata = config.checkbox_to_value(subtitles_sr_metadata)
+        subtitles_sc_metadata = config.checkbox_to_value(subtitles_sc_metadata)
 
         if whitelist:
             whitelist = short_group_names(whitelist)
@@ -673,7 +568,7 @@ class AddShows(Home):
             season_folders=season_folders,
             lang=indexerLang,
             subtitles=subtitles,
-            subtitles_sr_metadata=subtitles_sr_metadata,
+            subtitles_sc_metadata=subtitles_sc_metadata,
             anime=anime,
             scene=scene,
             paused=None,
@@ -690,11 +585,17 @@ class AddShows(Home):
     def split_extra_show(extra_show):
         if not extra_show:
             return None, None, None, None
+
         split_vals = extra_show.split("|")
-        if len(split_vals) < 4:
+        if len(split_vals) == 1:
+            indexer = settings.INDEXER_DEFAULT
+            show_dir = split_vals[0]
+            return indexer, show_dir, None, None
+        elif len(split_vals) < 4:
             indexer = split_vals[0]
             show_dir = split_vals[1]
             return indexer, show_dir, None, None
+
         indexer = split_vals[0]
         show_dir = split_vals[1]
         indexer_id = split_vals[2]
@@ -702,19 +603,14 @@ class AddShows(Home):
 
         return indexer, show_dir, indexer_id, show_name
 
-    def addExistingShows(self, shows_to_add, promptForSettings, **kwargs):
+    def addExistingShows(self):
         """
         Receives a dir list and add them. Adds the ones with given TVDB IDs first, then forwards
         along to the newShow page.
         """
 
         # grab a list of other shows to add, if provided
-        if not shows_to_add:
-            shows_to_add = []
-        elif not isinstance(shows_to_add, list):
-            shows_to_add = [shows_to_add]
-
-        shows_to_add = [unquote_plus(xhtml_unescape(x)) for x in shows_to_add]
+        shows_to_add = self.get_arguments("shows_to_add")
 
         indexer_id_given = []
         dirs_only = []
@@ -735,7 +631,7 @@ class AddShows(Home):
                 indexer_id_given.append((int(indexer), show_dir, int(indexer_id), show_name))
 
         # if they want me to prompt for settings then I will just carry on to the newShow page
-        if shows_to_add and config.checkbox_to_value(promptForSettings):
+        if shows_to_add and config.checkbox_to_value(self.get_argument("promptForSettings")):
             return self.newShow(shows_to_add[0], shows_to_add[1:])
 
         # if they don't want me to prompt for settings then I can just add all the nfo shows now

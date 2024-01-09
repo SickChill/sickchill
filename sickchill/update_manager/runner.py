@@ -6,7 +6,6 @@ import time
 
 from sickchill import logger, settings
 from sickchill.helper.exceptions import UpdaterException
-from sickchill.init_helpers import check_installed, git_folder, pyproject_file
 from sickchill.oldbeard import db, helpers, ui
 
 from .pip import PipUpdateManager
@@ -19,15 +18,10 @@ class UpdateManager(object):
 
     def __init__(self):
         self.updater = None
-        self.install_type = None
         self.amActive = False
+        self.updater = None
 
-        self.install_type = self.find_install_type()
-        if self.install_type == "git":
-            self.updater = None
-        elif self.install_type == "source":
-            self.updater = None
-        elif self.install_type == "pip":
+        if not settings.DISABLE_UPDATER:
             self.updater = PipUpdateManager()
 
         self.session = helpers.make_session()
@@ -201,26 +195,6 @@ class UpdateManager(object):
         except Exception as error:
             return f"{error}"
 
-    @staticmethod
-    def find_install_type():
-        """
-        Determines how this copy of sc was installed.
-
-        returns: type of installation. Possible values are:
-            'win': any compiled windows build
-            'git': running from source using git
-            'source': running from source without git
-        """
-
-        if git_folder.is_dir():
-            install_type = "git"
-        elif pyproject_file.is_file():
-            install_type = "source"
-        elif check_installed():
-            install_type = "pip"
-
-        return install_type
-
     def check_for_new_version(self, force=False):
         """
         Checks the internet for a newer version.
@@ -229,18 +203,13 @@ class UpdateManager(object):
 
         force: if true the VERSION_NOTIFY setting will be ignored and a check will be forced
         """
-
-        if self.install_type != "pip":
-            logger.info("We no longer support updating from source, please use git or pip")
-            return False
-
         if not self.updater or (not settings.VERSION_NOTIFY and not settings.AUTO_UPDATE and not force):
             logger.info("Version checking is disabled, not checking for the newest version")
             return False
 
         # checking for updates
         if not settings.AUTO_UPDATE:
-            logger.info("Checking for updates using " + self.install_type.upper())
+            logger.info("Checking for updates from pip")
 
         if not self.need_update():
             if force:

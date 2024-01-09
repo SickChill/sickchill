@@ -115,14 +115,12 @@ class ShowQueue(generic_queue.GenericQueue):
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    # noinspection PyUnusedLocal
-    def rename_show_episodes(self, show, force=False):
+    def rename_show_episodes(self, show):
         queue_item_obj = QueueItemRename(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    # noinspection PyUnusedLocal
-    def download_subtitles(self, show, force=False):
+    def download_subtitles(self, show):
         queue_item_obj = QueueItemSubtitle(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
@@ -138,7 +136,7 @@ class ShowQueue(generic_queue.GenericQueue):
         season_folders=None,
         lang=None,
         subtitles=None,
-        subtitles_sr_metadata=None,
+        subtitles_sc_metadata=None,
         anime=None,
         scene=None,
         paused=None,
@@ -162,7 +160,7 @@ class ShowQueue(generic_queue.GenericQueue):
             season_folders,
             lang,
             subtitles,
-            subtitles_sr_metadata,
+            subtitles_sc_metadata,
             anime,
             scene,
             paused,
@@ -258,7 +256,7 @@ class QueueItemAdd(ShowQueueItem):
         season_folders,
         lang,
         subtitles,
-        subtitles_sr_metadata,
+        subtitles_sc_metadata,
         anime,
         scene,
         paused,
@@ -277,7 +275,7 @@ class QueueItemAdd(ShowQueueItem):
         self.season_folders = season_folders
         self.lang = lang
         self.subtitles = subtitles
-        self.subtitles_sr_metadata = subtitles_sr_metadata
+        self.subtitles_sc_metadata = subtitles_sc_metadata
         self.anime = anime
         self.scene = scene
         self.paused = paused
@@ -415,24 +413,24 @@ class QueueItemAdd(ShowQueueItem):
 
         try:
             try:
-                newShow = TVShow(self.indexer, self.indexer_id, self.lang)
+                new_show = TVShow(self.indexer, self.indexer_id, self.lang)
             except MultipleShowObjectsException as error:
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
                 existing_show = Show.find(settings.showList, self.indexer_id)
                 # noinspection PyProtectedMember
                 if existing_show and not os.path.isdir(existing_show._location):
-                    newShow = existing_show
+                    new_show = existing_show
                 else:
                     raise error
 
-            newShow.loadFromIndexer()
+            new_show.load_from_indexer()
 
-            self.show = newShow
+            self.show = new_show
 
             # set up initial values
             self.show.location = self.showDir
             self.show.subtitles = self.subtitles if self.subtitles is not None else settings.SUBTITLES_DEFAULT
-            self.show.subtitles_sr_metadata = self.subtitles_sr_metadata
+            self.show.subtitles_sc_metadata = self.subtitles_sc_metadata
             self.show.quality = self.quality if self.quality else settings.QUALITY_DEFAULT
             self.show.season_folders = self.season_folders if self.season_folders is not None else settings.SEASON_FOLDERS_DEFAULT
             self.show.anime = self.anime if self.anime is not None else settings.ANIME_DEFAULT
@@ -494,7 +492,7 @@ class QueueItemAdd(ShowQueueItem):
             settings.showList.append(self.show)
 
         try:
-            self.show.loadEpisodesFromIndexer()
+            self.show.loadEpisodesFromIndexer(force_all=True)
         except Exception as error:
             logger.exception(f"Error with {self.show.idxr.name}, not creating episode list: {error}")
             logger.debug(traceback.format_exc())
@@ -522,10 +520,10 @@ class QueueItemAdd(ShowQueueItem):
 
         if settings.USE_TRAKT:
             # if there are specific episodes that need to be added by trakt
-            settings.traktCheckerScheduler.action.manageNewShow(self.show)
+            settings.traktCheckerScheduler.action.check_new_show(self.show)
             # add show to trakt.tv library
             if settings.TRAKT_SYNC:
-                settings.traktCheckerScheduler.action.addShowToTraktLibrary(self.show)
+                settings.traktCheckerScheduler.action.add_show_to_trakt_library(self.show)
 
             if settings.TRAKT_SYNC_WATCHLIST:
                 logger.info("update watchlist")
@@ -534,7 +532,7 @@ class QueueItemAdd(ShowQueueItem):
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer, force=True)
 
-        # check if show has XEM mapping so we can determine if searches should go by scene numbering or indexer numbering.
+        # check if show has XEM mapping, so we can determine if searches should go by scene numbering or indexer numbering.
         if not self.scene and scene_numbering.get_xem_numbering_for_show(self.show.indexerid, self.show.indexer):
             self.show.scene = 1
 
@@ -604,7 +602,7 @@ class QueueItemRename(ShowQueueItem):
             # Only want to rename if we have a location
             if cur_ep_obj.location:
                 # do we have one of multi-episodes in the rename list already
-                for cur_related_ep in cur_ep_obj.relatedEps + [cur_ep_obj]:
+                for cur_related_ep in cur_ep_obj.related_episodes + [cur_ep_obj]:
                     if cur_related_ep in ep_obj_rename_list:
                         break
                 else:
@@ -646,7 +644,7 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.debug(f"Retrieving show info from {self.show.idxr.name}")
         try:
-            self.show.loadFromIndexer()
+            self.show.load_from_indexer()
         except Exception as error:
             logger.warning(f"Unable to contact {self.show.idxr.name}, aborting: {error}")
             super(QueueItemUpdate, self).finish()
@@ -668,7 +666,7 @@ class QueueItemUpdate(ShowQueueItem):
         # get episode list from TVDB
         logger.debug(f"Loading all episodes from {self.show.idxr.name}")
         try:
-            IndexerEpList = self.show.loadEpisodesFromIndexer()
+            IndexerEpList = self.show.loadEpisodesFromIndexer(self.force)
         except Exception as error:
             logger.exception(f"Unable to get info from {self.show.idxr.name}, the show info will not be refreshed: {error}")
             IndexerEpList = None
@@ -722,15 +720,15 @@ class QueueItemRemove(ShowQueueItem):
 
         if settings.USE_TRAKT:
             try:
-                settings.traktCheckerScheduler.action.removeShowFromTraktLibrary(self.show)
+                settings.traktCheckerScheduler.action.remove_show_from_trakt_library(self.show)
             except Exception as error:
                 logger.warning(_("Unable to delete show from Trakt: {show_name}. Error: {error}").format(show_name=self.show.name, error=error))
 
         # If any notification fails, don't stop removal
         try:
-            # TODO: ep_obj is undefined here, so all of these will fail.
+            # TODO: episode_object is undefined here, so all of these will fail.
             # send notifications
-            # notifiers.notify_download(ep_obj._format_pattern('%SN - %Sx%0E - %EN - %QN'))
+            # notifiers.notify_download(episode_object.format_pattern('%SN - %Sx%0E - %EN - %QN'))
 
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(self.show.name)

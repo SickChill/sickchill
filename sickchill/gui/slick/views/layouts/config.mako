@@ -1,9 +1,9 @@
-<%inherit file="main.mako"/>
+<%inherit file="main.mako" />
 <%!
     import os
     import datetime
     from sickchill.oldbeard.common import SKIPPED, ARCHIVED, IGNORED, statusStrings, cpu_presets
-    from sickchill.oldbeard.sbdatetime import sbdatetime, date_presets, time_presets
+    from sickchill.oldbeard.scdatetime import scdatetime, date_presets, time_presets
     from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
 %>
@@ -24,11 +24,11 @@
                 <div class="col-md-12">
                     <div id="config-components">
                         <ul>
-                            <%block name="tabs"/>
+                            <%block name="tabs" />
                         </ul>
                         <div id="config">
                             <div id="config-components">
-                                <%block name="pages"/>
+                                <%block name="pages" />
                             </div>
                         </div>
                     </div>
@@ -38,7 +38,7 @@
             <div class="row">
                 <%block name="saveButton">
                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                        <input type="button" onclick="$('#configForm').submit()" class="btn pull-left config_submitter button" value="${_('Save Changes')}"/>
+                        <input type="button" id="config_save_button" class="btn pull-left config_submitter button" value="${_('Save Changes')}" />
                     </div>
                 </%block>
                 <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 pull-right">
@@ -53,4 +53,3 @@
         </div>
     </div>
 </%block>
-

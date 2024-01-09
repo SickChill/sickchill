@@ -1,11 +1,11 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     import datetime
     import time
     import re
 
     from sickchill.oldbeard.helpers import anon_url
-    from sickchill.oldbeard import sbdatetime
+    from sickchill.oldbeard import scdatetime
     from sickchill.oldbeard.common import Quality
     from sickchill import indexer as show_indexer, settings
 
@@ -17,16 +17,16 @@
 </%block>
 
 <%block name="content">
-    <%namespace file="/inc_defs.mako" import="renderQualityPill"/>
+    <%namespace file="/inc_defs.mako" import="renderQualityPill" />
     <div class="row">
         <div class="col-md-12">
             <div class="pull-right key">
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
-                    % if settings.COMING_EPS_DISPLAY_SNATCHED:
-                        <span class="listing-key listing-snatched">${_('Snatched')}</span>
-                    % endif
+                % if settings.COMING_EPS_DISPLAY_SNATCHED:
+                    <span class="listing-key listing-snatched">${_('Snatched')}</span>
+                % endif
                     <span class="listing-key listing-current">${_('Today')}</span>
                     <span class="listing-key listing-default">${_('Soon')}</span>
                     <span class="listing-key listing-toofar">${_('Later')}</span>
@@ -53,9 +53,9 @@
                     <label>
                         <span>${_('Sort By')}:</span>
                         <select id="sort" class="form-control form-control-inline input-sm" title="Sort">
-                            <option value="${scRoot}/setScheduleSort/?sort=date" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'date']} >${_('Date')}</option>
-                            <option value="${scRoot}/setScheduleSort/?sort=network" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'network']} >${_('Network')}</option>
-                            <option value="${scRoot}/setScheduleSort/?sort=show" ${('', 'selected="selected"')[settings.COMING_EPS_SORT == 'show']} >${_('Show')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=date" ${selected(settings.COMING_EPS_SORT == 'date')} >${_('Date')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=network" ${selected(settings.COMING_EPS_SORT == 'network')} >${_('Network')}</option>
+                            <option value="${scRoot}/setScheduleSort/?sort=show" ${selected(settings.COMING_EPS_SORT == 'show')} >${_('Show')}</option>
                         </select>
                         &nbsp;
                     </label>
@@ -63,28 +63,28 @@
                 <label>
                     <span>${_('View Paused')}:</span>
                     <select id="viewpaused" class="form-control form-control-inline input-sm" title="View paused">
-                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Hidden')}</option>
-                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_PAUSED)]}>${_('Shown')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${selected(not settings.COMING_EPS_DISPLAY_PAUSED)}>${_('Hidden')}</option>
+                        <option value="${scRoot}/toggleScheduleDisplayPaused" ${selected(settings.COMING_EPS_DISPLAY_PAUSED)}>${_('Shown')}</option>
                     </select>
                     &nbsp;
                 </label>
                 % if layout != 'calendar':
-                <label>
-                    <span>${_('View Snatched')}:</span>
-                    <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
-                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[not bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Hidden')}</option>
-                        <option value="${scRoot}/toggleScheduleDisplaySnatched" ${('', 'selected="selected"')[bool(settings.COMING_EPS_DISPLAY_SNATCHED)]}>${_('Shown')}</option>
-                    </select>
-                    &nbsp;
-                </label>
+                    <label>
+                        <span>${_('View Snatched')}:</span>
+                        <select id="viewsnatched" class="form-control form-control-inline input-sm" title="View snatched">
+                            <option value="${scRoot}/toggleScheduleDisplaySnatched" ${selected(not settings.COMING_EPS_DISPLAY_SNATCHED)}>${_('Hidden')}</option>
+                            <option value="${scRoot}/toggleScheduleDisplaySnatched" ${selected(settings.COMING_EPS_DISPLAY_SNATCHED)}>${_('Shown')}</option>
+                        </select>
+                        &nbsp;
+                    </label>
                 % endif
                 <label>
                     <span>${_('Layout')}:</span>
                     <select id="layout" class="form-control form-control-inline input-sm" title="Layout">
-                        <option value="${scRoot}/setScheduleLayout/?layout=poster" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'poster']} >${_('Poster')}</option>
-                        <option value="${scRoot}/setScheduleLayout/?layout=calendar" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'calendar']} >${_('Calendar')}</option>
-                        <option value="${scRoot}/setScheduleLayout/?layout=banner" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'banner']} >${_('Banner')}</option>
-                        <option value="${scRoot}/setScheduleLayout/?layout=list" ${('', 'selected="selected"')[settings.COMING_EPS_LAYOUT == 'list']} >${_('List')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=poster" ${selected(settings.COMING_EPS_LAYOUT == 'poster')} >${_('Poster')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=calendar" ${selected(settings.COMING_EPS_LAYOUT == 'calendar')} >${_('Calendar')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=banner" ${selected(settings.COMING_EPS_LAYOUT == 'banner')} >${_('Banner')}</option>
+                        <option value="${scRoot}/setScheduleLayout/?layout=list" ${selected(settings.COMING_EPS_LAYOUT == 'list')} >${_('List')}</option>
                     </select>
                 </label>
             </div>
@@ -119,47 +119,47 @@
 
                         <tbody style="text-shadow:none;">
                             % for cur_result in results:
-                                <%
-                                    cur_indexer = int(cur_result['indexer'])
-                                    run_time = cur_result['runtime']
-                                    snatched_status = int(cur_result['epstatus']) in SNATCHED
+                            <%
+                                cur_indexer = int(cur_result['indexer'])
+                                run_time = cur_result['runtime']
+                                snatched_status = int(cur_result['epstatus']) in SNATCHED
 
-                                    if int(cur_result['paused']) and not settings.COMING_EPS_DISPLAY_PAUSED:
+                                if int(cur_result['paused']) and not settings.COMING_EPS_DISPLAY_PAUSED:
+                                    continue
+
+                                if snatched_status and not settings.COMING_EPS_DISPLAY_SNATCHED:
+                                    continue
+
+                                cur_ep_airdate = cur_result['localtime'].date()
+                                cur_ep_enddate = cur_result['localtime']
+                                if run_time:
+                                    cur_ep_enddate += datetime.timedelta(minutes = run_time)
+
+                                if snatched_status:
+                                    if cur_result['location']:
                                         continue
-
-                                    if snatched_status and not settings.COMING_EPS_DISPLAY_SNATCHED:
-                                        continue
-
-                                    cur_ep_airdate = cur_result['localtime'].date()
-                                    cur_ep_enddate = cur_result['localtime']
-                                    if run_time:
-                                        cur_ep_enddate += datetime.timedelta(minutes = run_time)
-
-                                    if snatched_status:
-                                        if cur_result['location']:
-                                            continue
-                                        else:
-                                            show_div = 'listing-snatched'
-                                    elif cur_ep_enddate < today:
-                                        show_div = 'listing-overdue'
-                                    elif cur_ep_airdate >= next_week.date():
-                                        show_div = 'listing-toofar'
-                                    elif today.date() <= cur_ep_airdate < next_week.date():
-                                        if cur_ep_airdate == today.date():
-                                            show_div = 'listing-current'
-                                        else:
-                                            show_div = 'listing-default'
+                                    else:
+                                        show_div = 'listing-snatched'
+                                elif cur_ep_enddate < today:
+                                    show_div = 'listing-overdue'
+                                elif cur_ep_airdate >= next_week.date():
+                                    show_div = 'listing-toofar'
+                                elif today.date() <= cur_ep_airdate < next_week.date():
+                                    if cur_ep_airdate == today.date():
+                                        show_div = 'listing-current'
+                                    else:
+                                        show_div = 'listing-default'
                                 %>
                                 <tr class="${show_div}">
                                     <td align="center" nowrap="nowrap">
-                                        <% airDate = sbdatetime.sbdatetime.convert_to_setting(cur_result['localtime']) %>
-                                        <time datetime="${airDate.isoformat('T')}"
-                                              class="date">${sbdatetime.sbdatetime.sbfdatetime(airDate)}</time>
+                                        <% air_date = scdatetime.scdatetime.convert_to_setting(cur_result['localtime']) %>
+                                        <time datetime="${air_date.isoformat('T')}"
+                                              class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
                                     </td>
                                     <td align="center" nowrap="nowrap">
-                                        <% ends = sbdatetime.sbdatetime.convert_to_setting(cur_ep_enddate) %>
+                                        <% ends = scdatetime.scdatetime.convert_to_setting(cur_ep_enddate) %>
                                         <time datetime="${ends.isoformat('T')}"
-                                              class="date">${sbdatetime.sbdatetime.sbfdatetime(ends)}</time>
+                                              class="date">${scdatetime.scdatetime.scfdatetime(ends)}</time>
                                     </td>
                                     <td class="tvShow">
                                         <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}</a>
@@ -170,7 +170,7 @@
                                     <td class="banner">
                                         <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
                                             <img alt="" class="bannerThumb"
-                                                 src="${static_url("images/banner.png")}"
+                                                 src="${static_url('images/banner.png')}"
                                                  data-src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], 'banner_thumb'))}"
                                             />
                                         </a>
@@ -181,42 +181,42 @@
                                     <td>
                                         % if cur_result['description']:
                                             <img alt="" src="${static_url('images/info32.png')}" height="16" width="16" class="plotInfo"
-                                                 id="plot_info_${'{}_{}_{}'.format(cur_result['showid'], cur_result['season'], cur_result['episode'])}"/>
+                                                 id="plot_info_${'{}_{}_{}'.format(cur_result['showid'], cur_result['season'], cur_result['episode'])}" />
                                         % else:
-                                            <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone"/>
+                                            <img alt="" src="${static_url('images/info32.png')}" width="16" height="16" class="plotInfoNone" />
                                         % endif
                                         ${cur_result['name']}
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         ${cur_result['network']}
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         ${run_time}min
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         ${renderQualityPill(cur_result['quality'], showTitle=True)}
                                     </td>
                                     <td align="center" style="vertical-align: middle;">
                                         % if cur_result['imdb_id']:
                                             <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
-                                               onclick="window.open(this.href, '_blank'); return false"
+                                               target="_blank"
                                                title="http://www.imdb.com/title/${cur_result['imdb_id']}">
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
                                             <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
-                                               onclick="window.open(this.href, '_blank'); return false;"
+                                               target="_blank"
                                                title="https://trakt.tv/shows/${cur_result['imdb_id']}">
                                                 <span class="displayshow-icon-trakt"></span>
                                             </a>
                                         % endif
                                         <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
-                                           rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
+                                           rel="noreferrer" target="_blank"
                                            title="${show_indexer.show_url(cur_indexer)}${cur_result['showid']}">
                                             <img alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
-                                                 src="${static_url(show_indexer.icon(cur_indexer))}"/>
+                                                 src="${static_url(show_indexer.icon(cur_indexer))}" />
                                         </a>
                                     </td>
-                                    <td align="center">
+                                    <td class="text-center">
                                         <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
                                            title="Manual Search" class="forceUpdate epSearch"
                                            id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}">
@@ -266,7 +266,7 @@
                                         % if airday == day:
                                             % try:
                                                 <% day_has_show = True %>
-                                                <% airtime = sbdatetime.sbdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).sbftime() %>
+                                                <% airtime = scdatetime.scdatetime.fromtimestamp(time.mktime(cur_result['localtime'].timetuple())).scftime() %>
                                                 % if settings.TRIM_ZERO:
                                                     <% airtime = re.sub(r'0(\d:\d\d)', r'\1', airtime, 0, re.IGNORECASE | re.MULTILINE) %>
                                                 % endif
@@ -377,16 +377,16 @@
 
                     % if cur_segment != cur_category:
                         <div>
-                        % if cur_category in ('snatched', 'missed', 'later'):
-                            <h2 class="day">${headers[cur_category]}</h2>
-                        % else:
-                            <h2 class="day">${this_day_name}
-                                % if cur_category == 'today':
-                                    <span style="font-size: 14px; vertical-align: top;">[${_('Today')}]</span>
-                                % endif
-                            </h2>
-                        % endif
-                        <% cur_segment = cur_category %>
+                            % if cur_category in ('snatched', 'missed', 'later'):
+                                <h2 class="day">${headers[cur_category]}</h2>
+                            % else:
+                                <h2 class="day">${this_day_name}
+                                    % if cur_category == 'today':
+                                        <span style="font-size: 14px; vertical-align: top;">[${_('Today')}]</span>
+                                    % endif
+                                </h2>
+                            % endif
+                            <% cur_segment = cur_category %>
                         </div>
                     % endif
 
@@ -442,19 +442,19 @@
                                         <span class="tvshowTitleIcons">
                                             % if cur_result['imdb_id']:
                                                 <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
-                                                   onclick="window.open(this.href, '_blank'); return false" title="http://www.imdb.com/title/${cur_result['imdb_id']}">
+                                                   target="_blank" title="http://www.imdb.com/title/${cur_result['imdb_id']}">
                                                     <span class="displayshow-icon-imdb"></span>
                                                 </a>
                                                 <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
-                                                   onclick="window.open(this.href, '_blank'); return false;" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
+                                                   target="_blank" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
                                                     <span class="displayshow-icon-trakt"></span>
                                                 </a>
                                             % endif
                                             <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
-                                               rel="noreferrer" onclick="window.open(this.href, '_blank'); return false"
+                                               rel="noreferrer" target="_blank"
                                                title="${show_indexer.show_url(cur_indexer)}"><img
                                                     alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
-                                                    src="${static_url(show_indexer.icon(cur_indexer))}"/>
+                                                    src="${static_url(show_indexer.icon(cur_indexer))}" />
                                             </a>
                                             <span>
                                                 <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
@@ -465,9 +465,9 @@
                                                 </a>
                                             </span>
                                         </span>
-                                            <br/>
-                                            <br/>
-                                            <span class="title">${_('Next Episode')}:</span>
+                                        <br/>
+                                        <br/>
+                                        <span class="title">${_('Next Episode')}:</span>
                                         <span>
                                             ${'S{:02}E{:02} - {}'.format(int(cur_result['season']), int(cur_result['episode']), cur_result['name'])}
                                         </span>
@@ -475,7 +475,7 @@
                                         <div class="clearfix">
                                             <span class="title">${_('Airs')}:</span>
                                             <span class="airdate">
-                                                ${sbdatetime.sbdatetime.sbfdatetime(cur_result['localtime'])}
+                                                ${scdatetime.scdatetime.scfdatetime(cur_result['localtime'])}
                                             </span>
                                             ${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
                                         </div>
@@ -492,12 +492,12 @@
                                             % if cur_result['description']:
                                                 <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
                                                 <img class="ep_summaryTrigger" src="${static_url('images/plus.png')}" height="16" width="16" alt=""
-                                                     title="Toggle Summary"/>
+                                                     title="Toggle Summary" />
                                                 <div class="ep_summary">${cur_result['description']}</div>
                                             % else:
                                                 <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
                                                 <img class="ep_summaryTriggerNone" src="${static_url('images/plus.png')}" height="16" width="16"
-                                                     alt=""/>
+                                                     alt="" />
                                             % endif
                                         </div>
                                     </td>

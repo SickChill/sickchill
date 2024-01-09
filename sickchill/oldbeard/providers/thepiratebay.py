@@ -6,7 +6,7 @@ from urllib.parse import urlencode, urljoin
 
 try:
     import js2py
-except (ModuleNotFoundError, RuntimeError):
+except (KeyError, ModuleNotFoundError, RuntimeError):  # KeyError on python 3.12
     js2py = None
 
 from sickchill import logger
@@ -84,7 +84,7 @@ class Provider(TorrentProvider):
         trackers = self.tracker_cache.get_trackers()
         return "magnet:?xt=urn:btih:{info_hash}&dn={name}{trackers}".format(name=name, info_hash=info_hash, trackers=trackers) + self._custom_trackers
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         search_params = {"cat": "208,205", "q": None}
 
@@ -137,7 +137,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                             title, seeders, leechers
                                         )
                                     )

@@ -1,6 +1,5 @@
 from urllib.parse import urljoin
 
-import validators
 from markdown2 import _slugify as slugify
 
 from sickchill import logger
@@ -25,7 +24,7 @@ class Provider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self)
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
 
         for mode in search_strings:
@@ -40,8 +39,8 @@ class Provider(TorrentProvider):
                     search_url = self.urls["rss"]
 
                 if self.custom_url:
-                    if validators.url(self.custom_url) != True:
-                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                    if self.invalid_url(self.custom_url):
+                        logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 

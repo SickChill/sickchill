@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
     from sickchill.oldbeard import common
@@ -28,7 +28,7 @@
                 <option value="${show_indexer.FANART}">Fanart</option>
                 <option value="${show_indexer.TMDB}">TMDB</option>
                 % for index, indexer in show_indexer:
-                <option value="${index}" ${('', 'selected="selected"')[show.indexer == index]}>
+                <option value="${index}" ${selected(show.indexer == index)}>
                     ${indexer.name}
                 </option>
                 % endfor
@@ -78,10 +78,10 @@
                                         <span class="component-title">${_('Show Location')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="hidden" name="show" id="showID" value="${show.indexerid}"/>
+                                        <input type="hidden" name="show" id="showID" value="${show.indexerid}" />
                                         <input type="text" name="location" id="location" value="${show._location}"
                                                class="form-control input-sm input350"
-                                               autocapitalize="off" title="Location"/>
+                                               autocapitalize="off" title="Location" />
                                     </div>
                                 </div>
 
@@ -91,7 +91,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <% anyQualities, bestQualities = common.Quality.splitQuality(int(show.quality)) %>
-                                        <%include file="/inc_qualityChooser.mako"/>
+                                        <%include file="/inc_qualityChooser.mako" />
                                     </div>
                                 </div>
 
@@ -104,7 +104,7 @@
                                             <div class="col-md-12">
                                                 <select name="defaultEpStatus" id="defaultEpStatusSelect" class="form-control input-sm input100" title="defaultEpStatus">
                                                     % for curStatus in [WANTED, SKIPPED, IGNORED]:
-                                                        <option value="${curStatus}" ${('', 'selected="selected"')[curStatus == show.default_ep_status]}>${statusStrings[curStatus]}</option>
+                                                        <option value="${curStatus}" ${selected(curStatus == show.default_ep_status)}>${statusStrings[curStatus]}</option>
                                                     % endfor
                                                 </select>
                                             </div>
@@ -144,18 +144,18 @@
                                         <span class="component-title">${_('Subtitles')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" class="enabler" id="subtitles" name="subtitles" ${('', 'checked="checked"')[show.subtitles == 1 and settings.USE_SUBTITLES is True]} ${('disabled="disabled"', '')[bool(settings.USE_SUBTITLES)]}/>
+                                        <input type="checkbox" class="enabler" id="subtitles" name="subtitles" ${checked(show.subtitles and settings.USE_SUBTITLES)} ${disabled(settings.USE_SUBTITLES)}/>
                                         <label for="subtitles">${_('search for subtitles')}</label>
                                     </div>
                                 </div>
-                                <div id="content_subtitles">
+                                <div id="content_subtitles" ${hidden(show.subtitles and settings.USE_SUBTITLES)}>
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <span class="component-title">${_('Use SC Metadata')}</span>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="checkbox" id="subtitles_sr_metadata" name="subtitles_sr_metadata" ${('', 'checked="checked"')[show.subtitles_sr_metadata == 1 ]} />
-                                            <label for="subtitles_sr_metadata">${_('use SickChill metadata when searching for subtitle, this will override the autodiscovered metadata')}</label>
+                                            <input type="checkbox" id="subtitles_sc_metadata" name="subtitles_sc_metadata" ${checked(show.subtitles_sc_metadata)} />
+                                            <label for="subtitles_sc_metadata">${_('use SickChill metadata when searching for subtitle, this will override the autodiscovered metadata')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -165,7 +165,7 @@
                                         <span class="component-title">${_('Paused')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" id="paused" name="paused" ${('', 'checked="checked"')[show.paused == 1]}  title="paused"/>
+                                        <input type="checkbox" id="paused" name="paused" ${checked(show.paused)}  title="paused" />
                                         <label for="paused">${_('pause this show (SickChill will not download episodes)')}</label>
                                     </div>
                                 </div>
@@ -189,7 +189,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="checkbox" id="airbydate" name="air_by_date" ${('', 'checked="checked"')[show.air_by_date == 1]} />
+                                                <input type="checkbox" id="airbydate" name="air_by_date" ${checked(show.air_by_date)} />
                                                 <label for="airbydate">${_('check if the show is released as Show.03.02.2010 rather than Show.S02E03.')}</label>
                                             </div>
                                         </div>
@@ -209,14 +209,14 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="checkbox" id="anime"
-                                                       name="anime" ${('', 'checked="checked"')[show.is_anime == 1]}>
+                                                       name="anime" ${checked(show.is_anime)}>
                                                 <label for="anime">${_('check if the show is Anime and episodes are released as Show.265 rather than Show.S02E03')}</label>
                                             </div>
                                         </div>
                                         % if show.is_anime:
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <%include file="/inc_blackwhitelist.mako"/>
+                                                    <%include file="/inc_blackwhitelist.mako" />
                                                 </div>
                                             </div>
                                         % endif
@@ -230,7 +230,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="checkbox" id="sports" name="sports" ${('', 'checked="checked"')[show.sports == 1]}/>
+                                                <input type="checkbox" id="sports" name="sports" ${checked(show.sports)}/>
                                                 <label>${_('check if the show is a sporting or MMA event released as Show.03.02.2010 rather than Show.S02E03')}</label>
                                             </div>
                                         </div>
@@ -247,7 +247,7 @@
                                         <span class="component-title">${_('Season folders')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" id="season_folders" name="season_folders" ${('', 'checked="checked"')[show.season_folders == 1 or settings.NAMING_FORCE_FOLDERS]} ${('', 'disabled="disabled"')[bool(settings.NAMING_FORCE_FOLDERS)]} title="season_folders"/>
+                                        <input type="checkbox" id="season_folders" name="season_folders" title="season_folders" ${checked(show.season_folders or settings.NAMING_FORCE_FOLDERS)} ${disabled(not settings.NAMING_FORCE_FOLDERS)} />
                                         <label for="season_folders">${_('group episodes by season folder (uncheck to store in a single folder)')}</label>
                                     </div>
                                 </div>
@@ -257,7 +257,7 @@
                                         <span class="component-title">${_('Scene Numbering')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                        <input type="checkbox" id="scene" name="scene" ${('', 'checked="checked"')[show.scene == 1]} />
+                                        <input type="checkbox" id="scene" name="scene" ${checked(show.scene)} />
                                         <label for="scene">${_('search by scene numbering (uncheck to search by indexer numbering)')}</label>
                                     </div>
                                 </div>
@@ -269,7 +269,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="checkbox" id="dvdorder" name="dvdorder" ${('', 'checked="checked"')[show.dvdorder == 1]} />
+                                                <input type="checkbox" id="dvdorder" name="dvdorder" ${checked(show.dvdorder)} />
                                                 <label>${_('use the DVD order instead of the air order')}</label>
                                             </div>
                                         </div>
@@ -304,7 +304,7 @@
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_ignore_words"
                                                        name="rls_ignore_words" value="${show.rls_ignore_words}"
-                                                       class="form-control input-sm input350" autocapitalize="off"/>
+                                                       class="form-control input-sm input350" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -330,7 +330,7 @@
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_prefer_words" name="rls_prefer_words"
                                                        value="${show.rls_prefer_words}" autocapitalize="off"
-                                                       class="form-control input-sm input350"/>
+                                                       class="form-control input-sm input350" />
                                                 <br/>
                                             </div>
                                         </div>
@@ -358,7 +358,7 @@
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_require_words" name="rls_require_words"
                                                        value="${show.rls_require_words}" autocapitalize="off"
-                                                       class="form-control input-sm input350"/>
+                                                       class="form-control input-sm input350" />
                                                 <br/>
                                             </div>
                                         </div>
@@ -383,7 +383,7 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="text" id="SceneName" class="form-control input-sm input250" autocapitalize="off"/>
+                                                <input type="text" id="SceneName" class="form-control input-sm input250" autocapitalize="off" />
                                                 <select id="SceneSeason" class="form-control input-sm" style="width: 95px">
                                                     % for season in range(0, len(seasonResults) + 1):
                                                         %if season == 0:
@@ -392,12 +392,12 @@
                                                         <option data-season="${season}">${_('Show') if season == -1 else _('Season ') + str(season)}</option>
                                                     %endfor
                                                 </select>
-                                                <input class="btn btn-inline" type="button" value="${_('Add')}" id="addSceneName"/>
+                                                <input class="btn btn-inline" type="button" value="${_('Add')}" id="addSceneName" />
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="hidden" id="exceptions" name="exceptions_list"/>
+                                                <input type="hidden" id="exceptions" name="exceptions_list" />
                                                 <select id="exceptions_list" multiple
                                                         style="height:200px;" class="form-control input350 exceptions_list" title="exceptions_list">
                                                     % for season in range(0, len(seasonResults) + 1):
@@ -407,7 +407,7 @@
                                                         <optgroup data-season="${season}" label="${_('Show') if season == -1 else _('Season ') + str(season)}">
                                                             %if season in scene_exceptions:
                                                                 %for exception in scene_exceptions[season]:
-                                                                    <option ${'disabled' if exception["custom"] == False else ''} value="${exception["show_name"]}">
+                                                                    <option ${disabled(exception["custom"] == False)} value="${exception["show_name"]}">
                                                                         ${exception["show_name"]}
                                                                     </option>
                                                                 %endfor
@@ -418,7 +418,7 @@
                                                     % endfor
                                                 </select>
                                                 <div>
-                                                    <input id="removeSceneName" value="${_('Remove')}" class="btn float-left" type="button" style="margin-top: 10px;"/>
+                                                    <input id="removeSceneName" value="${_('Remove')}" class="btn float-left" type="button" style="margin-top: 10px;" />
                                                 </div>
                                             </div>
                                         </div>
@@ -462,7 +462,7 @@
                                         <input type="text" name="custom_name" id="custom_name" placeholder="${show.show_name}" value="${show.custom_name}"
                                                list="scene_exceptions"
                                                class="form-control input-sm input350"
-                                               autocapitalize="off" title="Name"/>
+                                               autocapitalize="off" title="Name" />
                                     </div>
 
                                     %if -1 in scene_exceptions:
@@ -483,7 +483,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="poster-container">
-                                                    <input type="hidden" name="poster"/>
+                                                    <input type="hidden" name="poster" />
                                                     <img src="${static_url(show.show_image_url('poster'))}"
                                                          data-image-type="poster"
                                                          class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
@@ -503,7 +503,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="banner-container">
-                                                    <input type="hidden" name="banner"/>
+                                                    <input type="hidden" name="banner" />
                                                     <img src="${static_url(show.show_image_url('banner'))}"
                                                          data-image-type="banner"
                                                          class="custom-image banner" alt="${_('Banner for')} ${show.name}"
@@ -523,7 +523,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="fanart-container">
-                                                    <input type="hidden" name="fanart"/>
+                                                    <input type="hidden" name="fanart" />
                                                     <img src="${static_url(show.show_image_url('fanart'))}"
                                                          data-image-type="fanart"
                                                          class="custom-image tvshowImg" alt="${_('Fanart for')} ${show.name}"
@@ -540,7 +540,7 @@
                     <br/>
                     <div class="row">
                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
-                            <input type="submit" id="submit" class="btn pull-left config_submitter button" value="${_('Save Changes')}"/>
+                            <input type="submit" id="submit" class="btn pull-left config_submitter button" value="${_('Save Changes')}" />
                         </div>
                     </div>
 

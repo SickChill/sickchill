@@ -65,7 +65,7 @@ class Notifier(object):
 
     def _notifyBoxcar2(self, title, message, accesstoken=None):
         """
-        Sends a boxcar2 notification based on the provided info or SB config
+        Sends a boxcar2 notification based on the provided info or SC config
 
         title: The title of the notification to send
         message: The message string to send

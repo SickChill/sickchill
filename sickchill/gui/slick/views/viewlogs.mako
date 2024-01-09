@@ -1,4 +1,4 @@
-<%inherit file="/layouts/main.mako"/>
+<%inherit file="/layouts/main.mako" />
 <%!
     from sickchill import settings
     from sickchill.logger import LOGGING_LEVELS, LOG_FILTERS
@@ -23,7 +23,7 @@
                                 levels.remove('DB')
                         %>
                         % for level in levels:
-                            <option value="${LOGGING_LEVELS[level]}" ${('', 'selected="selected"')[min_level == LOGGING_LEVELS[level]]}>${level.title()}</option>
+                            <option class="text-capitalize" value="${LOGGING_LEVELS[level]}" ${selected(min_level == LOGGING_LEVELS[level])}>${level}</option>
                         % endfor
                     </select>
                     &nbsp;
@@ -32,7 +32,7 @@
                     <span>${_('Filter')}:</span>
                     <select name="log_filter" id="log_filter" class="form-control form-control-inline input-sm" title="filter">
                         % for _log_filter in sorted(LOG_FILTERS):
-                            <option value="${_log_filter}" ${('', 'selected="selected"')[log_filter == _log_filter]}>${LOG_FILTERS[_log_filter]}</option>
+                            <option value="${_log_filter}" ${selected(log_filter == _log_filter)}>${LOG_FILTERS[_log_filter]}</option>
                         % endfor
                     </select>
                 </label>

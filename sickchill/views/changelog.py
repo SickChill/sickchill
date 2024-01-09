@@ -12,10 +12,10 @@ class HomeChangeLog(Home):
     def index(self, *args, **kwargs):
         # noinspection PyBroadException
         try:
-            changes = helpers.getURL("https://sickchill.github.io/sickchill-news/CHANGES.md", session=helpers.make_session(), returns="text")
+            changes = helpers.getURL("https://raw.githubusercontent.com/SickChill/sickchill/master/CHANGES.md", session=helpers.make_session(), returns="text")
         except Exception:
             logger.debug("Could not load changes from repo, giving a link!")
-            changes_url = "https://sickchill.github.io/sickchill-news/CHANGES.md"
+            changes_url = "https://raw.githubusercontent.com/SickChill/sickchill/master/CHANGES.md"
             changes = _("Could not load changes from the repo. [Click here for CHANGES.md]") + f"({changes_url})"
 
         t = PageTemplate(rh=self, filename="markdown.mako")

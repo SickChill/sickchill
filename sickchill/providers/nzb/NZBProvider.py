@@ -1,6 +1,6 @@
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
-from sickchill.oldbeard.classes import NZBSearchResult
+from sickchill.oldbeard.classes import NZBSearchResult, TorrentSearchResult
 from sickchill.providers.GenericProvider import GenericProvider
 
 
@@ -17,8 +17,8 @@ class NZBProvider(GenericProvider):
 
     def _get_result(self, episodes):
         result = NZBSearchResult(episodes)
-        if self.torznab or result.url.startswith("magnet") or result.url.endswith("torrent"):
-            result.resultType = GenericProvider.TORRENT
+        if result.is_torrent:
+            result.result_type = GenericProvider.TORRENT
 
         return result
 

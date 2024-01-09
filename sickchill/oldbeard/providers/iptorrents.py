@@ -2,7 +2,6 @@ import re
 import traceback
 from urllib.parse import urljoin
 
-import validators
 from requests.utils import dict_from_cookiejar
 
 from sickchill import logger
@@ -50,8 +49,8 @@ class Provider(TorrentProvider):
         login_params = {"username": self.username, "password": self.password, "login": "submit"}
 
         if self.custom_url:
-            if validators.url(self.custom_url) != True:
-                logger.warning("Invalid custom url: {0}".format(self.custom_url))
+            if self.invalid_url(self.custom_url):
+                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
                 return False
 
         # Get the index, redirects to log in
@@ -88,7 +87,7 @@ class Provider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, age=0, ep_obj=None):
+    def search(self, search_params, episode_object=None):
         results = []
         if not self.login():
             return results
@@ -107,8 +106,8 @@ class Provider(TorrentProvider):
                 search_url += ";o=seeders" if mode != "RSS" else ""
 
                 if self.custom_url:
-                    if validators.url(self.custom_url) != True:
-                        logger.warning("Invalid custom url: {0}".format(self.custom_url))
+                    if self.invalid_url(self.custom_url):
+                        logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
                         return results
                     search_url = urljoin(self.custom_url, search_url.split(self.url)[1])
 
@@ -153,7 +152,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                             title, seeders, leechers
                                         )
                                     )

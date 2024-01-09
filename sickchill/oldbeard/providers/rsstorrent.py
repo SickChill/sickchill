@@ -10,7 +10,7 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class TorrentRssProvider(TorrentProvider):
-    def __init__(self, name, url, cookies="", titleTAG="title", search_mode="eponly", search_fallback=False, enable_daily=False, enable_backlog=False):
+    def __init__(self, name, url, cookies="", titleTAG="title", search_mode="episode", search_fallback=False, enable_daily=False, enable_backlog=False):
         super().__init__(name)
 
         self.cache = TorrentRssCache(self, min_time=15)
@@ -26,7 +26,7 @@ class TorrentRssProvider(TorrentProvider):
         self.cookies = cookies
         self.titleTAG = titleTAG
 
-    def configStr(self):
+    def config_string(self):
         return "{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}".format(
             self.name or "",
             self.url or "",
@@ -85,7 +85,7 @@ class TorrentRssProvider(TorrentProvider):
         enable_backlog = 0
         enable_daily = 0
         search_fallback = 0
-        search_mode = "eponly"
+        search_mode = "episode"
         title_tag = "title"
 
         try:

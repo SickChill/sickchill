@@ -8,8 +8,8 @@
 }
 
 .fileBrowserDialog ul {
-    margin: 0;
     padding: 0;
+    margin: 0;
 }
 
 .fileBrowserDialog ul li {
@@ -24,8 +24,8 @@
 }
 
 .fileBrowserDialog ul li a:hover {
-    color: #00f;
     background: none;
+    color: #00f;
 }
 
 .fileBrowserDialog ul li a .ui-icon {
@@ -35,9 +35,9 @@
 
 .ui-autocomplete {
     max-height: 180px;
-    overflow-y: auto;
-    /* prevent horizontal scrollbar */
-    overflow-x: hidden;
     /* add padding to account for vertical scrollbar */
     padding-right: 20px;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+    overflow-y: auto;
 }

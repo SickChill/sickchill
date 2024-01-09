@@ -36,13 +36,19 @@ class RSSTorrentMixin:
 
     @classmethod
     def check_link(cls, link, url):
-        return urlparse(link).netloc == urlparse(url).netloc or validators.url(link) == True or link.startswith("magnet")
+        return urlparse(link).netloc == urlparse(url).netloc or validators.url(link) is True or link.startswith("magnet")
 
     @classmethod
     def parse_feed_item(cls, item, url, size_units=None):
-        title = item.title.get_text(strip=True)
-        found_urls = set()
+        seeders = 0
+        leechers = 0
+        item_size = -1
+        info_hash = ""
         download_url = None
+
+        title = item.title.get_text(strip=True)
+
+        found_urls = set()
         if item.link:
             found_urls.add(item.link.get_text(strip=True))
             if item.link.next.strip():
@@ -59,45 +65,45 @@ class RSSTorrentMixin:
             logger.debug(f"{item}")
             return
 
-        item_size = -1
+        attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": ["infoHash", "info_hash", "guid"]})
+        if attribute:
+            info_hash = attribute["value"]
 
-        regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
-        info_hash = item.infoHash or item.guid
-        if info_hash:
-            match = re.match(regex, info_hash.get_text(strip=True))
-            if match:
-                info_hash = match.group("guid")
-            else:
-                info_hash = info_hash.get_text(strip=True)
+        if not info_hash:
+            regex = "^.*(?P<guid>[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?).*$"
+            info_hash = item.find(["infoHash", "info_hash", "guid"]).get_text(strip=True)
+            if info_hash:
+                match = re.match(regex, info_hash)
+                if match:
+                    info_hash = match.group("guid")
 
-        if item.seeders:
+        attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": "seeders"})
+        if attribute:
+            seeders = try_int(attribute["value"])
+
+        if item.seeders and not seeders:
             seeders = try_int(item.seeders.get_text(strip=True))
-        else:
-            seeders = 0
 
-        if item.peers:
-            leechers = try_int(item.peers.get_text(strip=True))
-        elif item.leechers:
-            leechers = try_int(item.leechers.get_text(strip=True))
-        else:
-            leechers = 0
+        attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": ["leechers", "peers"]})
+        if attribute:
+            leechers = try_int(attribute["value"])
 
-        for attr in item.find_all(["newznab:attr", "torznab:attr"]):
-            item_size = attr["value"] if attr["name"] == "size" else item_size
-            seeders = try_int(attr["value"]) if attr["name"] == "seeders" else seeders
-            leechers = try_int(attr["value"]) if attr["name"] == "peers" else leechers
-            info_hash = attr["value"] if attr["name"] == "infoHash" else info_hash
-            # download_url = attr["value"] if attr["name"] == "magneturl" else download_url
-            # genre = attr["value"] if attr["name"] == "genre" else genre
+        if not leechers:
+            attribute = item.find(["peers", "leechers"])
+            if attribute:
+                leechers = try_int(attribute.get_text(strip=True))
 
-            # Multiple values possible for category
-            # category = attr["value"] if attr["name"] == "category" else category
+        attribute = item.find(["newznab:attr", "torznab:attr"], attrs={"name": "size"})
+        if attribute:
+            item_size = attribute["value"]
 
-        if item.size:
-            item_size = item.size.get_text(strip=True) or -1
-        elif "gingadaddy" in url:
-            size_regex = re.search(r"\d*.?\d* [KMGT]B", str(item.description))
-            item_size = size_regex.group() if size_regex else -1
+        if not item_size:
+            if item.size:
+                item_size = item.size.get_text(strip=True) or -1
+            elif "gingadaddy" in url and item.description:
+                size_regex = re.search(r"\d*.?\d* [KMGT]B", item.description.get_text(strip=True))
+                if size_regex:
+                    item_size = size_regex.group()
 
         torznab = any([item.seeders, item.leechers, item.peers, download_url.endswith("torrent"), download_url.startswith("magnet")])
 
@@ -106,7 +112,7 @@ class RSSTorrentMixin:
             logger.debug(f"{item}")
             return
 
-        if torznab and seeders == 0:
+        if torznab and not seeders:
             # TODO: Implement minseed/minleech for torznab/jackett
             logger.debug(f"Skipping torznab result {title} because there are no seeders.")
 
@@ -177,7 +183,7 @@ class TVCache(RSSTorrentMixin):
         self.min_time = kwargs.pop("min_time", 10)
         self.search_params = kwargs.pop("search_params", dict(RSS=[""]))
 
-    def _get_db(self):
+    def get_db(self):
         # init provider database if not done already
         if not provider_cache_db.get("instance"):
             provider_cache_db["instance"] = CacheDBConnection()
@@ -186,7 +192,7 @@ class TVCache(RSSTorrentMixin):
 
     def _clear_cache(self):
         if self.should_clear_cache():
-            cache_db_con = self._get_db()
+            cache_db_con = self.get_db()
             cache_db_con.trim(self.provider_id)
 
     def _get_seeders_and_leechers(self, item):
@@ -225,7 +231,7 @@ class TVCache(RSSTorrentMixin):
                         cl.append(ci)
 
                 if cl:
-                    cache_db_con = self._get_db()
+                    cache_db_con = self.get_db()
                     cache_db_con.mass_upsert("results", cl)
 
         except AuthException as error:
@@ -257,7 +263,7 @@ class TVCache(RSSTorrentMixin):
             url = self._translate_link_url(url)
 
             # logger.debug("Attempting to add item to cache: " + title)
-            return self._add_cache_entry(title, url, size, seeders, leechers)
+            return self.add_cache_entry(title, url, size, seeders, leechers)
 
         else:
             logger.debug("The data returned from the " + self.provider.name + " feed is incomplete, this result is unusable")
@@ -266,7 +272,7 @@ class TVCache(RSSTorrentMixin):
 
     @property
     def last_update(self):
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         sql_results = cache_db_con.select("SELECT time FROM lastUpdate WHERE provider = ?", [self.provider_id])
 
         if sql_results:
@@ -280,7 +286,7 @@ class TVCache(RSSTorrentMixin):
 
     @property
     def last_search(self):
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         sql_results = cache_db_con.select("SELECT time FROM lastSearch WHERE provider = ?", [self.provider_id])
 
         if sql_results:
@@ -301,7 +307,7 @@ class TVCache(RSSTorrentMixin):
         if not to_date:
             to_date = datetime.datetime.today()
 
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         cache_db_con.upsert("lastUpdate", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
 
     def set_last_search(self, to_date=None):
@@ -313,7 +319,7 @@ class TVCache(RSSTorrentMixin):
         if not to_date:
             to_date = datetime.datetime.today()
 
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         cache_db_con.upsert("lastSearch", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
 
     def should_update(self):
@@ -331,7 +337,7 @@ class TVCache(RSSTorrentMixin):
 
         return True
 
-    def _add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
+    def add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
         # check if we passed in a parsed result or should we try and create one
         if not parse_result:
             # create show_obj from indexer_id if available
@@ -393,7 +399,7 @@ class TVCache(RSSTorrentMixin):
         return needed_eps.get(episode, [])
 
     def list_propers(self, date=None):
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         sql = "SELECT * FROM results WHERE provider = ? AND name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
         # Add specific provider proper_strings also, like REAL, RERIP, etc.
         if hasattr(self.provider, "proper_strings"):
@@ -417,7 +423,7 @@ class TVCache(RSSTorrentMixin):
         needed_eps = {}
         cl = []
 
-        cache_db_con = self._get_db()
+        cache_db_con = self.get_db()
         if not episode:
             sql_results = cache_db_con.select("SELECT * FROM results WHERE provider = ?", [self.provider_id])
         elif not isinstance(episode, list):
@@ -426,13 +432,13 @@ class TVCache(RSSTorrentMixin):
                 [self.provider_id, episode.show.indexerid, episode.season, "%|" + str(episode.episode) + "|%"],
             )
         else:
-            for ep_obj in episode:
+            for episode_object in episode:
                 cl.append(
                     [
                         "SELECT * FROM results WHERE provider = ? AND indexerid = ? AND season = ? AND episodes LIKE ? AND quality IN ("
-                        + ",".join([str(x) for x in ep_obj.wantedQuality])
+                        + ",".join([str(x) for x in episode_object.wantedQuality])
                         + ")",
-                        [self.provider_id, ep_obj.show.indexerid, ep_obj.season, "%|" + str(ep_obj.episode) + "|%"],
+                        [self.provider_id, episode_object.show.indexerid, episode_object.season, "%|" + str(episode_object.episode) + "|%"],
                     ]
                 )
 
@@ -475,7 +481,7 @@ class TVCache(RSSTorrentMixin):
                 logger.debug("Ignoring " + cur_result["name"])
                 continue
 
-            ep_obj = show_obj.getEpisode(cur_season, cur_ep)
+            episode_object = show_obj.getEpisode(cur_season, cur_ep)
 
             # build a result object
             title = cur_result["name"]
@@ -483,7 +489,7 @@ class TVCache(RSSTorrentMixin):
 
             logger.info("Found result " + title + " at " + url)
 
-            result = self.provider.get_result([ep_obj])
+            result = self.provider.get_result([episode_object])
             result.show = show_obj
             result.url = url
             result.name = title
@@ -493,10 +499,10 @@ class TVCache(RSSTorrentMixin):
             result.content = None
 
             # add it to the list
-            if ep_obj not in needed_eps:
-                needed_eps[ep_obj] = [result]
+            if episode_object not in needed_eps:
+                needed_eps[episode_object] = [result]
             else:
-                needed_eps[ep_obj].append(result)
+                needed_eps[episode_object].append(result)
 
         # datetime stamp this search so cache gets cleared
         self.set_last_search()

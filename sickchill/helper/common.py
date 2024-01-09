@@ -190,26 +190,26 @@ def is_media_file(filename):
     # ignore samples
     is_rar = is_rar_file(filename)
 
-    with Path(filename) as path:
-        if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", path.name, re.I):
-            return False
+    path = Path(filename)
+    if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", path.name, re.I):
+        return False
 
-        # ignore RARBG release intro
-        if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", path.name, re.I):
-            return False
+    # ignore RARBG release intro
+    if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", path.name, re.I):
+        return False
 
-        # ignore Kodi tvshow trailers
-        if path.name == "tvshow-trailer.mp4":
-            return False
+    # ignore Kodi tvshow trailers
+    if path.name == "tvshow-trailer.mp4":
+        return False
 
-        # ignore MACOS's retarded "resource fork" files
-        if path.name.startswith("._"):
-            return False
+    # ignore MACOS's retarded "resource fork" files
+    if path.name.startswith("._"):
+        return False
 
-        if re.search("extras?$", path.name, re.I):
-            return False
+    if re.search("extras?$", path.name, re.I):
+        return False
 
-        return (get_extension(path, lower=True) in MEDIA_EXTENSIONS) or (is_rar and settings.UNPACK == settings.UNPACK_PROCESS_INTACT)
+    return (get_extension(path, lower=True) in MEDIA_EXTENSIONS) or (is_rar and settings.UNPACK == settings.UNPACK_PROCESS_INTACT)
 
 
 def is_rar_file(filename: Union[Path, PathLike, str]) -> bool:
@@ -222,15 +222,16 @@ def is_rar_file(filename: Union[Path, PathLike, str]) -> bool:
          True if this is RAR/Part file, False if not
     """
     result = False
-    with Path(filename) as path:
-        archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
-        try:
-            if path.is_file():
-                result = rarfile.is_rarfile(path)
-            else:
-                result = re.search(archive_regex, path.name) != None
-        except (IOError, OSError):
-            return result
+    path = Path(filename)
+    archive_regex = r"(?P<file>^(?P<base>(?:(?!\.part\d+\.rar$).)*)\.(?:(?:part0*1\.)?rar)$)"
+    try:
+        if path.is_file():
+            result = rarfile.is_rarfile(path)
+        else:
+            result = re.search(archive_regex, path.name) is not None
+    except (IOError, OSError):
+        return result
+
     return result
 
 
@@ -274,7 +275,7 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
         Default units: ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
     :keyword default_units: Default unit if none is given,
-        default is lowest unit on the scale, e.g. bytes
+        default is the lowest unit on the scale, e.g. bytes
 
     :returns: the number of bytes, the default value, or 0
     """
@@ -316,22 +317,22 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
     return result
 
 
-def remove_extension(filename: Union[Path, PathLike, str] = None, media_only: bool = True) -> Union[Path, PathLike, str]:
+def remove_extension(filename: Union[Path, PathLike, str]) -> Union[Path, PathLike, str]:
     """
     Remove the extension of the provided ``filename``.
     The extension is only removed if it is in MEDIA_EXTENSIONS or ['nzb', 'torrent'].
     :param filename: The filename from which we want to remove the extension
     :return: The ``filename`` without its extension.
     """
-    with Path(filename) as path:
-        if not path.name:
-            return filename
+    path = Path(filename)
+    if not path.name:
+        return filename
 
-        is_media = get_extension(path, lower=True) in ["nzb", "torrent"] + MEDIA_EXTENSIONS
-        return type(filename)((path, path.with_suffix(""))[media_only and is_media])
+    is_media = get_extension(path, lower=True) in ["nzb", "torrent"] + MEDIA_EXTENSIONS
+    return type(filename)((path, path.with_suffix(""))[is_media])
 
 
-def replace_extension(filename: Union[Path, PathLike, str] = None, new_extension: str = None, media_only: bool = False) -> Union[Path, PathLike, str]:
+def replace_extension(filename: Union[Path, PathLike, str], new_extension: str) -> Union[Path, PathLike, str]:
     """
     Replace the extension of the provided ``filename`` with a new extension.
     :param filename: The filename for which we want to change the extension
@@ -341,15 +342,16 @@ def replace_extension(filename: Union[Path, PathLike, str] = None, new_extension
     if not isinstance(new_extension, (PathLike, str)):
         raise TypeError()
 
-    with Path(filename) as path:
-        if not path.name:
-            return filename
-        if not path.suffix:
-            return filename
-        else:
-            if new_extension and not new_extension.startswith("."):
-                new_extension = f".{new_extension}"
-            return type(filename)(path.with_suffix(new_extension))
+    path = Path(filename)
+    if not path.name:
+        return filename
+    if not path.suffix:
+        return filename
+    else:
+        if new_extension and not new_extension.startswith("."):
+            new_extension = f".{new_extension}"
+
+    return type(filename)(path.with_suffix(new_extension))
 
 
 def sanitize_filename(filename):
@@ -399,22 +401,23 @@ def episode_num(season=None, episode=None, **kwargs):
 
     numbering = kwargs.pop("numbering", "standard")
 
-    if numbering == "standard":
-        if season is not None and episode:
-            return "S{0:0>2}E{1:02}".format(season, episode)
-    elif numbering == "absolute":
-        if not (season and episode) and (season or episode):
-            return "{0:0>3}".format(season or episode)
+    if season or episode:
+        if numbering == "standard":
+            if season is not None and episode is not None:
+                return f"S{season:02}E{episode:02}"
+        elif numbering == "absolute":
+            if episode is None:
+                return f"{season:03}"
 
 
 def setup_github():
     """
-    Instantiate the global github connection, for checking for updates and submitting issues
+    Instantiate the global GitHub connection, for checking for updates and submitting issues
     """
 
     try:
         if settings.GIT_TOKEN:
-            # Token Auth - allows users with Two-Factor Authorization (2FA) enabled on Github to connect their account.
+            # Token Auth - allows users with Two-Factor Authorization (2FA) enabled on GitHub to connect their account.
             settings.gh = Github(login_or_token=settings.GIT_TOKEN, user_agent="SickChill")
             # This will trigger:
             # * BadCredentialsException if token is invalid
@@ -464,12 +467,12 @@ def setup_github():
         sickchill.logger.error(_("Unable to set up GitHub properly. GitHub will not be available. Error: {error}").format(error=error))
 
 
-def choose_data_dir(program_dir):
+def choose_data_dir(program_dir) -> Path:
     old_data_dir = Path(program_dir).parent
     old_profile_path = Path.home().joinpath("sickchill")
     proper_data_dir = Path(appdirs.user_config_dir(appname="sickchill"))
     for location in [old_data_dir, old_profile_path, proper_data_dir]:
         for check in ["sickbeard.db", "sickchill.db", "config.ini"]:
             if location.joinpath(check).exists():
-                return location
-    return proper_data_dir
+                return location.resolve()
+    return proper_data_dir.resolve()

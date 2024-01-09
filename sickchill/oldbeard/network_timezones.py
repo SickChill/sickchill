@@ -13,13 +13,13 @@ time_regex = re.compile(r"(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meri
 
 network_dict = {}
 
-sb_timezone = tz.tzlocal()
+sc_timezone = tz.tzlocal()
 
 
 def update_network_dict():
     """Update timezone information from SC repositories"""
 
-    url = "https://sickchill.github.io/sb_network_timezones/network_timezones.txt"
+    url = "https://sickchill.github.io/sc_network_timezones/network_timezones.txt"
     data = helpers.getURL(url, session=helpers.make_session(), returns="text")
     if not data:
         logger.warning(f"Updating network timezones failed, this can happen from time to time. URL: {url}")
@@ -84,10 +84,10 @@ def load_network_dict():
 
 def get_network_timezone(network):
     """
-    Get the timezone of a network, or return sb_timezone
+    Get the timezone of a network, or return sc_timezone
 
     :param network: network to look up
-    :return: network timezone if found, or sb_timezone
+    :return: network timezone if found, or sc_timezone
     """
 
     if network:
@@ -96,9 +96,9 @@ def get_network_timezone(network):
     network_tz_name = network_dict.get(network)
 
     try:
-        network_tz = (tz.gettz(network_tz_name) or sb_timezone) if network_tz_name else sb_timezone
+        network_tz = (tz.gettz(network_tz_name) or sc_timezone) if network_tz_name else sc_timezone
     except Exception:
-        return sb_timezone
+        return sc_timezone
     return network_tz
 
 

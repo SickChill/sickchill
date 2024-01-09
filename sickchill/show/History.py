@@ -12,6 +12,7 @@ from sickchill.oldbeard.classes import SearchResult
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow
     from sickchill.oldbeard.subtitles import Scores
+    from sickchill.providers.GenericProvider import GenericProvider
 
 from sickchill.helper.common import remove_extension, try_int
 from sickchill.helper.exceptions import EpisodeNotFoundException
@@ -23,25 +24,27 @@ class History(object, metaclass=Singleton):
     date_format = "%Y%m%d%H%M%S"
 
     def __init__(self):
-        self.db: DBConnection = DBConnection()
+        self.db: DBConnection = DBConnection()  # DataSource: sickchill.db
         self.failed_db: DBConnection = DBConnection("failed.db")  # DataSource: failed.db
 
         self.trim()
 
-    def remove(self, toRemove):
+    def remove(self, items):
         """
         Removes the selected history
-        :param toRemove: Contains the properties of the log entries to remove
+        :param items: Contains the properties of the log entries to remove
         """
         query = ""
 
-        for item in toRemove:
-            query = query + " OR " if query != "" else ""
-            query = query + "(date IN ({0}) AND showid = {1} " "AND season = {2} AND episode = {3})".format(
-                ",".join(item["dates"]), item["show_id"], item["season"], item["episode"]
-            )
+        params = []
+        for item in items:
+            if query:
+                query += " OR "
 
-        self.db.action("DELETE FROM history WHERE " + query)
+            query += "(date IN (?) AND showid = ? AND season = ? AND episode = ?)"
+            params.extend([",".join(item["dates"]), item["show_id"], item["season"], item["episode"]])
+
+        self.db.action("DELETE FROM history WHERE " + query, params)
 
     def clear(self):
         """
@@ -69,12 +72,14 @@ class History(object, metaclass=Singleton):
 
         limit = max(try_int(limit, 0), 0)
 
+        # DataSource: sickchill.db
         common_sql = (
             "SELECT action, date, episode, provider, h.quality, resource, season, show_name, showid "
             "FROM history h, tv_shows s "
             "WHERE h.showid = s.indexer_id "
-        )
-        filter_sql = "AND action in (" + ",".join(["?"] * len(actions)) + ") "
+        )  # DataSource: sickchill.db
+        replacements = ",".join(["?"] * len(actions))
+        filter_sql = f"AND action IN ({replacements})"
         order_sql = "ORDER BY date DESC "
 
         if limit == 0:
@@ -110,15 +115,12 @@ class History(object, metaclass=Singleton):
         """
         Remove all elements older than 30 days from the history
         """
-
-        # TODO: Check if native way works with our dates
-        # self.db.action("DELETE FROM history WHERE date < datetime('now', '-30 days')")
         back_thirty_days = (datetime.today() - timedelta(days=30)).strftime(self.date_format)
         self.db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
         if settings.USE_FAILED_DOWNLOADS:
             self.failed_db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
 
-    def _logHistoryItem(self, action: int, showid: int, season: int, episode: int, quality: int, resource: str, provider, version=-1):
+    def _log_history_item(self, action: int, showid: int, season: int, episode: int, quality: int, resource: str, provider, version=-1):
         """
         Insert a history item in DB
 
@@ -131,26 +133,27 @@ class History(object, metaclass=Singleton):
         :param provider: provider used
         :param version: tracked version of file (defaults to -1)
         """
+        # DataSource: sickchill.db
         return self.db.action(
             "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [action, datetime.today().strftime(self.date_format), showid, season, episode, quality, resource, provider, version],
         )
 
-    def logSnatch(self, result: SearchResult):
+    def log_snatch(self, result: SearchResult):
         """
         Log history of snatch
 
         :param result: search result object
         """
-        providerClass = result.provider
+        provider_class: "GenericProvider" = result.provider
         show: "TVShow" = result.episodes[0].show
-        if providerClass:
-            provider = providerClass.name
+        if provider_class:
+            provider = provider_class.name
         else:
             provider = "unknown"
 
         for episode in result.episodes:
-            self._logHistoryItem(
+            self._log_history_item(
                 Quality.compositeStatus(SNATCHED, result.quality),
                 episode.show.indexerid,
                 episode.season,
@@ -166,7 +169,7 @@ class History(object, metaclass=Singleton):
                     [
                         datetime.today().strftime(self.date_format),
                         result.size,
-                        self.prepareFailedName(result.name),
+                        self.prepare_failed_name(result.name),
                         provider,
                         show.indexerid,
                         episode.season,
@@ -175,7 +178,7 @@ class History(object, metaclass=Singleton):
                     ],
                 )
 
-    def logDownload(self, episode: "TVEpisode", filename: str, quality: int, group: str = None, version: int = -1):
+    def log_download(self, episode: "TVEpisode", filename: str, quality: int, group: str = None, version: int = -1):
         """
         Log history of download
 
@@ -185,9 +188,9 @@ class History(object, metaclass=Singleton):
         :param group: Release group
         :param version: Version of file (defaults to -1)
         """
-        self._logHistoryItem(episode.status, episode.show.indexerid, episode.season, episode.episode, quality, filename, group or -1, version)
+        self._log_history_item(episode.status, episode.show.indexerid, episode.season, episode.episode, quality, filename, group or -1, version)
 
-    def logSubtitle(self, show: int, season: int, episode: int, status: int, subtitle: subliminal.subtitle.Subtitle, scores: "Scores"):
+    def log_subtitle(self, show: int, season: int, episode: int, status: int, subtitle: subliminal.subtitle.Subtitle, scores: "Scores"):
         """
         Log download of subtitle
 
@@ -196,20 +199,18 @@ class History(object, metaclass=Singleton):
         :param episode: Show episode
         :param status: Status of download
         :param subtitle: Result object
-        # :param scores: Scores named tuple
+        :param scores: Scores named tuple
         """
         if settings.SUBTITLES_HISTORY:
             logger.debug(
                 f"[{subtitle.provider_name}] Subtitle score for {subtitle.id} is: {scores.res}/{scores.percent}% (min={scores.min}/{scores.min_percent})"
             )
             status, quality = Quality.splitCompositeStatus(status)
-            # TODO: Split action and quality in database to simplify EVERYTHING.
-            # self._logHistoryItem(Quality.compositeStatus(SUBTITLED, scores.percent), show, season, episode, quality, subtitle.language.opensubtitles, subtitle.provider_name)
-            self._logHistoryItem(
+            self._log_history_item(
                 Quality.compositeStatus(SUBTITLED, quality), show, season, episode, quality, subtitle.language.opensubtitles, subtitle.provider_name
             )
 
-    def logFailed(self, episode_object: "TVEpisode", release: str, provider: str = ""):
+    def log_failed(self, episode_object: "TVEpisode", release: str, provider: str = ""):
         """
         Log a failed download
 
@@ -219,7 +220,7 @@ class History(object, metaclass=Singleton):
         """
 
         status, quality = Quality.splitCompositeStatus(episode_object.status)
-        self._logHistoryItem(
+        self._log_history_item(
             Quality.compositeStatus(FAILED, quality), episode_object.show.indexerid, episode_object.season, episode_object.episode, quality, release, provider
         )
 
@@ -228,7 +229,7 @@ class History(object, metaclass=Singleton):
 
         size = -1
 
-        release = self.prepareFailedName(release)
+        release = self.prepare_failed_name(release)
 
         sql_results = self.failed_db.select('SELECT * FROM history WHERE "release" = ?', [release])
 
@@ -244,7 +245,7 @@ class History(object, metaclass=Singleton):
             else:
                 logger.warning("They also vary in size. Deleting the logged snatches and recording this release with no size/provider")
                 for result in sql_results:
-                    self.deleteLoggedSnatch(result["release"], result["size"], result["provider"])
+                    self.remove_snatch(result["release"], result["size"], result["provider"])
 
             if providers == 1:
                 logger.info("They're also from the same provider. Using it as well.")
@@ -253,25 +254,25 @@ class History(object, metaclass=Singleton):
             size = sql_results[0]["size"]
             provider = sql_results[0]["provider"]
 
-        if not self.hasFailed(release, size, provider):
+        if not self.has_failed(release, size, provider):
             self.failed_db.action('INSERT INTO failed ("release", size, provider) VALUES (?, ?, ?)', [release, size, provider])
 
-        self.deleteLoggedSnatch(release, size, provider)
+        self.remove_snatch(release, size, provider)
 
     @staticmethod
-    def prepareFailedName(release: str):
+    def prepare_failed_name(release: str):
         """Standardizes release name for failed DB"""
 
         fixed = urllib.parse.unquote(release)
         if fixed.endswith((".nzb", ".torrent")):
             fixed = remove_extension(fixed)
 
-        return re.sub(r"[\.\-\+\ ]", "_", fixed)
+        return re.sub(r"[.\-+ ]", "_", fixed)
 
-    def logSuccess(self, release):
-        self.failed_db.action('DELETE FROM history WHERE "release" = ?', [self.prepareFailedName(release)])
+    def log_success(self, release):
+        self.failed_db.action('DELETE FROM history WHERE "release" = ?', [self.prepare_failed_name(release)])
 
-    def hasFailed(self, release: str, size: int, provider: str = "%"):
+    def has_failed(self, release: str, size: int, provider: str = "%"):
         """
         Returns True if a release has previously failed.
 
@@ -287,11 +288,11 @@ class History(object, metaclass=Singleton):
 
         return bool(
             self.failed_db.select_one(
-                'SELECT "release" FROM failed WHERE "release" = ? AND size = ? AND provider LIKE ? ', [self.prepareFailedName(release), size, provider]
+                'SELECT "release" FROM failed WHERE "release" = ? AND size = ? AND provider LIKE ? ', [self.prepare_failed_name(release), size, provider]
             )
         )
 
-    def revertEpisode(self, episode_object: "TVEpisode"):
+    def revert_episode(self, episode_object: "TVEpisode"):
         """Restore the episodes of a failed download to their original state"""
         if not settings.USE_FAILED_DOWNLOADS:
             return
@@ -316,7 +317,7 @@ class History(object, metaclass=Singleton):
         except EpisodeNotFoundException as error:
             logger.warning(f"Unable to create episode, please set its status manually: {error}")
 
-    def markFailed(self, episode_object: "TVEpisode"):
+    def mark_failed(self, episode_object: "TVEpisode"):
         """
         Mark an episode_object as failed
 
@@ -336,13 +337,13 @@ class History(object, metaclass=Singleton):
         except EpisodeNotFoundException as error:
             logger.warning(f"Unable to get episode, please set its status manually: {error}")
 
-        (release, provider) = self.findRelease(episode_object)
+        (release, provider) = self.find_release(episode_object)
         if release:
-            self.logFailed(episode_object, release, provider)
+            self.log_failed(episode_object, release, provider)
 
-        self.revertEpisode(episode_object)
+        self.revert_episode(episode_object)
 
-    def deleteLoggedSnatch(self, release: str, size: int, provider: str):
+    def remove_snatch(self, release: str, size: int, provider: str):
         """
         Remove a snatch from history
 
@@ -350,9 +351,9 @@ class History(object, metaclass=Singleton):
         :param size: Size of release
         :param provider: Provider to delete it from
         """
-        self.failed_db.action('DELETE FROM history WHERE "release" = ? AND size = ? AND provider = ?', [self.prepareFailedName(release), size, provider])
+        self.failed_db.action('DELETE FROM history WHERE "release" = ? AND size = ? AND provider = ?', [self.prepare_failed_name(release), size, provider])
 
-    def findRelease(self, episode_object: "TVEpisode"):
+    def find_release(self, episode_object: "TVEpisode"):
         """
         Find releases in history by show ID and season.
         Return None for release if multiple found or no release found.
@@ -386,6 +387,3 @@ class History(object, metaclass=Singleton):
         # Release was not found
         logger.debug(f"No releases found for season ({episode_object.season}) of ({episode_object.show.indexerid})")
         return None, None
-
-
-history = None

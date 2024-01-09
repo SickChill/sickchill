@@ -79,7 +79,7 @@ $(document).ready(function () {
 
         if ($('#provider_order_list > #' + id).length === 0) {
             const providerOrderList = $('#provider_order_list');
-            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + scRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
+            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" checked> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + scRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
             providerOrderList.sortable('refresh');
         }
 
@@ -94,7 +94,7 @@ $(document).ready(function () {
 
         if ($('#provider_order_list > #' + id).length === 0) {
             const providerOrderList = $('#provider_order_list');
-            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + scRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
+            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" checked> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + scRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
             providerOrderList.sortable('refresh');
         }
 
@@ -294,7 +294,7 @@ $(document).ready(function () {
             }
         }
 
-        $('#torrentrss_string').val(provStrings.join('!!!'));
+        $('#torrent_rss_string').val(provStrings.join('!!!'));
     };
 
     $.fn.refreshProviderList = function () {

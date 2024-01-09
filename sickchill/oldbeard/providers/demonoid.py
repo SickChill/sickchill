@@ -30,7 +30,7 @@ class Provider(TorrentProvider):
 
         self.cache = DemonoidCache(self)
 
-    def search(self, search_strings, age=0, ep_obj=None):
+    def search(self, search_strings, episode_object=None):
         results = []
         # https://demonoid.is/files/?category=12&quality=58&seeded=0&external=2&sort=seeders&order=desc&query=SEARCH_STRING
         search_params = {
@@ -89,7 +89,7 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(
                                             title, seeders, leechers
                                         )
                                     )
