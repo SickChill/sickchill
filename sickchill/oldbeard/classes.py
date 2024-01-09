@@ -91,32 +91,32 @@ class SearchResult(object):
         self.__checked_url = True
 
     @property
-    def __check_torznab(self):
-        torznab: bool = hasattr(self.provider, "torznab") and self.provider.torznab
-        torznab |= self.url and "jackett" in self.url
-        torznab |= self.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", self.url)
+    def __check_torznab(self) -> bool:
+        torznab: bool = hasattr(self.provider, "torznab") and bool(self.provider.torznab)
+        torznab |= bool(self.url) and "jackett" in self.url
+        torznab |= self.url.startswith("magnet:") and bool(re.search(r"urn:btih:(\w{32,40})", self.url))
         return torznab
 
     @property
-    def is_torrent(self):
+    def is_torrent(self) -> bool:
         self.__check_url()
         if self.__check_torznab:
             return True
         return self.result_type == "torrent"
 
     @property
-    def is_nzb(self):
+    def is_nzb(self) -> bool:
         if self.is_torrent:
             return False
         return self.result_type == "nzb"
 
     @property
-    def is_nzbdata(self):
+    def is_nzbdata(self) -> bool:
         if self.is_torrent:
             return False
         return self.result_type == "nzbdata"
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.provider is None:
             return "Invalid provider, unable to print self"
 
@@ -139,7 +139,7 @@ class SearchResult(object):
 
 class NZBSearchResult(SearchResult):
     """
-    Regular NZB result with an URL to the NZB
+    Regular NZB result with a URL to the NZB
     """
 
     def __init__(self, episodes):

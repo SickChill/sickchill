@@ -19,7 +19,7 @@ class Provider(TorrentProvider):
         self.minleech = 0
 
         # URLs
-        self.url = "https://eztv.re"
+        self.url = "https://eztvx.to"
         self.api = urljoin(self.url, "api/get-torrents")
 
         # Cache

@@ -1,3 +1,8 @@
+### 2024.1.8
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2023.6.27...2024.1.8)
+
+
 ### 2023.6.27
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2023.5.30...2023.6.27)
@@ -40,11 +45,25 @@
 
 ### 2023.5.24
 
-[full changelog](https://github.com/SickChill/SickChill/compare/2023.1.2...2023.5.24)
+[full changelog](https://github.com/SickChill/SickChill/compare/2023.10.20.1...2023.5.24)
 
 * Release version 2023.5.24
 * Bump webpack from 5.75.0 to 5.76.0
 * Bump http-cache-semantics from 4.1.0 to 4.1.1
+
+### 2023.10.20.1
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2023.10.20...2023.10.20.1)
+
+* try calver output
+* Signed-off-by: miigotu <miigotu@gmail.com>
+
+### 2023.10.20
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2023.1.2...2023.10.20)
+
+* try calver output
+* Signed-off-by: miigotu <miigotu@gmail.com>
 
 ### 2023.1.2
 
