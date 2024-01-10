@@ -2248,7 +2248,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_gotify"> ${hidden(settings.USE_GOTIFY)}>
+                        <div id="content_use_gotify" ${hidden(settings.USE_GOTIFY)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
