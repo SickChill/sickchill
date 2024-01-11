@@ -14,6 +14,7 @@ from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
 from . import Config
+from ...helper.common import try_float
 
 
 @Route("/config/providers(/?.*)", name="config:providers")
@@ -251,7 +252,7 @@ class ConfigProviders(Config):
             provider.check_set_option(self, "sorting", "seeders")
             provider.check_set_option(self, "search_mode", "episode")
 
-            provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_int(x), -1))
+            provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_float(x), -1))
 
         settings.NEWZNAB_DATA = "!!!".join([x.config_string() for x in settings.newznab_provider_list])
         settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
