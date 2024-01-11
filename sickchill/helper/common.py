@@ -402,6 +402,7 @@ def try_float(candidate, default_value=0):
     except (ValueError, TypeError):
         return default_value
 
+
 def episode_num(season=None, episode=None, **kwargs):
     """
     Convert season and episode into string

@@ -6,6 +6,7 @@ from tornado.web import addslash
 import sickchill.start
 from sickchill import settings
 from sickchill.helper import try_int
+from sickchill.helper.common import try_float
 from sickchill.oldbeard import config, ui
 from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
@@ -14,7 +15,6 @@ from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
 from . import Config
-from ...helper.common import try_float
 
 
 @Route("/config/providers(/?.*)", name="config:providers")
