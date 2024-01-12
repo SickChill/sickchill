@@ -1191,7 +1191,7 @@ class PostProcessor(object):
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
-            notifiers.notify_download(self.filename)
+            notifiers.notify_download(f"{episode_object.pretty_name} - {new_quality_string}")
 
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(episode_object.show.name)
