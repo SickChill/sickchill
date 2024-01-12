@@ -47,7 +47,8 @@ class Client(GenericClient):
             download_path=settings.TORRENT_PATH_INCOMPLETE or None,
             category=(settings.TORRENT_LABEL, settings.TORRENT_LABEL_ANIME)[result.show.is_anime] or settings.TORRENT_LABEL,
             is_paused=settings.TORRENT_PAUSED,
-            ratio_limit=(None, float(result.ratio))[float(result.ratio) > 0],
+            #ratio_limit=(None, float(result.ratio))[float(result.ratio) > 0],
+            ratio_limit=max(float(result.ratio or 0), 0) or None,
             seeding_time_limit=(None, 60 * int(settings.TORRENT_SEED_TIME))[int(settings.TORRENT_SEED_TIME) > 0],
             tags=("sickchill", "sickchill-anime")[result.show.is_anime],
         )
