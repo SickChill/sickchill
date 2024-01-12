@@ -1221,7 +1221,7 @@ class PostProcessor(object):
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
-            notifiers.email_notifier.notify_postprocess(self.filename)
+            notifiers.email_notifier.notify_postprocess(f"{episode_object.pretty_name} - {new_quality_string}")
         except Exception:
             logger.info(_("Some notifications could not be sent. Finishing postProcessing..."))
 
