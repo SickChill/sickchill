@@ -4024,6 +4024,14 @@ const SICKCHILL = {
                 $('#bestQualities option:selected').each((i, d) => {
                     bestQualArray.push($(d).val());
                 });
+                const whitelistArray = [];
+                const blacklistArray = [];
+                $('#white option').each((i, d) => {
+                    whitelistArray.push($(d).val());
+                });
+                $('#black option').each((i, d) => {
+                    blacklistArray.push($(d).val());
+                });
                 generateBlackWhiteList(); // eslint-disable-line no-undef
                 $.post(scRoot + '/config/general/saveAddShowDefaults', {
                     defaultStatus: $('#statusSelect').val(),
@@ -4034,8 +4042,8 @@ const SICKCHILL = {
                     anime: $('#anime').is(':checked'),
                     scene: $('#scene').is(':checked'),
                     defaultStatusAfter: $('#statusSelectAfter').val(),
-                    whitelist: $('#whitelist').val(),
-                    blacklist: $('#blacklist').val(),
+                    whitelist: whitelistArray,
+                    blacklist: blacklistArray,
                 });
 
                 $(this).attr('disabled', true);
