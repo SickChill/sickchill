@@ -233,8 +233,8 @@ class KODIMetadata(generic.GenericMetadata):
             season_element = ElementTree.SubElement(episode_element, "season")
             season_element.text = str(current_episode.season)
 
-            episode_element = ElementTree.SubElement(episode_element, "episode")
-            episode_element.text = str(current_episode.episode)
+            episode_number_element = ElementTree.SubElement(episode_element, "episode")
+            episode_number_element.text = str(current_episode.episode)
 
             if indexer_episode.get("id"):
                 uniqueid_element = ElementTree.SubElement(episode_element, "uniqueid")
