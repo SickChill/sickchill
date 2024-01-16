@@ -78,7 +78,7 @@ def send_nzb(result: "SearchResult", proper=False) -> bool:
 
     if result.show.quality and dupe_score:
         allowed_qualities, preferred_qualities = Quality.splitQuality(result.show.quality)
-        if result.quality == max(preferred_qualities):
+        if result.quality == max(preferred_qualities, default=0):
             dupe_score *= 1000
         elif result.quality in preferred_qualities:
             dupe_score *= 800
