@@ -716,7 +716,6 @@ const SICKCHILL = {
 
                 discord.name = $('#discord_name').val();
                 discord.avatar = $('#discord_avatar_url').val();
-                discord.tts = $('#discord_tts').val();
 
                 $('#testDiscord').prop('disabled', true);
                 $('#testDiscord-result').html(loading);
@@ -724,7 +723,6 @@ const SICKCHILL = {
                     webhook: discord.webhook,
                     name: discord.name,
                     avatar: discord.avatar,
-                    tts: discord.tts,
                 }).done(data => {
                     $('#testDiscord-result').html(data);
                     $('#testDiscord').prop('disabled', false);

@@ -607,7 +607,6 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.DISCORD_WEBHOOK = check_setting_str(settings.CFG, "Discord", "discord_webhook")
         settings.DISCORD_NAME = check_setting_str(settings.CFG, "Discord", "discord_name")
         settings.DISCORD_AVATAR_URL = check_setting_str(settings.CFG, "Discord", "discord_avatar_url")
-        settings.DISCORD_TTS = check_setting_str(settings.CFG, "Discord", "discord_tts")
 
         settings.USE_TRAKT = check_setting_bool(settings.CFG, "Trakt", "use_trakt")
         settings.TRAKT_USERNAME = check_setting_str(settings.CFG, "Trakt", "trakt_username", censor_log=True)
@@ -1535,7 +1534,6 @@ def save_config():
                 "discord_webhook": settings.DISCORD_WEBHOOK,
                 "discord_name": settings.DISCORD_NAME,
                 "discord_avatar_url": settings.DISCORD_AVATAR_URL,
-                "discord_tts": settings.DISCORD_TTS,
             },
             "Trakt": {
                 "use_trakt": int(settings.USE_TRAKT),

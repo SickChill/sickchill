@@ -414,12 +414,11 @@ class Home(WebRoot):
         webhook = self.get_query_argument("webhook")
         name = self.get_query_argument("name")
         avatar = self.get_query_argument("avatar")
-        tts = self.get_query_argument("tts")
 
         if GenericProvider.invalid_url(webhook):
             return _("Invalid URL for webhook")
 
-        result = notifiers.discord_notifier.test_notify(webhook, name, avatar, tts)
+        result = notifiers.discord_notifier.test_notify(webhook, name, avatar)
         if result:
             return _("Discord message successful")
         else:

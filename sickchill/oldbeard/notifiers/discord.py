@@ -35,11 +35,11 @@ class Notifier(object):
 
             self._notify_discord(f"{title} - {update_text}")
 
-    def test_notify(self, webhook: str = None, name: str = None, avatar: str = None, tts=None):
+    def test_notify(self, webhook: str = None, name: str = None, avatar: str = None):
         from sickchill.oldbeard.notifications_queue import DiscordTask
 
         task = DiscordTask("This is a test notification from SickChill")
-        return task._send_discord(webhook=webhook, name=name, avatar=avatar, tts=tts)
+        return task._send_discord(webhook=webhook, name=name, avatar=avatar)
 
     @staticmethod
     def _send_discord(message=None, force=False):

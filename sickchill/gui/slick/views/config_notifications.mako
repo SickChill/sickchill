@@ -3764,16 +3764,6 @@
                                 </div>
                             </div>
 
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Discord TTS')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="checkbox" name="discord_tts" id="discord_tts" ${checked(settings.DISCORD_TTS)}/>
-                                    <label for="discord_tts">${_('Send notifications using text-to-speech')}</label>
-                                </div>
-                            </div>
-
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="testNotification" id="testDiscord-result">${_('Click below to test.')}</div>
