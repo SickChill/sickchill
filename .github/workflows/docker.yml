@@ -28,7 +28,7 @@ jobs:
       docker_labels: ${{ steps.docker.outputs.labels }}
     steps:
       - name: Cache environment files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/buildkitd.toml
           key: ${{ github.workflow }}-environment
@@ -65,7 +65,7 @@ jobs:
             type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
             type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
       - name: Restore environment files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/buildkitd.toml
           key: ${{ github.workflow }}-environment
