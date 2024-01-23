@@ -130,10 +130,11 @@ class DiscordTask(generic_queue.QueueItem):
     def __len__(self):
         return len(self.embed["fields"])
 
-    def _send_discord(self, webhook: str = None, name: str = None, avatar: str = None):
+    def _send_discord(self, webhook: str = None, name: str = None, avatar: str = None, tts=None):
         discord_webhook = webhook or settings.DISCORD_WEBHOOK
         discord_name = name or settings.DISCORD_NAME
         avatar_icon = avatar or settings.DISCORD_AVATAR_URL
+        discord_tts = bool(settings.DISCORD_TTS if tts is None else tts)
 
         if not settings.USE_DISCORD:
             logger.debug("Notification for Discord not enabled, skipping this notification")
@@ -147,12 +148,13 @@ class DiscordTask(generic_queue.QueueItem):
         logger.info("Sending discord message to url: " + discord_webhook)
 
         headers = CaseInsensitiveDict({"Content-Type": "application/json"})
-        message_data = json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon))
         try:
-            r = requests.post(discord_webhook, data=message_data, headers=headers)
+            r = requests.post(
+                discord_webhook, data=json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, tts=discord_tts)), headers=headers
+            )
             r.raise_for_status()
         except requests.exceptions.ConnectionError as error:
-            logger.info(f"Could not reach the webhook url: {error}")
+            logger.info("Could not reach the webhook url")
             return False
         except requests.exceptions.RequestException as error:
             if error.response.status_code != 429 or int(error.response.headers.get("X-RateLimit-Remaining")) != 0:
@@ -161,7 +163,9 @@ class DiscordTask(generic_queue.QueueItem):
 
             logger.info("Discord rate limiting, retrying after {} seconds".format(error.response.headers.get("X-RateLimit-Reset-After")))
             time.sleep(int(error.response.headers.get("X-RateLimit-Reset-After")) + 1)
-            r = requests.post(discord_webhook, data=message_data, headers=headers)
+            r = requests.post(
+                discord_webhook, data=json.dumps(dict(embeds=[self.embed], username=discord_name, avatar_url=avatar_icon, tts=discord_tts)), headers=headers
+            )
             r.raise_for_status()
         except Exception as error:
             logger.exception(f"Error Sending Discord message: {error}")
