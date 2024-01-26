@@ -716,11 +716,11 @@ const SICKCHILL = {
 
                 discord.name = $('#discord_name').val();
                 discord.avatar = $('#discord_avatar_url').val();
-                discord.tts = $('#discord_tts').val();
+                discord.tts = $('#discord_tts').is(':checked') ? 1 : 0;
 
                 $('#testDiscord').prop('disabled', true);
                 $('#testDiscord-result').html(loading);
-                $.get(scRoot + '/home/testDiscord', {
+                $.post(scRoot + '/home/testDiscord', {
                     webhook: discord.webhook,
                     name: discord.name,
                     avatar: discord.avatar,
