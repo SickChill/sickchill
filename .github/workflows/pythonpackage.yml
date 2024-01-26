@@ -39,7 +39,7 @@ jobs:
       docker_labels: ${{ steps.docker.outputs.labels }}
     steps:
       - name: Cache environment files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/buildkitd.toml
           key: ${{ github.workflow }}-environment
@@ -145,7 +145,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Restore environment files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/buildkitd.toml
           key: ${{ github.workflow }}-environment
@@ -187,7 +187,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Cache environment files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/buildkitd.toml
           key: ${{ github.workflow }}-environment
