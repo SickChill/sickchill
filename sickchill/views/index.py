@@ -175,7 +175,7 @@ class WebHandler(BaseHandler):
 
             results = await self.async_call(method, len(sig.parameters))
 
-            self.finish(results)
+            await self.finish(results)
 
         except AttributeError:
             logger.debug('Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()))

@@ -2207,7 +2207,6 @@
 
                             <div class="row">
                                 <div class="col-md-12">
-
                                     <div class="testNotification" id="testJoin-result">${_('Click below to test your settings.')}</div>
                                 </div>
                             </div>
@@ -2249,7 +2248,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_gotify">
+                        <div id="content_use_gotify" ${hidden(settings.USE_GOTIFY)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">

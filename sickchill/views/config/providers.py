@@ -6,6 +6,7 @@ from tornado.web import addslash
 import sickchill.start
 from sickchill import settings
 from sickchill.helper import try_int
+from sickchill.helper.common import try_float
 from sickchill.oldbeard import config, ui
 from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
@@ -251,7 +252,7 @@ class ConfigProviders(Config):
             provider.check_set_option(self, "sorting", "seeders")
             provider.check_set_option(self, "search_mode", "episode")
 
-            provider.check_set_option(self, "ratio", 0, cast=float)
+            provider.check_set_option(self, "ratio", 0, cast=lambda x: max(try_float(x), -1))
 
         settings.NEWZNAB_DATA = "!!!".join([x.config_string() for x in settings.newznab_provider_list])
         settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
