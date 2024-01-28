@@ -1426,9 +1426,14 @@ class Home(WebRoot):
             return self.redirect("/home/")
 
     def setStatus(self, direct=False):
-        show = self.get_body_argument("show")
-        eps = self.get_body_arguments("eps[]")
-        status = self.get_body_argument("status")
+        if direct is True:
+            show = self.to_change_show
+            eps = self.to_change_eps
+            status = self.get_body_argument("newStatus")
+        else:
+            show = self.get_body_argument("show")
+            eps = self.get_body_arguments("eps[]")
+            status = self.get_body_argument("status")
 
         if status not in statusStrings:
             errMsg = _("Invalid status")

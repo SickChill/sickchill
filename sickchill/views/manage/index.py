@@ -109,6 +109,8 @@ class Manage(Home, WebRoot):
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
         to_change = {}
+        self.to_change_show = []
+        self.to_change_eps = []
 
         # make a list of all shows and their associated args
         for arg in kwargs:
@@ -125,6 +127,7 @@ class Manage(Home, WebRoot):
 
         main_db_con = db.DBConnection()
         for cur_indexer_id in to_change:
+            self.to_change_show = cur_indexer_id
             # get a list of all the eps we want to change if they just said "all"
             if "all" in to_change[cur_indexer_id]:
                 all_eps_results = main_db_con.select(
@@ -132,7 +135,9 @@ class Manage(Home, WebRoot):
                     status_list + [cur_indexer_id],
                 )
                 all_eps = [str(x["season"]) + "x" + str(x["episode"]) for x in all_eps_results]
-                to_change[cur_indexer_id] = all_eps
+                self.to_change_eps = all_eps
+            else:
+                self.to_change_eps = to_change[cur_indexer_id][0]
 
             self.setStatus(direct=True)
 
