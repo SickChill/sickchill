@@ -135,8 +135,7 @@ class SCWebServer(threading.Thread):
             login_url=f'{self.options["web_root"]}/login/',
             static_path=self.options["data_root"],
             static_url_prefix=f'{self.options["web_root"]}/',
-            static_handler_class=SickChillStaticFileHandler
-            # default_handler_class=Custom404Handler
+            static_handler_class=SickChillStaticFileHandler,
         )
 
         # Static File Handlers
@@ -168,7 +167,7 @@ class SCWebServer(threading.Thread):
                     SickChillStaticFileHandler,
                     {"path": os.path.join(self.options["data_root"], "fonts")},
                     name="fonts",
-                )
+                ),
                 # TODO: WTF is this?
                 # url(rf'{self.options["web_root"]}/videos/(.*)', SickChillStaticFileHandler,
                 #     {"path": self.video_root}, name='videos')

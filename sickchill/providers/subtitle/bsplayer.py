@@ -1,6 +1,7 @@
 """
 Created by Nyaran, based on https://github.com/realgam3/service.subtitles.bsplayer
 """
+
 import logging
 import os
 import random
