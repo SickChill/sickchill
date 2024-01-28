@@ -137,7 +137,7 @@ class Manage(Home, WebRoot):
                 all_eps = [str(x["season"]) + "x" + str(x["episode"]) for x in all_eps_results]
                 self.to_change_eps = all_eps
             else:
-                self.to_change_eps = to_change[cur_indexer_id][0]
+                self.to_change_eps = to_change[cur_indexer_id]
 
             self.setStatus(direct=True)
 
