@@ -53,7 +53,7 @@ sickchill = "SickChill:main"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = ">=22.8,<24.0"
+black = ">=22.8,<25.0"
 coveralls = "^3.3.1"
 mock = ">=4.0.3,<6.0.0"
 Babel = "^2.9.0"
