@@ -705,27 +705,21 @@ const SICKCHILL = {
             });
 
             $('#testDiscord').on('click', () => {
-                const discord = {};
                 const discordWebhook = $('#discord_webhook');
-                discord.webhook = discordWebhook.val();
-                if (!discord.webhook) {
+                if (!discordWebhook.val()) {
                     discordWebhook.focus();
                     notifyModal('Please fill in the webhook address');
                     return;
                 }
-
-                discord.name = $('#discord_name').val();
-                discord.avatar = $('#discord_avatar_url').val();
-                discord.tts = $('#discord_tts').is(':checked') ? 1 : 0;
-
+                const discord = {
+                    webhook: discordWebhook.val(),
+                    name: $('#discord_name').val(),
+                    avatar: $('#discord_avatar_url').val(),
+                    tts: $('#discord_tts').is(':checked')
+                }
                 $('#testDiscord').prop('disabled', true);
                 $('#testDiscord-result').html(loading);
-                $.post(scRoot + '/home/testDiscord', {
-                    webhook: discord.webhook,
-                    name: discord.name,
-                    avatar: discord.avatar,
-                    tts: discord.tts,
-                }).done(data => {
+                $.post(scRoot + '/home/testDiscord', discord).done(data => {
                     $('#testDiscord-result').html(data);
                     $('#testDiscord').prop('disabled', false);
                 });
