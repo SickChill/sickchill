@@ -711,12 +711,14 @@ const SICKCHILL = {
                     notifyModal('Please fill in the webhook address');
                     return;
                 }
+
                 const discord = {
                     webhook: discordWebhook.val(),
                     name: $('#discord_name').val(),
                     avatar: $('#discord_avatar_url').val(),
                     tts: $('#discord_tts').is(':checked') ? 1 : 0
                 }
+
                 $('#testDiscord').prop('disabled', true);
                 $('#testDiscord-result').html(loading);
                 $.post(scRoot + '/home/testDiscord', discord).done(data => {
