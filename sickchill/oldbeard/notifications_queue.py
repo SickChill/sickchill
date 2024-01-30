@@ -141,7 +141,7 @@ class DiscordTask(generic_queue.QueueItem):
             return False
 
         if not discord_name:
-            logger.debug("Discord Bot name balnk forcing to SickChill")
+            logger.debug("Discord Bot name blank, forcing to SickChill")
             discord_name = "SickChill"
             settings.DISCORD_NAME = discord_name
 
