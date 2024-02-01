@@ -896,7 +896,8 @@ class TVShow(object):
 
             logger.debug(f"{self.indexerid}: Obtained info from IMDb ->{self.imdb_info}")
         except (TypeError, ValueError, LookupError, OperationalError, imdb.IMDbError, NewConnectionError, MaxRetryError) as error:
-            logger.info(f"Could not get IMDB info: {error}")
+            logger.info(f"Could not get IMDB info: see debug logs for details")
+            logger.debug(f"IMDB traceback: {error}")
         except (SyntaxError, KeyError):
             logger.info("Could not get info from IDMb, pip install lxml")
 
