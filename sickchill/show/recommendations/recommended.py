@@ -1,6 +1,7 @@
 """
 Recommend shows based on lists from indexers
 """
+
 import os
 import posixpath
 

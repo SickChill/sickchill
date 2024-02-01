@@ -411,10 +411,10 @@ class Home(WebRoot):
             return _("Matrix message failed")
 
     def testDiscord(self):
-        webhook = self.get_query_argument("webhook")
-        name = self.get_query_argument("name")
-        avatar = self.get_query_argument("avatar")
-        tts = self.get_query_argument("tts")
+        webhook = self.get_body_argument("webhook")
+        name = self.get_body_argument("name")
+        avatar = self.get_body_argument("avatar")
+        tts = self.get_body_argument("tts")
 
         if GenericProvider.invalid_url(webhook):
             return _("Invalid URL for webhook")

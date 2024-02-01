@@ -2,7 +2,6 @@
 Test notifiers
 """
 
-
 import unittest
 
 from sickchill.oldbeard import db
