@@ -2,7 +2,6 @@
 Test coming episodes
 """
 
-
 import unittest
 
 from sickchill.show.ComingEpisodes import ComingEpisodes

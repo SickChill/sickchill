@@ -207,7 +207,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.ANON_REDIRECT = check_setting_str(settings.CFG, "General", "anon_redirect", settings.DEFAULT_ANON_REDIRECT)
         if settings.ANON_REDIRECT == "disabled" or not settings.ANON_REDIRECT.endswith("?"):
             settings.ANON_REDIRECT = ""
-        if settings.ANON_REDIRECT == "http://dereferer.org/?":
+        if settings.ANON_REDIRECT in ("http://dereferer.org/?", "https://anonym.to/?"):
             settings.ANON_REDIRECT = settings.DEFAULT_ANON_REDIRECT
 
         settings.PROXY_SETTING = check_setting_str(settings.CFG, "General", "proxy_setting")
@@ -263,8 +263,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.ANIME_DEFAULT = check_setting_bool(settings.CFG, "General", "anime_default")
         settings.SCENE_DEFAULT = check_setting_bool(settings.CFG, "General", "scene_default")
 
-        settings.WHITELIST_DEFAULT = check_setting_str(settings.CFG, "General", "whitelist_default")
-        settings.BLACKLIST_DEFAULT = check_setting_str(settings.CFG, "General", "blacklist_default")
+        settings.WHITELIST_DEFAULT = check_setting_str(settings.CFG, "General", "whitelist_default").split(",")
+        settings.BLACKLIST_DEFAULT = check_setting_str(settings.CFG, "General", "blacklist_default").split(",")
 
         settings.PROVIDER_ORDER = check_setting_str(settings.CFG, "General", "provider_order").split()
 
@@ -607,7 +607,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.DISCORD_WEBHOOK = check_setting_str(settings.CFG, "Discord", "discord_webhook")
         settings.DISCORD_NAME = check_setting_str(settings.CFG, "Discord", "discord_name")
         settings.DISCORD_AVATAR_URL = check_setting_str(settings.CFG, "Discord", "discord_avatar_url")
-        settings.DISCORD_TTS = check_setting_str(settings.CFG, "Discord", "discord_tts")
+        settings.DISCORD_TTS = check_setting_bool(settings.CFG, "Discord", "discord_tts")
 
         settings.USE_TRAKT = check_setting_bool(settings.CFG, "Trakt", "use_trakt")
         settings.TRAKT_USERNAME = check_setting_str(settings.CFG, "Trakt", "trakt_username", censor_log=True)
@@ -1213,8 +1213,8 @@ def save_config():
                 "indexer_timeout": int(settings.INDEXER_TIMEOUT),
                 "anime_default": int(settings.ANIME_DEFAULT),
                 "scene_default": int(settings.SCENE_DEFAULT),
-                "whitelist_default": settings.WHITELIST_DEFAULT,
-                "blacklist_default": settings.BLACKLIST_DEFAULT,
+                "whitelist_default": ",".join(settings.WHITELIST_DEFAULT),
+                "blacklist_default": ",".join(settings.BLACKLIST_DEFAULT),
                 "provider_order": " ".join(settings.PROVIDER_ORDER),
                 "version_notify": int(settings.VERSION_NOTIFY),
                 "auto_update": int(settings.AUTO_UPDATE),
@@ -1535,7 +1535,7 @@ def save_config():
                 "discord_webhook": settings.DISCORD_WEBHOOK,
                 "discord_name": settings.DISCORD_NAME,
                 "discord_avatar_url": settings.DISCORD_AVATAR_URL,
-                "discord_tts": settings.DISCORD_TTS,
+                "discord_tts": int(settings.DISCORD_TTS),
             },
             "Trakt": {
                 "use_trakt": int(settings.USE_TRAKT),

@@ -1191,7 +1191,7 @@ class PostProcessor(object):
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
-            notifiers.notify_download(episode_object.format_pattern("%SN - %Sx%0E - %EN - %QN"))
+            notifiers.notify_download(f"{episode_object.pretty_name} - {new_quality_string}")
 
             # do the library update for KODI
             notifiers.kodi_notifier.update_library(episode_object.show.name)
@@ -1221,7 +1221,7 @@ class PostProcessor(object):
         # If any notification fails, don't stop postProcessor
         try:
             # send notifications
-            notifiers.email_notifier.notify_postprocess(episode_object._format_pattern("%SN - %Sx%0E - %EN - %QN"))
+            notifiers.email_notifier.notify_postprocess(f"{episode_object.pretty_name} - {new_quality_string}")
         except Exception:
             logger.info(_("Some notifications could not be sent. Finishing postProcessing..."))
 

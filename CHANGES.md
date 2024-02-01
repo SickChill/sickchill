@@ -1,7 +1,35 @@
+### 2024.1.31
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.8-3...2024.1.31)
+
+
+### 2024.1.8-3
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.8-2...2024.1.8-3)
+
+* Release 2024.1.8-3
+* Signed-off-by: miigotu <miigotu@gmail.com>
+
+### 2024.1.8-2
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.8-1...2024.1.8-2)
+
+* Release 2024.1.8-2
+* fix: another error in check_torznab (jackett/newznab/nzb)
+* Signed-off-by: miigotu <miigotu@gmail.com>
+
+### 2024.1.8-1
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.8...2024.1.8-1)
+
+* release: 2024.1.8-1 hotfix for newznab error
+* Signed-off-by: miigotu <miigotu@gmail.com>
+
 ### 2024.1.8
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2023.6.27...2024.1.8)
 
+* Update Changelog
 
 ### 2023.6.27
 

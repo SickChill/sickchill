@@ -2207,7 +2207,6 @@
 
                             <div class="row">
                                 <div class="col-md-12">
-
                                     <div class="testNotification" id="testJoin-result">${_('Click below to test your settings.')}</div>
                                 </div>
                             </div>
@@ -2249,7 +2248,7 @@
                             </div>
                         </div>
 
-                        <div id="content_use_gotify">
+                        <div id="content_use_gotify" ${hidden(settings.USE_GOTIFY)}>
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -3743,7 +3742,7 @@
                                       <input type="text" name="discord_name" id="discord_name" value="${settings.DISCORD_NAME}" class="form-control input-sm input350" autocapitalize="off" />
                                     </div>
                                     <div class="col-md-12">
-                                      <label for="discord_name">${_('Must use Bot Name. Blank no longer valid and will fail. Click Save before Test.')}</label>
+                                      <label for="discord_name">${_('Blank and Save will default to SickChill.')}</label>
                                     </div>
                                   </div>
                                 </div>
@@ -3767,11 +3766,11 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Discord TTS')}</label>
+                                    <label class="component-title">${_('TTS')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <input type="checkbox" name="discord_tts" id="discord_tts" ${checked(settings.DISCORD_TTS)}/>
-                                    <label for="discord_tts">${_('Send notifications using text-to-speech')}</label>
+                                    <label for="discord_tts">${_('Send full notification message using text-to-speech else Bot Name only')}</label>
                                 </div>
                             </div>
 

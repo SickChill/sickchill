@@ -142,8 +142,6 @@ class ComingEpisodes(object):
             result["localtime"] = result["localtime"].toordinal()
 
             grouped_results[category].append(result)
-        else:
-            return []
 
         return grouped_results
 

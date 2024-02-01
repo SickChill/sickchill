@@ -389,6 +389,20 @@ def try_int(candidate, default_value=0):
         return default_value
 
 
+def try_float(candidate, default_value=0):
+    """
+    Try to convert ``candidate`` to int, or return the ``default_value``.
+    :param candidate: The value to convert to int
+    :param default_value: The value to return if the conversion fails
+    :return: ``candidate`` as int, or ``default_value`` if the conversion fails
+    """
+
+    try:
+        return float(candidate)
+    except (ValueError, TypeError):
+        return default_value
+
+
 def episode_num(season=None, episode=None, **kwargs):
     """
     Convert season and episode into string

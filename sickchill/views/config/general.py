@@ -40,8 +40,8 @@ class ConfigGeneral(Config):
         settings.STATUS_DEFAULT = int(self.get_body_argument("defaultStatus", settings.STATUS_DEFAULT_AFTER))
         settings.STATUS_DEFAULT_AFTER = int(self.get_body_argument("defaultStatusAfter", settings.STATUS_DEFAULT_AFTER))
 
-        settings.WHITELIST_DEFAULT = self.get_body_arguments("whitelist")
-        settings.BLACKLIST_DEFAULT = self.get_body_arguments("blacklist")
+        settings.WHITELIST_DEFAULT = self.get_body_arguments("whitelist[]")
+        settings.BLACKLIST_DEFAULT = self.get_body_arguments("blacklist[]")
 
         settings.SEASON_FOLDERS_DEFAULT = config.checkbox_to_value(self.get_body_argument("defaultSeasonFolders", settings.SEASON_FOLDERS_DEFAULT))
         settings.SUBTITLES_DEFAULT = config.checkbox_to_value(self.get_body_argument("subtitles", settings.SUBTITLES_DEFAULT))
