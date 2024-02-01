@@ -2,7 +2,6 @@
 Test shows
 """
 
-
 import unittest
 
 from sickchill import settings

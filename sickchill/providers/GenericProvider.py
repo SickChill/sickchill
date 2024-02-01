@@ -159,7 +159,7 @@ class GenericProvider(object):
                 search_strings = self.get_episode_search_strings(episode)
 
             for search_string in search_strings:
-                items_list += self.search(search_string, episode_object=episode)
+                items_list += self.search(search_string)
 
         if len(results) == len(episodes):
             return results

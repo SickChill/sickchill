@@ -43,7 +43,7 @@ PROVIDER_URLS = {
     "itasa": "http://www.italiansubs.net/",
     "legendastv": "http://www.legendas.tv",
     "napiprojekt": "http://www.napiprojekt.pl",
-    "opensubtitles": "http://www.opensubtitles.org",
+    "opensubtitles": "https://www.opensubtitles.com",
     "podnapisi": "http://www.podnapisi.net",
     "subscenter": "http://www.subscenter.info",
     "subtitulamos": "https://www.subtitulamos.tv",

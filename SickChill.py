@@ -55,7 +55,6 @@ signal.signal(signal.SIGTERM, sickchill.start.sig_handler)
 
 
 class SickChill:
-
     """
     Main SickChill module
     """
