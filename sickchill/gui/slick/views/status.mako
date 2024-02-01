@@ -40,17 +40,17 @@
             <div class="horizontal-scroll">
                 <table id="schedulerStatusTable" class="tablesorter">
                     <thead>
-                        <tr>
-                            <th>${_('Scheduler')}</th>
-                            <th>${_('Alive')}</th>
-                            <th>${_('Enable')}</th>
-                            <th>${_('Active')}</th>
-                            <th>${_('Start Time')}</th>
-                            <th>${_('Cycle Time')}</th>
-                            <th>${_('Next Run')}</th>
-                            <th>${_('Last Run')}</th>
-                            <th>${_('Silent')}</th>
-                        </tr>
+                    <tr>
+                        <th>${_('Scheduler')}</th>
+                        <th>${_('Alive')}</th>
+                        <th>${_('Enable')}</th>
+                        <th>${_('Active')}</th>
+                        <th>${_('Start Time')}</th>
+                        <th>${_('Cycle Time')}</th>
+                        <th>${_('Next Run')}</th>
+                        <th>${_('Last Run')}</th>
+                        <th>${_('Silent')}</th>
+                    </tr>
                     </thead>
                     <tbody>
                         % for schedulerName, scheduler in schedulerList.items():
@@ -62,13 +62,13 @@
         </div>
     </div>
     % if settings.showQueueScheduler.action:
-    <br/>
-    <div class="row">
-        <div class="col-md-12">
-            <h2 class="header">${_('Show Queue')}</h2>
-            <div class="horizontal-scroll">
-                <table id="queueStatusTable" class="tablesorter">
-                    <thead>
+        <br/>
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="header">${_('Show Queue')}</h2>
+                <div class="horizontal-scroll">
+                    <table id="queueStatusTable" class="tablesorter">
+                        <thead>
                         <tr>
                             <th>${_('Show id')}</th>
                             <th>${_('Show name')}</th>
@@ -77,28 +77,28 @@
                             <th>${_('Added')}</th>
                             <th>${_('Queue type')}</th>
                         </tr>
-                    </thead>
-                    <tbody>
-                        % if settings.showQueueScheduler.action.currentItem is not None:
-                            ${show_queue_row(settings.showQueueScheduler.action.currentItem)}
-                        % endif
+                        </thead>
+                        <tbody>
+                            % if settings.showQueueScheduler.action.currentItem is not None:
+                                ${show_queue_row(settings.showQueueScheduler.action.currentItem)}
+                            % endif
                         % for item in settings.showQueueScheduler.action.queue:
-                            ${show_queue_row(item)}
+                                                               ${show_queue_row(item)}
                         % endfor
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
     % endif
     % if settings.postProcessorTaskScheduler.action:
-    <br/>
-    <div class="row">
-        <div class="col-md-12">
-            <h2 class="header">${_('Post Processing Queue')}</h2>
-            <div class="horizontal-scroll">
-                <table id="queueStatusTable" class="tablesorter">
-                    <thead>
+        <br/>
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="header">${_('Post Processing Queue')}</h2>
+                <div class="horizontal-scroll">
+                    <table id="queueStatusTable" class="tablesorter">
+                        <thead>
                         <tr>
                             <th>${_('Added')}</th>
                             <th>${_('Mode')}</th>
@@ -111,19 +111,19 @@
                             <th>${_('Force')}</th>
                             <th>${_('In Progress')}</th>
                         </tr>
-                    </thead>
-                    <tbody>
-                        % if settings.postProcessorTaskScheduler.action.currentItem is not None:
-                            ${post_processor_task_row(settings.postProcessorTaskScheduler.action.currentItem)}
-                        % endif
+                        </thead>
+                        <tbody>
+                            % if settings.postProcessorTaskScheduler.action.currentItem is not None:
+                                ${post_processor_task_row(settings.postProcessorTaskScheduler.action.currentItem)}
+                            % endif
                         % for item in settings.postProcessorTaskScheduler.action.queue:
-                            ${post_processor_task_row(item)}
+                                                               ${post_processor_task_row(item)}
                         % endfor
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
     % endif
     <br/>
     <div class="row">
@@ -132,11 +132,11 @@
             <div class="horizontal-scroll">
                 <table id="DFStatusTable" class="tablesorter">
                     <thead>
-                        <tr>
-                            <th>${_('Type')}</th>
-                            <th>${_('Location')}</th>
-                            <th>${_('Free space')}</th>
-                        </tr>
+                    <tr>
+                        <th>${_('Type')}</th>
+                        <th>${_('Location')}</th>
+                        <th>${_('Free space')}</th>
+                    </tr>
                     </thead>
                     <tbody>
                         % if settings.TV_DOWNLOAD_DIR:
@@ -226,18 +226,18 @@
             try:
                 indexerid = item.show.indexerid
             except Exception:
-                indexerid = ''
+                indexerid = ' '
         %>
         <td>${indexerid}</td>
+        <td class="text-left">
         % try:
-            <td class="text-left">${item.show.name}</td>
+            ${item.show.name}
         % except Exception:
             % if item.action_id == ShowQueueActions.ADD:
-                <td class="text-left">${item.showDir}</td>
-            % else:
-                <td></td>
+                ${item.showDir}
             % endif
         % endtry
+        </td>
         <td class="${("false", "true")[item.inProgress]}">${item.inProgress}</td>
         % if item.priority == 10:
             <td>${_('LOW')}</td>
