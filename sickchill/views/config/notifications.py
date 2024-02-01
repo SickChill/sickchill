@@ -234,7 +234,7 @@ class ConfigNotifications(Config):
         discord_webhook=None,
         discord_name=None,
         discord_avatar_url=None,
-        discord_tts=False,
+        discord_tts=None,
     ):
         results = []
 
@@ -368,7 +368,7 @@ class ConfigNotifications(Config):
         settings.DISCORD_WEBHOOK = discord_webhook
         settings.DISCORD_NAME = discord_name
         settings.DISCORD_AVATAR_URL = discord_avatar_url
-        settings.DISCORD_TTS = discord_tts
+        settings.DISCORD_TTS = config.checkbox_to_value(discord_tts)
 
         settings.USE_BOXCAR2 = config.checkbox_to_value(use_boxcar2)
         settings.BOXCAR2_NOTIFY_ONSNATCH = config.checkbox_to_value(boxcar2_notify_onsnatch)

@@ -705,27 +705,22 @@ const SICKCHILL = {
             });
 
             $('#testDiscord').on('click', () => {
-                const discord = {};
                 const discordWebhook = $('#discord_webhook');
-                discord.webhook = discordWebhook.val();
-                if (!discord.webhook) {
+                if (!discordWebhook.val()) {
                     discordWebhook.focus();
                     notifyModal('Please fill in the webhook address');
                     return;
                 }
 
-                discord.name = $('#discord_name').val();
-                discord.avatar = $('#discord_avatar_url').val();
-                discord.tts = $('#discord_tts').val();
-
+                const discord = {
+                    webhook: discordWebhook.val(),
+                    name: $('#discord_name').val(),
+                    avatar: $('#discord_avatar_url').val(),
+                    tts: $('#discord_tts').is(':checked') ? 1 : 0,
+                };
                 $('#testDiscord').prop('disabled', true);
                 $('#testDiscord-result').html(loading);
-                $.get(scRoot + '/home/testDiscord', {
-                    webhook: discord.webhook,
-                    name: discord.name,
-                    avatar: discord.avatar,
-                    tts: discord.tts,
-                }).done(data => {
+                $.post(scRoot + '/home/testDiscord', discord).done(data => {
                     $('#testDiscord-result').html(data);
                     $('#testDiscord').prop('disabled', false);
                 });
@@ -4024,6 +4019,14 @@ const SICKCHILL = {
                 $('#bestQualities option:selected').each((i, d) => {
                     bestQualArray.push($(d).val());
                 });
+                const grpwhitelistArray = [];
+                const grpblacklistArray = [];
+                $('#white option').each((i, d) => {
+                    grpwhitelistArray.push($(d).val());
+                });
+                $('#black option').each((i, d) => {
+                    grpblacklistArray.push($(d).val());
+                });
                 generateBlackWhiteList(); // eslint-disable-line no-undef
                 $.post(scRoot + '/config/general/saveAddShowDefaults', {
                     defaultStatus: $('#statusSelect').val(),
@@ -4034,8 +4037,8 @@ const SICKCHILL = {
                     anime: $('#anime').is(':checked'),
                     scene: $('#scene').is(':checked'),
                     defaultStatusAfter: $('#statusSelectAfter').val(),
-                    whitelist: $('#whitelist').val(),
-                    blacklist: $('#blacklist').val(),
+                    whitelist: grpwhitelistArray,
+                    blacklist: grpblacklistArray,
                 });
 
                 $(this).attr('disabled', true);
