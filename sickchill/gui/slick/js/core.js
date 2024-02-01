@@ -4019,6 +4019,14 @@ const SICKCHILL = {
                 $('#bestQualities option:selected').each((i, d) => {
                     bestQualArray.push($(d).val());
                 });
+                const grpwhitelistArray = [];
+                const grpblacklistArray = [];
+                $('#white option').each((i, d) => {
+                    grpwhitelistArray.push($(d).val());
+                });
+                $('#black option').each((i, d) => {
+                    grpblacklistArray.push($(d).val());
+                });
                 generateBlackWhiteList(); // eslint-disable-line no-undef
                 $.post(scRoot + '/config/general/saveAddShowDefaults', {
                     defaultStatus: $('#statusSelect').val(),
@@ -4029,8 +4037,8 @@ const SICKCHILL = {
                     anime: $('#anime').is(':checked'),
                     scene: $('#scene').is(':checked'),
                     defaultStatusAfter: $('#statusSelectAfter').val(),
-                    whitelist: $('#whitelist').val(),
-                    blacklist: $('#blacklist').val(),
+                    whitelist: grpwhitelistArray,
+                    blacklist: grpblacklistArray,
                 });
 
                 $(this).attr('disabled', true);
