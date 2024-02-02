@@ -1,6 +1,6 @@
-### 2024.1.31
+### 2024.2.2
 
-[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.8-3...2024.1.31)
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.31...2024.2.2)
 
 
 ### 2024.1.8-3
@@ -27,9 +27,15 @@
 
 ### 2024.1.8
 
-[full changelog](https://github.com/SickChill/SickChill/compare/2023.6.27...2024.1.8)
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.31...2024.1.8)
 
 * Update Changelog
+
+### 2024.1.31
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2023.6.27...2024.1.31)
+
+* Release version 2024.1.31, Grunt
 
 ### 2023.6.27
 
