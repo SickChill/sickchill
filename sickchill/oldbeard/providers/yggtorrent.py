@@ -82,7 +82,7 @@ class Provider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         self.login()
 
         results = []

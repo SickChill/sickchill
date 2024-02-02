@@ -19,7 +19,7 @@ class Provider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, min_time=20)
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         """
         Search query:
         http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
@@ -31,7 +31,7 @@ class Provider(TorrentProvider):
         results = []
 
         # Only search if user conditions are true
-        lang_info = "" if not episode_object or not episode_object.show else episode_object.show.lang
+        lang_info = self.show and self.show.lang or ""
 
         search_params = {"l": "doSearch", "q": "", "category_": "All", "idioma_": 1, "bus_de_": "All"}
 

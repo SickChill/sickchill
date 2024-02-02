@@ -37,14 +37,14 @@ class Provider(TorrentProvider):
 
         self.rows_selector = dict(class_=re.compile(r"even|odd"), id=re.compile(r"torrent_.*_torrents"))
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
         if not (self.url and self.urls):
             self.find_domain()
             if not (self.url and self.urls):
                 return results
 
-        anime = (self.show and self.show.anime) or (episode_object and episode_object.show and episode_object.show.anime) or False
+        anime = self.show and self.show.anime or False
         search_params = OrderedDict(field="seeders", sorder="desc", category=("tv", "anime")[anime])
 
         for mode in search_strings:
@@ -81,7 +81,7 @@ class Provider(TorrentProvider):
                         return results
 
                     # This will recurse a few times until all of the mirrors are exhausted if none of them work.
-                    return self.search(search_strings, episode_object)
+                    return self.search(search_strings)
 
                 with BS4Parser(data) as html:
                     labels = [cell.get_text() for cell in html.find(class_="firstr")("th")]

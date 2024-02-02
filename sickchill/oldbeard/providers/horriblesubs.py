@@ -24,7 +24,7 @@ class Provider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, min_time=15)  # only poll HorribleSubs every 15 minutes max
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
         if self.show and not self.show.is_anime:
             return results

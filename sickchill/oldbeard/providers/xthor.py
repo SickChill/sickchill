@@ -25,7 +25,7 @@ class Provider(TorrentProvider):
         logger.warning("Your authentication credentials for {0} are missing, check your config.".format(self.name))
         return False
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
         if not self._check_auth:
             return results

@@ -39,8 +39,6 @@ class TorrentBasicTests(conftest.SickChillTestDBCase):
             for search_strings in search_strings_list:
                 provider.search(search_strings)  # {'Episode': ['Italian Works S05E10']}
 
-        return True
-
     @unittest.skip("Only run this manually")
     def test_search(self):
         """

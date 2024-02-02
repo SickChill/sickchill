@@ -24,7 +24,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         self.size_units = ["BYTES", "KIB", "MIB", "GIB", "TIB", "PIB"]
         self.cache = tvcache.TVCache(self, min_time=20)  # only poll Nyaa every 20 minutes max
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
         if self.show and not self.show.is_anime:
             return results

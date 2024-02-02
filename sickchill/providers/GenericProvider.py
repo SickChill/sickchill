@@ -58,6 +58,9 @@ class GenericProvider(object):
             "https://itorrents.org/torrent/{torrent_hash}.torrent?title={torrent_name}",
         ]
         self.cache = TVCache(self)
+
+        self.current_episode_object = None
+
         self.enable_backlog = False
         self.enable_daily = False
         self.enabled = False
@@ -157,6 +160,8 @@ class GenericProvider(object):
                 search_strings = self.get_season_search_strings(episode)
             elif search_mode == "episode":
                 search_strings = self.get_episode_search_strings(episode)
+
+            self.current_episode_object = episode
 
             for search_string in search_strings:
                 items_list += self.search(search_string)
@@ -283,11 +288,11 @@ class GenericProvider(object):
 
             logger.debug(_("Found result {title} at {url}.").format(title=title, url=url))
 
-            episode_object = []
+            episode_objects = []
             for current_episode in actual_episodes:
-                episode_object.append(show_object.getEpisode(actual_season, current_episode))
+                episode_objects.append(show_object.getEpisode(actual_season, current_episode))
 
-            result = self.get_result(episode_object)
+            result = self.get_result(episode_objects)
             result.show = show_object
             result.url = url
             result.name = title
@@ -297,13 +302,13 @@ class GenericProvider(object):
             result.content = None
             result.size = self._get_size(item)
 
-            if len(episode_object) == 1:
-                episode_number = episode_object[0].episode
+            if len(episode_objects) == 1:
+                episode_number = episode_objects[0].episode
                 logger.debug("Single episode result.")
-            elif len(episode_object) > 1:
+            elif len(episode_objects) > 1:
                 episode_number = MULTI_EP_RESULT
                 logger.debug(f"Separating multi-episode result to check for later - result contains episodes: {parse_result.episode_numbers}")
-            elif len(episode_object) == 0:
+            elif len(episode_objects) == 0:
                 episode_number = SEASON_RESULT
                 logger.debug("Separating full season result to check for later")
             else:
@@ -402,7 +407,7 @@ class GenericProvider(object):
     def login(self):
         return True
 
-    def search(self, search_params, episode_object=None):
+    def search(self, strings):
         return []
 
     def _get_result(self, episodes):

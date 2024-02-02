@@ -84,7 +84,7 @@ class Provider(TorrentProvider):
         trackers = self.tracker_cache.get_trackers()
         return "magnet:?xt=urn:btih:{info_hash}&dn={name}{trackers}".format(name=name, info_hash=info_hash, trackers=trackers) + self._custom_trackers
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
         search_params = {"cat": "208,205", "q": None}
 

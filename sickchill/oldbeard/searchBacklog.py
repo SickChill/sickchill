@@ -8,19 +8,19 @@ from . import common, db, scheduler, search_queue, ui
 
 class BacklogSearchScheduler(scheduler.Scheduler):
     def forceSearch(self):
-        self.action._set_lastBacklog(1)
+        self.action.set_lastBacklog(1)
         self.lastRun = datetime.datetime.fromordinal(1)
 
     def nextRun(self):
-        if self.action._lastBacklog <= 1:
+        if self.action.lastBacklog <= 1:
             return datetime.date.today()
         else:
-            return datetime.date.fromordinal(self.action._lastBacklog + self.action.cycleTime)
+            return datetime.date.fromordinal(self.action.lastBacklog + self.action.cycleTime)
 
 
 class BacklogSearcher(object):
     def __init__(self):
-        self._lastBacklog = self._get_lastBacklog()
+        self.lastBacklog = self._get_lastBacklog()
         self.cycleTime = settings.BACKLOG_FREQUENCY / 60 / 24
         self.lock = threading.Lock()
         self.amActive = False
@@ -62,7 +62,7 @@ class BacklogSearcher(object):
         curDate = datetime.date.today().toordinal()
         fromDate = datetime.date.min
 
-        if not (which_shows or curDate - self._lastBacklog >= self.cycleTime):
+        if not (which_shows or curDate - self.lastBacklog >= self.cycleTime):
             logger.info(f"Running limited backlog on missed episodes {settings.BACKLOG_DAYS} day(s) and older only")
             fromDate = datetime.date.today() - datetime.timedelta(days=settings.BACKLOG_DAYS)
 
@@ -85,7 +85,7 @@ class BacklogSearcher(object):
         # don't consider this an actual backlog search if we only did recent eps
         # or if we only did certain shows
         if fromDate == datetime.date.min and not which_shows:
-            self._set_lastBacklog(curDate)
+            self.set_lastBacklog(curDate)
 
         self.amActive = False
         self._reset_pi()
@@ -105,8 +105,8 @@ class BacklogSearcher(object):
             if lastBacklog > datetime.date.today().toordinal():
                 lastBacklog = 1
 
-        self._lastBacklog = lastBacklog
-        return self._lastBacklog
+        self.lastBacklog = lastBacklog
+        return self.lastBacklog
 
     @staticmethod
     def _get_segments(show, fromDate):
@@ -149,7 +149,7 @@ class BacklogSearcher(object):
         return wanted
 
     @staticmethod
-    def _set_lastBacklog(when):
+    def set_lastBacklog(when):
         logger.debug(f"Setting the last backlog in the DB to {when}")
 
         main_db_con = db.DBConnection()
@@ -158,7 +158,7 @@ class BacklogSearcher(object):
         if not sql_results:
             main_db_con.action("INSERT INTO info (last_backlog, last_indexer) VALUES (?,?)", [str(when), 0])
         else:
-            main_db_con.action("UPDATE info SET last_backlog=" + str(when))
+            main_db_con.action(f"UPDATE info SET last_backlog={when} WHERE 1")
 
     def run(self, force=False):
         try:

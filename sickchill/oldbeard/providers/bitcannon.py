@@ -17,7 +17,7 @@ class Provider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self, search_params={"RSS": ["tv", "anime"]})
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
 
         url = "http://localhost:3000/"
@@ -29,7 +29,7 @@ class Provider(TorrentProvider):
 
         search_params = {}
 
-        anime = episode_object and episode_object.show and episode_object.show.anime
+        anime = self.show and self.show.anime or False
         search_params["category"] = ("tv", "anime")[bool(anime)]
 
         if self.api_key:

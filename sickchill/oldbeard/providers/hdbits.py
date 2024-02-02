@@ -36,11 +36,11 @@ class Provider(TorrentProvider):
         return True
 
     def get_season_search_strings(self, episode_object):
-        season_search_string = [self.make_post_data_JSON(show=episode_object.show, season=episode_object)]
+        season_search_string = [self.make_post_data_JSON(show=self.show, season=episode_object)]
         return season_search_string
 
     def get_episode_search_strings(self, episode_object, add_string=""):
-        episode_search_string = [self.make_post_data_JSON(show=episode_object.show, episode=episode_object)]
+        episode_search_string = [self.make_post_data_JSON(show=self.show, episode=episode_object)]
         return episode_search_string
 
     def _get_title_and_url(self, item):
@@ -49,11 +49,10 @@ class Provider(TorrentProvider):
 
         return title, url
 
-    def search(self, search_params, episode_object=None):
-        # FIXME
+    def search(self, search_params):
         results = []
 
-        logger.debug("Search string: {0}".format(search_params))
+        logger.debug(f"Search string: {search_params}")
 
         self._check_auth()
 

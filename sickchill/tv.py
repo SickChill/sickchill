@@ -749,7 +749,7 @@ class TVShow(object):
 
             self.default_ep_status = int(sql_results[0]["default_ep_status"] or SKIPPED)
 
-            if not self.imdb_id:
+            if sql_results[0]["imdb_id"] and not self.imdb_id:
                 self.imdb_id = sql_results[0]["imdb_id"]
 
             if self.is_anime:

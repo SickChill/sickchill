@@ -66,7 +66,7 @@ class Provider(TorrentProvider):
 
         return True
 
-    def search(self, search_strings, ep_obj=None):
+    def search(self, search_strings):
         results = []
 
         if not self.login():

@@ -42,7 +42,7 @@ class Provider(TorrentProvider):
         match = re.findall(r"[0-9]+", description)
         return int(match[0]) * 1024**2, int(match[1]), int(match[2])
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
 
         for mode in search_strings:

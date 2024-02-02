@@ -47,7 +47,7 @@ class Provider(TorrentProvider):
 
         return True
 
-    def search(self, search_params, episode_object=None):
+    def search(self, search_params):
         self._check_auth()
 
         results = []
@@ -183,7 +183,7 @@ class Provider(TorrentProvider):
         search_params = {"category": "Season"}
 
         # Search for entire seasons: no need to do special things for air by date or sports shows
-        if episode_object.show.air_by_date or episode_object.show.sports:
+        if self.show.air_by_date or self.show.sports:
             # Search for the year of the air by date show
             search_params["name"] = str(episode_object.airdate).split("-")[0]
         else:
@@ -199,7 +199,7 @@ class Provider(TorrentProvider):
         search_params = {"category": "Episode"}
 
         # episode
-        if episode_object.show.air_by_date or episode_object.show.sports:
+        if self.show.air_by_date or self.show.sports:
             date_str = str(episode_object.airdate)
 
             # BTN uses dots in dates, we just search for the date since that

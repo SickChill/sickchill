@@ -24,7 +24,7 @@ class Provider(TorrentProvider):
 
         self.cache = tvcache.TVCache(self)
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
 
         for mode in search_strings:

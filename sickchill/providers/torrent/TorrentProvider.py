@@ -32,10 +32,10 @@ class TorrentProvider(GenericProvider):
 
             if show:
                 episode = show.getEpisode(result["season"], result["episode"])
+                self.current_episode_object = episode
 
                 for term in self.proper_strings:
                     search_strings = self.get_episode_search_strings(episode, add_string=term)
-
                     for search_string in search_strings:
                         for item in self.search(search_string):
                             title, url = self._get_title_and_url(item)

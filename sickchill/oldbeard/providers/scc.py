@@ -61,7 +61,7 @@ class Provider(TorrentProvider):
         title = r"<title>.+? \| {0}</title>".format(section)
         return re.search(title, text, re.I)
 
-    def search(self, search_strings, episode_object=None):
+    def search(self, search_strings):
         results = []
         if not self.login():
             return results

@@ -173,13 +173,13 @@ class Provider(TorrentProvider):
             hash=info_hash, title=quote_plus(title), trackers="http://tracker.tntvillage.scambioetico.org:2710/announce"
         )
 
-    def search(self, search_params, episode_object=None):
+    def search(self, search_strings):
         results = []
 
-        for mode in search_params:
+        for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
-            for search_string in search_params[mode]:
+            for search_string in search_strings[mode]:
                 if search_string == "":
                     continue
 

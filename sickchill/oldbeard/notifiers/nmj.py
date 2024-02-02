@@ -1,5 +1,10 @@
 import re
-import telnetlib
+
+try:
+    import telnetlib
+except (ImportError, ModuleNotFoundError):
+    telnetlib = None
+
 import urllib.parse
 import urllib.request
 from xml.etree import ElementTree
@@ -19,6 +24,9 @@ class Notifier(object):
         """
 
         # establish a terminal session to the PC
+
+        if telnetlib is None:
+            logger.info("telnetlib was removed in python 3.13, use python 3.12, disable nmj, or update this script to use a new library")
         try:
             terminal = telnetlib.Telnet(host)
         except Exception:
