@@ -1,47 +1,48 @@
-name: Pypi
+name: Build develop branch
 
 on:
   workflow_run:
     workflows: [ "Python Packaging" ]
     branches: |
-      - master
-      - test-deploy
-#    tags:
-#      - 20*
+      - develop
     type:
       - complete
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: true
-
 jobs:
-  Release:
-    runs-on: ubuntu-22.04
-    if: github.event.workflow_run.conclusion == "success" && github.actor == "miigotu"
+  version:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout SickChill
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Get new version string
+        uses: miigotu/actions-calver@workflows
+        id: next-version
         with:
-          fetch-depth: 0
-          path: sickchill
+          release: false
+          pre: true
+          draft: true
+          date_format: "%Y.%m.%-d"
+          patch_separator: "-"
+          version_regexp: '^20[^\-]*$'
+          release_branch: ${{ github.branch }}
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'yarn'
+      - name: Install yarn
+        run: npm install -g yarn
       - name: Setup Poetry
         uses: 5yutan5/setup-poetry-env@v1.1.0
         with:
-          python-version: ${{ matrix.python-version }}
-          python-cache-dependency-path: sickchill/pyproject.toml
-      - name: Bump version
-        run: |
-          poetry install
-          # Set release version to todays date
-          # debchange with gbd-change with new version
-      - name: Publish
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        working-directory: sickchill
-        run: |
-          git config --global user.name miigotu
-          git config --global user.email miigotu@gmail.com
+          python-version: "3.11"
+          python-cache-dependency-path: pyproject.toml
+      - run: |
+          poetry version ${{ steps.next-version.outputs.release }}
+          yarn version ${{ steps.next-version.outputs.release }}
           poetry build
-          poetry publish
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Result
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
