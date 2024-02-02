@@ -5,7 +5,7 @@ on:
     workflows: [Python Packaging]
     branches: |
       - develop
-    type:
+    types:
       - completed
 
 jobs:
