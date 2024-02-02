@@ -12,9 +12,9 @@ class Provider(TorrentProvider):
     def __init__(self):
         super().__init__("Newpct")
 
-        self.onlyspasearch = None
+        self.only_spanish_search: bool = False
 
-        self.url = "http://www.newpct.com"
+        self.url = "https://www.newpct.com"
         self.urls = {"search": urljoin(self.url, "index.php")}
 
         self.cache = tvcache.TVCache(self, min_time=20)
@@ -22,7 +22,7 @@ class Provider(TorrentProvider):
     def search(self, search_strings):
         """
         Search query:
-        http://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
+        https://www.newpct.com/index.php?l=doSearch&q=fringe&category_=All&idioma_=1&bus_de_=All
         q => Show name
         category_ = Category 'Shows' (767)
         idioma_ = Language Spanish (1), All
@@ -38,20 +38,16 @@ class Provider(TorrentProvider):
         for mode in search_strings:
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
-
-            if self.onlyspasearch:
-                search_params["idioma_"] = 1
-            else:
-                search_params["idioma_"] = "All"
+            search_params["idioma_"] = ("All", 1)[self.only_spanish_search]
 
             # Only search if user conditions are true
-            if self.onlyspasearch and lang_info != "es" and mode != "RSS":
+            if self.only_spanish_search and lang_info != "es" and mode != "RSS":
                 logger.debug("Show info is not spanish, skipping provider search")
                 continue
 
-            search_params["bus_de_"] = "All" if mode != "RSS" else "semana"
+            search_params["bus_de_"] = ("semana", "All")[mode != "RSS"]
 
-            for search_string in {*search_strings[mode]}:
+            for search_string in search_strings[mode]:
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
@@ -72,14 +68,14 @@ class Provider(TorrentProvider):
 
                     # 'Fecha', 'Título', 'Tamaño', ''
                     # Date, Title, Size
-                    labels = [label.get_text(strip=True) for label in torrent_rows[0]("th")]
+                    # labels = [label.get_text(strip=True) for label in torrent_rows[0]("th")]
                     for row in torrent_rows[1:-1]:
                         try:
                             cells = row("td")
 
                             torrent_row = row.find("a")
                             download_url = torrent_row.get("href", "")
-                            title = self._processTitle(torrent_row.get("title", ""), download_url)
+                            title = self._process_title(torrent_row.get("title", ""), download_url)
                             if not all([title, download_url]):
                                 continue
 
@@ -129,7 +125,7 @@ class Provider(TorrentProvider):
         urls, filename = self._make_url(result)
 
         for url in urls:
-            # Search results don't return torrent files directly, it returns show sheets so we must parse showSheet to access torrent.
+            # Search results don't return torrent files directly, it returns show sheets, so we must parse showSheet to access torrent.
             data = self.get_url(url, returns="text")
             url_torrent = re.search(r"http://tumejorserie.com/descargar/.+\.torrent", data, re.DOTALL).group()
 
@@ -152,12 +148,12 @@ class Provider(TorrentProvider):
         return False
 
     @staticmethod
-    def _processTitle(title, url):
+    def _process_title(title, url):
         # Remove 'Mas informacion sobre ' literal from title
         title = title[22:]
-        title = re.sub(r"[ ]{2,}", " ", title, flags=re.I)
+        title = re.sub(r" {2,}", " ", title, flags=re.I)
 
-        # Quality - Use re module to avoid case sensitive problems with replace
+        # Quality - Use re module to avoid case-sensitive problems with replace
         title = re.sub(r"\[HDTV 1080p?[^\[]*]", "1080p HDTV x264", title, flags=re.I)
         title = re.sub(r"\[HDTV 720p?[^\[]*]", "720p HDTV x264", title, flags=re.I)
         title = re.sub(r"\[ALTA DEFINICION 720p?[^\[]*]", "720p HDTV x264", title, flags=re.I)

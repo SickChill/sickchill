@@ -423,7 +423,7 @@ class HelpersEncryptionTests(unittest.TestCase):
             self.skipTest("pyOpenSSL is not installed or error importing it")
             return False
         except ImportError as error:
-            self.skipTest("OpenSSL module not available: {}".format(error))
+            self.skipTest(f"OpenSSL module not available: {error}")
             return False
 
         base_path = Path(__file__).parent.absolute()

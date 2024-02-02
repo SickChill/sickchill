@@ -1,4 +1,5 @@
 import re
+from typing import Dict, List, TYPE_CHECKING
 from urllib.parse import urljoin
 
 from requests.utils import dict_from_cookiejar
@@ -10,6 +11,9 @@ from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVEpisode
 
 
 class Provider(TorrentProvider):
@@ -78,12 +82,12 @@ class Provider(TorrentProvider):
         search_params = {"tags_type": 1, "order_by": "time", "order_way": "desc", "action": "basic", "searchsubmit": 1, "searchstr": ""}
 
         def process_column_header(td):
-            result = ""
+            column_result = None
             if td.a and td.a.img:
-                result = td.a.img.get("title", td.a.get_text(strip=True))
-            if not result:
-                result = td.get_text(strip=True)
-            return result
+                column_result = td.a.img.get("title", td.a.get_text(strip=True))
+            if not column_result:
+                column_result = td.get_text(strip=True)
+            return column_result
 
         for mode in search_strings:
             items = []
@@ -93,6 +97,7 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
+                searchedSeason = "0"
                 if mode == "Season":
                     searchedSeason = re.match(r".*\s(Season\s\d+|S\d+)", search_string).group(1)
 
@@ -128,6 +133,7 @@ class Provider(TorrentProvider):
                                 # for an exact season on MTV, it returns all of them
                                 if searchedSeason not in title:
                                     continue
+
                                 # If torrent is grouped, we need a folder name for title
                                 if "Season" in title:
                                     torrentid = urljoin(self.url, result.find("span", title="Download").parent["href"])
@@ -176,8 +182,8 @@ class Provider(TorrentProvider):
 
         return results
 
-    def get_season_search_strings(self, episode):
-        search_string = {"Season": []}
+    def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
+        search_string = {"Season": set()}
 
         for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
             season_string = show_name + " "
@@ -192,8 +198,8 @@ class Provider(TorrentProvider):
                 season_string += "S{0:02d}".format(int(episode.scene_season))
                 # MTV renames most season packs to just "Season ##"
                 mtv_season_string = "{0} Season {1}".format(show_name, int(episode.scene_season))
-                search_string["Season"].append(mtv_season_string.strip())
+                search_string["Season"].add(mtv_season_string.strip())
 
-            search_string["Season"].append(season_string)
+            search_string["Season"].add(season_string)
 
         return [search_string]

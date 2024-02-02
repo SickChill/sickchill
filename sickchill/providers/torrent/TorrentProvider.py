@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import bencodepy
+import bencode
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
@@ -105,8 +105,8 @@ class TorrentProvider(GenericProvider):
 
     def _verify_download(self, filename):
         try:
-            bencodepy.bread(filename)
-        except bencodepy.BencodeDecodeError as error:
+            bencode.bread(filename)
+        except bencode.BencodeDecodeError as error:
             logger.debug(f"Failed to validate torrent file: {error}")
             logger.debug("Result is not a valid torrent file")
             return False

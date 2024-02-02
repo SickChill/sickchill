@@ -1,4 +1,5 @@
 import re
+from typing import Dict, List, TYPE_CHECKING
 from urllib.parse import urljoin
 
 from sickchill import logger, settings
@@ -7,6 +8,9 @@ from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
 
 from .TorrentProvider import TorrentProvider
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVEpisode
 
 
 class FrenchTorrentProvider(TorrentProvider):
@@ -81,11 +85,13 @@ class FrenchTorrentProvider(TorrentProvider):
     def _set_provider_url(self, url):
         self._used_url = url
 
+    # noinspection PyTypeChecker
     url = property(_get_provider_url, _set_provider_url)
+    # noinspection PyTypeChecker
     custom_url = property(_get_custom_url, _set_custom_url)
 
-    def get_season_search_strings(self, episode):
-        search_string = {"Season": []}
+    def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
+        search_string = {"Season": set()}
         for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
             season = int(episode.scene_season)
             if episode.show.air_by_date or episode.show.sports:
@@ -96,6 +102,6 @@ class FrenchTorrentProvider(TorrentProvider):
             else:
                 season_string = f"{show_name} Saison {season:0d}"
 
-            search_string["Season"].append(season_string)
+            search_string["Season"].add(season_string)
 
         return [search_string]

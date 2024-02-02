@@ -170,7 +170,7 @@ class Provider(TorrentProvider):
     @staticmethod
     def _magnet_from_result(info_hash, title):
         return "magnet:?xt=urn:btih:{hash}&dn={title}&tr={trackers}".format(
-            hash=info_hash, title=quote_plus(title), trackers="http://tracker.tntvillage.scambioetico.org:2710/announce"
+            hash=info_hash, title=quote_plus(title), trackers="https://tracker.tntvillage.scambioetico.org:2710/announce"
         )
 
     def search(self, search_strings):
@@ -292,7 +292,7 @@ class Provider(TorrentProvider):
                                 items.append(item)
 
                     except Exception as error:
-                        logger.exception("Failed parsing provider. Error: {0}".format(error))
+                        logger.exception(f"Failed parsing provider. Error: {error}")
 
                 # For each search mode sort all the items by seeders if available
                 items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

@@ -14,7 +14,7 @@ DISCORD = 600
 
 class NotificationsQueue(generic_queue.GenericQueue):
     """
-    Queue to handle multiple post processing tasks
+    Queue to handle multiple post-processing tasks
     """
 
     def __init__(self):
@@ -28,7 +28,7 @@ class NotificationsQueue(generic_queue.GenericQueue):
     @property
     def is_paused(self):
         """
-        Shows if the post processing queue is paused
+        Shows if the post-processing queue is paused
         :return: bool
         """
         return self.min_priority == generic_queue.QueuePriorities.HIGH
@@ -160,13 +160,15 @@ class DiscordTask(generic_queue.QueueItem):
             r.raise_for_status()
         except requests.exceptions.ConnectionError as error:
             logger.info("Could not reach the webhook url")
+            logger.debug(f"Error: {error}")
             return False
         except requests.exceptions.RequestException as error:
             if error.response.status_code != 429 or int(error.response.headers.get("X-RateLimit-Remaining")) != 0:
                 logger.exception(f"RequestException traceback: {traceback.format_exc()}")
                 raise error
 
-            logger.info("Discord rate limiting, retrying after {} seconds".format(error.response.headers.get("X-RateLimit-Reset-After")))
+            retry_after = error.response.headers.get("X-RateLimit-Reset-After")
+            logger.info(f"Discord rate limiting, retrying after {retry_after} seconds")
             time.sleep(int(error.response.headers.get("X-RateLimit-Reset-After")) + 1)
             r = requests.post(discord_webhook, data=message_data, headers=headers)
             r.raise_for_status()
