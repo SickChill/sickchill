@@ -5,7 +5,7 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
-from typing import Callable
+from typing import Callable, Dict, Iterable, List, TYPE_CHECKING, Union
 from urllib.parse import urljoin
 
 import validators
@@ -23,6 +23,9 @@ from sickchill.oldbeard.helpers import download_file, getURL, make_session, remo
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
 from sickchill.oldbeard.tvcache import TVCache
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVEpisode
 
 
 class GenericProvider(object):
@@ -413,11 +416,11 @@ class GenericProvider(object):
     def _get_result(self, episodes):
         return SearchResult(episodes)
 
-    def get_episode_search_strings(self, episode, add_string=""):
+    def get_episode_search_strings(self, episode: "TVEpisode", add_string: str = "") -> Union[List[Dict], Iterable]:
         if not episode:
             return []
 
-        search_string = {"Episode": []}
+        search_string = {"Episode": set()}
 
         for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
             episode_string = show_name + " "
@@ -443,14 +446,14 @@ class GenericProvider(object):
                 if episode_string_fallback:
                     episode_string_fallback += " " + add_string
 
-            search_string["Episode"].append(episode_string.strip())
+            search_string["Episode"].add(episode_string.strip())
             if episode_string_fallback:
-                search_string["Episode"].append(episode_string_fallback.strip())
+                search_string["Episode"].add(episode_string_fallback.strip())
 
         return [search_string]
 
-    def get_season_search_strings(self, episode):
-        search_string = {"Season": []}
+    def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
+        search_string = {"Season": set()}
 
         for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
             season_string = show_name + " "
@@ -464,7 +467,7 @@ class GenericProvider(object):
             else:
                 season_string += "S{0:02d}".format(int(episode.scene_season))
 
-            search_string["Season"].append(season_string.strip())
+            search_string["Season"].add(season_string.strip())
 
         return [search_string]
 

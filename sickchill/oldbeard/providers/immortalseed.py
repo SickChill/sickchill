@@ -46,7 +46,7 @@ class Provider(TorrentProvider):
 
         return True
 
-    def _check_auth_from_data(self, data):
+    def check_auth_from_data(self, data):
         if not self.passkey:
             logger.warning("Invalid passkey. Check your settings")
 
@@ -168,4 +168,4 @@ class ImmortalseedCache(tvcache.TVCache):
         return self.get_rss_feed(self.provider.urls["rss"], params=params)
 
     def _check_auth(self, data):
-        return self.provider._check_auth_from_data(data)
+        return self.provider.check_auth_from_data(data)

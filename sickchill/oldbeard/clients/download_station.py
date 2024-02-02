@@ -165,8 +165,8 @@ class Client(GenericClient):
                 self._set_destination(result, response_json["data"]["default_destination"])
                 logger.info("Destination set to %s", self._get_destination(result))
             except (ValueError, KeyError, JSONDecodeError) as error:
-                logger.debug("Get DownloadStation default destination error: {0}".format(error))
-                logger.warning("Could not get share destination from DownloadStation for {}, please set it in the settings", result.result_type)
+                logger.debug(f"Get DownloadStation default destination error: {error}")
+                logger.warning(f"Could not get share destination from DownloadStation for {result.result_type}, please set it in the settings")
                 raise
 
     def _add_torrent_uri(self, result: "SearchResult"):

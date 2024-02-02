@@ -194,7 +194,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
 
         return True
 
-    def _check_auth_from_data(self, data):
+    def check_auth_from_data(self, data):
         """
         Checks that the returned data is valid
         Returns: _check_auth if valid otherwise False if there is an error
@@ -322,7 +322,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                     break
 
                 with BS4Parser(data, language="xml") as html:
-                    if not self._check_auth_from_data(html):
+                    if not self.check_auth_from_data(html):
                         break
 
                     self.torznab = self.check_torznab(html)

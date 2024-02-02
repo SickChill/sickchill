@@ -44,7 +44,7 @@ class XEMBasicTests(conftest.SickChillTestDBCase):
                 cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
                 settings.showList.append(cur_show)
             except Exception as error:
-                print("There was an error creating the show {0}".format(error))
+                print(f"There was an error creating the show {error}")
 
     # @staticmethod
     # def test_formatting():
