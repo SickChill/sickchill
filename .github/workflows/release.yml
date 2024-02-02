@@ -6,7 +6,7 @@ on:
     branches: |
       - develop
     type:
-      - complete
+      - completed
 
 jobs:
   version:
