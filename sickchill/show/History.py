@@ -312,7 +312,7 @@ class History(object, metaclass=Singleton):
                 else:
                     logger.debug("Episode don't have a previous snatched status to revert. Setting it back to WANTED")
                     episode_object.status = WANTED
-                    episode_object.saveToDB()
+                    episode_object.save_to_db()
 
         except EpisodeNotFoundException as error:
             logger.warning(f"Unable to create episode, please set its status manually: {error}")
@@ -332,7 +332,7 @@ class History(object, metaclass=Singleton):
             with episode_object.lock:
                 quality = Quality.splitCompositeStatus(episode_object.status)[1]
                 episode_object.status = Quality.compositeStatus(FAILED, quality)
-                episode_object.saveToDB()
+                episode_object.save_to_db()
 
         except EpisodeNotFoundException as error:
             logger.warning(f"Unable to get episode, please set its status manually: {error}")

@@ -800,7 +800,7 @@ class CMDEpisodeSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        episode_object = show_obj.getEpisode(self.s, self.e)
+        episode_object = show_obj.get_episode(self.s, self.e)
         if isinstance(episode_object, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
@@ -939,13 +939,13 @@ class CMDEpisodeSetStatus(ApiCall):
         self.status = status_to_code(self.status)
 
         if self.e:
-            episode_object = show_obj.getEpisode(self.s, self.e)
+            episode_object = show_obj.get_episode(self.s, self.e)
             if not episode_object:
                 return _responds(RESULT_FAILURE, msg="Episode not found")
             ep_list = [episode_object]
         else:
             # get all episode numbers from self, season
-            ep_list = show_obj.getAllEpisodes(season=self.s)
+            ep_list = show_obj.get_all_episodes(season=self.s)
 
         def _ep_result(result_code, ep, msg=""):
             return {"season": ep.season, "episode": ep.episode, "status": statusStrings_bare[ep.status], "result": result_type_map[result_code], "message": msg}
@@ -1043,7 +1043,7 @@ class CMDSubtitleSearch(ApiCall):
             return _responds(RESULT_FAILURE, msg="Show not found")
 
         # retrieve the episode object and fail if we can't get one
-        episode_object = show_obj.getEpisode(self.s, self.e)
+        episode_object = show_obj.get_episode(self.s, self.e)
         if isinstance(episode_object, str):
             return _responds(RESULT_FAILURE, msg="Episode not found")
 
@@ -1227,7 +1227,7 @@ class CMDBacklog(ApiCall):
             )
 
             for curResult in sql_results:
-                cur_ep_cat = curShow.getOverview(curResult["status"])
+                cur_ep_cat = curShow.get_overview(curResult["status"])
                 if cur_ep_cat and cur_ep_cat in (Overview.WANTED, Overview.QUAL):
                     show_eps.append(curResult)
 
@@ -1942,9 +1942,9 @@ class CMDShow(ApiCall):
             show_dict["network"] = ""
         show_dict["status"] = show_obj.status
 
-        if try_int(show_obj.nextaired, 1) > 693595:
+        if try_int(show_obj.next_airdate, 1) > 693595:
             dt_episode_airs = scdatetime.scdatetime.convert_to_setting(
-                network_timezones.parse_date_time(show_obj.nextaired, show_dict["airs"], show_dict["network"])
+                network_timezones.parse_date_time(show_obj.next_airdate, show_dict["airs"], show_dict["network"])
             )
             show_dict["airs"] = scdatetime.scdatetime.scftime(dt_episode_airs, t_preset=timeFormat).lstrip("0").replace(" 0", " ")
             show_dict["next_ep_airdate"] = scdatetime.scdatetime.scfdate(dt_episode_airs, d_preset=dateFormat)
@@ -2763,9 +2763,9 @@ class CMDShows(ApiCall):
                 "subtitles": (0, 1)[curShow.subtitles],
             }
 
-            if try_int(curShow.nextaired, 1) > 693595:  # 1900
+            if try_int(curShow.next_airdate, 1) > 693595:  # 1900
                 dt_episode_airs = scdatetime.scdatetime.convert_to_setting(
-                    network_timezones.parse_date_time(curShow.nextaired, curShow.airs, show_dict["network"])
+                    network_timezones.parse_date_time(curShow.next_airdate, curShow.airs, show_dict["network"])
                 )
                 show_dict["next_ep_airdate"] = scdatetime.scdatetime.scfdate(dt_episode_airs, d_preset=dateFormat)
             else:

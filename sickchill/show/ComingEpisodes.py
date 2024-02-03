@@ -76,7 +76,7 @@ class ComingEpisodes(object):
 
         sql_l = []
         for show_obj in settings.showList:
-            next_air_date = show_obj.nextEpisode()
+            next_air_date = show_obj.next_episode()
             sql_l.append(
                 [
                     "SELECT DISTINCT {0} ".format(fields_to_select) + "FROM tv_episodes e, tv_shows s "

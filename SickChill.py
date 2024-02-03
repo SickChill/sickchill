@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import datetime
+import mimetypes
 import os
 import platform
 import shutil
@@ -28,14 +29,12 @@ from sickchill.oldbeard.name_parser.parser import NameParser, ParseResult
 
 setup_gettext()
 
-import mimetypes
-
 mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/sfont", ".otf")
 mimetypes.add_type("application/sfont", ".ttf")
 mimetypes.add_type("application/javascript", ".js")
 mimetypes.add_type("application/font-woff", ".woff")
-# Not sure about this one, but we also have halflings in .woff so I think it wont matter
+# Not sure about this one, but we also have halflings in .woff, so I think it won't matter
 # mimetypes.add_type("application/font-woff2", ".woff2")
 
 from configobj import ConfigObj
@@ -67,6 +66,8 @@ class SickChill:
         self.run_as_daemon = False
 
         # web server constants
+        self.flask_server = None
+
         self.web_server = None
         self.forced_port = None
         self.no_launch = False
@@ -253,7 +254,7 @@ class SickChill:
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(sql_show["indexer"], sql_show["indexer_id"])
-                cur_show.nextEpisode()
+                cur_show.next_episode()
                 settings.showList.append(cur_show)
             except Exception as error:
                 logger.exception("There was an error creating the show in {}: Error {}".format(sql_show["location"], error))
@@ -301,7 +302,7 @@ class SickChill:
         """
         if settings.started:
             sickchill.start.halt()  # stop all tasks
-            sickchill.start.saveAll()  # save all shows to DB
+            sickchill.start.save_all()  # save all shows to DB
 
             # shutdown web server
             if self.web_server:

@@ -44,7 +44,7 @@ def generator(cur_data, cur_name, cur_provider):
         show = TVShow(1, int(cur_data["tvdbid"]))
         show.name = cur_name
         show.quality = common.ANY | common.Quality.UNKNOWN | common.Quality.RAWHDTV
-        show.saveToDB()
+        show.save_to_db()
         settings.showList.append(show)
 
         for ep_number in cur_data["e"]:
@@ -55,7 +55,7 @@ def generator(cur_data, cur_name, cur_provider):
             episode.scene_season = cur_data["s"]
             episode.scene_episode = ep_number
 
-            episode.saveToDB()
+            episode.save_to_db()
 
             cur_provider.show = show
             season_strings = cur_provider.get_season_search_strings(episode)

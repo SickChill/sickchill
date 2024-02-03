@@ -758,7 +758,7 @@ class PostProcessor(object):
 
             # now that we've figured out which episode this file is just load it manually
             try:
-                curEp = show.getEpisode(season, cur_episode)
+                curEp = show.get_episode(season, cur_episode)
                 if not curEp:
                     raise EpisodeNotFoundException()
             except EpisodeNotFoundException as error:
@@ -1058,7 +1058,7 @@ class PostProcessor(object):
                 raise EpisodePostProcessingFailedException(_("Unable to create the show directory: ") + episode_object.show._location)
 
             # get metadata for the show (but not episode because it hasn't been fully processed)
-            episode_object.show.writeMetadata(True)
+            episode_object.show.write_metadata(True)
 
         # update the ep info before we rename so the quality & release name go into the name properly
         sql_l = []

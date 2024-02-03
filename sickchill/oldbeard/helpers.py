@@ -659,7 +659,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
             show = Show.find(settings.showList, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:
-            ep = show.getEpisode(None, None, absolute_number=absolute_number)
+            ep = show.get_episode(None, None, absolute_number=absolute_number)
             if ep:
                 episodes.append(ep.episode)
                 season = ep.season  # this will always take the last found season so eps that cross the season border are not handeled well

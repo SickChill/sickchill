@@ -66,7 +66,7 @@ class DailySearcher(object):
                 if air_time > curTime:
                     continue
 
-            ep = show.getEpisode(sqlEp["season"], sqlEp["episode"])
+            ep = show.get_episode(sqlEp["season"], sqlEp["episode"])
             with ep.lock:
                 prefix = _("New episode {episode_string} airs today,").format(episode_string=ep.pretty_name)
                 if ep.season == 0:

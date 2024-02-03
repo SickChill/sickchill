@@ -281,7 +281,7 @@ class GenericProvider(object):
                 continue
 
             for episode_number in actual_episodes:
-                if not show_object.wantEpisode(actual_season, episode_number, quality, manual_search, download_current_quality):
+                if not show_object.want_episode(actual_season, episode_number, quality, manual_search, download_current_quality):
                     skip_release = True
                     break
 
@@ -293,7 +293,7 @@ class GenericProvider(object):
 
             episode_objects = []
             for current_episode in actual_episodes:
-                episode_objects.append(show_object.getEpisode(actual_season, current_episode))
+                episode_objects.append(show_object.get_episode(actual_season, current_episode))
 
             result = self.get_result(episode_objects)
             result.show = show_object
@@ -587,9 +587,6 @@ class GenericProvider(object):
 
         return False, f"No Cookies added from ui for provider: {self.name}"
 
-    def has_option(self, option):
-        return hasattr(self, option)
-
     def check_set_option(self, view, option, default="", cast: Callable = str, unhide=False):
         if hasattr(self, option):
             if view.request.method == "GET":
@@ -636,7 +633,7 @@ class GenericProvider(object):
     def check_and_update_urls(self):
         has_custom_url = False
         custom_url_valid = True
-        if hasattr(self, "custom_url") and self.has_option("url") and self.has_option("urls"):
+        if hasattr(self, "custom_url") and hasattr(self, "url") and hasattr(self, "urls"):
             has_custom_url = bool(self.custom_url)
             custom_url_valid = self.valid_url(self.custom_url)
             if has_custom_url and custom_url_valid:

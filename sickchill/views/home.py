@@ -61,9 +61,9 @@ class Home(WebRoot):
             return None, _("Invalid show parameters")
 
         if absolute:
-            episode_object = show_obj.getEpisode(absolute_number=absolute)
+            episode_object = show_obj.get_episode(absolute_number=absolute)
         elif season and episode:
-            episode_object = show_obj.getEpisode(season, episode)
+            episode_object = show_obj.get_episode(season, episode)
         else:
             return None, _("Invalid parameters")
 
@@ -891,7 +891,7 @@ class Home(WebRoot):
         epCats = {}
 
         for curResult in sql_results:
-            curEpCat = show_obj.getOverview(curResult["status"])
+            curEpCat = show_obj.get_overview(curResult["status"])
             if curEpCat:
                 epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
                 epCounts[curEpCat] += 1
@@ -1250,7 +1250,7 @@ class Home(WebRoot):
                         )
 
             # save it to the DB
-            show_obj.saveToDB()
+            show_obj.save_to_db()
 
         # force the update
         if do_update:
@@ -1470,7 +1470,7 @@ class Home(WebRoot):
                     logger.debug(f"Something went wrong when trying to setStatus, {episode_num(*ep_info)}")
                     continue
 
-                episode_object = show_obj.getEpisode(ep_info[0], ep_info[1])
+                episode_object = show_obj.get_episode(ep_info[0], ep_info[1])
 
                 if not episode_object:
                     return self._genericMessage(_("Error"), _("Episode couldn't be retrieved"))
@@ -1588,7 +1588,7 @@ class Home(WebRoot):
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
-        show_obj.getAllEpisodes(has_location=True)
+        show_obj.get_all_episodes(has_location=True)
         t = PageTemplate(rh=self, filename="testRename.mako")
         submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid}", "icon": "ui-icon ui-icon-pencil"}]
 
@@ -1625,11 +1625,11 @@ class Home(WebRoot):
                 "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?", [ep_result[0]["location"], ep_info[1]]
             )
 
-            root_ep_obj = show_obj.getEpisode(ep_info[0], ep_info[1])
+            root_ep_obj = show_obj.get_episode(ep_info[0], ep_info[1])
             root_ep_obj.related_episodes = []
 
             for cur_related_ep in related_eps_result:
-                related_ep_obj = show_obj.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
+                related_ep_obj = show_obj.get_episode(cur_related_ep["season"], cur_related_ep["episode"])
                 if related_ep_obj not in root_ep_obj.related_episodes:
                     root_ep_obj.related_episodes.append(related_ep_obj)
 
@@ -1661,7 +1661,7 @@ class Home(WebRoot):
             )
         else:
             show_object: TVShow = Show.find(settings.showList, show)
-            episodes_sql = "|".join([str(ep.season) for ep in show_object.getAllEpisodes(season=season) if ep.season > 0])
+            episodes_sql = "|".join([str(ep.season) for ep in show_object.get_all_episodes(season=season) if ep.season > 0])
             results = cache_db_con.select(
                 "SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC",
                 [show, season, f"%{episodes_sql}%", FAILED],
@@ -1762,7 +1762,7 @@ class Home(WebRoot):
                         "searchstatus": search_status,
                         "status": statusStrings[search_thread.segment.status],
                         "quality": self.getQualityClass(search_thread.segment),
-                        "overview": Overview.overviewStrings[show_obj.getOverview(search_thread.segment.status)],
+                        "overview": Overview.overviewStrings[show_obj.get_overview(search_thread.segment.status)],
                         "location": relative_ep_location(search_thread.segment._location, show_obj._location),
                         "size": pretty_file_size(search_thread.segment.file_size) if search_thread.segment.file_size else "",
                     }
@@ -1779,7 +1779,7 @@ class Home(WebRoot):
                             "searchstatus": search_status,
                             "status": statusStrings[episode_object.status],
                             "quality": self.getQualityClass(episode_object),
-                            "overview": Overview.overviewStrings[show_obj.getOverview(episode_object.status)],
+                            "overview": Overview.overviewStrings[show_obj.get_overview(episode_object.status)],
                             "location": relative_ep_location(episode_object._location, show_obj._location),
                             "size": pretty_file_size(episode_object.file_size) if episode_object.file_size else "",
                         }

@@ -115,7 +115,7 @@ class GenericMetadata(object):
     def _has_show_metadata(self, show_obj):
         return self._check_exists(self.get_show_file_path(show_obj))
 
-    def _has_episode_metadata(self, episode_object):
+    def has_episode_metadata(self, episode_object):
         return self._check_exists(self.get_episode_file_path(episode_object))
 
     def _has_fanart(self, show_obj):
@@ -127,7 +127,7 @@ class GenericMetadata(object):
     def _has_banner(self, show_obj):
         return self._check_exists(self.get_banner_path(show_obj))
 
-    def _has_episode_thumb(self, episode_object):
+    def has_episode_thumb(self, episode_object):
         return self._check_exists(self.get_episode_thumb_path(episode_object))
 
     def _has_season_poster(self, show_obj, season):
@@ -248,7 +248,7 @@ class GenericMetadata(object):
                 if indexerid is not None:
                     if indexerid.text == str(show_obj.indexerid):
                         return True
-                        indexerid.text = str(show_obj.indexerid)
+                    indexerid.text = str(show_obj.indexerid)
                 else:
                     ElementTree.SubElement(root, "id").text = str(show_obj.indexerid)
 
@@ -263,13 +263,13 @@ class GenericMetadata(object):
                 logger.error(f"Unable to write file to {nfo_file_path} - are you sure the folder is writable? {error}")
 
     def create_episode_metadata(self, episode_object):
-        if self.episode_metadata and episode_object and not self._has_episode_metadata(episode_object):
+        if self.episode_metadata and episode_object and not self.has_episode_metadata(episode_object):
             logger.debug(f"[{self.name} META] Creating episode metadata for {episode_object.pretty_name}")
             return self.write_ep_file(episode_object)
         return False
 
     def update_episode_metadata(self, episode_object):
-        if self.episode_metadata and episode_object and self._has_episode_metadata(episode_object):
+        if self.episode_metadata and episode_object and self.has_episode_metadata(episode_object):
             logger.debug(f"[{self.name} META] Updating episode indexer info metadata file for {episode_object.pretty_name}")
             nfo_file_path = self.get_episode_file_path(episode_object)
 
@@ -342,7 +342,7 @@ class GenericMetadata(object):
         return False
 
     def create_episode_thumb(self, episode_object):
-        if self.episode_thumbnails and episode_object and not self._has_episode_thumb(episode_object):
+        if self.episode_thumbnails and episode_object and not self.has_episode_thumb(episode_object):
             logger.debug(f"[{self.name} META] Creating episode thumbnail for {episode_object.pretty_name}")
             return self.save_thumbnail(episode_object)
         return False

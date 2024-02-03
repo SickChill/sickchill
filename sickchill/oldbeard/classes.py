@@ -76,7 +76,7 @@ class SearchResult(object):
             return show[0]
 
         show = show[1]
-        episode_objects = [show.getEpisode(result_dict.get("season"), ep) for ep in result_dict.get("episodes").split("|") if ep]
+        episode_objects = [show.get_episode(result_dict.get("season"), ep) for ep in result_dict.get("episodes").split("|") if ep]
         result = cls(episode_objects)
         result.from_json(result_dict)
         result.show = show
