@@ -501,7 +501,7 @@ class PostProcessor(object):
         # search the database for a possible match and return immediately if we find one
         main_db_con = db.DBConnection()
         for curName in names:
-            search_name = re.sub(r"[\.\- ]", "_", curName)
+            search_name = re.sub(r"[.\- ]", "_", curName)
             sql_results = main_db_con.select(
                 "SELECT showid, season, quality, version, resource FROM history WHERE resource LIKE ? AND (action % 100 = 4 OR action % 100 = 6)", [search_name]
             )
@@ -840,7 +840,7 @@ class PostProcessor(object):
             self._log(f"Absolute path to script: {script_cmd[0]}", logger.DEBUG)
 
             script_cmd += [
-                episode_object._location,
+                episode_object.location,
                 self.directory,
                 str(episode_object.show.indexerid),
                 str(episode_object.season),
@@ -1174,14 +1174,14 @@ class PostProcessor(object):
             main_db_con = db.DBConnection()
             main_db_con.mass_action(sql_l)
 
-        episode_object.airdateModifyStamp()
+        episode_object.airdate_modify_stamp()
 
         if settings.USE_ICACLS and os.name == "nt":
-            os.popen('icacls "' + episode_object._location + '"* /reset /T')
+            os.popen(f'icacls "{episode_object._location}"* /reset /T')
 
         # generate nfo/tbn
         try:
-            episode_object.createMetaFiles()
+            episode_object.create_meta_files()
         except Exception:
             logger.info(_("Could not create/update meta files. Continuing with postProcessing..."))
 
