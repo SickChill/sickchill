@@ -161,7 +161,7 @@ class Show(object):
         else:
             show.paused = pause
 
-        show.saveToDB()
+        show.save_to_db()
 
         return None, show
 

@@ -124,18 +124,17 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             restore_dir = os.path.join(settings.DATA_DIR, "restore")
             if os.path.exists(restore_dir) and os.path.exists(os.path.join(restore_dir, "cache")):
 
-                def restore_cache(srcDir, dstDir):
+                def restore_cache(source, destination):
                     def path_leaf(path):
                         head, tail = os.path.split(path)
                         return tail or os.path.basename(head)
 
                     try:
-                        if os.path.isdir(dstDir):
-                            # noinspection PyTypeChecker
-                            bakFilename = "{0}-{1}".format(path_leaf(dstDir), datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d_%H%M%S"))
-                            shutil.move(dstDir, os.path.join(os.path.dirname(dstDir), bakFilename))
+                        if os.path.isdir(destination):
+                            backup_name = "{0}-{1}".format(path_leaf(destination), datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d_%H%M%S"))
+                            shutil.move(destination, os.path.join(os.path.dirname(destination), backup_name))
 
-                        shutil.move(srcDir, dstDir)
+                        shutil.move(source, destination)
                         logger.info("Restore: restoring cache successful")
                     except Exception as er:
                         logger.exception(f"Restore: restoring cache failed: {er}")
@@ -784,59 +783,59 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             curProvider.enabled = (curProvider.can_daily or curProvider.can_backlog) and check_setting_bool(
                 settings.CFG, curProvider.get_id().upper(), curProvider.get_id()
             )
-            if curProvider.has_option("custom_url"):
+            if hasattr(curProvider, "custom_url"):
                 curProvider.custom_url = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_custom_url"), "", censor_log=True)
-            if curProvider.has_option("api_key"):
+            if hasattr(curProvider, "api_key"):
                 curProvider.api_key = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_api_key"), censor_log=True)
-            if curProvider.has_option("hash"):
+            if hasattr(curProvider, "hash"):
                 curProvider.hash = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_hash"), censor_log=True)
-            if curProvider.has_option("digest"):
+            if hasattr(curProvider, "digest"):
                 curProvider.digest = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_digest"), censor_log=True)
-            if curProvider.has_option("username"):
+            if hasattr(curProvider, "username"):
                 curProvider.username = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_username"), censor_log=True)
-            if curProvider.has_option("password"):
+            if hasattr(curProvider, "password"):
                 curProvider.password = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_password"), censor_log=True)
-            if curProvider.has_option("passkey"):
+            if hasattr(curProvider, "passkey"):
                 curProvider.passkey = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_passkey"), censor_log=True)
-            if curProvider.has_option("pin"):
+            if hasattr(curProvider, "pin"):
                 curProvider.pin = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_pin"), censor_log=True)
-            if curProvider.has_option("confirmed"):
+            if hasattr(curProvider, "confirmed"):
                 curProvider.confirmed = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_confirmed"), True)
-            if curProvider.has_option("ranked"):
+            if hasattr(curProvider, "ranked"):
                 curProvider.ranked = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_ranked"), True)
-            if curProvider.has_option("engrelease"):
+            if hasattr(curProvider, "engrelease"):
                 curProvider.engrelease = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_engrelease"))
-            if curProvider.has_option("only_spanish_search"):
+            if hasattr(curProvider, "only_spanish_search"):
                 curProvider.only_spanish_search = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_only_spanish_search"))
-            if curProvider.has_option("sorting"):
+            if hasattr(curProvider, "sorting"):
                 curProvider.sorting = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_sorting"), "seeders")
-            if curProvider.has_option("options"):
+            if hasattr(curProvider, "options"):
                 curProvider.options = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_options"), "")
-            if curProvider.has_option("ratio"):
+            if hasattr(curProvider, "ratio"):
                 curProvider.ratio = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_ratio"), "")
-            if curProvider.has_option("minseed"):
+            if hasattr(curProvider, "minseed"):
                 curProvider.minseed = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_minseed"), 1, min_val=0)
-            if curProvider.has_option("minleech"):
-                curProvider.minleech = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_minleech"), 0, min_val=0)
-            if curProvider.has_option("freeleech"):
+            if hasattr(curProvider, "minleech"):
+                curProvider.minleech = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_minleech"), min_val=0)
+            if hasattr(curProvider, "freeleech"):
                 curProvider.freeleech = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_freeleech"))
-            if curProvider.has_option("search_mode"):
+            if hasattr(curProvider, "search_mode"):
                 curProvider.search_mode = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_search_mode"), "episode")
-            if curProvider.has_option("search_fallback"):
+            if hasattr(curProvider, "search_fallback"):
                 curProvider.search_fallback = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_search_fallback"))
-            if curProvider.has_option("enable_daily"):
+            if hasattr(curProvider, "enable_daily"):
                 curProvider.enable_daily = curProvider.can_daily and check_setting_bool(
                     settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_enable_daily"), True
                 )
-            if curProvider.has_option("enable_backlog"):
+            if hasattr(curProvider, "enable_backlog"):
                 curProvider.enable_backlog = curProvider.can_backlog and check_setting_bool(
                     settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_enable_backlog"), curProvider.can_backlog
                 )
-            if curProvider.has_option("cat"):
-                curProvider.cat = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cat"), 0)
-            if curProvider.has_option("subtitle"):
+            if hasattr(curProvider, "cat"):
+                curProvider.cat = check_setting_int(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cat"))
+            if hasattr(curProvider, "subtitle"):
                 curProvider.subtitle = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_subtitle"))
-            if curProvider.has_option("cookies"):
+            if hasattr(curProvider, "cookies"):
                 curProvider.cookies = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cookies"), censor_log=True)
 
         providers.check_enabled_providers()
@@ -1081,11 +1080,11 @@ def sig_handler(signum=None, frame=None):
         Shutdown.stop(settings.PID)
 
 
-def saveAll():
+def save_all():
     # write all shows
     logger.info("Saving all shows to the database")
     for show in settings.showList:
-        show.saveToDB()
+        show.save_to_db()
 
     # save config
     logger.info("Saving config file to disk")
@@ -1095,60 +1094,60 @@ def saveAll():
 def save_config():
     new_config = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
 
-    # For passwords you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
+    # For passwords, you must include the word `password` in the item_name and add `helpers.encrypt(settings.ITEM_NAME, settings.ENCRYPTION_VERSION)` in save_config()
     # dynamically save provider settings
     for curProvider in providers.sorted_provider_list():
         new_config[curProvider.get_id().upper()] = {}
         new_config[curProvider.get_id().upper()][curProvider.get_id()] = int(curProvider.enabled)
-        if curProvider.has_option("custom_url"):
+        if hasattr(curProvider, "custom_url"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_custom_url")] = curProvider.custom_url
-        if curProvider.has_option("digest"):
+        if hasattr(curProvider, "digest"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_digest")] = curProvider.digest
-        if curProvider.has_option("hash"):
+        if hasattr(curProvider, "hash"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_hash")] = curProvider.hash
-        if curProvider.has_option("api_key"):
+        if hasattr(curProvider, "api_key"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_api_key")] = curProvider.api_key
-        if curProvider.has_option("username"):
+        if hasattr(curProvider, "username"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_username")] = curProvider.username
-        if curProvider.has_option("password"):
+        if hasattr(curProvider, "password"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_password")] = helpers.encrypt(curProvider.password, settings.ENCRYPTION_VERSION)
-        if curProvider.has_option("passkey"):
+        if hasattr(curProvider, "passkey"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_passkey")] = curProvider.passkey
-        if curProvider.has_option("pin"):
+        if hasattr(curProvider, "pin"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_pin")] = curProvider.pin
-        if curProvider.has_option("confirmed"):
+        if hasattr(curProvider, "confirmed"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_confirmed")] = int(curProvider.confirmed)
-        if curProvider.has_option("ranked"):
+        if hasattr(curProvider, "ranked"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_ranked")] = int(curProvider.ranked)
-        if curProvider.has_option("engrelease"):
+        if hasattr(curProvider, "engrelease"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_engrelease")] = int(curProvider.engrelease)
-        if curProvider.has_option("only_spanish_search"):
+        if hasattr(curProvider, "only_spanish_search"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_only_spanish_search")] = int(curProvider.only_spanish_search)
-        if curProvider.has_option("sorting"):
+        if hasattr(curProvider, "sorting"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_sorting")] = curProvider.sorting
-        if curProvider.has_option("ratio"):
+        if hasattr(curProvider, "ratio"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_ratio")] = curProvider.ratio
-        if curProvider.has_option("minseed"):
+        if hasattr(curProvider, "minseed"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_minseed")] = int(curProvider.minseed)
-        if curProvider.has_option("minleech"):
+        if hasattr(curProvider, "minleech"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_minleech")] = int(curProvider.minleech)
-        if curProvider.has_option("options"):
+        if hasattr(curProvider, "options"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_options")] = curProvider.options
-        if curProvider.has_option("freeleech"):
+        if hasattr(curProvider, "freeleech"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_freeleech")] = int(curProvider.freeleech)
-        if curProvider.has_option("search_mode"):
+        if hasattr(curProvider, "search_mode"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_search_mode")] = curProvider.search_mode
-        if curProvider.has_option("search_fallback"):
+        if hasattr(curProvider, "search_fallback"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_search_fallback")] = int(curProvider.search_fallback)
-        if curProvider.has_option("enable_daily"):
+        if hasattr(curProvider, "enable_daily"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_enable_daily")] = int(curProvider.enable_daily and curProvider.can_daily)
-        if curProvider.has_option("enable_backlog"):
+        if hasattr(curProvider, "enable_backlog"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_enable_backlog")] = int(curProvider.enable_backlog and curProvider.can_backlog)
-        if curProvider.has_option("cat"):
+        if hasattr(curProvider, "cat"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_cat")] = int(curProvider.cat)
-        if curProvider.has_option("subtitle"):
+        if hasattr(curProvider, "subtitle"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_subtitle")] = int(curProvider.subtitle)
-        if curProvider.has_option("cookies"):
+        if hasattr(curProvider, "cookies"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_cookies")] = curProvider.cookies
 
     new_config.update(
@@ -1701,9 +1700,9 @@ def launchBrowser(protocol="http", startPort=None, web_root="/"):
     browserURL = f"{protocol}://localhost:{startPort:d}{web_root}/home/"
 
     try:
-        webbrowser.open(browserURL, 2, True)
+        webbrowser.open(browserURL, 2)
     except Exception:
         try:
-            webbrowser.open(browserURL, 1, True)
+            webbrowser.open(browserURL, 1)
         except Exception:
             logger.exception("Unable to launch a browser")

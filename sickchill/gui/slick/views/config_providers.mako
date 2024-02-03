@@ -75,7 +75,7 @@
                         <ul id="provider_order_list">
                             % for provider in providers.sorted_provider_list(only_enabled=True):
                             <%
-                                if provider.has_option('custom_url'):
+                                if hasattr(provider, 'custom_url'):
                                     provider_url = provider.custom_url or provider.url
                                 else:
                                     provider_url = provider.url
@@ -157,7 +157,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('enable_daily'):
+                                % if hasattr(provider, 'enable_daily'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable daily searches')}</label>
@@ -172,7 +172,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('enable_backlog'):
+                                % if hasattr(provider, 'enable_backlog'):
                                      <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
@@ -187,7 +187,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('search_mode'):
+                                % if hasattr(provider, 'search_mode'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Season search mode')}</label>
@@ -214,7 +214,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('search_fallback'):
+                                % if hasattr(provider, 'search_fallback'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable fallback')}</label>
@@ -233,7 +233,7 @@
 
                         % for provider in [provider for provider in providers.sorted_provider_list() if provider.provider_type == GenericProvider.NZB and provider not in settings.newznab_provider_list]:
                             <div class="providerDiv" id="${provider.get_id("Div")}">
-                                % if provider.has_option('username'):
+                                % if hasattr(provider, 'username'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Username')}</label>
@@ -244,7 +244,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('api_key'):
+                                % if hasattr(provider, 'api_key'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('API key')}</label>
@@ -255,7 +255,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('enable_daily'):
+                                % if hasattr(provider, 'enable_daily'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable daily searches')}</label>
@@ -270,7 +270,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('enable_backlog'):
+                                % if hasattr(provider, 'enable_backlog'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
@@ -285,7 +285,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('search_mode'):
+                                % if hasattr(provider, 'search_mode'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Season search mode')}</label>
@@ -312,7 +312,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('search_fallback'):
+                                % if hasattr(provider, 'search_fallback'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable fallback')}</label>
@@ -332,7 +332,7 @@
                         % for provider in [provider for provider in providers.sorted_provider_list() if provider.provider_type == GenericProvider.TORRENT]:
                             <div class="providerDiv" id="${provider.get_id("Div")}">
 
-                                % if provider.has_option('custom_url'):
+                                % if hasattr(provider, 'custom_url'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Custom URL')}</label>
@@ -344,7 +344,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('api_key'):
+                                % if hasattr(provider, 'api_key'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Api key')}</label>
@@ -355,7 +355,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('digest'):
+                                % if hasattr(provider, 'digest'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Digest')}</label>
@@ -366,7 +366,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('hash'):
+                                % if hasattr(provider, 'hash'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Hash')}</label>
@@ -377,7 +377,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('username'):
+                                % if hasattr(provider, 'username'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Username')}</label>
@@ -388,7 +388,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('password'):
+                                % if hasattr(provider, 'password'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Password')}</label>
@@ -399,7 +399,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('passkey'):
+                                % if hasattr(provider, 'passkey'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Passkey')}</label>
@@ -434,7 +434,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('pin'):
+                                % if hasattr(provider, 'pin'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Pin')}</label>
@@ -445,7 +445,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('ratio'):
+                                % if hasattr(provider, 'ratio'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title" id="${provider.get_id("_ratio_desc")}">${_('Seed ratio')}</label>
@@ -465,7 +465,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('minseed'):
+                                % if hasattr(provider, 'minseed'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title" id="${provider.get_id("_minseed_desc")}">${_('Minimum seeders')}</label>
@@ -476,7 +476,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('minleech'):
+                                % if hasattr(provider, 'minleech'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title" id="${provider.get_id("_minleech_desc")}">${_('Minimum leechers')}</label>
@@ -487,7 +487,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('confirmed'):
+                                % if hasattr(provider, 'confirmed'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Confirmed download')}</label>
@@ -499,7 +499,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('ranked'):
+                                % if hasattr(provider, 'ranked'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Ranked torrents')}</label>
@@ -511,7 +511,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('engrelease'):
+                                % if hasattr(provider, 'engrelease'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('English torrents')}</label>
@@ -523,7 +523,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('onlyspasearch'):
+                                % if hasattr(provider, 'onlyspasearch'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('For Spanish torrents')}</label>
@@ -535,7 +535,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('sorting'):
+                                % if hasattr(provider, 'sorting'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Sorting results by')}</label>
@@ -550,7 +550,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('freeleech'):
+                                % if hasattr(provider, 'freeleech'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Freeleech')}</label>
@@ -562,7 +562,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('enable_daily'):
+                                % if hasattr(provider, 'enable_daily'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable daily searches')}</label>
@@ -577,7 +577,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('enable_backlog'):
+                                % if hasattr(provider, 'enable_backlog'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable backlog searches')}</label>
@@ -593,7 +593,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('search_mode'):
+                                % if hasattr(provider, 'search_mode'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Season search mode')}</label>
@@ -620,7 +620,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('search_fallback'):
+                                % if hasattr(provider, 'search_fallback'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Enable fallback')}</label>
@@ -634,7 +634,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('cat'):
+                                % if hasattr(provider, 'cat'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Category')}</label>
@@ -649,7 +649,7 @@
                                     </div>
                                 % endif
 
-                                % if provider.has_option('subtitle'):
+                                % if hasattr(provider, 'subtitle'):
                                     <div class="field-pair row">
                                         <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                             <label class="component-title">${_('Subtitled')}</label>

@@ -264,7 +264,7 @@ class Manage(Home, WebRoot):
                 season, episode = epResult.split("x")
 
                 show = Show.find(settings.showList, int(cur_indexer_id))
-                show.getEpisode(season, episode).download_subtitles()
+                show.get_episode(season, episode).download_subtitles()
 
         return self.redirect("/manage/subtitleMissed/")
 
@@ -305,7 +305,7 @@ class Manage(Home, WebRoot):
             )
 
             for curResult in sql_results:
-                curEpCat = current_show.getOverview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
+                curEpCat = current_show.get_overview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
                 if curEpCat:
                     epCats["{ep}".format(ep=episode_num(curResult["season"], curResult["episode"]))] = curEpCat
                     epCounts[curEpCat] += 1

@@ -115,14 +115,14 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         show = TVShow(1, tvdb_id)
         show.name = show_name
         show.quality = cur_data["q"]
-        show.saveToDB()
+        show.save_to_db()
         settings.showList.append(show)
         episode = None
 
         for epNumber in cur_data["e"]:
             episode = TVEpisode(show, cur_data["s"], epNumber)
             episode.status = common.WANTED
-            episode.saveToDB()
+            episode.save_to_db()
 
         best_result = search.search_providers(show, episode.episode, force_search)
         if not best_result:

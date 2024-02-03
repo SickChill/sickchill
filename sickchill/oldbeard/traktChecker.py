@@ -594,7 +594,7 @@ class TraktChecker(object):
         """
         Sets an episode to wanted, only if it is currently skipped
         """
-        episode_object = show.getEpisode(season, episode)
+        episode_object = show.get_episode(season, episode)
         if episode_object:
             with episode_object.lock:
                 if episode_object.status != SKIPPED or episode_object.airdate == datetime.date.min:
@@ -604,7 +604,7 @@ class TraktChecker(object):
                 # figure out what segment the episode is in and remember it, so we can backlog it
 
                 episode_object.status = WANTED
-                episode_object.saveToDB()
+                episode_object.save_to_db()
 
             cur_backlog_queue_item = search_queue.BacklogQueueItem(show, [episode_object])
             settings.searchQueueScheduler.action.add_item(cur_backlog_queue_item)

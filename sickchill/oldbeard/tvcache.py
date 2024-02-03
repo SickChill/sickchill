@@ -419,7 +419,7 @@ class TVCache(RSSTorrentMixin):
         propers_results = cache_db_con.select(sql, [self.provider_id])
         return [x for x in propers_results if x["indexerid"]]
 
-    def find_needed_episodes(self, episode, manualSearch=False, downCurQuality=False):
+    def find_needed_episodes(self, episode, manual_search=False, down_cur_quality=False):
         needed_eps = {}
         cl = []
 
@@ -477,11 +477,11 @@ class TVCache(RSSTorrentMixin):
             cur_version = cur_result["version"]
 
             # if the show says we want that episode then add it to the list
-            if not show_obj.wantEpisode(cur_season, cur_ep, cur_quality, manualSearch, downCurQuality):
+            if not show_obj.want_episode(cur_season, cur_ep, cur_quality, manual_search, down_cur_quality):
                 logger.debug("Ignoring " + cur_result["name"])
                 continue
 
-            episode_object = show_obj.getEpisode(cur_season, cur_ep)
+            episode_object = show_obj.get_episode(cur_season, cur_ep)
 
             # build a result object
             title = cur_result["name"]

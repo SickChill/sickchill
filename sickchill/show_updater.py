@@ -50,7 +50,7 @@ class ShowUpdater(object):
                 pi_list = []
                 for cur_show in settings.showList:
                     try:
-                        cur_show.nextEpisode()
+                        cur_show.next_episode()
 
                         skip_update = False
                         # Skip ended or paused shows until interval is met
