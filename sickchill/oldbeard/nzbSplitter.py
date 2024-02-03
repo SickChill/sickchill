@@ -128,7 +128,7 @@ def split_result(obj):
 
     # parse the season ep name
     try:
-        parsed_obj = NameParser(False, showObj=obj.show).parse(obj.name)
+        parsed_obj = NameParser(False, show_object=obj.show).parse(obj.name)
     except (InvalidNameException, InvalidShowException) as error:
         logger.debug(f"{error}")
         return []
@@ -149,7 +149,7 @@ def split_result(obj):
 
         # parse the name
         try:
-            parsed_obj = NameParser(False, showObj=obj.show).parse(new_nzb)
+            parsed_obj = NameParser(False, show_object=obj.show).parse(new_nzb)
         except (InvalidNameException, InvalidShowException) as error:
             logger.debug(f"{error}")
             return []

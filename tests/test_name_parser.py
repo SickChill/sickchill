@@ -176,7 +176,7 @@ class UnicodeTests(conftest.SickChillTestDBCase):
         :param result:
         :return:
         """
-        name_parser = parser.NameParser(True, showObj=self.show)
+        name_parser = parser.NameParser(True, show_object=self.show)
         parse_result = name_parser.parse(name)
 
         # this shouldn't raise an exception
@@ -303,7 +303,7 @@ class BasicTests(conftest.SickChillTestDBCase):
             result = SIMPLE_TEST_CASES[section][cur_test_base]
 
             self.show.name = result.series_name if result else None
-            name_parser.showObj = self.show
+            name_parser.show_object = self.show
             if not result:
                 self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
                 return
@@ -475,7 +475,7 @@ class AnimeTests(conftest.SickChillTestDBCase):
             result = ANIME_TEST_CASES[section][cur_test_base]
 
             self.show.name = result.series_name if result else None
-            name_parser.showObj = self.show
+            name_parser.show_object = self.show
             if not result:
                 self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
                 return
@@ -554,7 +554,7 @@ class BasicFailedTests(conftest.SickChillTestDBCase):
             result = SIMPLE_TEST_CASES[section][cur_test_base]
 
             self.show.name = result.series_name if result else None
-            name_parser.showObj = self.show
+            name_parser.show_object = self.show
             if not result:
                 self.assertRaises(parser.InvalidNameException, name_parser.parse, cur_test)
                 return

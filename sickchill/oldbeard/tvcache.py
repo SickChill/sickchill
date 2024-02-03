@@ -346,7 +346,7 @@ class TVCache(RSSTorrentMixin):
                 show_obj = Show.find(settings.showList, indexer_id)
 
             try:
-                parse_result = NameParser(showObj=show_obj).parse(name)
+                parse_result = NameParser(show_object=show_obj).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.debug(f"{error}")
                 return None

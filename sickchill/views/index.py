@@ -8,9 +8,11 @@ from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
 from secrets import compare_digest
+from typing import Any, TYPE_CHECKING
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
+from tornado import httputil
 from tornado.concurrent import run_on_executor
 from tornado.web import authenticated, HTTPError, RequestHandler
 
@@ -32,8 +34,22 @@ try:
 except Exception:
     has_cryptography = False
 
+if TYPE_CHECKING:
+    from tornado.web import Application
+
 
 class BaseHandler(RequestHandler):
+    def __init__(
+        self,
+        application: "Application",
+        request: httputil.HTTPServerRequest,
+        **kwargs: Any,
+    ):
+        super().__init__(application, request, **kwargs)
+        self.startTime = None
+        self.to_change_show = None
+        self.to_change_eps = None
+
     def data_received(self, chunk):
         pass
 

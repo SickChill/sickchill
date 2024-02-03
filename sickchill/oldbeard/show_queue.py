@@ -418,7 +418,7 @@ class QueueItemAdd(ShowQueueItem):
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
                 existing_show = Show.find(settings.showList, self.indexer_id)
                 # noinspection PyProtectedMember
-                if existing_show and not os.path.isdir(existing_show._location):
+                if existing_show and not os.path.isdir(existing_show.get_location):
                     new_show = existing_show
                 else:
                     raise error
@@ -743,7 +743,7 @@ class QueueItemRemove(ShowQueueItem):
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
 
             # do the library update for Synology Indexer
-            notifiers.synoindex_notifier.addFolder(self.show._location)
+            notifiers.synoindex_notifier.addFolder(self.show.get_location)
 
             # do the library update for pyTivo
             notifiers.pytivo_notifier.update_library(self.show)

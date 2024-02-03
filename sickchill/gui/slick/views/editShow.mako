@@ -79,7 +79,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="hidden" name="show" id="showID" value="${show.indexerid}" />
-                                        <input type="text" name="location" id="location" value="${show._location}"
+                                        <input type="text" name="location" id="location" value="${show.get_location}"
                                                class="form-control input-sm input350"
                                                autocapitalize="off" title="Location" />
                                     </div>

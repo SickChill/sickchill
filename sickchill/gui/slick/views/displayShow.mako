@@ -404,9 +404,9 @@
                         (season_number, episode_number) = (default_season, default_episode)
                         default_episode_numbering = True
 
-                    epLoc = epResult["location"]
-                    if epLoc and show._location and epLoc.lower().startswith(show._location.lower()):
-                        epLoc = epLoc[len(show._location)+1:]
+                    episode_location = epResult["location"]
+                    if episode_location and show.get_location and episode_location.lower().startswith(show.get_location.lower()):
+                        episode_location = episode_location[len(show.get_location)+1:]
                 %>
                 % if int(epResult["season"]) != curSeason:
                     % if epResult["season"] != sql_results[0]["season"]:
@@ -485,8 +485,8 @@
                         <td class="text-center episode">
                             <%
                                 text = str(epResult['episode'])
-                                if epLoc:
-                                    text = '<span title="' + epLoc + '" class="addQTip">' + text + "</span>"
+                                if episode_location:
+                                    text = '<span title="' + episode_location + '" class="addQTip">' + text + "</span>"
                             %>
                         ${text}
                         </td>
@@ -523,7 +523,7 @@
                             % endif
                             ${epResult["name"]}
                         </td>
-                        <td class="col-name location">${epLoc}</td>
+                        <td class="col-name location">${episode_location}</td>
                         <td class="col-ep size">
                             % if epResult["file_size"]:
                             ${pretty_file_size(epResult["file_size"])}

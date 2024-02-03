@@ -109,7 +109,7 @@
                                     <td class="text-center">${statusStrings[curShow.default_ep_status]}</td>
                                     <td class="text-center">${_(curShow.status)}</td>
 
-                                    <td class="text-center">${curShow._location.rsplit('\\', 1)[0]}</td>
+                                    <td class="text-center">${curShow.get_location.rsplit('\\', 1)[0]}</td>
                                     <td class="text-center">
                                         <% disabled = settings.showQueueScheduler.action.is_being_updated(curShow) or settings.showQueueScheduler.action.is_in_update_queue(curShow) %>
                                         <label for="update-${curShow.indexerid}" class="sr-only">${_('Update')} ${curShow.name}</label>

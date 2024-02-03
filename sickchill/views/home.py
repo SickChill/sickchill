@@ -94,7 +94,7 @@ class Home(WebRoot):
             anime = []
             for show in settings.showList:
                 # noinspection PyProtectedMember
-                if selected_root_dir in show._location:
+                if selected_root_dir in show.get_location:
                     if show.is_anime:
                         anime.append(show)
                     else:
@@ -108,7 +108,7 @@ class Home(WebRoot):
             shows = []
             for show in settings.showList:
                 # noinspection PyProtectedMember
-                if selected_root_dir in show._location:
+                if selected_root_dir in show.get_location:
                     shows.append(show)
 
             sortedShowLists = [["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))]]
@@ -569,7 +569,7 @@ class Home(WebRoot):
     @staticmethod
     def loadShowNotifyLists():
         main_db_con = db.DBConnection()
-        rows = main_db_con.select("SELECT indexer_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
+        rows = main_db_con.select("SELECT indexer_id, show_name, notify_list FROM tv_shows ORDER BY show_name")
 
         data = {}
         size = 0
@@ -786,8 +786,7 @@ class Home(WebRoot):
         try:
             showLoc = (show_obj.location, True)
         except ShowDirectoryNotFoundException:
-            # noinspection PyProtectedMember
-            showLoc = (show_obj._location, False)
+            showLoc = (show_obj.get_location, False)
 
         show_message = ""
 
@@ -1221,12 +1220,12 @@ class Home(WebRoot):
             if not directCall:
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
-                location = self.get_argument("location", show_obj._location)
+                location = self.get_argument("location", show_obj.get_location)
 
             location = os.path.normpath(location)
 
             # noinspection PyProtectedMember
-            old_location = os.path.normpath(show_obj._location)
+            old_location = os.path.normpath(show_obj.get_location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if old_location != location:
                 logger.debug(old_location + " != " + location)
@@ -1325,7 +1324,7 @@ class Home(WebRoot):
 
     def refreshShow(self):
         show = self.get_query_argument("show")
-        force = self.get_query_argument("force", default=False)
+        force = bool(try_int(self.get_query_argument("force", default="0")))
 
         error, show = Show.refresh(show, force)
 
@@ -1343,7 +1342,7 @@ class Home(WebRoot):
 
     def updateShow(self):
         show = self.get_query_argument("show")
-        force = self.get_query_argument("force", default=False)
+        force = bool(try_int(self.get_query_argument("force", default="0")))
 
         if not show:
             return self._genericMessage(_("Error"), _("Invalid show ID"))
@@ -1584,7 +1583,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location
+            show_obj.location()
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
@@ -1615,9 +1614,7 @@ class Home(WebRoot):
             ep_info = cur_ep.split("x")
 
             # this is probably the worst possible way to deal with double eps but I've kinda painted myself into a corner here with this stupid database
-            ep_result = main_db_con.select(
-                "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5", [show, ep_info[0], ep_info[1]]
-            )
+            ep_result = main_db_con.select("SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", [show, ep_info[0], ep_info[1]])
             if not ep_result:
                 logger.warning(f"Unable to find an episode for {show}: {cur_ep} , skipping")
                 continue
@@ -1763,7 +1760,7 @@ class Home(WebRoot):
                         "status": statusStrings[search_thread.segment.status],
                         "quality": self.getQualityClass(search_thread.segment),
                         "overview": Overview.overviewStrings[show_obj.get_overview(search_thread.segment.status)],
-                        "location": relative_ep_location(search_thread.segment._location, show_obj._location),
+                        "location": relative_ep_location(search_thread.segment.location, show_obj.get_location),
                         "size": pretty_file_size(search_thread.segment.file_size) if search_thread.segment.file_size else "",
                     }
                 )
@@ -1780,7 +1777,7 @@ class Home(WebRoot):
                             "status": statusStrings[episode_object.status],
                             "quality": self.getQualityClass(episode_object),
                             "overview": Overview.overviewStrings[show_obj.get_overview(episode_object.status)],
-                            "location": relative_ep_location(episode_object._location, show_obj._location),
+                            "location": relative_ep_location(episode_object.location, show_obj.get_location),
                             "size": pretty_file_size(episode_object.file_size) if episode_object.file_size else "",
                         }
                     )

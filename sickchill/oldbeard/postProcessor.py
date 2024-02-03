@@ -4,8 +4,9 @@ import os
 import re
 import stat
 import subprocess
+from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
+from typing import List, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from processTV import ParseResult
@@ -99,7 +100,7 @@ class PostProcessor(object):
     def _checkForExistingFile(self, existing_file):
         """
         Checks if a file exists already and if it does whether it's bigger or smaller than
-        the file we are post processing
+        the file we are post-processing
 
         ;param existing_file: The file to compare to
 
@@ -137,6 +138,9 @@ class PostProcessor(object):
         """
         For a given file path searches for files with the same name but different extension and returns their absolute paths
 
+        :param subtitles_only: only look for subtitles
+        :param subfolders: check in subfolders
+        :param rename: if we are looking for all files to rename
         :param file_path: The file to check for associated files
         :return: A list containing all files which are associated to the given file
         """
@@ -264,7 +268,7 @@ class PostProcessor(object):
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.deleteFile(cur_file)
 
-    def _combined_file_operation(self, file_path, new_path, new_base_name, associated_files=False, action=None, subtitles=False):
+    def _combined_file_operation(self, file_path, new_path: str, new_base_name, associated_files=False, action=None, subtitles=False):
         """
         Performs a generic operation (move or copy) on a file. Can rename the file as well as change its location,
         and optionally move associated files too.
@@ -412,7 +416,7 @@ class PostProcessor(object):
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_hard_link, subtitles=subtitles)
 
-    def _moveAndSymlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
+    def _move_and_symlink(self, file_path, new_path, new_base_name, associated_files=False, subtitles=False):
         """
         Move file, symlink source location back to destination, and set proper permissions
 
@@ -606,17 +610,17 @@ class PostProcessor(object):
         return to_return
 
     @staticmethod
-    def _build_anidb_episode(connection, filePath):
+    def _build_anidb_episode(connection, file_path):
         """
         Look up anidb properties for an episode
 
         :param connection: anidb connection handler
-        :param filePath: file to check
+        :param file_path: file to check
         :return: episode object
         """
         ep = adba.Episode(
             connection,
-            file_path=Path(filePath),
+            file_path=Path(file_path),
             paramsF=["quality", "anidb_file_name", "crc32"],
             paramsA=["epno", "english_name", "short_name_list", "other_name", "synonym_list"],
         )
@@ -647,7 +651,7 @@ class PostProcessor(object):
         """
 
         show = season = quality = version = None
-        episodes = []
+        episodes: Union[List[int], List[datetime]] = []
 
         # try to look up the release in history
         attempt_list = [
@@ -728,10 +732,10 @@ class PostProcessor(object):
             # if there's no season then we can hopefully just use 1 automatically
             elif season is None and show:
                 main_db_con = db.DBConnection()
-                numseasonsSQlResult = main_db_con.select(
-                    "SELECT COUNT(DISTINCT season) FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0", [show.indexerid, show.indexer]
+                total_seasons_sql_result = main_db_con.select(
+                    "SELECT COUNT(DISTINCT season) as count FROM tv_episodes WHERE showid = ? and indexer = ? and season != 0", [show.indexerid, show.indexer]
                 )
-                if int(numseasonsSQlResult[0][0]) == 1 and season is None:
+                if int(total_seasons_sql_result[0]["count"]) == 1 and season is None:
                     self._log(_("Don't have a season number, but this show appears to only have 1 season, setting season number to 1..."), logger.DEBUG)
                     season = 1
 
@@ -989,9 +993,11 @@ class PostProcessor(object):
             # Only proceed if the file season is > 0
             if int(episode_object.season) > 0:
                 main_db_con = db.DBConnection()
-                max_season = main_db_con.select("SELECT MAX(season) FROM tv_episodes WHERE showid = ? and indexer = ?", [show.indexerid, show.indexer])
+                max_season = main_db_con.select(
+                    "SELECT MAX(season) as last_season FROM tv_episodes WHERE showid = ? and indexer = ?", [show.indexerid, show.indexer]
+                )
 
-                if not isinstance(max_season[0][0], int) or max_season[0][0] < 0:
+                if not isinstance(max_season[0]["last_season"], int) or max_season[0]["last_season"] < 0:
                     self._log(
                         f"File has season {episode_object.season}, while the database does not have any known seasons yet. "
                         "Try forcing a full update on the show and process this file again. "
@@ -1000,15 +1006,15 @@ class PostProcessor(object):
                     return False
 
                 # If the file season (episode_object.season) is bigger than the indexer season (max_season[0][0]), skip the file
-                newest_season_num = max_season[0][0]
+                newest_season = max_season[0]["last_season"]
                 episode_season = episode_object.season
-                if int(episode_season) > newest_season_num:
+                if int(episode_season) > newest_season:
                     self._log(
                         _(
-                            "File has season {episode_season}, while the indexer is on season {newest_season_num}. "
+                            "File has season {episode_season}, while the indexer is on season {newest_season}. "
                             "Try forcing a full update on the show and process this file again. "
                             "The file may be incorrectly labeled or fake, aborting."
-                        ).format(episode_season=episode_season, newest_season_num=newest_season_num)
+                        ).format(episode_season=episode_season, newest_season_num=newest_season)
                     )
                     return False
 
@@ -1020,7 +1026,7 @@ class PostProcessor(object):
         if settings.USE_FREE_SPACE_CHECK:
             if not helpers.is_file_locked(self.directory):
                 if not verify_freespace(
-                    self.directory, episode_object.show._location, [episode_object] + episode_object.related_episodes, method=self.process_method
+                    self.directory, episode_object.show.get_location, [episode_object] + episode_object.related_episodes, method=self.process_method
                 ):
                     self._log(_("Not enough disk space to continue processing, exiting"), logger.WARNING)
                     return False
@@ -1034,7 +1040,7 @@ class PostProcessor(object):
 
                 # clean up any left over folders
                 if cur_ep.location:
-                    helpers.delete_empty_folders(os.path.dirname(cur_ep.location), keep_dir=episode_object.show._location)
+                    helpers.delete_empty_folders(os.path.dirname(cur_ep.location), keep_dir=episode_object.show.get_location)
 
                 # clean up download-related properties
                 cur_ep.cleanup_download_properties()
@@ -1046,16 +1052,16 @@ class PostProcessor(object):
             #    curEp.status = common.Quality.compositeStatus(common.SNATCHED, new_ep_quality)
 
         # if the show directory doesn't exist then make it if allowed
-        if not os.path.isdir(episode_object.show._location) and settings.CREATE_MISSING_SHOW_DIRS:
+        if not os.path.isdir(episode_object.show.get_location) and settings.CREATE_MISSING_SHOW_DIRS:
             self._log(_("Show directory doesn't exist, creating it"), logger.DEBUG)
             try:
-                os.mkdir(episode_object.show._location)
-                helpers.chmodAsParent(episode_object.show._location)
+                os.mkdir(episode_object.show.get_location)
+                helpers.chmodAsParent(episode_object.show.get_location)
 
                 # do the library update for synoindex
-                notifiers.synoindex_notifier.addFolder(episode_object.show._location)
+                notifiers.synoindex_notifier.addFolder(episode_object.show.get_location)
             except (OSError, IOError):
-                raise EpisodePostProcessingFailedException(_("Unable to create the show directory: ") + episode_object.show._location)
+                raise EpisodePostProcessingFailedException(_("Unable to create the show directory: ") + episode_object.show.get_location)
 
             # get metadata for the show (but not episode because it hasn't been fully processed)
             episode_object.show.write_metadata(True)
@@ -1117,7 +1123,7 @@ class PostProcessor(object):
 
         # figure out the base name of the resulting episode file
         if settings.RENAME_EPISODES:
-            old_path = Path(self.filename)
+            old_path = Path(str(self.filename))
             orig_extension = old_path.suffix
             new_base_name = os.path.basename(proper_path)
             new_filename = f"{new_base_name}{orig_extension}"
@@ -1147,7 +1153,7 @@ class PostProcessor(object):
             elif self.process_method == METHOD_SYMLINK:
                 if helpers.is_file_locked(self.directory, True):
                     raise EpisodePostProcessingFailedException(_("File is locked for reading/writing"))
-                self._moveAndSymlink(
+                self._move_and_symlink(
                     self.directory, dest_path, new_base_name, settings.MOVE_ASSOCIATED_FILES, settings.USE_SUBTITLES and episode_object.show.subtitles
                 )
             elif self.process_method == METHOD_SYMLINK_REVERSED:
@@ -1177,7 +1183,7 @@ class PostProcessor(object):
         episode_object.airdate_modify_stamp()
 
         if settings.USE_ICACLS and os.name == "nt":
-            os.popen(f'icacls "{episode_object._location}"* /reset /T')
+            os.popen(f'icacls "{episode_object.location}"* /reset /T')
 
         # generate nfo/tbn
         try:
@@ -1232,10 +1238,10 @@ def guessit_findit(name: str) -> Union["ParseResult", None]:
     logger.debug(f"Trying a new way to verify if we can parse this file")
     title = guessit(name, {"type": "episode"}).get("title")
     if title:
-        show: "TVShow" = helpers.get_show(title, False)
+        show: "TVShow" = helpers.get_show(title)
         if show:
             try:
-                np = NameParser(showObj=show).parse(name, cache_result=False)
+                np = NameParser(show_object=show).parse(name, cache_result=False)
                 return np
             except (InvalidNameException, InvalidShowException) as error:
                 logger.debug(f"Sorry, guessit failed to parse the file name for {show}: {name} (Error: {error} ... continuing with the old way")
