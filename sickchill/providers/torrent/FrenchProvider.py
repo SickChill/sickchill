@@ -62,15 +62,18 @@ class FrenchTorrentProvider(TorrentProvider):
 
         return ""
 
-    def _get_custom_url(self):
+    @property
+    def custom_url(self):
         return self._custom_url
 
-    def _set_custom_url(self, url):
+    @custom_url.setter
+    def custom_url(self, url):
         if self._custom_url != url:
             self._custom_url = url
             self._recheck_url = True
 
-    def _get_provider_url(self):
+    @property
+    def url(self):
         if self._recheck_url:
             if self.custom_url:
                 if self.valid_url(self.custom_url):
@@ -82,13 +85,9 @@ class FrenchTorrentProvider(TorrentProvider):
 
         return self._used_url
 
-    def _set_provider_url(self, url):
+    @url.setter
+    def url(self, url):
         self._used_url = url
-
-    # noinspection PyTypeChecker
-    url = property(_get_provider_url, _set_provider_url)
-    # noinspection PyTypeChecker
-    custom_url = property(_get_custom_url, _set_custom_url)
 
     def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
         search_string = {"Season": set()}
