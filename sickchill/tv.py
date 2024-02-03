@@ -15,7 +15,6 @@ from xml.etree import ElementTree
 
 import imdb
 from imdb import Cinemagoer
-
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
@@ -487,9 +486,7 @@ class TVShow(object):
                 episode_object.load_from_db(season, episode)
                 scanned_episodes[season][episode] = True
             except EpisodeDeletedException:
-                logger.debug(
-                    f"{showid}: Tried loading {show_name} {episode_num(season, episode)} from the DB that should have been deleted, skipping it"
-                )
+                logger.debug(f"{showid}: Tried loading {show_name} {episode_num(season, episode)} from the DB that should have been deleted, skipping it")
                 continue
 
         if show_name and showid:
@@ -571,7 +568,9 @@ class TVShow(object):
         logger.debug(f"{self.indexerid}: Creating episode object from {filepath}")
 
         try:
-            parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=("normal", "anime")[self.is_anime]).parse(filepath, skip_scene_detection=True)
+            parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=("normal", "anime")[self.is_anime]).parse(
+                filepath, skip_scene_detection=True
+            )
         except (InvalidNameException, InvalidShowException) as error:
             logger.debug(f"{self.indexerid}: {error}")
             return None
@@ -635,7 +634,9 @@ class TVShow(object):
             # if they replace a file on me, I'll make some attempt at re-checking the quality unless I know it's the same file
             if check_quality_again and not same_file:
                 new_quality = Quality.nameQuality(filepath, self.is_anime)
-                logger.debug(f"{self.indexerid}: Since this file has been renamed, I checked {filepath} and found quality {Quality.qualityStrings[new_quality]}")
+                logger.debug(
+                    f"{self.indexerid}: Since this file has been renamed, I checked {filepath} and found quality {Quality.qualityStrings[new_quality]}"
+                )
 
                 with episode.lock:
                     episode.status = Quality.compositeStatus(DOWNLOADED, new_quality)
@@ -1763,7 +1764,7 @@ class TVEpisode(object):
                         or int(ep_details.findtext("episode")) != self.episode
                     ):
                         ep_string = episode_num(self.season, self.episode)
-                        other_string = episode_num(ep_details.findtext('season'), ep_details.findtext('episode'))
+                        other_string = episode_num(ep_details.findtext("season"), ep_details.findtext("episode"))
                         logger.debug(
                             f"{self.show.indexerid}: NFO has an <episodedetails> block for a different episode - wanted {ep_string} but got {other_string}"
                         )
@@ -2490,7 +2491,7 @@ class TVEpisode(object):
         current_path = absolute_current_path_no_ext
 
         if absolute_current_path_no_ext.startswith(self.show.location):
-            current_path = absolute_current_path_no_ext[len(self.show.location):]
+            current_path = absolute_current_path_no_ext[len(self.show.location) :]
 
         logger.debug(f"Renaming/moving episode from the base path {self.location} to {absolute_proper_path}")
 
