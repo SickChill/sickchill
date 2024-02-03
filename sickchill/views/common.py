@@ -43,7 +43,7 @@ class PageTemplate(Template):
         self.context["sbHandleReverseProxy"] = settings.HANDLE_REVERSE_PROXY
         self.context["sbDefaultPage"] = settings.DEFAULT_PAGE
         self.context["scLogin"] = rh.get_current_user()
-        self.context["sbStartTime"] = rh.startTime
+        self.context["scStartTime"] = rh.startTime
         self.context["static_url"] = rh.static_url
         self.context["reverse_url"] = rh.reverse_url
         self.context["linkify"] = linkify

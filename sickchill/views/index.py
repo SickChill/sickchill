@@ -39,16 +39,6 @@ if TYPE_CHECKING:
 
 
 class BaseHandler(RequestHandler):
-    def __init__(
-        self,
-        application: "Application",
-        request: httputil.HTTPServerRequest,
-        **kwargs: Any,
-    ):
-        super().__init__(application, request, **kwargs)
-        self.startTime = None
-        self.to_change_show = None
-        self.to_change_eps = None
 
     def data_received(self, chunk):
         pass

@@ -382,7 +382,7 @@
                             % if resource:
                                 <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)}</span></span> |
                             % endif
-                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - sbStartTime)}s</span></span> |
+                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - scStartTime)}s</span></span> |
                             <span class="footer-item">Mako: <span class="footerhighlight">${"{:.4f}".format(time() - makoStartTime)}s</span></span> |
                             <span class="footer-item">${_('Version')}: <span class="footerhighlight">${get_current_version()}</span></span> |
                             <span class="footer-item">${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(settings.DATE_PRESET+" "+settings.TIME_PRESET)}</span></span>
