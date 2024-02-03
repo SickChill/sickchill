@@ -2599,6 +2599,9 @@ class TVEpisode(object):
                         f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
                     )
 
+                except OverflowError or ValueError as error:
+                    logger.warning(f"Date change error: {error}, raw air date time: {airdatetime}")
+
         except OSError:
             logger.warning(f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}'")
 
