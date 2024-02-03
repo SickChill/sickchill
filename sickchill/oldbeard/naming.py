@@ -161,7 +161,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
     logger.debug("Trying to parse " + new_name)
 
     try:
-        result = NameParser(True, showObj=ep.show, naming_pattern=True).parse(new_name)
+        result = NameParser(True, show_object=ep.show, naming_pattern=True).parse(new_name)
     except (InvalidNameException, InvalidShowException) as error:
         logger.debug(f"{error}")
         return False

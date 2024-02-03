@@ -78,14 +78,14 @@
                             % for current_episode in sorted(show.episodes[current_season], reverse=True):
                                 <%
                                     episode_object = show.episodes[current_season][current_episode]
-                                    if not (episode_object and episode_object._location):
+                                    if not (episode_object and episode_object.location):
                                         continue
 
                                     episode_list = episode_object.sorted_episode_list
                                     if episode_object.episode != min(episode_list):
                                         continue
 
-                                    location = episode_object.location[len(show._location)+1:]
+                                    location = episode_object.location[len(show.get_location)+1:]
                                     extension = location.split('.')[-1]
                                     new_location = episode_object.proper_path() + '.' + extension
                                 %>

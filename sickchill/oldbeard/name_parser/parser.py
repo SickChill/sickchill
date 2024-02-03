@@ -3,9 +3,10 @@ import os.path
 import re
 import time
 from collections import OrderedDict
+from datetime import date
 from operator import attrgetter
 from threading import Lock
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from dateutil.parser import parse
 
@@ -26,17 +27,17 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, filename: bool = True, showObj=None, tryIndexers: bool = False, naming_pattern: bool = False, parse_method: str = None):
+    def __init__(self, filename: bool = True, show_object=None, try_indexers: bool = False, naming_pattern: bool = False, parse_method: str = None):
         self.filename: bool = filename
-        self.showObj: TVShow = showObj
-        self.tryIndexers: bool = tryIndexers
+        self.show_object: TVShow = show_object
+        self.try_indexers: bool = try_indexers
         self.compiled_regexes: List = []
 
         self.naming_pattern = naming_pattern
 
-        if (self.showObj and not self.showObj.is_anime) or parse_method == "normal":
+        if (self.show_object and not self.show_object.is_anime) or parse_method == "normal":
             self._compile_regexes(self.NORMAL_REGEX)
-        elif (self.showObj and self.showObj.is_anime) or parse_method == "anime":
+        elif (self.show_object and self.show_object.is_anime) or parse_method == "anime":
             self._compile_regexes(self.ANIME_REGEX)
         else:
             self._compile_regexes(self.ALL_REGEX)
@@ -57,14 +58,14 @@ class NameParser(object):
         series_name = re.sub(r"\.(?!\s)(\D)", " \\1", series_name)
         series_name = series_name.replace("_", " ")
         series_name = re.sub(r"-$", "", series_name)
-        series_name = re.sub(r"^\[.*\]", "", series_name)
+        series_name = re.sub(r"^\[.*]", "", series_name)
         return series_name.strip()
 
-    def _compile_regexes(self, regexMode):
-        if regexMode == self.ANIME_REGEX:
+    def _compile_regexes(self, regex_mode):
+        if regex_mode == self.ANIME_REGEX:
             dbg_str = "ANIME"
             uncompiled_regex = [regexes.anime_regexes]
-        elif regexMode == self.NORMAL_REGEX:
+        elif regex_mode == self.NORMAL_REGEX:
             dbg_str = "NORMAL"
             uncompiled_regex = [regexes.normal_regexes]
         else:
@@ -75,8 +76,8 @@ class NameParser(object):
             for cur_pattern_num, (cur_pattern_name, cur_pattern) in enumerate(regexItem):
                 try:
                     cur_regex = re.compile(cur_pattern, re.VERBOSE | re.I)
-                except re.error as errormsg:
-                    logger.info(f"WARNING: Invalid episode_pattern using {dbg_str} regexs, {errormsg}. {cur_pattern}")
+                except re.error as error_message:
+                    logger.info(f"WARNING: Invalid episode_pattern using {dbg_str} regexes, {error_message}. {cur_pattern}")
                 else:
                     self.compiled_regexes.append((cur_pattern_num, cur_pattern_name, cur_regex))
 
@@ -145,11 +146,10 @@ class NameParser(object):
                     # Workaround for shows that get interpreted as 'air_date' incorrectly.
                     # Shows so far are 11.22.63 and 9-1-1
                     excluded_shows = ["112263", "911"]
-                    assert re.sub(r"[^\d]*", "", air_date) not in excluded_shows
+                    assert re.sub(r"\D*", "", air_date) not in excluded_shows
 
-                    # noinspection PyUnresolvedReferences
                     try:
-                        check = parse(air_date, fuzzy_with_tokens=True)[0].date()
+                        check: date = parse(air_date, fuzzy=True).date()
                         # Make sure a 20th century date isn't returned as a 21st century date
                         # 1 Year into the future (No releases should be coming out a year ahead of time, that's just insane)
                         if check > check.today() and (check - check.today()).days // 365 > 1:
@@ -157,7 +157,8 @@ class NameParser(object):
 
                         result.air_date = check
                         result.score += 1
-                    except:
+                    except Exception as error:
+                        logger.debug(error)
                         continue
                 except Exception as error:
                     logger.debug(error)
@@ -193,21 +194,21 @@ class NameParser(object):
         # matches = [x for x in matches if x.series_name]
 
         if matches:
-            # pick best match with highest score based on placement
+            # pick the best match with the highest score based on placement
             best_result = max(sorted(matches, reverse=True, key=attrgetter("which_regex")), key=attrgetter("score"))
 
             show = None
             if best_result and best_result.series_name and not self.naming_pattern:
                 # try and create a show object for this result
-                show = helpers.get_show(best_result.series_name, self.tryIndexers)
+                show = helpers.get_show(best_result.series_name, self.try_indexers)
 
             # confirm passed in show object indexer id matches result show object indexer id
             if show:
-                if self.showObj and show.indexerid != self.showObj.indexerid:
+                if self.show_object and show.indexerid != self.show_object.indexerid:
                     show = None
                 best_result.show = show
-            elif self.showObj and not show:
-                best_result.show = self.showObj
+            elif self.show_object and not show:
+                best_result.show = self.show_object
 
             # Only allow anime matches if resolved show or specified show is anime
             best_result = self.check_anime_preferred(best_result, matches)
@@ -241,10 +242,11 @@ class NameParser(object):
 
                 if season_number is None or not episode_numbers:
                     try:
-                        epObj = sickchill.indexer.episode(best_result.show, firstAired=best_result.air_date)
-                        season_number = epObj["airedSeason"]
-                        episode_numbers = [epObj["airedEpisode"]]
-                    except Exception:
+                        episode_object = sickchill.indexer.episode(best_result.show, firstAired=best_result.air_date)
+                        season_number = episode_object["airedSeason"]
+                        episode_numbers = [episode_object["airedEpisode"]]
+                    except Exception as error:
+                        logger.debug(error)
                         logger.warning(f"Unable to find episode with date {best_result.air_date} for show {best_result.show.name}, skipping")
                         episode_numbers = []
 
@@ -264,7 +266,7 @@ class NameParser(object):
 
                     if best_result.show.is_scene and not skip_scene_detection:
                         a = scene_numbering.get_indexer_absolute_numbering(
-                            best_result.show.indexerid, best_result.show.indexer, epAbsNo, True, best_result.scene_season
+                            best_result.show.indexerid, best_result.show.indexer, epAbsNo, scene_season=best_result.scene_season
                         )
 
                     (s, e) = helpers.get_all_episodes_from_absolute_number(best_result.show, [a])
@@ -288,7 +290,7 @@ class NameParser(object):
                     new_episode_numbers.append(e)
                     new_season_numbers.append(s)
 
-            # need to do a quick sanity check heregex.  It's possible that we now have episodes
+            # need to do a quick sanity check regex.  It's possible that we now have episodes
             # from more than one season (by tvdb numbering), and this is just too much
             # for oldbeard, so we'd need to flag it.
             new_season_numbers = list(set(new_season_numbers))  # remove duplicates
@@ -297,8 +299,7 @@ class NameParser(object):
                     f"Scene numbering results episodes from seasons {new_season_numbers}, (i.e. more than one) and sickchill does not support this. Sorry."
                 )
 
-            # I guess it's possible that we'd have duplicate episodes too, so lets
-            # eliminate them
+            # I guess it's possible that we'd have duplicate episodes too, so let's eliminate them
             new_episode_numbers = sorted(set(new_episode_numbers))
 
             # maybe even duplicate absolute numbers so why not do them as well
@@ -321,8 +322,8 @@ class NameParser(object):
         return best_result
 
     def check_anime_preferred(self, best_result, matches):
-        show = self.showObj or best_result.show
-        if (best_result.show and best_result.show.is_anime and not self.showObj) or (self.showObj and self.showObj.is_anime):
+        show = self.show_object or best_result.show
+        if (best_result.show and best_result.show.is_anime and not self.show_object) or (self.show_object and self.show_object.is_anime):
             anime_matches = [x for x in matches if "anime" in x.which_regex[0]]
             if anime_matches:
                 best_result_anime = max(sorted(anime_matches, reverse=True, key=attrgetter("which_regex")), key=attrgetter("score"))
@@ -335,7 +336,7 @@ class NameParser(object):
         return best_result
 
     @staticmethod
-    def _combine_results(first, second, attr):
+    def _combine_results(first: Any, second: Any, attr: str) -> Any:
         # if the first doesn't exist then return the second or nothing
         if not first:
             if not second:
@@ -347,18 +348,18 @@ class NameParser(object):
         if not second:
             return getattr(first, attr)
 
-        a = getattr(first, attr)
-        b = getattr(second, attr)
+        first_value = getattr(first, attr)
+        second_value = getattr(second, attr)
 
-        # if a is good use it
-        if a is not None or (isinstance(a, list) and a):
-            return a
-        # if not use b (if b isn't set it'll just be default)
+        # if first_value is good use it
+        if first_value is not None or (isinstance(first_value, list) and first_value):
+            return first_value
+        # if not use second_value (if second_value isn't set it'll just be default)
         else:
-            return b
+            return second_value
 
     @staticmethod
-    def _unicodify(obj, encoding="utf-8"):
+    def _to_unicode(obj, encoding="utf-8"):
         if isinstance(obj, bytes):
             obj = str(obj, encoding, "replace")
         return obj
@@ -379,7 +380,8 @@ class NameParser(object):
             else:
                 number = 0
 
-        except Exception:
+        except Exception as error:
+            logger.debug(error)
             # on error try converting from Roman numerals
             roman_to_int_map = (
                 ("M", 1000),
@@ -409,7 +411,7 @@ class NameParser(object):
         return number
 
     def parse(self, name, cache_result=True, skip_scene_detection=False):
-        name = self._unicodify(name)
+        name = self._to_unicode(name)
 
         if self.naming_pattern:
             cache_result = False
@@ -583,7 +585,7 @@ class ParseResult(object):
 
         to_return += f" [ABD: {self.is_air_by_date}] [ANIME: {self.is_anime}] [whichReg: {self.which_regex}] Score: {self.score}"
 
-        return re.sub(r"[ ]+", " ", to_return)
+        return re.sub(r" +", " ", to_return)
 
     @property
     def is_air_by_date(self):

@@ -200,6 +200,10 @@ class TVShow(object):
         else:
             raise NoNFOException("Invalid folder for the show!")
 
+    @property
+    def get_location(self):
+        return self._location
+
     def flush_episodes(self):
         for current_season in self.episodes:
             self.episodes[current_season].clear()
@@ -427,7 +431,7 @@ class TVShow(object):
             ep_filename = os.path.splitext(ep_filename)[0]
 
             try:
-                parse_result = NameParser(False, showObj=self, tryIndexers=True).parse(ep_filename)
+                parse_result = NameParser(False, show_object=self, try_indexers=True).parse(ep_filename)
             except (InvalidNameException, InvalidShowException):
                 parse_result = None
 
@@ -568,7 +572,7 @@ class TVShow(object):
         logger.debug(f"{self.indexerid}: Creating episode object from {filepath}")
 
         try:
-            parse_result = NameParser(showObj=self, tryIndexers=True, parse_method=("normal", "anime")[self.is_anime]).parse(
+            parse_result = NameParser(show_object=self, try_indexers=True, parse_method=("normal", "anime")[self.is_anime]).parse(
                 filepath, skip_scene_detection=True
             )
         except (InvalidNameException, InvalidShowException) as error:
@@ -1682,8 +1686,8 @@ class TVEpisode(object):
                 self.delete_episode()
             return False
 
-        if not os.path.isdir(self.show._location) and not settings.CREATE_MISSING_SHOW_DIRS and not settings.ADD_SHOWS_WO_DIR:
-            logger.info(f"The show dir {self.show._location} is missing, not bothering to change the episode statuses since it'd probably be invalid")
+        if not os.path.isdir(self.show.get_location) and not settings.CREATE_MISSING_SHOW_DIRS and not settings.ADD_SHOWS_WO_DIR:
+            logger.info(f"The show dir {self.show.get_location} is missing, not bothering to change the episode statuses since it'd probably be invalid")
             return
 
         if self.location:
@@ -1729,7 +1733,7 @@ class TVEpisode(object):
             self.status = UNKNOWN
 
     def load_from_nfo(self, location):
-        if not os.path.isdir(self.show._location):
+        if not os.path.isdir(self.show.get_location):
             logger.info(f"{self.show.indexerid}: The show dir is missing, not bothering to try loading the episode NFO")
             return
 
@@ -1821,7 +1825,7 @@ class TVEpisode(object):
         )
 
     def create_meta_files(self):
-        if not os.path.isdir(self.show._location):
+        if not os.path.isdir(self.show.get_location):
             logger.info(f"{self.show.indexerid}: The show dir is missing, not bothering to try to create metadata")
             return
 
@@ -2130,7 +2134,7 @@ class TVEpisode(object):
                 return ""
 
             try:
-                parse_result = NameParser(name, showObj=show, naming_pattern=True).parse(name)
+                parse_result = NameParser(name, show_object=show, naming_pattern=True).parse(name)
             except (InvalidNameException, InvalidShowException) as error:
                 logger.debug(f"Unable to get parse release_group: {error}")
                 return ""

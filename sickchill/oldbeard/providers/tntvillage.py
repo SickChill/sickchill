@@ -231,7 +231,7 @@ class Provider(TorrentProvider):
     @staticmethod
     def _is_season_pack(name):
         try:
-            parse_result = NameParser(tryIndexers=True).parse(name)
+            parse_result = NameParser(try_indexers=True).parse(name)
         except (InvalidNameException, InvalidShowException) as error:
             logger.debug(f"{error}")
             return False
