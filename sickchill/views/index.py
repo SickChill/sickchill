@@ -39,7 +39,6 @@ if TYPE_CHECKING:
 
 
 class BaseHandler(RequestHandler):
-
     def data_received(self, chunk):
         pass
 
