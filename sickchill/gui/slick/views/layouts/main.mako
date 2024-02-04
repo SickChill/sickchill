@@ -120,19 +120,19 @@
         <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <%
-                    numCombined = numErrors + numWarnings + settings.NEWS_UNREAD
-                    if numCombined:
-                        if numErrors:
+                    total_warning_error_count = error_count + warning_count + settings.NEWS_UNREAD
+                    if total_warning_error_count:
+                        if error_count:
                             toolsBadgeClass = ' btn-danger'
-                        elif numWarnings:
+                        elif warning_count:
                             toolsBadgeClass = ' btn-warning'
                         else:
                             toolsBadgeClass = ''
                 %>
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapsible-navbar">
-                        % if numCombined:
-                            <span class="floating-badge${ toolsBadgeClass }">${ str(numCombined) }</span>
+                        % if total_warning_error_count:
+                            <span class="floating-badge${ toolsBadgeClass }">${ str(total_warning_error_count) }</span>
                         % endif
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
@@ -142,7 +142,7 @@
                     <a class="navbar-brand" href="${static_url('home/', include_version=False)}" title="SickChill"><img alt="SickChill" src="${static_url('images/sickchill.png')}"
                                                                                  class="img-responsive pull-left" /></a>
                 </div>
-                % if scLogin:
+                % if current_user:
                     <div class="collapse navbar-collapse" id="collapsible-navbar">
                         <ul class="nav navbar-nav navbar-right">
                             <%block name="navbar" />
@@ -243,8 +243,8 @@
                                 else:
                                     newsBadge = ''
 
-                                if numCombined:
-                                    toolsBadge = ' <span class="badge'+toolsBadgeClass+'">'+str(numCombined)+'</span>'
+                                if total_warning_error_count:
+                                    toolsBadge = ' <span class="badge'+toolsBadgeClass+'">'+str(total_warning_error_count)+'</span>'
                                 else:
                                     toolsBadge = ''
                             %>
@@ -260,26 +260,26 @@
                                     <li><a href="${static_url('changes/', include_version=False)}"><i class="fa fa-fw fa-globe"></i>&nbsp;${_('Changelog')}</a></li>
                                     <li><a href="${anon_url('https://github.com/SickChill/SickChill/wiki/Donations')}" rel="noreferrer" target="_blank"><i class="fa fa-fw fa-life-ring"></i>&nbsp;${_('Support SickChill')}</a></li>
                                     <li role="separator" class="divider"></li>
-                                    %if numErrors:
-                                        <li><a href="${static_url('errorlogs/', include_version=False)}"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${numErrors}</span></a></li>
+                                    %if error_count:
+                                        <li><a href="${static_url('errorlogs/', include_version=False)}"><i class="fa fa-fw fa-exclamation-circle"></i>&nbsp;${_('View Errors')} <span class="badge btn-danger">${error_count}</span></a></li>
                                     %endif
-                                    %if numWarnings:
+                                    %if warning_count:
                                         <li>
                                           <a href="${static_url('errorlogs/?level={}'.format(logger.WARNING), include_version=False)}">
-                                            <i class="fa fa-fw fa-exclamation-triangle"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${numWarnings}</span>
+                                            <i class="fa fa-fw fa-exclamation-triangle"></i>&nbsp;${_('View Warnings')} <span class="badge btn-warning">${warning_count}</span>
                                           </a>
                                         </li>
                                     %endif
                                     <li><a href="${static_url('errorlogs/viewlog/', include_version=False)}"><i class="fa fa-fw fa-file-text-o"></i>&nbsp;${_('View Log')}</a></li>
                                     <li role="separator" class="divider"></li>
                                     % if hasattr(settings, "DISABLE_UPDATER") and not settings.DISABLE_UPDATER:
-                                    <li><a href="${static_url('home/updateCheck?pid={}'.format(scPID), include_version=False)}"><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
+                                    <li><a href="${static_url('home/updateCheck?pid={}'.format(process_id), include_version=False)}"><i class="fa fa-fw fa-wrench"></i>&nbsp;${_('Check For Updates')}</a></li>
                                     % endif
-                                    <li><a href="${static_url('home/restart/?pid={}'.format(scPID), include_version=False)}" class="confirm restart"><i
+                                    <li><a href="${static_url('home/restart/?pid={}'.format(process_id), include_version=False)}" class="confirm restart"><i
                                         class="fa fa-fw fa-repeat"></i>&nbsp;${_('Restart')}</a></li>
-                                    <li><a href="${static_url('home/shutdown/?pid={}'.format(scPID), include_version=False)}" class="confirm shutdown"><i
+                                    <li><a href="${static_url('home/shutdown/?pid={}'.format(process_id), include_version=False)}" class="confirm shutdown"><i
                                         class="fa fa-fw fa-power-off"></i>&nbsp;${_('Shutdown')}</a></li>
-                                    % if scLogin:
+                                    % if current_user:
                                         <li><a href="${static_url('logout', include_version=False)}" class="confirm logout"><i class="fa fa-fw fa-sign-out"></i>&nbsp;${_('Logout')}</a></li>
                                     % endif
                                     <li role="separator" class="divider"></li>
@@ -320,7 +320,7 @@
                     </div>
                 % endif
                 <div class="clearfix"></div>
-                % if scLogin:
+                % if current_user:
                     <div id="site-messages"></div>
                 % endif
             </div>
@@ -349,7 +349,7 @@
                 </div>
             </div>
 
-            % if scLogin:
+            % if current_user:
                 <div class="row">
                     <div class="footer clearfix col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
                         <%
@@ -382,8 +382,8 @@
                             % if resource:
                                 <span class="footer-item">${_('Memory used')}: <span class="footerhighlight">${pretty_file_size(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)}</span></span> |
                             % endif
-                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - scStartTime)}s</span></span> |
-                            <span class="footer-item">Mako: <span class="footerhighlight">${"{:.4f}".format(time() - makoStartTime)}s</span></span> |
+                            <span class="footer-item">${_('Load time')}: <span class="footerhighlight">${"{:.4f}".format(time() - page_load_start_time)}s</span></span> |
+                            <span class="footer-item">Mako: <span class="footerhighlight">${"{:.4f}".format(time() - mako_load_start_time)}s</span></span> |
                             <span class="footer-item">${_('Version')}: <span class="footerhighlight">${get_current_version()}</span></span> |
                             <span class="footer-item">${_('Now')}: <span class="footerhighlight">${datetime.datetime.now().strftime(settings.DATE_PRESET+" "+settings.TIME_PRESET)}</span></span>
                         </div>

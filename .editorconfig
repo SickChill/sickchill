@@ -1,15 +1,10 @@
-# top-most EditorConfig file
 root = true
 
-# Unix-style newlines with a newline ending every file
-# and trailing whitespace removed
 [*]
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-# Matches multiple files with brace expansion notation
-# Set default charset
 [*.{py,mako}]
 charset = utf-8
 indent_style = space
@@ -20,12 +15,9 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
-# Matches configuration files for services like Travis, AppVeyor and Codecov
 [*.yml]
 indent_style = space
 indent_size = 2
 
-[{package.json, bower.json, webpack.config.js}]
-charset = utf-8
-indent_style = space
+[{package.json,bower.json,webpack.config.js}]
 indent_size = 2
