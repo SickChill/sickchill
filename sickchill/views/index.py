@@ -45,7 +45,7 @@ class BaseHandler(RequestHandler):
 
     def initialize(self):
         super().initialize()
-        self.startTime = time.time()
+        self.page_load_start_time = time.time()
 
     def set_default_headers(self):
         self.set_header("X-Robots-Tag", "noindex")

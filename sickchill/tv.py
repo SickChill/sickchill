@@ -2568,46 +2568,43 @@ class TVEpisode(object):
         if not all([settings.AIRDATE_EPISODES, self.airdate, self.location, self.show, self.show.airs, self.show.network]):
             return
 
+        airdatetime = None
+
         try:
             airdate_ordinal = self.airdate.toordinal()
             if airdate_ordinal < 1:
                 return
 
             airdatetime = network_timezones.parse_date_time(airdate_ordinal, self.show.airs, self.show.network)
+            compare_tz = network_timezones.get_network_timezone(self.show.network)
 
             if settings.FILE_TIMESTAMP_TIMEZONE == "local":
+                compare_tz = network_timezones.sc_timezone
                 airdatetime = airdatetime.astimezone(network_timezones.sc_timezone)
 
-            filemtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=network_timezones.sc_timezone)
+            file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=compare_tz)
 
-            if filemtime != airdatetime:
+            if file_mtime != airdatetime:
                 airdatetime = airdatetime.timetuple()
                 logger.debug(
                     f"{self.show.indexerid}: About to modify date of '{self.location}' to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
                 )
-                try:
-                    if helpers.touchFile(self.location, time.mktime(airdatetime)):
-                        logger.info(
-                            f"{self.show.indexerid}: Changed modify date of '{os.path.basename(self.location)}' to "
-                            f"show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
-                        )
-                    else:
-                        logger.warning(
-                            f"{self.show.indexerid}: Unable to modify date of '{os.path.basename(self.location)}' "
-                            f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
-                        )
-
-                except OSError:
+                if helpers.touchFile(self.location, time.mktime(time.localtime(airdatetime))):
+                    logger.info(
+                        f"{self.show.indexerid}: Changed modify date of '{os.path.basename(self.location)}' to "
+                        f"show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
+                    )
+                else:
                     logger.warning(
-                        f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}' "
+                        f"{self.show.indexerid}: Unable to modify date of '{os.path.basename(self.location)}' "
                         f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}"
                     )
 
-                except OverflowError or ValueError as error:
-                    logger.warning(f"Date change error: {error}, raw air date time: {airdatetime}")
-
-        except OSError:
-            logger.warning(f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}'")
+        except (OSError, OverflowError, ValueError) as error:
+            logger.warning(
+                f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}' "
+                f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}, raw air date time: {airdatetime}: {error}"
+            )
 
     def cleanup_download_properties(self):
         """
