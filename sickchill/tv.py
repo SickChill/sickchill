@@ -2568,6 +2568,8 @@ class TVEpisode(object):
         if not all([settings.AIRDATE_EPISODES, self.airdate, self.location, self.show, self.show.airs, self.show.network]):
             return
 
+        airdatetime = None
+
         try:
             airdate_ordinal = self.airdate.toordinal()
             if airdate_ordinal < 1:
@@ -2599,8 +2601,8 @@ class TVEpisode(object):
 
         except (OSError, OverflowError, ValueError) as error:
             logger.warning(
-                f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}' "
-                f"to show air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}, raw air date time: {airdatetime}: {error}"
+                f"{self.show.indexerid}: Failed to modify date of '{os.path.basename(self.location)}' to show "
+                f"air date {time.strftime('%b %d,%Y (%H:%M)', airdatetime)}, raw air date time: {airdatetime}: {error}"
             )
 
     def cleanup_download_properties(self):
