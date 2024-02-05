@@ -296,4 +296,4 @@ kodipydent-alt = ">=2022.9.3"
 beekeeper-alt = ">=2022.9.3"
 
 stevedore = "^5.1.0"
-cachecontrol = "^0.13.1"
+cachecontrol = ">=0.13.1,<0.15.0"
