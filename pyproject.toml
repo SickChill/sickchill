@@ -85,12 +85,12 @@ optional = true
 
 [tool.poetry.group.types.dependencies]
 types-attrs = "^19.1.0"
-types-pyOpenSSL = ">=22.0.10,<24.0.0"
+types-pyOpenSSL = ">=22.0.10,<25.0.0"
 types-python-dateutil = "^2.8.19"
 types-python-slugify = ">=6.1,<9.0"
 types-requests = "^2.28.11"
 types-chardet = "^5.0.4"
-types-pytz = ">=2022.2.1,<2024.0.0"
+types-pytz = ">=2022.2.1,<2025.0.0"
 types-setuptools = ">=65.3,<70.0"
 types-six = "^1.16.20"
 
@@ -296,4 +296,4 @@ kodipydent-alt = ">=2022.9.3"
 beekeeper-alt = ">=2022.9.3"
 
 stevedore = "^5.1.0"
-cachecontrol = "^0.13.1"
+cachecontrol = ">=0.13.1,<0.15.0"
