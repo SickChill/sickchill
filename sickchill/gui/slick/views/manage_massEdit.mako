@@ -95,9 +95,9 @@
                                         <select id="qualityPreset" name="quality_preset" class="form-control form-control-inline input-sm" title="Quality Preset">
                                             <option value="keep">&lt; ${_('Keep')} &gt;</option>
                                             <% selected = None %>
-                                            <option value="0" ${selected(quality_value is not None and quality_value not in common.qualityPresets)}>${_('Custom')}</option>
+                                            <option value="0" ${('', 'selected')[quality_value is not None and quality_value not in common.qualityPresets]}>${_('Custom')}</option>
                                             % for curPreset in sorted(common.qualityPresets):
-                                                <option value="${curPreset}" ${selected(quality_value == curPreset)}>${common.qualityPresetStrings[curPreset]}</option>
+                                                <option value="${curPreset}" ${('', 'selected')[quality_value == curPreset]}>${common.qualityPresetStrings[curPreset]}</option>
                                             % endfor
                                         </select>
                                     </div>
@@ -108,7 +108,7 @@
                                                 <% anyQualityList = [x for x in common.Quality.qualityStrings if x > common.Quality.NONE] %>
                                                 <select id="anyQualities" name="anyQualities" multiple="multiple" size="${len(anyQualityList)}" class="form-control form-control-inline input-sm">
                                                     % for curQuality in sorted(anyQualityList):
-                                                        <option value="${curQuality}" ${selected(curQuality in anyQualities)}>${common.Quality.qualityStrings[curQuality]}</option>
+                                                        <option value="${curQuality}" ${('', 'selected')[curQuality in anyQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
                                                     % endfor
                                                 </select>
                                             </div>
@@ -118,7 +118,7 @@
                                                 <% bestQualityList = [x for x in common.Quality.qualityStrings if x >= common.Quality.SDTV] %>
                                                 <select id="bestQualities" name="bestQualities" multiple="multiple" size="${len(bestQualityList)}" class="form-control form-control-inline input-sm">
                                                     % for curQuality in sorted(bestQualityList):
-                                                        <option value="${curQuality}" ${selected(curQuality in bestQualities)}>${common.Quality.qualityStrings[curQuality]}</option>
+                                                        <option value="${curQuality}" ${('', 'selected')[curQuality in bestQualities]}>${common.Quality.qualityStrings[curQuality]}</option>
                                                     % endfor
                                                 </select>
                                             </div>
@@ -136,9 +136,9 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="season_folders" name="season_folders" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${selected(season_folders_value is None)}>&lt; ${_('Keep')} &gt;</option>
-                            <option value="enable" ${selected(season_folders_value == 1)}>${_('Yes')}</option>
-                            <option value="disable" ${selected(season_folders_value == 0)}>${_('No')}</option>
+                            <option value="keep" ${('', 'selected')[season_folders_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="enable" ${('', 'selected')[season_folders_value == 1]}>${_('Yes')}</option>
+                            <option value="disable" ${('', 'selected')[season_folders_value == 0]}>${_('No')}</option>
                         </select>
                         <label for="season_folders">${_('Group episodes by season folder (set to "No" to store in a single folder).')}</label>
                     </div>
@@ -150,9 +150,9 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_paused" name="paused" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${selected(paused_value is None)}>&lt; ${_('Keep')} &gt;</option>
-                            <option value="enable" ${selected(paused_value == 1)}>${_('Yes')}</option>
-                            <option value="disable" ${selected(paused_value == 0)}>${_('No')}</option>
+                            <option value="keep" ${('', 'selected')[paused_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="enable" ${('', 'selected')[paused_value == 1]}>${_('Yes')}</option>
+                            <option value="disable" ${('', 'selected')[paused_value == 0]}>${_('No')}</option>
                         </select>
                         <label for="edit_paused">${_('Pause these shows (SickChill will not download episodes).')}</label>
                     </div>
@@ -166,7 +166,7 @@
                         <select id="edit_default_ep_status" name="default_ep_status" class="form-control form-control-inline input-sm">
                             <option value="keep">&lt; Keep &gt;</option>
                             % for curStatus in [common.WANTED, common.SKIPPED, common.IGNORED]:
-                                <option value="${curStatus}" ${selected(curStatus == default_ep_status_value)}>${common.statusStrings[curStatus]}</option>
+                                <option value="${curStatus}" ${('', 'selected')[curStatus == default_ep_status_value]}>${common.statusStrings[curStatus]}</option>
                             % endfor
                         </select>
                         <label for="edit_default_ep_status">${_('This will set the status for future episodes.')}</label>
@@ -179,9 +179,9 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_scene" name="scene" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${selected(scene_value is None)}>&lt; ${_('Keep')} &gt;</option>
-                            <option value="enable" ${selected(scene_value == 1)}>${_('Yes')}</option>
-                            <option value="disable" ${selected(scene_value == 0)}>${_('No')}</option>
+                            <option value="keep" ${('', 'selected')[scene_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="enable" ${('', 'selected')[scene_value == 1]}>${_('Yes')}</option>
+                            <option value="disable" ${('', 'selected')[scene_value == 0]}>${_('No')}</option>
                         </select>
                         <label for="edit_scene">${_('Search by scene numbering (set to "No" to search by indexer numbering).')}</label>
                     </div>
@@ -193,9 +193,9 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_anime" name="anime" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${selected(anime_value is None)}>&lt; ${_('Keep')} &gt;</option>
-                            <option value="enable" ${selected(anime_value == 1)}>${_('Yes')}</option>
-                            <option value="disable" ${selected(anime_value == 0)}>${_('No')}</option>
+                            <option value="keep" ${('', 'selected')[anime_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="enable" ${('', 'selected')[anime_value == 1]}>${_('Yes')}</option>
+                            <option value="disable" ${('', 'selected')[anime_value == 0]}>${_('No')}</option>
                         </select><br>
                         <label for="edit_anime">${_('Set if these shows are Anime and episodes are released as Show.265 rather than Show.S02E03')}</label>
                     </div>
@@ -209,9 +209,9 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <select id="edit_sports" name="sports" class="form-control form-control-inline input-sm">
-                                    <option value="keep" ${selected(sports_value is None)}>&lt; ${_('Keep')} &gt;</option>
-                                    <option value="enable" ${selected(sports_value == 1)}>${_('Yes')}</option>
-                                    <option value="disable" ${selected(sports_value == 0)}>${_('No')}</option>
+                                    <option value="keep" ${('', 'selected')[sports_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                                    <option value="enable" ${('', 'selected')[sports_value == 1]}>${_('Yes')}</option>
+                                    <option value="disable" ${('', 'selected')[sports_value == 0]}>${_('No')}</option>
                                 </select>
                                 <label for="edit_sports">${_('Set if these shows are sporting or MMA events released as Show.03.02.2010 rather than Show.S02E03.')}</label>
                             </div>
@@ -232,9 +232,9 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <select id="edit_air_by_date" name="air_by_date" class="form-control form-control-inline input-sm">
-                                    <option value="keep" ${selected(air_by_date_value is None)}>&lt; ${_('Keep')} &gt;</option>
-                                    <option value="enable" ${selected(air_by_date_value == 1)}>${_('Yes')}</option>
-                                    <option value="disable" ${selected(air_by_date_value == 0)}>${_('No')}</option>
+                                    <option value="keep" ${('', 'selected')[air_by_date_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                                    <option value="enable" ${('', 'selected')[air_by_date_value == 1]}>${_('Yes')}</option>
+                                    <option value="disable" ${('', 'selected')[air_by_date_value == 0]}>${_('No')}</option>
                                 </select>
                                 <label for="edit_air_by_date">${_('Set if these shows are released as Show.03.02.2010 rather than Show.S02E03.')}</label>
                             </div>
@@ -253,9 +253,9 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_subtitles" name="subtitles" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${selected(subtitles_value is None)}>&lt; ${_('Keep')} &gt;</option>
-                            <option value="enable" ${selected(subtitles_value == 1)}>${_('Yes')}</option>
-                            <option value="disable" ${selected(subtitles_value == 0)}>${_('No')}</option>
+                            <option value="keep" ${('', 'selected')[subtitles_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="enable" ${('', 'selected')[subtitles_value == 1]}>${_('Yes')}</option>
+                            <option value="disable" ${('', 'selected')[subtitles_value == 0]}>${_('No')}</option>
                         </select><br>
                         <label for="edit_subtitles">${_('Search for subtitles.')}</label>
                     </div>
@@ -267,9 +267,9 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_ignore_words" name="ignore_words" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${selected(ignore_words_value is None)}>&lt; ${_('Keep')} &gt;</option>
-                            <option value="new" ${selected(ignore_words_value == 1)}>${_('New')}</option>
-                            <option value="clear" ${selected(ignore_words_value == 0)}>${_('Clear')}</option>
+                            <option value="keep" ${('', 'selected')[ignore_words_value is None]}>&lt; ${_('Keep')} &gt;</option>
+                            <option value="new" ${('', 'selected')[ignore_words_value == 1]}>${_('New')}</option>
+                            <option value="clear" ${('', 'selected')[ignore_words_value == 0]}>${_('Clear')}</option>
                         </select>
                         <input type="text" id="edit_mass_ignore_words"
                                name="mass_ignore_words" value=""
@@ -284,9 +284,9 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_prefer_words" name="prefer_words" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${selected(prefer_words_value is None)}>< ${_('Keep')} ></option>
-                            <option value="new" ${selected(prefer_words_value == 1)}>${_('New')}</option>
-                            <option value="clear" ${selected(prefer_words_value == 0)}>${_('Clear')}</option>
+                            <option value="keep" ${('', 'selected')[prefer_words_value is None]}>< ${_('Keep')} ></option>
+                            <option value="new" ${('', 'selected')[prefer_words_value == 1]}>${_('New')}</option>
+                            <option value="clear" ${('', 'selected')[prefer_words_value == 0]}>${_('Clear')}</option>
                         </select>
                         <input type="text" id="edit_mass_prefer_words"
                                name="mass_prefer_words" value=""
@@ -301,9 +301,9 @@
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_require_words" name="require_words" class="form-control form-control-inline input-sm">
-                            <option value="keep" ${selected(require_words_value is None)}>< ${_('Keep')} ></option>
-                            <option value="new" ${selected(require_words_value == 1)}>${_('New')}</option>
-                            <option value="clear" ${selected(require_words_value == 0)}>${_('Clear')}</option>
+                            <option value="keep" ${('', 'selected')[require_words_value is None]}>< ${_('Keep')} ></option>
+                            <option value="new" ${('', 'selected')[require_words_value == 1]}>${_('New')}</option>
+                            <option value="clear" ${('', 'selected')[require_words_value == 0]}>${_('Clear')}</option>
                         </select>
                         <input type="text" id="edit_mass_require_words"
                                name="mass_require_words" value=""
