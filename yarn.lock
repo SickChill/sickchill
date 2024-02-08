@@ -1494,44 +1494,44 @@
     estree-walker "^2.0.1"
     picomatch "^2.2.2"
 
-"@sentry-internal/tracing@7.100.0":
-  version "7.100.0"
-  resolved "https://registry.yarnpkg.com/@sentry-internal/tracing/-/tracing-7.100.0.tgz#01f0925a287a6e5d0becd731ab361cabbd27c007"
-  integrity sha512-qf4W1STXky9WOQYoPSw2AmCBDK4FzvAyq5yeD2sLU7OCUEfbRUcN0lQljUvmWRKv/jTIAyeU5icDLJPZuR50nA==
+"@sentry-internal/tracing@7.100.1":
+  version "7.100.1"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/tracing/-/tracing-7.100.1.tgz#4329492e50c390567197a4acbf7e3672b1db7820"
+  integrity sha512-+u9RRf5eL3StiyiRyAHZmdkAR7GTSGx4Mt4Lmi5NEtCcWlTGZ1QgW2r8ZbhouVmTiJkjhQgYCyej3cojtazeJg==
   dependencies:
-    "@sentry/core" "7.100.0"
-    "@sentry/types" "7.100.0"
-    "@sentry/utils" "7.100.0"
+    "@sentry/core" "7.100.1"
+    "@sentry/types" "7.100.1"
+    "@sentry/utils" "7.100.1"
 
-"@sentry/core@7.100.0":
-  version "7.100.0"
-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.100.0.tgz#5b28c7b3e41e45e4d50e3bdea5d35434fd78e86b"
-  integrity sha512-eWRPuP0Zdj4a2F7SybqNjf13LGOVgGwvW6sojweQp9oxGAfCPp/EMDGBhlpYbMJeLbzmqzJ4ZFHIedaiEC+7kg==
+"@sentry/core@7.100.1":
+  version "7.100.1"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.100.1.tgz#7b8e101a931af8e8b3b2449534749f882772df4f"
+  integrity sha512-f+ItUge/o9AjlveQq0ZUbQauKlPH1FIJbC1TRaYLJ4KNfOdrsh8yZ29RmWv0cFJ/e+FGTr603gWpRPObF5rM8Q==
   dependencies:
-    "@sentry/types" "7.100.0"
-    "@sentry/utils" "7.100.0"
+    "@sentry/types" "7.100.1"
+    "@sentry/utils" "7.100.1"
 
 "@sentry/node@^7.36.0":
-  version "7.100.0"
-  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-7.100.0.tgz#52e7be6d5afd396f7516f004b712ff345976f87d"
-  integrity sha512-8cf9wFNo/9I++60MVAf6tuKn/N5JCZ/Z8NDUzutnWWdQBLSx+LhZYNPntN3WkHl6Q7PBHGw3mU1Bc+rF48MeSQ==
+  version "7.100.1"
+  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-7.100.1.tgz#36195cc24090a71ec7d1c4513da63356ab44d784"
+  integrity sha512-jB6tBLr7BpgdE2SlYZu343vvpa5jMFnqyFlprr+jdDu/ayNF4idB0qFwQe8p4C6LI6M/MNDRLVOgPBiCjjZSpw==
   dependencies:
-    "@sentry-internal/tracing" "7.100.0"
-    "@sentry/core" "7.100.0"
-    "@sentry/types" "7.100.0"
-    "@sentry/utils" "7.100.0"
+    "@sentry-internal/tracing" "7.100.1"
+    "@sentry/core" "7.100.1"
+    "@sentry/types" "7.100.1"
+    "@sentry/utils" "7.100.1"
 
-"@sentry/types@7.100.0":
-  version "7.100.0"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.100.0.tgz#a16f60d78613bd9810298e9e8d80134be58b24f8"
-  integrity sha512-c+RHwZwpKeBk7h8sUX4nQcelxBz8ViCojifnbEe3tcn8O15HOLvZqRKgLLOiff3MoErxiv4oxs0sPbEFRm/IvA==
+"@sentry/types@7.100.1":
+  version "7.100.1"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.100.1.tgz#1349b77269cecf4e80c087842575bd1a001e9995"
+  integrity sha512-fLM+LedHuKzOd8IhXBqaQuym+AA519MGjeczBa5kGakes/BbAsUMwsNfjsKQedp7Kh44RgYF99jwoRPK2oDrXw==
 
-"@sentry/utils@7.100.0":
-  version "7.100.0"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.100.0.tgz#a9d36c01eede117c3e17b0350d399a87934e9c66"
-  integrity sha512-LAhZMEGq3C125prZN/ShqeXpRfdfgJkl9RAKjfq8cmMFsF7nsF72dEHZgIwrZ0lgNmtaWAB83AwJcyN83RwOxQ==
+"@sentry/utils@7.100.1":
+  version "7.100.1"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.100.1.tgz#6e26f3b06b1e485a2180f464ab3374ecb8d5e407"
+  integrity sha512-Ve6dXr1o6xiBe3VCoJgiutmBKrugryI65EZAbYto5XI+t+PjiLLf9wXtEMF24ZrwImo4Lv3E9Uqza+fWkEbw6A==
   dependencies:
-    "@sentry/types" "7.100.0"
+    "@sentry/types" "7.100.1"
 
 "@sigstore/bundle@^1.1.0":
   version "1.1.0"
@@ -2989,9 +2989,9 @@ camelcase@^2.0.0:
   integrity sha512-DLIsRzJVBQu72meAKPkWQOLcujdXT32hwdfnkI1frSiSRMK1MofjKHf+MEx0SB6fjEFXL8fBDv1dKymBlOp4Qw==
 
 caniuse-lite@^1.0.30001580:
-  version "1.0.30001584"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001584.tgz#5e3ea0625d048d5467670051687655b1f7bf7dfd"
-  integrity sha512-LOz7CCQ9M1G7OjJOF9/mzmqmj3jE/7VOmrfw6Mgs0E8cjOsbRXQJHsPBfmBOXDskXKrHLyyW3n7kpDW/4BsfpQ==
+  version "1.0.30001585"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001585.tgz#0b4e848d84919c783b2a41c13f7de8ce96744401"
+  integrity sha512-yr2BWR1yLXQ8fMpdS/4ZZXpseBgE7o4g41x3a6AJOqZuOi+iE/WdJYAuZ6Y95i4Ohd2Y+9MzIWRR+uGABH4s3Q==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -3919,9 +3919,9 @@ ejs@^3.1.6, ejs@^3.1.8, ejs@^3.1.9:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.648:
-  version "1.4.659"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.659.tgz#e93af8119b6610cb4d2614a47508a74543b96ce5"
-  integrity sha512-sRJ3nV3HowrYpBtPF9bASQV7OW49IgZC01Xiq43WfSE3RTCkK0/JidoCmR73Hyc1mN+l/H4Yqx0eNiomvExFZg==
+  version "1.4.661"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.661.tgz#b28d63468b06e75610ed2b0f8e5f5f669a57bd91"
+  integrity sha512-AFg4wDHSOk5F+zA8aR+SVIOabu7m0e7BiJnigCvPXzIGy731XENw/lmNxTySpVFtkFEy+eyt4oHhh5FF3NjQNw==
 
 emittery@^1.0.1:
   version "1.0.2"
@@ -5189,12 +5189,13 @@ get-stream@^6.0.0:
   integrity sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==
 
 get-symbol-description@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/get-symbol-description/-/get-symbol-description-1.0.1.tgz#c0de911bfaa9ea8da52b5e702d2b3b51b8791ec4"
-  integrity sha512-KmuibvwbWaM4BHcBRYwJfZ1JxyJeBwB8ct9YYu67SvYdbEIlcQ2e56dHxfbobqW38GXo8/zDFqJeGtHiVbWyQw==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/get-symbol-description/-/get-symbol-description-1.0.2.tgz#533744d5aa20aca4e079c8e5daf7fd44202821f5"
+  integrity sha512-g0QYk1dZBxGwk+Ngc+ltRH2IBp2f7zBkBMBJZCDerh6EhlhSR6+9irMCuT/09zD6qkarHUSn529sK/yL4S27mg==
   dependencies:
     call-bind "^1.0.5"
     es-errors "^1.3.0"
+    get-intrinsic "^1.2.4"
 
 get-tsconfig@^4.6.2, get-tsconfig@^4.7.0:
   version "4.7.2"
@@ -8495,9 +8496,9 @@ postcss-value-parser@^4.1.0, postcss-value-parser@^4.2.0:
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
 postcss@^8.4.32, postcss@^8.4.33:
-  version "8.4.34"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.34.tgz#563276e86b4ff20dfa5eed0d394d4c53853b2051"
-  integrity sha512-4eLTO36woPSocqZ1zIrFD2K1v6wH7pY1uBh0JIM2KKfrVtGvPFiAku6aNOP0W1Wr9qwnaCsF0Z+CrVnryB2A8Q==
+  version "8.4.35"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.35.tgz#60997775689ce09011edf083a549cea44aabe2f7"
+  integrity sha512-u5U8qYpBCpN13BsiEB0CbR1Hhh4Gc0zLFuedrHJKMctHCHAGrMdG0PRM/KErzAL3CU6/eckEtmHNB3x6e3c0vA==
   dependencies:
     nanoid "^3.3.7"
     picocolors "^1.0.0"
