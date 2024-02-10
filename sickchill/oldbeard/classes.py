@@ -86,7 +86,7 @@ class SearchResult(object):
     def __check_url(self):
         if not self.__checked_url and self.url and "jackett_apikey" in self.url:
             response = self.provider.get_url(self.url, allow_redirects=False, returns="response")
-            if response.next and response.next.url and response.next.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", self.url):
+            if response.next and response.next.url and response.next.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", response.next.url):
                 self.url = response.next.url
         self.__checked_url = True
 
