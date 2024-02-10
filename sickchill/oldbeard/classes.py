@@ -62,12 +62,10 @@ class SearchResult(object):
 
     def from_json(self, result_dict):
         self.name = result_dict.get("name")
-        self.url = result_dict.get("url")
         self.size = result_dict.get("size")
         self.version = result_dict.get("version")
         self.release_group = result_dict.get("release_group")
         self.quality = int(result_dict.get("quality"))
-        self.provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get("provider"))
 
     @classmethod
     def make_result(cls, result_dict):
@@ -77,7 +75,9 @@ class SearchResult(object):
 
         show = show[1]
         episode_objects = [show.getEpisode(result_dict.get("season"), ep) for ep in result_dict.get("episodes").split("|") if ep]
-        result = cls(episode_objects)
+        provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get("provider"))
+        url = result_dict.get("url")
+        result = cls(episode_objects, provider, url)
         result.from_json(result_dict)
         result.show = show
 
