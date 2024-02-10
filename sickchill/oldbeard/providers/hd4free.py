@@ -62,7 +62,7 @@ class Provider(TorrentProvider):
 
                 error = jdata.get("error")
                 if error:
-                    logger.debug("{}".format(error))
+                    logger.debug(f"{error}")
                     return results
 
                 try:

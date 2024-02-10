@@ -529,7 +529,7 @@
                                             <label class="component-title">${_('For Spanish torrents')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="checkbox" name="${provider.get_id("_onlyspasearch")}" id="${provider.get_id("_onlyspasearch")}" ${checked(provider.onlyspasearch)} />
+                                            <input type="checkbox" name="${provider.get_id("_onlyspasearch")}" id="${provider.get_id("_onlyspasearch")}" ${checked(provider.only_spanish_search)} />
                                             <label for="${provider.get_id("_onlyspasearch")}">${_('ONLY search on this provider if show info is defined as "Spanish" (avoid provider\'s use for VOS shows)')}</label>
                                         </div>
                                     </div>
