@@ -292,9 +292,8 @@ class GenericProvider(object):
             for current_episode in actual_episodes:
                 episode_objects.append(show_object.getEpisode(actual_season, current_episode))
 
-            result = self.get_result(episode_objects)
+            result = self.get_result(episode_objects, url)
             result.show = show_object
-            result.url = url
             result.name = title
             result.quality = quality
             result.release_group = release_group
@@ -335,11 +334,8 @@ class GenericProvider(object):
 
         return quality
 
-    def get_result(self, episodes):
-        result = self._get_result(episodes)
-        result.provider = self
-
-        return result
+    def get_result(self, episodes, url):
+        return self._get_result(episodes, self, url)
 
     # noinspection PyUnusedLocal
     @staticmethod
@@ -410,8 +406,8 @@ class GenericProvider(object):
     def search(self, strings):
         return []
 
-    def _get_result(self, episodes):
-        return SearchResult(episodes)
+    def _get_result(self, episodes, provider, url):
+        return SearchResult(episodes, provider, url)
 
     def get_episode_search_strings(self, episode, add_string=""):
         if not episode:

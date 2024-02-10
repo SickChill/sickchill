@@ -18,14 +18,14 @@ class SearchResult(object):
     Represents a search result from an indexer.
     """
 
-    def __init__(self, episodes):
-        self.provider: Union["GenericProvider", None] = None
+    def __init__(self, episodes, provider=None, url=""):
+        self.provider: Union["GenericProvider", None] = provider
 
         # release show object
         self.show: Union["TVShow", None] = None
 
         # URL to the NZB/torrent file
-        self.url: str = ""
+        self.url: str = url
 
         # used by some providers to store extra info associated with the result
         self.extraInfo = []
@@ -142,8 +142,8 @@ class NZBSearchResult(SearchResult):
     Regular NZB result with a URL to the NZB
     """
 
-    def __init__(self, episodes):
-        super().__init__(episodes)
+    def __init__(self, episodes, provider, url):
+        super().__init__(episodes, provider, url)
         self.result_type = "nzb"
 
 
@@ -152,8 +152,8 @@ class NZBDataSearchResult(SearchResult):
     NZB result where the actual NZB XML data is stored in the extraInfo
     """
 
-    def __init__(self, episodes):
-        super().__init__(episodes)
+    def __init__(self, episodes, provider, url):
+        super().__init__(episodes, provider, url)
         self.result_type = "nzbdata"
 
 
@@ -162,8 +162,8 @@ class TorrentSearchResult(SearchResult):
     Torrent result with a URL to the torrent
     """
 
-    def __init__(self, episodes):
-        super().__init__(episodes)
+    def __init__(self, episodes, provider, url):
+        super().__init__(episodes, provider, url)
         self.result_type = "torrent"
 
 
