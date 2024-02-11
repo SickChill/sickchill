@@ -22,8 +22,7 @@ from .common import Quality
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
-# if 'legendastv' not in subliminal.provider_manager.names():
-#     subliminal.provider_manager.register('legendastv = subliminal.providers.legendastv:LegendasTVProvider')
+# 'legendastv' closed down
 if "itasa" not in subliminal.provider_manager.names():
     subliminal.provider_manager.register("itasa = sickchill.providers.subtitle.itasa:ItaSAProvider")
 if "wizdom" not in subliminal.provider_manager.names():
@@ -38,16 +37,13 @@ if "bsplayer" not in subliminal.provider_manager.names():
 subliminal.region.configure("dogpile.cache.memory")
 
 PROVIDER_URLS = {
-    "addic7ed": "http://www.addic7ed.com",
+    "addic7ed": "https://www.addic7ed.com",
     "bsplayer": "http://bsplayer-subtitles.com",
     "itasa": "http://www.italiansubs.net/",
-    "legendastv": "http://www.legendas.tv",
     "napiprojekt": "http://www.napiprojekt.pl",
     "opensubtitles": "https://www.opensubtitles.com",
     "podnapisi": "http://www.podnapisi.net",
-    "subscenter": "http://www.subscenter.info",
     "subtitulamos": "https://www.subtitulamos.tv",
-    "thesubdb": "http://www.thesubdb.com",
     "wizdom": "http://wizdom.xyz",
     "tvsubtitles": "http://www.tvsubtitles.net",
 }
@@ -78,7 +74,6 @@ class SubtitleProviderPool(object):
             provider_configs = {
                 "addic7ed": {"username": settings.ADDIC7ED_USER, "password": settings.ADDIC7ED_PASS},
                 "itasa": {"username": settings.ITASA_USER, "password": settings.ITASA_PASS},
-                "legendastv": {"username": settings.LEGENDASTV_USER, "password": settings.LEGENDASTV_PASS},
                 "opensubtitles": {"username": settings.OPENSUBTITLES_USER, "password": settings.OPENSUBTITLES_PASS},
                 "subscenter": {"username": settings.SUBSCENTER_USER, "password": settings.SUBSCENTER_PASS},
             }
@@ -106,7 +101,7 @@ class SubtitleProviderPool(object):
 
 def sorted_service_list():
     new_list = []
-    lmgtfy = "https://lmgtfy.com/?q=%s"
+    lmgtfy = "https://blog.lmgtfy.com/?q=%s"
 
     current_index = 0
     for current_service in settings.SUBTITLES_SERVICES_LIST:
