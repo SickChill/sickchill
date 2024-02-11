@@ -326,7 +326,6 @@
                     <fieldset class="component-group-list">
                         <%
                             providerLoginDict = {
-                                'legendastv': {'user': settings.LEGENDASTV_USER, 'pass': settings.LEGENDASTV_PASS},
                                 'addic7ed': {'user': settings.ADDIC7ED_USER, 'pass': settings.ADDIC7ED_PASS},
                                 'itasa': {'user': settings.ITASA_USER, 'pass': settings.ITASA_PASS},
                                 'opensubtitles': {'user': settings.OPENSUBTITLES_USER, 'pass': settings.OPENSUBTITLES_PASS},

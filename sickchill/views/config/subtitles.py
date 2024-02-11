@@ -39,8 +39,6 @@ class ConfigSubtitles(Config):
         addic7ed_pass=None,
         itasa_user=None,
         itasa_pass=None,
-        legendastv_user=None,
-        legendastv_pass=None,
         opensubtitles_user=None,
         opensubtitles_pass=None,
         subscenter_user=None,
@@ -80,8 +78,6 @@ class ConfigSubtitles(Config):
         settings.ADDIC7ED_PASS = filters.unhide(settings.ADDIC7ED_PASS, addic7ed_pass) or ""
         settings.ITASA_USER = itasa_user or ""
         settings.ITASA_PASS = filters.unhide(settings.ITASA_PASS, itasa_pass) or ""
-        settings.LEGENDASTV_USER = legendastv_user or ""
-        settings.LEGENDASTV_PASS = filters.unhide(settings.LEGENDASTV_PASS, legendastv_pass) or ""
         settings.OPENSUBTITLES_USER = opensubtitles_user or ""
         settings.OPENSUBTITLES_PASS = filters.unhide(settings.OPENSUBTITLES_PASS, opensubtitles_pass) or ""
         settings.SUBSCENTER_USER = subscenter_user or ""

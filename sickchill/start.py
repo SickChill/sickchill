@@ -700,9 +700,6 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.ITASA_USER = check_setting_str(settings.CFG, "Subtitles", "itasa_username", censor_log=True)
         settings.ITASA_PASS = check_setting_str(settings.CFG, "Subtitles", "itasa_password", censor_log=True)
 
-        settings.LEGENDASTV_USER = check_setting_str(settings.CFG, "Subtitles", "legendastv_username", censor_log=True)
-        settings.LEGENDASTV_PASS = check_setting_str(settings.CFG, "Subtitles", "legendastv_password", censor_log=True)
-
         settings.OPENSUBTITLES_USER = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_username", censor_log=True)
         settings.OPENSUBTITLES_PASS = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_password", censor_log=True)
 
@@ -1661,8 +1658,6 @@ def save_config():
                 "addic7ed_password": helpers.encrypt(settings.ADDIC7ED_PASS, settings.ENCRYPTION_VERSION),
                 "itasa_username": settings.ITASA_USER,
                 "itasa_password": helpers.encrypt(settings.ITASA_PASS, settings.ENCRYPTION_VERSION),
-                "legendastv_username": settings.LEGENDASTV_USER,
-                "legendastv_password": helpers.encrypt(settings.LEGENDASTV_PASS, settings.ENCRYPTION_VERSION),
                 "opensubtitles_username": settings.OPENSUBTITLES_USER,
                 "opensubtitles_password": helpers.encrypt(settings.OPENSUBTITLES_PASS, settings.ENCRYPTION_VERSION),
                 "subscenter_username": settings.SUBSCENTER_USER,
