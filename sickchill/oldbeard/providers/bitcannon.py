@@ -49,7 +49,7 @@ class Provider(TorrentProvider):
                     logger.debug("No data returned from provider")
                     continue
 
-                if not self._check_auth_from_data(parsed_json):
+                if not self.check_auth_from_data(parsed_json):
                     return results
 
                 for result in parsed_json.pop("torrents", {}):
@@ -92,7 +92,7 @@ class Provider(TorrentProvider):
         return results
 
     @staticmethod
-    def _check_auth_from_data(data):
+    def check_auth_from_data(data):
         if not all([isinstance(data, dict), data.pop("status", 200) != 401, data.pop("message", "") != "Invalid API key"]):
             logger.warning("Invalid api key. Check your settings")
             return False

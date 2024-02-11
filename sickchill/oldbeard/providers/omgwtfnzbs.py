@@ -25,7 +25,7 @@ class Provider(NZBProvider):
 
         return True
 
-    def _check_auth_from_data(self, parsed_data, is_XML=True):
+    def check_auth_from_data(self, parsed_data, is_XML=True):
         if not parsed_data:
             return self._check_auth()
 
@@ -75,7 +75,7 @@ class Provider(NZBProvider):
                     logger.debug(_("No data returned from provider"))
                     continue
 
-                if not self._check_auth_from_data(data, is_XML=False):
+                if not self.check_auth_from_data(data, is_XML=False):
                     continue
 
                 for item in data:

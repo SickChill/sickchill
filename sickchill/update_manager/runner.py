@@ -68,7 +68,7 @@ class UpdateManager(object):
                 ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
                 return False
         except Exception as error:
-            logger.exception("Update: Config backup failed. Error: {}".format(error))
+            logger.exception(f"Update: Config backup failed. Error: {error}")
             ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
             return False
 

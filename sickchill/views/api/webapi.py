@@ -2721,7 +2721,7 @@ class CMDShowUpdate(ApiCall):
             settings.showQueueScheduler.action.update_show(show_obj, True)
             return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
         except CantUpdateShowException as error:
-            logger.debug("API::Unable to update show: {0}".format(error))
+            logger.debug(f"API::Unable to update show: {error}")
             return _responds(RESULT_FAILURE, msg=f"Unable to update {show_obj.name}")
 
 

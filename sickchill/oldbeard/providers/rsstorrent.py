@@ -1,7 +1,7 @@
 import os
 import re
 
-import bencodepy
+import bencode
 from requests.utils import add_dict_to_cookiejar
 
 from sickchill import logger, settings
@@ -142,10 +142,10 @@ class TorrentRssProvider(TorrentProvider):
             else:
                 torrent_file = self.get_url(url, returns="content")
                 try:
-                    bencodepy.decode(torrent_file)
-                except (bencodepy.exceptions.BencodeDecodeError, Exception) as error:
+                    bencode.decode(torrent_file)
+                except (bencode.BencodeDecodeError, Exception) as error:
                     self.dumpHTML(torrent_file)
-                    return False, "Torrent link is not a valid torrent file: {0}".format(error)
+                    return False, f"Torrent link is not a valid torrent file: {error}"
 
             return True, "RSS feed Parsed correctly"
 

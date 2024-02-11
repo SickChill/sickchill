@@ -242,7 +242,7 @@ class ConfigProviders(Config):
             provider.check_set_option(self, "confirmed", False, cast=config.checkbox_to_value)
             provider.check_set_option(self, "ranked", False, cast=config.checkbox_to_value)
             provider.check_set_option(self, "engrelease", False, cast=config.checkbox_to_value)
-            provider.check_set_option(self, "onlyspasearch", False, cast=config.checkbox_to_value)
+            provider.check_set_option(self, "only_spanish_search", False, cast=config.checkbox_to_value)
             provider.check_set_option(self, "freeleech", False, cast=config.checkbox_to_value)
             provider.check_set_option(self, "search_fallback", False, cast=config.checkbox_to_value)
             provider.check_set_option(self, "enable_daily", False, cast=config.checkbox_to_value)  # fix can_daily

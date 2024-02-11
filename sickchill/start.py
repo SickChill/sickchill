@@ -806,8 +806,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
                 curProvider.ranked = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_ranked"), True)
             if curProvider.has_option("engrelease"):
                 curProvider.engrelease = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_engrelease"))
-            if curProvider.has_option("onlyspasearch"):
-                curProvider.onlyspasearch = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_onlyspasearch"))
+            if curProvider.has_option("only_spanish_search"):
+                curProvider.only_spanish_search = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_only_spanish_search"))
             if curProvider.has_option("sorting"):
                 curProvider.sorting = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_sorting"), "seeders")
             if curProvider.has_option("options"):
@@ -1122,8 +1122,8 @@ def save_config():
             new_config[curProvider.get_id().upper()][curProvider.get_id("_ranked")] = int(curProvider.ranked)
         if curProvider.has_option("engrelease"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_engrelease")] = int(curProvider.engrelease)
-        if curProvider.has_option("onlyspasearch"):
-            new_config[curProvider.get_id().upper()][curProvider.get_id("_onlyspasearch")] = int(curProvider.onlyspasearch)
+        if curProvider.has_option("only_spanish_search"):
+            new_config[curProvider.get_id().upper()][curProvider.get_id("_only_spanish_search")] = int(curProvider.only_spanish_search)
         if curProvider.has_option("sorting"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_sorting")] = curProvider.sorting
         if curProvider.has_option("ratio"):

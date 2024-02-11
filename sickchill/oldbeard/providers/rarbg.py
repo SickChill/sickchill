@@ -1,12 +1,16 @@
 import datetime
 import re
 import time
+from typing import Dict, List, TYPE_CHECKING
 
 from sickchill import logger, settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.common import cpu_presets
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVEpisode
 
 
 class Provider(TorrentProvider):
@@ -24,7 +28,7 @@ class Provider(TorrentProvider):
 
         # Spec: https://torrentapi.org/apidocs_v2.txt
         self.url = "https://rarbg.to"
-        self.urls = {"api": "http://torrentapi.org/pubapi_v2.php"}
+        self.urls = {"api": "https://torrentapi.org/pubapi_v2.php"}
 
         self.proper_strings = ["{{PROPER|REPACK}}"]
 
@@ -152,7 +156,7 @@ class Provider(TorrentProvider):
 
         return results
 
-    def get_season_search_strings(self, episode):
+    def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
         search_strings = super(Provider, self).get_season_search_strings(episode)
         if episode and episode.show and episode.show.imdb_id:
             if episode.show.air_by_date or episode.show.sports:
@@ -163,6 +167,6 @@ class Provider(TorrentProvider):
             else:
                 season_string = f"{episode.show.imdb_id}.S{episode.season:02d}"
 
-            search_strings[0]["Season"].append(season_string)
+            search_strings[0]["Season"].add(season_string)
 
         return search_strings

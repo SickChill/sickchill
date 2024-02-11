@@ -2,6 +2,7 @@ import math
 import socket
 import time
 from datetime import datetime
+from typing import Dict, Iterable, List, TYPE_CHECKING, Union
 
 import jsonrpclib
 
@@ -12,6 +13,9 @@ from sickchill.oldbeard import classes, scene_exceptions, tvcache
 from sickchill.oldbeard.common import cpu_presets
 from sickchill.oldbeard.helpers import sanitizeSceneName
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVEpisode
 
 
 class Provider(TorrentProvider):
@@ -37,7 +41,7 @@ class Provider(TorrentProvider):
 
         return True
 
-    def _check_auth_from_data(self, data):
+    def check_auth_from_data(self, data):
         if data is None:
             return self._check_auth()
 
@@ -64,7 +68,7 @@ class Provider(TorrentProvider):
             return results
 
         found = {}
-        if self._check_auth_from_data(data):
+        if self.check_auth_from_data(data):
             if "torrents" in data:
                 found = data["torrents"]
 
@@ -179,28 +183,28 @@ class Provider(TorrentProvider):
 
         return search_params
 
-    def get_season_search_strings(self, episode_object):
+    def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
         search_params = {"category": "Season"}
 
         # Search for entire seasons: no need to do special things for air by date or sports shows
         if self.show.air_by_date or self.show.sports:
             # Search for the year of the air by date show
-            search_params["name"] = str(episode_object.airdate).split("-")[0]
+            search_params["name"] = str(episode.airdate).split("-")[0]
         else:
             # BTN uses the same format for both Anime and TV
-            search_params["name"] = "Season " + str(episode_object.scene_season)
+            search_params["name"] = "Season " + str(episode.scene_season)
 
-        return self.__add_tvdb_or_name(search_params, episode_object)
+        return self.__add_tvdb_or_name(search_params, episode)
 
-    def get_episode_search_strings(self, episode_object, add_string=""):
-        if not episode_object:
+    def get_episode_search_strings(self, episode: "TVEpisode", add_string: str = "") -> Union[List[Dict], Iterable]:
+        if not episode:
             return [{}]
 
         search_params = {"category": "Episode"}
 
         # episode
         if self.show.air_by_date or self.show.sports:
-            date_str = str(episode_object.airdate)
+            date_str = str(episode.airdate)
 
             # BTN uses dots in dates, we just search for the date since that
             # combined with the series identifier should result in just one episode
@@ -208,10 +212,10 @@ class Provider(TorrentProvider):
         else:
             # BTN uses the same format for both Anime and TV
             # Do a general name search for the episode
-            search_params["name"] = episode_num(episode_object.scene_season, episode_object.scene_episode)
+            search_params["name"] = episode_num(episode.scene_season, episode.scene_episode)
 
         # search
-        return self.__add_tvdb_or_name(search_params, episode_object)
+        return self.__add_tvdb_or_name(search_params, episode)
 
     def find_propers(self, search_date=None):
         results = []
