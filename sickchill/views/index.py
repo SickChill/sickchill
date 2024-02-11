@@ -183,7 +183,10 @@ class WebHandler(BaseHandler):
             try:
                 await self.finish(results)
             except Exception as e:
-                logger.debug(f"self.finish exception {e}, result {results}")
+                if settings.DEVELOPER:
+                    logger.debug(f"self.finish exception {e}, result {results}")
+                else:
+                    logger.debug(f"self.finish exception {e}")
 
         except AttributeError:
             logger.debug('Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()))

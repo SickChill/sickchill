@@ -10,16 +10,16 @@
     <div class="row">
         <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12 pull-right">
             <div class="pull-right">
-                % if totalWanted > 0:
-                    <span class="listing-key wanted">${_('Wanted')}: <b>${totalWanted}</b></span>
+                % if total_wanted > 0:
+                    <span class="listing-key wanted">${_('Wanted')}: <b>${total_wanted}</b></span>
                 % endif
 
-                % if totalQualSnatched > 0:
-                    <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${totalQualSnatched}</b></span>
+                % if total_qual_snatched > 0:
+                    <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${total_qual_snatched}</b></span>
                 % endif
 
-                % if totalQual > 0:
-                    <span class="listing-key qual">${_('Allowed')}: <b>${totalQual}</b></span>
+                % if total_qual > 0:
+                    <span class="listing-key qual">${_('Allowed')}: <b>${total_qual}</b></span>
                 % endif
             </div>
         </div>
@@ -35,31 +35,31 @@
         <div class="col-md-12">
             <label for="pickShow">${_('Jump to Show')}:</label>
             <select id="pickShow" class="form-control form-control-inline input-sm">
-                % for curShow in backLogShows:
+                % for curShow in backlog_shows:
                     <option value="${curShow.indexerid}">${curShow.name}</option>
                 % endfor
             </select>
         </div>
     </div>
 
-    % for curShow in backLogShows:
-        % if not showQualSnatched(curShow) and not showCounts[curShow.indexerid][Overview.WANTED] + showCounts[curShow.indexerid][Overview.QUAL]:
+    % for curShow in backlog_shows:
+        % if not show_qual_snatched(curShow) and not show_counts[curShow.indexerid][Overview.WANTED] + show_counts[curShow.indexerid][Overview.QUAL]:
             <% continue %>
         % endif
 
         <div class="row">
             <div class="col-md-12">
                 <div class="pull-right" style="margin-top: 30px;">
-                    % if showCounts[curShow.indexerid][Overview.WANTED] > 0:
-                        <span class="listing-key wanted">${_('Wanted')}: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
+                    % if show_counts[curShow.indexerid][Overview.WANTED] > 0:
+                        <span class="listing-key wanted">${_('Wanted')}: <b>${show_counts[curShow.indexerid][Overview.WANTED]}</b></span>
                     % endif
 
-                    % if showQualSnatched(curShow) and showCounts[curShow.indexerid][Overview.SNATCHED] > 0:
-                        <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
+                    % if show_qual_snatched(curShow) and show_counts[curShow.indexerid][Overview.SNATCHED] > 0:
+                        <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${show_counts[curShow.indexerid][Overview.SNATCHED]}</b></span>
                     % endif
 
-                    % if showCounts[curShow.indexerid][Overview.QUAL] > 0:
-                        <span class="listing-key qual">${_('Allowed')}: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
+                    % if show_counts[curShow.indexerid][Overview.QUAL] > 0:
+                        <span class="listing-key qual">${_('Allowed')}: <b>${show_counts[curShow.indexerid][Overview.QUAL]}</b></span>
                     % endif
 
                     <a class="btn btn-inline forceBacklog" href="${scRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>
@@ -79,16 +79,16 @@
                         </tr>
                         <tr class="seasoncols"><th>${_('Episode')}</th><th>${_('Name')}</th><th class="nowrap">${_('Airdate')}</th></tr>
 
-                        % for curResult in showSQLResults[curShow.indexerid]:
+                        % for curResult in show_sql_results[curShow.indexerid]:
                         <%
                             whichStr = episode_num(curResult['season'], curResult['episode']) or episode_num(curResult['season'], curResult['episode'], numbering='absolute')
-                            if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
+                            if whichStr not in show_categories[curShow.indexerid] or show_categories[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
                                 continue
 
-                            if not showQualSnatched(curShow) and showCats[curShow.indexerid][whichStr] == Overview.SNATCHED:
+                            if not show_qual_snatched(curShow) and show_categories[curShow.indexerid][whichStr] == Overview.SNATCHED:
                                 continue
                         %>
-                            <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
+                            <tr class="seasonstyle ${Overview.overviewStrings[show_categories[curShow.indexerid][whichStr]]}">
                                 <td class="tableleft text-center">${whichStr}</td>
                                 <td class="tableright text-center nowrap">
                                     ${curResult["name"]}
