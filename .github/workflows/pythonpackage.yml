@@ -84,10 +84,10 @@ jobs:
         experimental: [ false ]
         include:
           - os: windows-latest
-            python-version: ${{ github.env.PYTHON_TEST_VERSION }}
+            python-version: "3.11"
             experimental: false
           - os: macos-latest
-            python-version: ${{ github.env.PYTHON_TEST_VERSION }}
+            python-version: "3.11"
             experimental: false
       fail-fast: true
     continue-on-error: ${{ matrix.experimental }}
