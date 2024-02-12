@@ -55,8 +55,8 @@ class TorrentProvider(GenericProvider):
 
         return "&tr=" + "&tr=".join({x.strip() for x in settings.TRACKERS_LIST.split(",") if x.strip()})
 
-    def _get_result(self, episodes):
-        return TorrentSearchResult(episodes)
+    def _get_result(self, episodes, provider, url):
+        return TorrentSearchResult(episodes, provider, url)
 
     def _get_size(self, item):
         if isinstance(item, dict):

@@ -489,9 +489,8 @@ class TVCache(RSSTorrentMixin):
 
             logger.info("Found result " + title + " at " + url)
 
-            result = self.provider.get_result([episode_object])
+            result = self.provider.get_result([episode_object], url)
             result.show = show_obj
-            result.url = url
             result.name = title
             result.quality = cur_quality
             result.release_group = cur_release_group
