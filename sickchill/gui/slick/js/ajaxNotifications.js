@@ -26,7 +26,9 @@ function displayPNotify(type, title, message, id) {
         hide: true,
         history: true,
         shadow: true,
-        stack: {dir1: 'up', dir2: 'left', firstpos1: 25, firstpos2: 25},
+        stack: {
+            dir1: 'up', dir2: 'left', firstpos1: 25, firstpos2: 25,
+        },
         styling: 'fontawesome',
         width: '340px',
         destroy: true,

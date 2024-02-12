@@ -1,5 +1,5 @@
-function getMeta(pyVar) {
-    return $('meta[data-var="' + pyVar + '"]').data('content');
+function getMeta(pythonVariable) {
+    return $('meta[data-var="' + pythonVariable + '"]').data('content');
 }
 
 const scRoot = getMeta('scRoot');
@@ -29,10 +29,10 @@ function configSuccess(reload = true) {
     $('#prowl_show').trigger('notify');
 }
 
-function metaToBool(pyVar) {
-    let meta = $('meta[data-var="' + pyVar + '"]').data('content');
+function metaToBool(pythonVariable) {
+    let meta = $('meta[data-var="' + pythonVariable + '"]').data('content');
     if (meta === undefined) {
-        console.log(pyVar + ' is empty, did you forget to add this to "main.mako"?');
+        console.log(pythonVariable + ' is empty, did you forget to add this to "main.mako"?');
         return meta;
     }
 
@@ -42,9 +42,9 @@ function metaToBool(pyVar) {
     return !(meta === 'false' || meta === 'none' || meta === '0');
 }
 
-function isMeta(pyVar, result) {
+function isMeta(pythonVariable, result) {
     const reg = new RegExp(result.length > 1 ? result.join('|') : result);
-    return (reg).test($('meta[data-var="' + pyVar + '"]').data('content'));
+    return (reg).test($('meta[data-var="' + pythonVariable + '"]').data('content'));
 }
 
 function notifyModal(message) {
@@ -58,7 +58,7 @@ function addSiteMessage(level = 'danger', tag = '', message = '') {
         if (messagesDiv !== undefined) {
             messagesDiv.empty();
             for (const key in siteMessages) {
-                if (Object.prototype.hasOwnProperty.call(siteMessages, key)) {
+                if (Object.hasOwn(siteMessages, key)) {
                     messagesDiv.append('<div class="alert alert-' + siteMessages[key].level + ' upgrade-notification hidden-print" id="site-message-' + key + '" role="alert">'
                         + '<span>' + siteMessages[key].message + '</span><span class="glyphicon glyphicon-check site-message-dismiss pull-right" data-id="' + key + '"/>'
                         + '</div>');
@@ -160,9 +160,7 @@ const SICKCHILL = {
                 activate(event, ui) {
                     let lastOpenedPanel = $(this).data('lastOpenedPanel');
 
-                    if (!lastOpenedPanel) {
-                        lastOpenedPanel = $(ui.oldPanel);
-                    }
+                    lastOpenedPanel ||= $(ui.oldPanel);
 
                     if (!$(this).data('topPositionTab')) {
                         $(this).data('topPositionTab', $(ui.newPanel).position().top);
@@ -318,12 +316,12 @@ const SICKCHILL = {
             });
 
             $('.datePresets').on('click', function () {
-                let def = $('#date_presets').val();
-                if (this.checked && def === '%x') {
-                    def = '%a, %b %d, %Y';
+                let defaultPreset = $('#date_presets').val();
+                if (this.checked && defaultPreset === '%x') {
+                    defaultPreset = '%a, %b %d, %Y';
                     $('#date_use_system_default').html('1');
                 } else if (!this.checked && $('#date_use_system_default').html() === '1') {
-                    def = '%x';
+                    defaultPreset = '%x';
                 }
 
                 $('#date_presets').attr('name', 'date_preset_old');
@@ -335,8 +333,8 @@ const SICKCHILL = {
                 $('#date_presets_old').attr('name', 'date_preset_na');
                 $('#date_presets_old').attr('id', 'date_presets_na');
 
-                if (def) {
-                    $('#date_presets').val(def);
+                if (defaultPreset) {
+                    $('#date_presets').val(defaultPreset);
                 }
             });
 
@@ -389,29 +387,31 @@ const SICKCHILL = {
         },
         index() {
             $('#log_dir').fileBrowser({title: _('Select log file folder location')});
-            $('#sickchill_background_path').fileBrowser({title: _('Select Background Image'), key: 'sickchill_background_path', includeFiles: 1, fileTypes: ['images']});
-            $('#custom_css_path').fileBrowser({title: _('Select CSS file'), key: 'custom_css_path', includeFiles: 1, fileTypes: ['css']});
+            $('#sickchill_background_path').fileBrowser({
+                title: _('Select Background Image'), key: 'sickchill_background_path', includeFiles: 1, fileTypes: ['images'],
+            });
+            $('#custom_css_path').fileBrowser({
+                title: _('Select CSS file'), key: 'custom_css_path', includeFiles: 1, fileTypes: ['css'],
+            });
         },
         backupRestore() {
             $('#Backup').on('click', () => {
                 $('#Backup').attr('disabled', true);
                 $('#Backup-result').html(loading);
-                const backupDir = $('#backupDir').val();
-                $.get(scRoot + '/config/backuprestore/backup', {backupDir})
-                    .done(data => {
-                        $('#Backup-result').html(data);
-                        $('#Backup').attr('disabled', false);
-                    });
+                const backupDirectory = $('#backupDir').val();
+                $.get(scRoot + '/config/backuprestore/backup', {backupDirectory}).done(data => {
+                    $('#Backup-result').html(data);
+                    $('#Backup').attr('disabled', false);
+                });
             });
             $('#Restore').on('click', () => {
                 $('#Restore').attr('disabled', true);
                 $('#Restore-result').html(loading);
                 const backupFile = $('#backupFile').val();
-                $.post(scRoot + '/config/backuprestore/restore', {backupFile})
-                    .done(data => {
-                        $('#Restore-result').html(data);
-                        $('#Restore').attr('disabled', false);
-                    });
+                $.post(scRoot + '/config/backuprestore/restore', {backupFile}).done(data => {
+                    $('#Restore-result').html(data);
+                    $('#Restore').attr('disabled', false);
+                });
             });
 
             $('#backupDir').fileBrowser({title: _('Select backup folder to save to'), key: 'backupPath'});
@@ -1235,7 +1235,7 @@ const SICKCHILL = {
                     // future: Why is this not just sent as json to begin with?
                     const notifyList = [];
                     for (const listKey in list) {
-                        if (Object.prototype.hasOwnProperty.call(list, listKey) && listKey.charAt(0) !== '_') {
+                        if (Object.hasOwn(list, listKey) && listKey.charAt(0) !== '_') {
                             notifyList.push(list[listKey]);
                         }
                     }
@@ -1253,7 +1253,7 @@ const SICKCHILL = {
                     });
                     let html = '<option value="-1">-- Select --</option>';
                     for (const sortedListKey in sortedList) {
-                        if (Object.prototype.hasOwnProperty.call(sortedList, sortedListKey) && sortedList[sortedListKey].id && sortedList[sortedListKey].name) {
+                        if (Object.hasOwn(sortedList, sortedListKey) && sortedList[sortedListKey].id && sortedList[sortedListKey].name) {
                             html += '<option value="' + sortedList[sortedListKey].id + '">' + $('<div>').text(sortedList[sortedListKey].name).html() + '</option>';
                         }
                     }
@@ -1728,8 +1728,8 @@ const SICKCHILL = {
             });
 
             $.fn.refreshMetadataConfig = function (first) {
-                let curMost = 0;
-                let curMostProvider = '';
+                let currentMost = 0;
+                let currentMostProvider = '';
 
                 $('.metadataDiv').each(function () { // eslint-disable-line complexity
                     const generatorName = $(this).attr('id');
@@ -1759,14 +1759,14 @@ const SICKCHILL = {
                         seasonAllBanner ? '1' : '0',
                     );
 
-                    let curNumber = 0;
+                    let currentNumber = 0;
                     for (const element of configArray) {
-                        curNumber += Number.parseInt(element, 10);
+                        currentNumber += Number.parseInt(element, 10);
                     }
 
-                    if (curNumber > curMost) {
-                        curMost = curNumber;
-                        curMostProvider = generatorName;
+                    if (currentNumber > currentMost) {
+                        currentMost = currentNumber;
+                        currentMostProvider = generatorName;
                     }
 
                     $('#' + generatorName + '_eg_show_metadata').attr('class', showMetadata ? 'enabled' : 'disabled');
@@ -1782,8 +1782,8 @@ const SICKCHILL = {
                     $('#' + generatorName + '_data').val(configArray.join('|'));
                 });
 
-                if (curMostProvider !== '' && first) {
-                    $('#metadataType option[value=' + curMostProvider + ']').attr('selected', 'selected');
+                if (currentMostProvider !== '' && first) {
+                    $('#metadataType option[value=' + currentMostProvider + ']').attr('selected', 'selected');
                     $(this).showHideMetadata();
                 }
             };
@@ -2734,7 +2734,9 @@ const SICKCHILL = {
                         subtitlesTd.empty();
                         $.each(subtitles, (index, language) => {
                             if (language !== '') {
-                                subtitlesTd.append($('<img/>', {src: scRoot + '/images/subtitles/flags/' + language + '.png', alt: language, width: 16, height: 11}));
+                                subtitlesTd.append($('<img/>', {
+                                    src: scRoot + '/images/subtitles/flags/' + language + '.png', alt: language, width: 16, height: 11,
+                                }));
                             }
                         });
                         icon.prop('class', 'displayshow-icon-sub');
@@ -2797,8 +2799,8 @@ const SICKCHILL = {
                 $(this).val('jump');
             });
 
-            $('#seasonJumpLinks a').on('click', ev => {
-                const season = $(ev.target).data('season');
+            $('#seasonJumpLinks a').on('click', event_ => {
+                const season = $(event_.target).data('season');
                 $('html,body').animate({scrollTop: $('#' + season).offset().top - 50}, 'slow');
                 $('#collapseSeason-' + season).collapse('show');
                 location.hash = season;
@@ -3280,7 +3282,7 @@ const SICKCHILL = {
                     row += '<td style="width: 8%;">';
                     subtitles = subtitles.split(',');
                     for (const i in subtitles) {
-                        if (Object.prototype.hasOwnProperty.call(subtitles, i)) {
+                        if (Object.hasOwn(subtitles, i)) {
                             row += '<img src="' + scRoot + '/images/subtitles/flags/' + subtitles[i] + '.png" width="16" height="11" alt="' + subtitles[i] + '" />&nbsp;';
                         }
                     }
@@ -3477,31 +3479,31 @@ const SICKCHILL = {
             }
         },
         massEdit() {
-            function findDirIndex(which) {
-                const dirParts = which.split('_');
-                return dirParts.at(-1);
+            function findDirectoryIndex(which) {
+                const directoryParts = which.split('_');
+                return directoryParts.at(-1);
             }
 
-            function editRootDir(path, options) {
+            function editRootDirectory(path, options) {
                 $('#new_root_dir_' + options.whichId).val(path);
                 $('#new_root_dir_' + options.whichId).change();
             }
 
             $('.new_root_dir').on('change', function () {
-                const curIndex = findDirIndex($(this).attr('id'));
-                $('#display_new_root_dir_' + curIndex).html('<b>' + $(this).val() + '</b>');
+                const currentIndex = findDirectoryIndex($(this).attr('id'));
+                $('#display_new_root_dir_' + currentIndex).html('<b>' + $(this).val() + '</b>');
             });
 
             $('.edit_root_dir').on('click', function () {
-                const curIndex = findDirIndex($(this).attr('id'));
-                const initialDir = $('#new_root_dir_' + curIndex).val();
-                $(this).nFileBrowser(editRootDir, {initialDir, whichId: curIndex});
+                const currentIndex = findDirectoryIndex($(this).attr('id'));
+                const initialDirectory = $('#new_root_dir_' + currentIndex).val();
+                $(this).nFileBrowser(editRootDirectory, {initialDirectory, whichId: currentIndex});
             });
 
             $('.delete_root_dir').on('click', function () {
-                const curIndex = findDirIndex($(this).attr('id'));
-                $('#new_root_dir_' + curIndex).val(null);
-                $('#display_new_root_dir_' + curIndex).html('<b>' + _('DELETED') + '</b>');
+                const currentIndex = findDirectoryIndex($(this).attr('id'));
+                $('#new_root_dir_' + currentIndex).val(null);
+                $('#display_new_root_dir_' + currentIndex).html('<b>' + _('DELETED') + '</b>');
             });
 
             SICKCHILL.common.QualityChooser.init();
@@ -3513,30 +3515,30 @@ const SICKCHILL = {
             });
 
             $('.get_more_eps').on('click', function () {
-                const curIndexerId = $(this).attr('id');
-                const checked = $('#allCheck-' + curIndexerId).is(':checked');
-                const lastRow = $('tr#' + curIndexerId);
+                const currentIndexerId = $(this).attr('id');
+                const checked = $('#allCheck-' + currentIndexerId).is(':checked');
+                const lastRow = $('tr#' + currentIndexerId);
                 const clicked = $(this).attr('data-clicked');
                 const action = $(this).attr('value');
 
                 if (!clicked) {
                     $.getJSON(scRoot + '/manage/showEpisodeStatuses', {
-                        indexer_id: curIndexerId, // eslint-disable-line camelcase
+                        indexer_id: currentIndexerId, // eslint-disable-line camelcase
                         whichStatus: $('#oldStatus').val(),
                     }, data => {
                         $.each(data, (season, eps) => {
                             $.each(eps, (episode, name) => {
-                                lastRow.after($.makeEpisodeRow(curIndexerId, season, episode, name, checked));
+                                lastRow.after($.makeEpisodeRow(currentIndexerId, season, episode, name, checked));
                             });
                         });
                     });
                     $(this).attr('data-clicked', 1);
                     $(this).prop('value', 'Collapse');
                 } else if (action.toLowerCase() === 'collapse') {
-                    $('.show-' + curIndexerId).hide();
+                    $('.show-' + currentIndexerId).hide();
                     $(this).prop('value', 'Expand');
                 } else if (action.toLowerCase() === 'expand') {
-                    $('.show-' + curIndexerId).show();
+                    $('.show-' + currentIndexerId).show();
                     $(this).prop('value', 'Collapse');
                 }
             });
@@ -3860,8 +3862,8 @@ const SICKCHILL = {
                 $('.ep_summary').hide();
                 $('.ep_summaryTrigger').on('click', function () {
                     $(this).next('.ep_summary').slideToggle('normal', function () {
-                        $(this).prev('.ep_summaryTrigger').attr('src', function (i, src) {
-                            return $(this).next('.ep_summary').is(':visible') ? src.replace('plus', 'minus') : src.replace('minus', 'plus');
+                        $(this).prev('.ep_summaryTrigger').attr('src', function (i, source) {
+                            return $(this).next('.ep_summary').is(':visible') ? source.replace('plus', 'minus') : source.replace('minus', 'plus');
                         });
                     });
                 });
@@ -4348,7 +4350,7 @@ const SICKCHILL = {
             let lastTxt = '';
             // @TODO This fixes the issue of the page not loading at all,
             //       before I added this I couldn't get the directories to show in the table.
-            const rootDirsWorkaround = function () {
+            const rootDirectoriesWorkaround = function () {
                 if (lastTxt === $('#rootDirText').val()) {
                     return false;
                 }
@@ -4362,9 +4364,9 @@ const SICKCHILL = {
                 loadContent();
             };
 
-            rootDirsWorkaround();
+            rootDirectoriesWorkaround();
 
-            $('#rootDirText').on('change', rootDirsWorkaround);
+            $('#rootDirText').on('change', rootDirectoriesWorkaround);
 
             $('#rootDirStaticList').on('click', '.dir_check', loadContent);
         },

@@ -66,23 +66,23 @@
         imagesContainer.height(scrollableHeight).css('maxHeight', scrollableHeight);
     }
 
-    function createImage(imageSrc, thumbSrc) {
+    function createImage(imageSource, thumbSource) {
         const image = $('<img alt="' + $('#showID').attr('value') + ' ' + imageType + '"/>')
             .attr('data-image-type', imageSelectorDialog.data('image-type'))
-            .addClass('image-selector-item').on('click', ev => {
+            .addClass('image-selector-item').on('click', event_ => {
                 $('.image-selector-item-selected').removeClass('image-selector-item-selected');
-                $(ev.target).addClass('image-selector-item-selected');
+                $(event_.target).addClass('image-selector-item-selected');
             });
 
         const wrapUrl = new URL(scRoot + '/imageSelector/url_wrap/', location.href);
-        if (thumbSrc) {
-            wrapUrl.searchParams.append('url', thumbSrc);
-            image.attr('data-thumb', thumbSrc);
+        if (thumbSource) {
+            wrapUrl.searchParams.append('url', thumbSource);
+            image.attr('data-thumb', thumbSource);
         } else {
-            wrapUrl.searchParams.append('url', imageSrc);
+            wrapUrl.searchParams.append('url', imageSource);
         }
 
-        image.attr('src', wrapUrl.href).attr('data-image', imageSrc);
+        image.attr('src', wrapUrl.href).attr('data-image', imageSource);
 
         image.appendTo(imagesContainer);
     }
@@ -117,9 +117,9 @@
                 if (selectedImage.length > 0) {
                     const image = selectedImage.data('image');
                     const thumb = selectedImage.data('thumb');
-                    const src = selectedImage.attr('src');
+                    const source = selectedImage.attr('src');
                     $('[name=' + imageType + ']').val((image ? image + '|' : '') + thumb);
-                    field.attr('src', src).addClass('modified');
+                    field.attr('src', source).addClass('modified');
                 }
 
                 $(this).dialog('close');
@@ -165,7 +165,7 @@
             imageSelectorElement.children('.error').hide();
 
             if (this.files) {
-                const loadFunction = ev => {
+                const loadFunction = event_ => {
                     const img = new Image();
                     img.addEventListener('load', () => {
                         if (imageTypeSizes[imageType].validate(img)) {
@@ -175,7 +175,7 @@
                             imageSelectorElement.children('.error').show();
                         }
                     });
-                    img.src = ev.target.result;
+                    img.src = event_.target.result;
                 };
 
                 for (const file of this.files) {

@@ -8,12 +8,20 @@ from sickchill.helper.common import try_int
 from .. import logger
 from . import db, helpers
 
-# regex to parse time (12/24 hour format)
+# regex to parse time (12/24-hour format)
 time_regex = re.compile(r"(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b", re.I)
 
 network_dict = {}
 
 sc_timezone = tz.tzlocal()
+
+
+class NetworkTimezoneLoadException(Exception):
+    """"Error loading network timezones"""
+
+
+class GetNetworkTimezoneException(Exception):
+    """"Error getting network timezone"""
 
 
 def update_network_dict():
@@ -78,7 +86,7 @@ def load_network_dict():
 
         network_dict.clear()
         network_dict.update(dict(cur_network_list))
-    except Exception:
+    except NetworkTimezoneLoadException:
         pass
 
 
@@ -97,7 +105,7 @@ def get_network_timezone(network):
 
     try:
         network_tz = (tz.gettz(network_tz_name) or sc_timezone) if network_tz_name else sc_timezone
-    except Exception:
+    except GetNetworkTimezoneException:
         return sc_timezone
     return network_tz
 
@@ -141,5 +149,5 @@ def parse_date_time(d, t, network):
     return result.replace(hour=hr, minute=m, tzinfo=network_tz)
 
 
-def test_timeformat(time_string):
+def test_time_format(time_string):
     return time_regex.search(time_string) is not None
