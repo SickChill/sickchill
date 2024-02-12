@@ -27,7 +27,7 @@ class Provider(TorrentProvider):
 
     def _check_auth(self):
         if not self.username or not self.passkey:
-            raise AuthException(("Your authentication credentials for {} are " "missing, check your config.").format(self.name))
+            raise AuthException(f"Your authentication credentials for {self.name} are missing, check your config.")
 
         return True
 
