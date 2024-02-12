@@ -18,14 +18,14 @@ class SearchResult(object):
     Represents a search result from an indexer.
     """
 
-    def __init__(self, episodes):
-        self.provider: Union["GenericProvider", None] = None
+    def __init__(self, episodes, provider=None, url=""):
+        self.provider: Union["GenericProvider", None] = provider
 
         # release show object
         self.show: Union["TVShow", None] = None
 
         # URL to the NZB/torrent file
-        self.url: str = ""
+        self.url: str = url
 
         # used by some providers to store extra info associated with the result
         self.extraInfo = []
@@ -62,12 +62,10 @@ class SearchResult(object):
 
     def from_json(self, result_dict):
         self.name = result_dict.get("name")
-        self.url = result_dict.get("url")
         self.size = result_dict.get("size")
         self.version = result_dict.get("version")
         self.release_group = result_dict.get("release_group")
         self.quality = int(result_dict.get("quality"))
-        self.provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get("provider"))
 
     @classmethod
     def make_result(cls, result_dict):
@@ -76,8 +74,12 @@ class SearchResult(object):
             return show[0]
 
         show = show[1]
+
         episode_objects = [show.get_episode(result_dict.get("season"), ep) for ep in result_dict.get("episodes").split("|") if ep]
-        result = cls(episode_objects)
+        provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get("provider"))
+        url = result_dict.get("url")
+        result = cls(episode_objects, provider, url)
+
         result.from_json(result_dict)
         result.show = show
 
@@ -86,7 +88,7 @@ class SearchResult(object):
     def __check_url(self):
         if not self.__checked_url and self.url and "jackett_apikey" in self.url:
             response = self.provider.get_url(self.url, allow_redirects=False, returns="response")
-            if response.next and response.next.url and response.next.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", self.url):
+            if response.next and response.next.url and response.next.url.startswith("magnet:") and re.search(r"urn:btih:(\w{32,40})", response.next.url):
                 self.url = response.next.url
         self.__checked_url = True
 
@@ -142,8 +144,8 @@ class NZBSearchResult(SearchResult):
     Regular NZB result with a URL to the NZB
     """
 
-    def __init__(self, episodes):
-        super().__init__(episodes)
+    def __init__(self, episodes, provider, url):
+        super().__init__(episodes, provider, url)
         self.result_type = "nzb"
 
 
@@ -152,8 +154,8 @@ class NZBDataSearchResult(SearchResult):
     NZB result where the actual NZB XML data is stored in the extraInfo
     """
 
-    def __init__(self, episodes):
-        super().__init__(episodes)
+    def __init__(self, episodes, provider, url):
+        super().__init__(episodes, provider, url)
         self.result_type = "nzbdata"
 
 
@@ -162,8 +164,8 @@ class TorrentSearchResult(SearchResult):
     Torrent result with a URL to the torrent
     """
 
-    def __init__(self, episodes):
-        super().__init__(episodes)
+    def __init__(self, episodes, provider, url):
+        super().__init__(episodes, provider, url)
         self.result_type = "torrent"
 
 
