@@ -16,18 +16,18 @@
         <div id="showTabs">
             <!-- Nav tabs -->
             <ul>
-                % for curShowlist in sortedShowLists:
-                    % if curShowlist[1]:
-                        <li><a href="#${curShowlist[0].lower()}TabContent" id="${curShowlist[0].lower()}Tab">${curShowlist[0]}</a></li>
+                % for cur_show_list in sorted_show_lists:
+                    % if cur_show_list[1]:
+                        <li><a href="#${cur_show_list[0].lower()}TabContent" id="${cur_show_list[0].lower()}Tab">${cur_show_list[0]}</a></li>
                     % endif
                 % endfor
             </ul>
             <!-- Tab panes -->
         <div>
         % endif
-        % for curShowlist in sortedShowLists:
-            % if curShowlist[1]:
-            <% curListType = curShowlist[0] %>
+        % for cur_show_list in sorted_show_lists:
+            % if cur_show_list[1]:
+            <% curListType = cur_show_list[0] %>
                 <div id=${("showsTabContent", "animeTabContent")[curListType == "Anime"]}>
                     <div class="row home-container">
                         <div class="col-md-12">
@@ -39,7 +39,7 @@
                             % endif
                             <div class="row">
                                 <div class="col-md-12">
-                                        <%include file="/inc_home_show_list.mako" args="curListType=curListType, myShowList=curShowlist[1]" />
+                                        <%include file="/inc_home_show_list.mako" args="curListType=curListType, myShowList=cur_show_list[1]" />
                                 </div>
                             </div>
                         </div>
@@ -58,10 +58,10 @@
                 % if settings.HOME_LAYOUT == 'poster':
                     <div class="loading-spinner"></div>
                 % endif
-                % for curShowlist in sortedShowLists:
+                % for cur_show_list in sorted_show_lists:
                     <div class="row">
                         <div class="col-md-12">
-                                <%include file="/inc_home_show_list.mako" args="curListType=curShowlist[0], myShowList=curShowlist[1]" />
+                                <%include file="/inc_home_show_list.mako" args="curListType=cur_show_list[0], myShowList=cur_show_list[1]" />
                         </div>
                     </div>
                 % endfor

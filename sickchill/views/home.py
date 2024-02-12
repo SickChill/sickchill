@@ -100,7 +100,7 @@ class Home(WebRoot):
                     else:
                         shows.append(show)
 
-            sortedShowLists = [
+            sorted_show_lists = [
                 ["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))],
                 ["Anime", sorted(anime, key=lambda mbr: attrgetter("sort_name")(mbr))],
             ]
@@ -111,14 +111,14 @@ class Home(WebRoot):
                 if selected_root_dir in show.get_location:
                     shows.append(show)
 
-            sortedShowLists = [["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))]]
+            sorted_show_lists = [["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))]]
 
         stats = self.show_statistics()
         return t.render(
             title=_("Home"),
             header=_("Show List"),
             topmenu="home",
-            sortedShowLists=sortedShowLists,
+            sorted_show_lists=sorted_show_lists,
             show_stat=stats[0],
             max_download_count=stats[1],
             controller="home",
@@ -445,18 +445,18 @@ class Home(WebRoot):
         host = config.clean_hosts(self.get_query_argument("host"))
         password = filters.unhide(settings.PLEX_CLIENT_PASSWORD, self.get_query_argument("password"))
 
-        finalResult = ""
-        for curHost in [x.strip() for x in host.split(",")]:
-            curResult = notifiers.plex_notifier.test_notify_pht(unquote_plus(curHost), username, password)
-            if len(curResult.split(":")) > 2 and "OK" in curResult.split(":")[2]:
-                finalResult += _("Successful test notice sent to Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(curHost))
+        final_result = ""
+        for cur_host in [x.strip() for x in host.split(",")]:
+            cur_result = notifiers.plex_notifier.test_notify_pht(unquote_plus(cur_host), username, password)
+            if len(cur_result.split(":")) > 2 and "OK" in cur_result.split(":")[2]:
+                final_result += _("Successful test notice sent to Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(cur_host))
             else:
-                finalResult += _("Test failed for Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(curHost))
-            finalResult += "<br>" + "\n"
+                final_result += _("Test failed for Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(cur_host))
+            final_result += "<br>" + "\n"
 
         ui.notifications.message(_("Tested Plex Home Theater(s)") + ":", unquote_plus(host.replace(",", ", ")))
 
-        return finalResult
+        return final_result
 
     def testPMS(self):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
@@ -466,20 +466,20 @@ class Home(WebRoot):
         password = filters.unhide(settings.PLEX_SERVER_PASSWORD, self.get_query_argument("password"))
         plex_server_token = self.get_query_argument("plex_server_token")
 
-        finalResult = ""
+        final_result = ""
 
-        curResult = notifiers.plex_notifier.test_notify_pms(unquote_plus(host), username, password, plex_server_token)
-        if curResult is None:
-            finalResult += _("Successful test of Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(host.replace(",", ", ")))
-        elif curResult is False:
-            finalResult += _("Test failed, No Plex Media Server host specified")
+        cur_result = notifiers.plex_notifier.test_notify_pms(unquote_plus(host), username, password, plex_server_token)
+        if cur_result is None:
+            final_result += _("Successful test of Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(host.replace(",", ", ")))
+        elif cur_result is False:
+            final_result += _("Test failed, No Plex Media Server host specified")
         else:
-            finalResult += _("Test failed for Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(str(curResult).replace(",", ", ")))
-        finalResult += "<br>" + "\n"
+            final_result += _("Test failed for Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(str(cur_result).replace(",", ", ")))
+        final_result += "<br>" + "\n"
 
         ui.notifications.message(_("Tested Plex Media Server host(s)") + ":", unquote_plus(host.replace(",", ", ")))
 
-        return finalResult
+        return final_result
 
     @staticmethod
     def testLibnotify():
@@ -784,9 +784,9 @@ class Home(WebRoot):
         submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid}", "icon": "fa fa-pencil"}]
 
         try:
-            showLoc = (show_obj.location, True)
+            show_location = (show_obj.location, True)
         except ShowDirectoryNotFoundException:
-            showLoc = (show_obj.get_location, False)
+            show_location = (show_obj.get_location, False)
 
         show_message = ""
 
@@ -877,7 +877,7 @@ class Home(WebRoot):
                     # noinspection PyPep8
                     submenu.append({"title": _("Download Subtitles"), "path": f"home/subtitleShow?show={show_obj.indexerid}", "icon": "fa fa-language"})
 
-        epCounts = {
+        ep_counts = {
             Overview.SKIPPED: 0,
             Overview.WANTED: 0,
             Overview.QUAL: 0,
@@ -889,11 +889,11 @@ class Home(WebRoot):
         }
         epCats = {}
 
-        for curResult in sql_results:
-            curEpCat = show_obj.get_overview(curResult["status"])
+        for cur_result in sql_results:
+            curEpCat = show_obj.get_overview(cur_result["status"])
             if curEpCat:
-                epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
-                epCounts[curEpCat] += 1
+                epCats[str(cur_result["season"]) + "x" + str(cur_result["episode"])] = curEpCat
+                ep_counts[curEpCat] += 1
 
         if settings.ANIME_SPLIT_HOME:
             shows = []
@@ -903,12 +903,12 @@ class Home(WebRoot):
                     anime.append(show)
                 else:
                     shows.append(show)
-            sortedShowLists = [
+            sorted_show_lists = [
                 ["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))],
                 ["Anime", sorted(anime, key=lambda mbr: attrgetter("sort_name")(mbr))],
             ]
         else:
-            sortedShowLists = [["Shows", sorted(settings.showList, key=lambda mbr: attrgetter("sort_name")(mbr))]]
+            sorted_show_lists = [["Shows", sorted(settings.showList, key=lambda mbr: attrgetter("sort_name")(mbr))]]
 
         bwl = None
         if show_obj.is_anime:
@@ -938,14 +938,14 @@ class Home(WebRoot):
 
         return t.render(
             submenu=submenu,
-            showLoc=showLoc,
+            show_location=show_location,
             show_message=show_message,
             show=show_obj,
             sql_results=sql_results,
             seasonResults=seasonResults,
-            sortedShowLists=sortedShowLists,
+            sorted_show_lists=sorted_show_lists,
             bwl=bwl,
-            epCounts=epCounts,
+            ep_counts=ep_counts,
             epCats=epCats,
             all_scene_exceptions=show_obj.exceptions,
             scene_numbering=get_scene_numbering_for_show(indexerid, indexer),
