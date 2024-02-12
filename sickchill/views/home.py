@@ -1645,7 +1645,7 @@ class Home(WebRoot):
         # show_object: TVShow = Show.find(settings.showList, show)
         # sickchill.oldbeard.search.search_providers(
         #     show_object,
-        #     show_object.getEpisode(season=season, episode=episode or 1),
+        #     show_object.get_episode(season=season, episode=episode or 1),
         #     downCurQuality=True,
         #     manual=True,
         #     manual_snatch=('season', 'episode')[episode is not None]
