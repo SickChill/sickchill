@@ -137,7 +137,7 @@ const SICKCHILL = {
                     + '<input type="checkbox" id="deleteFiles" name="deleteFiles"/>&nbsp;'
                     + '<label for="deleteFiles" class="red-text">Check to delete files as well. IRREVERSIBLE</label>',
                 confirm(event) {
-                    location.href = event.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '');
+                    location.href = event.context.href + ($('#deleteFiles')[0].checked ? '&full=1' : '&full=0');
                 },
             });
 
