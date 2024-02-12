@@ -75,7 +75,7 @@
 
                                         <div class="traktShowTitleIcons">
                                             <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_imdb_id}&amp;show_name=${current_result['title'] | u}&amp;indexer=IMDB"
-                                               class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
+                                               class="btn btn-xs">${_('Add Show')}</a>
                                         </div>
                                     </div>
                                 </div>
