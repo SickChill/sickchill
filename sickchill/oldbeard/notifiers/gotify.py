@@ -116,7 +116,7 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_LOGIN]
             self._notify_gotify(title, update_text.format(ipaddress))
 
-    def _notify_gotify(self, title, message, host, token=None, force=False):
+    def _notify_gotify(self, title, message, host=None, token=None, force=False):
         """
         Sends a Gotify notification
 
