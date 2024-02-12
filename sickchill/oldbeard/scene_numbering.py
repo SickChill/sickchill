@@ -23,6 +23,7 @@ def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=Tr
     (so the return values will always be set)
 
     :param indexer_id: int
+    :param indexer: int
     :param season: int
     :param episode: int
     :param fallback_to_xem: bool If set (the default), check xem for matches if there is no local scene numbering
@@ -247,6 +248,7 @@ def find_xem_absolute_numbering(indexer_id, indexer, absolute_number):
     Refreshes/Loads as needed.
 
     :param indexer_id: int
+    :param indexer: int
     :param absolute_number: int
     :return: int
     """
@@ -305,6 +307,7 @@ def get_indexer_absolute_numbering_for_xem(indexer_id, indexer, sceneAbsoluteNum
     :param indexer_id: int
     :param indexer: int
     :param sceneAbsoluteNumber: int
+    :param scene_season: default None
     :return: int
     """
     if indexer_id is None or sceneAbsoluteNumber is None:
@@ -459,6 +462,8 @@ def xem_refresh(indexer_id, indexer, force=False):
     Refresh data from xem for a tv show
 
     :param indexer_id: int
+    :param indexer: int
+    :param force: default False
     """
     if not indexer_id or indexer_id < 1:
         return
