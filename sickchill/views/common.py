@@ -20,8 +20,7 @@ def get_lookup():
             directories=[os.path.join(settings.PROG_DIR, "gui/" + settings.GUI_NAME + "/views/")],
             module_directory=os.path.join(settings.CACHE_DIR, "mako"),
             strict_undefined=settings.DEVELOPER or settings.DEBUG,
-            #  format_exceptions=True,
-            filesystem_checks=True,
+            format_exceptions=True,
             imports=["from sickchill.oldbeard.filters import checked, disabled, hidden, selected"],
         ),
     )
@@ -37,33 +36,16 @@ class PageTemplate(Template):
         self.template = lookup.get_template(filename)
 
         self.context["scRoot"] = settings.WEB_ROOT
-        self.context["sbHttpPort"] = settings.WEB_PORT
-        self.context["sbHttpsPort"] = settings.WEB_PORT
-        self.context["sbHttpsEnabled"] = settings.ENABLE_HTTPS
-        self.context["sbHandleReverseProxy"] = settings.HANDLE_REVERSE_PROXY
-        self.context["sbDefaultPage"] = settings.DEFAULT_PAGE
-        self.context["scLogin"] = rh.get_current_user()
-        self.context["sbStartTime"] = rh.startTime
+        self.context["sc_default_page"] = settings.DEFAULT_PAGE
+        self.context["current_user"] = rh.get_current_user()
+        self.context["page_load_start_time"] = rh.page_load_start_time
         self.context["static_url"] = rh.static_url
         self.context["reverse_url"] = rh.reverse_url
         self.context["linkify"] = linkify
 
-        # if rh.request.headers['Host'][0] == '[':
-        #     self.context['sbHost'] = re.match(r"^\[.*\]", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
-        # else:
-        #     self.context['sbHost'] = re.match(r"^[^:]+", rh.request.headers['Host'], re.X | re.M | re.S).group(0)
-        #
-        # if "X-Forwarded-Host" in rh.request.headers:
-        #     self.context['sbHost'] = rh.request.headers['X-Forwarded-Host']
-        # if "X-Forwarded-Port" in rh.request.headers:
-        #     sbHttpPort = rh.request.headers['X-Forwarded-Port']
-        #     self.context['sbHttpsPort'] = sbHttpPort
-        # if "X-Forwarded-Proto" in rh.request.headers:
-        #     self.context['sbHttpsEnabled'] = rh.request.headers['X-Forwarded-Proto'].lower() == 'https'
-
-        self.context["numErrors"] = len(classes.ErrorViewer.errors)
-        self.context["numWarnings"] = len(classes.WarningViewer.errors)
-        self.context["scPID"] = str(settings.PID)
+        self.context["error_count"] = len(classes.ErrorViewer.errors)
+        self.context["warning_count"] = len(classes.WarningViewer.errors)
+        self.context["process_id"] = str(settings.PID)
 
         self.context["title"] = "FixME"
         self.context["header"] = "FixME"
@@ -77,7 +59,7 @@ class PageTemplate(Template):
         self.context["remote_ip"] = rh.request.remote_ip
 
     def render(self, *args, **kwargs):
-        self.context["makoStartTime"] = time.time()
+        self.context["mako_load_start_time"] = time.time()
         context = self.context
         context.update(kwargs)
         # noinspection PyBroadException

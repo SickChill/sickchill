@@ -28,7 +28,7 @@ class ConfigBackupRestore(Config):
 
     @staticmethod
     def backup(backupDir=None):
-        finalResult = ""
+        final_result = ""
 
         if backupDir:
             source = [
@@ -47,32 +47,32 @@ class ConfigBackupRestore(Config):
                     source.append(os.path.join(path, filename))
 
             if helpers.backup_config_zip(source, target, settings.DATA_DIR):
-                finalResult += "Successful backup to " + target
+                final_result += "Successful backup to " + target
             else:
-                finalResult += "Backup FAILED"
+                final_result += "Backup FAILED"
         else:
-            finalResult += "You need to choose a folder to save your backup to!"
+            final_result += "You need to choose a folder to save your backup to!"
 
-        finalResult += "<br>\n"
+        final_result += "<br>\n"
 
-        return finalResult
+        return final_result
 
     @staticmethod
     def restore(backupFile=None):
-        finalResult = ""
+        final_result = ""
 
         if backupFile:
             source = backupFile
             target_dir = os.path.join(settings.DATA_DIR, "restore")
 
             if helpers.restore_config_zip(source, target_dir):
-                finalResult += "Successfully extracted restore files to " + target_dir
-                finalResult += "<br>Restart sickchill to complete the restore."
+                final_result += "Successfully extracted restore files to " + target_dir
+                final_result += "<br>Restart sickchill to complete the restore."
             else:
-                finalResult += "Restore FAILED"
+                final_result += "Restore FAILED"
         else:
-            finalResult += "You need to select a backup file to restore!"
+            final_result += "You need to select a backup file to restore!"
 
-        finalResult += "<br>\n"
+        final_result += "<br>\n"
 
-        return finalResult
+        return final_result

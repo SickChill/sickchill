@@ -145,7 +145,7 @@ def _fake_specify_ep(self, season, episode):
 
 
 # the real one tries to contact TVDB just stop it from getting more info on the ep
-TVEpisode.specifyEpisode = _fake_specify_ep
+TVEpisode.specify_episode = _fake_specify_ep
 
 
 # =================
@@ -203,14 +203,14 @@ class SickChillTestPostProcessorCase(unittest.TestCase):
                 else:
                     episode = TVEpisode(self.show, season, episode)
                 self.show.episodes[season][episode] = episode
-                episode.saveToDB()
+                episode.save_to_db()
 
-        self.show.saveToDB()
+        self.show.save_to_db()
         settings.showList = [self.show]
 
     def tearDown(self):
         settings.showList = []
-        self.show.deleteShow(True)
+        self.show.delete_show(True)
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()

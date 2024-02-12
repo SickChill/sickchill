@@ -40,7 +40,7 @@
                             <i>${cur_show['show']['votes']} ${_('votes')}</i>
                             <div class="traktShowTitleIcons">
                                 <a href="${scRoot}/addShows/addShowByID?indexer_id=${cur_show['show']['ids']['tvdb']}&amp;show_name=${cur_show['show']['title'] | u}"
-                                   class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
+                                   class="btn btn-xs">${_('Add Show')}</a>
                                 % if black_list:
                                     <a href="${scRoot}/addShows/addShowToBlacklist?indexer_id=${cur_show['show']['ids']['tvdb'] or cur_show['show']['ids']['tvrage']}"
                                        class="btn btn-xs">${_('Remove Show')}</a>

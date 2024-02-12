@@ -31,7 +31,7 @@ class TorrentProvider(GenericProvider):
             show = Show.find(settings.showList, int(result["showid"]))
 
             if show:
-                episode = show.getEpisode(result["season"], result["episode"])
+                episode = show.get_episode(result["season"], result["episode"])
                 self.current_episode_object = episode
 
                 for term in self.proper_strings:

@@ -11,9 +11,7 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider):
-    """
-    BJ-Share Torrent provider.
-    """
+    """BJ-Share Torrent provider."""
 
     def __init__(self):
         """Initialize the class."""

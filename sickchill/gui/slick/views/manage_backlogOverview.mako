@@ -10,16 +10,16 @@
     <div class="row">
         <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12 pull-right">
             <div class="pull-right">
-                % if totalWanted > 0:
-                    <span class="listing-key wanted">${_('Wanted')}: <b>${totalWanted}</b></span>
+                % if total_wanted > 0:
+                    <span class="listing-key wanted">${_('Wanted')}: <b>${total_wanted}</b></span>
                 % endif
 
-                % if totalQualSnatched > 0:
-                    <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${totalQualSnatched}</b></span>
+                % if total_qual_snatched > 0:
+                    <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${total_qual_snatched}</b></span>
                 % endif
 
-                % if totalQual > 0:
-                    <span class="listing-key qual">${_('Allowed')}: <b>${totalQual}</b></span>
+                % if total_qual > 0:
+                    <span class="listing-key qual">${_('Allowed')}: <b>${total_qual}</b></span>
                 % endif
             </div>
         </div>
@@ -35,38 +35,38 @@
         <div class="col-md-12">
             <label for="pickShow">${_('Jump to Show')}:</label>
             <select id="pickShow" class="form-control form-control-inline input-sm">
-                % for curShow in backLogShows:
-                    <option value="${curShow.indexerid}">${curShow.name}</option>
+                % for cur_show in backlog_shows:
+                    <option value="${cur_show.indexerid}">${cur_show.name}</option>
                 % endfor
             </select>
         </div>
     </div>
 
-    % for curShow in backLogShows:
-        % if not showQualSnatched(curShow) and not showCounts[curShow.indexerid][Overview.WANTED] + showCounts[curShow.indexerid][Overview.QUAL]:
+    % for cur_show in backlog_shows:
+        % if not show_qual_snatched(cur_show) and not show_counts[cur_show.indexerid][Overview.WANTED] + show_counts[cur_show.indexerid][Overview.QUAL]:
             <% continue %>
         % endif
 
         <div class="row">
             <div class="col-md-12">
                 <div class="pull-right" style="margin-top: 30px;">
-                    % if showCounts[curShow.indexerid][Overview.WANTED] > 0:
-                        <span class="listing-key wanted">${_('Wanted')}: <b>${showCounts[curShow.indexerid][Overview.WANTED]}</b></span>
+                    % if show_counts[cur_show.indexerid][Overview.WANTED] > 0:
+                        <span class="listing-key wanted">${_('Wanted')}: <b>${show_counts[cur_show.indexerid][Overview.WANTED]}</b></span>
                     % endif
 
-                    % if showQualSnatched(curShow) and showCounts[curShow.indexerid][Overview.SNATCHED] > 0:
-                        <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${showCounts[curShow.indexerid][Overview.SNATCHED]}</b></span>
+                    % if show_qual_snatched(cur_show) and show_counts[cur_show.indexerid][Overview.SNATCHED] > 0:
+                        <span class="listing-key snatched">${_('Snatched (Allowed)')}: <b>${show_counts[cur_show.indexerid][Overview.SNATCHED]}</b></span>
                     % endif
 
-                    % if showCounts[curShow.indexerid][Overview.QUAL] > 0:
-                        <span class="listing-key qual">${_('Allowed')}: <b>${showCounts[curShow.indexerid][Overview.QUAL]}</b></span>
+                    % if show_counts[cur_show.indexerid][Overview.QUAL] > 0:
+                        <span class="listing-key qual">${_('Allowed')}: <b>${show_counts[cur_show.indexerid][Overview.QUAL]}</b></span>
                     % endif
 
-                    <a class="btn btn-inline forceBacklog" href="${scRoot}/manage/backlogShow?indexer_id=${curShow.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>
+                    <a class="btn btn-inline forceBacklog" href="${scRoot}/manage/backlogShow?indexer_id=${cur_show.indexerid}"><i class="icon-play-circle icon-white"></i> ${_('Force Backlog')}</a>
                 </div>
 
                 <h2 style="display: inline-block;">
-                    <a href="${scRoot}/home/displayShow?show=${curShow.indexerid}">${curShow.name}</a>
+                    <a href="${scRoot}/home/displayShow?show=${cur_show.indexerid}">${cur_show.name}</a>
                 </h2>
             </div>
         </div>
@@ -74,31 +74,31 @@
             <div class="col-md-12">
                 <div class="horizontal-scroll">
                     <table class="sickchillTable">
-                        <tr class="seasonheader" id="show-${curShow.indexerid}">
+                        <tr class="seasonheader" id="show-${cur_show.indexerid}">
                             <td colspan="3" class="align-left" style="position: relative;"></td>
                         </tr>
                         <tr class="seasoncols"><th>${_('Episode')}</th><th>${_('Name')}</th><th class="nowrap">${_('Airdate')}</th></tr>
 
-                        % for curResult in showSQLResults[curShow.indexerid]:
+                        % for cur_result in show_sql_results[cur_show.indexerid]:
                         <%
-                            whichStr = episode_num(curResult['season'], curResult['episode']) or episode_num(curResult['season'], curResult['episode'], numbering='absolute')
-                            if whichStr not in showCats[curShow.indexerid] or showCats[curShow.indexerid][whichStr] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
+                            which_str = episode_num(cur_result['season'], cur_result['episode']) or episode_num(cur_result['season'], cur_result['episode'], numbering='absolute')
+                            if which_str not in show_categories[cur_show.indexerid] or show_categories[cur_show.indexerid][which_str] not in (Overview.QUAL, Overview.WANTED, Overview.SNATCHED):
                                 continue
 
-                            if not showQualSnatched(curShow) and showCats[curShow.indexerid][whichStr] == Overview.SNATCHED:
+                            if not show_qual_snatched(cur_show) and show_categories[cur_show.indexerid][which_str] == Overview.SNATCHED:
                                 continue
                         %>
-                            <tr class="seasonstyle ${Overview.overviewStrings[showCats[curShow.indexerid][whichStr]]}">
-                                <td class="tableleft text-center">${whichStr}</td>
+                            <tr class="seasonstyle ${Overview.overviewStrings[show_categories[cur_show.indexerid][which_str]]}">
+                                <td class="tableleft text-center">${which_str}</td>
                                 <td class="tableright text-center nowrap">
-                                    ${curResult["name"]}
+                                    ${cur_result["name"]}
                                 </td>
                                 <td>
                                 % try:
-                                    % if int(curResult['airdate']) > 1:
-                                    <% air_date = datetime.datetime.fromordinal(curResult['airdate']) %>
-                                    % if air_date > datetime.datetime.utcfromtimestamp(0) and curShow.network:
-                                        <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(curResult['airdate'], curShow.airs, curShow.network)) %>
+                                    % if int(cur_result['airdate']) > 1:
+                                    <% air_date = datetime.datetime.fromordinal(cur_result['airdate']) %>
+                                    % if air_date > datetime.datetime.utcfromtimestamp(0) and cur_show.network:
+                                        <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_result['airdate'], cur_show.airs, cur_show.network)) %>
                                     % endif
                                         <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
                                     % else:

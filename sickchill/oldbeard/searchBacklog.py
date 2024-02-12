@@ -15,7 +15,7 @@ class BacklogSearchScheduler(scheduler.Scheduler):
         if self.action.lastBacklog <= 1:
             return datetime.date.today()
         else:
-            return datetime.date.fromordinal(self.action.lastBacklog + self.action.cycleTime)
+            return datetime.date.fromordinal(int(self.action.lastBacklog + self.action.cycleTime))
 
 
 class BacklogSearcher(object):
@@ -139,7 +139,7 @@ class BacklogSearcher(object):
                 elif cur_quality in allowed_qualities:
                     continue
 
-            episode_object = show.getEpisode(sql_result["season"], sql_result["episode"])
+            episode_object = show.get_episode(sql_result["season"], sql_result["episode"])
 
             if episode_object.season not in wanted:
                 wanted[episode_object.season] = [episode_object]

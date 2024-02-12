@@ -418,7 +418,7 @@ class QueueItemAdd(ShowQueueItem):
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
                 existing_show = Show.find(settings.showList, self.indexer_id)
                 # noinspection PyProtectedMember
-                if existing_show and not os.path.isdir(existing_show._location):
+                if existing_show and not os.path.isdir(existing_show.get_location):
                     new_show = existing_show
                 else:
                     raise error
@@ -480,7 +480,7 @@ class QueueItemAdd(ShowQueueItem):
         self.show.load_imdb_info()
 
         try:
-            self.show.saveToDB()
+            self.show.save_to_db()
         except Exception as error:
             logger.exception(f"Error saving the show to the database: {error}")
             logger.debug(traceback.format_exc())
@@ -492,7 +492,7 @@ class QueueItemAdd(ShowQueueItem):
             settings.showList.append(self.show)
 
         try:
-            self.show.loadEpisodesFromIndexer(force_all=True)
+            self.show.load_episodes_from_indexer(force_all=True)
         except Exception as error:
             logger.exception(f"Error with {self.show.idxr.name}, not creating episode list: {error}")
             logger.debug(traceback.format_exc())
@@ -501,7 +501,7 @@ class QueueItemAdd(ShowQueueItem):
         name_cache.build_name_cache(self.show)
 
         try:
-            self.show.loadEpisodesFromDir()
+            self.show.load_episodes_from_dir()
         except Exception as error:
             logger.exception(f"Error searching dir for episodes: {error}")
             logger.debug(traceback.format_exc())
@@ -512,11 +512,11 @@ class QueueItemAdd(ShowQueueItem):
             logger.info("Launching backlog for this show since its episodes are WANTED")
             settings.backlogSearchScheduler.action.searchBacklog([self.show])
 
-        self.show.writeMetadata()
-        self.show.updateMetadata()
-        self.show.populateCache()
+        self.show.write_metadata()
+        self.show.update_metadata()
+        self.show.populate_cache()
 
-        self.show.flushEpisodes()
+        self.show.flush_episodes()
 
         if settings.USE_TRAKT:
             # if there are specific episodes that need to be added by trakt
@@ -565,11 +565,11 @@ class QueueItemRefresh(ShowQueueItem):
 
         logger.info(f"Performing refresh on {self.show.name}")
 
-        self.show.refreshDir()
-        self.show.writeMetadata()
+        self.show.refresh_dir()
+        self.show.write_metadata()
         if self.force:
-            self.show.updateMetadata()
-        self.show.populateCache()
+            self.show.update_metadata()
+        self.show.populate_cache()
 
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
@@ -597,7 +597,7 @@ class QueueItemRename(ShowQueueItem):
 
         ep_obj_rename_list = []
 
-        ep_obj_list = self.show.getAllEpisodes(has_location=True)
+        ep_obj_list = self.show.get_all_episodes(has_location=True)
         for cur_ep_obj in ep_obj_list:
             # Only want to rename if we have a location
             if cur_ep_obj.location:
@@ -655,18 +655,18 @@ class QueueItemUpdate(ShowQueueItem):
 
         # have to save show before reading episodes from db
         try:
-            self.show.saveToDB()
+            self.show.save_to_db()
         except Exception as error:
             logger.exception(f"Error saving show info to the database: {error}")
             logger.debug(traceback.format_exc())
 
         # get episode list from DB
-        DBEpList = self.show.loadEpisodesFromDB()
+        DBEpList = self.show.load_episodes_from_db()
 
         # get episode list from TVDB
         logger.debug(f"Loading all episodes from {self.show.idxr.name}")
         try:
-            IndexerEpList = self.show.loadEpisodesFromIndexer(self.force)
+            IndexerEpList = self.show.load_episodes_from_indexer(self.force)
         except Exception as error:
             logger.exception(f"Unable to get info from {self.show.idxr.name}, the show info will not be refreshed: {error}")
             IndexerEpList = None
@@ -674,8 +674,8 @@ class QueueItemUpdate(ShowQueueItem):
         if IndexerEpList:
             for curSeason in IndexerEpList:
                 for curEpisode in IndexerEpList[curSeason]:
-                    curEp = self.show.getEpisode(curSeason, curEpisode)
-                    curEp.saveToDB()
+                    curEp = self.show.get_episode(curSeason, curEpisode)
+                    curEp.save_to_db()
 
                     if curSeason in DBEpList and curEpisode in DBEpList[curSeason]:
                         del DBEpList[curSeason][curEpisode]
@@ -684,15 +684,15 @@ class QueueItemUpdate(ShowQueueItem):
             for curSeason in DBEpList:
                 for curEpisode in DBEpList[curSeason]:
                     logger.info("Permanently deleting episode {0:02d}E{1:02d} from the database".format(curSeason, curEpisode))
-                    curEp = self.show.getEpisode(curSeason, curEpisode)
+                    curEp = self.show.get_episode(curSeason, curEpisode)
                     try:
-                        curEp.deleteEpisode()
+                        curEp.delete_episode()
                     except EpisodeDeletedException:
                         pass
 
         #  save show again, in case episodes have changed
         try:
-            self.show.saveToDB()
+            self.show.save_to_db()
         except Exception as error:
             logger.exception(f"Error saving show info to the database: {error}")
             logger.debug(traceback.format_exc())
@@ -716,7 +716,7 @@ class QueueItemRemove(ShowQueueItem):
     def run(self):
         super(QueueItemRemove, self).run()
         logger.info(f"Removing {self.show.name}")
-        self.show.deleteShow(full=self.full)
+        self.show.delete_show(full=self.full)
 
         if settings.USE_TRAKT:
             try:
@@ -743,7 +743,7 @@ class QueueItemRemove(ShowQueueItem):
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
 
             # do the library update for Synology Indexer
-            notifiers.synoindex_notifier.addFolder(self.show._location)
+            notifiers.synoindex_notifier.addFolder(self.show.get_location)
 
             # do the library update for pyTivo
             notifiers.pytivo_notifier.update_library(self.show)

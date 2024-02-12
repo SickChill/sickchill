@@ -8,9 +8,11 @@ from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from operator import attrgetter
 from secrets import compare_digest
+from typing import Any, TYPE_CHECKING
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
+from tornado import httputil
 from tornado.concurrent import run_on_executor
 from tornado.web import authenticated, HTTPError, RequestHandler
 
@@ -32,6 +34,9 @@ try:
 except Exception:
     has_cryptography = False
 
+if TYPE_CHECKING:
+    from tornado.web import Application
+
 
 class BaseHandler(RequestHandler):
     def data_received(self, chunk):
@@ -39,7 +44,7 @@ class BaseHandler(RequestHandler):
 
     def initialize(self):
         super().initialize()
-        self.startTime = time.time()
+        self.page_load_start_time = time.time()
 
     def set_default_headers(self):
         self.set_header("X-Robots-Tag", "noindex")
@@ -178,7 +183,10 @@ class WebHandler(BaseHandler):
             try:
                 await self.finish(results)
             except Exception as e:
-                logger.debug(f"self.finish exception {e}, result {results}")
+                if settings.DEVELOPER:
+                    logger.debug(f"self.finish exception {e}, result {results}")
+                else:
+                    logger.debug(f"self.finish exception {e}")
 
         except AttributeError:
             logger.debug('Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()))
@@ -265,7 +273,14 @@ class WebRoot(WebHandler):
             apikey = _("API Key not generated")
 
         t = PageTemplate(rh=self, filename="apiBuilder.mako")
-        return t.render(title=_("API Builder"), header=_("API Builder"), shows=shows, episodes=episodes, apikey=apikey, commands=function_mapper)
+        return t.render(
+            title=_("API Builder"),
+            header=_("API Builder"),
+            shows=shows,
+            episodes=episodes,
+            apikey=apikey,
+            commands=function_mapper,
+        )
 
     def setHomeLayout(self):
         layout = self.get_query_argument("layout")

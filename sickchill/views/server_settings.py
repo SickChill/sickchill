@@ -17,20 +17,6 @@ from sickchill.views.api import ApiHandler, KeyHandler
 
 from .routes import Route
 
-# from sickchill.views.index import RequestHandler
-# from sickchill.views.common import PageTemplate
-
-
-# class Custom404Handler(RequestHandler):
-#     startTime = 0.0
-#
-#     def prepare(self):
-#         # return self.redirect(self.reverse_url("home", ""))
-#
-#         self.set_status(404)
-#         t = PageTemplate(rh=self, filename="404.mako")
-#         return self.finish(t.render(title="404", header=_("Oops")))
-
 
 class SickChillStaticFileHandler(StaticFileHandler):
     @classmethod

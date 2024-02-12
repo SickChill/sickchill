@@ -25,4 +25,11 @@ class HomeNews(Home):
         t = PageTemplate(rh=self, filename="markdown.mako")
         data = markdown2.markdown(news if news else _("The was a problem connecting to github, please refresh and try again"), extras=["header-ids"])
 
-        return t.render(title=_("News"), header=_("News"), topmenu="system", data=data, controller="news", action="index")
+        return t.render(
+            title=_("News"),
+            header=_("News"),
+            topmenu="system",
+            data=data,
+            controller="news",
+            action="index",
+        )

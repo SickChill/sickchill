@@ -2,11 +2,9 @@ name: Build develop branch
 
 on:
   workflow_run:
-    workflows: [Python Packaging]
-    branches: |
-      - develop
-    types:
-      - completed
+    workflows: [ Python Packaging ]
+    branches: [ develop ]
+    types: [ completed, requested ]
 
 jobs:
   version:

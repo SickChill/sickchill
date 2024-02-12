@@ -74,10 +74,12 @@ class SearchResult(object):
             return show[0]
 
         show = show[1]
-        episode_objects = [show.getEpisode(result_dict.get("season"), ep) for ep in result_dict.get("episodes").split("|") if ep]
+
+        episode_objects = [show.get_episode(result_dict.get("season"), ep) for ep in result_dict.get("episodes").split("|") if ep]
         provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get("provider"))
         url = result_dict.get("url")
         result = cls(episode_objects, provider, url)
+
         result.from_json(result_dict)
         result.show = show
 

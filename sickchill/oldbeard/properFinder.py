@@ -222,7 +222,7 @@ class ProperFinder(object):
                     continue
 
                 # get the episode object
-                episode_object = proper.show.getEpisode(proper.season, proper.episode)
+                episode_object = proper.show.get_episode(proper.season, proper.episode)
 
                 # make the result object
                 result = proper.provider.get_result([episode_object], proper.url)

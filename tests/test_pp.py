@@ -50,12 +50,12 @@ class PPBasicTests(conftest.SickChillTestDBCase):
         show = TVShow(1, 3)
         show.name = conftest.SHOW_NAME
         show.location = conftest.SHOW_DIR
-        show.saveToDB()
+        show.save_to_db()
 
         settings.showList = [show]
         episode = TVEpisode(show, conftest.SEASON, conftest.EPISODE)
         episode.name = "some episode name"
-        episode.saveToDB()
+        episode.save_to_db()
 
         add_name("show name", 3)
         settings.PROCESS_METHOD = "move"

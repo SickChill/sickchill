@@ -659,7 +659,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
             show = Show.find(settings.showList, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:
-            ep = show.getEpisode(None, None, absolute_number=absolute_number)
+            ep = show.get_episode(None, None, absolute_number=absolute_number)
             if ep:
                 episodes.append(ep.episode)
                 season = ep.season  # this will always take the last found season so eps that cross the season border are not handeled well
@@ -891,22 +891,22 @@ def _check_against_names(nameInQuestion, show, season=-1):
     return False
 
 
-def get_show(name, tryIndexers=False):
+def get_show(name, try_indexers=False):
     if not settings.showList:
         return
 
-    showObj = None
-    fromCache = False
+    show_object = None
+    from_cache = False
 
     if not name:
-        return showObj
+        return show_object
 
     try:
         # check cache for show
         cache = sickchill.oldbeard.name_cache.get_id_from_name(name)
         if cache:
-            fromCache = True
-            showObj = Show.find(settings.showList, int(cache))
+            from_cache = True
+            show_object = Show.find(settings.showList, int(cache))
         else:
             check_names = [full_sanitizeSceneName(name), name]
             show_matches = [
@@ -917,31 +917,31 @@ def get_show(name, tryIndexers=False):
             ]
 
             if len(show_matches) == 1:
-                showObj = show_matches[0]
+                show_object = show_matches[0]
 
         # try indexers
-        if not showObj and tryIndexers:
+        if not show_object and try_indexers:
             result = sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1]
             if result:
-                showObj = Show.find(settings.showList, result.id)
+                show_object = Show.find(settings.showList, result.id)
 
         # try scene exceptions
-        if not showObj:
+        if not show_object:
             scene_exceptions = sickchill.oldbeard.scene_exceptions.get_scene_exception_by_name_multiple(name)
             for scene_exception in scene_exceptions:
                 if scene_exception[0]:
-                    showObj = Show.find(settings.showList, scene_exception[0])
-                    if showObj:
+                    show_object = Show.find(settings.showList, scene_exception[0])
+                    if show_object:
                         break
 
         # add show to cache
-        if showObj and not fromCache:
-            sickchill.oldbeard.name_cache.add_name(name, showObj.indexerid)
+        if show_object and not from_cache:
+            sickchill.oldbeard.name_cache.add_name(name, show_object.indexerid)
     except Exception as error:
         logger.debug(_("There was a problem when attempting to find {name} in SickChill. Error: {error}").format(name=name, error=error))
         logger.debug(traceback.format_exc())
 
-    return showObj
+    return show_object
 
 
 def is_hidden_folder(folder):

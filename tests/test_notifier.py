@@ -44,7 +44,7 @@ class NotifierTests(conftest.SickChillTestDBCase):
                 episode.name = f"Episode {episode_counter + 1}"
                 episode.quality = "SDTV"
                 show.episodes.append(episode)
-            show.saveToDB()
+            show.save_to_db()
             cls.legacy_shows.append(show)
 
         for show_counter in range(200, 200 + num_shows):
@@ -56,7 +56,7 @@ class NotifierTests(conftest.SickChillTestDBCase):
                 episode.name = f"Episode {episode_counter + 1}"
                 episode.quality = "SDTV"
                 show.episodes.append(episode)
-            show.saveToDB()
+            show.save_to_db()
             cls.shows.append(show)
 
     def setUp(self):

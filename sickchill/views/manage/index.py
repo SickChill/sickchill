@@ -18,7 +18,13 @@ from sickchill.views.routes import Route
 class Manage(Home, WebRoot):
     def index(self):
         t = PageTemplate(rh=self, filename="manage.mako")
-        return t.render(title=_("Mass Update"), header=_("Mass Update"), topmenu="manage", controller="manage", action="index")
+        return t.render(
+            title=_("Mass Update"),
+            header=_("Mass Update"),
+            topmenu="manage",
+            controller="manage",
+            action="index",
+        )
 
     @staticmethod
     def showEpisodeStatuses(indexer_id, whichStatus):
@@ -264,7 +270,7 @@ class Manage(Home, WebRoot):
                 season, episode = epResult.split("x")
 
                 show = Show.find(settings.showList, int(cur_indexer_id))
-                show.getEpisode(season, episode).download_subtitles()
+                show.get_episode(season, episode).download_subtitles()
 
         return self.redirect("/manage/subtitleMissed/")
 
@@ -279,13 +285,13 @@ class Manage(Home, WebRoot):
     def backlogOverview(self):
         t = PageTemplate(rh=self, filename="manage_backlogOverview.mako")
 
-        showCounts = {}
-        showCats = {}
-        showSQLResults = {}
+        show_counts = {}
+        show_categories = {}
+        show_sql_results = {}
 
         main_db_con = db.DBConnection()
         for current_show in settings.showList:
-            epCounts = {
+            episode_counts = {
                 Overview.SKIPPED: 0,
                 Overview.WANTED: 0,
                 Overview.QUAL: 0,
@@ -295,7 +301,7 @@ class Manage(Home, WebRoot):
                 Overview.SNATCHED_PROPER: 0,
                 Overview.SNATCHED_BEST: 0,
             }
-            epCats = {}
+            episode_categories = {}
 
             sql_results = main_db_con.select(
                 "SELECT status, season, episode, name, airdate FROM tv_episodes WHERE tv_episodes.season IS NOT NULL "
@@ -304,47 +310,47 @@ class Manage(Home, WebRoot):
                 [current_show.indexerid],
             )
 
-            for curResult in sql_results:
-                curEpCat = current_show.getOverview(curResult["status"], backlog=settings.BACKLOG_MISSING_ONLY)
+            for result in sql_results:
+                curEpCat = current_show.get_overview(result["status"], backlog=settings.BACKLOG_MISSING_ONLY)
                 if curEpCat:
-                    epCats["{ep}".format(ep=episode_num(curResult["season"], curResult["episode"]))] = curEpCat
-                    epCounts[curEpCat] += 1
+                    episode_categories["{ep}".format(ep=episode_num(result["season"], result["episode"]))] = curEpCat
+                    episode_counts[curEpCat] += 1
 
-            showCounts[current_show.indexerid] = epCounts
-            showCats[current_show.indexerid] = epCats
-            showSQLResults[current_show.indexerid] = sql_results
+            show_counts[current_show.indexerid] = episode_counts
+            show_categories[current_show.indexerid] = episode_categories
+            show_sql_results[current_show.indexerid] = sql_results
 
-        def showQualSnatched(show):
+        def show_qual_snatched(show):
             return Quality.splitQuality(show.quality)[1]
 
-        totalWanted = totalQual = totalQualSnatched = 0
-        backLogShows = sorted(
+        total_wanted = total_qual = total_qual_snatched = 0
+        backlog_shows = sorted(
             [
                 x
                 for x in settings.showList
                 if (
-                    showCounts[x.indexerid][Overview.QUAL]
-                    or showCounts[x.indexerid][Overview.WANTED]
-                    or (0, showCounts[x.indexerid][Overview.SNATCHED])[len(showQualSnatched(x)) > 0]
+                    show_counts[x.indexerid][Overview.QUAL]
+                    or show_counts[x.indexerid][Overview.WANTED]
+                    or (0, show_counts[x.indexerid][Overview.SNATCHED])[len(show_qual_snatched(x)) > 0]
                 )
             ],
             key=lambda x: x.sort_name,
         )
-        for current_show in backLogShows:
-            totalWanted += showCounts[current_show.indexerid][Overview.WANTED]
-            totalQual += showCounts[current_show.indexerid][Overview.QUAL]
-            if showQualSnatched(current_show):
-                totalQualSnatched += showCounts[current_show.indexerid][Overview.SNATCHED]
+        for current_show in backlog_shows:
+            total_wanted += show_counts[current_show.indexerid][Overview.WANTED]
+            total_qual += show_counts[current_show.indexerid][Overview.QUAL]
+            if show_qual_snatched(current_show):
+                total_qual_snatched += show_counts[current_show.indexerid][Overview.SNATCHED]
 
         return t.render(
-            showCounts=showCounts,
-            showCats=showCats,
-            totalQual=totalQual,
-            showQualSnatched=showQualSnatched,
-            totalWanted=totalWanted,
-            totalQualSnatched=totalQualSnatched,
-            backLogShows=backLogShows,
-            showSQLResults=showSQLResults,
+            show_counts=show_counts,
+            show_categories=show_categories,
+            total_qual=total_qual,
+            show_qual_snatched=show_qual_snatched,
+            total_wanted=total_wanted,
+            total_qual_snatched=total_qual_snatched,
+            backlog_shows=backlog_shows,
+            show_sql_results=show_sql_results,
             controller="manage",
             action="backlogOverview",
             title=_("Backlog Overview"),
@@ -406,8 +412,8 @@ class Manage(Home, WebRoot):
         root_dir_list = []
 
         for current_show in show_list:
-            show_root_dir = self.__gooey_path(current_show._location, "dirname")
-            if show_root_dir and show_root_dir != current_show._location and show_root_dir not in root_dir_list:
+            show_root_dir = self.__gooey_path(current_show.get_location, "dirname")
+            if show_root_dir and show_root_dir != current_show.get_location and show_root_dir not in root_dir_list:
                 root_dir_list.append(show_root_dir)
 
             # if we know they're not all the same then no point even bothering
@@ -538,13 +544,13 @@ class Manage(Home, WebRoot):
             if not show_object:
                 continue
 
-            show_root_dir = self.__gooey_path(show_object._location, "dirname")
-            cur_show_dir = self.__gooey_path(show_object._location, "basename")
+            show_root_dir = self.__gooey_path(show_object.get_location, "dirname")
+            cur_show_dir = self.__gooey_path(show_object.get_location, "basename")
             if show_root_dir and root_dir_map.get(show_root_dir) and show_root_dir != root_dir_map.get(show_root_dir):
                 new_show_dir = os.path.join(root_dir_map[show_root_dir], cur_show_dir)
-                logger.info(f"For show {show_object.name} changing dir from {show_object._location} to {new_show_dir}")
+                logger.info(f"For show {show_object.name} changing dir from {show_object.get_location} to {new_show_dir}")
             else:
-                new_show_dir = show_object._location
+                new_show_dir = show_object.get_location
 
             new_paused = ("off", "on")[(paused == "enable", show_object.paused)[paused == "keep"]]
             new_default_ep_status = (default_ep_status, show_object.default_ep_status)[default_ep_status == "keep"]
@@ -706,7 +712,7 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def failedDownloads(self):
-        remove = self.get_body_arguments("remove")
+        remove = self.get_body_arguments("remove[]")
         limit = self.get_argument("limit", "100")
         failed_db_con = db.DBConnection("failed.db")
 

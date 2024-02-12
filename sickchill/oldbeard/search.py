@@ -317,7 +317,7 @@ def wanted_episodes(show, from_date):
             elif quality in allowed_qualities:
                 continue
 
-        episode_object = show.getEpisode(result["season"], result["episode"])
+        episode_object = show.get_episode(result["season"], result["episode"])
         episode_object.wantedQuality = [i for i in all_qualities if i > quality and i != common.Quality.UNKNOWN]
         wanted.append(episode_object)
 
@@ -526,7 +526,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
             some_wanted = False
             for episode_number in all_episodes:
                 for season in (x.season for x in episodes):
-                    if not show.wantEpisode(season, episode_number, season_quality, downCurQuality):
+                    if not show.want_episode(season, episode_number, season_quality, downCurQuality):
                         all_wanted = False
                     else:
                         some_wanted = True
@@ -537,7 +537,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                 episode_objects = []
                 for episode_number in all_episodes:
                     for season in {x.season for x in episodes}:
-                        episode_objects.append(show.getEpisode(season, episode_number))
+                        episode_objects.append(show.get_episode(season, episode_number))
                 best_season_result.episodes = episode_objects
 
                 # Remove provider from thread name before return results
@@ -575,7 +575,7 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
                     episode_objects = []
                     for episode_number in all_episodes:
                         for season in {x.season for x in episodes}:
-                            episode_objects.append(show.getEpisode(season, episode_number))
+                            episode_objects.append(show.get_episode(season, episode_number))
                     best_season_result.episodes = episode_objects
 
                     if MULTI_EP_RESULT in found_results[curProvider.name]:

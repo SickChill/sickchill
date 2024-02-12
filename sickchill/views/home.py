@@ -61,9 +61,9 @@ class Home(WebRoot):
             return None, _("Invalid show parameters")
 
         if absolute:
-            episode_object = show_obj.getEpisode(absolute_number=absolute)
+            episode_object = show_obj.get_episode(absolute_number=absolute)
         elif season and episode:
-            episode_object = show_obj.getEpisode(season, episode)
+            episode_object = show_obj.get_episode(season, episode)
         else:
             return None, _("Invalid parameters")
 
@@ -94,13 +94,13 @@ class Home(WebRoot):
             anime = []
             for show in settings.showList:
                 # noinspection PyProtectedMember
-                if selected_root_dir in show._location:
+                if selected_root_dir in show.get_location:
                     if show.is_anime:
                         anime.append(show)
                     else:
                         shows.append(show)
 
-            sortedShowLists = [
+            sorted_show_lists = [
                 ["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))],
                 ["Anime", sorted(anime, key=lambda mbr: attrgetter("sort_name")(mbr))],
             ]
@@ -108,17 +108,17 @@ class Home(WebRoot):
             shows = []
             for show in settings.showList:
                 # noinspection PyProtectedMember
-                if selected_root_dir in show._location:
+                if selected_root_dir in show.get_location:
                     shows.append(show)
 
-            sortedShowLists = [["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))]]
+            sorted_show_lists = [["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))]]
 
         stats = self.show_statistics()
         return t.render(
             title=_("Home"),
             header=_("Show List"),
             topmenu="home",
-            sortedShowLists=sortedShowLists,
+            sorted_show_lists=sorted_show_lists,
             show_stat=stats[0],
             max_download_count=stats[1],
             controller="home",
@@ -445,18 +445,18 @@ class Home(WebRoot):
         host = config.clean_hosts(self.get_query_argument("host"))
         password = filters.unhide(settings.PLEX_CLIENT_PASSWORD, self.get_query_argument("password"))
 
-        finalResult = ""
-        for curHost in [x.strip() for x in host.split(",")]:
-            curResult = notifiers.plex_notifier.test_notify_pht(unquote_plus(curHost), username, password)
-            if len(curResult.split(":")) > 2 and "OK" in curResult.split(":")[2]:
-                finalResult += _("Successful test notice sent to Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(curHost))
+        final_result = ""
+        for cur_host in [x.strip() for x in host.split(",")]:
+            cur_result = notifiers.plex_notifier.test_notify_pht(unquote_plus(cur_host), username, password)
+            if len(cur_result.split(":")) > 2 and "OK" in cur_result.split(":")[2]:
+                final_result += _("Successful test notice sent to Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(cur_host))
             else:
-                finalResult += _("Test failed for Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(curHost))
-            finalResult += "<br>" + "\n"
+                final_result += _("Test failed for Plex Home Theater ... {plex_clients}").format(plex_clients=unquote_plus(cur_host))
+            final_result += "<br>" + "\n"
 
         ui.notifications.message(_("Tested Plex Home Theater(s)") + ":", unquote_plus(host.replace(",", ", ")))
 
-        return finalResult
+        return final_result
 
     def testPMS(self):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
@@ -466,20 +466,20 @@ class Home(WebRoot):
         password = filters.unhide(settings.PLEX_SERVER_PASSWORD, self.get_query_argument("password"))
         plex_server_token = self.get_query_argument("plex_server_token")
 
-        finalResult = ""
+        final_result = ""
 
-        curResult = notifiers.plex_notifier.test_notify_pms(unquote_plus(host), username, password, plex_server_token)
-        if curResult is None:
-            finalResult += _("Successful test of Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(host.replace(",", ", ")))
-        elif curResult is False:
-            finalResult += _("Test failed, No Plex Media Server host specified")
+        cur_result = notifiers.plex_notifier.test_notify_pms(unquote_plus(host), username, password, plex_server_token)
+        if cur_result is None:
+            final_result += _("Successful test of Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(host.replace(",", ", ")))
+        elif cur_result is False:
+            final_result += _("Test failed, No Plex Media Server host specified")
         else:
-            finalResult += _("Test failed for Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(str(curResult).replace(",", ", ")))
-        finalResult += "<br>" + "\n"
+            final_result += _("Test failed for Plex Media Server(s) ... {plex_servers}").format(plex_servers=unquote_plus(str(cur_result).replace(",", ", ")))
+        final_result += "<br>" + "\n"
 
         ui.notifications.message(_("Tested Plex Media Server host(s)") + ":", unquote_plus(host.replace(",", ", ")))
 
-        return finalResult
+        return final_result
 
     @staticmethod
     def testLibnotify():
@@ -569,7 +569,7 @@ class Home(WebRoot):
     @staticmethod
     def loadShowNotifyLists():
         main_db_con = db.DBConnection()
-        rows = main_db_con.select("SELECT indexer_id, show_name, notify_list FROM tv_shows ORDER BY show_name ASC")
+        rows = main_db_con.select("SELECT indexer_id, show_name, notify_list FROM tv_shows ORDER BY show_name")
 
         data = {}
         size = 0
@@ -691,7 +691,15 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.disk_usage_hr(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
-        return t.render(title=_("Status"), header=_("Status"), topmenu="system", tvdirFree=tvdirFree, rootDir=rootDir, controller="home", action="status")
+        return t.render(
+            title=_("Status"),
+            header=_("Status"),
+            topmenu="system",
+            tvdirFree=tvdirFree,
+            rootDir=rootDir,
+            controller="home",
+            action="status",
+        )
 
     def shutdown(self):
         pid = self.get_query_argument("pid")
@@ -710,7 +718,13 @@ class Home(WebRoot):
 
         t = PageTemplate(rh=self, filename="restart.mako")
 
-        return t.render(title=_("Home"), header=_("Restarting SickChill"), topmenu="system", controller="home", action="restart")
+        return t.render(
+            title=_("Home"),
+            header=_("Restarting SickChill"),
+            topmenu="system",
+            controller="home",
+            action="restart",
+        )
 
     def updateCheck(self):
         pid = self.get_query_argument("pid")
@@ -722,7 +736,7 @@ class Home(WebRoot):
 
         return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
-    def update(self, pid, branch=None):
+    def update(self, pid):
         if settings.DISABLE_UPDATER or str(pid) != str(settings.PID):
             return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
@@ -733,7 +747,13 @@ class Home(WebRoot):
                 settings.events.put(settings.events.SystemEvent.RESTART)
 
                 t = PageTemplate(rh=self, filename="restart.mako")
-                return t.render(title=_("Home"), header=_("Restarting SickChill"), topmenu="home", controller="home", action="restart")
+                return t.render(
+                    title=_("Home"),
+                    header=_("Restarting SickChill"),
+                    topmenu="home",
+                    controller="home",
+                    action="restart",
+                )
             else:
                 return self._genericMessage(_("Update Failed"), _("Update wasn't successful, not restarting. Check your log for more information."))
         else:
@@ -784,10 +804,9 @@ class Home(WebRoot):
         submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid}", "icon": "fa fa-pencil"}]
 
         try:
-            showLoc = (show_obj.location, True)
+            show_location = (show_obj.location, True)
         except ShowDirectoryNotFoundException:
-            # noinspection PyProtectedMember
-            showLoc = (show_obj._location, False)
+            show_location = (show_obj.get_location, False)
 
         show_message = ""
 
@@ -878,7 +897,7 @@ class Home(WebRoot):
                     # noinspection PyPep8
                     submenu.append({"title": _("Download Subtitles"), "path": f"home/subtitleShow?show={show_obj.indexerid}", "icon": "fa fa-language"})
 
-        epCounts = {
+        ep_counts = {
             Overview.SKIPPED: 0,
             Overview.WANTED: 0,
             Overview.QUAL: 0,
@@ -890,11 +909,11 @@ class Home(WebRoot):
         }
         epCats = {}
 
-        for curResult in sql_results:
-            curEpCat = show_obj.getOverview(curResult["status"])
+        for cur_result in sql_results:
+            curEpCat = show_obj.get_overview(cur_result["status"])
             if curEpCat:
-                epCats[str(curResult["season"]) + "x" + str(curResult["episode"])] = curEpCat
-                epCounts[curEpCat] += 1
+                epCats[str(cur_result["season"]) + "x" + str(cur_result["episode"])] = curEpCat
+                ep_counts[curEpCat] += 1
 
         if settings.ANIME_SPLIT_HOME:
             shows = []
@@ -904,12 +923,12 @@ class Home(WebRoot):
                     anime.append(show)
                 else:
                     shows.append(show)
-            sortedShowLists = [
+            sorted_show_lists = [
                 ["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))],
                 ["Anime", sorted(anime, key=lambda mbr: attrgetter("sort_name")(mbr))],
             ]
         else:
-            sortedShowLists = [["Shows", sorted(settings.showList, key=lambda mbr: attrgetter("sort_name")(mbr))]]
+            sorted_show_lists = [["Shows", sorted(settings.showList, key=lambda mbr: attrgetter("sort_name")(mbr))]]
 
         bwl = None
         if show_obj.is_anime:
@@ -939,14 +958,14 @@ class Home(WebRoot):
 
         return t.render(
             submenu=submenu,
-            showLoc=showLoc,
+            show_location=show_location,
             show_message=show_message,
             show=show_obj,
             sql_results=sql_results,
             seasonResults=seasonResults,
-            sortedShowLists=sortedShowLists,
+            sorted_show_lists=sorted_show_lists,
             bwl=bwl,
-            epCounts=epCounts,
+            ep_counts=ep_counts,
             epCats=epCats,
             all_scene_exceptions=show_obj.exceptions,
             scene_numbering=get_scene_numbering_for_show(indexerid, indexer),
@@ -1221,12 +1240,12 @@ class Home(WebRoot):
             if not directCall:
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
-                location = self.get_argument("location", show_obj._location)
+                location = self.get_argument("location", show_obj.get_location)
 
             location = os.path.normpath(location)
 
             # noinspection PyProtectedMember
-            old_location = os.path.normpath(show_obj._location)
+            old_location = os.path.normpath(show_obj.get_location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if old_location != location:
                 logger.debug(old_location + " != " + location)
@@ -1250,7 +1269,7 @@ class Home(WebRoot):
                         )
 
             # save it to the DB
-            show_obj.saveToDB()
+            show_obj.save_to_db()
 
         # force the update
         if do_update:
@@ -1300,7 +1319,9 @@ class Home(WebRoot):
 
         return self.redirect(f"/home/displayShow?show={show.indexerid}")
 
-    def deleteShow(self, show=None, full=0):
+    def deleteShow(self):
+        show = self.get_query_argument("show")
+        full = int(self.get_query_argument("full"))
         if show:
             error, show = Show.delete(show, full)
 
@@ -1325,7 +1346,7 @@ class Home(WebRoot):
 
     def refreshShow(self):
         show = self.get_query_argument("show")
-        force = self.get_query_argument("force", default=False)
+        force = bool(try_int(self.get_query_argument("force", default="0")))
 
         error, show = Show.refresh(show, force)
 
@@ -1343,7 +1364,7 @@ class Home(WebRoot):
 
     def updateShow(self):
         show = self.get_query_argument("show")
-        force = self.get_query_argument("force", default=False)
+        force = bool(try_int(self.get_query_argument("force", default="0")))
 
         if not show:
             return self._genericMessage(_("Error"), _("Invalid show ID"))
@@ -1470,7 +1491,7 @@ class Home(WebRoot):
                     logger.debug(f"Something went wrong when trying to setStatus, {episode_num(*ep_info)}")
                     continue
 
-                episode_object = show_obj.getEpisode(ep_info[0], ep_info[1])
+                episode_object = show_obj.get_episode(ep_info[0], ep_info[1])
 
                 if not episode_object:
                     return self._genericMessage(_("Error"), _("Episode couldn't be retrieved"))
@@ -1584,15 +1605,22 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location
+            show_obj.location()
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
-        show_obj.getAllEpisodes(has_location=True)
+        show_obj.get_all_episodes(has_location=True)
         t = PageTemplate(rh=self, filename="testRename.mako")
         submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid}", "icon": "ui-icon ui-icon-pencil"}]
 
-        return t.render(submenu=submenu, show=show_obj, title=_("Preview Rename"), header=_("Preview Rename"), controller="home", action="previewRename")
+        return t.render(
+            submenu=submenu,
+            show=show_obj,
+            title=_("Preview Rename"),
+            header=_("Preview Rename"),
+            controller="home",
+            action="previewRename",
+        )
 
     def doRename(self, show=None, eps=None):
         if not (show and eps):
@@ -1615,9 +1643,7 @@ class Home(WebRoot):
             ep_info = cur_ep.split("x")
 
             # this is probably the worst possible way to deal with double eps but I've kinda painted myself into a corner here with this stupid database
-            ep_result = main_db_con.select(
-                "SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ? AND 5=5", [show, ep_info[0], ep_info[1]]
-            )
+            ep_result = main_db_con.select("SELECT location FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?", [show, ep_info[0], ep_info[1]])
             if not ep_result:
                 logger.warning(f"Unable to find an episode for {show}: {cur_ep} , skipping")
                 continue
@@ -1625,11 +1651,11 @@ class Home(WebRoot):
                 "SELECT season, episode FROM tv_episodes WHERE location = ? AND episode != ?", [ep_result[0]["location"], ep_info[1]]
             )
 
-            root_ep_obj = show_obj.getEpisode(ep_info[0], ep_info[1])
+            root_ep_obj = show_obj.get_episode(ep_info[0], ep_info[1])
             root_ep_obj.related_episodes = []
 
             for cur_related_ep in related_eps_result:
-                related_ep_obj = show_obj.getEpisode(cur_related_ep["season"], cur_related_ep["episode"])
+                related_ep_obj = show_obj.get_episode(cur_related_ep["season"], cur_related_ep["episode"])
                 if related_ep_obj not in root_ep_obj.related_episodes:
                     root_ep_obj.related_episodes.append(related_ep_obj)
 
@@ -1648,7 +1674,7 @@ class Home(WebRoot):
         # show_object: TVShow = Show.find(settings.showList, show)
         # sickchill.oldbeard.search.search_providers(
         #     show_object,
-        #     show_object.getEpisode(season=season, episode=episode or 1),
+        #     show_object.get_episode(season=season, episode=episode or 1),
         #     downCurQuality=True,
         #     manual=True,
         #     manual_snatch=('season', 'episode')[episode is not None]
@@ -1661,7 +1687,7 @@ class Home(WebRoot):
             )
         else:
             show_object: TVShow = Show.find(settings.showList, show)
-            episodes_sql = "|".join([str(ep.season) for ep in show_object.getAllEpisodes(season=season) if ep.season > 0])
+            episodes_sql = "|".join([str(ep.season) for ep in show_object.get_all_episodes(season=season) if ep.season > 0])
             results = cache_db_con.select(
                 "SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC",
                 [show, season, f"%{episodes_sql}%", FAILED],
@@ -1679,10 +1705,15 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, filename="manual_search_show_releases.mako")
         submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show}", "icon": "fa fa-pencil"}]
         return t.render(
-            submenu=submenu, title=_("Manual Snatch"), header=_("Manual Snatch"), controller="home", action="manual_search_show_releases", results=results
+            submenu=submenu,
+            title=_("Manual Snatch"),
+            header=_("Manual Snatch"),
+            controller="home",
+            action="manual_search_show_releases",
+            results=results,
         )
 
-    def manual_snatch_show_release(self, *args, **kwargs):
+    def manual_snatch_show_release(self):
         url = self.get_body_argument("url")
         show = self.get_body_argument("show")
 
@@ -1762,8 +1793,8 @@ class Home(WebRoot):
                         "searchstatus": search_status,
                         "status": statusStrings[search_thread.segment.status],
                         "quality": self.getQualityClass(search_thread.segment),
-                        "overview": Overview.overviewStrings[show_obj.getOverview(search_thread.segment.status)],
-                        "location": relative_ep_location(search_thread.segment._location, show_obj._location),
+                        "overview": Overview.overviewStrings[show_obj.get_overview(search_thread.segment.status)],
+                        "location": relative_ep_location(search_thread.segment.location, show_obj.get_location),
                         "size": pretty_file_size(search_thread.segment.file_size) if search_thread.segment.file_size else "",
                     }
                 )
@@ -1779,8 +1810,8 @@ class Home(WebRoot):
                             "searchstatus": search_status,
                             "status": statusStrings[episode_object.status],
                             "quality": self.getQualityClass(episode_object),
-                            "overview": Overview.overviewStrings[show_obj.getOverview(episode_object.status)],
-                            "location": relative_ep_location(episode_object._location, show_obj._location),
+                            "overview": Overview.overviewStrings[show_obj.get_overview(episode_object.status)],
+                            "location": relative_ep_location(episode_object.location, show_obj.get_location),
                             "size": pretty_file_size(episode_object.file_size) if episode_object.file_size else "",
                         }
                     )
