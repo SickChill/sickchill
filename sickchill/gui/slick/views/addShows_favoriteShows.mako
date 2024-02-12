@@ -96,7 +96,7 @@
                                         <i>${cur_result.siteRatingCount}</i>
                                         <div class="traktShowTitleIcons">
                                             <a href="${scRoot}/addShows/addShowByID?indexer_id=${cur_result.id}&amp;show_name=${cur_result.seriesName | u}&amp;indexer=TVDB"
-                                               class="btn btn-xs" data-no-redirect>${_('Add Show')}</a>
+                                               class="btn btn-xs">${_('Add Show')}</a>
                                         </div>
                                     </div>
                                 </div>
