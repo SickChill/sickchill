@@ -21,4 +21,11 @@ class HomeChangeLog(Home):
         t = PageTemplate(rh=self, filename="markdown.mako")
         data = markdown2.markdown(changes if changes else _("The was a problem connecting to github, please refresh and try again"), extras=["header-ids"])
 
-        return t.render(title=_("Changelog"), header=_("Changelog"), topmenu="system", data=data, controller="changes", action="index")
+        return t.render(
+            title=_("Changelog"),
+            header=_("Changelog"),
+            topmenu="system",
+            data=data,
+            controller="changes",
+            action="index",
+        )

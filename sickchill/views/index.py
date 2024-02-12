@@ -273,7 +273,14 @@ class WebRoot(WebHandler):
             apikey = _("API Key not generated")
 
         t = PageTemplate(rh=self, filename="apiBuilder.mako")
-        return t.render(title=_("API Builder"), header=_("API Builder"), shows=shows, episodes=episodes, apikey=apikey, commands=function_mapper)
+        return t.render(
+            title=_("API Builder"),
+            header=_("API Builder"),
+            shows=shows,
+            episodes=episodes,
+            apikey=apikey,
+            commands=function_mapper,
+        )
 
     def setHomeLayout(self):
         layout = self.get_query_argument("layout")

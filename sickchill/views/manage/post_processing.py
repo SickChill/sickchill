@@ -12,7 +12,13 @@ class PostProcess(Home):
     @addslash
     def index(self):
         t = PageTemplate(rh=self, filename="home_postprocess.mako")
-        return t.render(title=_("Post Processing"), header=_("Post Processing"), topmenu="home", controller="home", action="postProcess")
+        return t.render(
+            title=_("Post Processing"),
+            header=_("Post Processing"),
+            topmenu="home",
+            controller="home",
+            action="postProcess",
+        )
 
     def processEpisode(
         self,

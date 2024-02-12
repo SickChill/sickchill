@@ -691,7 +691,15 @@ class Home(WebRoot):
                 rootDir[subject] = helpers.disk_usage_hr(subject)
 
         t = PageTemplate(rh=self, filename="status.mako")
-        return t.render(title=_("Status"), header=_("Status"), topmenu="system", tvdirFree=tvdirFree, rootDir=rootDir, controller="home", action="status")
+        return t.render(
+            title=_("Status"),
+            header=_("Status"),
+            topmenu="system",
+            tvdirFree=tvdirFree,
+            rootDir=rootDir,
+            controller="home",
+            action="status",
+        )
 
     def shutdown(self):
         pid = self.get_query_argument("pid")
@@ -710,7 +718,13 @@ class Home(WebRoot):
 
         t = PageTemplate(rh=self, filename="restart.mako")
 
-        return t.render(title=_("Home"), header=_("Restarting SickChill"), topmenu="system", controller="home", action="restart")
+        return t.render(
+            title=_("Home"),
+            header=_("Restarting SickChill"),
+            topmenu="system",
+            controller="home",
+            action="restart",
+        )
 
     def updateCheck(self):
         pid = self.get_query_argument("pid")
@@ -733,7 +747,13 @@ class Home(WebRoot):
                 settings.events.put(settings.events.SystemEvent.RESTART)
 
                 t = PageTemplate(rh=self, filename="restart.mako")
-                return t.render(title=_("Home"), header=_("Restarting SickChill"), topmenu="home", controller="home", action="restart")
+                return t.render(
+                    title=_("Home"),
+                    header=_("Restarting SickChill"),
+                    topmenu="home",
+                    controller="home",
+                    action="restart",
+                )
             else:
                 return self._genericMessage(_("Update Failed"), _("Update wasn't successful, not restarting. Check your log for more information."))
         else:
@@ -1593,7 +1613,14 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, filename="testRename.mako")
         submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show_obj.indexerid}", "icon": "ui-icon ui-icon-pencil"}]
 
-        return t.render(submenu=submenu, show=show_obj, title=_("Preview Rename"), header=_("Preview Rename"), controller="home", action="previewRename")
+        return t.render(
+            submenu=submenu,
+            show=show_obj,
+            title=_("Preview Rename"),
+            header=_("Preview Rename"),
+            controller="home",
+            action="previewRename",
+        )
 
     def doRename(self, show=None, eps=None):
         if not (show and eps):
@@ -1678,7 +1705,12 @@ class Home(WebRoot):
         t = PageTemplate(rh=self, filename="manual_search_show_releases.mako")
         submenu = [{"title": _("Edit"), "path": f"home/editShow?show={show}", "icon": "fa fa-pencil"}]
         return t.render(
-            submenu=submenu, title=_("Manual Snatch"), header=_("Manual Snatch"), controller="home", action="manual_search_show_releases", results=results
+            submenu=submenu,
+            title=_("Manual Snatch"),
+            header=_("Manual Snatch"),
+            controller="home",
+            action="manual_search_show_releases",
+            results=results,
         )
 
     def manual_snatch_show_release(self):

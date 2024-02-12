@@ -18,7 +18,12 @@ class ConfigSubtitles(Config):
         t = PageTemplate(rh=self, filename="config_subtitles.mako")
 
         return t.render(
-            submenu=self.ConfigMenu(), title=_("Config - Subtitles"), header=_("Subtitles"), topmenu="config", controller="config", action="subtitles"
+            submenu=self.ConfigMenu(),
+            title=_("Config - Subtitles"),
+            header=_("Subtitles"),
+            topmenu="config",
+            controller="config",
+            action="subtitles",
         )
 
     def saveSubtitles(

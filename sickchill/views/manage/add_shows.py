@@ -29,7 +29,13 @@ from sickchill.views.routes import Route
 class AddShows(Home):
     def index(self):
         t = PageTemplate(rh=self, filename="addShows.mako")
-        return t.render(title=_("Add Shows"), header=_("Add Shows"), topmenu="home", controller="addShows", action="index")
+        return t.render(
+            title=_("Add Shows"),
+            header=_("Add Shows"),
+            topmenu="home",
+            controller="addShows",
+            action="index",
+        )
 
     def sanitizeFileName(self):
         return sanitize_filename(self.get_body_argument("name"))
