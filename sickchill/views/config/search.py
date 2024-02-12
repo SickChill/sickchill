@@ -19,7 +19,12 @@ class ConfigSearch(Config):
         t = PageTemplate(rh=self, filename="config_search.mako")
 
         return t.render(
-            submenu=self.ConfigMenu(), title=_("Config - Episode Search"), header=_("Search Settings"), topmenu="config", controller="config", action="search"
+            submenu=self.ConfigMenu(),
+            title=_("Config - Episode Search"),
+            header=_("Search Settings"),
+            topmenu="config",
+            controller="config",
+            action="search",
         )
 
     def saveSearch(

@@ -18,7 +18,13 @@ from sickchill.views.routes import Route
 class Manage(Home, WebRoot):
     def index(self):
         t = PageTemplate(rh=self, filename="manage.mako")
-        return t.render(title=_("Mass Update"), header=_("Mass Update"), topmenu="manage", controller="manage", action="index")
+        return t.render(
+            title=_("Mass Update"),
+            header=_("Mass Update"),
+            topmenu="manage",
+            controller="manage",
+            action="index",
+        )
 
     @staticmethod
     def showEpisodeStatuses(indexer_id, whichStatus):

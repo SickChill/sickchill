@@ -16,7 +16,14 @@ class MoviesHandler(WebRoot):
 
     def index(self):
         t = PageTemplate(rh=self, filename="movies/index.mako")
-        return t.render(title=_("Movies"), header=_("Movie List"), topmenu="movies", movies=settings.movie_list, controller="movies", action="index")
+        return t.render(
+            title=_("Movies"),
+            header=_("Movie List"),
+            topmenu="movies",
+            movies=settings.movie_list,
+            controller="movies",
+            action="index",
+        )
 
     def search(self):
         query = self.get_body_argument("query", "")
@@ -64,7 +71,14 @@ class MoviesHandler(WebRoot):
             settings.movie_list.delete(pk)
 
         t = PageTemplate(rh=self, filename="movies/remove.mako")
-        return t.render(title=_("Movies"), header=_("Movie Remove"), topmenu="movies", movies=settings.movie_list, controller="movies", action="remove")
+        return t.render(
+            title=_("Movies"),
+            header=_("Movie Remove"),
+            topmenu="movies",
+            movies=settings.movie_list,
+            controller="movies",
+            action="remove",
+        )
 
     def details(self):
         movie = settings.movie_list.by_slug(self.path_kwargs.get("slug"))
@@ -72,4 +86,12 @@ class MoviesHandler(WebRoot):
             return self._genericMessage(_("Error"), _("Movie not found"))
 
         t = PageTemplate(rh=self, filename="movies/details.mako")
-        return t.render(title=_("Movies"), header=_("Movie Remove"), topmenu="movies", controller="movies", action="details", movie=movie, movie_message=None)
+        return t.render(
+            title=_("Movies"),
+            header=_("Movie Remove"),
+            topmenu="movies",
+            controller="movies",
+            action="details",
+            movie=movie,
+            movie_message=None,
+        )
