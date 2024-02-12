@@ -119,19 +119,19 @@ class PostProcessor(object):
         if os.path.isfile(existing_file):
             # see if it's bigger than our old file
             if os.path.getsize(existing_file) > os.path.getsize(self.directory):
-                self._log(_("File {existing_file} is larger than {directory}").format(existing_file=existing_file, directory=self.directory), logger.DEBUG)
+                self._log(_(f"File {existing_file} is larger than {self.directory}"), logger.DEBUG)
                 return PostProcessor.EXISTS_LARGER
 
             elif os.path.getsize(existing_file) == os.path.getsize(self.directory):
-                self._log(_("File {existing_file} is the same size as {directory}").format(existing_file=existing_file, directory=self.directory), logger.DEBUG)
+                self._log(_(f"File {existing_file} is the same size as {self.directory}"), logger.DEBUG)
                 return PostProcessor.EXISTS_SAME
 
             else:
-                self._log(_("File {existing_file} is smaller than {directory}").format(existing_file=existing_file, directory=self.directory), logger.DEBUG)
+                self._log(_(f"File {existing_file} is smaller than {self.directory}"), logger.DEBUG)
                 return PostProcessor.EXISTS_SMALLER
 
         else:
-            self._log(_("File {existing_file} doesn't exist so there's no worries about replacing it").format(existing_file=existing_file), logger.DEBUG)
+            self._log(_(f"File {existing_file} doesn't exist so there's no worries about replacing it"), logger.DEBUG)
             return PostProcessor.DOESNT_EXIST
 
     def list_associated_files(self, file_path, subtitles_only=False, subfolders=False, rename=False):
@@ -198,29 +198,23 @@ class PostProcessor(object):
 
         if file_path_list_to_allow or file_path_list_to_delete:
             self._log(
-                _("Found the following associated files for {file_path}: {allow_and_delete}").format(
-                    file_path=file_path, allow_and_delete=file_path_list_to_allow + file_path_list_to_delete
-                ),
+                _(f"Found the following associated files for {file_path}: {file_path_list_to_allow + file_path_list_to_delete}"),
                 logger.DEBUG,
             )
             if file_path_list_to_delete:
                 self._log(
-                    _("Deleting non-allowed associated files for {file_path}: {file_path_list_to_delete}").format(
-                        file_path=file_path, file_path_list_to_delete=file_path_list_to_delete
-                    ),
+                    _(f"Deleting non-allowed associated files for {file_path}: {file_path_list_to_delete}"),
                     logger.DEBUG,
                 )
                 # Delete all extensions the user doesn't allow
                 self._delete(file_path_list_to_delete)
             if file_path_list_to_allow:
                 self._log(
-                    _("Allowing associated files for {file_path}: {file_path_list_to_allow}").format(
-                        file_path=file_path, file_path_list_to_allow=file_path_list_to_allow
-                    ),
+                    _(f"Allowing associated files for {file_path}: {file_path_list_to_allow}"),
                     logger.DEBUG,
                 )
         else:
-            self._log(_("No associated files for {file_path} were found during this pass").format(file_path=file_path), logger.DEBUG)
+            self._log(_(f"No associated files for {file_path} were found during this pass"), logger.DEBUG)
 
         return file_path_list_to_allow
 
@@ -246,22 +240,22 @@ class PostProcessor(object):
             file_list += self.list_associated_files(file_path, subfolders=True)
 
         if not file_list:
-            self._log(_("There were no files associated with {file_path}, not deleting anything").format(file_path=file_path), logger.DEBUG)
+            self._log(_(f"There were no files associated with {file_path}, not deleting anything"), logger.DEBUG)
             return
 
         # delete the file and any other files which we want to delete
         for cur_file in file_list:
             if os.path.isfile(cur_file):
-                self._log(_("Deleting file {cur_file}").format(cur_file=cur_file), logger.DEBUG)
+                self._log(_(f"Deleting file {cur_file}"), logger.DEBUG)
                 # check first the read-only attribute
                 file_attribute = os.stat(cur_file)[0]
                 if not file_attribute & stat.S_IWRITE:
                     # File is read-only, so make it writeable
-                    self._log(_("Read only mode on file {cur_file} Will try to make it writeable").format(cur_file=cur_file), logger.DEBUG)
+                    self._log(_(f"Read only mode on file {cur_file} Will try to make it writeable"), logger.DEBUG)
                     try:
                         os.chmod(cur_file, stat.S_IWRITE)
                     except Exception:
-                        self._log(_("Cannot change permissions of {cur_file}").format(cur_file=cur_file), logger.WARNING)
+                        self._log(_(f"Cannot change permissions of {cur_file}"), logger.WARNING)
 
                 os.remove(cur_file)
 
@@ -293,7 +287,7 @@ class PostProcessor(object):
             file_list += self.list_associated_files(file_path, subtitles_only=True, subfolders=subfolders)
 
         if not file_list:
-            self._log(_("There were no files associated with {file_path}, not moving anything").format(file_path=file_path), logger.DEBUG)
+            self._log(_(f"There were no files associated with {file_path}, not moving anything"), logger.DEBUG)
             return
 
         # deal with all files
@@ -327,7 +321,7 @@ class PostProcessor(object):
                 subs_new_path = os.path.join(new_path, settings.SUBTITLES_DIR)
                 dir_exists = helpers.makeDir(subs_new_path)
                 if not dir_exists:
-                    logger.exception(_("Unable to create subtitles folder {subs_new_path}").format(subs_new_path=subs_new_path))
+                    logger.exception(_(f"Unable to create subtitles folder {subs_new_path}"))
                 else:
                     helpers.chmodAsParent(subs_new_path)
                 new_file_path = os.path.join(subs_new_path, new_filename)
@@ -347,15 +341,13 @@ class PostProcessor(object):
         """
 
         def _int_move(cur_file_path, new_file_path):
-            self._log(_("Moving file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG)
+            self._log(_(f"Moving file from {cur_file_path} to {new_file_path}"), logger.DEBUG)
             try:
                 helpers.moveFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
                 self._log(
-                    _("Unable to move file from {cur_file_path} to {new_file_path}: {error}").format(
-                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
-                    ),
+                    _(f"Unable to move file from {cur_file_path} to {new_file_path}: {error}"),
                     logger.ERROR,
                 )
                 raise
@@ -373,7 +365,7 @@ class PostProcessor(object):
         """
 
         def _int_copy(cur_file_path, new_file_path):
-            self._log(_("Copying file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG)
+            self._log(_(f"Copying file from {cur_file_path} to {new_file_path}"), logger.DEBUG)
             try:
                 helpers.copyFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
@@ -399,9 +391,7 @@ class PostProcessor(object):
         """
 
         def _int_hard_link(cur_file_path, new_file_path):
-            self._log(
-                _("Hard linking file from {cur_file_path} to {new_file_path}").format(cur_file_path=cur_file_path, new_file_path=new_file_path), logger.DEBUG
-            )
+            self._log(_(f"Hard linking file from {cur_file_path} to {new_file_path}"), logger.DEBUG)
             try:
                 helpers.hardlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
@@ -701,7 +691,7 @@ class PostProcessor(object):
                     airdate = episodes[0].toordinal()
                 except AttributeError:
                     airdate_value = episodes[0]
-                    self._log(_("Could not convert to a valid airdate: {airdate_value}").format(airdate_value=airdate_value), logger.DEBUG)
+                    self._log(_(f"Could not convert to a valid airdate: {airdate_value}"), logger.DEBUG)
                     episodes = []
                     continue
 
@@ -766,7 +756,7 @@ class PostProcessor(object):
                 if not curEp:
                     raise EpisodeNotFoundException()
             except EpisodeNotFoundException as error:
-                self._log(_("Unable to create episode: {error}").format(error=error), logger.DEBUG)
+                self._log(_(f"Unable to create episode: {error}"), logger.DEBUG)
                 raise EpisodePostProcessingFailedException()
 
             # associate all the episodes together under a single root episode
@@ -791,7 +781,7 @@ class PostProcessor(object):
         if episode_object.status in common.Quality.SNATCHED + common.Quality.SNATCHED_PROPER + common.Quality.SNATCHED_BEST:
             ep_status_, ep_quality = common.Quality.splitCompositeStatus(episode_object.status)
             if ep_quality != common.Quality.UNKNOWN:
-                self._log(_("The old status had a quality in it, using that: ") + common.Quality.qualityStrings[ep_quality], logger.DEBUG)
+                self._log(_(f"The old status had a quality in it, using that: {common.Quality.qualityStrings[ep_quality]}"), logger.DEBUG)
                 return ep_quality
 
         # release name is the most reliable if it exists, followed by folder name and lastly file name
@@ -860,7 +850,7 @@ class PostProcessor(object):
                 )
                 out, err = p.communicate()
 
-                self._log(_("Script result: {out}").format(out=(out or err).strip()), logger.DEBUG)
+                self._log(_(f"Script result: {(out or err).strip()}"), logger.DEBUG)
 
             except Exception as error:
                 self._log(f"Unable to run extra_script: {error}")
@@ -917,19 +907,19 @@ class PostProcessor(object):
         :return: True on success, False on failure
         """
 
-        self._log(_("Processing {directory} ({release_name})").format(directory=self.directory, release_name=self.release_name))
+        self._log(_(f"Processing {self.directory} ({self.release_name})"))
 
         if os.path.isdir(self.directory):
-            self._log(_("File {directory} seems to be a directory").format(directory=self.directory))
+            self._log(_(f"File {self.directory} seems to be a directory"))
             return False
 
         if not os.path.exists(self.directory):
-            self._log(_("File {directory} doesn't exist, did unrar fail?").format(directory=self.directory))
+            self._log(_(f"File {self.directory} doesn't exist, did unrar fail?"))
             return False
 
         for ignore_file in self.IGNORED_FILESTRINGS:
             if ignore_file in self.directory:
-                self._log(_("File {directory} is ignored type, skipping").format(directory=self.directory))
+                self._log(_(f"File {self.directory} is ignored type, skipping"))
                 return False
 
         # reset per-file stuff
@@ -953,21 +943,21 @@ class PostProcessor(object):
 
         # get the quality of the episode we're processing
         if quality and not common.Quality.qualityStrings[quality] == "Unknown":
-            self._log(_("Snatch history had a quality in it, using that: ") + common.Quality.qualityStrings[quality], logger.DEBUG)
+            self._log(_(f"Snatch history had a quality in it, using that: {common.Quality.qualityStrings[quality]}"), logger.DEBUG)
             new_ep_quality = quality
         else:
             new_ep_quality = self._get_quality(episode_object)
 
         new_quality_string = common.Quality.qualityStrings[new_ep_quality]
-        logger.debug(_("Quality of the episode we're processing: {new_quality_string}").format(new_quality_string=new_quality_string))
+        logger.debug(_(f"Quality of the episode we're processing: {new_quality_string}"))
 
         # see if this is a priority download (is it snatched, in history, PROPER, or BEST)
         priority_download = self._is_priority(episode_object, new_ep_quality)
-        self._log(_("Is ep a priority download: ") + str(priority_download), logger.DEBUG)
+        self._log(_(f"Is ep a priority download: {str(priority_download)}"), logger.DEBUG)
 
         # get the version of the episode we're processing
         if version:
-            self._log(_("Snatch history had a version in it, using that: v") + str(version), logger.DEBUG)
+            self._log(_(f"Snatch history had a version in it, using that: v{str(version)}"), logger.DEBUG)
             new_ep_version = version
         else:
             new_ep_version = -1
@@ -1061,7 +1051,7 @@ class PostProcessor(object):
                 # do the library update for synoindex
                 notifiers.synoindex_notifier.addFolder(episode_object.show.get_location)
             except (OSError, IOError):
-                raise EpisodePostProcessingFailedException(_("Unable to create the show directory: ") + episode_object.show.get_location)
+                raise EpisodePostProcessingFailedException(_(f"Unable to create the show directory: {episode_object.show.get_location}"))
 
             # get metadata for the show (but not episode because it hasn't been fully processed)
             episode_object.show.write_metadata(True)
@@ -1072,11 +1062,11 @@ class PostProcessor(object):
         for cur_ep in [episode_object] + episode_object.related_episodes:
             with cur_ep.lock:
                 if self.release_name:
-                    self._log(_("Found release name ") + self.release_name, logger.DEBUG)
+                    self._log(_(f"Found release name: {self.release_name}"), logger.DEBUG)
                     cur_ep.release_name = self.release_name
                 elif self.filename:
                     # If we can't get the release name we expect, save the original release name instead
-                    self._log(_("Using original release name ") + self.filename, logger.DEBUG)
+                    self._log(_(f"Using original release name: {self.filename}"), logger.DEBUG)
                     cur_ep.release_name = self.filename
                 else:
                     cur_ep.release_name = ""
@@ -1116,7 +1106,7 @@ class PostProcessor(object):
         except ShowDirectoryNotFoundException:
             raise EpisodePostProcessingFailedException(_("Unable to post-process an episode if the show dir doesn't exist, quitting"))
 
-        self._log(_("Destination folder for this episode: ") + dest_path, logger.DEBUG)
+        self._log(_(f"Destination folder for this episode: {dest_path}"), logger.DEBUG)
 
         # create any folders we need
         helpers.make_dirs(dest_path)
