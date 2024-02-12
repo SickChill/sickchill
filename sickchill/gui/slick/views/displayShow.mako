@@ -36,14 +36,14 @@
                                 <span id="prevShow" class="displayshow-icon-left" title="${_('Prev Show')}"></span>
                             </div>
                             <select id="pickShow" class="form-control input-sm" title="Change Show">
-                                % for curShowList in sortedShowLists:
-                                    % if len(sortedShowLists) > 1:
-                                        <optgroup label="${curShowList[0]}">
+                                % for cur_show_list in sorted_show_lists:
+                                    % if len(sorted_show_lists) > 1:
+                                        <optgroup label="${cur_show_list[0]}">
                                     % endif
-                                    % for curShow in curShowList[1]:
+                                    % for curShow in cur_show_list[1]:
                                         <option value="${curShow.indexerid}" ${selected(curShow == show)}>${curShow.name}</option>
                                     % endfor
-                                    % if len(sortedShowLists) > 1:
+                                    % if len(sorted_show_lists) > 1:
                                         </optgroup>
                                     % endif
                                 % endfor
@@ -213,15 +213,15 @@
                                                 <td class="showLegend">${_('Default EP Status')}: </td>
                                                 <td>${statusStrings[show.default_ep_status]}</td>
                                             </tr>
-                                            % if showLoc[1]:
+                                            % if show_location[1]:
                                                 <tr>
                                                     <td class="showLegend">${_('Location')}: </td>
-                                                    <td>${showLoc[0]}</td>
+                                                    <td>${show_location[0]}</td>
                                                 </tr>
                                             % else:
                                                 <tr>
                                                     <td class="showLegend"><span style="color: red;">${_('Location')}: </span></td>
-                                                    <td><span style="color: red;">${showLoc[0]}</span> (${_('Missing')})</td>
+                                                    <td><span style="color: red;">${show_location[0]}</span> (${_('Missing')})</td>
                                                 </tr>
                                             % endif
                                             <tr>
@@ -263,7 +263,7 @@
                                             % endif
                                             <tr>
                                                 <td class="showLegend">${_('Size')}:</td>
-                                                <td>${pretty_file_size(helpers.get_size(showLoc[0]))}</td>
+                                                <td>${pretty_file_size(helpers.get_size(show_location[0]))}</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -325,11 +325,11 @@
                 <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 pull-right">
                     <div class="pull-right" id="checkboxControls">
                         <div style="padding-bottom: 5px;">
-                            <% total_snatched = epCounts[Overview.SNATCHED] + epCounts[Overview.SNATCHED_PROPER] + epCounts[Overview.SNATCHED_BEST] %>
-                            <label class="pull-right" for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> ${_('Wanted')}: <b>${epCounts[Overview.WANTED]}</b></span></label>
-                            <label class="pull-right" for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> ${_('Allowed')}: <b>${epCounts[Overview.QUAL]}</b></span></label>
-                            <label class="pull-right" for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> ${_('Preferred')}: <b>${epCounts[Overview.GOOD]}</b></span></label>
-                            <label class="pull-right" for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> ${_('Skipped')}: <b>${epCounts[Overview.SKIPPED]}</b></span></label>
+                            <% total_snatched = ep_counts[Overview.SNATCHED] + ep_counts[Overview.SNATCHED_PROPER] + ep_counts[Overview.SNATCHED_BEST] %>
+                            <label class="pull-right" for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked" /> ${_('Wanted')}: <b>${ep_counts[Overview.WANTED]}</b></span></label>
+                            <label class="pull-right" for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked" /> ${_('Allowed')}: <b>${ep_counts[Overview.QUAL]}</b></span></label>
+                            <label class="pull-right" for="good"><span class="good"><input type="checkbox" id="good" checked="checked" /> ${_('Preferred')}: <b>${ep_counts[Overview.GOOD]}</b></span></label>
+                            <label class="pull-right" for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked" /> ${_('Skipped')}: <b>${ep_counts[Overview.SKIPPED]}</b></span></label>
                             <label class="pull-right" for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked" /> ${_('Snatched')}: <b>${total_snatched}</b></span></label>
                         </div>
                         <div class="clearfix"></div>

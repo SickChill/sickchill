@@ -1226,10 +1226,10 @@ class CMDBacklog(ApiCall):
                 [curShow.indexerid],
             )
 
-            for curResult in sql_results:
-                cur_ep_cat = curShow.get_overview(curResult["status"])
+            for cur_result in sql_results:
+                cur_ep_cat = curShow.get_overview(cur_result["status"])
                 if cur_ep_cat and cur_ep_cat in (Overview.WANTED, Overview.QUAL):
-                    show_eps.append(curResult)
+                    show_eps.append(cur_result)
 
             if show_eps:
                 shows.append({"indexerid": curShow.indexerid, "show_name": curShow.name, "status": curShow.status, "episodes": show_eps})
