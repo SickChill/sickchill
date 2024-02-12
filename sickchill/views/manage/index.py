@@ -712,7 +712,7 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def failedDownloads(self):
-        remove = self.get_body_arguments("remove")
+        remove = self.get_body_arguments("remove[]")
         limit = self.get_argument("limit", "100")
         failed_db_con = db.DBConnection("failed.db")
 
