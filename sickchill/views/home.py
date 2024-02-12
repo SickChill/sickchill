@@ -722,7 +722,7 @@ class Home(WebRoot):
 
         return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
-    def update(self, pid, branch=None):
+    def update(self, pid):
         if settings.DISABLE_UPDATER or str(pid) != str(settings.PID):
             return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
@@ -1681,7 +1681,7 @@ class Home(WebRoot):
             submenu=submenu, title=_("Manual Snatch"), header=_("Manual Snatch"), controller="home", action="manual_search_show_releases", results=results
         )
 
-    def manual_snatch_show_release(self, *args, **kwargs):
+    def manual_snatch_show_release(self):
         url = self.get_body_argument("url")
         show = self.get_body_argument("show")
 
