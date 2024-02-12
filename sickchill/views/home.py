@@ -1299,7 +1299,9 @@ class Home(WebRoot):
 
         return self.redirect(f"/home/displayShow?show={show.indexerid}")
 
-    def deleteShow(self, show=None, full=0):
+    def deleteShow(self):
+        show = self.get_query_argument("show")
+        full = int(self.get_query_argument("full"))
         if show:
             error, show = Show.delete(show, full)
 
