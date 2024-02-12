@@ -245,7 +245,7 @@ $(document).ready(function () {
     $.fn.makeNewznabProviderString = function () {
         const provStrings = [];
         for (const id in newznabProviders) {
-            if (Object.prototype.hasOwnProperty.call(newznabProviders, id)) {
+            if (Object.hasOwn(newznabProviders, id)) {
                 provStrings.push(newznabProviders[id][1].join('|'));
             }
         }
@@ -289,7 +289,7 @@ $(document).ready(function () {
     $.fn.makeTorrentRssProviderString = function () {
         const provStrings = [];
         for (const id in torrentRssProviders) {
-            if (Object.prototype.hasOwnProperty.call(torrentRssProviders, id)) {
+            if (Object.hasOwn(torrentRssProviders, id)) {
                 provStrings.push(torrentRssProviders[id].join('|'));
             }
         }
@@ -323,7 +323,7 @@ $(document).ready(function () {
         if (finalArray.length > 0) {
             $('<select>').prop('id', 'editAProvider').addClass('form-control input-sm').appendTo('#provider-list');
             for (const id in finalArray) {
-                if (Object.prototype.hasOwnProperty.call(finalArray, id)) {
+                if (Object.hasOwn(finalArray, id)) {
                     const provider = finalArray[id];
                     $('#editAProvider').append($('<option>').prop('value', provider).text($.trim($('#' + provider).text()).replace(/\s\*$/, '').replace(/\s\*\*$/, '')));
                 }
@@ -461,7 +461,9 @@ $(document).ready(function () {
         const url = $('#torrentrss_url').val();
         const cookies = $('#torrentrss_cookies').val();
         const titleTAG = $('#torrentrss_titleTAG').val();
-        const parameters = {name, url, cookies, titleTAG};
+        const parameters = {
+            name, url, cookies, titleTAG,
+        };
 
         // Send to the form with ajax, get a return value
         $.getJSON(scRoot + '/config/providers/canAddTorrentRssProvider', parameters, function (data) {

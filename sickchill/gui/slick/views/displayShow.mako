@@ -192,7 +192,7 @@
                                             % if show.network and show.airs:
                                                 <tr>
                                                     <td class="showLegend">${_('Originally Airs')}: </td>
-                                                    <td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font> ", "")[network_timezones.test_timeformat(show.airs)]} on ${show.network}</td>
+                                                    <td>${show.airs} ${("<font color='#FF0000'><b>(invalid time format)</b></font> ", "")[network_timezones.test_time_format(show.airs)]} on ${show.network}</td>
                                                 </tr>
                                             % elif show.network:
                                                 <tr>
@@ -202,7 +202,7 @@
                                             % elif show.airs:
                                                 <tr>
                                                     <td class="showLegend">${_('Originally Airs')}: </td>
-                                                    <td>${show.airs} ${("<font color='#FF0000'><b>(invalid Timeformat)</b></font>", "")[network_timezones.test_timeformat(show.airs)]}</td>
+                                                    <td>${show.airs} ${("<font color='#FF0000'><b>(invalid time format)</b></font>", "")[network_timezones.test_time_format(show.airs)]}</td>
                                                 </tr>
                                             % endif
                                             <tr>
