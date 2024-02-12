@@ -17,11 +17,11 @@ sc_timezone = tz.tzlocal()
 
 
 class NetworkTimezoneLoadException(Exception):
-    """"Error loading network timezones"""
+    """ "Error loading network timezones"""
 
 
 class GetNetworkTimezoneException(Exception):
-    """"Error getting network timezone"""
+    """ "Error getting network timezone"""
 
 
 def update_network_dict():
