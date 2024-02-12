@@ -101,9 +101,7 @@ class PostProcessor(object):
         """
         Checks if a file exists already and if it does whether it's bigger or smaller than
         the file we are post-processing
-
-        ;param existing_file: The file to compare to
-
+        :param existing_file: The file to compare to
         :return:
             DOESNT_EXIST if the file doesn't exist
             EXISTS_LARGER if the file exists and is larger than the file we are post processing
@@ -197,22 +195,13 @@ class PostProcessor(object):
                     file_path_list_to_delete.append(associated_file_path)
 
         if file_path_list_to_allow or file_path_list_to_delete:
-            self._log(
-                _(f"Found the following associated files for {file_path}: {file_path_list_to_allow + file_path_list_to_delete}"),
-                logger.DEBUG,
-            )
+            self._log(_(f"Found the following associated files for {file_path}: {file_path_list_to_allow + file_path_list_to_delete}"), logger.DEBUG)
             if file_path_list_to_delete:
-                self._log(
-                    _(f"Deleting non-allowed associated files for {file_path}: {file_path_list_to_delete}"),
-                    logger.DEBUG,
-                )
+                self._log(_(f"Deleting non-allowed associated files for {file_path}: {file_path_list_to_delete}"), logger.DEBUG)
                 # Delete all extensions the user doesn't allow
                 self._delete(file_path_list_to_delete)
             if file_path_list_to_allow:
-                self._log(
-                    _(f"Allowing associated files for {file_path}: {file_path_list_to_allow}"),
-                    logger.DEBUG,
-                )
+                self._log(_(f"Allowing associated files for {file_path}: {file_path_list_to_allow}"), logger.DEBUG)
         else:
             self._log(_(f"No associated files for {file_path} were found during this pass"), logger.DEBUG)
 
@@ -346,10 +335,7 @@ class PostProcessor(object):
                 helpers.moveFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
-                self._log(
-                    _(f"Unable to move file from {cur_file_path} to {new_file_path}: {error}"),
-                    logger.ERROR,
-                )
+                self._log(_(f"Unable to move file from {cur_file_path} to {new_file_path}: {error}"), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_move, subtitles=subtitles)
@@ -370,12 +356,7 @@ class PostProcessor(object):
                 helpers.copyFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
-                self._log(
-                    _("Unable to copy file from {cur_file_path} to {new_file_path}: {error}").format(
-                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
-                    ),
-                    logger.ERROR,
-                )
+                self._log(_(f"Unable to copy file from {cur_file_path} to {new_file_path}: {error}"), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_copy, subtitles=subtitles)
@@ -396,12 +377,7 @@ class PostProcessor(object):
                 helpers.hardlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
-                self._log(
-                    _("Unable to link file from {cur_file_path} to {new_file_path}: {error}").format(
-                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
-                    ),
-                    logger.ERROR,
-                )
+                self._log(_(f"Unable to link file from {cur_file_path} to {new_file_path}: {error}"), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_hard_link, subtitles=subtitles)
@@ -417,22 +393,12 @@ class PostProcessor(object):
         """
 
         def _int_move_and_sym_link(cur_file_path, new_file_path):
-            self._log(
-                _("Moving then symbolically linking file from {cur_file_path} to {new_file_path}").format(
-                    cur_file_path=cur_file_path, new_file_path=new_file_path
-                ),
-                logger.DEBUG,
-            )
+            self._log(_(f"Moving then symbolically linking file from {cur_file_path} to {new_file_path}"), logger.DEBUG)
             try:
                 helpers.moveAndSymlinkFile(cur_file_path, new_file_path)
                 helpers.chmodAsParent(new_file_path)
             except (IOError, OSError) as error:
-                self._log(
-                    _("Unable to link file from {cur_file_path} to {new_file_path}: {error}").format(
-                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
-                    ),
-                    logger.ERROR,
-                )
+                self._log(_(f"Unable to link file from {cur_file_path} to {new_file_path}: {error}"), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_move_and_sym_link, subtitles=subtitles)
@@ -448,22 +414,12 @@ class PostProcessor(object):
         """
 
         def _int_sym_link(cur_file_path, new_file_path):
-            self._log(
-                _("Creating then symbolically linking file from {new_file_path} to {cur_file_path}").format(
-                    cur_file_path=cur_file_path, new_file_path=new_file_path
-                ),
-                logger.DEBUG,
-            )
+            self._log(_(f"Creating then symbolically linking file from {new_file_path} to {cur_file_path}"), logger.DEBUG)
             try:
                 os.symlink(cur_file_path, new_file_path)
                 helpers.chmodAsParent(cur_file_path)
             except (IOError, OSError) as error:
-                self._log(
-                    _("Unable to link file {cur_file_path} to {new_file_path}: {error}").format(
-                        cur_file_path=cur_file_path, new_file_path=new_file_path, error=error
-                    ),
-                    logger.ERROR,
-                )
+                self._log(_(f"Unable to link file {cur_file_path} to {new_file_path}: {error}"), logger.ERROR)
                 raise
 
         self._combined_file_operation(file_path, new_path, new_base_name, associated_files, action=_int_sym_link, subtitles=subtitles)
@@ -519,12 +475,7 @@ class PostProcessor(object):
 
             qual_str = common.Quality.qualityStrings[quality] if quality is not None else quality
             result_name = show.name if show else "UNDEFINED"
-            self._log(
-                _("Found result in history for {result_name} - Season: {season} - Quality: {qual_str} - Version: {version}").format(
-                    result_name=result_name, season=season, qual_str=qual_str, version=version
-                ),
-                logger.DEBUG,
-            )
+            self._log(_(f"Found result in history for {result_name} - Season: {season} - Quality: {qual_str} - Version: {version}"), logger.DEBUG)
 
             return to_return
 
@@ -1001,10 +952,8 @@ class PostProcessor(object):
                 if int(episode_season) > newest_season:
                     self._log(
                         _(
-                            "File has season {episode_season}, while the indexer is on season {newest_season}. "
-                            "Try forcing a full update on the show and process this file again. "
-                            "The file may be incorrectly labeled or fake, aborting."
-                        ).format(episode_season=episode_season, newest_season_num=newest_season)
+                            f"File has season {episode_season}, while the indexer is on season {newest_season}. Try forcing a full update on the show and process this file again. The file may be incorrectly labeled or fake, aborting."
+                        )
                     )
                     return False
 
@@ -1151,7 +1100,7 @@ class PostProcessor(object):
                     self.directory, dest_path, new_base_name, settings.MOVE_ASSOCIATED_FILES, settings.USE_SUBTITLES and episode_object.show.subtitles
                 )
             else:
-                logger.exception(_("Unknown process method: ") + str(self.process_method))
+                logger.exception(_(f"Unknown process method: {str(self.process_method)}"))
                 raise EpisodePostProcessingFailedException(_("Unable to move the files to their new home"))
         except (OSError, IOError):
             raise EpisodePostProcessingFailedException(_("Unable to move the files to their new home"))
