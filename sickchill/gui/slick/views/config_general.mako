@@ -330,7 +330,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="update_frequency">${_('hours for software updates (default:1)')}</label>
+                                        <label for="update_frequency">${_('hours for software updates (default:168 (7d))')}</label>
                                     </div>
                                 </div>
                             </div>
