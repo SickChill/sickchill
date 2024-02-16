@@ -72,10 +72,6 @@ class Notifier(object):
                 return True
 
             except requests.exceptions.RequestException as error:
-                logger.debug(_("Emby url {url}").format(url=url))
-                logger.debug(_("Emby params {params}").format(params=params))
-                logger.debug(_("Emby notification {response}").format(response=response))
-                logger.debug(_("EMBY: HTTP response: {content}").format(content=response.content.decode('UTF-8')))
                 logger.warning(_("EMBY: Warning: Could not contact Emby at {url} {error}").format(url=url, error=error))
 
                 return False
