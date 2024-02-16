@@ -26,7 +26,7 @@ class Notifier(object):
             return False
 
         try:
-            response = requests.get(url, params=params, headers=self._make_headers(emby_apikey))
+            response = requests.post(url, params=params, headers=self._make_headers(emby_apikey))
             if response:
                 logger.debug(_("EMBY: HTTP response: {content}").format(content=response.content))
             response.raise_for_status()
@@ -60,7 +60,8 @@ class Notifier(object):
             if show:
                 params.update({"TvdbId": show.indexerid})
                 # Endpoint emby/Library/Series/Added is deprecated http://swagger.emby.media/?staticview=true#/LibraryService/postLibrarySeriesAdded
-                url = urljoin(settings.EMBY_HOST, "emby/Library/Series/Added")
+                # url = urljoin(settings.EMBY_HOST, "emby/Library/Series/Added")
+                url = urljoin(settings.EMBY_HOST, "emby/Library/Media/Updated")
             else:
                 url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
 
@@ -71,6 +72,10 @@ class Notifier(object):
                 return True
 
             except requests.exceptions.RequestException as error:
+                logger.debug(_("Emby url {url}").format(url=url))
+                logger.debug(_("Emby params {params}").format(params=params))
+                logger.debug(_("Emby notification {response}").format(response=response))
+                logger.debug(_("EMBY: HTTP response: {content}").format(content=response.content.decode('UTF-8')))
                 logger.warning(_("EMBY: Warning: Could not contact Emby at {url} {error}").format(url=url, error=error))
 
                 return False
