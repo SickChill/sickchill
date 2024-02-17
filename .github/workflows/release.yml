@@ -52,3 +52,5 @@ jobs:
           path: |
             dist/*.whl
             dist/*.tar.gz
+      - run: |
+          echo ${{ steps.next-version.outputs.changelog }}
