@@ -225,17 +225,6 @@
             <br/>
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                    <i class="icon16-config-mirc"></i>&nbsp;&nbsp;${_('IRC Chat')}:
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
-                    <a href="irc://irc.freenode.net/#sickchill" rel="noreferrer">
-                        <i>#sickchill</i> on <i>irc.freenode.net</i>
-                    </a>
-                </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                     <i class="fa fa-fw fa-discord" style="color: #6B8ADB"></i>${_('Discord')}:
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">

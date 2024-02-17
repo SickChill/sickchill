@@ -318,10 +318,6 @@ inc_top.mako
     background-position: -456px 0;
 }
 
-.menu-icon-irc {
-    background-position: -478px 0;
-}
-
 .menu-icon-changelog {
     background-position: -495px 0;
 }
@@ -1934,10 +1930,6 @@ select .selected {
 
 .add-client-icon-ftp {
     background-position: -452px 0;
-}
-
-.add-client-icon-irc {
-    background-position: -488px 0;
 }
 
 .add-client-icon-putio {

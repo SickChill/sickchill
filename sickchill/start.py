@@ -17,7 +17,6 @@ from sickchill.oldbeard.databases import failed, main
 from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 
-from .helper import setup_github
 from .init_helpers import locale_dir, setup_gettext
 from .oldbeard import (
     clients,
@@ -80,8 +79,6 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.ENCRYPTION_SECRET = check_setting_str(settings.CFG, "General", "encryption_secret", helpers.generateCookieSecret(), censor_log=True)
 
         # git login info
-        settings.GIT_USERNAME = check_setting_str(settings.CFG, "General", "git_username")
-        settings.GIT_TOKEN = check_setting_str(settings.CFG, "General", "git_token_password", censor_log=True)  # encryption needed
         settings.DEVELOPER = check_setting_bool(settings.CFG, "General", "developer")
 
         # debugging
@@ -89,7 +86,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.DBDEBUG = check_setting_bool(settings.CFG, "General", "dbdebug") or dbdebug
 
         settings.DEFAULT_PAGE = check_setting_str(settings.CFG, "General", "default_page", "home")
-        if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news", "IRC"):
+        if settings.DEFAULT_PAGE not in ("home", "schedule", "history", "news"):
             settings.DEFAULT_PAGE = "home"
 
         settings.LOG_DIR = check_setting_str(settings.CFG, "General", "log_dir", os.path.normpath(os.path.join(settings.DATA_DIR, "Logs")))
@@ -106,9 +103,6 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         # init logging
         logger.init_logging(console_logging=console_logging, file_logging=file_logging, debug_logging=settings.DEBUG, database_logging=settings.DBDEBUG)
-
-        # Initializes oldbeard.gh
-        setup_github()
 
         settings.GUI_NAME = check_setting_str(settings.CFG, "GUI", "gui_name", "slick")
         settings.GUI_LANG = check_setting_str(settings.CFG, "GUI", "language")
@@ -1150,8 +1144,6 @@ def save_config():
     new_config.update(
         {
             "General": {
-                "git_username": settings.GIT_USERNAME,
-                "git_token_password": helpers.encrypt(settings.GIT_TOKEN, settings.ENCRYPTION_VERSION),
                 "config_version": settings.CONFIG_VERSION,
                 "encryption_version": int(settings.ENCRYPTION_VERSION),
                 "encryption_secret": settings.ENCRYPTION_SECRET,

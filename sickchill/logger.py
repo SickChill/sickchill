@@ -5,16 +5,11 @@ import os
 import platform
 import re
 import sys
-import traceback
 from logging import NullHandler
 from urllib.parse import quote
 
-from github import InputFileContent
-from github.GithubException import RateLimitExceededException, TwoFactorException
-
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
-from sickchill.init_helpers import get_current_version
 from sickchill.oldbeard import classes, notifiers
 
 # log levels
@@ -37,7 +32,7 @@ censored_items = {}
 
 class DispatchFormatter(logging.Formatter, object):
     """
-    Censor information such as API keys, user names, and passwords from the Log
+    Censor information such as API keys, usernames, and passwords from the Log
     """
 
     def __init__(self, fmt=None, datefmt=None, style="{"):
@@ -113,8 +108,6 @@ class Logger(object):
         self.debug_logging = False
         self.database_logging = False
         self.log_file = None
-
-        self.submitter_running = False
 
     def init_logging(self, console_logging=False, file_logging=False, debug_logging=False, database_logging=False):
         """
@@ -215,166 +208,6 @@ class Logger(object):
             sys.exit(error_msg)
         else:
             sys.exit(1)
-
-    def submit_errors(self):
-        submitter_result = ""
-        issue_id = None
-
-        if not all((settings.GIT_TOKEN, settings.DEBUG, settings.gh, classes.ErrorViewer.errors)):
-            submitter_result = "Please set your GitHub token in the config and enable debug. Unable to submit issue ticket to GitHub!"
-            return submitter_result, issue_id
-
-        try:
-            from sickchill.update_manager import UpdateManager
-
-            update_manager = UpdateManager()
-            update_manager.check_for_new_version()
-            need_update = update_manager.need_update()
-        except Exception:
-            submitter_result = "Could not check if your SickChill is updated, unable to submit issue ticket to GitHub!"
-            return submitter_result, issue_id
-
-        if need_update:
-            submitter_result = "Please update SickChill, unable to submit issue ticket to GitHub with an outdated version!"
-            return submitter_result, issue_id
-
-        if self.submitter_running:
-            submitter_result = "Issue submitter is running, please wait for it to complete"
-            return submitter_result, issue_id
-
-        self.submitter_running = True
-
-        try:
-            # read log file
-            __log_data = None
-
-            if os.path.isfile(self.log_file):
-                with open(self.log_file) as log_f:
-                    __log_data = log_f.readlines()
-
-            for i in range(1, int(settings.LOG_NR)):
-                f_name = f"{self.log_file}.{i}"
-                if os.path.isfile(f_name) and (len(__log_data) <= 500):
-                    with open(f_name) as log_f:
-                        __log_data += log_f.readlines()
-
-            __log_data = list(reversed(__log_data))
-
-            # parse and submit errors to issue tracker
-            for cur_error in sorted(classes.ErrorViewer.errors, key=lambda error: error.time, reverse=True)[:500]:
-                try:
-                    title_error = str(cur_error.title)
-                    if not title_error or title_error == "None":
-                        title_error = re.match(r"^[A-Za-z0-9\-\[\] :]+::\s\[\w{7}\]\s*(.*)$", cur_error.message).group(1)
-
-                    if len(title_error) > 1000:
-                        title_error = title_error[0:1000]
-
-                except Exception as err_msg:
-                    self.logger.log(ERROR, f"Unable to get error title : {err_msg}")
-                    title_error = "UNKNOWN"
-
-                gist = None
-                regex = rf"^(?P<time>{re.escape(cur_error.time)})\s+(?P<level>[A-Z]+)\s+[A-Za-z0-9\-\[\] :]+::.*$"
-                for i, data in enumerate(__log_data):
-                    match = re.match(regex, data)
-                    if match:
-                        level = match.group("level")
-                        if LOGGING_LEVELS[level] == ERROR:
-                            paste_data = "".join(__log_data[i : i + 50])
-                            if paste_data:
-                                gist = settings.gh.get_user().create_gist(False, {"sickchill.log": InputFileContent(paste_data)})
-                            break
-                    else:
-                        gist = "No ERROR found"
-
-                try:
-                    locale_name = locale.getdefaultlocale()[1]
-                except Exception:
-                    locale_name = "unknown"
-
-                if gist and gist != "No ERROR found":
-                    log_link = f"Link to Log: {gist.html_url}"
-                else:
-                    log_link = "No Log available with ERRORS:"
-
-                msg = [
-                    "### INFO",
-                    f"Python Version: **{sys.version[:120]}**".replace("\n", ""),
-                    f"Operating System: **{platform.platform()}**",
-                    f"Locale: {locale_name}",
-                    f"Version: **{get_current_version()}**",
-                    log_link,
-                    "### ERROR",
-                    "```",
-                    cur_error.message,
-                    "```",
-                    "---",
-                    "_STAFF NOTIFIED_: @SickChill/owners @SickChill/moderators",
-                ]
-
-                message = "\n".join(msg)
-                title_error = f"[APP SUBMITTED]: {title_error}"
-
-                repo = settings.gh.get_organization(settings.GIT_ORG).get_repo(settings.GIT_REPO)
-                reports = repo.get_issues(state="all")
-
-                def is_ascii_error(title):
-                    # [APP SUBMITTED]: 'ascii' codec can't encode characters in position 00-00: ordinal not in range(128)
-                    # [APP SUBMITTED]: 'charmap' codec can't decode byte 0x00 in position 00: character maps to <undefined>
-                    return re.search(r".* codec can\'t .*code .* in position .*:", title) is not None
-
-                def is_malformed_error(title):
-                    # [APP SUBMITTED]: not well-formed (invalid token): line 0, column 0
-                    return re.search(r".* not well-formed \(invalid token\): line .* column .*", title) is not None
-
-                ascii_error = is_ascii_error(title_error)
-                malformed_error = is_malformed_error(title_error)
-
-                issue_found = False
-                for report in reports:
-                    if (
-                        title_error.rsplit(" :: ")[-1] in report.title
-                        or (malformed_error and is_malformed_error(report.title))
-                        or (ascii_error and is_ascii_error(report.title))
-                    ):
-                        issue_id = report.number
-                        if not report.raw_data["locked"]:
-                            if report.create_comment(message):
-                                submitter_result = f"Commented on existing issue #{issue_id} successfully!"
-                            else:
-                                submitter_result = f"Failed to comment on found issue #{issue_id}!"
-                        else:
-                            submitter_result = f"Issue #{issue_id} is locked, check GitHub to find info about the error."
-
-                        issue_found = True
-                        break
-
-                if not issue_found:
-                    issue = repo.create_issue(title_error, message)
-                    if issue:
-                        issue_id = issue.number
-                        submitter_result = f"Your issue ticket #{issue_id} was submitted successfully!"
-                    else:
-                        submitter_result = "Failed to create a new issue!"
-
-                if issue_id and cur_error in classes.ErrorViewer.errors:
-                    # clear error from error list
-                    classes.ErrorViewer.errors.remove(cur_error)
-        except RateLimitExceededException:
-            submitter_result = "Your GitHub user has exceeded its API rate limit, please try again later"
-            issue_id = None
-        except TwoFactorException:
-            submitter_result = "Your GitHub account requires Two-Factor Authentication, " "please change your auth method in the config"
-            issue_id = None
-        except Exception:
-            self.logger.log(ERROR, traceback.format_exc())
-            submitter_result = "Exception generated in issue submitter, please check the log"
-            issue_id = None
-        finally:
-            self.submitter_running = False
-
-        return submitter_result, issue_id
 
 
 class Wrapper(object):
@@ -500,7 +333,6 @@ def database(msg, *args, **kwargs):
         debug(msg, args, kwargs)
 
 
-submit_errors = Wrapper.instance.submit_errors
 init_logging = Wrapper.instance.init_logging
 restart = Wrapper.instance.restart
 shutdown = Wrapper.instance.shutdown

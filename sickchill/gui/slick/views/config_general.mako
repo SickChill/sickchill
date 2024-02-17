@@ -79,7 +79,6 @@
                                             <option value="schedule" ${selected(settings.DEFAULT_PAGE == 'schedule')}>${_('Schedule')}</option>
                                             <option value="history" ${selected(settings.DEFAULT_PAGE == 'history')}>${_('History')}</option>
                                             <option value="news" ${selected(settings.DEFAULT_PAGE == 'news')}>${_('News')}</option>
-                                            <option value="IRC" ${selected(settings.DEFAULT_PAGE == 'IRC')}>${_('IRC')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1153,80 +1152,6 @@
                     </fieldset>
                 </div>
             </div>
-
-            <!-- Divider -->
-            <div class="config-group-divider"></div>
-
-            <!-- Github -->
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                    <div class="component-group-desc">
-                        <h3>GitHub</h3>
-                        <p>${_('Options for github related features.')}</p>
-                    </div>
-                </div>
-                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
-
-                    <fieldset class="component-group-list">
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('GitHub username')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="text" name="git_username" id="git_username" value="${settings.GIT_USERNAME}" class="form-control input-sm input300" autocapitalize="off" autocomplete="no" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="git_username">${_('Only used for web IRC chat')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('GitHub personal access token')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input
-                                            type="password" name="git_token" id="git_token" value="${settings.GIT_TOKEN|hide}"
-                                            class="form-control input-sm input350" autocapitalize="off" autocomplete="no"
-                                        />
-                                        % if not settings.GIT_TOKEN:
-                                            <input class="btn btn-inline" type="button" id="create_access_token" value="${_('Generate Token')}">
-                                        % else:
-                                            <input class="btn btn-inline" type="button" id="manage_tokens" value="${_('Manage Tokens')}">
-                                        % endif
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="git_token">${_('*** (REQUIRED FOR SUBMITTING ISSUES) ***')}</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="git_token">
-                                            ${_('Provide repo:status, public_repo, write:discussion, read:discussion, user, gist, and notifications')}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
-
         </div>
 
     </form>

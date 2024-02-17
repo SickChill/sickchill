@@ -172,11 +172,9 @@ class ConfigTestBasic(unittest.TestCase):
         CFG = ConfigObj("test_config.ini", encoding="UTF-8", indent_type="  ")
         config.check_section(CFG, "General")
         CFG["General"]["process_method"] = "copy"
-        CFG["General"]["git_password"] = "SFa342FHb_"  # noqa: S105
         CFG["General"]["extra_scripts"] = None
         # normal
         assert config.check_setting_str(CFG, "General", "process_method", "move") == "copy"
-        assert config.check_setting_str(CFG, "General", "git_password", "", silent=False, censor_log=True) == "SFa342FHb_"
         # None value type
         assert config.check_setting_str(CFG, "General", "extra_scripts", "") == ""
         # unmatched section
@@ -199,8 +197,6 @@ class ConfigTestBasic(unittest.TestCase):
         assert not config.check_setting_bool(CFG, "General", "season_folders_default", def_val=True)
         # None value type
         assert not config.check_setting_bool(CFG, "General", "dbdebug", False)
-        # unmatched item
-        assert config.check_setting_bool(CFG, "General", "git_reset", def_val=True)
         # unmatched section
         assert not config.check_setting_bool(CFG, "Subtitles", "use_subtitles", def_val=False)
         # wrong def_val type, silent = off

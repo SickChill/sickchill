@@ -19,7 +19,6 @@ from .history import History
 from .home import Home
 from .imageSelector import ImageSelector
 from .index import BaseHandler, WebHandler, WebRoot
-from .irc import HomeIRC
 from .logs import ErrorLogs
 from .manage import AddShows, Manage, ManageSearches, PostProcess
 from .movies import MoviesHandler

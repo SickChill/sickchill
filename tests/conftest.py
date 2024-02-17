@@ -101,9 +101,6 @@ settings.CONFIG_FILE = os.path.join(settings.DATA_DIR, "config.ini")
 settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
 settings.GUI_NAME = "slick"
 
-settings.GIT_USERNAME = sickchill.oldbeard.config.check_setting_str(settings.CFG, "General", "git_username")
-settings.GIT_TOKEN = sickchill.oldbeard.config.check_setting_str(settings.CFG, "General", "git_token_password", censor_log=True)
-
 settings.LOG_DIR = os.path.join(TEST_DIR, "Logs")
 sickchill.logger.log_file = os.path.join(settings.LOG_DIR, "test_sickchill.log")
 create_test_log_folder()

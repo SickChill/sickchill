@@ -4,7 +4,7 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import logger, settings
-from sickchill.helper import setup_github, try_int
+from sickchill.helper import try_int
 from sickchill.init_helpers import setup_gettext
 from sickchill.oldbeard import config, filters, helpers, ui
 from sickchill.oldbeard.common import Quality, WANTED
@@ -112,8 +112,6 @@ class ConfigGeneral(Config):
         sickchill_background_path=None,
         custom_css=None,
         custom_css_path=None,
-        git_username=None,
-        git_token=None,
         display_all_seasons=None,
         gui_language=None,
         ignore_broken_symlinks=None,
@@ -156,14 +154,6 @@ class ConfigGeneral(Config):
         if settings.PROXY_SETTING:
             settings.PROXY_SETTING = config.clean_url(settings.PROXY_SETTING).rstrip("/")
         settings.PROXY_INDEXERS = config.checkbox_to_value(proxy_indexers)
-
-        settings.GIT_USERNAME = git_username
-
-        tmp_git_token = filters.unhide(settings.GIT_TOKEN, git_token)
-        if settings.GIT_TOKEN != tmp_git_token:
-            # Re-Initializes oldbeard.gh, so a restart isn't necessary
-            settings.GIT_TOKEN = tmp_git_token
-            setup_github()
 
         settings.CALENDAR_UNPROTECTED = config.checkbox_to_value(calendar_unprotected)
         settings.CALENDAR_ICONS = config.checkbox_to_value(calendar_icons)

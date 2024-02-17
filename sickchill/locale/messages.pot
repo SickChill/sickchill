@@ -2706,15 +2706,6 @@ msgstr ""
 msgid "IP or Hostname of your Deluge Daemon (e.g. http://localhost:58846)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:82
-#: sickchill/gui/slick/views/layouts/main.mako:258 sickchill/views/irc.py:10
-msgid "IRC"
-msgstr ""
-
-#: sickchill/gui/slick/views/config.mako:228
-msgid "IRC Chat"
-msgstr ""
-
 #: sickchill/gui/slick/views/config_general.mako:1076
 msgid ""
 "If checked, broken symbolic links warnings generated when calculating show "
@@ -3906,10 +3897,6 @@ msgstr ""
 
 #: sickchill/gui/slick/views/config_notifications.mako:108
 msgid "Only update first host"
-msgstr ""
-
-#: sickchill/gui/slick/views/config_general.mako:1158
-msgid "Only used for web IRC chat"
 msgstr ""
 
 #: sickchill/views/index.py:58
@@ -9162,4 +9149,3 @@ msgstr ""
 #: sickchill/views/home.py:1280
 msgid "{show_name} has been {paused_resumed}"
 msgstr ""
-

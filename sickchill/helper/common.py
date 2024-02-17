@@ -1,4 +1,6 @@
+import platform
 import re
+import uuid
 from fnmatch import fnmatch
 from os import PathLike
 from pathlib import Path
@@ -6,19 +8,14 @@ from typing import Union
 
 import appdirs
 import rarfile
-from github import Github
-from github.GithubException import (
-    BadAttributeException,
-    BadCredentialsException,
-    BadUserAgentException,
-    GithubException,
-    RateLimitExceededException,
-    TwoFactorException,
-    UnknownObjectException,
-)
 
-import sickchill
 from sickchill import settings
+from sickchill.init_helpers import get_current_version
+
+INSTANCE_ID = str(uuid.uuid1())
+USER_AGENT = "SickChill/{version} ({os} {architecture} {os_version}; {instance})".format(
+    version=get_current_version(), os=platform.system(), architecture=platform.machine(), os_version=platform.release(), instance=INSTANCE_ID
+)
 
 dateFormat = "%Y-%m-%d"
 dateTimeFormat = "%Y-%m-%d %H:%M:%S"
@@ -422,63 +419,6 @@ def episode_num(season=None, episode=None, **kwargs):
         elif numbering == "absolute":
             if episode is None:
                 return f"{season:03}"
-
-
-def setup_github():
-    """
-    Instantiate the global GitHub connection, for checking for updates and submitting issues
-    """
-
-    try:
-        if settings.GIT_TOKEN:
-            # Token Auth - allows users with Two-Factor Authorization (2FA) enabled on GitHub to connect their account.
-            settings.gh = Github(login_or_token=settings.GIT_TOKEN, user_agent="SickChill")
-            # This will trigger:
-            # * BadCredentialsException if token is invalid
-            # * TwoFactorException if user has enabled Github-2FA
-            #   but didn't set a personal token in the configuration.
-            settings.gh.get_organization(settings.GIT_ORG)
-        if not settings.gh:
-            settings.gh = Github(user_agent="SickChill")
-            settings.gh.get_organization(settings.GIT_ORG)
-    except BadCredentialsException as error:
-        settings.gh = None
-        sickchill.logger.warning(
-            _("Unable to set up GitHub properly with your github token. Please check your credentials. Error: {error}").format(error=error)
-        )
-    except TwoFactorException as error:
-        settings.gh = None
-        sickchill.logger.warning(
-            _("Unable to set up GitHub properly with your github token due to 2FA - Make sure this token works with 2FA. Error: {error}").format(error=error)
-        )
-    except RateLimitExceededException as error:
-        settings.gh = None
-        if settings.GIT_TOKEN:
-            sickchill.logger.warning(
-                _("Unable to set up GitHub properly, You are currently being throttled by rate limiting for too many requests. Error: {error}").format(
-                    error=error
-                )
-            )
-        else:
-            sickchill.logger.warning(
-                _(
-                    "Unable to set up GitHub properly, You are currently being throttled by rate limiting for too many requests - Try adding an access token. Error: {error}"
-                ).format(error=error)
-            )
-    except UnknownObjectException as error:
-        settings.gh = None
-        sickchill.logger.warning(
-            _("Unable to set up GitHub properly, it seems to be down or your organization/repo is set wrong. Error: {error}").format(error=error)
-        )
-    except BadUserAgentException as error:
-        settings.gh = None
-        sickchill.logger.warning(_("Unable to set up GitHub properly, GitHub doesn't like the user-agent. Error: {error}").format(error=error))
-    except BadAttributeException as error:
-        settings.gh = None
-        sickchill.logger.error(_("Unable to set up GitHub properly, There might be an error with the library. Error: {error}").format(error=error))
-    except (GithubException, Exception) as error:
-        settings.gh = None
-        sickchill.logger.error(_("Unable to set up GitHub properly. GitHub will not be available. Error: {error}").format(error=error))
 
 
 def choose_data_dir(program_dir) -> Path:

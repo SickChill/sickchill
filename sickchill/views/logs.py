@@ -26,14 +26,6 @@ class ErrorLogs(WebRoot):
                 "requires": self.haveWarnings() and level == logger.WARNING,
                 "icon": "ui-icon ui-icon-trash",
             },
-            {
-                "title": _("Submit Errors"),
-                "path": "errorlogs/submit_errors/",
-                "requires": self.haveErrors() and level == logger.ERROR,
-                "class": "submiterrors",
-                "confirm": True,
-                "icon": "ui-icon ui-icon-arrowreturnthick-1-n",
-            },
         ]
 
         return menu
@@ -89,12 +81,3 @@ class ErrorLogs(WebRoot):
             controller="errorlogs",
             action="viewlogs",
         )
-
-    def submit_errors(self):
-        submitter_result, issue_id = logger.submit_errors()
-        log = logger.info if issue_id else logger.warning
-        log(submitter_result)
-        submitter_notification = ui.notifications.error if not issue_id else ui.notifications.message
-        submitter_notification(submitter_result)
-
-        return self.redirect("/errorlogs/")

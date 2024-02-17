@@ -36,8 +36,7 @@ from urllib3 import disable_warnings
 import sickchill
 from sickchill import adba, logger, settings
 from sickchill.helper import episode_num, pretty_file_size, SUBTITLE_EXTENSIONS
-from sickchill.helper.common import is_media_file, replace_extension
-from sickchill.oldbeard.common import USER_AGENT
+from sickchill.helper.common import is_media_file, replace_extension, USER_AGENT
 from sickchill.show.Show import Show
 
 from . import db
@@ -69,7 +68,7 @@ def set_opener(verify: bool):
     disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     https_handler = HTTPSHandler(context=make_context(verify))
     opener = urllib.request.build_opener(https_handler)
-    opener.addheaders = [("User-agent", sickchill.oldbeard.common.USER_AGENT)]
+    opener.addheaders = [("User-agent", USER_AGENT)]
     urllib.request.install_opener(opener)
 
 
