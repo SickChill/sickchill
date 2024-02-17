@@ -30,7 +30,7 @@ module.exports = function (grunt) {
 
         // Start merging and releasing
         'exec:git:merge:develop --strategy-option theirs', // Merge develop into master
-        'default', // Run default task, grunt
+        // 'default', // Run default task, grunt
         // 'exec:updateTranslations', // Update translations
 
         'exec:bumpVersion', // Update version in pyproject.toml
@@ -46,6 +46,8 @@ module.exports = function (grunt) {
         'exec:gitTagNextVersion:yes', // Create new release tag
 
         'exec:gitPush:origin:master:tags', // Push master + tags
+        'exec:pypi', // PBuild and push wheel to pypi
+
         'exec:git:checkout:develop', // Go back to develop
         'exec:git:merge:master --strategy-option theirs', // Merge master back into develop
         'exec:gitPush:origin:develop:tags', // Push develop + tags
@@ -286,6 +288,9 @@ module.exports = function (grunt) {
 
             // Run tests
             test: {cmd: 'yarn run test || npm run test'},
+
+            // Build and push to pypi
+            pypi: {cmd: 'poetry publish --build'},
 
             // Publish/Releases
             git: {
