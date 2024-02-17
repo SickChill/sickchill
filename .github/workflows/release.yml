@@ -38,7 +38,7 @@ jobs:
           python-cache-dependency-path: pyproject.toml
       - run: |
           poetry version ${{ steps.next-version.outputs.release }}
-          yarn version --new-version ${{ steps.next-version.outputs.release }}
+          yarn version --no-version-git-tag --no-commit-hooks --new-version ${{ steps.next-version.outputs.release }}
           poetry build
       - uses: actions/upload-artifact@v4
         with:
