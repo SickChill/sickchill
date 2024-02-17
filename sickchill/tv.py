@@ -789,6 +789,8 @@ class TVShow(object):
         self.runtime = getattr(indexer_show, "runtime", "")
 
         self.imdb_id = getattr(indexer_show, "imdbId", "")
+        if not self.imdb_id:
+            self.imdb_id = helpers.imdb_from_tvdbid_on_tvmaze(self.indexerid)
 
         if hasattr(indexer_show, "airsDayOfWeek") and hasattr(indexer_show, "airsTime"):
             if indexer_show.airsTime and indexer_show.airsDayOfWeek:
@@ -819,11 +821,15 @@ class TVShow(object):
     def load_imdb_info(self):
         # TODO: Create shows only database from s3 datasets, possibly distributable from sickchill.github.io until they are integrated into sickindexer
 
+        # Check that the imdb_id we have is valid for searching
+        self.check_imdb_id()
+
+        if not self.imdb_id:
+            # TODO: Load tvmaze/tvdb info into other imdb_info fields
+            self.imdb_id = helpers.imdb_from_tvdbid_on_tvmaze(self.indexerid)
+
         try:
             client = Cinemagoer()
-
-            # Check that the imdb_id we have is valid for searching
-            self.check_imdb_id()
 
             if self.name and not self.imdb_id:
                 logger.debug(f"{self.indexerid}: Trying to find the imdbID for {self.name}")

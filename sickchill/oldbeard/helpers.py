@@ -1664,7 +1664,7 @@ def tvdbid_from_remote_id(indexer_id: str, indexer: str):  # pylint:disable=too-
     session = make_session()
     tvdb_id = ""
 
-    indeder = indexer.upper()
+    indexer = indexer.upper()
     if indexer in ("IMDB", "ZAP2IT"):
         if indexer == "IMDB":
             indexer += "ID"
@@ -1684,6 +1684,20 @@ def tvdbid_from_remote_id(indexer_id: str, indexer: str):  # pylint:disable=too-
                 pass
 
     return tvdb_id
+
+
+def imdb_from_tvdbid_on_tvmaze(indexer_id: Union[str, int]) -> str:
+    logger.debug(f"attempting to get imdb id from tvmaze using tvdbid: {indexer_id}")
+    imdb_id = ""
+    session = make_session()
+    data = getURL(f"https://api.tvmaze.com/lookup/shows?thetvdb={indexer_id}", session=session, returns="json")
+    if data:
+        try:
+            imdb_id = data["externals"]["imdb"]
+        except (SyntaxError, IndexError, ValueError):
+            logger.debug(f"attempt to use tvmaze to get imdbid failed")
+
+    return imdb_id
 
 
 def is_ip_local(ip):
