@@ -22,6 +22,8 @@ jobs:
           patch_separator: "-"
           version_regexp: '^20[^\-]*$'
           release_branch: ${{ github.branch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
