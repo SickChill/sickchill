@@ -197,20 +197,20 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           config: /tmp/buildkitd.toml
-      - if: github.actor == 'miigotu' && !env.ACT
+      - if: success() && !env.ACT
         name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - if: github.actor == 'miigotu' && !env.ACT
+      - if: success() && !env.ACT
         name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - if: github.actor == 'miigotu'
+      - if: success()
         name: Build and Push
         uses: docker/build-push-action@v5
         with:
@@ -225,7 +225,7 @@ jobs:
             SOURCE=1
           allow: |
             security.insecure
-      - if: github.actor == 'miigotu'
+      - if: success()
         name: Snag wheels
         uses: docker/build-push-action@v5
         with:
@@ -239,7 +239,7 @@ jobs:
             SOURCE=1
           allow: |
             security.insecure
-      - if: github.actor == 'miigotu'
+      - if: success()
         name: List wheels directory
         run: |
           ls -R /tmp/sickchill-wheels
