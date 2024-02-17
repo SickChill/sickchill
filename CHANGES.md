@@ -1,7 +1,25 @@
+### 2024.2.17
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.2...2024.2.17)
+
+
 ### 2024.2.2
 
-[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.31...2024.2.2)
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.1.8-3...2024.2.2)
 
+* Release version 2024.2.2
+* fix: another typo in workflow that builds wheels from commits to the develop branch
+* fix: typo on workflow run type that triggers building wheels on develop
+* refactor: try and complete the removal of episode_object parameter from all provider search methods, fixes newznab and other providers
+* Update poetry (python) and yarn (npm) dependencies
+* chore: try building develop branch and uploading artifacts
+* v4.0.73-5.3
+* v4.0.73-5.2
+* v4.0.73-5.1
+* v4.0.73-5.0
+* fix: prevent results with a quality of 0 (NONE) from being set as preferred in duplicates for nzb
+* fix: issue with table formatting on status page when a show was just added. fixes [#8682](https://github.com/SickChill/SickChill/issues/8682)
+* fix: don't show traceback when imdb info is not found
 
 ### 2024.1.8-3
 
