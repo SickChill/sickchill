@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 1
+          persist-credentials: false
       - name: Get new version string
         uses: miigotu/actions-calver@workflows
         id: next-version
