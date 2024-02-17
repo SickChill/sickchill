@@ -40,6 +40,8 @@ jobs:
           poetry version ${{ steps.next-version.outputs.release }}
           yarn version --no-version-git-tag --no-commit-hooks --new-version ${{ steps.next-version.outputs.release }}
           poetry build
+        env:
+          YARN_VERSION_GIT_TAG: ""
       - uses: actions/upload-artifact@v4
         with:
           name: Result
