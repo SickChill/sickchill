@@ -32,13 +32,8 @@ module.exports = function (grunt) {
         'exec:git:merge:develop --strategy-option theirs', // Merge develop into master
         // 'default', // Run default task, grunt
         // 'exec:updateTranslations', // Update translations
-
         'exec:bumpVersion', // Update version in pyproject.toml
-
-        'exec:commitChangedFiles:yes', // Commit the updates to translations and grunt
-
         'exec:gitListChanges', // List changes from since last tag
-
         'exec:gitListTags', // Get list of tags
         '_genchanges:yes', // Generate changelog
         'exec:commitChangedFiles:yes', // Commit the changelog
