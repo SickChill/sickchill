@@ -21,7 +21,7 @@ class TraktChecker(object):
         self.collection_list = {}
         self.amActive = False
 
-    def run(self):
+    def run(self, force=False):
         self.amActive = True
 
         # add shows from trakt.tv watchlist

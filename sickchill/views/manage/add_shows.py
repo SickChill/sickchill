@@ -239,7 +239,7 @@ class AddShows(Home):
         posts them to addNewShow
         """
 
-        trakt_list = self.get_argument("traktList", default="anticipated")
+        trakt_list = self.get_query_argument("traktList", default="anticipated").lower()
 
         trakt_options = {
             "anticipated": _("Most Anticipated Shows"),
@@ -253,8 +253,6 @@ class AddShows(Home):
         }
         if settings.TRAKT_ACCESS_TOKEN:
             trakt_options["recommended"] = _("Recommended Shows")
-
-        trakt_list = trakt_list.lower()
 
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
         return t.render(
@@ -457,7 +455,7 @@ class AddShows(Home):
         provided then it forwards back to newShow, if not it goes to /home.
         """
 
-        indexerLang = self.get_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE)
+        indexerLang = self.get_body_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE)
 
         # grab our list of other dirs if given
         other_shows = self.get_arguments("other_shows")
