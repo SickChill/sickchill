@@ -161,7 +161,7 @@ class GenericClient(object):
                 raise
 
             try:
-                info = torrent_bdecode[b"info"]
+                info = torrent_bdecode["info"]
             except Exception:
                 logger.exception("Unable to find info field in torrent")
                 logger.info(f"Torrent bencoded data: {result.content!r}")
