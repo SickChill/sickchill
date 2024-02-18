@@ -40,10 +40,11 @@ class AddShows(Home):
     def sanitizeFileName(self):
         return sanitize_filename(self.get_body_argument("name"))
 
-    def searchIndexersForShowName(self, search_term, lang=None, indexer=None, exact=False):
+    def searchIndexersForShowName(self):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
-        search_terms = [self.get_body_argument("search_term")]  # get_arguments to make this a list of terms, we can probably add advanced searching here.
+        search_term = self.get_body_argument("search_term")
+        search_terms = [search_term]  # get_arguments to make this a list of terms, we can probably add advanced searching here.
         lang = self.get_body_argument("lang", default=settings.INDEXER_DEFAULT_LANGUAGE)
         indexer = int(self.get_body_argument("indexer", default=settings.INDEXER_DEFAULT))
         exact = config.checkbox_to_value(self.get_body_argument("exact"))
@@ -110,7 +111,7 @@ class AddShows(Home):
         lang_id = sickchill.indexer.lang_dict()[lang]
         return json.dumps({"results": final_results, "langid": lang_id, "success": len(final_results) > 0})
 
-    def massAddTable(self, rootDir=None):
+    def massAddTable(self):
         t = PageTemplate(rh=self, filename="home_massAddTable.mako")
         root_dirs = self.get_arguments("rootDir")
         if not root_dirs:
@@ -156,9 +157,9 @@ class AddShows(Home):
                 }
 
                 # see if the folder is in KODI already
-                dirResults = main_db_con.select("SELECT indexer_id FROM tv_shows WHERE location = ? LIMIT 1", [cur_path])
+                dir_results = main_db_con.select("SELECT indexer_id FROM tv_shows WHERE location = ? LIMIT 1", [cur_path])
 
-                if dirResults:
+                if dir_results:
                     cur_dir["added_already"] = True
                 else:
                     cur_dir["added_already"] = False
@@ -238,7 +239,7 @@ class AddShows(Home):
         posts them to addNewShow
         """
 
-        traktList = self.get_argument("traktList", default="anticipated")
+        trakt_list = self.get_argument("traktList", default="anticipated")
 
         trakt_options = {
             "anticipated": _("Most Anticipated Shows"),
@@ -253,45 +254,43 @@ class AddShows(Home):
         if settings.TRAKT_ACCESS_TOKEN:
             trakt_options["recommended"] = _("Recommended Shows")
 
-        traktList = traktList.lower()
+        trakt_list = trakt_list.lower()
 
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
         return t.render(
-            title=trakt_options[traktList],
-            header=trakt_options[traktList],
-            traktList=traktList,
+            title=trakt_options[trakt_list],
+            header=trakt_options[trakt_list],
+            traktList=trakt_list,
             trakt_options=trakt_options,
             controller="addShows",
             action="trendingShows",
         )
 
-    def getTrendingShows(self, traktList=None):
+    def getTrendingShows(self):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and posts them to addNewShow
         """
         t = PageTemplate(rh=self, filename="trendingShows.mako")
-        if not traktList:
-            traktList = ""
 
-        traktList = traktList.lower()
+        trakt_list = self.get_query_argument("traktList", "").lower()
 
-        if traktList == "trending":
+        if trakt_list == "trending":
             page_url = "shows/trending"
-        elif traktList == "popular":
+        elif trakt_list == "popular":
             page_url = "shows/popular"
-        elif traktList == "anticipated":
+        elif trakt_list == "anticipated":
             page_url = "shows/anticipated"
-        elif traktList == "collected":
+        elif trakt_list == "collected":
             page_url = "shows/collected"
-        elif traktList == "watched":
+        elif trakt_list == "watched":
             page_url = "shows/watched"
-        elif traktList == "played":
+        elif trakt_list == "played":
             page_url = "shows/played"
-        elif traktList == "recommended":
+        elif trakt_list == "recommended":
             page_url = "recommendations/shows"
-        elif traktList == "newshow":
+        elif trakt_list == "newshow":
             page_url = "calendars/all/shows/new/{0}/30".format(datetime.date.today().strftime("%Y-%m-%d"))
-        elif traktList == "newseason":
+        elif trakt_list == "newseason":
             page_url = "calendars/all/shows/premieres/{0}/30".format(datetime.date.today().strftime("%Y-%m-%d"))
         else:
             page_url = "shows/anticipated"
@@ -299,7 +298,7 @@ class AddShows(Home):
         trending_shows = []
         black_list = False
         try:
-            trending_shows, black_list = trakt_trending.fetch_trending_shows(traktList, page_url)
+            trending_shows, black_list = trakt_trending.fetch_trending_shows(trakt_list, page_url)
         except Exception as error:
             logger.warning(f"Could not get trending shows: {error}")
 

@@ -70,7 +70,7 @@ class SCWebServer(threading.Thread):
         # video root
         if settings.ROOT_DIRS:
             root_dirs = settings.ROOT_DIRS.split("|")
-            self.video_root = root_dirs[int(root_dirs[0]) + 1]
+            self.video_root = root_dirs[int(root_dirs[0])]
         else:
             self.video_root = None
 

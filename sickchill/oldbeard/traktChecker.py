@@ -21,7 +21,7 @@ class TraktChecker(object):
         self.collection_list = {}
         self.amActive = False
 
-    def run(self, force=False):
+    def run(self):
         self.amActive = True
 
         # add shows from trakt.tv watchlist
@@ -290,7 +290,7 @@ class TraktChecker(object):
             trakt_data = []
 
             for show in settings.showList or []:
-                if not self._is_in_show_watchlist(show.idxr.slug, str(show.indexerid), "0", "0"):
+                if not self._is_in_show_watchlist(show.idxr.slug, str(show.indexerid)):
                     logger.debug("Adding Show: Indexer {0} {1} - {2} to Watchlist".format(show.idxr.name, str(show.indexerid), show.name))
                     show_element = {"title": show.name, "year": show.startyear, "ids": {show.idxr.slug: show.indexerid}}
 
