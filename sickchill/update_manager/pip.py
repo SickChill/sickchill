@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Union
 
 from packaging import version as packaging_version
+from packaging.version import Version
 
 from sickchill import logger, settings
 from sickchill.init_helpers import get_current_version, sickchill_dir
@@ -21,7 +22,7 @@ class PipUpdateManager(UpdateManagerBase):
         self._newest_version: packaging_version.Version = None
         self.session = helpers.make_session()
 
-    def get_current_version(self) -> str:
+    def get_current_version(self) -> Version:
         return packaging_version.parse(self.version_text)
 
     def get_clean_version(self, use_version: packaging_version.Version = None):

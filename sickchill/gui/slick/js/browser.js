@@ -33,28 +33,37 @@
             fileTypes: fileTypes.join(','),
         }, data => {
             fileBrowserDialog.empty();
-            const firstValue = data[0];
             let list = null;
             let link = null;
 
             const innerData = $.grep(data, (value, index) => index !== 0);
-
             const inputContainer = $('<div class="fileBrowserFieldContainer"></div>');
-            $('<input type="text" class="form-control input-sm">').val(firstValue.currentPath).on('keypress', event_ => {
-                if (event_.which === 13) {
-                    browse(event_.target.value, endpoint, includeFiles, fileTypes);
+
+            $('<input type="text" class="form-control input-sm">').val(currentBrowserPath).on('keypress', event => {
+                if (event.key === 'Enter') {
+                    browse(event.target.value, endpoint, includeFiles, fileTypes);
                 }
             }).appendTo(inputContainer.appendTo(fileBrowserDialog)).fileBrowser({
                 showBrowseButton: false,
-            }).on('autocompleteselect', (event_, ui) => {
+            }).on('autocompleteselect', (event, ui) => {
                 browse(ui.item.value, endpoint, includeFiles, fileTypes);
             });
 
             const listContainer = $('<div class="ui-dialog-scrollable-child">');
             list = $('<ul>').appendTo(listContainer.appendTo(fileBrowserDialog));
             $.each(innerData, (i, entry) => {
-                if (entry.isFile && fileTypes && (!entry.isAllowed || fileTypes.includes('images') && !entry.isImage)) { // eslint-disable-line no-mixed-operators
-                    return true;
+                /**
+                 * @param entry
+                 * @param entry.isFile
+                 * @param entry.isImage
+                 * @param entry.isAllowed
+                 */
+                // noinspection OverlyComplexBooleanExpressionJS
+                if (entry.isFile && fileTypes) {
+                    const isAllowed = (entry.isAllowed || (fileTypes.includes('images') && entry.isImage));
+                    if (!isAllowed) {
+                        return true;
+                    }
                 }
 
                 link = $('<a href="javascript:void(0)">').on('click', () => {
@@ -96,18 +105,19 @@
             // The title may change, even if fileBrowserDialog already exists
             fileBrowserDialog.dialog('option', 'title', newOptions.title);
         } else {
+            const margin = 80;
             // Set up the jquery dialog
-            fileBrowserDialog = $('<div class="fileBrowserDialog" style="display:none"></div>').appendTo('body').dialog({
+            fileBrowserDialog = $('<div class="fileBrowserDialog"></div>').appendTo('body').dialog({
                 dialogClass: 'browserDialog',
                 classes: {
                     'ui-dialog': 'ui-dialog-scrollable-by-child',
                 },
                 title: newOptions.title,
-                position: {my: 'center top', at: 'center top+60', of: window},
-                minWidth: Math.min($(document).width() - 80, 650),
-                height: Math.min($(document).height() - 80, $(window).height() - 80),
-                maxHeight: Math.min($(document).height() - 80, $(window).height() - 80),
-                maxWidth: $(document).width() - 80,
+                position: {my: 'center top', at: 'center top+' + margin, of: window},
+                minWidth: Math.min($(document).width() - margin, $(window).width() - margin),
+                height: Math.min($(document).height() - margin, $(window).height() - margin),
+                maxHeight: Math.min($(document).height() - margin, $(window).height() - margin),
+                maxWidth: Math.min($(document).width() - margin, $(window).width() - margin),
                 modal: true,
                 autoOpen: false,
             });
@@ -118,7 +128,7 @@
             class: 'btn',
             click() {
                 // Store the browsed path to the associated text field
-                callback(newOptions.includeFiles ? currentBrowserPath : $(this).find('.fileBrowserField').val(), newOptions);
+                callback(newOptions.includeFiles ? $(this).find('.fileBrowserField').val() : currentBrowserPath, newOptions);
                 $(this).dialog('close');
             },
         }, {
@@ -130,12 +140,7 @@
         }]);
 
         // Set up the browser and launch the dialog
-        let initialDirectory = '';
-        if (newOptions.initialDirectory) {
-            initialDirectory = newOptions.initialDirectory;
-        }
-
-        browse(initialDirectory, newOptions.url, newOptions.includeFiles, newOptions.fileTypes);
+        browse(newOptions.initialDirectory || '', newOptions.url, newOptions.includeFiles, newOptions.fileTypes);
         fileBrowserDialog.dialog('open');
 
         return false;
@@ -183,7 +188,9 @@
         // If the text field is empty, and we're given a key then populate it with the last browsed value from localStorage
         try {
             hasLocalStorage = Boolean(localStorage.getItem);
-        } catch {}
+        } catch {
+            console.log('no local storage permissions');
+        }
 
         if (hasLocalStorage && newOptions.key) {
             path = localStorage['fileBrowser-' + newOptions.key];
@@ -207,12 +214,9 @@
             // Append the browse button and give it a click behaviour
             newOptions.field.after(
                 $('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser">').on('click', function () {
-                    let initialDirectory = newOptions.field.val();
-                    initialDirectory ||= (newOptions.key && path);
-                    initialDirectory ||= '';
-
-                    const optionsWithInitialDirectory = $.extend({}, newOptions, {initialDirectory});
+                    const optionsWithInitialDirectory = $.extend({}, newOptions, {initialDirectory: newOptions.field.val() || (newOptions.key && path) || ''});
                     $(this).nFileBrowser(callback, optionsWithInitialDirectory);
+
                     return false;
                 }),
             );

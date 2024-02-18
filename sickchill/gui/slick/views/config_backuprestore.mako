@@ -28,13 +28,13 @@
                                         ${_('Select the folder you wish to save your backup file to')}:
                                     </div>
                                     <div class="col-md-12">
-                                        <input type="text" name="backupDir" id="backupDir" class="form-control input-sm input350" autocapitalize="off"  title="Backup directory" />
-                                        <input class="btn btn-inline" type="button" value="Backup" id="Backup" />
+                                        <input type="text" name="backupDirectory" id="backupDirectory" class="form-control input-sm input350" autocapitalize="off" title="Backup directory"/>
+                                        <input class="btn btn-inline" type="button" value="${_('Backup')}" id="backup-submit"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="Backup" id="Backup-result"></div>
+                        <div class="Backup" id="backup-result"></div>
                     </fieldset>
                 </div>
             </div>
@@ -57,13 +57,13 @@
                                         ${_('Select the backup file you wish to restore')}:
                                     </div>
                                     <div class="col-md-12">
-                                        <input type="text" name="backupFile" id="backupFile" class="form-control input-sm input350" autocapitalize="off"  title="Backup directory" />
-                                        <input class="btn btn-inline" type="button" value="${_('Restore')}" id="Restore" />
+                                        <input type="text" name="backupFile" id="backupFile" class="form-control input-sm input350" autocapitalize="off" title="Backup directory"/>
+                                        <input class="btn btn-inline" type="button" value="${_('Restore')}" id="restore-submit"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="Restore" id="Restore-result"></div>
+                        <div class="Restore" id="restore-result"></div>
                     </fieldset>
                 </div>
             </div>

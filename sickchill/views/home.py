@@ -74,8 +74,8 @@ class Home(WebRoot):
 
     def index(self):
         t = PageTemplate(rh=self, filename="home.mako")
-
         selected_root = self.get_body_argument("root", None)
+
         if selected_root and settings.ROOT_DIRS:
             backend_pieces = settings.ROOT_DIRS.split("|")
             backend_dirs = backend_pieces[1:]
@@ -89,36 +89,102 @@ class Home(WebRoot):
         else:
             selected_root_dir = ""
 
-        if settings.ANIME_SPLIT_HOME:
-            shows = []
-            anime = []
-            for show in settings.showList:
-                # noinspection PyProtectedMember
-                if selected_root_dir in show.get_location:
-                    if show.is_anime:
-                        anime.append(show)
-                    else:
-                        shows.append(show)
-
-            sorted_show_lists = [
-                ["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))],
-                ["Anime", sorted(anime, key=lambda mbr: attrgetter("sort_name")(mbr))],
-            ]
-        else:
-            shows = []
-            for show in settings.showList:
-                # noinspection PyProtectedMember
-                if selected_root_dir in show.get_location:
+        shows = []
+        anime = []
+        for show in settings.showList:
+            if selected_root_dir in show.get_location:
+                if settings.ANIME_SPLIT_HOME and show.is_anime:
+                    anime.append(show)
+                else:
                     shows.append(show)
-
-            sorted_show_lists = [["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))]]
 
         stats = self.show_statistics()
         return t.render(
             title=_("Home"),
             header=_("Show List"),
             topmenu="home",
-            sorted_show_lists=sorted_show_lists,
+            sorted_show_lists=[["Shows", shows], ["Anime", anime]],
+            show_stat=stats[0],
+            max_download_count=stats[1],
+            controller="home",
+            action="index",
+            selected_root=selected_root or "-1",
+        )
+
+    def filter(self):
+        t = PageTemplate(rh=self, filename="home.mako")
+
+        selected_root = self.get_body_argument("root", None)
+        page = try_int(self.get_argument("p", default="0"))
+        limit = try_int(self.get_argument("limit", default=None))
+        kind = self.get_argument("type", "all")
+        genre = self.get_argument("genre", "")
+        if kind not in ("all", "series", "anime"):
+            kind = "all"
+
+        if selected_root and settings.ROOT_DIRS:
+            backend_pieces = settings.ROOT_DIRS.split("|")
+            backend_dirs = backend_pieces[1:]
+            try:
+                assert selected_root != "-1"
+                selected_root_dir = backend_dirs[int(selected_root)]
+                if selected_root_dir[-1] not in ("/", "\\"):
+                    selected_root_dir += os.sep
+            except (IndexError, ValueError, TypeError, AssertionError):
+                selected_root_dir = ""
+        else:
+            selected_root_dir = ""
+
+        shows_to_show = []
+        skipped = 0
+        for show in settings.showList:
+            if selected_root_dir and selected_root_dir not in show.get_location:
+                continue
+
+            if kind == "anime" and not show.is_anime:
+                skipped += 1
+                continue
+
+            if kind == "series" and show.is_anime:
+                skipped += 1
+                continue
+
+            if genre and genre.lower() not in show.genre:
+                skipped += 1
+                continue
+
+            shows_to_show.append(show)
+            if limit and len(shows_to_show) == limit:
+                break
+
+        logger.debug(f"skipped {skipped} shows due to filters: genre: {genre}, limit: {limit}, kind: {kind}")
+        if limit:
+            upper_slice = min(page * limit + limit, len(shows_to_show))
+            lower_slice = min(page * limit, len(shows_to_show) - limit)
+
+            number_of_pages = len(shows_to_show) // limit
+            if len(shows_to_show) % limit:
+                number_of_pages += 1
+
+            logger.info(f"Split home into {number_of_pages} pages")
+        else:
+            upper_slice = len(shows_to_show) - 1
+            lower_slice = 0
+
+        shows = []
+        anime = []
+        for show in shows_to_show[lower_slice:upper_slice]:
+            if settings.ANIME_SPLIT_HOME and show.is_anime:
+                anime.append(show)
+            else:
+                shows.append(show)
+
+        stats = self.show_statistics()
+        return t.render(
+            title=_("Home"),
+            header=_("Show List"),
+            topmenu="home",
+            sorted_show_lists=[["Shows", shows], ["Anime", anime]],
             show_stat=stats[0],
             max_download_count=stats[1],
             controller="home",
@@ -915,20 +981,17 @@ class Home(WebRoot):
                 epCats[str(cur_result["season"]) + "x" + str(cur_result["episode"])] = curEpCat
                 ep_counts[curEpCat] += 1
 
-        if settings.ANIME_SPLIT_HOME:
-            shows = []
-            anime = []
-            for show in settings.showList:
-                if show.is_anime:
-                    anime.append(show)
-                else:
-                    shows.append(show)
-            sorted_show_lists = [
-                ["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))],
-                ["Anime", sorted(anime, key=lambda mbr: attrgetter("sort_name")(mbr))],
-            ]
-        else:
-            sorted_show_lists = [["Shows", sorted(settings.showList, key=lambda mbr: attrgetter("sort_name")(mbr))]]
+        shows = []
+        anime = []
+        for show in settings.showList:
+            if settings.ANIME_SPLIT_HOME and show.is_anime:
+                anime.append(show)
+            else:
+                shows.append(show)
+        sorted_show_lists = [
+            ["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))],
+            ["Anime", sorted(anime, key=lambda mbr: attrgetter("sort_name")(mbr))],
+        ]
 
         bwl = None
         if show_obj.is_anime:

@@ -48,9 +48,9 @@ class Notifier(object):
         logger.debug("Telegram in use with API KEY: {0}".format(api_key))
         params = {"chat_id": id or settings.TELEGRAM_ID, "text": f"{title} : {msg}"}
         response = getURL(f"https://api.telegram.org/bot{api_key or settings.TELEGRAM_APIKEY}/sendMessage", params=params, session=self.session, returns="json")
-        message = ("Telegram message sent successfully.", "Sending Telegram message failed, check the log")[response is None]
+        message = ("Sending Telegram message failed, check the log", "Telegram message sent successfully.")[bool(response)]
         logger.info(message)
-        return response is not None, message
+        return bool(response), message
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
         """

@@ -1099,7 +1099,7 @@ def backup_config_zip(fileList, archive, arcname=None):
         for f in fileList:
             a.write(f, os.path.relpath(f, arcname))
         a.close()
-        return True
+        return archive
     except Exception as error:
         logger.warning(_("There was a problem creating the zip file. Error: {error}").format(error=error))
         return False
@@ -1256,13 +1256,13 @@ def getURL(
         response.raise_for_status()
     except Exception as error:
         handle_requests_exception(error)
-        return None
+        return ""
 
     try:
         return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
     except ValueError:
         logger.debug(_("Requested a json response but response was not json, check the url: {url}").format(url=url))
-        return None
+        return ""
 
 
 def download_file(url, filename, session=None, headers=None, **kwargs):  # pylint:disable=too-many-return-statements

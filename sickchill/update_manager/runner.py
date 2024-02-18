@@ -59,7 +59,7 @@ class UpdateManager(object):
             if not os.path.isdir(backup_dir):
                 os.mkdir(backup_dir)
 
-            if self._keep_latest_backup(backup_dir) and self._backup(backup_dir):
+            if self._keep_latest_backup(backup_dir) and self.backup_to_dir(backup_dir):
                 logger.info("Config backup successful, updating...")
                 ui.notifications.message(_("Backup"), _("Config backup successful, updating..."))
                 return True
@@ -95,7 +95,7 @@ class UpdateManager(object):
         return True
 
     @staticmethod
-    def _backup(backup_dir=None):
+    def backup_to_dir(backup_dir=None):
         if not backup_dir:
             return False
         source = [

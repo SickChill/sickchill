@@ -1,8 +1,8 @@
 import os
-import time
 
 from tornado.web import addslash
 
+import sickchill.update_manager
 from sickchill import settings
 from sickchill.oldbeard import helpers
 from sickchill.views.common import PageTemplate
@@ -26,28 +26,15 @@ class ConfigBackupRestore(Config):
             action="backupRestore",
         )
 
-    @staticmethod
-    def backup(backupDir=None):
+    def backup(self):
+        backup_dir = self.get_body_argument("backupDirectory", default="")
         final_result = ""
 
-        if backupDir:
-            source = [
-                os.path.join(settings.DATA_DIR, "sickchill.db"),
-                settings.CONFIG_FILE,
-                os.path.join(settings.DATA_DIR, "failed.db"),
-                os.path.join(settings.DATA_DIR, "cache.db"),
-            ]
-            target = os.path.join(backupDir, "sickchill-" + time.strftime("%Y%m%d%H%M%S") + ".zip")
-
-            for path, dirs, files in os.walk(settings.CACHE_DIR, topdown=True):
-                for dirname in dirs:
-                    if path == settings.CACHE_DIR and dirname not in ["images"]:
-                        dirs.remove(dirname)
-                for filename in files:
-                    source.append(os.path.join(path, filename))
-
-            if helpers.backup_config_zip(source, target, settings.DATA_DIR):
-                final_result += "Successful backup to " + target
+        if backup_dir:
+            updater = sickchill.update_manager.UpdateManager()
+            target = updater.backup_to_dir(backup_dir)
+            if target:
+                final_result += f"Successful backup to {target}"
             else:
                 final_result += "Backup FAILED"
         else:
@@ -57,12 +44,13 @@ class ConfigBackupRestore(Config):
 
         return final_result
 
-    @staticmethod
-    def restore(backupFile=None):
+    def restore(self):
+        backup_file = self.get_body_argument("backupFile", default="")
+
         final_result = ""
 
-        if backupFile:
-            source = backupFile
+        if backup_file:
+            source = backup_file
             target_dir = os.path.join(settings.DATA_DIR, "restore")
 
             if helpers.restore_config_zip(source, target_dir):

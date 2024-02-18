@@ -121,10 +121,11 @@ class BaseHandler(RequestHandler):
                 CERTS_URL = "{}/cdn-cgi/access/certs".format(settings.CF_AUTH_DOMAIN)
                 if "CF_Authorization" in self.request.cookies:
                     jwk_set = helpers.getURL(CERTS_URL, returns="json")
-                    for key_dict in jwk_set["keys"]:
-                        public_key = jwt_algorithms_RSAAlgorithm.from_jwk(json.dumps(key_dict))
-                        if jwt.decode(self.request.cookies["CF_Authorization"], key=public_key, audience=settings.CF_POLICY_AUD):
-                            return True
+                    if jwk_set:
+                        for key_dict in jwk_set["keys"]:
+                            public_key = jwt_algorithms_RSAAlgorithm.from_jwk(json.dumps(key_dict))
+                            if jwt.decode(self.request.cookies["CF_Authorization"], key=public_key, audience=settings.CF_POLICY_AUD):
+                                return True
 
             # Logged into UI?
             if self.get_secure_cookie("sickchill_user"):

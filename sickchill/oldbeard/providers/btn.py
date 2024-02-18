@@ -42,7 +42,7 @@ class Provider(TorrentProvider):
         return True
 
     def check_auth_from_data(self, data):
-        if data is None:
+        if not data:
             return self._check_auth()
 
         if "api-error" in data:

@@ -1513,7 +1513,7 @@ class CMDSickChillBackup(ApiCall):
                 os.mkdir(self.location)
 
         logger.info(_("API: sc.backup backing up to {location}").format(location=self.location))
-        result = update_manager._backup(self.location)
+        result = update_manager.backup_to_dir(self.location)
         if result:
             logger.info(_("API: sc.backup successful!"))
             return _responds(RESULT_SUCCESS, msg="Backup successful")

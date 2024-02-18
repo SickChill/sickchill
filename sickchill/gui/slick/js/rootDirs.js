@@ -2,6 +2,7 @@
 (function () {
     let method;
     const noop = function () {};
+
     const methods = [
         'assert',
         'clear',
@@ -66,10 +67,10 @@ $(document).ready(() => {
 
     function syncOptionIDs() {
         // Re-sync option ids
-        let i = 0;
+        let index = 0;
         $('#rootDirs option').each(function () {
-            i++;
-            $(this).attr('id', 'rd-' + i);
+            index++;
+            $(this).attr('id', 'rd-' + index);
         });
     }
 
