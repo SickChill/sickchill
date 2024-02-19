@@ -1607,7 +1607,7 @@ class Home(WebRoot):
         try:
             show_obj.location
         except ShowDirectoryNotFoundException:
-            return
+            return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
         show_obj.get_all_episodes(has_location=True)
         t = PageTemplate(rh=self, filename="testRename.mako")
@@ -1633,7 +1633,7 @@ class Home(WebRoot):
         try:
             show_obj.location
         except ShowDirectoryNotFoundException:
-            return
+            return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
         if not eps:
             return self.redirect("/home/displayShow?show=" + show)
