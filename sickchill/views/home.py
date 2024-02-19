@@ -1604,9 +1604,8 @@ class Home(WebRoot):
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
-        try:
-            show_obj.location()
-        except ShowDirectoryNotFoundException:
+        if not os.path.isdir(show_obj.location):
+            logger.warning(_("Can't rename episodes '{show}' directory is missing.").format(show=show_obj.show_name))
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
         show_obj.get_all_episodes(has_location=True)
