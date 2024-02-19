@@ -1605,7 +1605,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location()
+            show_obj.location
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
