@@ -2,19 +2,31 @@ import os
 from pathlib import Path
 from typing import List
 
-import pythoncom
+try:
+    import pythoncom
+except (ModuleNotFoundError, ImportError):
+    pythoncom = None
+
+try:
+    import win32api
+    import win32com.client
+except (ModuleNotFoundError, ImportError):
+    win32api = None
+
+try:
+    import win32net
+except (ModuleNotFoundError, ImportError):
+    win32net = None
 
 from sickchill import logger, settings
 
 
 def get_windows_drives() -> List[Path]:
     """Return list of detected drives"""
-    try:
-        import win32api
-        import win32com.client
-    except (ModuleNotFoundError, ImportError) as error:
+
+    if win32api is None:
         if os.name == "nt":
-            logger.info(_("Unable to get windows shares without pywin32 installed: {error}").format(error))
+            logger.info(_("Unable to get windows shares without pywin32 installed"))
         return []
 
     # Add Logical Drives
@@ -35,9 +47,12 @@ def get_windows_drives() -> List[Path]:
 
 
 def get_network_shares():
-    import win32net
-
     network_shares = []
+    if win32net is None:
+        if os.name == "nt":
+            logger.info(_("Unable to get windows shares without pywin32 installed"))
+        return network_shares
+
     servers, count, unknown = win32net.NetServerEnum(None, 100)
     for server in servers:
         # noinspection PyBroadException
@@ -80,8 +95,10 @@ def folders_at_path(path: Path, include_parent: bool = False, include_files: boo
         if os.name == "nt":
             # noinspection PyBroadException
             try:
-                # noinspection PyUnresolvedReferences
-                pythoncom.CoInitialize()
+                if pythoncom:
+                    # noinspection PyUnresolvedReferences
+                    pythoncom.CoInitialize()
+
                 for letter in get_windows_drives():
                     entries.append({"name": letter, "path": letter})
 
@@ -90,8 +107,9 @@ def folders_at_path(path: Path, include_parent: bool = False, include_files: boo
                 # for share in get_network_shares():
                 #     entries.append({"name": share, "path": share})
 
-                # noinspection PyUnresolvedReferences
-                pythoncom.CoUninitialize()
+                if pythoncom:
+                    # noinspection PyUnresolvedReferences
+                    pythoncom.CoUninitialize()
             except Exception:
                 logger.debug("Attempting to get windows drives and shares failed", exc_info=True, stack_info=True)
 
