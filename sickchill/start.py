@@ -1063,9 +1063,7 @@ def halt():
         settings.started.clear()
 
 
-def sig_handler(signum=None, frame=None):
-    # noinspection PyUnusedLocal
-    frame_ = frame
+def sig_handler(signum=None, *args, **kwargs):
     if not isinstance(signum, type(None)):
         logger.info(f"Signal {signum} caught, saving and exiting...")
         Shutdown.stop(settings.PID)
@@ -1074,7 +1072,7 @@ def sig_handler(signum=None, frame=None):
 def save_all():
     # write all shows
     logger.info("Saving all shows to the database")
-    for show in settings.showList:
+    for show in settings.show_list:
         show.save_to_db()
 
     # save config

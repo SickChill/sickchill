@@ -6,13 +6,11 @@ import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
-from operator import attrgetter
 from secrets import compare_digest
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
-from tornado import httputil
 from tornado.concurrent import run_on_executor
 from tornado.web import authenticated, HTTPError, RequestHandler
 
@@ -121,10 +119,11 @@ class BaseHandler(RequestHandler):
                 CERTS_URL = "{}/cdn-cgi/access/certs".format(settings.CF_AUTH_DOMAIN)
                 if "CF_Authorization" in self.request.cookies:
                     jwk_set = helpers.getURL(CERTS_URL, returns="json")
-                    for key_dict in jwk_set["keys"]:
-                        public_key = jwt_algorithms_RSAAlgorithm.from_jwk(json.dumps(key_dict))
-                        if jwt.decode(self.request.cookies["CF_Authorization"], key=public_key, audience=settings.CF_POLICY_AUD):
-                            return True
+                    if jwk_set:
+                        for key_dict in jwk_set["keys"]:
+                            public_key = jwt_algorithms_RSAAlgorithm.from_jwk(json.dumps(key_dict))
+                            if jwt.decode(self.request.cookies["CF_Authorization"], key=public_key, audience=settings.CF_POLICY_AUD):
+                                return True
 
             # Logged into UI?
             if self.get_secure_cookie("sickchill_user"):
@@ -253,7 +252,7 @@ class WebRoot(WebHandler):
 
     def apibuilder(self):
         main_db_con = db.DBConnection(row_type="dict")
-        shows = sorted(settings.showList, key=lambda mbr: attrgetter("sort_name")(mbr))
+
         episodes = {}
 
         results = main_db_con.select("SELECT episode, season, showid " "FROM tv_episodes " "ORDER BY season ASC, episode ASC")
@@ -276,7 +275,7 @@ class WebRoot(WebHandler):
         return t.render(
             title=_("API Builder"),
             header=_("API Builder"),
-            shows=shows,
+            shows=settings.show_list,
             episodes=episodes,
             apikey=apikey,
             commands=function_mapper,

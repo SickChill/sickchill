@@ -334,7 +334,7 @@ def search_for_needed_episodes():
 
     did_search = False
 
-    show_list = settings.showList
+    show_list = settings.show_list
     from_date = datetime.date.min
     episodes = []
 

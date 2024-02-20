@@ -595,26 +595,6 @@ def fixSetGroupID(childPath):
         )
 
 
-def is_anime_in_show_list():
-    """
-    Check if any shows in list contain anime
-
-    Returns:
-         True if global showlist contains Anime, False if not
-    """
-
-    for show in settings.showList:
-        if show.is_anime:
-            return True
-    return False
-
-
-def update_anime_support():
-    """Check if we need to support anime, and if we do, enable the feature"""
-
-    settings.ANIMESUPPORT = is_anime_in_show_list()
-
-
 def get_absolute_number_from_season_and_episode(show, season, episode):
     """
     Find the absolute number for a show episode
@@ -655,7 +635,7 @@ def get_all_episodes_from_absolute_number(show, absolute_numbers, indexer_id=Non
 
     if absolute_numbers:
         if indexer_id and not show:
-            show = Show.find(settings.showList, indexer_id)
+            show = Show.find(settings.show_list, indexer_id)
 
         for absolute_number in absolute_numbers if show else []:
             ep = show.get_episode(None, None, absolute_number=absolute_number)
@@ -891,7 +871,7 @@ def _check_against_names(nameInQuestion, show, season=-1):
 
 
 def get_show(name, try_indexers=False):
-    if not settings.showList:
+    if not settings.show_list:
         return
 
     show_object = None
@@ -905,12 +885,12 @@ def get_show(name, try_indexers=False):
         cache = sickchill.oldbeard.name_cache.get_id_from_name(name)
         if cache:
             from_cache = True
-            show_object = Show.find(settings.showList, int(cache))
+            show_object = Show.find(settings.show_list, int(cache))
         else:
             check_names = [full_sanitizeSceneName(name), name]
             show_matches = [
                 show
-                for show in settings.showList
+                for show in settings.show_list
                 if (show.show_name and full_sanitizeSceneName(show.show_name) in check_names)
                 or (show.custom_name and full_sanitizeSceneName(show.custom_name) in check_names)
             ]
@@ -922,14 +902,14 @@ def get_show(name, try_indexers=False):
         if not show_object and try_indexers:
             result = sickchill.indexer.search_indexers_for_series_id(name=full_sanitizeSceneName(name))[1]
             if result:
-                show_object = Show.find(settings.showList, result.id)
+                show_object = Show.find(settings.show_list, result.id)
 
         # try scene exceptions
         if not show_object:
             scene_exceptions = sickchill.oldbeard.scene_exceptions.get_scene_exception_by_name_multiple(name)
             for scene_exception in scene_exceptions:
                 if scene_exception[0]:
-                    show_object = Show.find(settings.showList, scene_exception[0])
+                    show_object = Show.find(settings.show_list, scene_exception[0])
                     if show_object:
                         break
 
@@ -1099,7 +1079,7 @@ def backup_config_zip(fileList, archive, arcname=None):
         for f in fileList:
             a.write(f, os.path.relpath(f, arcname))
         a.close()
-        return True
+        return archive
     except Exception as error:
         logger.warning(_("There was a problem creating the zip file. Error: {error}").format(error=error))
         return False
@@ -1256,13 +1236,13 @@ def getURL(
         response.raise_for_status()
     except Exception as error:
         handle_requests_exception(error)
-        return None
+        return ""
 
     try:
         return response if response_type in ("response", None) else response.json() if response_type == "json" else getattr(response, response_type, response)
     except ValueError:
         logger.debug(_("Requested a json response but response was not json, check the url: {url}").format(url=url))
-        return None
+        return ""
 
 
 def download_file(url, filename, session=None, headers=None, **kwargs):  # pylint:disable=too-many-return-statements

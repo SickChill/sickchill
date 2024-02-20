@@ -10,12 +10,12 @@ blueprint = Blueprint("shows", __name__, template_folder="templates", static_fol
 @blueprint.route("/")
 def shows():
     logger.info("Loading shows page")
-    logger.debug(f"Shows: {settings.showList}")
-    return render_template("shows.html", shows=settings.showList)
+    logger.debug(f"Shows: {settings.show_list}")
+    return render_template("shows.html", shows=settings.show_list)
 
 
 @blueprint.route("/show/")
 def show():
     logger.info("Loading show details page")
-    logger.debug(f"Shows: {settings.showList}")
+    logger.debug(f"Shows: {settings.show_list}")
     return render_template("show.html", show=None)

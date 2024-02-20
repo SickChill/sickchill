@@ -83,7 +83,7 @@ class TVEpisodeTests(conftest.SickChillTestDBCase):
         Set up
         """
         super().setUp()
-        settings.showList = []
+        settings.show_list = []
 
     def test_init_empty_db(self):
         """
@@ -107,7 +107,7 @@ class TVTests(conftest.SickChillTestDBCase):
         Set up
         """
         super().setUp()
-        settings.showList = []
+        settings.show_list = []
 
     @staticmethod
     def test_get_episode():
@@ -124,7 +124,7 @@ class TVTests(conftest.SickChillTestDBCase):
         show.airs = "monday"
         show.startyear = 1987
         show.save_to_db()
-        settings.showList = [show]
+        settings.show_list = [show]
         # TODO: implement
 
 

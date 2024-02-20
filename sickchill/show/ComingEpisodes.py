@@ -75,7 +75,7 @@ class ComingEpisodes(object):
         status_list = [WANTED, UNAIRED] + SNATCHED
 
         sql_l = []
-        for show_obj in settings.showList:
+        for show_obj in settings.show_list:
             next_air_date = show_obj.next_episode()
             sql_l.append(
                 [

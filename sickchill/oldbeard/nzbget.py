@@ -116,7 +116,7 @@ def send_nzb(result: "SearchResult", proper=False) -> bool:
                         return False
 
                     data = result.provider.get_url(result.url, returns="content")
-                    if data is None:
+                    if not data:
                         return False
 
                     nzb_data_content = standard_b64encode(data)

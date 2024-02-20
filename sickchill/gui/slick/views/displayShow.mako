@@ -37,13 +37,13 @@
                             </div>
                             <select id="pickShow" class="form-control input-sm" title="Change Show">
                                 % for cur_show_list in sorted_show_lists:
-                                    % if len(sorted_show_lists) > 1:
+                                    % if settings.ANIME_SPLIT_HOME and len(sorted_show_lists) > 1 and cur_show_list[1]:
                                         <optgroup label="${cur_show_list[0]}">
                                     % endif
                                     % for curShow in cur_show_list[1]:
                                         <option value="${curShow.indexerid}" ${selected(curShow == show)}>${curShow.name}</option>
                                     % endfor
-                                    % if len(sorted_show_lists) > 1:
+                                    % if settings.ANIME_SPLIT_HOME and len(sorted_show_lists) > 1 and cur_show_list[1]:
                                         </optgroup>
                                     % endif
                                 % endfor

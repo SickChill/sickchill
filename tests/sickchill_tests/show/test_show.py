@@ -22,7 +22,7 @@ class ShowTests(unittest.TestCase):
         """
         settings.QUALITY_DEFAULT = Quality.FULLHDTV
 
-        settings.showList = []
+        settings.show_list = []
 
         show123 = TestTVShow(0, 123)
         show456 = TestTVShow(0, 456)
@@ -68,12 +68,12 @@ class ShowTests(unittest.TestCase):
         """
         settings.QUALITY_DEFAULT = Quality.FULLHDTV
 
-        settings.showList = []
+        settings.show_list = []
 
         show123 = TestTVShow(0, 123)
         show456 = TestTVShow(0, 456)
         show789 = TestTVShow(0, 789)
-        settings.showList = [
+        settings.show_list = [
             show123,
             show456,
             show789,

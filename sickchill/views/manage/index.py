@@ -269,13 +269,13 @@ class Manage(Home, WebRoot):
             for epResult in to_download[cur_indexer_id]:
                 season, episode = epResult.split("x")
 
-                show = Show.find(settings.showList, int(cur_indexer_id))
+                show = Show.find(settings.show_list, int(cur_indexer_id))
                 show.get_episode(season, episode).download_subtitles()
 
         return self.redirect("/manage/subtitleMissed/")
 
     def backlogShow(self, indexer_id):
-        show_object = Show.find(settings.showList, int(indexer_id))
+        show_object = Show.find(settings.show_list, int(indexer_id))
 
         if show_object:
             settings.backlogSearchScheduler.action.searchBacklog([show_object])
@@ -290,7 +290,7 @@ class Manage(Home, WebRoot):
         show_sql_results = {}
 
         main_db_con = db.DBConnection()
-        for current_show in settings.showList:
+        for current_show in settings.show_list:
             episode_counts = {
                 Overview.SKIPPED: 0,
                 Overview.WANTED: 0,
@@ -327,7 +327,7 @@ class Manage(Home, WebRoot):
         backlog_shows = sorted(
             [
                 x
-                for x in settings.showList
+                for x in settings.show_list
                 if (
                     show_counts[x.indexerid][Overview.QUAL]
                     or show_counts[x.indexerid][Overview.WANTED]
@@ -377,7 +377,7 @@ class Manage(Home, WebRoot):
         show_list = []
         show_names = []
         for show_id in edit:
-            show_object = Show.find(settings.showList, show_id)
+            show_object = Show.find(settings.show_list, show_id)
             if show_object:
                 show_list.append(show_object)
                 show_names.append(show_object.name)
@@ -540,7 +540,7 @@ class Manage(Home, WebRoot):
         errors = []
         for current_show in edit:
             current_show_errors = []
-            show_object = Show.find(settings.showList, current_show)
+            show_object = Show.find(settings.show_list, current_show)
             if not show_object:
                 continue
 
@@ -641,7 +641,7 @@ class Manage(Home, WebRoot):
             if curShowID == "":
                 continue
 
-            show_object = Show.find(settings.showList, int(curShowID))
+            show_object = Show.find(settings.show_list, int(curShowID))
             if not show_object:
                 continue
 

@@ -1,6 +1,5 @@
 <%inherit file="/layouts/main.mako" />
 <%!
-    from operator import attrgetter
     from sickchill import settings
     from sickchill.oldbeard.common import statusStrings
 %>
@@ -80,7 +79,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            % for curShow in sorted(settings.showList, key=lambda mbr: attrgetter('sort_name')(mbr)):
+                            % for curShow in settings.show_list:
                             <%
                                 if settings.showQueueScheduler.action.is_in_remove_queue(curShow) or settings.showQueueScheduler.action.is_being_removed(curShow):
                                     continue

@@ -55,7 +55,7 @@ class BacklogSearcher(object):
         if which_shows:
             show_list = which_shows
         else:
-            show_list = settings.showList
+            show_list = settings.show_list
 
         self._get_lastBacklog()
 

@@ -82,7 +82,7 @@ def create_test_cache_folder():
 # =================
 
 
-settings.showList = []
+settings.show_list = []
 settings.QUALITY_DEFAULT = 4  # hdtv
 settings.SEASON_FOLDERS_DEFAULT = 0
 
@@ -158,13 +158,13 @@ class SickChillTestDBCase(unittest.TestCase):
     """
 
     def setUp(self):
-        settings.showList = []
+        settings.show_list = []
         setup_test_db()
         setup_test_episode_file()
         setup_test_show_dir()
 
     def tearDown(self):
-        settings.showList = []
+        settings.show_list = []
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()
@@ -180,7 +180,7 @@ class SickChillTestPostProcessorCase(unittest.TestCase):
     """
 
     def setUp(self):
-        settings.showList = []
+        settings.show_list = []
         setup_test_db()
         setup_test_episode_file()
         setup_test_show_dir()
@@ -203,10 +203,10 @@ class SickChillTestPostProcessorCase(unittest.TestCase):
                 episode.save_to_db()
 
         self.show.save_to_db()
-        settings.showList = [self.show]
+        settings.show_list = [self.show]
 
     def tearDown(self):
-        settings.showList = []
+        settings.show_list = []
         self.show.delete_show(True)
         teardown_test_db()
         teardown_test_episode_file()

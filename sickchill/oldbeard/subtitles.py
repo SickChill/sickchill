@@ -436,7 +436,7 @@ class SubtitlesFinder(object):
 
                 logger.info(f"Searching for missing subtitles of {ep_show_name} {ep_string}")
 
-                show_object = Show.find(settings.showList, int(ep_to_sub["showid"]))
+                show_object = Show.find(settings.show_list, int(ep_to_sub["showid"]))
                 if not show_object:
                     logger.debug(f"Show with ID {ep_show_id} not found in the database")
                     continue

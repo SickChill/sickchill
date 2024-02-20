@@ -380,26 +380,24 @@ const SICKCHILL = {
             });
         },
         backupRestore() {
-            $('#Backup').on('click', () => {
-                $('#Backup').attr('disabled', true);
-                $('#Backup-result').html(loading);
-                const backupDirectory = $('#backupDir').val();
-                $.get(scRoot + '/config/backuprestore/backup', {backupDirectory}).done(data => {
-                    $('#Backup-result').html(data);
-                    $('#Backup').attr('disabled', false);
+            $('#backup-submit').on('click', () => {
+                $('#backup-submit').attr('disabled', true);
+                $('#backup-result').html(loading);
+                $.post(scRoot + '/config/backuprestore/backup', {backupDirectory: $('#backupDirectory').val()}).done(data => {
+                    $('#backup-result').html(data);
+                    $('#backup-submit').attr('disabled', false);
                 });
             });
-            $('#Restore').on('click', () => {
-                $('#Restore').attr('disabled', true);
-                $('#Restore-result').html(loading);
-                const backupFile = $('#backupFile').val();
-                $.post(scRoot + '/config/backuprestore/restore', {backupFile}).done(data => {
-                    $('#Restore-result').html(data);
-                    $('#Restore').attr('disabled', false);
+            $('#restore-submit').on('click', () => {
+                $('#restore-submit').attr('disabled', true);
+                $('#restore-result').html(loading);
+                $.post(scRoot + '/config/backuprestore/restore', {backupFile: $('#backupFile').val()}).done(data => {
+                    $('#restore-result').html(data);
+                    $('#restore-submit').attr('disabled', false);
                 });
             });
 
-            $('#backupDir').fileBrowser({title: _('Select backup folder to save to'), key: 'backupPath'});
+            $('#backupDirectory').fileBrowser({title: _('Select backup folder to save to'), key: 'backupPath'});
             $('#backupFile').fileBrowser({title: _('Select backup files to restore'), key: 'backupFile', includeFiles: 1});
             $('#config-components').tabs();
         },
@@ -1387,7 +1385,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern,
-                    abd: 'True',
+                    abd: true,
                 }, data => {
                     if (data) {
                         $('#naming_abd_example').text(data + '.ext');
@@ -1399,7 +1397,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern,
-                    abd: 'True',
+                    abd: true,
                 }, data => {
                     let info;
                     if (data === 'invalid') {
@@ -1437,7 +1435,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/testNaming', {
                     pattern,
-                    sports: 'True', // @TODO does this actually need to be a string or can it be a boolean?
+                    sports: true,
                 }, data => {
                     if (data) {
                         $('#naming_sports_example').text(data + '.ext');
@@ -1449,7 +1447,7 @@ const SICKCHILL = {
 
                 $.post(scRoot + '/config/postProcessing/isNamingValid', {
                     pattern,
-                    sports: 'True', // @TODO does this actually need to be a string or can it be a boolean?
+                    sports: true,
                 }, data => {
                     let info;
                     if (data === 'invalid') {

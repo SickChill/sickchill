@@ -13,7 +13,7 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 
 # locale_dir = sickchill_dir / "locale"
-pid_file: Path = None
+pid_file: Union[Path, None] = None
 
 
 sickchill_dir = Path(__file__).parent
@@ -139,10 +139,10 @@ def check_installed() -> bool:
 
 def get_current_version() -> str:
     fallback_version = "0.0.0"
-    version_regex = re.compile(r'\s*version\s*=\s*["\']([.0-9a-z-+]+)["\']\s*$')
+    matcher = re.compile(r'\s*version\s*=\s*["\']([.0-9a-z-+]+)["\']\s*$')
     if pyproject_file.is_file():
         for line in pyproject_file.open():
-            match = version_regex.match(line)
+            match = matcher.match(line)
             if match:
                 return match.group(1)
         return fallback_version

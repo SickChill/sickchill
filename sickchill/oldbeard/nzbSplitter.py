@@ -122,7 +122,7 @@ def split_result(obj):
     :return: a list of episode objects or an empty list
     """
     url_data = helpers.getURL(obj.url, session=helpers.make_session(), returns="content")
-    if url_data is None:
+    if not url_data:
         logger.warning("Unable to load url " + obj.url + ", can't download season NZB")
         return []
 

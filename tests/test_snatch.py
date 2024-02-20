@@ -116,7 +116,7 @@ def generator(tvdb_id, show_name, cur_data, force_search):
         show.name = show_name
         show.quality = cur_data["q"]
         show.save_to_db()
-        settings.showList.append(show)
+        settings.show_list.append(show)
         episode = None
 
         for epNumber in cur_data["e"]:

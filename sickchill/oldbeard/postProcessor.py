@@ -519,7 +519,7 @@ class PostProcessor(object):
             if quality == common.Quality.UNKNOWN:
                 quality = None
 
-            show = Show.find(settings.showList, indexer_id)
+            show = Show.find(settings.show_list, indexer_id)
 
             self.in_history = True
             self.version = version
@@ -1169,7 +1169,7 @@ class PostProcessor(object):
                 cur_ep.location = os.path.join(dest_path, new_filename)
                 # download subtitles
                 if settings.USE_SUBTITLES and episode_object.show.subtitles and (cur_ep.season != 0 or settings.SUBTITLES_INCLUDE_SPECIALS):
-                    cur_ep.refreshSubtitles()
+                    cur_ep.refresh_subtitles()
                     cur_ep.download_subtitles()
                 sql_l.append(cur_ep.get_sql())
 

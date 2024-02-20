@@ -1,7 +1,8 @@
 import datetime
 import os
 
-from sickchill import logger, settings, tv
+from sickchill import logger, settings
+from sickchill.tv import TVEpisode
 
 from . import common
 from .common import DOWNLOADED, Quality
@@ -51,7 +52,7 @@ class TVShow(object):
         return self.scene > 0
 
 
-class TVEpisode(tv.TVEpisode):
+class SampleEpisode(TVEpisode):
     def __init__(self, season, episode, absolute_number, name):
         self.related_episodes = []
         self.name = name
@@ -189,7 +190,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
 
 def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
     # make a fake episode object
-    ep = TVEpisode(2, 3, 3, "Ep Name")
+    ep = SampleEpisode(2, 3, 3, "Ep Name")
 
     ep._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
     ep._airdate = datetime.date(2011, 3, 9)
@@ -215,7 +216,7 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
 
             ep._release_name = "Show.Name.003-004.HDTV.XviD-SICKCHILL"
 
-            secondEp = TVEpisode(2, 4, 4, "Ep Name (2)")
+            secondEp = SampleEpisode(2, 4, 4, "Ep Name (2)")
             secondEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
             secondEp._release_name = ep._release_name
 
@@ -223,11 +224,11 @@ def generate_sample_ep(multi=None, abd=False, sports=False, anime_type=None):
         else:
             ep._release_name = "Show.Name.S02E03E04E05.HDTV.XviD-SICKCHILL"
 
-            secondEp = TVEpisode(2, 4, 4, "Ep Name (2)")
+            secondEp = SampleEpisode(2, 4, 4, "Ep Name (2)")
             secondEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
             secondEp._release_name = ep._release_name
 
-            thirdEp = TVEpisode(2, 5, 5, "Ep Name (3)")
+            thirdEp = SampleEpisode(2, 5, 5, "Ep Name (3)")
             thirdEp._status = Quality.compositeStatus(DOWNLOADED, Quality.HDTV)
             thirdEp._release_name = ep._release_name
 

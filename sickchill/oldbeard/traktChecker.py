@@ -289,7 +289,10 @@ class TraktChecker(object):
 
             trakt_data = []
 
-            for show in settings.showList or []:
+            for show in settings.show_list or []:
+                if settings.stopping or settings.restarting:
+                    break
+
                 if not self._is_in_show_watchlist(show.idxr.slug, str(show.indexerid)):
                     logger.debug("Adding Show: Indexer {0} {1} - {2} to Watchlist".format(show.idxr.name, str(show.indexerid), show.name))
                     show_element = {"title": show.name, "year": show.startyear, "ids": {show.idxr.slug: show.indexerid}}
@@ -310,7 +313,10 @@ class TraktChecker(object):
         if settings.USE_TRAKT and settings.TRAKT_SYNC_WATCHLIST and settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL:
             logger.debug("SHOW_SICKCHILL::REMOVE::START - Look for Shows to remove from SickChill")
 
-            for show in settings.showList or []:
+            for show in settings.show_list or []:
+                if settings.stopping or settings.restarting:
+                    break
+
                 if show.status in ("Ended", "Canceled"):
                     if not show.imdb_id:
                         logger.warning(
@@ -351,7 +357,7 @@ class TraktChecker(object):
                         self._add_show_with_defaults(index, indexer_id, show["title"], WANTED)
 
                     if int(settings.TRAKT_METHOD_ADD) == 1:
-                        new_show = Show.find(settings.showList, indexer_id)
+                        new_show = Show.find(settings.show_list, indexer_id)
 
                         if new_show:
                             self._set_episode_to_wanted(new_show, 1, 1)
@@ -379,7 +385,7 @@ class TraktChecker(object):
                     indexer_id = int(show_element)
                     show = self.episode_watchlist[indexer.slug][show_element]
 
-                    new_show = Show.find(settings.showList, indexer_id)
+                    new_show = Show.find(settings.show_list, indexer_id)
 
                     try:
                         if new_show:
@@ -409,7 +415,7 @@ class TraktChecker(object):
         """
         Adds a new show with the default settings
         """
-        if not Show.find(settings.showList, int(indexer_id)):
+        if not Show.find(settings.show_list, int(indexer_id)):
             logger.info(f"Adding show {indexer_id}")
             root_dirs = settings.ROOT_DIRS.split("|")
 

@@ -1,9 +1,10 @@
 import json
-import os
+from pathlib import Path
 
 from sickchill.oldbeard import config
-from sickchill.oldbeard.browser import foldersAtPath
+from sickchill.oldbeard.browser import folders_at_path
 
+from .. import settings
 from .index import WebRoot
 from .routes import Route
 
@@ -15,18 +16,25 @@ class WebFileBrowser(WebRoot):
         self.set_header("Content-Type", "application/json")
 
         path = self.get_argument("path")
-        includeFiles = config.checkbox_to_value(self.get_argument("includeFiles", False))
-        fileTypes = self.get_argument("fileTypes", "").split(",")
+        include_files = config.checkbox_to_value(self.get_argument("includeFiles", "false"))
+        file_types = self.get_argument("fileTypes", "*").split(",")
 
-        return json.dumps(foldersAtPath(path, True, includeFiles, fileTypes))
+        path = Path(path)
+        if not path.exists():
+            path = Path(settings.DATA_DIR)
+        return json.dumps(folders_at_path(path, include_parent=True, include_files=include_files, file_types=file_types))
 
-    def complete(self, term, includeFiles=False, fileTypes=""):
+    def complete(self):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
 
-        includeFiles = config.checkbox_to_value(self.get_argument("includeFiles", False))
+        include_files = config.checkbox_to_value(self.get_argument("includeFiles", "false"))
         term = self.get_argument("term")
-        fileTypes = self.get_argument("fileTypes", "").split(",")
-        paths = [entry["path"] for entry in foldersAtPath(os.path.dirname(term), includeFiles=includeFiles, fileTypes=fileTypes) if "path" in entry]
+        file_types = self.get_argument("fileTypes", "*").split(",")
+
+        paths = []
+        for entry in folders_at_path(Path(term), include_parent=True, include_files=include_files, file_types=file_types):
+            if "path" in entry:
+                paths.append(entry.get("path", ""))
 
         return json.dumps(paths)
