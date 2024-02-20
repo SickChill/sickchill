@@ -1,7 +1,13 @@
+### 2024.2.20.204434
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.20...2024.2.20.204434)
+
+
 ### 2024.2.20
 
-[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.18...2024.2.20)
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.2...2024.2.20)
 
+* fix: pypi wont let me specify cinemagoer from source, we have to wait or use another library
 
 ### 2024.2.2
 
