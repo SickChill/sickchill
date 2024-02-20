@@ -106,7 +106,7 @@ class ApiHandler(RequestHandler):
 
         try:
             out_dict = _call_dispatcher(args, kwargs)
-        except Exception as error:  # real internal error oohhh nooo :(
+        except Exception as error:  # real internal error oh no :(
             logger.info(traceback.format_exc())
             logger.exception(f"API :: {error}")
             error_data = {"error_msg": f"{error}", "args": args, "kwargs": kwargs}
@@ -217,7 +217,7 @@ class ApiHandler(RequestHandler):
 
         cmd are separated by "|" e.g. &cmd=shows|future
         kwargs are name-spaced with "." e.g. show.indexerid=101501
-        if a kwarg has no namespace asking it anyways (global)
+        if a kwarg has no namespace asking it anyway (global)
 
         full e.g.
         /api?apikey=1234&cmd=show.seasonlist_asd|show.seasonlist_2&show.seasonlist_asd.indexerid=101501&show.seasonlist_2.indexerid=79488&sort=asc
@@ -462,14 +462,14 @@ def _rename_element(dict_obj, old_key, new_key):
 def _responds(result_type, data=None, msg=""):
     """
     result is a string of given "type" (success/failure/timeout/error)
-    message is a human readable string, can be empty
-    data is either a dict or a array, can be a empty dict or empty array
+    message is a human-readable string, can be empty
+    data is either a dict or an array, can be an empty dict or empty array
     """
     return {"result": result_type_map[result_type], "message": msg, "data": {} if not data else data}
 
 
 def status_to_code(status_string) -> int:
-    # convert the string status to a int
+    # convert the string status to an int
     if isinstance(status_string, int):
         return status_string
 
@@ -753,7 +753,7 @@ class CMDEpisode(ApiCall):
             episode["location"] = ""
         elif not self.fullPath:
             # using the length because lstrip() removes to much
-            show_path_length = len(show_path) + 1  # the / or \ yeah not that nice i know
+            show_path_length = len(show_path) + 1  # the / or \ yeah not that nice I know
             episode["location"] = episode["location"][show_path_length:]
 
         # convert stuff to human form
@@ -1460,7 +1460,7 @@ class CMDSickChillAddRootDir(ApiCall):
                 root_dirs.append(self.location)
 
         root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs]
-        root_dirs_new.insert(0, index)
+        root_dirs_new.insert(0, str(index))
         # noinspection PyCompatibility
         root_dirs_new = "|".join(str(x) for x in root_dirs_new)
 
@@ -1582,7 +1582,7 @@ class CMDSickChillDeleteRootDir(ApiCall):
 
         root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs_new]
         if root_dirs_new:
-            root_dirs_new.insert(0, new_index)
+            root_dirs_new.insert(0, str(new_index))
         # noinspection PyCompatibility
         root_dirs_new = "|".join(str(x) for x in root_dirs_new)
 
@@ -2150,12 +2150,12 @@ class CMDShowAddNew(ApiCall):
 
         # don't create show dir if config says not to
         if settings.ADD_SHOWS_WO_DIR:
-            logger.info("Skipping initial creation of " + show_path + " due to config.ini setting")
+            logger.info(f"Skipping initial creation of {'show_path'} due to config.ini setting")
         else:
             dir_exists = helpers.makeDir(show_path)
             if not dir_exists:
-                logger.exception("API :: Unable to create the folder " + show_path + ", can't add the show")
-                return _responds(RESULT_FAILURE, {"path": show_path}, "Unable to create the folder " + show_path + ", can't add the show")
+                logger.exception(f"API :: Unable to create the folder {'show_path'}, can't add the show")
+                return _responds(RESULT_FAILURE, {"path": show_path}, f"Unable to create the folder {'show_path'}, can't add the show")
             else:
                 helpers.chmodAsParent(show_path)
 
@@ -2462,7 +2462,7 @@ class CMDShowSeasonList(ApiCall):
 
         main_db_con = db.DBConnection(row_type="dict")
         if self.sort == "asc":
-            sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season ASC", [self.indexerid])
+            sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season", [self.indexerid])
         else:
             sql_results = main_db_con.select("SELECT DISTINCT season FROM tv_episodes WHERE showid = ? ORDER BY season DESC", [self.indexerid])
         season_list = []  # a list with all season numbers

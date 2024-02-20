@@ -29,6 +29,8 @@ def get_windows_drives() -> List[Path]:
             logger.info(_("Unable to get windows shares without pywin32 installed"))
         return []
 
+    configure_com(True)
+
     # Add Logical Drives
     drives = win32api.GetLogicalDriveStrings().split("\000")[:-1]
 
@@ -43,6 +45,9 @@ def get_windows_drives() -> List[Path]:
     for network_shortcut in network_shortcuts:
         shortcut = shell.CreateShortCut(str(network_shortcut))
         drives.append(shortcut.Targetpath)
+
+    configure_com()
+
     return drives
 
 
@@ -53,6 +58,8 @@ def get_network_shares():
             logger.info(_("Unable to get windows shares without pywin32 installed"))
         return network_shares
 
+    configure_com(True)
+
     servers, count, unknown = win32net.NetServerEnum(None, 100)
     for server in servers:
         # noinspection PyBroadException
@@ -62,6 +69,8 @@ def get_network_shares():
                 network_shares.append(f"\\\\{server['name']}\\{share['netname']}")
         except Exception:
             pass
+
+    configure_com()
 
     return network_shares
 
@@ -95,10 +104,6 @@ def folders_at_path(path: Path, include_parent: bool = False, include_files: boo
         if os.name == "nt":
             # noinspection PyBroadException
             try:
-                if pythoncom:
-                    # noinspection PyUnresolvedReferences
-                    pythoncom.CoInitialize()
-
                 for letter in get_windows_drives():
                     entries.append({"name": letter, "path": letter})
 
@@ -106,10 +111,6 @@ def folders_at_path(path: Path, include_parent: bool = False, include_files: boo
                 # We can store them in WINDOWS_SHARES
                 # for share in get_network_shares():
                 #     entries.append({"name": share, "path": share})
-
-                if pythoncom:
-                    # noinspection PyUnresolvedReferences
-                    pythoncom.CoUninitialize()
             except Exception:
                 logger.debug("Attempting to get windows drives and shares failed", exc_info=True, stack_info=True)
 
@@ -169,3 +170,21 @@ def folders_at_path(path: Path, include_parent: bool = False, include_files: boo
             return folders_at_path(path.parent, include_parent, include_files, file_types)
 
     return entries + dir_list + file_list
+
+
+def configure_com(start: bool = False) -> bool:
+    if pythoncom:
+        # noinspection PyBroadException
+        try:
+            if start:
+                # noinspection PyUnresolvedReferences
+                pythoncom.CoInitializeEx()
+            else:
+                # noinspection PyUnresolvedReferences
+                pythoncom.CoUninitializeEx()
+
+            return True
+        except Exception:
+            pass
+
+    return False

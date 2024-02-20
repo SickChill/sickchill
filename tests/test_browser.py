@@ -22,29 +22,29 @@ class BrowserTestAll(unittest.TestCase):
         """
         drives = browser.get_windows_drives()
         self.assertIsNotNone(drives)
-        self.assertIn("C", drives)
+        self.assertIn(f"{Path.cwd().drive}{os.sep}", drives, f"Drives[{drives}]")
 
     def test_folders_at_path(self):
         """
         Test foldersAtPath
         """
         test_list = browser.folders_at_path(self.here / "not_a_real_path")
-        assert test_list[0]["currentPath"] == self.here
+        assert test_list[0]["currentPath"] == str(self.here.parent)
 
-        test_list = browser.folders_at_path(Path(""))
+        test_list = browser.folders_at_path(Path("//"))
         if os.name == "nt":
-            assert test_list[0]["currentPath"] == "Root"
+            assert test_list[0]["currentPath"] == "My Computer", test_list[0]
             drives = browser.get_windows_drives()
             assert len(drives) == len(test_list[1:])
             for item in test_list[1:]:
-                assert item["path"].strip(":\\") in drives
+                assert item["path"] in drives
         else:
             assert test_list[0]["currentPath"] == "/"
 
         test_list = browser.folders_at_path(self.here, include_parent=True)
-        assert test_list[0]["currentPath"] == self.here
+        assert test_list[0]["currentPath"] == str(self.here.parent)
         assert test_list[1]["name"] == ".."
-        assert test_list[1]["path"] == os.path.dirname(self.here)
+        assert test_list[1]["path"] == str(self.here.parent.parent)
 
 
 if __name__ == "__main__":
