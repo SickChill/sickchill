@@ -1,11 +1,11 @@
-### 2024.2.18
+### 2024.2.20
 
-[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.17...2024.2.18)
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.18...2024.2.20)
 
 
 ### 2024.2.2
 
-[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.17...2024.2.2)
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.18...2024.2.2)
 
 * Release version 2024.2.2
 * fix: another typo in workflow that builds wheels from commits to the develop branch
@@ -20,6 +20,12 @@
 * fix: prevent results with a quality of 0 (NONE) from being set as preferred in duplicates for nzb
 * fix: issue with table formatting on status page when a show was just added. fixes [#8682](https://github.com/SickChill/SickChill/issues/8682)
 * fix: don't show traceback when imdb info is not found
+
+### 2024.2.18
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.17...2024.2.18)
+
+* root dirs, trakt, addshow, bdecode ([#8718](https://github.com/SickChill/SickChill/issues/8718))
 
 ### 2024.2.17
 
