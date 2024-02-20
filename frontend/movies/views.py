@@ -10,6 +10,6 @@ blueprint = Blueprint("movies", __name__, template_folder="templates", static_fo
 @blueprint.route("/")
 def movies():
     logger.info("Loading movies page")
-    logger.debug(f"movies: {settings.showList}")
+    logger.debug(f"movies: {settings.show_list}")
 
     return render_template("movies.html", movies=settings.movie_list)

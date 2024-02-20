@@ -20,8 +20,6 @@ Public Methods:
     fileBitFilter
     chmodAsParent
     fixSetGroupID
-    is_anime_in_show_list
-    update_anime_support
     get_absolute_number_from_season_and_episode
     get_all_episodes_from_absolute_number
     sanitizeSceneName
@@ -496,13 +494,6 @@ class HelpersShowTests(unittest.TestCase):
         pass
 
     @unittest.skip("Not yet implemented")
-    def test_is_anime_in_show_list(self):
-        """
-        Test is_anime_in_show_list
-        """
-        pass
-
-    @unittest.skip("Not yet implemented")
     def test_check_against_names(self):
         """
         Test _check_against_names
@@ -609,13 +600,6 @@ class HelpersMiscTests(unittest.TestCase):
     def test_fix_set_group_id(self):
         """
         Test fixSetGroupID
-        """
-        pass
-
-    @unittest.skip("Not yet implemented")
-    def test_update_anime_support(self):
-        """
-        Test update_anime_support
         """
         pass
 

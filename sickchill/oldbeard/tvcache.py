@@ -343,7 +343,7 @@ class TVCache(RSSTorrentMixin):
             # create show_obj from indexer_id if available
             show_obj = None
             if indexer_id:
-                show_obj = Show.find(settings.showList, indexer_id)
+                show_obj = Show.find(settings.show_list, indexer_id)
 
             try:
                 parse_result = NameParser(show_object=show_obj).parse(name)
@@ -448,7 +448,7 @@ class TVCache(RSSTorrentMixin):
         # for each cache entry
         for cur_result in sql_results:
             # get the show object, or if it's not one of our shows then ignore it
-            show_obj = Show.find(settings.showList, int(cur_result["indexerid"]))
+            show_obj = Show.find(settings.show_list, int(cur_result["indexerid"]))
             if not show_obj:
                 continue
 

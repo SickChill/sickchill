@@ -116,13 +116,13 @@ class Notifier(object):
 
     @staticmethod
     def trakt_show_data_generate(data):
-        showList = []
+        show_list = []
         # TODO: is indexer and indexerid swapped here or in traktChecker:591? !Important
         for indexer, indexerid, title, year in data:
             show = {"title": title, "year": year, "ids": {sickchill.indexer.slug(indexer): indexerid}}
-            showList.append(show)
+            show_list.append(show)
 
-        post_data = {"shows": showList}
+        post_data = {"shows": show_list}
 
         return post_data
 

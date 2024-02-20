@@ -63,7 +63,7 @@ def get_scene_exceptions(indexer_id, season=-1):
         if indexer_id in exceptions_cache and -1 in exceptions_cache[indexer_id]:
             results += exceptions_cache[indexer_id][-1]
     else:
-        show = Show.find(settings.showList, indexer_id)
+        show = Show.find(settings.show_list, indexer_id)
         if show:
             if show.show_name:
                 results.append(helpers.full_sanitizeSceneName(show.show_name))
@@ -104,7 +104,7 @@ def get_all_scene_exceptions(indexer_id):
 
         exceptions_cache[indexer_id][cur_exception["season"]].append(cur_exception["show_name"])
 
-    show = Show.find(settings.showList, indexer_id)
+    show = Show.find(settings.show_list, indexer_id)
     if show:
         sanitized_name = helpers.full_sanitizeSceneName(show.show_name)
         sanitized_custom_name = helpers.full_sanitizeSceneName(show.custom_name)
@@ -284,7 +284,10 @@ def _anidb_exceptions_fetcher():
 
     if should_refresh("anidb"):
         logger.info("Checking for scene exception updates for AniDB")
-        for show in settings.showList:
+        for show in settings.show_list:
+            if settings.stopping or settings.restarting:
+                break
+
             if show.is_anime and show.indexer == 1:
                 try:
                     anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True, cache_dir=Path(settings.CACHE_DIR))

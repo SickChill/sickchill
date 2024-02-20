@@ -11,6 +11,7 @@ import sys
 import threading
 import time
 import traceback
+from operator import attrgetter
 from pathlib import Path
 from typing import List, Union
 
@@ -243,22 +244,30 @@ class SickChill:
     @staticmethod
     def load_shows_from_db():
         """
-        Populates the showList with shows from the database
+        Populates the show list with shows from the database
         """
         logger.debug("Loading initial show list")
 
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT indexer, indexer_id, location FROM tv_shows;")
 
-        settings.showList = []
+        settings.show_list = []
         for sql_show in sql_results:
+            if settings.stopping or settings.restarting:
+                break
+
             try:
                 cur_show = TVShow(sql_show["indexer"], sql_show["indexer_id"])
                 cur_show.next_episode()
-                settings.showList.append(cur_show)
+                settings.show_list.append(cur_show)
             except Exception as error:
                 logger.exception("There was an error creating the show in {}: Error {}".format(sql_show["location"], error))
                 logger.debug(traceback.format_exc())
+            except KeyboardInterrupt:
+                break
+
+        # Presort show_list, so we don't have to do it every page load
+        settings.show_list = sorted(settings.show_list, key=attrgetter("sort_name"))
 
     @staticmethod
     def restore_db(src_dir, dst_dir):

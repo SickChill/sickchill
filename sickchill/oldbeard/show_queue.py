@@ -1,6 +1,7 @@
 import os
 import traceback
 from collections import namedtuple
+from operator import attrgetter
 
 import dateutil.parser
 
@@ -303,7 +304,7 @@ class QueueItemAdd(ShowQueueItem):
         Returns True if we've gotten far enough to have a show object, or False
         if we still only know the folder name.
         """
-        return self.show not in settings.showList or not self.show
+        return self.show not in settings.show_list or not self.show
 
     @property
     def info(self):
@@ -416,7 +417,7 @@ class QueueItemAdd(ShowQueueItem):
                 new_show = TVShow(self.indexer, self.indexer_id, self.lang)
             except MultipleShowObjectsException as error:
                 # If we have the show in our list, but the location is wrong, lets fix it and refresh!
-                existing_show = Show.find(settings.showList, self.indexer_id)
+                existing_show = Show.find(settings.show_list, self.indexer_id)
                 # noinspection PyProtectedMember
                 if existing_show and not os.path.isdir(existing_show.get_location):
                     new_show = existing_show
@@ -488,8 +489,11 @@ class QueueItemAdd(ShowQueueItem):
             raise
 
         # add it to the show list
-        if not Show.find(settings.showList, self.indexer_id):
-            settings.showList.append(self.show)
+        if not Show.find(settings.show_list, self.indexer_id):
+            settings.show_list.append(self.show)
+
+        # Presort show_list, so we don't have to do it every page load
+        settings.show_list = sorted(settings.show_list, key=attrgetter("sort_name"))
 
         try:
             self.show.load_episodes_from_indexer(force_all=True)

@@ -28,7 +28,7 @@ class TorrentProvider(GenericProvider):
         )
 
         for result in sql_results or []:
-            show = Show.find(settings.showList, int(result["showid"]))
+            show = Show.find(settings.show_list, int(result["showid"]))
 
             if show:
                 episode = show.get_episode(result["season"], result["episode"])

@@ -519,7 +519,7 @@ class PostProcessor(object):
             if quality == common.Quality.UNKNOWN:
                 quality = None
 
-            show = Show.find(settings.showList, indexer_id)
+            show = Show.find(settings.show_list, indexer_id)
 
             self.in_history = True
             self.version = version

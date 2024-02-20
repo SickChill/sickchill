@@ -40,7 +40,7 @@ def get_id_from_name(name):
         results = cache_db_con.select_one("SELECT indexer_id FROM scene_names WHERE name = ?", [name])
         if results:
             indexer_id = results["indexer_id"]
-            show = Show.find(settings.showList, indexer_id)
+            show = Show.find(settings.show_list, indexer_id)
             if show:
                 build_name_cache(show)
     else:
@@ -77,7 +77,10 @@ def build_name_cache(show=None):
 
     if not show:
         # logger.info("Building internal name cache for all shows")
-        for show in settings.showList:
+        for show in settings.show_list:
+            if settings.stopping or settings.restarting:
+                break
+
             build_name_cache(show)
     else:
         logger.debug("Building internal name cache for " + show.name)

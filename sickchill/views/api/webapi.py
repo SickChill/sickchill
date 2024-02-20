@@ -728,7 +728,7 @@ class CMDEpisode(ApiCall):
 
     def run(self):
         """Get detailed information about an episode"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -795,7 +795,7 @@ class CMDEpisodeSearch(ApiCall):
 
     def run(self):
         """Search for an episode"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -932,7 +932,7 @@ class CMDEpisodeSetStatus(ApiCall):
 
     def run(self):
         """Set the status of an episode or a season (when no episode is provided)"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1038,7 +1038,7 @@ class CMDSubtitleSearch(ApiCall):
 
     def run(self):
         """Search for an episode subtitles"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1095,7 +1095,7 @@ class CMDExceptions(ApiCall):
                 scene_exceptions[indexerid].append(row["show_name"])
 
         else:
-            show_obj = Show.find(settings.showList, int(self.indexerid))
+            show_obj = Show.find(settings.show_list, int(self.indexerid))
             if not show_obj:
                 return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1217,10 +1217,9 @@ class CMDBacklog(ApiCall):
         shows = []
 
         main_db_con = db.DBConnection(row_type="dict")
-        for curShow in settings.showList:
+        for curShow in settings.show_list:
             show_eps = []
 
-            # noinspection PyPep8
             sql_results = main_db_con.select(
                 "SELECT tv_episodes.*, tv_shows.paused FROM tv_episodes INNER JOIN tv_shows ON tv_episodes.showid = tv_shows.indexer_id WHERE showid = ? AND paused = 0 ORDER BY season DESC, episode DESC",
                 [curShow.indexerid],
@@ -1711,7 +1710,7 @@ class CMDSickChillSearchIndexers(ApiCall):
             for indexer, indexer_results in search_results.items():
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
-                    in_show_list = sickchill.show.Show.Show.find(settings.showList, int(result["id"])) is not None
+                    in_show_list = sickchill.show.Show.Show.find(settings.show_list, int(result["id"])) is not None
                     if in_show_list and self.only_new:
                         continue
 
@@ -1882,7 +1881,7 @@ class CMDShow(ApiCall):
 
     def run(self):
         """Get detailed information about a show"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -1984,7 +1983,7 @@ class CMDShowAddExisting(ApiCall):
 
     def run(self):
         """Add an existing show in SickChill"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in the database")
 
@@ -2077,7 +2076,7 @@ class CMDShowAddNew(ApiCall):
 
     def run(self):
         """Add a new show to SickChill"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if show_obj:
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in database")
 
@@ -2195,7 +2194,7 @@ class CMDShowCache(ApiCall):
 
     def run(self):
         """Check SickChill's cache to see if the images (poster, banner, fanart) for a show are valid"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2269,7 +2268,7 @@ class CMDShowGetQuality(ApiCall):
 
     def run(self):
         """Get the quality setting of a show"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2355,7 +2354,7 @@ class CMDShowGetNetworkLogo(ApiCall):
         """
         :return: Get the network logo of a show
         """
-        show = Show.find(settings.showList, self.tvdbid or self.indexerid)
+        show = Show.find(settings.show_list, self.tvdbid or self.indexerid)
         path = Path(settings.PROG_DIR) / "gui" / settings.GUI_NAME / "images" / "network"
         path /= show.network_logo_name + ".png"
         return {"outputType": "image", "image": path.resolve()}
@@ -2457,7 +2456,7 @@ class CMDShowSeasonList(ApiCall):
 
     def run(self):
         """Get the list of seasons of a show"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2493,7 +2492,7 @@ class CMDShowSeasons(ApiCall):
 
     def run(self):
         """Get the list of episodes for one or all seasons of a show"""
-        sho_obj = Show.find(settings.showList, int(self.indexerid))
+        sho_obj = Show.find(settings.show_list, int(self.indexerid))
         if not sho_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2570,7 +2569,7 @@ class CMDShowSetQuality(ApiCall):
 
     def run(self):
         """Set the quality setting of a show. If no quality is provided, the default user setting is used."""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2613,7 +2612,7 @@ class CMDShowStats(ApiCall):
 
     def run(self):
         """Get episode statistics for a given show"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2713,7 +2712,7 @@ class CMDShowUpdate(ApiCall):
 
     def run(self):
         """Update a show in SickChill"""
-        show_obj = Show.find(settings.showList, int(self.indexerid))
+        show_obj = Show.find(settings.show_list, int(self.indexerid))
         if not show_obj:
             return _responds(RESULT_FAILURE, msg="Show not found")
 
@@ -2743,7 +2742,7 @@ class CMDShows(ApiCall):
     def run(self):
         """Get all shows in SickChill"""
         shows = {}
-        for curShow in settings.showList:
+        for curShow in settings.show_list:
             # If self.paused is None: show all, 0: show un-paused, 1: show paused
             if self.paused is not None and self.paused != curShow.paused:
                 continue

@@ -17,7 +17,7 @@ class IndexerFavorites(object):
         indexer_favorites = sickchill.indexer.get_indexer_favorites()
         results = []
         for series in indexer_favorites:
-            if Show().find(settings.showList, series.id):
+            if Show().find(settings.show_list, series.id):
                 continue
             results.append(series)
             self.cache_image(series.id)

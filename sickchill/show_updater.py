@@ -48,7 +48,9 @@ class ShowUpdater(object):
                     logger.info(_("No last update time from the cache, so we do a full update for all shows"))
 
                 pi_list = []
-                for cur_show in settings.showList:
+                for cur_show in settings.show_list:
+                    if settings.stopping or settings.restarting:
+                        break
                     try:
                         cur_show.next_episode()
 

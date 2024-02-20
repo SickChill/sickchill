@@ -18,7 +18,7 @@ class XEMBasicTests(conftest.SickChillTestDBCase):
     @staticmethod
     def load_shows_from_db():
         """
-        Populates the showList with shows from the database
+        Populates the show_list with shows from the database
         """
 
         test_main_db_con = sickchill.oldbeard.db.DBConnection()
@@ -27,14 +27,14 @@ class XEMBasicTests(conftest.SickChillTestDBCase):
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
-                settings.showList.append(cur_show)
+                settings.show_list.append(cur_show)
             except Exception:  # noqa: S110
                 pass
 
     @staticmethod
     def load_from_db():
         """
-        Populates the showList with shows from the database
+        Populates the show_list with shows from the database
         """
         test_main_db_con = sickchill.oldbeard.db.DBConnection()
         sql_results = test_main_db_con.select("SELECT * FROM tv_shows")
@@ -42,7 +42,7 @@ class XEMBasicTests(conftest.SickChillTestDBCase):
         for sql_show in sql_results:
             try:
                 cur_show = TVShow(int(sql_show["indexer"]), int(sql_show["indexer_id"]))
-                settings.showList.append(cur_show)
+                settings.show_list.append(cur_show)
             except Exception as error:
                 print(f"There was an error creating the show {error}")
 

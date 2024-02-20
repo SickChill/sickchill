@@ -95,7 +95,7 @@ class AddShows(Home):
                         show["id"],
                         show["seriesName"],
                         show["firstAired"],
-                        sickchill.tv.Show.find(settings.showList, show["id"]) is not None,
+                        sickchill.tv.Show.find(settings.show_list, show["id"]) is not None,
                     )
                     for show in shows
                 }
@@ -176,7 +176,7 @@ class AddShows(Home):
                 if all((indexer_id, show_name, indexer)):
                     cur_dir["existing_info"] = (indexer_id, show_name, indexer)
 
-                if indexer_id and Show.find(settings.showList, indexer_id):
+                if indexer_id and Show.find(settings.show_list, indexer_id):
                     cur_dir["added_already"] = True
         return t.render(dirList=dir_list)
 
@@ -321,7 +321,7 @@ class AddShows(Home):
             popular_shows = {
                 show
                 for show in popular_shows
-                if show.getID() and show.getID().strip("tt") not in {show.imdb_id.strip("tt") for show in settings.showList if show.imdb_id}
+                if show.getID() and show.getID().strip("tt") not in {show.imdb_id.strip("tt") for show in settings.show_list if show.imdb_id}
             }
             for show in popular_shows:
                 show.setdefault("rating", "0.0")
@@ -422,7 +422,7 @@ class AddShows(Home):
             if not indexer_id:
                 return add_error()
 
-        existing = Show.find(settings.showList, indexer_id)
+        existing = Show.find(settings.show_list, indexer_id)
         if try_int(indexer_id) <= 0 or existing:
             return add_error(existing)
 

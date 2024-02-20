@@ -132,7 +132,7 @@ class TVShow(object):
         self.indexerid = indexerid
         self.lang = lang
 
-        other_show = Show.find(settings.showList, self.indexerid)
+        other_show = Show.find(settings.show_list, self.indexerid)
         if other_show is not None:
             raise MultipleShowObjectsException("Can't create a show if it already exists")
 
@@ -838,7 +838,7 @@ class TVShow(object):
                 # custom name first, then the name returned by thetvdb
                 for name in {self.custom_name, self.show_name}:
                     if name:
-                        if self.startyear:
+                        if self.startyear and not name.strip(")").endswith(f"{self.startyear}"):
                             # add name (year) first, as it is the most restrictive for matching
                             attempts.add(f"{name} ({self.startyear})".strip('" '))
                         # then bare name, without year
@@ -973,8 +973,8 @@ class TVShow(object):
         action = ("delete", "trash")[settings.TRASH_REMOVE_SHOW]
 
         # remove self from show list
-        if self in settings.showList:
-            settings.showList.remove(self)
+        if self in settings.show_list:
+            settings.show_list.remove(self)
 
         # clear the cache
         image_cache_dir = os.path.join(settings.CACHE_DIR, "images")
@@ -1174,8 +1174,6 @@ class TVShow(object):
 
         main_db_con = db.DBConnection()
         main_db_con.upsert("tv_shows", new_value_dict, control_value_dict)
-
-        helpers.update_anime_support()
 
         if self.imdb_id and self.imdb_info:
             main_db_con = db.DBConnection()

@@ -13,4 +13,6 @@ class Restart(object):
 
         settings.events.put(Events.SystemEvent.RESTART)
 
+        settings.restarting = True
+
         return True

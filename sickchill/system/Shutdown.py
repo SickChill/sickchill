@@ -12,5 +12,6 @@ class Shutdown(object):
             return False
 
         settings.events.put(Events.SystemEvent.SHUTDOWN)
+        settings.stopping = True
 
         return True

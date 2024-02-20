@@ -6,7 +6,6 @@ import os
 import time
 import traceback
 import urllib.parse
-from operator import attrgetter
 from pathlib import Path
 from urllib.parse import unquote_plus
 
@@ -55,7 +54,7 @@ class Home(WebRoot):
         if not show:
             return None, _("Invalid show parameters")
 
-        show_obj = Show.find(settings.showList, int(show))
+        show_obj = Show.find(settings.show_list, int(show))
 
         if not show_obj:
             return None, _("Invalid show parameters")
@@ -91,7 +90,7 @@ class Home(WebRoot):
 
         shows = []
         anime = []
-        for show in settings.showList:
+        for show in settings.show_list:
             if selected_root_dir in show.get_location:
                 if settings.ANIME_SPLIT_HOME and show.is_anime:
                     anime.append(show)
@@ -137,7 +136,7 @@ class Home(WebRoot):
 
         shows_to_show = []
         skipped = 0
-        for show in settings.showList:
+        for show in settings.show_list:
             if selected_root_dir and selected_root_dir not in show.get_location:
                 continue
 
@@ -848,7 +847,7 @@ class Home(WebRoot):
 
         # todo: add more comprehensive show validation
         try:
-            show_obj = Show.find(settings.showList, int(show))
+            show_obj = Show.find(settings.show_list, int(show))
         except (ValueError, TypeError):
             return self._genericMessage(_("Error"), _("Invalid show ID: {show}").format(show=str(show)))
 
@@ -983,15 +982,11 @@ class Home(WebRoot):
 
         shows = []
         anime = []
-        for show in settings.showList:
+        for show in settings.show_list:
             if settings.ANIME_SPLIT_HOME and show.is_anime:
                 anime.append(show)
             else:
                 shows.append(show)
-        sorted_show_lists = [
-            ["Shows", sorted(shows, key=lambda mbr: attrgetter("sort_name")(mbr))],
-            ["Anime", sorted(anime, key=lambda mbr: attrgetter("sort_name")(mbr))],
-        ]
 
         bwl = None
         if show_obj.is_anime:
@@ -1026,7 +1021,7 @@ class Home(WebRoot):
             show=show_obj,
             sql_results=sql_results,
             seasonResults=seasonResults,
-            sorted_show_lists=sorted_show_lists,
+            sorted_show_lists=[["Shows", shows], ["Anime", anime]],
             bwl=bwl,
             ep_counts=ep_counts,
             epCats=epCats,
@@ -1096,7 +1091,7 @@ class Home(WebRoot):
         anidb_failed = False
 
         try:
-            show_obj = Show.find(settings.showList, int(show))
+            show_obj = Show.find(settings.show_list, int(show))
         except (ValueError, TypeError):
             errString = _("Invalid show ID") + f": {show}"
             if directCall:
@@ -1432,7 +1427,7 @@ class Home(WebRoot):
         if not show:
             return self._genericMessage(_("Error"), _("Invalid show ID"))
 
-        show_obj = Show.find(settings.showList, int(show))
+        show_obj = Show.find(settings.show_list, int(show))
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Unable to find the specified show"))
@@ -1450,7 +1445,7 @@ class Home(WebRoot):
 
     def subtitleShow(self):
         show = self.get_query_argument("show")
-        show_obj = Show.find(settings.showList, int(show))
+        show_obj = Show.find(settings.show_list, int(show))
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Unable to find the specified show"))
@@ -1467,7 +1462,7 @@ class Home(WebRoot):
         show_obj = None
 
         if show:
-            show_obj = Show.find(settings.showList, int(show))
+            show_obj = Show.find(settings.show_list, int(show))
             if show_obj:
                 showName = urllib.parse.quote_plus(show_obj.name)
 
@@ -1497,7 +1492,7 @@ class Home(WebRoot):
         show_obj = None
 
         if show:
-            show_obj = Show.find(settings.showList, int(show))
+            show_obj = Show.find(settings.show_list, int(show))
 
         if notifiers.emby_notifier.update_library(show_obj):
             ui.notifications.message(_("Library update command sent to Emby host: {emby_host}").format(emby_host=settings.EMBY_HOST))
@@ -1527,7 +1522,7 @@ class Home(WebRoot):
             else:
                 return self._genericMessage(_("Error"), errMsg)
 
-        show_obj = Show.find(settings.showList, int(show))
+        show_obj = Show.find(settings.show_list, int(show))
 
         if not show_obj:
             errMsg = _("Show not in show list")
@@ -1662,7 +1657,7 @@ class Home(WebRoot):
     def testRename(self):
         show = self.get_query_argument("show")
 
-        show_obj = Show.find(settings.showList, show)
+        show_obj = Show.find(settings.show_list, show)
 
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
@@ -1689,7 +1684,7 @@ class Home(WebRoot):
         if not (show and eps):
             return self._genericMessage(_("Error"), _("You must specify a show and at least one episode"))
 
-        show_obj = Show.find(settings.showList, int(show))
+        show_obj = Show.find(settings.show_list, int(show))
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
@@ -1734,7 +1729,7 @@ class Home(WebRoot):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
 
         cache_db_con = db.DBConnection("cache.db", row_type="dict")
-        # show_object: TVShow = Show.find(settings.showList, show)
+        # show_object: TVShow = Show.find(settings.show_list, show)
         # sickchill.oldbeard.search.search_providers(
         #     show_object,
         #     show_object.get_episode(season=season, episode=episode or 1),
@@ -1749,7 +1744,7 @@ class Home(WebRoot):
                 [show, season, f"%|{episode}|%", FAILED],
             )
         else:
-            show_object: TVShow = Show.find(settings.showList, show)
+            show_object: TVShow = Show.find(settings.show_list, show)
             episodes_sql = "|".join([str(ep.season) for ep in show_object.get_all_episodes(season=season) if ep.season > 0])
             results = cache_db_con.select(
                 "SELECT * FROM results WHERE indexerid = ? AND season = ? AND episodes LIKE ? AND status != ? ORDER BY seeders DESC",
@@ -1831,7 +1826,7 @@ class Home(WebRoot):
 
         def getEpisodes(search_thread, search_status):
             results = []
-            show_obj = Show.find(settings.showList, int(search_thread.show.indexerid))
+            show_obj = Show.find(settings.show_list, int(search_thread.show.indexerid))
 
             if not show_obj:
                 logger.warning(f"No Show Object found for show with indexerID: {search_thread.show.indexerid}")
@@ -1996,7 +1991,7 @@ class Home(WebRoot):
         if sceneAbsolute in ("null", ""):
             sceneAbsolute = None
 
-        show_obj = Show.find(settings.showList, int(show))
+        show_obj = Show.find(settings.show_list, int(show))
 
         if show_obj.is_anime:
             result = {
