@@ -1,4 +1,6 @@
 import os
+import string
+import sys
 from pathlib import Path
 from typing import List
 
@@ -9,9 +11,10 @@ except (ModuleNotFoundError, ImportError):
 
 try:
     import win32api
-    import win32com.client
+    import win32com.client as win32com_client
 except (ModuleNotFoundError, ImportError):
     win32api = None
+    win32com_client = None
 
 try:
     import win32net
@@ -21,30 +24,55 @@ except (ModuleNotFoundError, ImportError):
 from sickchill import logger, settings
 
 
-def get_windows_drives() -> List[Path]:
+def get_windows_drives_old() -> List[str]:
+    if sys.version_info >= (3, 12) and os.name == "nt":
+        return os.listdrives()
+
+    if win32api:
+        configure_com(True)
+        drives = [drive for drive in win32api.GetLogicalDriveStrings().split("\000")][:-1]
+        configure_com()
+        if drives:
+            return drives
+
+    from ctypes import windll
+
+    drives = []
+    bitmask = windll.kernel32.GetLogicalDrives()
+    for letter in string.ascii_uppercase:
+        if bitmask & 1:
+            drives.append(f"{letter}:{os.sep}")
+        bitmask >>= 1
+
+    return drives
+
+
+def get_windows_drives() -> List[str]:
     """Return list of detected drives"""
 
     if win32api is None:
         if os.name == "nt":
             logger.info(_("Unable to get windows shares without pywin32 installed"))
-        return []
+
+        return get_windows_drives_old()
 
     configure_com(True)
 
     # Add Logical Drives
     drives = win32api.GetLogicalDriveStrings().split("\000")[:-1]
 
-    # Add Network Locations (not the same as network shares, these are shortcut files possibly to shares)
-    net_shortcuts_location = Path(os.getenv("APPDATA"))
-    net_shortcuts_location /= "Microsoft\\Windows\\Network Shortcuts"
-    network_shortcuts = []
-    for location in net_shortcuts_location.iterdir():
-        if location.is_file() and location.suffix == ".lnk":
-            network_shortcuts.append(location)
-    shell = win32com.client.Dispatch("WScript.Shell")
-    for network_shortcut in network_shortcuts:
-        shortcut = shell.CreateShortCut(str(network_shortcut))
-        drives.append(shortcut.Targetpath)
+    if win32com_client:
+        # Add Network Locations (not the same as network shares, these are shortcut files possibly to shares)
+        net_shortcuts_location = Path(os.getenv("APPDATA"))
+        net_shortcuts_location /= "Microsoft\\Windows\\Network Shortcuts"
+        network_shortcuts = []
+        for location in net_shortcuts_location.iterdir():
+            if location.is_file() and location.suffix == ".lnk":
+                network_shortcuts.append(location)
+        shell = win32com_client.Dispatch("WScript.Shell")
+        for network_shortcut in network_shortcuts:
+            shortcut = shell.CreateShortCut(str(network_shortcut))
+            drives.append(shortcut.Targetpath)
 
     configure_com()
 
