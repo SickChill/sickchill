@@ -141,8 +141,6 @@ def folders_at_path(path: Path, include_parent: bool = False, include_files: boo
                 #     entries.append({"name": share, "path": share})
             except Exception:
                 logger.debug("Attempting to get windows drives and shares failed", exc_info=True, stack_info=True)
-
-            return entries
     else:
         entries = [{"currentPath": str(path.resolve())}]
         if include_parent:
