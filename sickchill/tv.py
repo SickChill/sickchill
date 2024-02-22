@@ -140,11 +140,11 @@ class TVShow(object):
         self.load_from_db()
 
     def __refresh_if_changed(self, attribute: str, value) -> None:
-        existing = getattr(self, attribute)
+        existing = getattr(self, f"_{attribute}")
         if type(existing) is not type(value):
             logger.warning(f"Please report that TVShow.{attribute} was set with an incorrect value ({value})", exc_info=True, stack_info=True)
         if existing != value:
-            setattr(self, attribute, value)
+            setattr(self, f"_{attribute}", value)
             self.dirty = True
             """
             TODO: move refresh, update, pause, etc logic here from Show
@@ -2562,7 +2562,8 @@ class TVEpisode(object):
         current_path = absolute_current_path_no_ext
 
         if absolute_current_path_no_ext.startswith(self.show.location):
-            current_path = absolute_current_path_no_ext[len(self.show.location) :]  # noqa: whitespace
+            # noinspection IncorrectFormatting
+            current_path = absolute_current_path_no_ext[len(self.show.location) :]
 
         logger.debug(f"Renaming/moving episode from the base path {self.location} to {absolute_proper_path}")
 

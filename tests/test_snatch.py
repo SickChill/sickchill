@@ -45,10 +45,10 @@ def _create_fake_xml(items):
     :param items:
     :return:
     """
-    xml = '<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/" encoding="utf-8"><channel>'  # noqa: E501
+    xml = '<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:newznab="https://www.newznab.com/DTD/2010/feeds/attributes/" encoding="utf-8"><channel>'
     for item in items:
         xml += "<item><title>" + item + "</title>\n"
-        xml += "<link>http://fantasy.com/" + item + "</link></item>"
+        xml += "<link>https://www.newznab.com/" + item + "</link></item>"
     xml += "</channel></rss>"
     return xml
 
@@ -64,7 +64,7 @@ class SearchTest(conftest.SickChillTestDBCase):
     @staticmethod
     def _fake_get_url(url, headers=None):
         """
-        Fake getting a url
+        Fake requesting url
 
         :param url:
         :param headers:
