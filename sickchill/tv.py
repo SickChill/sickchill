@@ -105,15 +105,11 @@ class TVShow(object):
     airs = DirtySetter("")
     startyear = DirtySetter(0)
     paused = DirtySetter(0)
-    air_by_date = DirtySetter(0)
     subtitles = DirtySetter(int(settings.SUBTITLES_DEFAULT))
     subtitles_sc_metadata = DirtySetter(0)
     dvdorder = DirtySetter(0)
     lang = DirtySetter("en")
     last_update_indexer = DirtySetter(1)
-    sports = DirtySetter(0)
-    anime = DirtySetter(0)
-    scene = DirtySetter(0)
     rls_ignore_words = DirtySetter("")
     rls_require_words = DirtySetter("")
     rls_prefer_words = DirtySetter("")
@@ -127,36 +123,86 @@ class TVShow(object):
         self.episodes = {}
         self.next_airdate = ""
         self.release_groups = None
-        self._location = ""
         self.indexer = indexer
         self.indexerid = indexerid
         self.lang = lang
 
+        self._location = ""
+        self._anime = 0
+        self._scene = 0
+        self._sports = 0
+        self._air_by_date = 0
+        
         other_show = Show.find(settings.show_list, self.indexerid)
         if other_show is not None:
             raise MultipleShowObjectsException("Can't create a show if it already exists")
 
         self.load_from_db()
 
+    def __refresh_if_changed(self, attribute: str, value) -> None:
+        existing = getattr(self, attribute)
+        if type(existing) != type(value)
+            logger.warning(
+                f"Please report that TVShow.{attribute} was set with an incorrect value ({value})", exc_info=True, stack_info=True
+            )
+        if existing != value:
+            setattr(self, value)
+            self.dirty = True
+            """
+            TODO: move refresh, update, pause, etc logic here from Show
+            It is incredibly inefficient to send just the indexerid 
+            and then have to iterate over the whole show list to
+            find the show object so we can do an action on it.
+            This makes every refresh use a ton more cpu cycles for example,
+            and the larger their show list is the worse it gets
+            Also, having all of the logic that only acts on one class
+            within the class itself makes it easier to find what methods exist.
+            """
+            Show.refresh(self.indexerid, True)
+
     @property
-    def name(self):
+    def name(self) -> str:
         return self.custom_name or self.show_name
 
     @name.setter
-    def name(self, name):
-        self.show_name = name
+    def name(self, value) -> None:
+        self.show_name = value
 
     @property
-    def is_anime(self):
+    def is_anime(self) -> bool:
         return int(self.anime) > 0
 
     @property
-    def is_sports(self):
-        return int(self.sports) > 0
+    def anime(self) -> int:
+        return self._anime
+
+    @anime.setter
+    def anime(self, value: int) -> int:
+        return self.__refresh_if_changed("anime", value)
 
     @property
-    def is_scene(self):
+    def is_sports(self) -> bool:
+        return int(self.sports) > 0
+    
+    @property
+    def sports(self) -> int:
+        return self._sports
+
+    @sports.setter
+    def sports(self, value: int) -> int:
+        return self.__refresh_if_changed("sports", value)
+
+    @property
+    def is_scene(self) -> bool:
         return int(self.scene) > 0
+
+    @property
+    def scene(self) -> int:
+        return self._scene
+
+    @scene.setter
+    def scene(self, value: int) -> int:
+        return self.__refresh_if_changed("scene", value)
 
     @property
     def network_logo_name(self):
@@ -375,7 +421,7 @@ class TVShow(object):
 
         for epResult in sql_results:
             logger.debug("{id}: Retrieving/creating episode {ep}".format(id=self.indexerid, ep=episode_num(epResult["season"], epResult["episode"])))
-            current_episode = self.get_episode(epResult["season"], epResult["episode"])
+            &&g = self.get_episode(epResult["season"], epResult["episode"])
             if not current_episode:
                 continue
 
