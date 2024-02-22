@@ -177,7 +177,7 @@ class TVShow(object):
         return self._anime
 
     @anime.setter
-    def anime(self, value: int) -> int:
+    def anime(self, value: int) -> None:
         return self.__refresh_if_changed("anime", value)
 
     @property
@@ -189,7 +189,7 @@ class TVShow(object):
         return self._sports
 
     @sports.setter
-    def sports(self, value: int) -> int:
+    def sports(self, value: int) -> None:
         return self.__refresh_if_changed("sports", value)
 
     @property
@@ -201,7 +201,7 @@ class TVShow(object):
         return self._scene
 
     @scene.setter
-    def scene(self, value: int) -> int:
+    def scene(self, value: int) -> None:
         return self.__refresh_if_changed("scene", value)
 
     @property
