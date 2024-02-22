@@ -350,7 +350,7 @@ class QueueItemAdd(ShowQueueItem):
                 self._finish_early()
                 return
 
-            # Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
+            # Let's try to create the show Dir if it's not provided. This way we force the show dir to build using the
             # Indexers provided series name
             if self.root_dir and not self.showDir:
                 if not s.seriesName:
@@ -678,9 +678,7 @@ class QueueItemUpdate(ShowQueueItem):
         if IndexerEpList:
             for curSeason in IndexerEpList:
                 for curEpisode in IndexerEpList[curSeason]:
-                    curEp = self.show.get_episode(curSeason, curEpisode)
-                    curEp.save_to_db()
-
+                    self.show.get_episode(curSeason, curEpisode).save_to_db()
                     if curSeason in DBEpList and curEpisode in DBEpList[curSeason]:
                         del DBEpList[curSeason][curEpisode]
 
@@ -688,9 +686,8 @@ class QueueItemUpdate(ShowQueueItem):
             for curSeason in DBEpList:
                 for curEpisode in DBEpList[curSeason]:
                     logger.info("Permanently deleting episode {0:02d}E{1:02d} from the database".format(curSeason, curEpisode))
-                    curEp = self.show.get_episode(curSeason, curEpisode)
                     try:
-                        curEp.delete_episode()
+                        self.show.get_episode(curSeason, curEpisode).delete_episode()
                     except EpisodeDeletedException:
                         pass
 

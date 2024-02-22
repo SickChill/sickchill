@@ -141,7 +141,7 @@ class TVShow(object):
 
     def __refresh_if_changed(self, attribute: str, value) -> None:
         existing = getattr(self, attribute)
-        if type(existing) != type(value):
+        if type(existing) is not type(value):
             logger.warning(f"Please report that TVShow.{attribute} was set with an incorrect value ({value})", exc_info=True, stack_info=True)
         if existing != value:
             setattr(self, attribute, value)
@@ -176,7 +176,7 @@ class TVShow(object):
 
     @anime.setter
     def anime(self, value: int) -> None:
-        return self.__refresh_if_changed("anime", value)
+        self.__refresh_if_changed("anime", value)
 
     @property
     def is_sports(self) -> bool:
@@ -188,7 +188,7 @@ class TVShow(object):
 
     @sports.setter
     def sports(self, value: int) -> None:
-        return self.__refresh_if_changed("sports", value)
+        self.__refresh_if_changed("sports", value)
 
     @property
     def is_scene(self) -> bool:
@@ -200,7 +200,15 @@ class TVShow(object):
 
     @scene.setter
     def scene(self, value: int) -> None:
-        return self.__refresh_if_changed("scene", value)
+        self.__refresh_if_changed("scene", value)
+
+    @property
+    def air_by_date(self) -> int:
+        return self._air_by_date
+
+    @air_by_date.setter
+    def air_by_date(self, value: int) -> None:
+        self.__refresh_if_changed("air_by_date", value)
 
     @property
     def network_logo_name(self):
@@ -2554,7 +2562,7 @@ class TVEpisode(object):
         current_path = absolute_current_path_no_ext
 
         if absolute_current_path_no_ext.startswith(self.show.location):
-            current_path = absolute_current_path_no_ext[len(self.show.location) :]
+            current_path = absolute_current_path_no_ext[len(self.show.location) :]  # noqa: whitespace
 
         logger.debug(f"Renaming/moving episode from the base path {self.location} to {absolute_proper_path}")
 
