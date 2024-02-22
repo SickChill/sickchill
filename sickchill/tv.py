@@ -132,7 +132,7 @@ class TVShow(object):
         self._scene = 0
         self._sports = 0
         self._air_by_date = 0
-        
+
         other_show = Show.find(settings.show_list, self.indexerid)
         if other_show is not None:
             raise MultipleShowObjectsException("Can't create a show if it already exists")
@@ -142,15 +142,13 @@ class TVShow(object):
     def __refresh_if_changed(self, attribute: str, value) -> None:
         existing = getattr(self, attribute)
         if type(existing) != type(value):
-            logger.warning(
-                f"Please report that TVShow.{attribute} was set with an incorrect value ({value})", exc_info=True, stack_info=True
-            )
+            logger.warning(f"Please report that TVShow.{attribute} was set with an incorrect value ({value})", exc_info=True, stack_info=True)
         if existing != value:
             setattr(self, attribute, value)
             self.dirty = True
             """
             TODO: move refresh, update, pause, etc logic here from Show
-            It is incredibly inefficient to send just the indexerid 
+            It is incredibly inefficient to send just the indexerid
             and then have to iterate over the whole show list to
             find the show object so we can do an action on it.
             This makes every refresh use a ton more cpu cycles for example,
@@ -183,7 +181,7 @@ class TVShow(object):
     @property
     def is_sports(self) -> bool:
         return int(self.sports) > 0
-    
+
     @property
     def sports(self) -> int:
         return self._sports
@@ -421,7 +419,7 @@ class TVShow(object):
 
         for epResult in sql_results:
             logger.debug("{id}: Retrieving/creating episode {ep}".format(id=self.indexerid, ep=episode_num(epResult["season"], epResult["episode"])))
-            &&g = self.get_episode(epResult["season"], epResult["episode"])
+            current_episode = self.get_episode(epResult["season"], epResult["episode"])
             if not current_episode:
                 continue
 
