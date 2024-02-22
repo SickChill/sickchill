@@ -65,7 +65,7 @@
                                 <%include file="/inc_home_show_list.mako" args="curListType=cur_show_list[0], myShowList=cur_show_list[1]" />
                         </div>
                     </div>
-                    % endfor
+                    % endif
                 % endfor
             </div>
         </div>
