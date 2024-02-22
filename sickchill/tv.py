@@ -141,12 +141,12 @@ class TVShow(object):
 
     def __refresh_if_changed(self, attribute: str, value) -> None:
         existing = getattr(self, attribute)
-        if type(existing) != type(value)
+        if type(existing) != type(value):
             logger.warning(
                 f"Please report that TVShow.{attribute} was set with an incorrect value ({value})", exc_info=True, stack_info=True
             )
         if existing != value:
-            setattr(self, value)
+            setattr(self, attribute, value)
             self.dirty = True
             """
             TODO: move refresh, update, pause, etc logic here from Show
