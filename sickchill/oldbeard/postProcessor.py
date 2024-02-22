@@ -1012,7 +1012,7 @@ class PostProcessor(object):
                             "File has season {episode_season}, while the indexer is on season {newest_season}. "
                             "Try forcing a full update on the show and process this file again. "
                             "The file may be incorrectly labeled or fake, aborting."
-                        ).format(episode_season=episode_season, newest_season_num=newest_season)
+                        ).format(episode_season=episode_season, newest_season=newest_season)
                     )
                     return False
 
