@@ -33,11 +33,7 @@ class ShowQueue(generic_queue.GenericQueue):
         # noinspection SpellCheckingInspection
         self.queue_name = "SHOWQUEUE"
 
-    @overload
-    def _is_in_queue(self, show: "TVShow", actions: Tuple[int, ...]) -> bool:
-        ...
-
-    def _is_in_queue(self, show: "TVShow", actions: tuple[int, ...]) -> bool:
+    def _is_in_queue(self, show: "TVShow", actions) -> bool:
         if not show:
             return False
 
