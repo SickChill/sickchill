@@ -14,7 +14,7 @@ from tornado.web import RequestHandler
 import sickchill
 from sickchill import logger, settings
 from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size, sanitize_filename, timeFormat, try_int
-from sickchill.helper.exceptions import CantUpdateShowException, ShowDirectoryNotFoundException
+from sickchill.helper.exceptions import ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
 from sickchill.init_helpers import get_current_version
 from sickchill.oldbeard import classes, db, helpers, network_timezones, scdatetime, search_queue, ui
@@ -679,7 +679,6 @@ class CMDComingEpisodes(ApiCall):
         grouped_coming_episodes = ComingEpisodes.get_coming_episodes(self.type, self.sort, True, self.paused)
         data = {section: [] for section in grouped_coming_episodes.keys()}
 
-        # noinspection PyCompatibility
         for section, coming_episodes in grouped_coming_episodes.items():
             for coming_episode in coming_episodes:
                 data[section].append(
@@ -1710,7 +1709,7 @@ class CMDSickChillSearchIndexers(ApiCall):
             for indexer, indexer_results in search_results.items():
                 for result in indexer_results:
                     # Skip it if it's in our show list already, and we only want new shows
-                    in_show_list = sickchill.show.Show.Show.find(settings.show_list, int(result["id"])) is not None
+                    in_show_list = Show.find(settings.show_list, int(result["id"])) is not None
                     if in_show_list and self.only_new:
                         continue
 
@@ -2243,7 +2242,6 @@ class CMDShowDelete(ApiCall):
     def run(self):
         """Delete a show in SickChill"""
         error, show = Show.delete(self.indexerid, self.removefiles)
-
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
@@ -2406,7 +2404,6 @@ class CMDShowPause(ApiCall):
     def run(self):
         """Pause or un-pause a show"""
         error, show = Show.pause(self.indexerid, self.pause)
-
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
@@ -2432,7 +2429,6 @@ class CMDShowRefresh(ApiCall):
     def run(self):
         """Refresh a show in SickChill"""
         error, show = Show.refresh(self.indexerid)
-
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
@@ -2712,16 +2708,11 @@ class CMDShowUpdate(ApiCall):
 
     def run(self):
         """Update a show in SickChill"""
-        show_obj = Show.find(settings.show_list, int(self.indexerid))
-        if not show_obj:
-            return _responds(RESULT_FAILURE, msg="Show not found")
+        error, show = Show.update(self.indexerid, True)
+        if error:
+            _responds(RESULT_FAILURE, msg=f"Unable to update {show.name}")
 
-        try:
-            settings.showQueueScheduler.action.update_show(show_obj, True)
-            return _responds(RESULT_SUCCESS, msg=str(show_obj.name) + " has queued to be updated")
-        except CantUpdateShowException as error:
-            logger.debug(f"API::Unable to update show: {error}")
-            return _responds(RESULT_FAILURE, msg=f"Unable to update {show_obj.name}")
+        return _responds(RESULT_SUCCESS, msg=str(show.name) + " has queued to be updated")
 
 
 # noinspection PyAbstractClass

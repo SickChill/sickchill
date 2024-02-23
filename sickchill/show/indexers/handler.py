@@ -120,8 +120,8 @@ class ShowIndexer(object):
                     logger.debug("Failed to find {} on {}".format(search, self.name(i)))
                     continue
 
-                ShowObj = Show.find(settings.show_list, result.id)
-                if indexerid and ShowObj and ShowObj.indexerid == result.id:
+                show = Show.find(settings.show_list, result.id)
+                if indexerid and show and show.indexerid == result.id:
                     return i, result
                 elif indexerid and indexerid == result.id:
                     return i, result

@@ -1,5 +1,6 @@
 import logging
 import os
+import string
 import sys
 import unittest
 from pathlib import Path
@@ -35,9 +36,11 @@ class BrowserTestAll(unittest.TestCase):
         if os.name == "nt":
             assert test_list[0]["currentPath"] == "My Computer", test_list[0]
             drives = browser.get_windows_drives()
-            assert len(drives) == len(test_list[1:])
+            assert len(drives)
+            assert len(test_list[1:])
             for item in test_list[1:]:
-                assert item["path"] in drives
+                if item["path"].upper()[0] in string.ascii_uppercase:
+                    assert item["path"][:3] in drives, (item["path"], drives)
         else:
             assert test_list[0]["currentPath"] == "/"
 

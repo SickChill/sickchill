@@ -13,7 +13,7 @@ import time
 import traceback
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Union
+from typing import TYPE_CHECKING
 
 import sickchill.start
 
@@ -46,6 +46,9 @@ from sickchill.oldbeard.event_queue import Events
 from sickchill.tv import TVShow
 from sickchill.update_manager import PipUpdateManager
 from sickchill.views.server_settings import SCWebServer
+
+if TYPE_CHECKING:
+    from typing import List, Union
 
 # http://bugs.python.org/issue7980#msg221094
 THROWAWAY = datetime.datetime.strptime("20110101", "%Y%m%d")

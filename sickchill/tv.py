@@ -156,7 +156,8 @@ class TVShow(object):
             Also, having all of the logic that only acts on one class
             within the class itself makes it easier to find what methods exist.
             """
-            Show.refresh(self.indexerid, True)
+            # Note: do not enable this until we have a queue we can set these as pending and only do it when processing show lists are done
+            # Show.refresh(self, True)
 
     @property
     def name(self) -> str:
@@ -970,7 +971,7 @@ class TVShow(object):
             MaxRetryError,
         ) as error:
             logger.info(f"Could not get IMDB info: see debug logs for details")
-            logger.debug(f"IMDB traceback: {error}")
+            logger.debug(f"IMDB traceback: {error}", exc_info=True)
         except (SyntaxError, KeyError):
             logger.info("Could not get info from IDMb, pip install lxml")
 

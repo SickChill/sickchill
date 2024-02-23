@@ -7,7 +7,6 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from secrets import compare_digest
-from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
@@ -31,9 +30,6 @@ try:
     has_cryptography = True
 except Exception:
     has_cryptography = False
-
-if TYPE_CHECKING:
-    from tornado.web import Application
 
 
 class BaseHandler(RequestHandler):

@@ -69,11 +69,9 @@ class SearchResult(object):
 
     @classmethod
     def make_result(cls, result_dict):
-        show = sickchill.show.Show.Show.validate_indexer_id(result_dict.get("indexerid"))
-        if not show[1]:
-            return show[0]
-
-        show = show[1]
+        error, show = sickchill.show.Show.Show.validate_indexer_id(result_dict.get("indexerid"))
+        if not show:
+            return error
 
         episode_objects = [show.get_episode(result_dict.get("season"), ep) for ep in result_dict.get("episodes").split("|") if ep]
         provider = sickchill.oldbeard.providers.getProviderClass(result_dict.get("provider"))

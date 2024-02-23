@@ -5499,7 +5499,7 @@ msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:390
 msgid ""
-"Show in {showDir} has no name on {indexer}, probably searched with the "
+"Show in {show_dir} has no name on {indexer}, probably searched with the "
 "wrong language. Delete .nfo and add manually in the correct language."
 msgstr ""
 
@@ -5695,7 +5695,7 @@ msgid "Skipped"
 msgstr "スキップされた"
 
 #: sickchill/oldbeard/show_queue.py:377
-msgid "Skipping initial creation of {showDir} due to config.ini setting"
+msgid "Skipping initial creation of {show_dir} due to config.ini setting"
 msgstr ""
 
 #: sickchill/gui/slick/views/config.mako:250
@@ -6278,7 +6278,7 @@ msgid "The old status had a quality in it, using that: "
 msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:478
-msgid "The show in {showDir} is already in your show list, skipping"
+msgid "The show in {show_dir} is already in your show list, skipping"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_notifications.mako:1306
@@ -6827,7 +6827,7 @@ msgid "Unable to create subtitles folder {subs_new_path}"
 msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:381
-msgid "Unable to create the folder {showDir}, can't add the show"
+msgid "Unable to create the folder {show_dir}, can't add the show"
 msgstr ""
 
 #: sickchill/views/manage/add_shows.py:632
@@ -6874,7 +6874,7 @@ msgid "Unable to force an update on scene numbering of the show."
 msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:361
-msgid "Unable to get a show {showDir}, can't add the show"
+msgid "Unable to get a show {show_dir}, can't add the show"
 msgstr ""
 
 #: sickchill/oldbeard/helpers.py:1448
@@ -9234,4 +9234,3 @@ msgstr ""
 #: sickchill/views/home.py:1280
 msgid "{show_name} has been {paused_resumed}"
 msgstr ""
-

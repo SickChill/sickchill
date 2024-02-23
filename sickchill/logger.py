@@ -1,8 +1,6 @@
-import locale
 import logging
 import logging.handlers
 import os
-import platform
 import re
 import sys
 from logging import NullHandler
@@ -96,6 +94,7 @@ class Logger(object):
             logging.getLogger("subliminal"),
             logging.getLogger("tornado.access"),
             logging.getLogger("imdbpy.parser.http.piculet"),
+            logging.getLogger("imdbpy.parser.http.domparser"),
             logging.getLogger("sqlalchemy.engine"),
             logging.getLogger("sqlalchemy.pool"),
             logging.getLogger("sqlalchemy.dialect"),
@@ -141,7 +140,7 @@ class Logger(object):
 
         # set minimum logging level allowed for loggers
         for logger in self.loggers:
-            if logger.name in ("subliminal", "tornado.access", "tornado.general", "imdbpy.parser.http.piculet"):
+            if logger.name in ("subliminal", "tornado.access", "tornado.general", "imdbpy.parser.http.piculet", "imdbpy.parser.http.domparser"):
                 logger.setLevel("CRITICAL")
             elif (logger.name.startswith("sqlalchemy") or logger.name.startswith("imdb")) and not self.database_logging:
                 logger.setLevel("WARNING")
