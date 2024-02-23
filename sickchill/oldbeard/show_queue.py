@@ -43,11 +43,7 @@ class ShowQueue(generic_queue.GenericQueue):
 
         return show.indexerid in (x.show.indexerid if x.show else 0 for x in self.queue if x.action_id in actions)
 
-    @overload
-    def _actions_in_queue(self, show: "TVShow", actions: Tuple[int, ...]) -> bool:
-        ...
-
-    def _actions_in_queue(self, show: "TVShow", actions: tuple[int, ...]) -> bool:
+    def _actions_in_queue(self, show: "TVShow", actions) -> bool:
         return self.currentItem is not None and show == self.currentItem.show and self.currentItem.action_id in actions
 
     # def is_in_add_queue(self, show: "TVShow") -> bool:
