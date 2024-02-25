@@ -59,11 +59,13 @@
                     <div class="loading-spinner"></div>
                 % endif
                 % for cur_show_list in sorted_show_lists:
+                    % if cur_show_list[1]:
                     <div class="row">
                         <div class="col-md-12">
                                 <%include file="/inc_home_show_list.mako" args="curListType=cur_show_list[0], myShowList=cur_show_list[1]" />
                         </div>
                     </div>
+                    % endif
                 % endfor
             </div>
         </div>

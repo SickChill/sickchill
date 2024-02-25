@@ -6078,7 +6078,7 @@ msgstr "Série sautée"
 #| msgid "" "Show in {0} has no name on {1}, probably searched with the wrong "
 #| "language. Delete .nfo and add manually in the correct language."
 msgid ""
-"Show in {showDir} has no name on {indexer}, probably searched with the "
+"Show in {show_dir} has no name on {indexer}, probably searched with the "
 "wrong language. Delete .nfo and add manually in the correct language."
 msgstr ""
 "La série dans {0} n'a pas de nom sur {1}, probablement recherchée avec la"
@@ -6285,7 +6285,7 @@ msgstr "Série sautée"
 #: sickchill/oldbeard/show_queue.py:377
 #, fuzzy
 #| msgid "Skipping initial creation of {0} due to config.ini setting"
-msgid "Skipping initial creation of {showDir} due to config.ini setting"
+msgid "Skipping initial creation of {show_dir} due to config.ini setting"
 msgstr ""
 "La création initiale de {0} a été ignorée en raison du paramètre "
 "config.ini"
@@ -6920,7 +6920,7 @@ msgstr "L'ancien statut avait une qualité définie, je l'utilise: "
 #: sickchill/oldbeard/show_queue.py:478
 #, fuzzy
 #| msgid "The show in {0} is already in your show list, skipping"
-msgid "The show in {showDir} is already in your show list, skipping"
+msgid "The show in {show_dir} is already in your show list, skipping"
 msgstr "La série dans {0} est déjà dans votre liste de séries, passée"
 
 #: sickchill/gui/slick/views/config_notifications.mako:1306
@@ -7544,7 +7544,7 @@ msgstr "Impossible de créer le répertoire des sous-titres {0}"
 #: sickchill/oldbeard/show_queue.py:381
 #, fuzzy
 #| msgid "Unable to create the folder {show_dir}, can't add the show"
-msgid "Unable to create the folder {showDir}, can't add the show"
+msgid "Unable to create the folder {show_dir}, can't add the show"
 msgstr "Impossible de créer le dossier {show_dir}, impossible d'ajouter la série"
 
 #: sickchill/views/manage/add_shows.py:632
@@ -7601,7 +7601,7 @@ msgstr ""
 #: sickchill/oldbeard/show_queue.py:361
 #, fuzzy
 #| msgid "Unable to get a show {0}, can't add the show"
-msgid "Unable to get a show {showDir}, can't add the show"
+msgid "Unable to get a show {show_dir}, can't add the show"
 msgstr "Impossible d'obtenir une série {0}, impossible d'ajouter la série"
 
 #: sickchill/oldbeard/helpers.py:1448
@@ -10145,4 +10145,3 @@ msgstr "{show_name} a été {deleted_trashed} {was_deleted}"
 #: sickchill/views/home.py:1280
 msgid "{show_name} has been {paused_resumed}"
 msgstr "{show_name} a été {paused_resumed}"
-

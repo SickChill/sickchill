@@ -331,7 +331,7 @@ class TraktChecker(object):
                         continue
 
                     if progress and progress.get("aired", True) == progress.get("completed", False):
-                        settings.showQueueScheduler.action.remove_show(show, full=True)
+                        Show.delete(show, remove_files=True)
                         logger.debug("Show: {0} has been removed from SickChill".format(show.name))
 
             logger.debug("SHOW_SICKCHILL::REMOVE::FINISH - Trakt Show Watchlist")

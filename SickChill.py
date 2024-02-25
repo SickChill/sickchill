@@ -31,12 +31,12 @@ from sickchill.oldbeard.name_parser.parser import NameParser, ParseResult
 setup_gettext()
 
 mimetypes.add_type("text/css", ".css")
+# noinspection SpellCheckingInspection
 mimetypes.add_type("application/sfont", ".otf")
+# noinspection SpellCheckingInspection
 mimetypes.add_type("application/sfont", ".ttf")
 mimetypes.add_type("application/javascript", ".js")
 mimetypes.add_type("application/font-woff", ".woff")
-# Not sure about this one, but we also have halflings in .woff, so I think it won't matter
-# mimetypes.add_type("application/font-woff2", ".woff2")
 
 from configobj import ConfigObj
 
@@ -332,7 +332,9 @@ class SickChill:
                 popen_list = [sys.executable, settings.MY_FULLNAME]
                 if popen_list and not settings.NO_RESTART:
                     popen_list += settings.MY_ARGS
+                    # noinspection SpellCheckingInspection
                     if "--nolaunch" not in popen_list:
+                        # noinspection SpellCheckingInspection
                         popen_list += ["--nolaunch"]
                     logger.info("Restarting SickChill with {options}".format(options=popen_list))
                     # shutdown the logger to make sure it's released the logfile BEFORE it restarts SC.

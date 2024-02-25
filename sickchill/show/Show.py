@@ -2,7 +2,7 @@ from datetime import date
 from typing import TYPE_CHECKING, Union
 
 from sickchill import settings
-from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, MultipleShowObjectsException
+from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, MultipleShowObjectsException
 from sickchill.oldbeard.common import Quality, SKIPPED, WANTED
 from sickchill.oldbeard.db import DBConnection
 
@@ -11,35 +11,8 @@ if TYPE_CHECKING:
 
 
 class Show(object):
-    def __init__(self):
-        pass
-
     @staticmethod
-    def delete(indexer_id, remove_files=False):
-        """
-        Try to delete a show
-        :param indexer_id: The unique id of the show to delete
-        :param remove_files: ``True`` to remove the files associated with the show, ``False`` otherwise
-        :return: A tuple containing:
-         - an error message if the show could not be deleted, ``None`` otherwise
-         - the show object that was deleted, if it exists, ``None`` otherwise
-        """
-
-        error, show = Show.validate_indexer_id(indexer_id)
-
-        if error is not None:
-            return error, show
-
-        if show:
-            try:
-                settings.showQueueScheduler.action.remove_show(show, bool(remove_files))
-            except CantRemoveShowException as exception:
-                return str(exception), show
-
-        return None, show
-
-    @staticmethod
-    def find(shows, indexer_id) -> Union["TVShow", None]:
+    def find(shows: list, indexer_id: Union[int, str]) -> Union["TVShow", None]:
         """
         Find a show by its indexer id in the provided list of shows
         :param shows: The list of shows to search in
@@ -47,10 +20,7 @@ class Show(object):
         :return: The desired show if found, ``None`` if not found
         :throw: ``MultipleShowObjectsException`` if multiple shows match the provided ``indexer_id``
         """
-        if not indexer_id or not shows:
-            return None
-
-        if not isinstance(indexer_id, (str, int)):
+        if not (indexer_id and shows):
             return None
 
         if isinstance(indexer_id, list):
@@ -59,6 +29,8 @@ class Show(object):
 
             indexer_ids = [int(x) for x in indexer_id]
         else:
+            if not isinstance(indexer_id, (int, str)):
+                return None
             indexer_ids = [int(indexer_id)]
 
         results = [show for show in shows if show.indexerid in indexer_ids]
@@ -72,18 +44,15 @@ class Show(object):
         raise MultipleShowObjectsException()
 
     @staticmethod
-    def find_name(shows, name) -> Union["TVShow", None]:
+    def find_name(shows: list, name: str) -> Union["TVShow", None]:
         """
-        Find a show by its indexer id in the provided list of shows
+        Find a show by its namer in the provided list of shows
         :param shows: The list of shows to search in
         :param name: The known name of the desired show
         :return: The desired show if found, ``None`` if not found
         :throw: ``MultipleShowObjectsException`` if multiple shows match the provided ``indexer_id``
         """
-        if not name or not shows:
-            return None
-
-        if not isinstance(name, str):
+        if not (name and shows):
             return None
 
         if isinstance(name, list):
@@ -92,6 +61,9 @@ class Show(object):
                 if not isinstance(item, str):
                     return None
         else:
+            if not isinstance(name, str):
+                return None
+
             names = [name]
 
         results = [show for show in shows if show.name in names]
@@ -105,7 +77,7 @@ class Show(object):
         raise MultipleShowObjectsException()
 
     @staticmethod
-    def overall_stats():
+    def overall_stats() -> dict:
         db = DBConnection()
         shows = settings.show_list
         today = date.today().toordinal()
@@ -114,7 +86,7 @@ class Show(object):
         snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
         total_status = [SKIPPED, WANTED]
 
-        results = db.select("SELECT airdate, status " "FROM tv_episodes " "WHERE season > 0 " "AND episode > 0 " "AND airdate > 1")
+        results = db.select("SELECT airdate, status FROM tv_episodes WHERE season > 0 AND episode > 0 AND airdate > 1")
 
         stats = {
             "episodes": {
@@ -141,18 +113,47 @@ class Show(object):
         return stats
 
     @staticmethod
-    def pause(indexer_id, pause=None):
+    def validate_indexer_id(show_or_id: Union["TVShow", str, int], show_list: list = None) -> (Union[str, None], Union["TVShow", None]):
+        """
+        Check that the provided indexer_id is valid and corresponds with a known show
+        :param show_or_id: The indexer id or object to check
+        :param show_list: The list of shows to check against
+        :return: A tuple containing:
+         - an error message if the indexer id is not correct, ``None`` otherwise
+         - the show object corresponding to ``indexer_id`` if it exists, ``None`` otherwise
+        """
+
+        # NOTE: cannot import TVShow here because of circular import, check this way
+        if hasattr(show_or_id, "custom_name"):
+            return None, show_or_id
+
+        try:
+            indexer_id = int(show_or_id)
+        except (TypeError, ValueError):
+            return _("Invalid show ID") + f" {show_or_id}", None
+
+        if not show_list:
+            show_list = settings.show_list
+
+        try:
+            show = Show.find(show_list, indexer_id)
+        except MultipleShowObjectsException:
+            return "Unable to find the specified show", None
+
+        return None, show
+
+    @staticmethod
+    def pause(show_or_id: Union[int, str, "TVShow"], pause: Union[bool, None] = None) -> (Union[str, None], Union["TVShow", None]):
         """
         Change the pause state of a show
-        :param indexer_id: The unique id of the show to update
+        :param show_or_id: The unique id or object of the show to update
         :param pause: ``True`` to pause the show, ``False`` to resume the show, ``None`` to toggle the pause state
         :return: A tuple containing:
          - an error message if the pause state could not be changed, ``None`` otherwise
          - the show object that was updated, if it exists, ``None`` otherwise
         """
 
-        error, show = Show.validate_indexer_id(indexer_id)
-
+        error, show = Show.validate_indexer_id(show_or_id)
         if error is not None:
             return error, show
 
@@ -166,18 +167,17 @@ class Show(object):
         return None, show
 
     @staticmethod
-    def refresh(indexer_id, force=False):
+    def refresh(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
         """
         Try to refresh a show
         :param force: Force refresh
-        :param indexer_id: The unique id of the show to refresh
+        :param show_or_id: The unique id or object of the show to refresh
         :return: A tuple containing:
          - an error message if the show could not be refreshed, ``None`` otherwise
          - the show object that was refreshed, if it exists, ``None`` otherwise
         """
 
-        error, show = Show.validate_indexer_id(indexer_id)
-
+        error, show = Show.validate_indexer_id(show_or_id)
         if error is not None:
             return error, show
 
@@ -189,23 +189,43 @@ class Show(object):
         return None, show
 
     @staticmethod
-    def validate_indexer_id(indexer_id):
+    def update(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
         """
-        Check that the provided indexer_id is valid and corresponds with a known show
-        :param indexer_id: The indexer id to check
+        Try to delete a show
+        :param show_or_id: The unique id or object of the show to delete
+        :param force: Force update
         :return: A tuple containing:
-         - an error message if the indexer id is not correct, ``None`` otherwise
-         - the show object corresponding to ``indexer_id`` if it exists, ``None`` otherwise
+         - an error message if the show could not be deleted, ``None`` otherwise
+         - the show object that was deleted, if it exists, ``None`` otherwise
         """
+        error, show = Show.validate_indexer_id(show_or_id)
+        if error is not None:
+            return error, show
 
         try:
-            indexer_id = int(indexer_id)
-        except (TypeError, ValueError):
-            return "Invalid show ID", None
+            settings.showQueueScheduler.action.update_show(show, bool(force))
+        except CantUpdateShowException as exception:
+            return str(exception), show
+
+        return None, show
+
+    @staticmethod
+    def delete(show_or_id: Union[int, str, "TVShow"], remove_files: bool = False) -> (Union[str, None], Union["TVShow", None]):
+        """
+        Try to delete a show
+        :param show_or_id: The unique id or object of the show to delete
+        :param remove_files: ``True`` to remove the files associated with the show, ``False`` otherwise
+        :return: A tuple containing:
+         - an error message if the show could not be deleted, ``None`` otherwise
+         - the show object that was deleted, if it exists, ``None`` otherwise
+        """
+        error, show = Show.validate_indexer_id(show_or_id)
+        if error is not None:
+            return error, show
 
         try:
-            show = Show.find(settings.show_list, indexer_id)
-        except MultipleShowObjectsException:
-            return "Unable to find the specified show", None
+            settings.showQueueScheduler.action.remove_show(show, bool(remove_files))
+        except CantRemoveShowException as exception:
+            return str(exception), show
 
         return None, show

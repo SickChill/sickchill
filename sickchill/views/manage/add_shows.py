@@ -565,7 +565,7 @@ class AddShows(Home):
         settings.showQueueScheduler.action.add_show(
             indexer,
             indexer_id,
-            showDir=show_dir,
+            show_dir=show_dir,
             default_status=int(defaultStatus),
             quality=newQuality,
             season_folders=season_folders,

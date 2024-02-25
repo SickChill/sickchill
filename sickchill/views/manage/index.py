@@ -274,8 +274,9 @@ class Manage(Home, WebRoot):
 
         return self.redirect("/manage/subtitleMissed/")
 
-    def backlogShow(self, indexer_id):
-        show_object = Show.find(settings.show_list, int(indexer_id))
+    def backlogShow(self):
+        show = self.get_query_argument("indexer_id")
+        show_object = Show.find(settings.show_list, show)
 
         if show_object:
             settings.backlogSearchScheduler.action.searchBacklog([show_object])
@@ -641,23 +642,23 @@ class Manage(Home, WebRoot):
             if curShowID == "":
                 continue
 
-            show_object = Show.find(settings.show_list, int(curShowID))
+            show_object = Show.find(settings.show_list, curShowID)
             if not show_object:
                 continue
 
             if curShowID in delete:
-                settings.showQueueScheduler.action.remove_show(show_object, True)
+                Show.delete(show_object, True)
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in remove:
-                settings.showQueueScheduler.action.remove_show(show_object)
+                Show.delete(show_object)
                 # don't do anything else if it's being removed
                 continue
 
             if curShowID in update:
                 try:
-                    settings.showQueueScheduler.action.update_show(show_object, True)
+                    Show.update(show_object, True)
                     updates.append(show_object.name)
                 except CantUpdateShowException as error:
                     errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
@@ -665,7 +666,7 @@ class Manage(Home, WebRoot):
             # don't bother refreshing shows that were updated anyway
             if curShowID in refresh and curShowID not in update:
                 try:
-                    settings.showQueueScheduler.action.refresh_show(show_object, force=True)
+                    Show.refresh(show_object, force=True)
                     refreshes.append(show_object.name)
                 except CantRefreshShowException as error:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))

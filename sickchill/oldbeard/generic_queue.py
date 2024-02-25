@@ -5,9 +5,9 @@ from .. import logger
 
 
 class QueuePriorities(object):
-    LOW = 10
-    NORMAL = 20
-    HIGH = 30
+    LOW: int = 10
+    NORMAL: int = 20
+    HIGH: int = 30
 
 
 class GenericQueue(object):

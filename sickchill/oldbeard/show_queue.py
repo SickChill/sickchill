@@ -2,6 +2,7 @@ import os
 import traceback
 from collections import namedtuple
 from operator import attrgetter
+from typing import overload, Tuple, Union
 
 import dateutil.parser
 
@@ -29,58 +30,59 @@ from .helpers import chmodAsParent, makeDir, sortable_name
 class ShowQueue(generic_queue.GenericQueue):
     def __init__(self):
         super(ShowQueue, self).__init__()
+        # noinspection SpellCheckingInspection
         self.queue_name = "SHOWQUEUE"
 
-    def _is_in_queue(self, show, actions):
+    def _is_in_queue(self, show: "TVShow", actions) -> bool:
         if not show:
             return False
 
         return show.indexerid in (x.show.indexerid if x.show else 0 for x in self.queue if x.action_id in actions)
 
-    def _is_being_somethinged(self, show, actions):
+    def _actions_in_queue(self, show: "TVShow", actions) -> bool:
         return self.currentItem is not None and show == self.currentItem.show and self.currentItem.action_id in actions
 
-    # def is_in_add_queue(self, show):
+    # def is_in_add_queue(self, show: "TVShow") -> bool:
     #     return self._isInQueue(show, (ShowQueueActions.ADD,))
 
-    def is_in_update_queue(self, show):
+    def is_in_update_queue(self, show: "TVShow") -> bool:
         return self._is_in_queue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
 
-    def is_in_refresh_queue(self, show):
+    def is_in_refresh_queue(self, show: "TVShow") -> bool:
         return self._is_in_queue(show, (ShowQueueActions.REFRESH,))
 
-    def is_in_rename_queue(self, show):
+    def is_in_rename_queue(self, show: "TVShow") -> bool:
         return self._is_in_queue(show, (ShowQueueActions.RENAME,))
 
-    def is_in_remove_queue(self, show):
+    def is_in_remove_queue(self, show: "TVShow") -> bool:
         return self._is_in_queue(show, (ShowQueueActions.REMOVE,))
 
-    def is_in_subtitle_queue(self, show):
+    def is_in_subtitle_queue(self, show: "TVShow") -> bool:
         return self._is_in_queue(show, (ShowQueueActions.SUBTITLE,))
 
-    def is_being_added(self, show):
-        return self._is_being_somethinged(show, (ShowQueueActions.ADD,))
+    def is_being_added(self, show: "TVShow") -> bool:
+        return self._actions_in_queue(show, (ShowQueueActions.ADD,))
 
-    def is_being_updated(self, show):
-        return self._is_being_somethinged(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
+    def is_being_updated(self, show: "TVShow") -> bool:
+        return self._actions_in_queue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
 
-    def is_being_refreshed(self, show):
-        return self._is_being_somethinged(show, (ShowQueueActions.REFRESH,))
+    def is_being_refreshed(self, show: "TVShow") -> bool:
+        return self._actions_in_queue(show, (ShowQueueActions.REFRESH,))
 
-    def is_being_renamed(self, show):
-        return self._is_being_somethinged(show, (ShowQueueActions.RENAME,))
+    def is_being_renamed(self, show: "TVShow") -> bool:
+        return self._actions_in_queue(show, (ShowQueueActions.RENAME,))
 
-    def is_being_removed(self, show):
-        return self._is_being_somethinged(show, (ShowQueueActions.REMOVE,))
+    def is_being_removed(self, show: "TVShow") -> bool:
+        return self._actions_in_queue(show, (ShowQueueActions.REMOVE,))
 
-    def is_being_subtitled(self, show):
-        return self._is_being_somethinged(show, (ShowQueueActions.SUBTITLE,))
+    def is_being_subtitled(self, show: "TVShow") -> bool:
+        return self._actions_in_queue(show, (ShowQueueActions.SUBTITLE,))
 
     @property
-    def loading_show_list(self):
+    def loading_show_list(self) -> {"ShowQueueItem"}:
         return {x for x in self.queue + [self.currentItem] if x and x.is_loading}
 
-    def update_show(self, show, force=False):
+    def update_show(self, show: "TVShow", force: bool = False) -> "ShowQueueItem":
         if self.is_being_added(show):
             raise CantUpdateShowException(f"{show.name} is still being added, wait until it is finished before you update.")
 
@@ -96,7 +98,7 @@ class ShowQueue(generic_queue.GenericQueue):
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    def refresh_show(self, show, force=False):
+    def refresh_show(self, show: "TVShow", force=False) -> Union["ShowQueueItem", None]:
         if self.is_being_refreshed(show) and not force:
             raise CantRefreshShowException("This show is already being refreshed, not refreshing again.")
 
@@ -116,22 +118,21 @@ class ShowQueue(generic_queue.GenericQueue):
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    def rename_show_episodes(self, show):
+    def rename_show_episodes(self, show: "TVShow") -> "ShowQueueItem":
         queue_item_obj = QueueItemRename(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    def download_subtitles(self, show):
+    def download_subtitles(self, show: "TVShow") -> "ShowQueueItem":
         queue_item_obj = QueueItemSubtitle(show)
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    # noinspection PyPep8Naming
     def add_show(
         self,
         indexer,
         indexer_id,
-        showDir,
+        show_dir,
         default_status=None,
         quality=None,
         season_folders=None,
@@ -145,7 +146,7 @@ class ShowQueue(generic_queue.GenericQueue):
         whitelist=None,
         default_status_after=None,
         root_dir=None,
-    ):
+    ) -> "ShowQueueItem":
         if lang is None:
             lang = settings.INDEXER_DEFAULT_LANGUAGE
 
@@ -155,7 +156,7 @@ class ShowQueue(generic_queue.GenericQueue):
         queue_item_obj = QueueItemAdd(
             indexer,
             indexer_id,
-            showDir,
+            show_dir,
             default_status,
             quality,
             season_folders,
@@ -174,7 +175,7 @@ class ShowQueue(generic_queue.GenericQueue):
         self.add_item(queue_item_obj)
         return queue_item_obj
 
-    def remove_show(self, show, full=False):
+    def remove_show(self, show: "TVShow", full: bool = False) -> "ShowQueueItem":
         if not show:
             raise CantRemoveShowException("Failed removing show: Show does not exist")
 
@@ -201,6 +202,7 @@ class ShowQueueActions(object):
     REFRESH = 1
     ADD = 2
     UPDATE = 3
+    # noinspection SpellCheckingInspection
     FORCEUPDATE = 4
     RENAME = 5
     SUBTITLE = 6
@@ -233,15 +235,15 @@ class ShowQueueItem(generic_queue.QueueItem):
         super(ShowQueueItem, self).__init__(ShowQueueActions.names[action_id], action_id)
         self.show = show
 
-    def is_in_queue(self):
+    def is_in_queue(self) -> bool:
         return self in settings.showQueueScheduler.action.queue + [settings.showQueueScheduler.action.currentItem]
 
     @property
-    def show_name(self):
+    def show_name(self) -> str:
         return self.show.name if self.show else "UNSET"
 
     @property
-    def is_loading(self):
+    def is_loading(self) -> bool:
         return False
 
 
@@ -251,7 +253,7 @@ class QueueItemAdd(ShowQueueItem):
         self,
         indexer,
         indexer_id,
-        showDir,
+        show_dir,
         default_status,
         quality,
         season_folders,
@@ -268,7 +270,7 @@ class QueueItemAdd(ShowQueueItem):
     ):
         super(QueueItemAdd, self).__init__(ShowQueueActions.ADD, None)
 
-        self.showDir = showDir
+        self.show_dir = show_dir
         self.indexer = indexer
         self.indexer_id = indexer_id
         self.default_status = default_status
@@ -296,7 +298,7 @@ class QueueItemAdd(ShowQueueItem):
         Returns the show name if there is a show object created, if not returns
         the dir that the show is being added to.
         """
-        return self.show.name if self.show else self.showDir.rsplit(os.sep)[-1] if self.showDir else _("Loading")
+        return self.show.name if self.show else self.show_dir.rsplit(os.sep)[-1] if self.show_dir else _("Loading")
 
     @property
     def is_loading(self):
@@ -334,7 +336,9 @@ class QueueItemAdd(ShowQueueItem):
         super(QueueItemAdd, self).run()
 
         logger.info(
-            _("Starting to add show {0}").format(_("by ShowDir: {0}").format(self.showDir) if self.showDir else _("by Indexer Id: {0}").format(self.indexer_id))
+            _("Starting to add show {0}").format(
+                _("by show_dir: {0}").format(self.show_dir) if self.show_dir else _("by Indexer Id: {0}").format(self.indexer_id)
+            )
         )
         # make sure the Indexer IDs are valid
         try:
@@ -350,11 +354,11 @@ class QueueItemAdd(ShowQueueItem):
                 self._finish_early()
                 return
 
-            # Let's try to create the show Dir if it's not provided. This way we force the show dir to build build using the
+            # Let's try to create the show Dir if it's not provided. This way we force the show dir to build using the
             # Indexers provided series name
-            if self.root_dir and not self.showDir:
+            if self.root_dir and not self.show_dir:
                 if not s.seriesName:
-                    logger.info(_("Unable to get a show {showDir}, can't add the show").format(showDir=self.showDir))
+                    logger.info(_("Unable to get a show {show_dir}, can't add the show").format(show_dir=self.show_dir))
                     self._finish_early()
                     return
 
@@ -367,26 +371,25 @@ class QueueItemAdd(ShowQueueItem):
                     except (TypeError, ValueError):
                         logger.info(_("Could not append the show year folder for the show: {show_dir}").format(show_dir=show_dir))
 
-                self.showDir = os.path.join(self.root_dir, sanitize_filename(show_dir))
+                self.show_dir = os.path.join(self.root_dir, sanitize_filename(show_dir))
 
                 if settings.ADD_SHOWS_WO_DIR:
-                    logger.info(_("Skipping initial creation of {showDir} due to config.ini setting").format(showDir=self.showDir))
+                    logger.info(_("Skipping initial creation of {show_dir} due to config.ini setting").format(show_dir=self.show_dir))
                 else:
-                    dir_exists = makeDir(self.showDir)
+                    dir_exists = makeDir(self.show_dir)
                     if not dir_exists:
-                        logger.info(_("Unable to create the folder {showDir}, can't add the show").format(showDir=self.showDir))
+                        logger.info(_("Unable to create the folder {show_dir}, can't add the show").format(show_dir=self.show_dir))
                         self._finish_early()
                         return
 
-                    chmodAsParent(self.showDir)
+                    chmodAsParent(self.show_dir)
 
-            # this usually only happens if they have an NFO in their show dir which gave us a Indexer ID that has no proper english version of the show
+            # this usually only happens if they have an NFO in their show dir which gave us an indexer id that has no proper english version of the show
             if getattr(s, "seriesName", None) is None:
-                # noinspection PyPep8
                 error_string = _(
-                    "Show in {showDir} has no name on {indexer}, probably "
+                    "Show in {show_dir} has no name on {indexer}, probably "
                     "searched with the wrong language. Delete .nfo and add manually in the correct language."
-                ).format(showDir=self.showDir, indexer=sickchill.indexer.name(self.indexer))
+                ).format(show_dir=self.show_dir, indexer=sickchill.indexer.name(self.indexer))
 
                 logger.warning(error_string)
                 ui.notifications.error(_("Unable to add show"), error_string)
@@ -395,7 +398,7 @@ class QueueItemAdd(ShowQueueItem):
                 return
         except Exception as error:
             error_string = (
-                f"Unable to look up the show in {self.showDir} on {sickchill.indexer.name(self.indexer)} "
+                f"Unable to look up the show in {self.show_dir} on {sickchill.indexer.name(self.indexer)} "
                 f"using ID {self.indexer_id}, not using the NFO. Delete .nfo and try adding manually again."
             )
 
@@ -405,7 +408,7 @@ class QueueItemAdd(ShowQueueItem):
             if settings.USE_TRAKT:
                 trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
-                title = self.showDir.split("/")[-1]
+                title = self.show_dir.split("/")[-1]
                 data = {"shows": [{"title": title, "ids": {sickchill.indexer.slug(self.indexer): self.indexer_id}}]}
                 trakt_api.traktRequest("sync/watchlist/remove", data, method="POST")
 
@@ -429,7 +432,7 @@ class QueueItemAdd(ShowQueueItem):
             self.show = new_show
 
             # set up initial values
-            self.show.location = self.showDir
+            self.show.location = self.show_dir
             self.show.subtitles = self.subtitles if self.subtitles is not None else settings.SUBTITLES_DEFAULT
             self.show.subtitles_sc_metadata = self.subtitles_sc_metadata
             self.show.quality = self.quality if self.quality else settings.QUALITY_DEFAULT
@@ -471,7 +474,7 @@ class QueueItemAdd(ShowQueueItem):
             return
 
         except MultipleShowObjectsException:
-            error_string = _("The show in {showDir} is already in your show list, skipping").format(showDir=self.showDir)
+            error_string = _("The show in {show_dir} is already in your show list, skipping").format(show_dir=self.show_dir)
             logger.warning(error_string)
             ui.notifications.error(_("Show skipped"), error_string)
 
@@ -548,14 +551,14 @@ class QueueItemAdd(ShowQueueItem):
 
     def _finish_early(self):
         if self.show is not None:
-            settings.showQueueScheduler.action.remove_show(self.show)
+            Show.delete(self.show)
 
         super(QueueItemAdd, self).finish()
         self.finish()
 
 
 class QueueItemRefresh(ShowQueueItem):
-    def __init__(self, show=None, force=False):
+    def __init__(self, show: "TVShow" = None, force=False):
         super(QueueItemRefresh, self).__init__(ShowQueueActions.REFRESH, show)
 
         # do refreshes first because they're quick
@@ -583,7 +586,7 @@ class QueueItemRefresh(ShowQueueItem):
 
 
 class QueueItemRename(ShowQueueItem):
-    def __init__(self, show=None):
+    def __init__(self, show: "TVShow" = None):
         super(QueueItemRename, self).__init__(ShowQueueActions.RENAME, show)
 
     def run(self):
@@ -620,7 +623,7 @@ class QueueItemRename(ShowQueueItem):
 
 
 class QueueItemSubtitle(ShowQueueItem):
-    def __init__(self, show=None):
+    def __init__(self, show: "TVShow" = None):
         super(QueueItemSubtitle, self).__init__(ShowQueueActions.SUBTITLE, show)
 
     def run(self):
@@ -635,7 +638,7 @@ class QueueItemSubtitle(ShowQueueItem):
 
 
 class QueueItemUpdate(ShowQueueItem):
-    def __init__(self, show=None, force=False):
+    def __init__(self, show: "TVShow" = None, force=False):
         action = ShowQueueActions.FORCEUPDATE if force else ShowQueueActions.UPDATE
         super(QueueItemUpdate, self).__init__(action, show)
         self.force = force
@@ -665,32 +668,31 @@ class QueueItemUpdate(ShowQueueItem):
             logger.debug(traceback.format_exc())
 
         # get episode list from DB
-        DBEpList = self.show.load_episodes_from_db()
+        database_episodes = self.show.load_episodes_from_db()
 
         # get episode list from TVDB
         logger.debug(f"Loading all episodes from {self.show.idxr.name}")
         try:
-            IndexerEpList = self.show.load_episodes_from_indexer(self.force)
+            indexer_episodes = self.show.load_episodes_from_indexer(self.force)
         except Exception as error:
             logger.exception(f"Unable to get info from {self.show.idxr.name}, the show info will not be refreshed: {error}")
-            IndexerEpList = None
+            indexer_episodes = dict()
 
-        if IndexerEpList:
-            for curSeason in IndexerEpList:
-                for curEpisode in IndexerEpList[curSeason]:
-                    curEp = self.show.get_episode(curSeason, curEpisode)
-                    curEp.save_to_db()
+        for season in indexer_episodes:
+            for episode in indexer_episodes[season]:
+                self.show.get_episode(season, episode).save_to_db()
+                if season in database_episodes and episode in database_episodes[season]:
+                    del database_episodes[season][episode]
 
-                    if curSeason in DBEpList and curEpisode in DBEpList[curSeason]:
-                        del DBEpList[curSeason][curEpisode]
-
-            # remaining episodes in the DB list are not on the indexer, just delete them from the DB
-            for curSeason in DBEpList:
-                for curEpisode in DBEpList[curSeason]:
-                    logger.info("Permanently deleting episode {0:02d}E{1:02d} from the database".format(curSeason, curEpisode))
-                    curEp = self.show.get_episode(curSeason, curEpisode)
+        if indexer_episodes:
+            # remaining episodes in the database list are not on the indexer, just delete them from the DB
+            # TODO: database: maybe add a "marked for deletion" column to the database, and when we delete an episode just mark it and do the actual deletion after a few days.
+            #  episodes marked for deletion can be hidden from the ui, but we wont lose downloaded files for episodes that are then brought back and they wont be sent to download again?
+            for season in database_episodes:
+                for episode in database_episodes[season]:
+                    logger.info("Permanently deleting episode {0:02d}E{1:02d} from the database".format(season, episode))
                     try:
-                        curEp.delete_episode()
+                        self.show.get_episode(season, episode).delete_episode()
                     except EpisodeDeletedException:
                         pass
 
@@ -710,10 +712,10 @@ class QueueItemUpdate(ShowQueueItem):
 
 
 class QueueItemRemove(ShowQueueItem):
-    def __init__(self, show=None, full=False):
+    def __init__(self, show: "TVShow" = None, full: bool = False):
         super(QueueItemRemove, self).__init__(ShowQueueActions.REMOVE, show)
 
-        # lets make sure this happens before any other high priority actions
+        # noinspection IncorrectFormatting
         self.priority = generic_queue.QueuePriorities.HIGH**2
         self.full = full
 
@@ -729,6 +731,7 @@ class QueueItemRemove(ShowQueueItem):
                 logger.warning(_("Unable to delete show from Trakt: {show_name}. Error: {error}").format(show_name=self.show.name, error=error))
 
         # If any notification fails, don't stop removal
+        # noinspection PyBroadException
         try:
             # TODO: episode_object is undefined here, so all of these will fail.
             # send notifications
@@ -749,7 +752,7 @@ class QueueItemRemove(ShowQueueItem):
             # do the library update for Synology Indexer
             notifiers.synoindex_notifier.addFolder(self.show.get_location)
 
-            # do the library update for pyTivo
+            # do the library update for tivo
             notifiers.pytivo_notifier.update_library(self.show)
         except Exception:
             logger.info(_("Some notifications could not be sent. Continuing removal of {}...").format(self.show.name))
