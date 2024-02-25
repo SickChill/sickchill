@@ -141,8 +141,8 @@ class TVShow(object):
 
     def __refresh_if_changed(self, attribute: str, value) -> None:
         existing = getattr(self, f"_{attribute}")
-        if type(existing) is not type(value):
-            logger.warning(f"Please report that TVShow.{attribute} was set with an incorrect value ({value})", exc_info=True, stack_info=True)
+        # if type(existing) is not type(value):
+        #    logger.warning(f"Please report that TVShow.{attribute} was set with an incorrect value ({value})", exc_info=True, stack_info=True)
         if existing != value:
             setattr(self, f"_{attribute}", value)
             self.dirty = True
