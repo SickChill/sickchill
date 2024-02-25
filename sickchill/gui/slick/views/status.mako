@@ -234,7 +234,7 @@
             ${item.show.name}
         % except Exception:
             % if item.action_id == ShowQueueActions.ADD:
-                ${item.showDir}
+                ${item.show_dir}
             % endif
         % endtry
         </td>
