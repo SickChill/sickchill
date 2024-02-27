@@ -1,9 +1,8 @@
-name: Build develop branch
+name: Build wheel
 
 on:
   workflow_run:
     workflows: [ Python Packaging ]
-    branches: [ develop ]
     types: [ completed, requested ]
 
 jobs:
@@ -53,4 +52,4 @@ jobs:
             dist/*.whl
             dist/*.tar.gz
       - run: |
-          echo ${{ steps.next-version.outputs.changelog }}
+          echo "${{ steps.next-version.outputs.changelog }}"

@@ -103,6 +103,7 @@ class TVShow(object):
     season_folders = DirtySetter(int(settings.SEASON_FOLDERS_DEFAULT))
     status = DirtySetter("Unknown")
     airs = DirtySetter("")
+    # noinspection SpellCheckingInspection
     startyear = DirtySetter(0)
     paused = DirtySetter(0)
     subtitles = DirtySetter(int(settings.SUBTITLES_DEFAULT))

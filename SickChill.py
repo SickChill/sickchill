@@ -14,6 +14,7 @@ import traceback
 from operator import attrgetter
 from pathlib import Path
 from typing import List, Union
+import zipfile
 
 import sickchill.start
 
@@ -44,7 +45,7 @@ from sickchill.helper.argument_parser import SickChillArgumentParser
 from sickchill.oldbeard import db, name_cache, network_timezones
 from sickchill.oldbeard.event_queue import Events
 from sickchill.tv import TVShow
-from sickchill.update_manager import PipUpdateManager
+from sickchill.update_manager import PipUpdateManager, UpdateManager
 from sickchill.views.server_settings import SCWebServer
 
 # http://bugs.python.org/issue7980#msg221094
@@ -82,6 +83,7 @@ class SickChill:
         """
         Remove the Mako cache directory
         """
+        # noinspection PyBroadException
         try:
             cache_folder = os.path.join(settings.CACHE_DIR, "mako")
             if os.path.isdir(cache_folder):
@@ -113,13 +115,16 @@ class SickChill:
                 result = self.test_name(args.name, parser if parser != "all" else "")
                 results.append(result)
                 parser_name = parser or "all"
-                sys.stdout.write(f"{parser_name}: {result}\n")
+                self.log(f"{parser_name}: {result}")
             sys.exit(int(not any(results)))
 
         if args.no_update:
             settings.DISABLE_UPDATER = True
         elif args.force_update:
             result = self.force_update()
+            sys.exit(int(not result))  # Ok -> 0 , Error -> 1
+        elif args.install_file:
+            result = self.install_file(Path(args.install_file))
             sys.exit(int(not result))  # Ok -> 0 , Error -> 1
 
         settings.NO_RESIZE = args.noresize
@@ -130,8 +135,7 @@ class SickChill:
 
         # The pid file is only useful in daemon mode, make sure we can write the file properly
         if bool(args.pidfile) and not self.run_as_daemon:
-            if self.console_logging:
-                sys.stdout.write("Not running in daemon mode. PID file creation disabled.\n")
+            self.log("Not running in daemon mode. PID file creation disabled")
 
         settings.DATA_DIR = Path(args.datadir).resolve() if args.datadir else settings.DATA_DIR
         settings.CONFIG_FILE = str(Path(args.config).resolve() if args.config else settings.DATA_DIR.joinpath("config.ini"))
@@ -159,13 +163,39 @@ class SickChill:
         # Check if we need to perform a restore first
         restore_dir = os.path.join(settings.DATA_DIR, "restore")
         if os.path.exists(restore_dir):
+            self.log(f"Found restore directory {restore_dir}, restoring your backup!")
             success = self.restore_db(restore_dir, settings.DATA_DIR)
-            if self.console_logging:
-                sys.stdout.write("Restore: restoring DB and config.ini {}!\n".format(("FAILED", "SUCCESSFUL")[success]))
+            status = ("FAILED", "SUCCESSFUL")[success]
+            self.log(f"Restore: restoring DB and config.ini {status}!", not success)
+
+        upgrade_dir = Path(settings.DATA_DIR) / "force-install"
+        if upgrade_dir.is_dir():
+            upgrade_files = []
+            for upgrade_file in upgrade_dir.glob("sickchill-*-none-any.whl"):
+                if upgrade_file.is_file():
+                    upgrade_files.append(upgrade_file)
+
+            for upgrade_file in upgrade_dir.glob("Result.zip"):
+                if upgrade_file.is_file():
+                    upgrade_files.append(upgrade_file)
+
+            if upgrade_files:
+                # The only files in here are a wheel and/or a Result.zip
+                if len(list(upgrade_dir.iterdir())) == len(upgrade_files):
+                    self.log(f"Found force-install directory {upgrade_dir} with {upgrade_files[0].name}, processing")
+                    result = self.install_file(upgrade_files[0])
+                    self.log(f"Removing sickchill*.whl and Results.zip from force-install directory {upgrade_dir}")
+                    for file in upgrade_files:
+                        file.unlink()
+
+                    sys.exit(int(not result))  # Ok -> 0 , Error -> 1
+                else:
+                    self.log(f"Cannot process this upgrade directory, you have files that don't belong in it. Continuing with startup", 1)
+                    sys.exit(1)  # Ok -> 0 , Error -> 1
 
         # Load the config and publish it to the oldbeard package
-        if self.console_logging and not os.path.isfile(settings.CONFIG_FILE):
-            sys.stdout.write("Unable to find {}, all settings will be default!\n".format(settings.CONFIG_FILE))
+        if not os.path.isfile(settings.CONFIG_FILE):
+            self.log(f"Unable to find {settings.CONFIG_FILE}, all settings will be default!")
 
         settings.CFG = ConfigObj(settings.CONFIG_FILE, encoding="UTF-8", indent_type="  ")
 
@@ -278,6 +308,7 @@ class SickChill:
         :param dst_dir: Directory to restore to
         :return:
         """
+        # noinspection PyBroadException
         try:
             files_list = ["sickbeard.db", "sickchill.db", "config.ini", "failed.db", "cache.db"]
             for filename in files_list:
@@ -318,6 +349,7 @@ class SickChill:
                 logger.info("Shutting down Tornado")
                 self.web_server.shutdown()
 
+                # noinspection PyBroadException
                 try:
                     self.web_server.join(10)
                 except Exception:
@@ -345,30 +377,85 @@ class SickChill:
         logger.shutdown()
         os._exit(0)  # noqa
 
-    @staticmethod
-    def force_update():
+    def force_update(self):
         """
         Forces SickChill to update to the latest version and exit.
 
         :return: True if successful, False otherwise
         """
         if not check_installed():
-            print(
-                "Sickchill updater no longer works with git or source installs, as they are intended for developers only. If you are a developer, you know how to update..."
-            )
+            self.log("Sickchill updater no longer works with git or source installs", 1)
             return False
 
-        print("Forcing SickChill to update using pip...")
+        self.log("Forcing SickChill to update using pip...")
         if not PipUpdateManager().update():
-            print("Failed to force an update.")
+            self.log("Failed to force an update", 1)
             return False
 
-        print("Successfully updated to the latest pip release. You may now run SickChill normally.")
+        self.log("Successfully updated to the latest pip release. You may now run SickChill normally")
+        return True
+
+    def install_file(self, file: Path):
+        """
+        Installs a wheel file, potentially inside a zip file
+        :return: True if successful, False otherwise
+        """
+
+        if not check_installed():
+            self.log("Sickchill updater no longer works with git or source installs", 1)
+            return False
+
+        file = file.resolve()
+
+        if not file.is_file():
+            self.log(f"File to install was not found ({file})", 1)
+            return False
+
+        if file.name.endswith("zip"):
+            self.log("File passed with to install was a zip file, extracting the wheel from it")
+            if not zipfile.is_zipfile(file):
+                self.log("File passed to install is not a valid zip file", 1)
+                return False
+
+            try:
+                with zipfile.ZipFile(file) as zf:
+                    for filename in zf.namelist():
+                        if filename.endswith("whl"):
+                            extracted = zf.extract(filename, path=file.parent)
+                            file = Path(extracted).resolve()
+                            break
+            except zipfile.BadZipfile as error:
+                self.log(f"Error while extracting {file}: {error}", 1)
+                return False
+
+        updater = UpdateManager()
+        if not updater.updater:
+            self.log(f"Unable to install files, the updater is disabled", 1)
+            return False
+
+        self.log(f"Creating a backup of your database and config before installing {file.name}")
+        if updater.backup():
+            self.log(f"Installing the wheel {file.name}")
+            if not updater.updater.pip_install(file):
+                self.log(f"Failed to install {file.name}", 1)
+                return False
+        else:
+            self.log("Could not make a backup, not installing the file", 1)
+            return False
+
+        self.log("Successfully installed to the wheel. You may now run SickChill normally")
         return True
 
     @staticmethod
     def test_name(name: str, parse_method="") -> List[Union[ParseResult, None]]:
         return NameParser(parse_method=parse_method)._parse_string(name)
+
+    def log(self, message: str, error: Union[bool, int] = 0) -> None:
+        if self.console_logging:
+            if error > 0:
+                sys.stderr.write(f"{message}\n")
+            else:
+                sys.stdout.write(f"{message}\n")
 
 
 def main():

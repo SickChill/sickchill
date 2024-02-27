@@ -37,6 +37,10 @@ class SickChillArgumentParser:
             action="store_true",
             help="download the latest stable version and force an " "update (use when you're unable to do so using " "the web ui)",
         )
+        self.parser.add_argument(
+            "--install-file",
+            help="full path to a wheel (*.whl) or Result.zip from github actions artifact to install. This is for testing other versions of sickchill"
+        )
 
         self.parser.add_argument("--debug", action="store_true", default=False, help=SUPPRESS)
         self.parser.add_argument("--dbdebug", action="store_true", default=False, help=SUPPRESS)

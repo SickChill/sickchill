@@ -70,7 +70,7 @@ class PipUpdateManager(UpdateManagerBase):
         notifiers.notify_update(f"{self._newest_version}")
         return True
 
-    def pip_install(self, packages: Union[List[str], str]) -> bool:
+    def pip_install(self, packages: Union[List[str], str, Path]) -> bool:
         def subprocess_call(cmd_list):
             try:
                 process = subprocess.Popen(
@@ -131,6 +131,8 @@ class PipUpdateManager(UpdateManagerBase):
             cmd += packages
         elif isinstance(packages, str):
             cmd.append(packages)
+        elif isinstance(packages, Path):
+            cmd.append(str(packages.resolve()))
 
         logger.debug(f"pip args: {' '.join(cmd)}")
 
