@@ -39,7 +39,7 @@ class SickChillArgumentParser:
         )
         self.parser.add_argument(
             "--install-file",
-            help="full path to a wheel (*.whl) or Result.zip from github actions artifact to install. This is for testing other versions of sickchill"
+            help="full path to a wheel (*.whl) or Result.zip from github actions artifact to install. This is for testing other versions of sickchill",
         )
 
         self.parser.add_argument("--debug", action="store_true", default=False, help=SUPPRESS)

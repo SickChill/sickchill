@@ -11,10 +11,10 @@ import sys
 import threading
 import time
 import traceback
+import zipfile
 from operator import attrgetter
 from pathlib import Path
 from typing import List, Union
-import zipfile
 
 import sickchill.start
 
