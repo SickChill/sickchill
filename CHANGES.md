@@ -1,7 +1,13 @@
+### 2024.2.27
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.20.204434...2024.2.27)
+
+
 ### 2024.2.20.204434
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2024.2.20...2024.2.20.204434)
 
+* grunt
 
 ### 2024.2.20
 
