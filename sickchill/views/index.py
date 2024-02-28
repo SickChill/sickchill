@@ -7,6 +7,7 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from secrets import compare_digest
+from typing import Any
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
@@ -25,11 +26,10 @@ from .common import PageTemplate
 
 try:
     import jwt
-    from jwt.algorithms import RSAAlgorithm as jwt_algorithms_RSAAlgorithm
-
-    has_cryptography = True
-except Exception:
-    has_cryptography = False
+    from jwt.algorithms import RSAAlgorithm
+except (ImportError, Exception):
+    jwt = None
+    RSAAlgorithm = None
 
 
 class BaseHandler(RequestHandler):
@@ -109,21 +109,20 @@ class BaseHandler(RequestHandler):
             return True
 
         if settings.WEB_USERNAME and settings.WEB_PASSWORD:
+            # Logged into UI?
+            if self.get_signed_cookie("sickchill_user"):
+                return True
+
             # Authenticate using jwt for CF Access
             # NOTE: Setting a username and password is STILL required to protect poorly configured tunnels or firewalls
-            if settings.CF_AUTH_DOMAIN and settings.CF_POLICY_AUD and has_cryptography:
-                CERTS_URL = "{}/cdn-cgi/access/certs".format(settings.CF_AUTH_DOMAIN)
-                if "CF_Authorization" in self.request.cookies:
-                    jwk_set = helpers.getURL(CERTS_URL, returns="json")
-                    if jwk_set:
-                        for key_dict in jwk_set["keys"]:
-                            public_key = jwt_algorithms_RSAAlgorithm.from_jwk(json.dumps(key_dict))
-                            if jwt.decode(self.request.cookies["CF_Authorization"], key=public_key, audience=settings.CF_POLICY_AUD):
+            if settings.CF_AUTH_DOMAIN and settings.CF_POLICY_AUD and jwt:
+                token = self.request.cookies.get("CF_Authorization") or self.request.headers.get("Cf-Access-Jwt-Assertion")
+                if token:
+                    key_set = helpers.getURL(f"{settings.CF_AUTH_DOMAIN}/cdn-cgi/access/certs", returns="json")
+                    if key_set:
+                        for key in key_set["keys"]:
+                            if jwt.decode(token, key=RSAAlgorithm.from_jwk(key), audience=settings.CF_POLICY_AUD):
                                 return True
-
-            # Logged into UI?
-            if self.get_secure_cookie("sickchill_user"):
-                return True
 
             # Basic Auth at a minimum
             auth_header = self.request.headers.get("Authorization")
@@ -133,7 +132,6 @@ class BaseHandler(RequestHandler):
                 if compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD):
                     return True
                 return False
-
         else:
             # Local network
             # strip <scope id> / <zone id> (%value/if_name) from remote_ip IPv6 scoped literal IP Addresses (RFC 4007) until phihag/ipaddress is updated tracking cpython 3.9.
@@ -149,11 +147,8 @@ class WebHandler(BaseHandler):
         self.executor = ThreadPoolExecutor(thread_name_prefix="WEBSERVER-" + self.__class__.__name__.upper())
 
     @authenticated
-    async def get(self, route, *args, **kwargs):
+    async def get(self, route, *_args, **_kwargs):
         try:
-            # logger.debug(f"Call for {route} with {args} and {kwargs}")
-            # logger.debug(f"Call for {route} with args [{self.request.arguments}]")
-
             # route -> method obj
             route = route.strip("/").replace(".", "_").replace("-", "_") or "index"
             # logger.debug(f"Route: {route}")
@@ -163,7 +158,7 @@ class WebHandler(BaseHandler):
                 message = ("404", "Could not find the page you requested")
                 ui.notifications.error(*message)
                 logger.info(", ".join(message))
-                helpers.add_site_message(", ".join(message), tag=message[0], level="danger")
+                helpers.add_site_message(", ".join(message), tag=message[0])
                 return self.redirect("/home/")
 
             from inspect import signature
@@ -174,17 +169,15 @@ class WebHandler(BaseHandler):
                     logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
             results = await self.async_call(method, len(sig.parameters))
-
             try:
                 await self.finish(results)
             except Exception as e:
-                if settings.DEVELOPER:
+                if 0:
                     logger.debug(f"self.finish exception {e}, result {results}")
                 else:
                     logger.debug(f"self.finish exception {e}")
-
         except AttributeError:
-            logger.debug('Failed doing webui request "{0}": {1}'.format(route, traceback.format_exc()))
+            logger.debug(f"Failed doing webui request '{route}'", exc_info=True)
             raise HTTPError(404)
 
     @run_on_executor
@@ -198,24 +191,24 @@ class WebHandler(BaseHandler):
                 return function()
 
             if self.request.method == "POST":
-                get_argument = self.get_body_argument
-                get_arguments = self.get_body_arguments
+                method_argument = self.get_body_argument
+                method_arguments = self.get_body_arguments
             elif self.request.method == "GET":
-                get_argument = self.get_query_argument
-                get_arguments = self.get_query_arguments
+                method_argument = self.get_query_argument
+                method_arguments = self.get_query_arguments
             else:
-                get_argument = self.get_argument
-                get_arguments = self.get_arguments
+                method_argument = self.get_argument
+                method_arguments = self.get_arguments
 
             kwargs = {}
             for arg, value in self.request.arguments.items():
                 if isinstance(value, str):
-                    kwargs[arg] = get_argument(arg)
+                    kwargs[arg] = method_argument(arg)
                 elif isinstance(value, list):
                     if len(value) == 1:
-                        kwargs[arg] = get_argument(arg)
+                        kwargs[arg] = method_argument(arg)
                     else:
-                        kwargs[arg] = get_arguments(arg)
+                        kwargs[arg] = method_arguments(arg)
                 else:
                     raise Exception
             return function(**kwargs)
@@ -231,8 +224,7 @@ class WebHandler(BaseHandler):
 @Route("(.*)(/?)", name="index")
 class WebRoot(WebHandler):
     def print_traceback(self, error, *args, **kwargs):
-        logger.info(f"A mako error occurred: {error}")
-        logger.debug(traceback.format_exc())
+        logger.info(f"A mako error occurred: {error}", stack_info=True, exc_info=True)
         logger.debug(f"args: {args}, kwargs: {kwargs}")
         t = PageTemplate(rh=self, filename="500.mako")
         kwargs["backtrace"] = RichTraceback(error=error)
@@ -251,7 +243,7 @@ class WebRoot(WebHandler):
 
         episodes = {}
 
-        results = main_db_con.select("SELECT episode, season, showid " "FROM tv_episodes " "ORDER BY season ASC, episode ASC")
+        results = main_db_con.select("SELECT episode, season, showid " "FROM tv_episodes " "ORDER BY season, episode")
 
         for result in results:
             if result["showid"] not in episodes:
@@ -428,7 +420,7 @@ class UI(WebRoot):
         else:
             if self.get_current_user() and not (check_installed() or settings.DEVELOPER):
                 message = _("SickChill no longer is supported unless installed with pip or poetry. Source and git installs are for experienced users only")
-                helpers.add_site_message(message, tag="not_installed", level="danger")
+                helpers.add_site_message(message, tag="not_installed")
 
         return settings.SITE_MESSAGES
 
@@ -452,6 +444,6 @@ class UI(WebRoot):
     def custom_css(self):
         if settings.CUSTOM_CSS_PATH and os.path.isfile(settings.CUSTOM_CSS_PATH):
             self.set_header("Content-Type", "text/css")
-            with open(settings.CUSTOM_CSS_PATH, "r") as content:
+            with open(settings.CUSTOM_CSS_PATH) as content:
                 return content.read()
         return None

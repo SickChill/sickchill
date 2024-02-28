@@ -2,6 +2,7 @@ import datetime
 import os.path
 import platform
 import re
+from pathlib import Path
 from urllib import parse
 
 import rarfile
@@ -300,7 +301,9 @@ def change_unpack_dir(unpack_dir):
         return True
 
     if os.path.normpath(settings.UNPACK_DIR) != os.path.normpath(unpack_dir):
-        if bool(settings.ROOT_DIRS) and any(helpers.is_subdirectory(unpack_dir, rd) for rd in settings.ROOT_DIRS.split("|")[1:]):
+        if settings.ROOT_DIRS and any(
+            Path(root_directory).resolve() in Path(unpack_dir).resolve().parents for root_directory in settings.ROOT_DIRS.split("|")[1:]
+        ):
             # don't change if it's in any of the TV root directories
             logger.info("Unable to change unpack directory to a sub-directory of a TV root dir")
             return False

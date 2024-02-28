@@ -67,13 +67,6 @@ class SCWebServer(threading.Thread):
 
         self.server = None
 
-        # video root
-        if settings.ROOT_DIRS:
-            root_dirs = settings.ROOT_DIRS.split("|")
-            self.video_root = root_dirs[int(root_dirs[0])]
-        else:
-            self.video_root = None
-
         # web root
         if self.options["web_root"]:
             settings.WEB_ROOT = self.options["web_root"] = "/" + self.options["web_root"].strip("/")
@@ -154,9 +147,6 @@ class SCWebServer(threading.Thread):
                     {"path": os.path.join(self.options["data_root"], "fonts")},
                     name="fonts",
                 ),
-                # TODO: WTF is this?
-                # url(rf'{self.options["web_root"]}/videos/(.*)', SickChillStaticFileHandler,
-                #     {"path": self.video_root}, name='videos')
             ],
         )
 

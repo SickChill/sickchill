@@ -1,3 +1,5 @@
+from typing import Union
+
 from .handler import ShowIndexer
 
-indexer = None
+indexer: Union[ShowIndexer, None] = None
