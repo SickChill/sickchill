@@ -33,8 +33,6 @@ Public Methods:
     full_sanitizeSceneName
     get_show
     is_hidden_folder
-    real_path
-    is_subdirectory
     set_up_anidb_connection
     makeZip
     extractZip
@@ -252,20 +250,6 @@ class HelpersDirectoryTests(unittest.TestCase):
         Test is_hidden_folder
         """
         pass
-
-    def test_real_path(self):
-        """
-        Test real_path
-        """
-        assert helpers.real_path("/usr/SickChill/../root/real/path/") == helpers.real_path("/usr/root/real/path/")
-
-    def test_is_subdirectory(self):
-        """
-        Test is_subdirectory
-        """
-        assert helpers.is_subdirectory(subdir_path="/usr/SickChill/Downloads/Unpack", topdir_path="/usr/SickChill/Downloads")
-        assert helpers.is_subdirectory(subdir_path="/usr/SickChill/Downloads/testfile.tst", topdir_path="/usr/SickChill/Downloads/")
-        assert not helpers.is_subdirectory(subdir_path="/usr/SickChill/Unpack", topdir_path="/usr/SickChill/Downloads")
 
 
 class HelpersFileTests(unittest.TestCase):

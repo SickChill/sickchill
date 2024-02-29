@@ -589,38 +589,24 @@ def _map_quality(show_quality):
 
 
 def _get_root_dirs():
-    if settings.ROOT_DIRS == "":
+    if not settings.ROOT_DIRS:
         return {}
 
-    root_dir = {}
     root_dirs = settings.ROOT_DIRS.split("|")
-    default_index = int(settings.ROOT_DIRS.split("|")[0])
 
-    root_dir["default_index"] = int(settings.ROOT_DIRS.split("|")[0])
-    # remove default_index value from list (this fixes the offset)
-    root_dirs.pop(0)
-
-    if len(root_dirs) < default_index:
+    try:
+        default_index = int(root_dirs[0])
+    except ValueError:
         return {}
 
-    # clean up the list - replace %xx escapes by their single-character equivalent
-    root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
+    if default_index > len(root_dirs) - 1:
+        return {}
 
     default_dir = root_dirs[default_index]
 
     dir_list = []
-    for root_dir in root_dirs:
-        valid = 1
-        # noinspection PyBroadException
-        try:
-            os.listdir(root_dir)
-        except Exception:
-            valid = 0
-        default = 0
-        if root_dir is default_dir:
-            default = 1
-
-        cur_dir = {"valid": valid, "location": root_dir, "default": default}
+    for root_dir in root_dirs[1:]:
+        cur_dir = {"valid": int(Path(root_dir).resolve().is_dir()), "location": root_dir, "default": int(root_dir is default_dir)}
         dir_list.append(cur_dir)
 
     return dir_list
@@ -1428,42 +1414,24 @@ class CMDSickChillAddRootDir(ApiCall):
         """Add a new root (parent) directory to SickChill"""
 
         self.location = urllib.parse.unquote_plus(self.location)
-        location_matched = 0
-        index = 0
 
         # disallow adding/setting an invalid dir
-        if not os.path.isdir(self.location):
+        if not Path(self.location).is_dir():
             return _responds(RESULT_FAILURE, msg="Location is invalid")
 
-        root_dirs = []
-
-        if settings.ROOT_DIRS == "":
+        if not settings.ROOT_DIRS:
             self.default = 1
+            root_dirs = []
         else:
             root_dirs = settings.ROOT_DIRS.split("|")
-            index = int(settings.ROOT_DIRS.split("|")[0])
-            root_dirs.pop(0)
-            # clean up the list - replace %xx escapes by their single-character equivalent
-            root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
-            for x in root_dirs:
-                if x == self.location:
-                    location_matched = 1
-                    if self.default == 1:
-                        index = root_dirs.index(self.location)
-                    break
 
-        if location_matched == 0:
-            if self.default == 1:
-                root_dirs.insert(0, self.location)
-            else:
-                root_dirs.append(self.location)
+        if not self.location.lower() in [root_dir.lower() for root_dir in root_dirs[1:]]:
+            root_dirs.append(self.location)
 
-        root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs]
-        root_dirs_new.insert(0, str(index))
-        # noinspection PyCompatibility
-        root_dirs_new = "|".join(str(x) for x in root_dirs_new)
+        if self.default:
+            root_dirs[0] = [root_dir.lower() for root_dir in root_dirs[1:]].index(self.location.lower())
 
-        settings.ROOT_DIRS = root_dirs_new
+        settings.ROOT_DIRS = "|".join(f"{root_dir}" for root_dir in root_dirs)
         return _responds(RESULT_SUCCESS, _get_root_dirs(), msg="Root directories updated")
 
 
@@ -1477,10 +1445,10 @@ class CMDSickChillCheckVersion(ApiCall):
 
         data = {
             "current_version": {
-                "version": update_manager.get_current_version(),
+                "version": str(update_manager.get_current_version()),
             },
             "latest_version": {
-                "version": update_manager.get_newest_version(),
+                "version": str(update_manager.get_newest_version()),
             },
             "version_delta": update_manager.get_version_delta(),
             "needs_update": needs_update,
@@ -1557,36 +1525,27 @@ class CMDSickChillDeleteRootDir(ApiCall):
 
     def run(self):
         """Delete a root (parent) directory from SickChill"""
-        if settings.ROOT_DIRS == "":
+        if not settings.ROOT_DIRS:
             return _responds(RESULT_FAILURE, _get_root_dirs(), msg="No root directories detected")
 
-        new_index = 0
-        root_dirs_new = []
         root_dirs = settings.ROOT_DIRS.split("|")
-        index = int(root_dirs[0])
-        root_dirs.pop(0)
-        # clean up the list - replace %xx escapes by their single-character equivalent
-        root_dirs = [urllib.parse.unquote_plus(x) for x in root_dirs]
-        old_root_dir = root_dirs[index]
-        for curRootDir in root_dirs:
-            if not curRootDir == self.location:
-                root_dirs_new.append(curRootDir)
-            else:
-                new_index = 0
 
-        for curIndex, curNewRootDir in enumerate(root_dirs_new):
-            if curNewRootDir is old_root_dir:
-                new_index = curIndex
-                break
+        self.location = urllib.parse.unquote_plus(self.location)
 
-        root_dirs_new = [urllib.parse.unquote_plus(x) for x in root_dirs_new]
-        if root_dirs_new:
-            root_dirs_new.insert(0, str(new_index))
-        # noinspection PyCompatibility
-        root_dirs_new = "|".join(str(x) for x in root_dirs_new)
+        if self.location.lower() not in [root_dir.lower() for root_dir in root_dirs[1:]]:
+            return _responds(RESULT_FAILURE, _get_root_dirs(), msg="Root directory was not found, not changed")
 
-        settings.ROOT_DIRS = root_dirs_new
-        # what if the root dir was not found?
+        index = [root_dir.lower() for root_dir in root_dirs[1:]].index(self.location.lower())
+
+        root_dirs.pop(index)
+
+        if len(root_dirs) < 2:
+            root_dirs = []
+        elif root_dirs[0] == str(index):
+            root_dirs[0] = 1
+
+        settings.ROOT_DIRS = "|".join(f"{root_dir}" for root_dir in root_dirs)
+
         return _responds(RESULT_SUCCESS, _get_root_dirs(), msg="Root directory deleted")
 
 
@@ -2080,15 +2039,17 @@ class CMDShowAddNew(ApiCall):
             return _responds(RESULT_FAILURE, msg="An existing indexerid already exists in database")
 
         if not self.location:
-            if settings.ROOT_DIRS != "":
+            if settings.ROOT_DIRS:
                 root_dirs = settings.ROOT_DIRS.split("|")
-                root_dirs.pop(0)
-                default_index = int(settings.ROOT_DIRS.split("|")[0])
+                default_index = int(root_dirs[0])
+                if default_index > len(root_dirs) - 1:
+                    return _responds(RESULT_FAILURE, msg="Default root directory is not set, please provide a location")
+
                 self.location = root_dirs[default_index]
             else:
                 return _responds(RESULT_FAILURE, msg="Root directory is not set, please provide a location")
 
-        if not os.path.isdir(self.location):
+        if not Path(self.location).is_dir():
             return _responds(RESULT_FAILURE, msg="'" + self.location + "' is not a valid location")
 
         # use default quality as a fail-safe

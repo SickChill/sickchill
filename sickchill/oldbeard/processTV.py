@@ -36,30 +36,31 @@ def delete_folder(folder, check_empty=True):
     return: True on success, False on failure
     """
 
+    folder = Path(folder).resolve()
     # check if it's a folder
-    if not os.path.isdir(folder):
+    if not folder.is_dir():
         return False
 
     # check if it isn't TV_DOWNLOAD_DIR
-    if settings.TV_DOWNLOAD_DIR and helpers.real_path(folder) == helpers.real_path(settings.TV_DOWNLOAD_DIR):
+    if settings.TV_DOWNLOAD_DIR and str(Path(folder).resolve()) == str(Path(settings.TV_DOWNLOAD_DIR).resolve()):
         return False
 
     # check if it's empty folder when wanted to be checked
     if check_empty:
-        check_files = os.listdir(folder)
-        if check_files:
-            logger.info(f"Not deleting folder {folder} found the following files: {check_files}")
+        found_files = [file for file in folder.iterdir()]
+        if found_files:
+            logger.info(f"Not deleting folder {folder} found the following files: {found_files}")
             return False
 
         try:
             logger.info(f"Deleting folder (if it's empty): {folder}")
-            os.rmdir(folder)
+            folder.rmdir()
         except (OSError, IOError) as error:
             logger.warning(f"Warning: unable to delete folder: {folder}: {error}")
             return False
     else:
         try:
-            logger.info("Deleting folder: " + folder)
+            logger.info(f"Deleting folder: {folder}")
             shutil.rmtree(folder)
         except (OSError, IOError) as error:
             logger.warning(f"Warning: unable to delete folder: {folder}: {error}")
@@ -82,27 +83,28 @@ def delete_files(process_path, unwanted_files, result, force=False):
     elif not result.result:
         return
 
+    process_path = Path(process_path)
     # Delete all file not needed
-    for cur_file in unwanted_files:
-        cur_file_path = os.path.join(process_path, cur_file)
-        if not os.path.isfile(cur_file_path):
+    for current_file in unwanted_files:
+        file_path = process_path / current_file
+        if not file_path.is_file():
             continue  # Prevent error when a notwantedfiles is an associated files
 
-        result.output += log_helper(f"Deleting file: {cur_file}", logger.DEBUG)
+        result.output += log_helper(f"Deleting file: {current_file}", logger.DEBUG)
 
         # check first the read-only attribute
-        file_attribute = os.stat(cur_file_path)[0]
+        file_attribute = file_path.stat()[0]
         if not file_attribute & stat.S_IWRITE:
             # File is read-only, so make it writeable
-            result.output += log_helper(f"Changing ReadOnly Flag for file: {cur_file}", logger.DEBUG)
+            result.output += log_helper(f"Changing ReadOnly Flag for file: {current_file}", logger.DEBUG)
             try:
-                os.chmod(cur_file_path, stat.S_IWRITE)
+                file_path.chmod(stat.S_IWRITE)
             except OSError as error:
-                result.output += log_helper(f"Cannot change permissions of {cur_file_path}: {error}", logger.DEBUG)
+                result.output += log_helper(f"Cannot change permissions of {current_file}: {error}", logger.DEBUG)
         try:
-            os.remove(cur_file_path)
+            file_path.unlink(True)
         except OSError as error:
-            result.output += log_helper(f"Unable to delete file {cur_file}: {error}", logger.DEBUG)
+            result.output += log_helper(f"Unable to delete file {current_file}: {error}", logger.DEBUG)
 
 
 def log_helper(message, level=logging.INFO):
@@ -132,13 +134,17 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
 
         # if the client and SickChill are not on the same machine translate the directory into a network directory
         elif all(
-            [settings.TV_DOWNLOAD_DIR, os.path.isdir(settings.TV_DOWNLOAD_DIR), os.path.normpath(process_path) == os.path.normpath(settings.TV_DOWNLOAD_DIR)]
+            [
+                settings.TV_DOWNLOAD_DIR,
+                Path(settings.TV_DOWNLOAD_DIR).is_dir(),
+                str(Path(process_path).resolve()) == str(Path(settings.TV_DOWNLOAD_DIR).resolve()),
+            ]
         ):
             process_path = os.path.join(settings.TV_DOWNLOAD_DIR, os.path.abspath(process_path).split(os.path.sep)[-1])
             result.output += log_helper(f"Trying to use folder: {process_path} ", logger.DEBUG)
 
         # if we didn't find a real dir then quit
-        if not os.path.isdir(process_path):
+        if not Path(process_path).is_dir():
             result.output += log_helper(
                 "Unable to figure out what folder to process. "
                 "If your downloader and SickChill aren't on the same PC "
@@ -161,6 +167,8 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         else:
             result.output += log_helper(_("Processing {process_path}").format(process_path=process_path))
             generator_to_use = os.walk(process_path, followlinks=settings.PROCESSOR_FOLLOW_SYMLINKS)
+
+        rar_files = []
 
         for current_directory, directory_names, filenames in generator_to_use:
             result.result = True
@@ -273,7 +281,11 @@ def validate_dir(process_path, release_name, failed, result):
         result.missed_files.append(f"{process_path} : Failed download")
         return False
 
-    if settings.TV_DOWNLOAD_DIR and helpers.real_path(process_path) != helpers.real_path(settings.TV_DOWNLOAD_DIR) and helpers.is_hidden_folder(process_path):
+    if (
+        settings.TV_DOWNLOAD_DIR
+        and str(Path(process_path).resolve()) != str(Path(settings.TV_DOWNLOAD_DIR).resolve())
+        and helpers.is_hidden_folder(process_path)
+    ):
         result.output += log_helper(f"Ignoring hidden folder: {process_path}", logger.DEBUG)
         if not process_path.endswith("@eaDir"):
             result.missed_files.append(f"{process_path} : Hidden folder")

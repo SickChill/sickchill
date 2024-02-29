@@ -1236,7 +1236,7 @@ def save_config():
                 "metadata_mede8er": settings.METADATA_MEDE8ER,
                 "backlog_days": int(settings.BACKLOG_DAYS),
                 "backlog_missing_only": int(settings.BACKLOG_MISSING_ONLY),
-                "root_dirs": settings.ROOT_DIRS if settings.ROOT_DIRS else "",
+                "root_dirs": settings.ROOT_DIRS or "",
                 "tv_download_dir": settings.TV_DOWNLOAD_DIR,
                 "keep_processed_dir": int(settings.KEEP_PROCESSED_DIR),
                 "process_method": settings.PROCESS_METHOD,

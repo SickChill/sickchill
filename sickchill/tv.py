@@ -880,7 +880,11 @@ class TVShow(object):
 
         if not self.imdb_id:
             # TODO: Load tvmaze/tvdb info into other imdb_info fields
-            self.imdb_id = helpers.imdb_from_tvdbid_on_tvmaze(self.indexerid)
+            # noinspection PyBroadException
+            try:
+                self.imdb_id = helpers.imdb_from_tvdbid_on_tvmaze(self.indexerid)
+            except Exception:
+                self.imdb_id = None
 
         try:
             client = Cinemagoer()
@@ -941,6 +945,8 @@ class TVShow(object):
 
             logger.debug(f"{self.indexerid}: Loading show info from IMDb")
             imdb_title: dict = client.get_movie(self.imdb_id.strip("t"))
+            if not imdb_title:
+                return
 
             self.imdb_info = {
                 "indexer_id": self.indexerid,
@@ -959,6 +965,8 @@ class TVShow(object):
             }
 
             logger.debug(f"{self.indexerid}: Obtained info from IMDb ->{self.imdb_info}")
+        except KeyError:
+            logger.info(f"Could not get IMDB info for {self.name}")
         except (
             TypeError,
             ValueError,

@@ -420,7 +420,7 @@ class TraktChecker(object):
             root_dirs = settings.ROOT_DIRS.split("|")
 
             try:
-                location = root_dirs[int(root_dirs[0]) + 1]
+                location = root_dirs[int(root_dirs[0])]
             except Exception:
                 location = None
 

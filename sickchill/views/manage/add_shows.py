@@ -65,7 +65,7 @@ class AddShows(Home):
 
         # Query Indexers for each search term and build the list of results
         for index, indexer_object in sickchill.indexer:
-            if int(indexer) and int(indexer) != index:
+            if indexer and indexer != index:
                 continue
 
             logger.debug(
@@ -89,9 +89,9 @@ class AddShows(Home):
             final_results.extend(
                 {
                     (
-                        sickchill.indexer.name(index),
+                        sickchill.indexer[index].name,
                         index,
-                        indexer_object.show_url,
+                        sickchill.indexer[index].show_url,
                         show["id"],
                         show["seriesName"],
                         show["firstAired"],
@@ -108,7 +108,7 @@ class AddShows(Home):
             final_results.sort(key=lambda x: x[4].lower().index(search_term.lower()))
             final_results.sort(key=lambda x: x[4].lower() == search_term.lower(), reverse=True)
 
-        lang_id = sickchill.indexer.lang_dict()[lang]
+        lang_id = sickchill.indexer[indexer].lang_dict()[lang]
         return json.dumps({"results": final_results, "langid": lang_id, "success": len(final_results) > 0})
 
     def massAddTable(self):
@@ -116,17 +116,6 @@ class AddShows(Home):
         root_dirs = self.get_arguments("rootDir")
         if not root_dirs:
             return _("No folders selected.")
-
-        if settings.ROOT_DIRS:
-            default_index = int(settings.ROOT_DIRS.split("|")[0])
-        else:
-            default_index = 0
-
-        if len(root_dirs) > default_index:
-            tmp = root_dirs[default_index]
-            if tmp in root_dirs:
-                root_dirs.remove(tmp)
-                root_dirs.insert(0, tmp)
 
         dir_list = []
 
@@ -145,6 +134,7 @@ class AddShows(Home):
                     if not os.path.isdir(cur_path):
                         continue
                     # ignore Synology folders
+                    # noinspection SpellCheckingInspection
                     if cur_file.lower() in ["#recycle", "@eadir"]:
                         continue
                 except Exception:
@@ -156,13 +146,9 @@ class AddShows(Home):
                     "display_dir": "<b>" + os.path.dirname(cur_path) + os.sep + "</b>" + os.path.basename(cur_path),
                 }
 
-                # see if the folder is in KODI already
                 dir_results = main_db_con.select("SELECT indexer_id FROM tv_shows WHERE location = ? LIMIT 1", [cur_path])
 
-                if dir_results:
-                    cur_dir["added_already"] = True
-                else:
-                    cur_dir["added_already"] = False
+                cur_dir["added_already"] = bool(dir_results)
 
                 dir_list.append(cur_dir)
 
@@ -241,6 +227,7 @@ class AddShows(Home):
 
         trakt_list = self.get_query_argument("traktList", default="anticipated").lower()
 
+        # noinspection SpellCheckingInspection
         trakt_options = {
             "anticipated": _("Most Anticipated Shows"),
             "newshow": _("New Shows"),
@@ -272,6 +259,7 @@ class AddShows(Home):
 
         trakt_list = self.get_query_argument("traktList", "").lower()
 
+        # noinspection SpellCheckingInspection
         if trakt_list == "trending":
             page_url = "shows/trending"
         elif trakt_list == "popular":
@@ -303,12 +291,12 @@ class AddShows(Home):
         return t.render(black_list=black_list, trending_shows=trending_shows)
 
     def getTrendingShowImage(self):
-        indexerId = self.get_body_argument("indexerId")
-        image_url = sickchill.indexer.series_poster_url_by_id(indexerId)
+        indexer_id = self.get_body_argument("indexerId")
+        image_url = sickchill.indexer.series_poster_url_by_id(indexer_id)
         if image_url:
-            image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexerId))
+            image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexer_id))
             trakt_trending.cache_image(image_url, image_path)
-            return indexerId
+            return indexer_id
 
     def popularShows(self):
         """
@@ -405,12 +393,12 @@ class AddShows(Home):
         show_name = self.get_query_argument("show_name")
         indexer = self.get_query_argument("indexer", default="TVDB")
 
-        def add_error(existing: TVShow = None) -> None:
+        def add_error(in_list: TVShow = None) -> None:
             title = f"Unable to add {show_name}"
 
             message = f"Could not add {show_name} with {indexer}:{indexer_id}. We were unable to locate the tvdb id at this time."
-            if existing:
-                message = f"{existing.name} with {existing.indexerid} is already in your show list."
+            if in_list:
+                message = f"{in_list.name} with {in_list.indexerid} is already in your show list."
 
             logger.info(" ".join([title, message]))
             ui.notifications.error(title, message)
@@ -430,8 +418,6 @@ class AddShows(Home):
 
     def addNewShow(
         self,
-        whichSeries=None,
-        indexerLang=None,
         rootDir=None,
         defaultStatus=None,
         quality_preset=None,
@@ -440,26 +426,25 @@ class AddShows(Home):
         season_folders=None,
         subtitles=None,
         subtitles_sc_metadata=None,
-        fullShowPath=None,
         other_shows=None,
         skipShow=None,
-        providedIndexer=None,
         anime=None,
         scene=None,
-        blacklist=[],
-        whitelist=[],
+        blacklist=None,
+        whitelist=None,
         defaultStatusAfter=None,
+        **_kwargs,
     ):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
         """
 
-        indexerLang = self.get_body_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE)
+        indexer_language = self.get_body_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE)
 
         # grab our list of other dirs if given
         other_shows = self.get_arguments("other_shows")
-        fullShowPath = self.get_argument("fullShowPath", default=None)
+        full_show_path = self.get_argument("fullShowPath", default=None)
 
         def finishAddShow():
             # if there are no extra shows then go home
@@ -477,17 +462,17 @@ class AddShows(Home):
         if skipShow:
             return finishAddShow()
         else:
-            whichSeries = self.get_argument("whichSeries")
+            which_series = self.get_argument("whichSeries")
 
         # sanity check on our inputs
-        if (not rootDir and not fullShowPath) or not whichSeries:
+        if (not rootDir and not full_show_path) or not which_series:
             return _("Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}").format(
-                show_to_add=whichSeries, root_dir=rootDir, show_path=fullShowPath
+                show_to_add=which_series, root_dir=rootDir, show_path=full_show_path
             )
 
         # figure out what show we're adding and where
-        series_pieces = whichSeries.split("|")
-        if (whichSeries and rootDir) or (whichSeries and fullShowPath and len(series_pieces) > 1):
+        series_pieces = which_series.split("|")
+        if (which_series and rootDir) or (which_series and full_show_path and len(series_pieces) > 1):
             if len(series_pieces) < 6:
                 logger.error("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))))
                 ui.notifications.error(_("Unknown error. Unable to add show due to problem with show selection."))
@@ -500,16 +485,16 @@ class AddShows(Home):
         else:
             # if no indexer was provided use the default indexer set in General settings
             indexer = int(self.get_argument("providedIndexer", default=settings.INDEXER_DEFAULT))
-            indexer_id = int(whichSeries)
-            show_name = os.path.basename(os.path.normpath(fullShowPath))
+            indexer_id = int(which_series)
+            show_name = os.path.basename(os.path.normpath(full_show_path))
 
         # use the whole path if it's given, or else append the show name to the root dir to get the full show path
-        if fullShowPath:
-            show_dir = os.path.normpath(fullShowPath)
+        if full_show_path:
+            show_dir = os.path.normpath(full_show_path)
             extra_check_dir = show_dir
         else:
             folder_name = show_name
-            s = sickchill.indexer.series_by_id(indexerid=indexer_id, indexer=indexer, language=indexerLang)
+            s = sickchill.indexer.series_by_id(indexerid=indexer_id, indexer=indexer, language=indexer_language)
             if settings.ADD_SHOWS_WITH_YEAR and s.firstAired:
                 try:
                     year = "({0})".format(dateutil.parser.parse(s.firstAired).year)
@@ -521,18 +506,18 @@ class AddShows(Home):
             show_dir = os.path.join(rootDir, sanitize_filename(folder_name))
             extra_check_dir = os.path.join(rootDir, sanitize_filename(show_name))
 
-        # blanket policy - if the dir exists you should have used "add existing show" numbnuts
-        if (os.path.isdir(show_dir) or os.path.isdir(extra_check_dir)) and not fullShowPath:
+        # blanket policy - if the dir exists you should have used "add existing show"
+        if (os.path.isdir(show_dir) or os.path.isdir(extra_check_dir)) and not full_show_path:
             ui.notifications.error(_("Unable to add show"), _("Folder {show_dir} exists already").format(show_dir=show_dir))
             return self.redirect("/addShows/existingShows/")
 
         # don't create show dir if config says not to
         if settings.ADD_SHOWS_WO_DIR:
-            logger.info("Skipping initial creation of " + show_dir + " due to config.ini setting")
+            logger.info(f"Skipping initial creation of {show_dir} due to config.ini setting")
         else:
             dir_exists = helpers.makeDir(show_dir)
             if not dir_exists:
-                logger.exception("Unable to create the folder " + show_dir + ", can't add the show")
+                logger.exception(f"Unable to create the folder {show_dir}, can't add the show")
                 ui.notifications.error(_("Unable to add show"), _("Unable to create the folder {show_dir}, can't add the show").format(show_dir=show_dir))
                 # Don't redirect to default page because user wants to see the new show
                 return self.redirect("/home/")
@@ -548,8 +533,12 @@ class AddShows(Home):
 
         if whitelist:
             whitelist = short_group_names(whitelist)
+        else:
+            whitelist = []
         if blacklist:
             blacklist = short_group_names(blacklist)
+        else:
+            blacklist = []
 
         if not anyQualities:
             anyQualities = []
@@ -569,7 +558,7 @@ class AddShows(Home):
             default_status=int(defaultStatus),
             quality=newQuality,
             season_folders=season_folders,
-            lang=indexerLang,
+            lang=indexer_language,
             subtitles=subtitles,
             subtitles_sc_metadata=subtitles_sc_metadata,
             anime=anime,

@@ -72,16 +72,13 @@ class Home(WebRoot):
 
     def index(self):
         t = PageTemplate(rh=self, filename="home.mako")
-        selected_root = self.get_body_argument("root", None)
+        selected_root = self.get_body_argument("root", "")
 
         if selected_root and settings.ROOT_DIRS:
-            backend_pieces = settings.ROOT_DIRS.split("|")
-            backend_dirs = backend_pieces[1:]
+            backend_dirs = settings.ROOT_DIRS.split("|")[1:]
             try:
                 assert selected_root != "-1"
                 selected_root_dir = backend_dirs[int(selected_root)]
-                if selected_root_dir[-1] not in ("/", "\\"):
-                    selected_root_dir += os.sep
             except (IndexError, ValueError, TypeError, AssertionError):
                 selected_root_dir = ""
         else:
@@ -90,7 +87,7 @@ class Home(WebRoot):
         shows = []
         anime = []
         for show in settings.show_list:
-            if selected_root_dir in show.get_location:
+            if show.get_location.startswith(selected_root_dir):
                 if settings.ANIME_SPLIT_HOME and show.is_anime:
                     anime.append(show)
                 else:
@@ -112,7 +109,7 @@ class Home(WebRoot):
     def filter(self):
         t = PageTemplate(rh=self, filename="home.mako")
 
-        selected_root = self.get_body_argument("root", None)
+        selected_root = self.get_body_argument("root", "")
         page = try_int(self.get_argument("p", default="0"))
         limit = try_int(self.get_argument("limit", default=None))
         kind = self.get_argument("type", "all")
@@ -121,13 +118,10 @@ class Home(WebRoot):
             kind = "all"
 
         if selected_root and settings.ROOT_DIRS:
-            backend_pieces = settings.ROOT_DIRS.split("|")
-            backend_dirs = backend_pieces[1:]
+            backend_dirs = settings.ROOT_DIRS.split("|")[1:]
             try:
                 assert selected_root != "-1"
                 selected_root_dir = backend_dirs[int(selected_root)]
-                if selected_root_dir[-1] not in ("/", "\\"):
-                    selected_root_dir += os.sep
             except (IndexError, ValueError, TypeError, AssertionError):
                 selected_root_dir = ""
         else:
@@ -136,7 +130,7 @@ class Home(WebRoot):
         shows_to_show = []
         skipped = 0
         for show in settings.show_list:
-            if selected_root_dir and selected_root_dir not in show.get_location:
+            if not show.get_location.startswith(selected_root_dir):
                 continue
 
             if kind == "anime" and not show.is_anime:
@@ -744,8 +738,7 @@ class Home(WebRoot):
         root_dir = {}
 
         if settings.ROOT_DIRS:
-            backend_pieces = settings.ROOT_DIRS.split("|")
-            backend_dirs = backend_pieces[1:]
+            backend_dirs = settings.ROOT_DIRS.split("|")[1:]
         else:
             backend_dirs = []
 
@@ -1496,7 +1489,7 @@ class Home(WebRoot):
     def setStatus(self, direct=False):
         if direct is True:
             # noinspection PyUnresolvedReferences
-            show = self.to_change_showa
+            show = self.to_change_show
             # noinspection PyUnresolvedReferences
             eps = self.to_change_eps
             status = self.get_body_argument("newStatus")
