@@ -1539,8 +1539,10 @@ class CMDSickChillDeleteRootDir(ApiCall):
 
         root_dirs.pop(index)
 
-        if str(index) == root_dirs[0]:
-            root_dirs[0] = 0
+        if len(root_dirs) < 2:
+            root_dirs = []
+        elif root_dirs[0] == str(index):
+            root_dirs[0] = 1
 
         settings.ROOT_DIRS = "|".join(f"{root_dir}" for root_dir in root_dirs)
 
