@@ -1,7 +1,13 @@
+### 2024.3.1
+
+[full changelog](https://github.com/SickChill/SickChill/compare/2024.2.27...2024.3.1)
+
+
 ### 2024.2.27
 
 [full changelog](https://github.com/SickChill/SickChill/compare/2024.2.20.204434...2024.2.27)
 
+* feat: add ability to drop Results.zip or sickchill-*-none-any.whl into a folder and have sickchill auto install it, and an argument to pass a path to a whl or zip to install
 
 ### 2024.2.20.204434
 
