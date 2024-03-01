@@ -526,7 +526,16 @@
                                     <label for="emby_apikey" class="component-title">${_('Emby API Key')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="emby_apikey" id="emby_apikey" value="${settings.EMBY_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="emby_apikey" id="emby_apikey" value="${settings.EMBY_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="emby_apikey">${_('Generated from Emby > Settings > Advanced > API keys')}</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

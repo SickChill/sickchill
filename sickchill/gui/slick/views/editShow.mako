@@ -407,7 +407,7 @@
                                                         <optgroup data-season="${season}" label="${_('Show') if season == -1 else _('Season ') + str(season)}">
                                                             %if season in scene_exceptions:
                                                                 %for exception in scene_exceptions[season]:
-                                                                    <option ${disabled(exception["custom"] == False)} value="${exception["show_name"]}">
+                                                                    <option ${disabled(exception["custom"])} value="${exception["show_name"]}">
                                                                         ${exception["show_name"]}
                                                                     </option>
                                                                 %endfor

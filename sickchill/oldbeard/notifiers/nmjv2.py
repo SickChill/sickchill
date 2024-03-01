@@ -13,10 +13,11 @@ class Notifier(object):
         # Not implemented: Start the scanner when snatched does not make any sense
 
     def notify_download(self, ep_name):
-        self._notifyNMJ()
+        if settings.USE_NMJv2:
+            self._notifyNMJv2()
 
     def notify_subtitle_download(self, ep_name, lang):
-        self._notifyNMJ()
+        self._notifyNMJv2()
 
     @staticmethod
     def notify_update(new_version):
@@ -28,7 +29,7 @@ class Notifier(object):
         return False
 
     def test_notify(self, host):
-        return self._sendNMJ(host)
+        return self._sendNMJv2(host)
 
     @staticmethod
     def notify_settings(host, dbloc, instance):
@@ -69,7 +70,7 @@ class Notifier(object):
         return False
 
     @staticmethod
-    def _sendNMJ(host):
+    def _sendNMJv2(host):
         """
         Sends a NMJ update command to the specified machine
 
@@ -130,7 +131,7 @@ class Notifier(object):
                 logger.info("NMJv2 started background scan")
                 return True
 
-    def _notifyNMJ(self, host=None, force=False):
+    def _notifyNMJv2(self, host=None, force=False):
         """
         Sends a NMJ update command based on the SC config settings
 
@@ -140,7 +141,7 @@ class Notifier(object):
         force: If True then the notification will be sent even if NMJ is disabled in the config
         """
         if not settings.USE_NMJv2 and not force:
-            logger.debug("Notification for NMJ scan update not enabled, skipping this notification")
+            logger.debug("Notification for NMJv2 scan update not enabled, skipping this notification")
             return False
 
         # fill in omitted parameters
@@ -149,4 +150,4 @@ class Notifier(object):
 
         logger.debug("Sending scan command for NMJ ")
 
-        return self._sendNMJ(host)
+        return self._sendNMJv2(host)

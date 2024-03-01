@@ -57,12 +57,7 @@ class Notifier(object):
                 return False
 
             params = {}
-            if show:
-                params.update({"TvdbId": show.indexerid})
-                # Endpoint emby/Library/Series/Added is deprecated http://swagger.emby.media/?staticview=true#/LibraryService/postLibrarySeriesAdded
-                url = urljoin(settings.EMBY_HOST, "emby/Library/Media/Updated")
-            else:
-                url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
+            url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
 
             try:
                 response = requests.post(url, params=params, headers=self._make_headers())
