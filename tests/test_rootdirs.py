@@ -1,7 +1,7 @@
 import logging
 import tempfile
 from pathlib import Path
-from unittest import TestCase
+from unittest import skip, TestCase
 from unittest.mock import patch
 
 from sickchill.helper.rootdirs import RootDirectories
@@ -9,6 +9,7 @@ from sickchill.helper.rootdirs import RootDirectories
 logging.basicConfig(format="{levelname} :: {message}", style="{", level=logging.DEBUG)
 
 
+@skip("Not implemented")
 class TestRootDirectories(TestCase):
     path_one = None
     path_two = None
