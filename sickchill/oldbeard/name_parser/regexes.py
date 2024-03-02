@@ -217,10 +217,10 @@ normal_regexes = [
 
 anime_regexes = [
     (
-        "anime_horriblesubs",
-        # [HorribleSubs] Maria the Virgin Witch - 01 [720p].mkv
+        "anime_ultimate-abs",
+        # [no more HorribleSubs] Maria the Virgin Witch - 01 [720p].mkv
         r"""
-     ^(?:\[(?P<release_group>HorribleSubs)\][\s\.])
+     ^(?:\[(?P<release_group>.+?)\][\s\.])
      (?:(?P<series_name>.+?)[\s\.]-[\s\.])
      (?P<ep_ab_num>((?!(1080|720|480)[pi]))\d{1,4})
      (-(?P<extra_ab_ep_num>((?!(1080|720|480)[pi])|(?![hx].?26[45]))\d{1,4}))?
