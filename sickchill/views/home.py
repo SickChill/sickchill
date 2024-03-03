@@ -1080,6 +1080,7 @@ class Home(WebRoot):
         fanart=None,
     ):
         anidb_failed = False
+        show_id = show
 
         error, show_obj = Show.validate_indexer_id(show)
         if error:
@@ -1118,8 +1119,8 @@ class Home(WebRoot):
                         anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name, cache_dir=Path(settings.CACHE_DIR))
                         groups = anime.get_groups()
                     except Exception as error:
-                        ui.notifications.error(_("Unable to retreive Fansub Groups from AniDB."))
-                        logger.debug(f"Unable to retreive Fansub Groups from AniDB. Error is {error}")
+                        ui.notifications.error(_("Unable to retrieve Fansub Groups from AniDB."))
+                        logger.debug(f"Unable to retrieve Fansub Groups from AniDB. Error is {error}")
 
             with show_obj.lock:
                 show = show_obj
@@ -1350,7 +1351,7 @@ class Home(WebRoot):
                 "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
             )
 
-        return self.redirect("/home/displayShow?show=" + show)
+        return self.redirect("/home/displayShow?show=" + show_id)
 
     def togglePause(self):
         show = self.get_query_argument("show")
