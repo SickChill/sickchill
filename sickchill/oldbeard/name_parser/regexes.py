@@ -217,8 +217,8 @@ normal_regexes = [
 
 anime_regexes = [
     (
-        "anime_ultimate-abs",
-        # [no more HorribleSubs] Maria the Virgin Witch - 01 [720p].mkv
+        "anime_anidb",
+        # [Group] Anime name - 01v2 [CCRCCRCC].ext from wiki.anidb.net
         r"""
      ^(?:\[(?P<release_group>.+?)\][\s\.])
      (?:(?P<series_name>.+?)[\s\.]-[\s\.])
