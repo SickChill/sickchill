@@ -3006,9 +3006,9 @@ camel-case@^4.1.2:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001587:
-  version "1.0.30001591"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001591.tgz#16745e50263edc9f395895a7cd468b9f3767cf33"
-  integrity sha512-PCzRMei/vXjJyL5mJtzNiUCKP59dm8Apqc3PH8gJkMnMXZGox93RbE76jHsmLwmIo6/3nsYIpJtx0O7u5PqFuQ==
+  version "1.0.30001593"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001593.tgz#7cda1d9e5b0cad6ebab4133b1f239d4ea44fe659"
+  integrity sha512-UWM1zlo3cZfkpBysd7AS+z+v007q9G1+fLTUU42rQnY6t2axoogPW/xol6T7juU5EUoOhML4WgBIdG+9yYqAjQ==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -5713,9 +5713,9 @@ html-encoding-sniffer@^1.0.2:
     whatwg-encoding "^1.0.1"
 
 html-entities@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.4.0.tgz#edd0cee70402584c8c76cc2c0556db09d1f45061"
-  integrity sha512-igBTJcNNNhvZFRtm8uA6xMY6xYleeDwn3PeBCkDz7tHttv4F2hsDI2aPgNERWzvRcNYHNT3ymRaQzllmXj4YsQ==
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.5.0.tgz#cb1346d0bca6df719c7f6e9ab09d4d916d1141d4"
+  integrity sha512-g3xzbdhD5HamT50Sc7/KVvFvU3SUMpKmJkQWYVRhcXHzwUzRXZt5HzTNwn/5BNMm4bECBZc5YnuPh0J8PIBbAQ==
 
 html-minifier-terser@^6.0.2:
   version "6.1.0"
