@@ -111,7 +111,7 @@ class Home(WebRoot):
 
         selected_root = self.get_body_argument("root", "")
         page = try_int(self.get_argument("p", default="0"))
-        limit = try_int(self.get_argument("limit", default=None))
+        limit = try_int(self.get_argument("limit", default="0"))
         kind = self.get_argument("type", "all")
         genre = self.get_argument("genre", "")
         if kind not in ("all", "series", "anime"):
@@ -1049,49 +1049,49 @@ class Home(WebRoot):
             out.append("S" + str(season) + ": " + ", ".join(exceptions.names))
         return "<br>".join(out)
 
-    def editShow(
-        self,
-        show=None,
-        location=None,
-        anyQualities=None,
-        bestQualities=None,
-        exceptions_list=None,
-        season_folders=None,
-        paused=None,
-        directCall=False,
-        air_by_date=None,
-        sports=None,
-        dvdorder=None,
-        indexerLang=None,
-        subtitles=None,
-        subtitles_sc_metadata=None,
-        rls_ignore_words=None,
-        rls_require_words=None,
-        rls_prefer_words=None,
-        anime=None,
-        blacklist=None,
-        whitelist=None,
-        scene=None,
-        defaultEpStatus=None,
-        quality_preset=None,
-        custom_name="",
-        poster=None,
-        banner=None,
-        fanart=None,
-    ):
-        anidb_failed = False
-        show_id = show
+    def editShow(self):
+        show_id = self.get_query_argument("show", default=None)
+        location = self.get_body_argument("location", default=None)
+        quality_preset = self.get_body_argument("quality_preset", default=None)
+        anyQualities = self.get_body_arguments("anyQualities")
+        bestQualities = self.get_body_arguments("bestQualities")
+        season_folders = config.checkbox_to_value(self.get_body_argument("season_folders", default="False"))
+        direct_call = config.checkbox_to_value(self.get_body_argument("directCall", default="False"))
+        if show_id is None:
+            show_id = self.get_body_argument("show")
+            banner = self.get_body_argument("banner", default=None)
+            blacklist = self.get_body_argument("blacklist", default=None)
+            custom_name = self.get_body_argument("custom_name", default="")
+            defaultEpStatus = self.get_body_argument("defaultEpStatus", default=None)
+            dvdorder = config.checkbox_to_value(self.get_body_argument("dvdorder", default="False"))
+            exceptions_list = self.get_body_argument("exceptions_list", default=None)
+            fanart = self.get_body_argument("fanart", default=None)
+            indexerLang = self.get_body_argument("indexerLang", default=None)
+            poster = self.get_body_argument("poster", default=None)
+            rls_ignore_words = self.get_body_argument("rls_ignore_words", default=None)
+            rls_prefer_words = self.get_body_argument("rls_prefer_words", default=None)
+            rls_require_words = self.get_body_argument("rls_require_words", default=None)
+            whitelist = self.get_body_argument("whitelist", default=None)
+            paused = config.checkbox_to_value(self.get_body_argument("paused", default="False"))
+            air_by_date = config.checkbox_to_value(self.get_body_argument("air_by_date", default="False"))
+            scene = config.checkbox_to_value(self.get_body_argument("scene", default="False"))
+            sports = config.checkbox_to_value(self.get_body_argument("sports", default="False"))
+            anime = config.checkbox_to_value(self.get_body_argument("anime", default="False"))
+            subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default="False"))
+            subtitles_sc_metadata = config.checkbox_to_value(self.get_body_argument("subtitles_sc_metadata", default="False"))
 
-        error, show_obj = Show.validate_indexer_id(show)
+        anidb_failed = False
+
+        error, show_obj = Show.validate_indexer_id(show_id)
         if error:
-            if directCall:
+            if direct_call:
                 return [error]
             else:
                 return self._genericMessage(_("Error"), error)
 
         if not show_obj:
-            error_string = _("Unable to find the specified show") + f": {show}"
-            if directCall:
+            error_string = _("Unable to find the specified show") + f": {show_id}"
+            if direct_call:
                 return [error_string]
             else:
                 return self._genericMessage(_("Error"), error_string)
@@ -1148,16 +1148,6 @@ class Home(WebRoot):
                     controller="home",
                     action="editShow",
                 )
-
-        season_folders = config.checkbox_to_value(season_folders)
-        dvdorder = config.checkbox_to_value(dvdorder)
-        paused = config.checkbox_to_value(paused)
-        air_by_date = config.checkbox_to_value(air_by_date)
-        scene = config.checkbox_to_value(scene)
-        sports = config.checkbox_to_value(sports)
-        anime = config.checkbox_to_value(anime)
-        subtitles = config.checkbox_to_value(subtitles)
-        subtitles_sc_metadata = config.checkbox_to_value(subtitles_sc_metadata)
 
         if indexerLang and indexerLang in show_obj.idxr.languages:
             indexer_lang = indexerLang
@@ -1243,8 +1233,8 @@ class Home(WebRoot):
             # noinspection PyProtectedMember
             metadata_generator._write_image(img_data, dest_path, overwrite=True)
 
-        # If directCall from mass_edit_update no scene exceptions handling or blackandwhite list handling
-        if not directCall:
+        # If direct_call from mass_edit_update no scene exceptions handling or blackandwhite list handling
+        if not direct_call:
             with show_obj.lock:
                 if anime:
                     if not show_obj.release_groups:
@@ -1281,12 +1271,12 @@ class Home(WebRoot):
             show_obj.subtitles_sc_metadata = subtitles_sc_metadata
             show_obj.air_by_date = air_by_date
             show_obj.default_ep_status = int(defaultEpStatus)
-            # words added to mass update so moved from directCall to here.
+            # words added to mass update so moved from direct_call to here.
             show_obj.rls_ignore_words = rls_ignore_words.strip()
             show_obj.rls_require_words = rls_require_words.strip()
             show_obj.rls_prefer_words = rls_prefer_words.strip()
 
-            if not directCall:
+            if not direct_call:
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
                 location = self.get_argument("location", show_obj.get_location)
@@ -1342,7 +1332,7 @@ class Home(WebRoot):
             except CantUpdateShowException:
                 errors.append(_("Unable to force an update on scene numbering of the show."))
 
-        if directCall:
+        if direct_call:
             return errors
 
         if errors:
