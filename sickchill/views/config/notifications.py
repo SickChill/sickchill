@@ -57,6 +57,9 @@ class ConfigNotifications(Config):
         use_emby=None,
         emby_host=None,
         emby_apikey=None,
+        use_jellyfin=None,
+        jellyfin_host=None,
+        jellyfin_apikey=None,
         use_growl=None,
         growl_notify_onsnatch=None,
         growl_notify_ondownload=None,
@@ -269,6 +272,10 @@ class ConfigNotifications(Config):
         settings.USE_EMBY = config.checkbox_to_value(use_emby)
         settings.EMBY_HOST = config.clean_url(emby_host)
         settings.EMBY_APIKEY = filters.unhide(settings.EMBY_APIKEY, emby_apikey)
+
+        settings.USE_JELLYFIN = config.checkbox_to_value(use_jellyfin)
+        settings.JELLYFIN_HOST = config.clean_url(jellyfin_host)
+        settings.JELLYFIN_APIKEY = filters.unhide(settings.JELLYFIN_APIKEY, jellyfin_apikey)
 
         settings.USE_GROWL = config.checkbox_to_value(use_growl)
         settings.GROWL_NOTIFY_ONSNATCH = config.checkbox_to_value(growl_notify_onsnatch)

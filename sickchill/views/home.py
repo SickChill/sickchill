@@ -261,6 +261,10 @@ class Home(WebRoot):
         return settings.USE_EMBY
 
     @staticmethod
+    def haveJELLYFIN():
+        return settings.USE_JELLYFIN
+
+    @staticmethod
     def haveTORRENT():
         host_good = (settings.TORRENT_HOST[:5] == "http:", settings.TORRENT_HOST[:5] == "https")[settings.ENABLE_HTTPS]
         if settings.USE_TORRENTS and settings.TORRENT_METHOD != "blackhole" and host_good:
@@ -553,6 +557,15 @@ class Home(WebRoot):
             return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
         else:
             return _("Test notice failed to {emby_host}").format(emby_host=unquote_plus(host))
+
+    def testJELLYFIN(self):
+        host = config.clean_url(self.get_query_argument("host"))
+        jellyfin_apikey = filters.unhide(settings.JELLYFIN_APIKEY, self.get_query_argument("jellyfin_apikey"))
+        result = notifiers.jellyfin_notifier.test_notify(host, jellyfin_apikey)
+        if result:
+            return _("Test notice sent successfully to {jellyfin_host}").format(jellyfin_host=unquote_plus(host))
+        else:
+            return _("Test notice failed to {jellyfin_host}").format(jellyfin_host=unquote_plus(host))
 
     def testNMJ(self):
         host = config.clean_host(self.get_body_argument("host"))
@@ -922,6 +935,15 @@ class Home(WebRoot):
                         "title": _("Update show in Emby"),
                         "path": f"home/updateEMBY?show={show_obj.indexerid}",
                         "requires": self.haveEMBY(),
+                        "icon": "menu-icon-emby",
+                    }
+                )
+                # noinspection PyPep8
+                submenu.append(
+                    {
+                        "title": _("Update show in Jellyfin"),
+                        "path": f"home/updateJELLYFIN?show={show_obj.indexerid}",
+                        "requires": self.haveJELLYFIN(),
                         "icon": "menu-icon-emby",
                     }
                 )
@@ -1480,6 +1502,22 @@ class Home(WebRoot):
             ui.notifications.message(_("Library update command sent to Emby host: {emby_host}").format(emby_host=settings.EMBY_HOST))
         else:
             ui.notifications.error(_("Unable to contact Emby host: {emby_host}").format(emby_host=settings.EMBY_HOST))
+
+        if show_obj:
+            return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
+        else:
+            return self.redirect("/home/")
+
+    def updateJELLYFIN(self, show=None):
+        show_obj = None
+
+        if show:
+            show_obj = Show.find(settings.show_list, int(show))
+
+        if notifiers.jellyfin_notifier.update_library(show_obj):
+            ui.notifications.message(_("Library update command sent to Jellyfin host: {jellyfin_host}").format(jellyfin_host=settings.JELLYFIN_HOST))
+        else:
+            ui.notifications.error(_("Unable to contact Jellyfin host: {jellyfin_host}").format(jellyfin_host=settings.JELLYFIN_HOST))
 
         if show_obj:
             return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
