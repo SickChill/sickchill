@@ -14,10 +14,11 @@ class Client(GenericClient):
     def __init__(self, host: str = None, username: str = None, password: str = None):
         super().__init__("qBittorrent", host, username, password)
         parsed_url = urlparse(self.host or settings.TORRENT_HOST)
-        self.host = parsed_url.hostname
+        self.url = parsed_url.geturl()
         self.port = parsed_url.port
+        logger.debug(f"qBittorrent URL: {self.url}")
         self.api = qbittorrentapi.Client(
-            host=self.host,
+            host=self.url,
             port=self.port or None,
             username=self.username or settings.TORRENT_USERNAME,
             password=self.password or settings.TORRENT_PASSWORD,
