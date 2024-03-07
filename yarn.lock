@@ -1751,9 +1751,9 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@^20.8.3":
-  version "20.11.24"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.24.tgz#cc207511104694e84e9fb17f9a0c4c42d4517792"
-  integrity sha512-Kza43ewS3xoLgCEpQrsT+xRo/EJej1y0kVYGiLFE1NEODXGzTfwiC6tXTLMQskn1X4/Rjlh0MQUvx9W+L9long==
+  version "20.11.25"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.25.tgz#0f50d62f274e54dd7a49f7704cc16bfbcccaf49f"
+  integrity sha512-TBHyJxk2b7HceLVGFcpAUjsa5zIdsPWlR6XHfyGzd0SFu+/NFgQgMAl96MSDZgQDvJAvV6BKsFOrt6zIL09JDw==
   dependencies:
     undici-types "~5.26.4"
 
@@ -1763,9 +1763,9 @@
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
 
 "@types/node@^18.18.5":
-  version "18.19.21"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.21.tgz#f4ca1ac8ffb05ee4b89163c2d6fac9a1a59ee149"
-  integrity sha512-2Q2NeB6BmiTFQi4DHBzncSoq/cJMLDdhPaAoJFnFCyD9a8VPZRf7a1GAwp1Edb7ROaZc5Jz/tnZyL6EsWMRaqw==
+  version "18.19.22"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.22.tgz#f622f92514b897e6b09903e97c16a0db8e94689f"
+  integrity sha512-p3pDIfuMg/aXBmhkyanPshdfJuX5c5+bQjYLIikPLXAUycEogij/c50n/C+8XOA5L93cU4ZRXtn+dNQGi0IZqQ==
   dependencies:
     undici-types "~5.26.4"
 
@@ -3923,9 +3923,9 @@ ejs@^3.1.6, ejs@^3.1.8, ejs@^3.1.9:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.668:
-  version "1.4.693"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.693.tgz#001bb5dcb57ba404366ec39e1957d11886fc8a93"
-  integrity sha512-/if4Ueg0GUQlhCrW2ZlXwDAm40ipuKo+OgeHInlL8sbjt+hzISxZK949fZeJaVsheamrzANXvw1zQTvbxTvSHw==
+  version "1.4.694"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.694.tgz#33dfb64406066a0d2f1e562be816276567bd98a9"
+  integrity sha512-kM3SwvGTYpBFJSc8jm4IYVMIOzDmAGd/Ry96O9elRiM6iEwHKNKhtXyFGzpfMMIGZD84W4/hyaULlMmNVvLQlQ==
 
 emittery@^1.0.1:
   version "1.0.3"
@@ -8525,11 +8525,11 @@ qs@6.11.0:
     side-channel "^1.0.4"
 
 qs@^6.4.0:
-  version "6.11.2"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.2.tgz#64bea51f12c1f5da1bc01496f48ffcff7c69d7d9"
-  integrity sha512-tDNIz22aBzCDxLtVH++VnTfzxlfeK5CbqohpSqpJgj1Wg/cQbStNAz3NuqCs5vV+pjBsK4x4pN9HlVh7rcYRiA==
+  version "6.12.0"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.12.0.tgz#edd40c3b823995946a8a0b1f208669c7a200db77"
+  integrity sha512-trVZiI6RMOkO476zLGaBIzszOdFPnCCXHPG9kn0yuS1uz6xdVxPfZdB3vUig9pxPFDM9BRAgz/YUIVQ1/vuiUg==
   dependencies:
-    side-channel "^1.0.4"
+    side-channel "^1.0.6"
 
 qs@~6.5.2:
   version "6.5.3"
@@ -9283,7 +9283,7 @@ shelljs@^0.8.5:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
-side-channel@^1.0.4:
+side-channel@^1.0.4, side-channel@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/side-channel/-/side-channel-1.0.6.tgz#abd25fb7cd24baf45466406b1096b7831c9215f2"
   integrity sha512-fDW/EZ6Q9RiO8eFG8Hj+7u/oW+XrPTIChwCOM2+th2A6OblDtYYIpve9m+KvI9Z4C9qSEXlaGR6bTEYHReuglA==
@@ -9352,9 +9352,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1280.0:
-  version "1.1282.1"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1282.1.tgz#cf111edb4234c334e36e45dc4bb31425f660370a"
-  integrity sha512-OaGdI7vscWOgIRLGF0ZzUjoNCyYAhkIz4HfNvII2h7Z11utssa4IS3ytXrnFYWdjgwLjqAQ94yGcSmSt8Clgtg==
+  version "1.1283.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1283.0.tgz#b7bb01d5de203826160acd77fe58d54fa1e4e2fc"
+  integrity sha512-uxdxDDK0hz52H6oqrMj0sfKuB4x1k4ErrlGlrqXB/CADxN4nMg7RvDJqs7st+425YoM+bkKaM04UlD2rHsUqBQ==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
@@ -9977,9 +9977,9 @@ terser-webpack-plugin@^5.3.10:
     terser "^5.26.0"
 
 terser@^5.0.0, terser@^5.10.0, terser@^5.26.0:
-  version "5.28.1"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-5.28.1.tgz#bf00f7537fd3a798c352c2d67d67d65c915d1b28"
-  integrity sha512-wM+bZp54v/E9eRRGXb5ZFDvinrJIOaTapx3WUokyVGZu5ucVCK55zEgGd5Dl2fSr3jUo5sDiERErUWLY6QPFyA==
+  version "5.29.1"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-5.29.1.tgz#44e58045b70c09792ba14bfb7b4e14ca8755b9fa"
+  integrity sha512-lZQ/fyaIGxsbGxApKmoPTODIzELy3++mXhS5hOqaAWZjQtpq/hFHAc+rm29NND1rYRxRWKcjuARNwULNXa5RtQ==
   dependencies:
     "@jridgewell/source-map" "^0.3.3"
     acorn "^8.8.2"
@@ -10233,9 +10233,9 @@ typed-array-length@^1.0.5:
     possible-typed-array-names "^1.0.0"
 
 typescript@^5.3.3:
-  version "5.3.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.3.tgz#b3ce6ba258e72e6305ba66f5c9b452aaee3ffe37"
-  integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.2.tgz#0ae9cebcfae970718474fe0da2c090cad6577372"
+  integrity sha512-+2/g0Fds1ERlP6JsakQQDXjZdZMM+rqpamFZJEKh4kwTIn3iDkgKtby0CeNd5ATNZ4Ry1ax15TMx0W2V+miizQ==
 
 uglify-js@^3.16.1:
   version "3.17.4"
