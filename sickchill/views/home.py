@@ -944,7 +944,7 @@ class Home(WebRoot):
                         "title": _("Update show in Jellyfin"),
                         "path": f"home/updateJELLYFIN?show={show_obj.indexerid}",
                         "requires": self.haveJELLYFIN(),
-                        "icon": "menu-icon-emby",
+                        "icon": "menu-icon-jellyfin",
                     }
                 )
                 if season_results and int(season_results[-1]["season"]) == 0:
