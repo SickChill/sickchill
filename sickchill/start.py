@@ -55,6 +55,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         check_section(settings.CFG, "KODI")
         check_section(settings.CFG, "PLEX")
         check_section(settings.CFG, "Emby")
+        check_section(settings.CFG, "Jellyfin")
         check_section(settings.CFG, "Growl")
         check_section(settings.CFG, "Prowl")
         check_section(settings.CFG, "Twitter")
@@ -458,6 +459,10 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.USE_EMBY = check_setting_bool(settings.CFG, "Emby", "use_emby")
         settings.EMBY_HOST = check_setting_str(settings.CFG, "Emby", "emby_host")
         settings.EMBY_APIKEY = check_setting_str(settings.CFG, "Emby", "emby_apikey")
+
+        settings.USE_JELLYFIN = check_setting_bool(settings.CFG, "Jellyfin", "use_jellyfin")
+        settings.JELLYFIN_HOST = check_setting_str(settings.CFG, "Jellyfin", "jellyfin_host")
+        settings.JELLYFIN_APIKEY = check_setting_str(settings.CFG, "Jellyfin", "jellyfin_apikey")
 
         settings.USE_GROWL = check_setting_bool(settings.CFG, "Growl", "use_growl")
         settings.GROWL_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Growl", "growl_notify_onsnatch")
@@ -1362,6 +1367,11 @@ def save_config():
                 "use_emby": int(settings.USE_EMBY),
                 "emby_host": settings.EMBY_HOST,
                 "emby_apikey": settings.EMBY_APIKEY,
+            },
+            "Jellyfin": {
+                "use_jellyfin": int(settings.USE_JELLYFIN),
+                "jellyfin_host": settings.JELLYFIN_HOST,
+                "jellyfin_apikey": settings.JELLYFIN_APIKEY,
             },
             "Growl": {
                 "use_growl": int(settings.USE_GROWL),
