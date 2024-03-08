@@ -1206,6 +1206,9 @@ class PostProcessor(object):
             # do the library update for EMBY
             notifiers.emby_notifier.update_library(episode_object.show)
 
+            # do the library update for JELLYFIN
+            notifiers.jellyfin_notifier.update_library(episode_object.show)
+
             # do the library update for NMJ
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
 
