@@ -553,14 +553,14 @@ class Manage(Home, WebRoot):
             else:
                 new_show_dir = show_object.get_location
 
-            new_paused = ("off", "on")[(paused == "enable", show_object.paused)[paused == "keep"]]
+            new_paused = (0, 1)[(paused == "enable", show_object.paused)[paused == "keep"]]
             new_default_ep_status = (default_ep_status, show_object.default_ep_status)[default_ep_status == "keep"]
-            new_anime = ("off", "on")[(anime == "enable", show_object.anime)[anime == "keep"]]
-            new_sports = ("off", "on")[(sports == "enable", show_object.sports)[sports == "keep"]]
-            new_scene = ("off", "on")[(scene == "enable", show_object.scene)[scene == "keep"]]
-            new_air_by_date = ("off", "on")[(air_by_date == "enable", show_object.air_by_date)[air_by_date == "keep"]]
-            new_season_folders = ("off", "on")[(season_folders == "enable", show_object.season_folders)[season_folders == "keep"]]
-            new_subtitles = ("off", "on")[(subtitles == "enable", show_object.subtitles)[subtitles == "keep"]]
+            new_anime = (0, 1)[(anime == "enable", show_object.anime)[anime == "keep"]]
+            new_sports = (0, 1)[(sports == "enable", show_object.sports)[sports == "keep"]]
+            new_scene = (0, 1)[(scene == "enable", show_object.scene)[scene == "keep"]]
+            new_air_by_date = (0, 1)[(air_by_date == "enable", show_object.air_by_date)[air_by_date == "keep"]]
+            new_season_folders = (0, 1)[(season_folders == "enable", show_object.season_folders)[season_folders == "keep"]]
+            new_subtitles = (0, 1)[(subtitles == "enable", show_object.subtitles)[subtitles == "keep"]]
 
             # new mass words update section
             if ignore_words == "new":
@@ -591,25 +591,24 @@ class Manage(Home, WebRoot):
 
             exceptions_list = []
 
-            current_show_errors += self.editShow(
-                current_show,
-                new_show_dir,
-                any_qualities,
-                best_qualities,
-                exceptions_list,
-                defaultEpStatus=new_default_ep_status,
-                season_folders=new_season_folders,
-                paused=new_paused,
-                sports=new_sports,
-                subtitles=new_subtitles,
-                rls_ignore_words=new_ignore_words,
-                rls_prefer_words=new_prefer_words,
-                rls_require_words=new_require_words,
-                anime=new_anime,
-                scene=new_scene,
-                air_by_date=new_air_by_date,
-                directCall=True,
-            )
+            self.current_show = current_show
+            self.new_show_dir = new_show_dir
+            self.any_qualities = any_qualities
+            self.best_qualities = best_qualities
+            self.exceptions_list = exceptions_list
+            self.new_default_ep_status = new_default_ep_status
+            self.new_season_folders = new_season_folders
+            self.new_paused = new_paused
+            self.new_sports = new_sports
+            self.new_subtitles = new_subtitles
+            self.new_ignore_words = new_ignore_words
+            self.new_prefer_words = new_prefer_words
+            self.new_require_words = new_require_words
+            self.new_anime = new_anime
+            self.new_scene = new_scene
+            self.new_air_by_date = new_air_by_date
+
+            current_show_errors += self.editShow(direct_call=True)
 
             if current_show_errors:
                 logger.exception(f"Errors: {current_show_errors}")
