@@ -553,14 +553,15 @@ class Manage(Home, WebRoot):
             else:
                 new_show_dir = show_object.get_location
 
-            new_paused = (0, 1)[(paused == "enable", show_object.paused)[paused == "keep"]]
-            new_default_ep_status = (default_ep_status, show_object.default_ep_status)[default_ep_status == "keep"]
-            new_anime = (0, 1)[(anime == "enable", show_object.anime)[anime == "keep"]]
-            new_sports = (0, 1)[(sports == "enable", show_object.sports)[sports == "keep"]]
-            new_scene = (0, 1)[(scene == "enable", show_object.scene)[scene == "keep"]]
-            new_air_by_date = (0, 1)[(air_by_date == "enable", show_object.air_by_date)[air_by_date == "keep"]]
-            new_season_folders = (0, 1)[(season_folders == "enable", show_object.season_folders)[season_folders == "keep"]]
-            new_subtitles = (0, 1)[(subtitles == "enable", show_object.subtitles)[subtitles == "keep"]]
+            # Explicitly handle "enable", "disable", and "keep" states
+            new_paused = 1 if paused == "enable" else (0 if paused == "disable" else show_object.paused)
+            new_anime = 1 if anime == "enable" else (0 if anime == "disable" else show_object.anime)
+            new_sports = 1 if sports == "enable" else (0 if sports == "disable" else show_object.sports)
+            new_scene = 1 if scene == "enable" else (0 if scene == "disable" else show_object.scene)
+            new_air_by_date = 1 if air_by_date == "enable" else (0 if air_by_date == "disable" else show_object.air_by_date)
+            new_season_folders = 1 if season_folders == "enable" else (0 if season_folders == "disable" else show_object.season_folders)
+            new_subtitles = 1 if subtitles == "enable" else (0 if subtitles == "disable" else show_object.subtitles)
+            new_default_ep_status = show_object.default_ep_status if default_ep_status == "keep" else default_ep_status
 
             # new mass words update section
             if ignore_words == "new":
