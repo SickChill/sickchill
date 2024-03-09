@@ -3391,6 +3391,7 @@ const SICKCHILL = {
                     columnSelector_columns: { // eslint-disable-line camelcase
                         12: false,
                     },
+                    stickyHeaders_offset: 50, // eslint-disable-line camelcase
                     filter_cssFilter: 'text-center text-capitalize', // eslint-disable-line camelcase
                     filter_hideFilters: false, // eslint-disable-line camelcase
                     filter_ignoreCase: true, // eslint-disable-line camelcase
