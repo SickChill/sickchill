@@ -90,7 +90,7 @@ def get_all_scene_exceptions(indexer_id: int) -> dict:
 
     cache_db_con = db.DBConnection("cache.db")
     exceptions = cache_db_con.select(
-        "SELECT show_name, season, custom FROM scene_exceptions WHERE indexer_id = ? ORDER BY show_name COLLATE NOCASE, custom", [indexer_id]
+        "SELECT show_name, season, custom FROM scene_exceptions WHERE indexer_id = ? ORDER BY show_name COLLATE NOCASE", [indexer_id]
     )
 
     if indexer_id in exceptions_cache:
@@ -133,6 +133,7 @@ def get_all_scene_exceptions(indexer_id: int) -> dict:
                 if sanitized_custom_name not in exceptions_cache[indexer_id][-1]:
                     exceptions_cache[indexer_id][-1].append(sanitized_custom_name)
 
+    # sort season in exceptions dict by "custom" then "show_name" so alphabetical and custom names are bottom of list
     for ind, ele in enumerate(all_exceptions_dict):
         all_exceptions_dict[ele] = sorted(all_exceptions_dict[ele], key=lambda x: (x["custom"], x["show_name"].lower()))
 
