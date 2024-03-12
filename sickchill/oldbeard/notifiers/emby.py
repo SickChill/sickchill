@@ -55,15 +55,11 @@ class Notifier(object):
             if not settings.EMBY_HOST:
                 logger.debug(_("EMBY: No host specified, check your settings"))
                 return False
-            params = {"Updates": [{"Path": "", "UpdateType": "Created"}]}
+            params = {}
             try:
-                if show:
-                    path = show.location
-                    if path:
-                        url = urljoin(settings.EMBY_HOST, "emby/Library/Media/Updated")
-                        params.update({"Updates": [{"Path": path}]})
-                    else:
-                        url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
+                if show.location:
+                    url = urljoin(settings.EMBY_HOST, "emby/Library/Media/Updated")
+                    params = {"Updates": [{"Path": show.location, "UpdateType": "Created"}]}
                 else:
                     url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
 
