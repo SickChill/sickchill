@@ -36,28 +36,6 @@ class Notifier(object):
             logger.warning(_("EMBY: Warning: Could not contact Emby at {url} {error}").format(url=url, error=error))
             return False
 
-    def _get_show_path(self, tvdbid):
-        """Get a show path in Emby library using Items endpoint
-
-        Returns:
-            The show path in Emby or empty
-
-        """
-        get_path_params = {"Recursive": "true", "Fields": "Path", "IncludeItemTypes": "Series"}
-        url = urljoin(settings.EMBY_HOST, "/Items")
-        try:
-            get_path_params.update({"AnyProviderIdEquals": "tvdb.{id}".format(id=tvdbid)})
-            items_response = requests.get(url, params=get_path_params, headers=self._make_headers())
-            items_response.raise_for_status()
-            if items_response.json()["TotalRecordCount"] == 1:
-                return items_response.json()["Items"][0]["Path"]
-            else:
-                return ""
-
-        except requests.exceptions.RequestException as error:
-            logger.warning(_("EMBY: Warning: Could not contact Emby at {url} {error}").format(url=url, error=error))
-            return None
-
     ##############################################################################
     # Public functions
     ##############################################################################
@@ -77,13 +55,13 @@ class Notifier(object):
             if not settings.EMBY_HOST:
                 logger.debug(_("EMBY: No host specified, check your settings"))
                 return False
-            params = {"UpdateType": "Created"}
+            params = {"Updates": [{"Path": "", "UpdateType": "Created"}]}
             try:
                 if show:
-                    path = self._get_show_path(show.indexerid)
+                    path = show.location
                     if path:
                         url = urljoin(settings.EMBY_HOST, "emby/Library/Media/Updated")
-                        params.update({"Path": path})
+                        params.update({"Updates": [{"Path": path}]})
                     else:
                         url = urljoin(settings.EMBY_HOST, "emby/Library/Refresh")
                 else:
@@ -92,7 +70,11 @@ class Notifier(object):
                 response = requests.post(url, json=params, headers=self._make_headers())
 
                 response.raise_for_status()
-                logger.debug(_("EMBY: HTTP status: {status_code}, response: {content}").format(status_code=response.status_code, content=response.content))
+                logger.debug(
+                    _("EMBY: HTTP status: {status_code}, {content}, params {params}").format(
+                        status_code=response.status_code, content=response.content, params=params
+                    )
+                )
                 return True
 
             except requests.exceptions.RequestException as error:
