@@ -7,7 +7,7 @@ from sickchill import logger, settings
 from sickchill.helper import try_int
 from sickchill.init_helpers import setup_gettext
 from sickchill.oldbeard import config, filters, helpers, ui
-from sickchill.oldbeard.common import Quality, WANTED
+from sickchill.oldbeard.common import Quality
 from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
 
