@@ -9,9 +9,6 @@ from pathlib import Path
 from urllib.parse import unquote_plus
 
 import requests
-from tornado import httputil
-from tornado.web import Application
-from typing_extensions import Any
 
 import sickchill.oldbeard
 from sickchill import adba, logger, settings
@@ -47,24 +44,6 @@ from .routes import Route
 
 @Route("/home(/?.*)", name="home")
 class Home(WebRoot):
-    def __init__(self, application: "Application", request: httputil.HTTPServerRequest, **kwargs: Any):
-        super().__init__(application, request, **kwargs)
-        self.current_show = None
-        self.new_show_dir = None
-        self.any_qualities = []
-        self.best_qualities = []
-        self.exceptions_list = None
-        self.new_default_ep_status = None
-        self.new_season_folders = None
-        self.new_paused = None
-        self.new_sports = None
-        self.new_subtitles = None
-        self.new_ignore_words = None
-        self.new_prefer_words = None
-        self.new_require_words = None
-        self.new_anime = None
-        self.new_scene = None
-        self.new_air_by_date = None
 
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
