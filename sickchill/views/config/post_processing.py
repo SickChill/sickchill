@@ -175,7 +175,7 @@ class ConfigPostProcessing(Config):
     @staticmethod
     def isRarSupported():
         """
-        Test Unpacking Support: - checks if unrar is installed and accesible
+        Test Unpacking Support: - checks if unrar is installed and accessible
         """
         check = config.change_unrar_tool(settings.UNRAR_TOOL, settings.UNAR_TOOL)
         if not check:
