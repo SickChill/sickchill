@@ -515,7 +515,7 @@ class AddShows(Home):
         subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default=None))
         subtitles_sc_metadata = config.checkbox_to_value(self.get_body_argument("subtitles_sc_metadata", default=None))
 
-a        whitelist = self.get_body_argument("whitelist", default=None)
+        whitelist = self.get_body_argument("whitelist", default=None)
         blacklist = self.get_body_argument("blacklist", default=None)
         any_qualities = self.get_body_arguments("anyQualities")
         best_qualities = self.get_body_arguments("bestQualities")
