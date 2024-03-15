@@ -129,7 +129,7 @@ def short_group_names(groups):
     Find AniDB short group names for release groups
 
     :param groups: list of groups to find short group names for
-        remove any leading blank characters
+        remove any leading and trailing commas
     :return: list of shortened group names
     """
     groups = groups.strip(",").split(",")
