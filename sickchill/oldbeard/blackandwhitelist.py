@@ -129,9 +129,10 @@ def short_group_names(groups):
     Find AniDB short group names for release groups
 
     :param groups: list of groups to find short group names for
+        remove any leading blank characters
     :return: list of shortened group names
     """
-    groups = groups.split(",")
+    groups = groups.strip(",").split(",")
     short_group_list = []
     if helpers.set_up_anidb_connection():
         for groupName in groups:

@@ -416,25 +416,7 @@ class AddShows(Home):
 
         return self.newShow("|".join([str(1), "", indexer_id, ""]), [], search_string=show_name)
 
-    def addNewShow(
-        self,
-        rootDir=None,
-        defaultStatus=None,
-        quality_preset=None,
-        anyQualities=None,
-        bestQualities=None,
-        season_folders=None,
-        subtitles=None,
-        subtitles_sc_metadata=None,
-        other_shows=None,
-        skipShow=None,
-        anime=None,
-        scene=None,
-        blacklist=None,
-        whitelist=None,
-        defaultStatusAfter=None,
-        **_kwargs,
-    ):
+    def addNewShow(self):
         """
         Receive tvdb id, dir, and other options and create a show from them. If extra show dirs are
         provided then it forwards back to newShow, if not it goes to /home.
@@ -443,8 +425,9 @@ class AddShows(Home):
         indexer_language = self.get_body_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE)
 
         # grab our list of other dirs if given
-        other_shows = self.get_arguments("other_shows")
-        full_show_path = self.get_argument("fullShowPath", default=None)
+        other_shows = self.get_body_argument("other_shows", default=None)
+        full_show_path = self.get_body_argument("fullShowPath", default=None)
+        root_dir = self.get_body_argument("rootDir", default=None)
 
         def finishAddShow():
             # if there are no extra shows then go home
@@ -459,20 +442,21 @@ class AddShows(Home):
             return self.newShow(next_show, remaining_shows)
 
         # if we're skipping then behave accordingly
-        if skipShow:
+        skip_show = self.get_body_argument("skipShow", default=None)
+        if skip_show:
             return finishAddShow()
         else:
-            which_series = self.get_argument("whichSeries")
+            which_series = self.get_body_argument("whichSeries", default=None)
 
         # sanity check on our inputs
-        if (not rootDir and not full_show_path) or not which_series:
+        if (not root_dir and not full_show_path) or not which_series:
             return _("Missing params, no Indexer ID or folder: {show_to_add} and {root_dir}/{show_path}").format(
-                show_to_add=which_series, root_dir=rootDir, show_path=full_show_path
+                show_to_add=which_series, root_dir=root_dir, show_path=full_show_path
             )
 
         # figure out what show we're adding and where
         series_pieces = which_series.split("|")
-        if (which_series and rootDir) or (which_series and full_show_path and len(series_pieces) > 1):
+        if (which_series and root_dir) or (which_series and full_show_path and len(series_pieces) > 1):
             if len(series_pieces) < 6:
                 logger.error("Unable to add show due to show selection. Not enough arguments: {0}".format((repr(series_pieces))))
                 ui.notifications.error(_("Unknown error. Unable to add show due to problem with show selection."))
@@ -484,7 +468,7 @@ class AddShows(Home):
             show_name = series_pieces[4]
         else:
             # if no indexer was provided use the default indexer set in General settings
-            indexer = int(self.get_argument("providedIndexer", default=settings.INDEXER_DEFAULT))
+            indexer = int(self.get_body_argument("providedIndexer", default=settings.INDEXER_DEFAULT))
             indexer_id = int(which_series)
             show_name = os.path.basename(os.path.normpath(full_show_path))
 
@@ -503,8 +487,8 @@ class AddShows(Home):
                 except (TypeError, ValueError):
                     logger.info(_("Could not append the show year folder for the show: {0}").format(folder_name))
 
-            show_dir = os.path.join(rootDir, sanitize_filename(folder_name))
-            extra_check_dir = os.path.join(rootDir, sanitize_filename(show_name))
+            show_dir = os.path.join(root_dir, sanitize_filename(folder_name))
+            extra_check_dir = os.path.join(root_dir, sanitize_filename(show_name))
 
         # blanket policy - if the dir exists you should have used "add existing show"
         if (os.path.isdir(show_dir) or os.path.isdir(extra_check_dir)) and not full_show_path:
@@ -525,11 +509,16 @@ class AddShows(Home):
                 helpers.chmodAsParent(show_dir)
 
         # prepare the inputs for passing along
-        scene = config.checkbox_to_value(scene)
-        anime = config.checkbox_to_value(anime)
-        season_folders = config.checkbox_to_value(season_folders)
-        subtitles = config.checkbox_to_value(subtitles)
-        subtitles_sc_metadata = config.checkbox_to_value(subtitles_sc_metadata)
+        scene = config.checkbox_to_value(self.get_body_argument("scene", default=None))
+        anime = config.checkbox_to_value(self.get_body_argument("anime", default=None))
+        season_folders = config.checkbox_to_value(self.get_body_argument("season_folders", default=None))
+        subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default=None))
+        subtitles_sc_metadata = config.checkbox_to_value(self.get_body_argument("subtitles_sc_metadata", default=None))
+
+a        whitelist = self.get_body_argument("whitelist", default=None)
+        blacklist = self.get_body_argument("blacklist", default=None)
+        any_qualities = self.get_body_arguments("anyQualities")
+        best_qualities = self.get_body_arguments("bestQualities")
 
         if whitelist:
             whitelist = short_group_names(whitelist)
@@ -540,23 +529,23 @@ class AddShows(Home):
         else:
             blacklist = []
 
-        if not anyQualities:
-            anyQualities = []
-        if not bestQualities or try_int(quality_preset, None):
-            bestQualities = []
-        if not isinstance(anyQualities, list):
-            anyQualities = [anyQualities]
-        if not isinstance(bestQualities, list):
-            bestQualities = [bestQualities]
-        newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
+        if not any_qualities:
+            any_qualities = []
+        if not best_qualities or try_int(self.get_body_argument("quality_preset", default=None)):
+            best_qualities = []
+        if not isinstance(any_qualities, list):
+            any_qualities = [any_qualities]
+        if not isinstance(best_qualities, list):
+            best_qualities = [best_qualities]
+        new_quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
 
         # add the show
         settings.showQueueScheduler.action.add_show(
             indexer,
             indexer_id,
             show_dir=show_dir,
-            default_status=int(defaultStatus),
-            quality=newQuality,
+            default_status=int(self.get_body_argument("defaultStatus", default=None)),
+            quality=new_quality,
             season_folders=season_folders,
             lang=indexer_language,
             subtitles=subtitles,
@@ -566,8 +555,8 @@ class AddShows(Home):
             paused=None,
             blacklist=blacklist,
             whitelist=whitelist,
-            default_status_after=int(defaultStatusAfter),
-            root_dir=rootDir,
+            default_status_after=int(self.get_body_argument("defaultStatusAfter", default=None)),
+            root_dir=root_dir,
         )
         ui.notifications.message(_("Show added"), _("Adding the specified show into {show_dir}").format(show_dir=show_dir))
 
