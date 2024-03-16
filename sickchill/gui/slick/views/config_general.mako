@@ -181,42 +181,6 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Number of Log files saved')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="number" min="1" step="1" name="log_nr" id="log_nr" value="${settings.LOG_NR}" class="form-control input-sm input75" autocapitalize="off" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="log_nr">${_('number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Size of Log files saved')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${settings.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="log_size">${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Use initial indexer set to')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -939,26 +903,6 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Enable debug')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="debug" id="debug" ${checked(settings.DEBUG)}/>
-                                <label for="debug">${_('enable debug logs')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Enable database debug')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="dbdebug" id="dbdebug" ${checked(settings.DBDEBUG)}/>
-                                <label for="dbdebug">${_('enable database debug logs')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Notify on Errors')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -1149,6 +1093,85 @@
                                 <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
                             </div>
                         </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="config-group-divider"></div>
+
+            <!-- Logging -->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <h3>${_('Logging')}</h3>
+                        <p>${_('Options for Logging.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable debug')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" name="debug" id="debug" ${checked(settings.DEBUG)}/>
+                                <label for="debug">${_('enable debug logs')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable database debug')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" name="dbdebug" id="dbdebug" ${checked(settings.DBDEBUG)}/>
+                                <label for="dbdebug">${_('enable database debug logs')}</label>
+                            </div>
+                        </div>
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Number of Log files saved')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="number" min="1" step="1" name="log_nr" id="log_nr"
+                                        value="${settings.LOG_NR}" class="form-control input-sm input75"
+                                        autocapitalize="off"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label
+                                        for="log_nr">${_('number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Size of Log files saved')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="number" min="0.5" step="0.1" name="log_size" id="log_size"
+                                        value="${settings.LOG_SIZE}" class="form-control input-sm input75"
+                                        autocapitalize="off"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label
+                                        for="log_size">${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </fieldset>
                 </div>
             </div>
