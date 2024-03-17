@@ -166,11 +166,15 @@ class AddShows(Home):
                     cur_dir["added_already"] = True
         return t.render(dirList=dir_list)
 
-    def newShow(self, show_to_add=None, other_shows=None, search_string=None):
+    def newShow(self):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
         """
+        show_to_add = self.get_body_argument("show_to_add", default=None)
+        other_shows = self.get_body_argument("other_shows", default=None)
+        search_string = self.get_body_argument("search_string", default=None)
+
         t = PageTemplate(rh=self, filename="addShows_newShow.mako")
 
         indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
