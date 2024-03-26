@@ -62,7 +62,7 @@
     "mini-css-extract-plugin": "^2.8.0",
     "sass": "^1.71.0",
     "sass-loader": "^14.1.0",
-    "snyk": "^1.1280.0",
+    "snyk": "^1.1285.1",
     "style-loader": "^3.3.4",
     "stylelint": "^16.2.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
@@ -71,7 +71,7 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.2",
     "workbox-webpack-plugin": "^7.0.0",
-    "xo": "^0.57.0",
+    "xo": "^0.58.0",
     "yarn-minify": "^1.0.1",
     "yarn-upgrade-all": "^0.7.2"
   },
