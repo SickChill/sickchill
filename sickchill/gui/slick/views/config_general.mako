@@ -869,6 +869,17 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Notify on Logged Errors')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" name="notify_on_logged_error"
+                                       id="notify_on_logged_error" ${checked(settings.NOTIFY_ON_LOGGED_ERROR)}/>
+                                <label for="notify_on_logged_error">${_('send logged errors to notifiers')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Enable debug')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -984,16 +995,6 @@
                                         <label for="anon_redirect">${_('backlink protection via anonymizer service, must end in "?" (default: {} )').format(settings.DEFAULT_ANON_REDIRECT)}</label>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Notify on Errors')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="notify_on_logged_error" id="notify_on_logged_error" ${checked(settings.NOTIFY_ON_LOGGED_ERROR)}/>
-                                <label for="notify_on_logged_error">${_('send logged errors to notifiers')}</label>
                             </div>
                         </div>
 
