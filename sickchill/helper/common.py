@@ -372,7 +372,7 @@ def sanitize_filename(filename):
     return ""
 
 
-def try_int(candidate, default_value=0):
+def try_int(candidate, default_value=0) -> int:
     """
     Try to convert ``candidate`` to int, or return the ``default_value``.
     :param candidate: The value to convert to int
@@ -386,7 +386,7 @@ def try_int(candidate, default_value=0):
         return default_value
 
 
-def try_float(candidate, default_value=0):
+def try_float(candidate, default_value=0) -> float:
     """
     Try to convert ``candidate`` to int, or return the ``default_value``.
     :param candidate: The value to convert to int

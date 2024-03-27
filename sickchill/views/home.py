@@ -44,6 +44,7 @@ from .routes import Route
 
 @Route("/home(/?.*)", name="home")
 class Home(WebRoot):
+
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
         return t.render(message=message, subject=subject, topmenu="home", title="")
@@ -111,7 +112,7 @@ class Home(WebRoot):
 
         selected_root = self.get_body_argument("root", "")
         page = try_int(self.get_argument("p", default="0"))
-        limit = try_int(self.get_argument("limit", default=None))
+        limit = try_int(self.get_argument("limit", default="0"))
         kind = self.get_argument("type", "all")
         genre = self.get_argument("genre", "")
         if kind not in ("all", "series", "anime"):
@@ -1059,7 +1060,7 @@ class Home(WebRoot):
         return result["description"] if result else "Episode not found."
 
     def sceneExceptions(self):
-        show = self.get_query_argument("show")
+        show = try_int(self.get_query_argument("show"))
         exeptions_list = sickchill.oldbeard.scene_exceptions.get_all_scene_exceptions(show)
         if not exeptions_list:
             return _("No scene exceptions")
@@ -1071,48 +1072,59 @@ class Home(WebRoot):
             out.append("S" + str(season) + ": " + ", ".join(exceptions.names))
         return "<br>".join(out)
 
-    def editShow(
-        self,
-        show=None,
-        location=None,
-        anyQualities=None,
-        bestQualities=None,
-        exceptions_list=None,
-        season_folders=None,
-        paused=None,
-        directCall=False,
-        air_by_date=None,
-        sports=None,
-        dvdorder=None,
-        indexerLang=None,
-        subtitles=None,
-        subtitles_sc_metadata=None,
-        rls_ignore_words=None,
-        rls_require_words=None,
-        rls_prefer_words=None,
-        anime=None,
-        blacklist=None,
-        whitelist=None,
-        scene=None,
-        defaultEpStatus=None,
-        quality_preset=None,
-        custom_name="",
-        poster=None,
-        banner=None,
-        fanart=None,
-    ):
+    def editShow(self, direct_call=False):
+        if direct_call is False:
+            show_id = self.get_query_argument("show", default=None)
+            location = self.get_body_argument("location", default=None)
+            any_qualities = self.get_body_arguments("anyQualities")
+            best_qualities = self.get_body_arguments("bestQualities")
+            season_folders = config.checkbox_to_value(self.get_body_argument("season_folders", default="False"))
+            if show_id is None:
+                show_id = self.get_body_argument("show")
+                blacklist = self.get_body_argument("blacklist", default=None)
+                whitelist = self.get_body_argument("whitelist", default=None)
+                default_ep_status = self.get_body_argument("defaultEpStatus", default=None)
+                dvdorder = config.checkbox_to_value(self.get_body_argument("dvdorder", default="False"))
+                exceptions_list = self.get_body_argument("exceptions_list", default=None)
+                rls_ignore_words = self.get_body_argument("rls_ignore_words", default=None)
+                rls_prefer_words = self.get_body_argument("rls_prefer_words", default=None)
+                rls_require_words = self.get_body_argument("rls_require_words", default=None)
+                paused = config.checkbox_to_value(self.get_body_argument("paused", default="False"))
+                air_by_date = config.checkbox_to_value(self.get_body_argument("air_by_date", default="False"))
+                scene = config.checkbox_to_value(self.get_body_argument("scene", default="False"))
+                sports = config.checkbox_to_value(self.get_body_argument("sports", default="False"))
+                anime = config.checkbox_to_value(self.get_body_argument("anime", default="False"))
+                subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default="False"))
+        else:
+            show_id = self.current_show
+            location = self.new_show_dir
+            any_qualities = self.any_qualities
+            best_qualities = self.best_qualities
+            exceptions_list = self.exceptions_list
+            default_ep_status = self.new_default_ep_status
+            season_folders = self.new_season_folders
+            paused = self.new_paused
+            sports = self.new_sports
+            subtitles = self.new_subtitles
+            rls_ignore_words = self.new_ignore_words
+            rls_prefer_words = self.new_prefer_words
+            rls_require_words = self.new_require_words
+            anime = self.new_anime
+            scene = self.new_scene
+            air_by_date = self.new_air_by_date
+
         anidb_failed = False
 
-        error, show_obj = Show.validate_indexer_id(show)
+        error, show_obj = Show.validate_indexer_id(show_id)
         if error:
-            if directCall:
+            if direct_call:
                 return [error]
             else:
                 return self._genericMessage(_("Error"), error)
 
         if not show_obj:
-            error_string = _("Unable to find the specified show") + f": {show}"
-            if directCall:
+            error_string = _("Unable to find the specified show") + f": {show_id}"
+            if direct_call:
                 return [error_string]
             else:
                 return self._genericMessage(_("Error"), error_string)
@@ -1124,10 +1136,7 @@ class Home(WebRoot):
             "SELECT DISTINCT season FROM tv_episodes WHERE showid = ? AND season IS NOT NULL ORDER BY season DESC", [show_obj.indexerid]
         )
 
-        if try_int(quality_preset, None):
-            bestQualities = []
-
-        if not (location or anyQualities or bestQualities or season_folders):
+        if not (location or any_qualities or best_qualities or season_folders):
             t = PageTemplate(rh=self, filename="editShow.mako")
             groups = []
 
@@ -1140,15 +1149,12 @@ class Home(WebRoot):
                         anime = adba.Anime(settings.ADBA_CONNECTION, name=show_obj.name, cache_dir=Path(settings.CACHE_DIR))
                         groups = anime.get_groups()
                     except Exception as error:
-                        ui.notifications.error(_("Unable to retreive Fansub Groups from AniDB."))
-                        logger.debug(f"Unable to retreive Fansub Groups from AniDB. Error is {error}")
-
-            with show_obj.lock:
-                show = show_obj
+                        ui.notifications.error(_("Unable to retrieve Fansub Groups from AniDB."))
+                        logger.debug(f"Unable to retrieve Fansub Groups from AniDB. Error is {error}")
 
             if show_obj.is_anime:
                 return t.render(
-                    show=show,
+                    show=show_obj,
                     scene_exceptions=show_obj.exceptions,
                     seasonResults=seasonResults,
                     groups=groups,
@@ -1161,7 +1167,7 @@ class Home(WebRoot):
                 )
             else:
                 return t.render(
-                    show=show,
+                    show=show_obj,
                     scene_exceptions=show_obj.exceptions,
                     seasonResults=seasonResults,
                     title=_("Edit Show"),
@@ -1170,39 +1176,34 @@ class Home(WebRoot):
                     action="editShow",
                 )
 
-        season_folders = config.checkbox_to_value(season_folders)
-        dvdorder = config.checkbox_to_value(dvdorder)
-        paused = config.checkbox_to_value(paused)
-        air_by_date = config.checkbox_to_value(air_by_date)
-        scene = config.checkbox_to_value(scene)
-        sports = config.checkbox_to_value(sports)
-        anime = config.checkbox_to_value(anime)
-        subtitles = config.checkbox_to_value(subtitles)
-        subtitles_sc_metadata = config.checkbox_to_value(subtitles_sc_metadata)
+        banner = self.get_body_argument("banner", default=None)
+        fanart = self.get_body_argument("fanart", default=None)
+        poster = self.get_body_argument("poster", default=None)
+        indexer_lang = self.get_body_argument("indexerLang", default=None)
+        custom_name = self.get_body_argument("custom_name", default="")
+        subtitles_sc_metadata = config.checkbox_to_value(self.get_body_argument("subtitles_sc_metadata", default="False"))
 
-        if indexerLang and indexerLang in show_obj.idxr.languages:
-            indexer_lang = indexerLang
-        else:
+        if not indexer_lang or indexer_lang not in show_obj.idxr.languages:
             indexer_lang = show_obj.lang
 
         # if we changed the language then kick off an update
         do_update = indexer_lang != show_obj.lang
         do_update_scene_numbering = scene != show_obj.scene or anime != show_obj.anime
 
-        if not anyQualities:
-            anyQualities = []
+        if not any_qualities:
+            any_qualities = []
 
-        if not bestQualities:
-            bestQualities = []
+        if not best_qualities:
+            best_qualities = []
 
         if not exceptions_list:
             exceptions_list = []
 
-        if not isinstance(anyQualities, list):
-            anyQualities = [anyQualities]
+        if not isinstance(any_qualities, list):
+            any_qualities = [any_qualities]
 
-        if not isinstance(bestQualities, list):
-            bestQualities = [bestQualities]
+        if not isinstance(best_qualities, list):
+            best_qualities = [best_qualities]
 
         if isinstance(exceptions_list, list):
             if exceptions_list:
@@ -1264,8 +1265,8 @@ class Home(WebRoot):
             # noinspection PyProtectedMember
             metadata_generator._write_image(img_data, dest_path, overwrite=True)
 
-        # If directCall from mass_edit_update no scene exceptions handling or blackandwhite list handling
-        if not directCall:
+        # If direct_call from mass_edit_update no scene exceptions handling or blackandwhite list handling
+        if not direct_call:
             with show_obj.lock:
                 if anime:
                     if not show_obj.release_groups:
@@ -1285,8 +1286,8 @@ class Home(WebRoot):
 
         errors = []
         with show_obj.lock:
-            newQuality = Quality.combineQualities([int(q) for q in anyQualities], [int(q) for q in bestQualities])
-            show_obj.quality = newQuality
+            new_quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
+            show_obj.quality = new_quality
 
             if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
@@ -1301,16 +1302,16 @@ class Home(WebRoot):
             show_obj.subtitles = subtitles
             show_obj.subtitles_sc_metadata = subtitles_sc_metadata
             show_obj.air_by_date = air_by_date
-            show_obj.default_ep_status = int(defaultEpStatus)
-            # words added to mass update so moved from directCall to here.
+            show_obj.default_ep_status = default_ep_status
+            # words added to mass update so moved from direct_call to here.
             show_obj.rls_ignore_words = rls_ignore_words.strip()
             show_obj.rls_require_words = rls_require_words.strip()
             show_obj.rls_prefer_words = rls_prefer_words.strip()
 
-            if not directCall:
+            if not direct_call:
                 show_obj.lang = indexer_lang
                 show_obj.dvdorder = dvdorder
-                location = self.get_argument("location", show_obj.get_location)
+                location = self.get_body_argument("location", show_obj.get_location)
 
             location = os.path.normpath(location)
 
@@ -1318,7 +1319,7 @@ class Home(WebRoot):
             old_location = os.path.normpath(show_obj.get_location)
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if old_location != location:
-                logger.debug(old_location + " != " + location)
+                logger.debug(f"Changing old location {old_location} to new location {location}")
                 if not (os.path.isdir(location) or settings.CREATE_MISSING_SHOW_DIRS or settings.ADD_SHOWS_WO_DIR):
                     errors.append(_("New location <tt>{location}</tt> does not exist").format(location=location))
                 else:
@@ -1363,7 +1364,7 @@ class Home(WebRoot):
             except CantUpdateShowException:
                 errors.append(_("Unable to force an update on scene numbering of the show."))
 
-        if directCall:
+        if direct_call is True:
             return errors
 
         if errors:
@@ -1372,7 +1373,7 @@ class Home(WebRoot):
                 "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
             )
 
-        return self.redirect("/home/displayShow?show=" + show)
+        return self.redirect("/home/displayShow?show=" + show_id)
 
     def togglePause(self):
         show = self.get_query_argument("show")
