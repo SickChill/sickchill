@@ -71,8 +71,6 @@ def video_screen_size(filename):
 
     # Switch to OpenCV2 as no externals required such as mediainfo for pymediainfo
     for method in [_opencv2_screen_size, _avi_screen_size]:
-        # for method in [_opencv2_screen_size, _avi_screen_size]:
-
         screen_size = method(filename)
         if screen_size != (None, None):
             return screen_size
