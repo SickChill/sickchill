@@ -7,7 +7,6 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from secrets import compare_digest
-from typing import Any
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
@@ -19,10 +18,9 @@ from sickchill import logger, settings
 from sickchill.init_helpers import check_installed, locale_dir
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.routes import Route
-
-from ..oldbeard import config, db, helpers, network_timezones, ui
 from .api.webapi import function_mapper
 from .common import PageTemplate
+from ..oldbeard import config, db, helpers, network_timezones, ui
 
 try:
     import jwt
