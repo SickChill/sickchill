@@ -34,7 +34,7 @@ def _avi_screen_size(filename):
 
 def _opencv2_screen_size(filename):
     """
-    Attempts to read the width and height of a video file, using mediainfo
+    Attempts to read the width and height of a video file, using opencv2
     :param filename: full path and filename to a video file
     :type: str
     :returns tuple: (width, height)
@@ -69,7 +69,7 @@ def video_screen_size(filename):
     if filename in bad_files or not is_media_file(filename):
         return None, None
 
-    # Switch to OpenCV2 as no externals required such as mediainfo
+    # Switch to OpenCV2 as no externals required such as mediainfo for pymediainfo
     for method in [_opencv2_screen_size, _avi_screen_size]:
         # for method in [_opencv2_screen_size, _avi_screen_size]:
 
