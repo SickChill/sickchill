@@ -1,13 +1,8 @@
 import binascii
 
-from enzyme import MKV
+import cv2
 
 from sickchill.helper.common import is_media_file
-
-try:
-    from pymediainfo import MediaInfo as mediainfo
-except (ModuleNotFoundError, RuntimeError):
-    mediainfo = None
 
 
 def _avi_screen_size(filename):
@@ -37,26 +32,7 @@ def _avi_screen_size(filename):
     return None, None
 
 
-def _mkv_screen_size(filename):
-    """
-    Parses mkv file for width and height
-    :param filename: full path and filename to a video file
-    :type: str
-    :returns tuple: (width, height)
-    """
-    try:
-        if filename.endswith(".mkv"):
-            with open(filename, "rb") as f:
-                mkv = MKV(f)
-
-            return mkv.video_tracks[0].width, mkv.video_tracks[0].height
-    except Exception:
-        pass
-
-    return None, None
-
-
-def _mediainfo_screen_size(filename):
+def _opencv2_screen_size(filename):
     """
     Attempts to read the width and height of a video file, using mediainfo
     :param filename: full path and filename to a video file
@@ -64,11 +40,12 @@ def _mediainfo_screen_size(filename):
     :returns tuple: (width, height)
     """
     try:
-        if mediainfo:
-            _media_info = mediainfo.parse(filename)
-            for track in _media_info.tracks:
-                if track.track_type == "Video":
-                    return track.width, track.height
+        cv2_video = cv2.VideoCapture(filename)
+        if cv2_video:
+            cv2_width = int(cv2_video.get(cv2.CAP_PROP_FRAME_WIDTH))
+            cv2_height = int(cv2_video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            cv2_video.release()
+            return cv2_width, cv2_height
     except (OSError, TypeError):
         pass
 
@@ -82,7 +59,7 @@ bad_files = set()
 def video_screen_size(filename):
     """
     Attempts to read the width and height of a video file,
-    first using mediainfo and then enzyme, and then a custom avi reader
+    first using opencv and then a custom avi reader
 
     :param filename: full path and filename to a video file
     :type: str
@@ -92,10 +69,9 @@ def video_screen_size(filename):
     if filename in bad_files or not is_media_file(filename):
         return None, None
 
-    # Need to implement mediainfo another way, pymediainfo 2.0 causes segfaults
-    # It's at pymedia 5 and this was never switched back
-    for method in [_mediainfo_screen_size, _mkv_screen_size, _avi_screen_size]:
-        # for method in [_mkv_screen_size, _avi_screen_size]:
+    # Switch to OpenCV2 as no externals required such as mediainfo
+    for method in [_opencv2_screen_size, _avi_screen_size]:
+        # for method in [_opencv2_screen_size, _avi_screen_size]:
 
         screen_size = method(filename)
         if screen_size != (None, None):
