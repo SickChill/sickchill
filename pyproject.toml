@@ -77,7 +77,6 @@ optional = true
 html5lib = "^1.1"
 lxml = ">=4.9.1,<6.0.0"
 Js2Py = ">=0.71,<0.75"
-pymediainfo = ">=5.0.3,<7.0.0"
 
 [tool.poetry.group.types]
 optional = true
