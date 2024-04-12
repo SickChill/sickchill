@@ -449,8 +449,8 @@ class AddShows(Home):
         skip_show = self.get_body_argument("skipShow", default=None)
         if skip_show:
             return finishAddShow()
-        else:
-            which_series = self.get_body_argument("whichSeries", default=None)
+
+        which_series = self.get_body_argument("whichSeries", default=None)
 
         # sanity check on our inputs
         if (not root_dir and not full_show_path) or not which_series:
@@ -509,8 +509,8 @@ class AddShows(Home):
                 ui.notifications.error(_("Unable to add show"), _("Unable to create the folder {show_dir}, can't add the show").format(show_dir=show_dir))
                 # Don't redirect to default page because user wants to see the new show
                 return self.redirect("/home/")
-            else:
-                helpers.chmodAsParent(show_dir)
+
+            helpers.chmodAsParent(show_dir)
 
         # prepare the inputs for passing along
         scene = config.checkbox_to_value(self.get_body_argument("scene", default=None))

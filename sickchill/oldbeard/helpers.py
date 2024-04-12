@@ -792,7 +792,7 @@ def check_url(url):
     We only check the URL header.
     """
     try:
-        requests.head(url, verify=False).raise_for_status()
+        requests.head(url, verify=False, timeout=10).raise_for_status()
     except Exception as error:
         # noinspection PyTypeChecker
         handle_requests_exception(error)
@@ -1725,7 +1725,7 @@ def manage_torrents_url(reset=False):
 
     def test_exists(url):
         try:
-            h = requests.head(url)
+            h = requests.head(url, timeout=10)
             return h.status_code != 404
         except requests.exceptions.RequestException:
             return False

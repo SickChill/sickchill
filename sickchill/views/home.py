@@ -246,8 +246,8 @@ class Home(WebRoot):
 
         if settings.started:
             return callback + "(" + json.dumps({"msg": str(settings.PID)}) + ");"
-        else:
-            return callback + "(" + json.dumps({"msg": "nope"}) + ");"
+
+        return callback + "(" + json.dumps({"msg": "nope"}) + ");"
 
     @staticmethod
     def haveKODI():
@@ -270,8 +270,8 @@ class Home(WebRoot):
         host_good = (settings.TORRENT_HOST[:5] == "http:", settings.TORRENT_HOST[:5] == "https")[settings.ENABLE_HTTPS]
         if settings.USE_TORRENTS and settings.TORRENT_METHOD != "blackhole" and host_good:
             return True
-        else:
-            return False
+
+        return False
 
     def testSABnzbd(self):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
@@ -285,10 +285,10 @@ class Home(WebRoot):
             authed, auth_msg = sab.test_client_connection(host, username, password, apikey)
             if authed:
                 return _("Success. Connected and authenticated")
-            else:
-                return _("Authentication failed. SABnzbd expects") + " '" + access_msg + "' " + _("as authentication method") + ", '" + auth_msg + "'"
-        else:
-            return _("Unable to connect to host")
+
+            return _("Authentication failed. SABnzbd expects") + " '" + access_msg + "' " + _("as authentication method") + ", '" + auth_msg + "'"
+
+        return _("Unable to connect to host")
 
     @staticmethod
     def __torrent_test(host, username, password, method):
@@ -316,8 +316,8 @@ class Home(WebRoot):
         result, message = notifiers.freemobile_notifier.test_notify(freemobile_id, freemobile_apikey)
         if result:
             return _("SMS sent successfully")
-        else:
-            return _("Problem sending SMS: {message}".format(message=message))
+
+        return _("Problem sending SMS: {message}".format(message=message))
 
     def testTelegram(self):
         telegram_id = self.get_body_argument("telegram_id")
@@ -325,8 +325,8 @@ class Home(WebRoot):
         result, message = notifiers.telegram_notifier.test_notify(telegram_id, telegram_apikey)
         if result:
             return _("Telegram notification succeeded. Check your Telegram clients to make sure it worked")
-        else:
-            return _("Error sending Telegram notification: {message}".format(message=message))
+
+        return _("Error sending Telegram notification: {message}".format(message=message))
 
     def testJoin(self):
         join_id = self.get_body_argument("join_id")
@@ -335,8 +335,8 @@ class Home(WebRoot):
         result, message = notifiers.join_notifier.test_notify(join_id, join_apikey)
         if result:
             return _("join notification succeeded. Check your join clients to make sure it worked")
-        else:
-            return _("Error sending join notification: {message}".format(message=message))
+
+        return _("Error sending join notification: {message}".format(message=message))
 
     def testGrowl(self):
         host = self.get_query_argument("host")
@@ -349,8 +349,8 @@ class Home(WebRoot):
         pw_append = _(" with password") + ": " + password if password else ""
         if result:
             return _("Registered and Tested growl successfully {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
-        else:
-            return _("Registration and Testing of growl failed {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
+
+        return _("Registration and Testing of growl failed {growl_host}").format(growl_host=unquote_plus(host)) + pw_append
 
     def testProwl(self):
         prowl_api = self.get_query_argument("prowl_api")
@@ -358,16 +358,16 @@ class Home(WebRoot):
         result = notifiers.prowl_notifier.test_notify(prowl_api, prowl_priority)
         if result:
             return _("Test prowl notice sent successfully")
-        else:
-            return _("Test prowl notice failed")
+
+        return _("Test prowl notice failed")
 
     def testBoxcar2(self):
         access_token = self.get_query_argument("accesstoken")
         result = notifiers.boxcar2_notifier.test_notify(access_token)
         if result:
             return _("Boxcar2 notification succeeded. Check your Boxcar2 clients to make sure it worked")
-        else:
-            return _("Error sending Boxcar2 notification")
+
+        return _("Error sending Boxcar2 notification")
 
     def testPushover(self):
         user_key = self.get_query_argument("userKey")
@@ -376,8 +376,8 @@ class Home(WebRoot):
         result = notifiers.pushover_notifier.test_notify(user_key, api_key)
         if result:
             return _("Pushover notification succeeded. Check your Pushover clients to make sure it worked")
-        else:
-            return _("Error sending Pushover notification")
+
+        return _("Error sending Pushover notification")
 
     def testGotify(self):
         host = self.get_body_argument("host")
@@ -387,8 +387,8 @@ class Home(WebRoot):
         logger.debug(f"Gotify result: {result} {message}")
         if result:
             return _("Gotify notification succeeded. Check your Gotify clients to make sure it worked.")
-        else:
-            return _("Error sending Gotify notification. {message}".format(message=message))
+
+        return _("Error sending Gotify notification. {message}".format(message=message))
 
     @staticmethod
     def twitterStep1():
@@ -402,16 +402,16 @@ class Home(WebRoot):
         logger.info(f"result: {result}")
         if result:
             return _("Key verification successful")
-        else:
-            return _("Unable to verify key")
+
+        return _("Unable to verify key")
 
     @staticmethod
     def testTwitter():
         result = notifiers.twitter_notifier.test_notify()
         if result:
             return _("Tweet successful, check your twitter to make sure it worked")
-        else:
-            return _("Error sending tweet")
+
+        return _("Error sending tweet")
 
     @staticmethod
     def testTwilio():
@@ -438,40 +438,40 @@ class Home(WebRoot):
         result = notifiers.slack_notifier.test_notify()
         if result:
             return _("Slack message successful")
-        else:
-            return _("Slack message failed")
+
+        return _("Slack message failed")
 
     @staticmethod
     def testMattermost():
         result = notifiers.mattermost_notifier.test_notify()
         if result:
             return _("Mattermost message successful")
-        else:
-            return _("Mattermost message failed")
+
+        return _("Mattermost message failed")
 
     @staticmethod
     def testMattermostBot():
         result = notifiers.mattermostbot_notifier.test_notify()
         if result:
             return _("Mattermost Bot message successful")
-        else:
-            return _("Mattermost Bot message failed")
+
+        return _("Mattermost Bot message failed")
 
     @staticmethod
     def testRocketChat():
         result = notifiers.rocketchat_notifier.test_notify()
         if result:
             return _("Rocket.Chat message successful")
-        else:
-            return _("Rocket.Chat message failed")
+
+        return _("Rocket.Chat message failed")
 
     @staticmethod
     def testMatrix():
         result = notifiers.matrix_notifier.test_notify()
         if result:
             return _("Matrix message successful")
-        else:
-            return _("Matrix message failed")
+
+        return _("Matrix message failed")
 
     def testDiscord(self):
         webhook = self.get_body_argument("webhook")
@@ -485,8 +485,8 @@ class Home(WebRoot):
         result = notifiers.discord_notifier.test_notify(webhook, name, avatar, tts)
         if result:
             return _("Discord message successful")
-        else:
-            return _("Discord message failed")
+
+        return _("Discord message failed")
 
     def testKODI(self):
         username = self.get_query_argument("username")
@@ -556,8 +556,8 @@ class Home(WebRoot):
         result = notifiers.emby_notifier.test_notify(host, emby_apikey)
         if result:
             return _("Test notice sent successfully to {emby_host}").format(emby_host=unquote_plus(host))
-        else:
-            return _("Test notice failed to {emby_host}").format(emby_host=unquote_plus(host))
+
+        return _("Test notice failed to {emby_host}").format(emby_host=unquote_plus(host))
 
     def testJELLYFIN(self):
         host = config.clean_url(self.get_query_argument("host"))
@@ -565,8 +565,8 @@ class Home(WebRoot):
         result = notifiers.jellyfin_notifier.test_notify(host, jellyfin_apikey)
         if result:
             return _("Test notice sent successfully to {jellyfin_host}").format(jellyfin_host=unquote_plus(host))
-        else:
-            return _("Test notice failed to {jellyfin_host}").format(jellyfin_host=unquote_plus(host))
+
+        return _("Test notice failed to {jellyfin_host}").format(jellyfin_host=unquote_plus(host))
 
     def testNMJ(self):
         host = config.clean_host(self.get_body_argument("host"))
@@ -576,8 +576,8 @@ class Home(WebRoot):
         result = notifiers.nmj_notifier.test_notify(unquote_plus(host), database, mount)
         if result:
             return _("Successfully started the scan update")
-        else:
-            return _("Test failed to start the scan update")
+
+        return _("Test failed to start the scan update")
 
     def settingsNMJ(self):
         host = config.clean_host(self.get_body_argument("host"))
@@ -586,17 +586,17 @@ class Home(WebRoot):
             return '{{"message": _("Got settings from {host}"), "database": "{database}", "mount": "{mount}"}}'.format(
                 **{"host": host, "database": settings.NMJ_DATABASE, "mount": settings.NMJ_MOUNT}
             )
-        else:
-            # noinspection PyPep8
-            return '{"message": _("Failed! Make sure your Popcorn is on and NMJ is running. (see Log & Errors -> Debug for detailed info)"), "database": "", "mount": ""}'
+
+        # noinspection PyPep8
+        return '{"message": _("Failed! Make sure your Popcorn is on and NMJ is running. (see Log & Errors -> Debug for detailed info)"), "database": "", "mount": ""}'
 
     def testNMJv2(self):
         host = config.clean_host(self.get_body_argument("host"))
         result = notifiers.nmjv2_notifier.test_notify(unquote_plus(host))
         if result:
             return _("Test notice sent successfully to {nmj2_host}").format(nmj2_host=unquote_plus(host))
-        else:
-            return _("Test notice failed to {nmj2_host}").format(nmj2_host=unquote_plus(host))
+
+        return _("Test notice failed to {nmj2_host}").format(nmj2_host=unquote_plus(host))
 
     def settingsNMJv2(self):
         host = config.clean_host(self.get_body_argument("host"))
@@ -605,13 +605,11 @@ class Home(WebRoot):
         result = notifiers.nmjv2_notifier.notify_settings(unquote_plus(host), dbloc, instance)
         if result:
             return '{{"message": _("NMJ Database found at: {host}"), "database": "{database}"}}'.format(**{"host": host, "database": settings.NMJv2_DATABASE})
-        else:
-            # noinspection PyPep8
-            return (
-                '{{"message": _("Unable to find NMJ Database at location: {dbloc}. Is the right location selected and PCH running?"), "database": ""}}'.format(
-                    **{"dbloc": dbloc}
-                )
-            )
+
+        # noinspection PyPep8
+        return '{{"message": _("Unable to find NMJ Database at location: {dbloc}. Is the right location selected and PCH running?"), "database": ""}}'.format(
+            **{"dbloc": dbloc}
+        )
 
     def getTraktToken(self):
         trakt_pin = self.get_body_argument("trakt_pin")
@@ -630,7 +628,7 @@ class Home(WebRoot):
         uri = self.get_body_argument("flaresolverr_uri")
         logger.debug(_("Checking flaresolverr uri: {uri}").format(uri=uri))
         try:
-            requests.head(uri)
+            requests.head(uri, timeout=30)
             result = _("Successfully connected to flaresolverr, this is experimental!")
         except (requests.ConnectionError, requests.RequestException):
             result = _("Failed to connect to flaresolverr")
@@ -710,24 +708,24 @@ class Home(WebRoot):
 
         if notifiers.email_notifier.test_notify(host, port, smtp_from, use_tls, user, pwd, to):
             return _("Test email sent successfully! Check inbox.")
-        else:
-            return _("ERROR: {last_error}").format(last_error=notifiers.email_notifier.last_err)
+
+        return _("ERROR: {last_error}").format(last_error=notifiers.email_notifier.last_err)
 
     def testPushalot(self):
         authorization_token = self.get_body_argument("authorizationToken")
         result = notifiers.pushalot_notifier.test_notify(authorization_token)
         if result:
             return _("Pushalot notification succeeded. Check your Pushalot clients to make sure it worked")
-        else:
-            return _("Error sending Pushalot notification")
+
+        return _("Error sending Pushalot notification")
 
     def testPushbullet(self):
         api = self.get_body_argument("api")
         result = notifiers.pushbullet_notifier.test_notify(api)
         if result:
             return _("Pushbullet notification succeeded. Check your device to make sure it worked")
-        else:
-            return _("Error sending Pushbullet notification")
+
+        return _("Error sending Pushbullet notification")
 
     def getPushbulletDevices(self):
         api = self.get_body_argument("api")
@@ -736,16 +734,16 @@ class Home(WebRoot):
         result = notifiers.pushbullet_notifier.get_devices(api)
         if result:
             return result
-        else:
-            return _("Error sending Pushbullet notification")
+
+        return _("Error sending Pushbullet notification")
 
     def getPushbulletChannels(self):
         api = self.get_body_argument("api")
         result = notifiers.pushbullet_notifier.get_channels(api)
         if result:
             return result
-        else:
-            return _("Error sending Pushbullet notification")
+
+        return _("Error sending Pushbullet notification")
 
     def status(self):
         tvdir_free = helpers.disk_usage_hr(settings.TV_DOWNLOAD_DIR)
@@ -824,10 +822,10 @@ class Home(WebRoot):
                     controller="home",
                     action="restart",
                 )
-            else:
-                return self._genericMessage(_("Update Failed"), _("Update wasn't successful, not restarting. Check your log for more information."))
-        else:
-            return self.redirect("/" + settings.DEFAULT_PAGE + "/")
+
+            return self._genericMessage(_("Update Failed"), _("Update wasn't successful, not restarting. Check your log for more information."))
+
+        return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
     @staticmethod
     def compare_db_version():
@@ -843,9 +841,9 @@ class Home(WebRoot):
         elif db_status == "downgrade":
             logger.debug("New version has an old DB version - Downgrade")
             return json.dumps({"status": "success", "message": "downgrade"})
-        else:
-            logger.exception("Couldn't compare DB version.")
-            return json.dumps({"status": "error", "message": "General exception"})
+
+        logger.exception("Couldn't compare DB version.")
+        return json.dumps({"status": "error", "message": "General exception"})
 
     def displayShow(self):
         show = self.get_query_argument("show")
@@ -1119,15 +1117,15 @@ class Home(WebRoot):
         if error:
             if direct_call:
                 return [error]
-            else:
-                return self._genericMessage(_("Error"), error)
+
+            return self._genericMessage(_("Error"), error)
 
         if not show_obj:
             error_string = _("Unable to find the specified show") + f": {show_id}"
             if direct_call:
                 return [error_string]
-            else:
-                return self._genericMessage(_("Error"), error_string)
+
+            return self._genericMessage(_("Error"), error_string)
 
         show_obj.exceptions = sickchill.oldbeard.scene_exceptions.get_all_scene_exceptions(show_obj.indexerid)
 
@@ -1165,16 +1163,16 @@ class Home(WebRoot):
                     controller="home",
                     action="editShow",
                 )
-            else:
-                return t.render(
-                    show=show_obj,
-                    scene_exceptions=show_obj.exceptions,
-                    seasonResults=seasonResults,
-                    title=_("Edit Show"),
-                    header=_("Edit Show"),
-                    controller="home",
-                    action="editShow",
-                )
+
+            return t.render(
+                show=show_obj,
+                scene_exceptions=show_obj.exceptions,
+                seasonResults=seasonResults,
+                title=_("Edit Show"),
+                header=_("Edit Show"),
+                controller="home",
+                action="editShow",
+            )
 
         banner = self.get_body_argument("banner", default=None)
         fanart = self.get_body_argument("fanart", default=None)
@@ -1240,8 +1238,8 @@ class Home(WebRoot):
                 _img_data = getShowImage(image_parts[0])
                 if len(image_parts) > 1:
                     return _img_data, getShowImage(image_parts[1])
-                else:
-                    return _img_data, _img_data
+
+                return _img_data, _img_data
 
         if poster:
             img_data, img_thumb_data = get_images(poster)
@@ -1483,8 +1481,8 @@ class Home(WebRoot):
 
         if show_obj:
             return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
-        else:
-            return self.redirect("/home/")
+
+        return self.redirect("/home/")
 
     def updatePLEX(self):
         if notifiers.plex_notifier.update_library() is None:
@@ -1506,8 +1504,8 @@ class Home(WebRoot):
 
         if show_obj:
             return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
-        else:
-            return self.redirect("/home/")
+
+        return self.redirect("/home/")
 
     def updateJELLYFIN(self, show=None):
         show_obj = None
@@ -1522,8 +1520,8 @@ class Home(WebRoot):
 
         if show_obj:
             return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
-        else:
-            return self.redirect("/home/")
+
+        return self.redirect("/home/")
 
     def setStatus(self, direct=False):
         if direct is True:
@@ -1542,8 +1540,8 @@ class Home(WebRoot):
             if direct:
                 ui.notifications.error(_("Error"), errMsg)
                 return json.dumps({"result": "error"})
-            else:
-                return self._genericMessage(_("Error"), errMsg)
+
+            return self._genericMessage(_("Error"), errMsg)
 
         show_obj = Show.find(settings.show_list, int(show))
 
@@ -1552,8 +1550,8 @@ class Home(WebRoot):
             if direct:
                 ui.notifications.error(_("Error"), errMsg)
                 return json.dumps({"result": "error"})
-            else:
-                return self._genericMessage(_("Error"), errMsg)
+
+            return self._genericMessage(_("Error"), errMsg)
 
         segments = {}
         if eps:
@@ -1674,8 +1672,8 @@ class Home(WebRoot):
 
         if direct:
             return json.dumps({"result": "success"})
-        else:
-            return self.redirect(f"/home/displayShow?show={show}")
+
+        return self.redirect(f"/home/displayShow?show={show}")
 
     def testRename(self):
         show = self.get_query_argument("show")
@@ -1838,8 +1836,8 @@ class Home(WebRoot):
             return json.dumps({"result": "success"})  # I Actually want to call it queued, because the search hasn't been started yet!
         if ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps({"result": "success"})
-        else:
-            return json.dumps({"result": "failure"})
+
+        return json.dumps({"result": "failure"})
 
     # ## Returns the current ep_queue_item status for the current viewed show.
     # Possible status: Downloaded, Snatched, etc...
@@ -1861,8 +1859,8 @@ class Home(WebRoot):
                 if ep_loc and show_loc and ep_loc.lower().startswith(show_loc.lower()):
                     # noinspection IncorrectFormatting
                     return ep_loc[len(show_loc) + 1 :]
-                else:
-                    return ep_loc
+
+                return ep_loc
 
             if isinstance(search_thread, sickchill.oldbeard.search_queue.ManualSearchQueueItem):
                 # noinspection PyProtectedMember
@@ -2091,8 +2089,8 @@ class Home(WebRoot):
             return json.dumps({"result": "success"})  # I Actually want to call it queued, because the search hasn't been started yet!
         if ep_queue_item.started and ep_queue_item.success is None:
             return json.dumps({"result": "success"})
-        else:
-            return json.dumps({"result": "failure"})
+
+        return json.dumps({"result": "failure"})
 
     @staticmethod
     def fetch_releasegroups(show_name):

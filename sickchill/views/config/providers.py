@@ -43,8 +43,8 @@ class ConfigProviders(Config):
 
         if provider_id in provider_dict:
             return json.dumps({"error": "Provider Name already exists as " + name})
-        else:
-            return json.dumps({"success": provider_id})
+
+        return json.dumps({"success": provider_id})
 
     @staticmethod
     def getNewznabCategories(name, url, key):
@@ -96,12 +96,12 @@ class ConfigProviders(Config):
 
         if temp_provider.get_id() in (x.get_id() for x in settings.torrent_rss_provider_list):
             return json.dumps({"error": "Exists as " + temp_provider.name})
-        else:
-            (succ, errMsg) = temp_provider.validateRSS()
-            if succ:
-                return json.dumps({"success": temp_provider.get_id()})
-            else:
-                return json.dumps({"error": errMsg})
+
+        (succ, errMsg) = temp_provider.validateRSS()
+        if succ:
+            return json.dumps({"success": temp_provider.get_id()})
+
+        return json.dumps({"error": errMsg})
 
     @staticmethod
     def deleteTorrentRssProvider(provider_id):
