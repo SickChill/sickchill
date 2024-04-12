@@ -1,5 +1,6 @@
 import binascii
 import warnings
+
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     from enzyme import MKV
