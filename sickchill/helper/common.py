@@ -344,9 +344,9 @@ def replace_extension(filename: Union[Path, PathLike, str], new_extension: str) 
         return filename
     if not path.suffix:
         return filename
-    else:
-        if new_extension and not new_extension.startswith("."):
-            new_extension = f".{new_extension}"
+
+    if new_extension and not new_extension.startswith("."):
+        new_extension = f".{new_extension}"
 
     return type(filename)(path.with_suffix(new_extension))
 

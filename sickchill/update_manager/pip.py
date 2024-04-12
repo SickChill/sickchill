@@ -117,10 +117,10 @@ class PipUpdateManager(UpdateManagerBase):
             cmd.append(f"--find-links=https://wheel-index.linuxserver.io/{os_id}/")
 
         if os_id == "alpine":
-            cmd.append(f"--extra-index-url=https://alpine-wheels.github.io/index")
+            cmd.append("--extra-index-url=https://alpine-wheels.github.io/index")
 
         elif os_id in ("raspbian", "osmc"):
-            cmd.append(f"--extra-index-url=https://www.piwheels.org/simple")
+            cmd.append("--extra-index-url=https://www.piwheels.org/simple")
 
         syno_wheelhouse = sickchill_dir.with_name("wheelhouse")
         if syno_wheelhouse.is_dir():

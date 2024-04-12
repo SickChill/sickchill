@@ -120,8 +120,8 @@ class ComingEpisodes(object):
             if result["epstatus"] in SNATCHED:
                 if result["location"]:
                     continue
-                else:
-                    category = "snatched"
+
+                category = "snatched"
             elif result["airdate"] < today:
                 category = "missed"
             elif result["airdate"] >= next_week:

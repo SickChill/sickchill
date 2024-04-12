@@ -1233,13 +1233,13 @@ class Home(WebRoot):
                 start = image.index("base64,") + 7
                 _img_data = base64.b64decode(image[start:])
                 return _img_data, _img_data
-            else:
-                image_parts = image.split("|")
-                _img_data = getShowImage(image_parts[0])
-                if len(image_parts) > 1:
-                    return _img_data, getShowImage(image_parts[1])
 
-                return _img_data, _img_data
+            image_parts = image.split("|")
+            _img_data = getShowImage(image_parts[0])
+            if len(image_parts) > 1:
+                return _img_data, getShowImage(image_parts[1])
+
+            return _img_data, _img_data
 
         if poster:
             img_data, img_thumb_data = get_images(poster)

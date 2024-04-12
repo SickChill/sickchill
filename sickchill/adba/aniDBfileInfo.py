@@ -32,8 +32,8 @@ def get_file_hash(filePath: Path):
         hashes = [md4_hash(data).digest() for data in a]
         if len(hashes) == 1:
             return hashes[0].hex()
-        else:
-            return md4_hash(reduce(lambda b, c: b + c, hashes, b"")).hexdigest()
+
+        return md4_hash(reduce(lambda b, c: b + c, hashes, b"")).hexdigest()
 
 
 def download_file(url, filename: Path):
