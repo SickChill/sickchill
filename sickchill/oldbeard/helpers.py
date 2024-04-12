@@ -1727,7 +1727,8 @@ def manage_torrents_url(reset=False):
         try:
             h = requests.head(url, timeout=10)
             return h.status_code != 404
-        except requests.exceptions.RequestException:
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to test URL existence: {url}. Error: {e}")
             return False
 
     if settings.TORRENT_METHOD == "utorrent":
