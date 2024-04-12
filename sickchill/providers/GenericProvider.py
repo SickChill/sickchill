@@ -600,7 +600,7 @@ class GenericProvider(object):
     @staticmethod
     def valid_url(url):
         try:
-            valid = validators.url(url)
+            valid = validators.url(url, strict_query=False)
         except validators.utils.ValidationError:
             valid = False
 

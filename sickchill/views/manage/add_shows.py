@@ -54,7 +54,7 @@ class AddShows(Home):
         if matches:
             search_terms.append("{0}({1})".format(matches.group(1), matches.group(2)))
 
-        search_list = search_terms    # for safety of terms list.
+        search_list = search_terms  # for safety of terms list.
         for term in search_list:
             # If search term begins with an article, let's also search for it without
             matches = re.match(r"^(?:a|an|the) (.+)$", term, re.I)
