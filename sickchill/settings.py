@@ -10,6 +10,8 @@ from sickchill.oldbeard.numdict import NumDict
 from .init_helpers import setup_gettext, sickchill_dir
 
 if TYPE_CHECKING:
+    from configobj import ConfigObj
+
     from .movies import MovieList
 
 setup_gettext()
@@ -83,7 +85,7 @@ CALENDAR_ICONS = False
 CALENDAR_UNPROTECTED = False
 CF_AUTH_DOMAIN = ""
 CF_POLICY_AUD = ""
-CFG = None
+CFG: "ConfigObj" = None
 CHECK_PROPERS_INTERVAL = None
 CLIENT_WEB_URLS = {"torrent": "", "newznab": ""}
 COMING_EPS_DISPLAY_PAUSED = False
