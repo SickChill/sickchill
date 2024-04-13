@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from . import aniDBfileInfo as fileInfo
+from sickchill.adba import aniDBfileInfo as fileInfo
 
 
 class TvDBMap(object):

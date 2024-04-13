@@ -2,11 +2,10 @@ import re
 from pathlib import Path
 
 from sickchill import logger, settings
-
-from ..helper.common import remove_extension, valid_url
-from . import common
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from .scene_exceptions import get_scene_exceptions
+from sickchill.helper.common import remove_extension, valid_url
+from sickchill.oldbeard import common
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.scene_exceptions import get_scene_exceptions
 
 resultFilters = {"sub(bed|ed|pack|s)", "(dir|sub|nfo)fix", "(?<!shomin.)sample", "(dvd)?extras", "dub(bed)?"}
 

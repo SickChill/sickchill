@@ -3,9 +3,8 @@ import posixpath
 
 from sickchill import logger, settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
+from sickchill.oldbeard import helpers
 from sickchill.oldbeard.trakt_api import TraktAPI, traktException
-
-from . import helpers
 
 
 class traktTrending(object):

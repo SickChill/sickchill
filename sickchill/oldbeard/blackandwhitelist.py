@@ -1,7 +1,6 @@
 from sickchill import logger, settings
 from sickchill.adba.aniDBerrors import AniDBCommandTimeoutError
-
-from . import db, helpers
+from sickchill.oldbeard import db, helpers
 
 
 class BlackAndWhiteList(object):

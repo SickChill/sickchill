@@ -11,8 +11,7 @@ from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRC
 from sickchill import logger, settings
 from sickchill.helper.common import is_media_file, is_rar_file, is_sync_file, is_torrent_or_nzb_file, remove_extension, valid_url
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
-
-from . import common, db, failedProcessor, helpers, postProcessor
+from sickchill.oldbeard import common, db, failedProcessor, helpers, postProcessor
 
 if TYPE_CHECKING:
     from sickchill.oldbeard.name_parser.parser import ParseResult

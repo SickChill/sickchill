@@ -4,7 +4,7 @@ Tests for SickChill
 
 import unittest
 
-from . import helper, providers, show, system
+from tests.sickchill_tests import helper, providers, show, system
 
 if __name__ == "__main__":
     print('=====> Running all test in "sickchill_tests" <=====')

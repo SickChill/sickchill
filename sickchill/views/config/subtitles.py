@@ -6,9 +6,8 @@ import sickchill.start
 from sickchill import settings
 from sickchill.oldbeard import config, filters, subtitles as subtitle_module, ui
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from . import Config
 
 
 @Route("/config/subtitles(/?.*)", name="config:subtitles")

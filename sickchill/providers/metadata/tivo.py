@@ -5,10 +5,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow
 
+from sickchill import logger
 from sickchill.oldbeard import helpers
-
-from ... import logger
-from . import generic
+from sickchill.providers.metadata import generic
 
 
 class TIVOMetadata(generic.GenericMetadata):

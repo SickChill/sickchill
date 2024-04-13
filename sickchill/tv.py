@@ -1390,7 +1390,7 @@ class TVShow(object):
 
             if cur_quality not in allowed_qualities + preferred_qualities and not backlog:
                 return Overview.QUAL
-            elif preferred_qualities and cur_quality not in preferred_qualities and not backlog:
+            if preferred_qualities and cur_quality not in preferred_qualities and not backlog:
                 return Overview.QUAL
 
             return Overview.GOOD

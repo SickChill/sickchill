@@ -12,9 +12,8 @@ from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from . import Config
 
 
 @Route("/config/providers(/?.*)", name="config:providers")

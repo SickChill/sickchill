@@ -37,9 +37,8 @@ import sickchill
 from sickchill import adba, logger, settings
 from sickchill.helper import episode_num, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import is_media_file, replace_extension, USER_AGENT
+from sickchill.oldbeard import db
 from sickchill.show.Show import Show
-
-from . import db
 
 # Add some missing languages
 LOCALE_NAMES.update(

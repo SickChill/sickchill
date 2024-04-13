@@ -5,9 +5,8 @@ from typing import Generator, Union
 
 import sickchill
 from sickchill import adba, logger, settings
+from sickchill.oldbeard import db, helpers
 from sickchill.show.Show import Show
-
-from . import db, helpers
 
 exceptions_cache = {}
 

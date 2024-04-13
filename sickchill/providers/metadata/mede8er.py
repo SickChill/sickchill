@@ -3,11 +3,10 @@ import os
 from xml.etree import ElementTree
 
 import sickchill
+from sickchill import logger
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.oldbeard import helpers
-
-from ... import logger
-from . import mediabrowser
+from sickchill.providers.metadata import mediabrowser
 
 
 class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):

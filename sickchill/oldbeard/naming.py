@@ -2,11 +2,10 @@ import datetime
 import os
 
 from sickchill import logger, settings
+from sickchill.oldbeard import common
+from sickchill.oldbeard.common import DOWNLOADED, Quality
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.tv import TVEpisode
-
-from . import common
-from .common import DOWNLOADED, Quality
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 name_presets = ("%SN - %Sx%0E", "%SN - %Sx%0E - %EN", "%S.N.S%0SE%0E.%E.N", "%Sx%0E - %EN", "S%0SE%0E - %EN", "Season %0S/%S.N.S%0SE%0E.%Q.N-%RG")
 

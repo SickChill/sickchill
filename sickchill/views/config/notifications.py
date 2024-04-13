@@ -7,9 +7,8 @@ from sickchill import logger, settings
 from sickchill.helper import try_int
 from sickchill.oldbeard import config, filters, ui
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from . import Config
 
 
 @Route("/config/notifications(/?.*)", name="config:notifications")

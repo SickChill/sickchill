@@ -6,10 +6,9 @@ import imagesize
 import sickchill
 from sickchill import logger, settings
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
+from sickchill.oldbeard import helpers
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.providers.metadata.helpers import getShowImage
-
-from . import helpers
 
 
 class ImageCache(object):

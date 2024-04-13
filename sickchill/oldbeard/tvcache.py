@@ -8,12 +8,11 @@ from urllib.parse import urlparse
 from sickchill import logger, settings
 from sickchill.helper.common import convert_size, try_int, valid_url
 from sickchill.helper.exceptions import AuthException
+from sickchill.oldbeard import db, show_name_helpers
 from sickchill.oldbeard.bs4_parser import BS4Parser
+from sickchill.oldbeard.databases import cache
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.show.Show import Show
-
-from . import db, show_name_helpers
-from .databases import cache
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 provider_cache_db = {}
 

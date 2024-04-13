@@ -5,8 +5,7 @@ import locale
 import timeago
 
 from sickchill import settings
-
-from .network_timezones import sc_timezone
+from sickchill.oldbeard.network_timezones import sc_timezone
 
 date_presets = (
     "%Y-%m-%d",
