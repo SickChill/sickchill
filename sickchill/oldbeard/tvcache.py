@@ -5,10 +5,8 @@ import time
 import traceback
 from urllib.parse import urlparse
 
-import validators
-
 from sickchill import logger, settings
-from sickchill.helper.common import convert_size, try_int
+from sickchill.helper.common import convert_size, try_int, valid_url
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.show.Show import Show
@@ -36,7 +34,7 @@ class RSSTorrentMixin:
 
     @classmethod
     def check_link(cls, link, url):
-        return urlparse(link).netloc == urlparse(url).netloc or validators.url(link) is True or link.startswith("magnet")
+        return urlparse(link).netloc == urlparse(url).netloc or valid_url(link) is True or link.startswith("magnet")
 
     @classmethod
     def parse_feed_item(cls, item, url, size_units=None):

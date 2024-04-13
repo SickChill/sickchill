@@ -1,11 +1,9 @@
 import re
 from pathlib import Path
 
-import validators
-
 from sickchill import logger, settings
 
-from ..helper.common import remove_extension
+from ..helper.common import remove_extension, valid_url
 from . import common
 from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from .scene_exceptions import get_scene_exceptions
@@ -137,7 +135,7 @@ def determine_release_name(directory=None, release_name=None):
     """Determine a release name from a nzb file and/or folder name"""
 
     if release_name is not None:
-        if validators.url(release_name) is True:
+        if valid_url(release_name) is True:
             logger.info(_("Downloader returned a download url rather than a release name"))
             return release_name
 
