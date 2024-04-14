@@ -86,7 +86,7 @@ class ImageCache(object):
         Returns true if a cached poster exists for the given Indexer ID
         """
         poster_path = self.poster_path(indexer_id)
-        logger.debug(f"Checking if file poster_path exists")
+        logger.debug(f"Checking if file poster_path exists; {poster_path}")
         return os.path.isfile(poster_path)
 
     def has_banner(self, indexer_id):

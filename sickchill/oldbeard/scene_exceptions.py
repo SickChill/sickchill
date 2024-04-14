@@ -234,7 +234,7 @@ def _sickchill_exceptions_generator() -> Union[Generator[int, str, int], None]:
     if not should_refresh("sickchill"):
         return
 
-    logger.info(f"Checking for scene exception updates from sickchill.github.io")
+    logger.info("Checking for scene exception updates from sickchill.github.io")
     url = "https://sickchill.github.io/scene_exceptions/scene_exceptions.json"
 
     # noinspection PyBroadException

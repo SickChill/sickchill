@@ -20,7 +20,7 @@ class TvDBMap(object):
             try:
                 if anime.get(x, False) == xValue:
                     return int(anime.get(y, 0))
-            except ValueError as error:
+            except ValueError:
                 continue
         return 0
 

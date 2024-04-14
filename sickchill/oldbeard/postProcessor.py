@@ -1235,7 +1235,7 @@ class PostProcessor(object):
 
 
 def guessit_findit(name: str) -> Union["ParseResult", None]:
-    logger.debug(f"Trying a new way to verify if we can parse this file")
+    logger.debug(f"Trying a new way to verify if we can parse this file; {name}")
     title = guessit(name, {"type": "episode"}).get("title")
     if title:
         show: "TVShow" = helpers.get_show(title)

@@ -256,7 +256,7 @@ class ProperFinder(object):
         if not sql_results:
             main_db_con.action("INSERT INTO info (last_backlog, last_indexer, last_proper_search) VALUES (?,?,?)", [0, 0, str(when)])
         else:
-            main_db_con.action(f"UPDATE info SET last_proper_search = ? WHERE 1", [str(when)])
+            main_db_con.action("UPDATE info SET last_proper_search = ? WHERE 1", [str(when)])
 
     @staticmethod
     def _get_last_proper_search():
