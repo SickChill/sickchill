@@ -1089,6 +1089,7 @@ class Home(WebRoot):
             out.append("S" + str(season) + ": " + ", ".join(exceptions.names))
         return "<br>".join(out)
 
+    # noinspection PyUnboundLocalVariable
     def editShow(self, direct_call=False):
         if direct_call is False:
             show_id = self.get_query_argument("show", default=None)
