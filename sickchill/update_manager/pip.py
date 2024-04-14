@@ -10,8 +10,7 @@ from packaging.version import Version
 from sickchill import logger, settings
 from sickchill.init_helpers import get_current_version, sickchill_dir
 from sickchill.oldbeard import helpers, notifiers
-
-from .abstract import UpdateManagerBase
+from sickchill.update_manager.abstract import UpdateManagerBase
 
 
 class PipUpdateManager(UpdateManagerBase):

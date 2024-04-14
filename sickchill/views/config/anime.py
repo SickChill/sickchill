@@ -6,9 +6,8 @@ import sickchill.start
 from sickchill import settings
 from sickchill.oldbeard import config, filters, ui
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from .index import Config
 
 
 @Route("/config/anime(/?.*)", name="config:anime")

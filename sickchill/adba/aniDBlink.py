@@ -5,9 +5,9 @@ import zlib
 from time import sleep, time
 from typing import Any, Dict
 
-from .aniDBcommands import Command
-from .aniDBerrors import AniDBBannedError, AniDBError, AniDBMustAuthError, AniDBPacketCorruptedError
-from .aniDBresponses import ResponseResolver
+from sickchill.adba.aniDBcommands import Command
+from sickchill.adba.aniDBerrors import AniDBBannedError, AniDBError, AniDBMustAuthError, AniDBPacketCorruptedError
+from sickchill.adba.aniDBresponses import ResponseResolver
 
 
 class AniDBLink(threading.Thread):

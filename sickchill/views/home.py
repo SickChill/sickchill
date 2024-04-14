@@ -15,6 +15,7 @@ from sickchill import adba, logger, settings
 from sickchill.helper import try_int
 from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
+from sickchill.oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickchill.oldbeard.common import cpu_presets, FAILED, IGNORED, Overview, Quality, SKIPPED, SNATCHED_BEST, statusStrings, UNAIRED, WANTED
 from sickchill.oldbeard.scene_numbering import (
@@ -28,22 +29,40 @@ from sickchill.oldbeard.scene_numbering import (
 )
 from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.metadata.generic import GenericMetadata
+from sickchill.providers.metadata.helpers import getShowImage
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
 from sickchill.tv import TVShow
 from sickchill.update_manager import UpdateManager
-
-from ..oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
-from ..providers.metadata.generic import GenericMetadata
-from ..providers.metadata.helpers import getShowImage
-from .common import PageTemplate
-from .index import WebRoot
-from .routes import Route
+from sickchill.views.common import PageTemplate
+from sickchill.views.index import WebRoot
+from sickchill.views.routes import Route
 
 
 @Route("/home(/?.*)", name="home")
 class Home(WebRoot):
+
+    def __init__(self, backend, back2=None):
+        super().__init__(backend, back2)
+        backend = None
+        self.current_show = backend
+        self.new_show_dir = None
+        self.any_qualities = None
+        self.best_qualities = None
+        self.exceptions_list = None
+        self.new_default_ep_status = None
+        self.new_season_folders = None
+        self.new_paused = None
+        self.new_sports = None
+        self.new_subtitles = None
+        self.new_ignore_words = None
+        self.new_prefer_words = None
+        self.new_require_words = None
+        self.new_anime = None
+        self.new_scene = None
+        self.new_air_by_date = None
 
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")

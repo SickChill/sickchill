@@ -9,9 +9,8 @@ from sickchill.init_helpers import setup_gettext
 from sickchill.oldbeard import config, filters, helpers, ui
 from sickchill.oldbeard.common import Quality
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from .index import Config
 
 
 @Route("/config/general(/?.*)", name="config:general")

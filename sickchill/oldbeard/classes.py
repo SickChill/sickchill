@@ -8,8 +8,8 @@ from sickchill.helper.common import dateTimeFormat
 from sickchill.oldbeard.common import Quality
 
 if TYPE_CHECKING:
-    from ..providers.GenericProvider import GenericProvider
-    from ..tv import TVEpisode, TVShow
+    from sickchill.providers.GenericProvider import GenericProvider
+    from sickchill.tv import TVEpisode, TVShow
 
 
 class SearchResult(object):

@@ -10,7 +10,7 @@ from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.helpers import make_context
 
 if TYPE_CHECKING:
-    from .classes import SearchResult
+    from sickchill.oldbeard.classes import SearchResult
 
 
 def get_proxy(https: bool, host: str, username: str, password: str, verify: bool) -> xmlrpc.client.ServerProxy:

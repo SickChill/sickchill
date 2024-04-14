@@ -16,12 +16,11 @@ from tornado.web import authenticated, HTTPError, RequestHandler
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.init_helpers import check_installed, locale_dir
+from sickchill.oldbeard import config, db, helpers, network_timezones, ui
 from sickchill.show.ComingEpisodes import ComingEpisodes
+from sickchill.views.api.webapi import function_mapper
+from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
-
-from ..oldbeard import config, db, helpers, network_timezones, ui
-from .api.webapi import function_mapper
-from .common import PageTemplate
 
 try:
     import jwt

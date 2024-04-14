@@ -1,12 +1,11 @@
 import sickchill.start
 from sickchill import settings
 from sickchill.helper import try_int
+from sickchill.oldbeard import ui
 from sickchill.show.History import History as HistoryTool
-
-from ..oldbeard import ui
-from .common import PageTemplate
-from .index import WebRoot
-from .routes import Route
+from sickchill.views.common import PageTemplate
+from sickchill.views.index import WebRoot
+from sickchill.views.routes import Route
 
 
 @Route("/history(/?.*)", name="history")

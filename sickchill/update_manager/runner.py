@@ -7,8 +7,7 @@ import time
 from sickchill import logger, settings
 from sickchill.helper.exceptions import UpdaterException
 from sickchill.oldbeard import db, helpers, ui
-
-from .pip import PipUpdateManager
+from sickchill.update_manager.pip import PipUpdateManager
 
 
 class UpdateManager(object):
