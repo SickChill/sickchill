@@ -3005,9 +3005,9 @@ camel-case@^4.1.2:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001587:
-  version "1.0.30001609"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001609.tgz#fc34fad75c0c6d6d6303bdbceec2da8f203dabd6"
-  integrity sha512-JFPQs34lHKx1B5t1EpQpWH4c+29zIyn/haGsbpfq3suuV9v56enjFt23zqijxGTMwy1p/4H2tjnQMY+p1WoAyA==
+  version "1.0.30001610"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001610.tgz#2f44ed6e21d359e914271ae35b68903632628ccf"
+  integrity sha512-QFutAY4NgaelojVMjY63o6XlZyORPaLfyMnsl3HgnWdJUcX6K0oaJymHjH8PT5Gk7sTm8rvC/c5COUQKXqmOMA==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -7149,9 +7149,9 @@ mem-fs@^4.0.0:
     vinyl-file "^5.0.0"
 
 memfs@^4.6.0:
-  version "4.8.1"
-  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.8.1.tgz#1e02c15c4397212a9a1b037fa4324c6f7dd45b47"
-  integrity sha512-7q/AdPzf2WpwPlPL4v1kE2KsJsHl7EF4+hAeVzlyanr2+YnR21NVn9mDqo+7DEaKDRsQy8nvxPlKH4WqMtiO0w==
+  version "4.8.2"
+  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.8.2.tgz#9bb7c3e43647348451082557f05fb170b7442949"
+  integrity sha512-j4WKth315edViMBGkHW6NTF0QBjsTrcRDmYNcGsPq+ozMEyCCCIlX2d2mJ5wuh6iHvJ3FevUrr48v58YRqVdYg==
   dependencies:
     tslib "^2.0.0"
 
