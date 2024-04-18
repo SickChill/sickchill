@@ -101,7 +101,7 @@ normal_regexes = [
         # Show Name - 2010-11-23 - Ep Name
         r"""
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
-     (?P<air_date>(\d{4}[. _-]\d{2}[. _-]\d{2}))  # Strict 4,2,2
+     (?P<air_date>(\d{4}[. _-]\d{1,2}[. _-]\d{1,2}))  # digits 4, 1 or 2, 1 or 2
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
