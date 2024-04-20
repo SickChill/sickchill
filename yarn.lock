@@ -3949,9 +3949,9 @@ ejs@^3.1.6, ejs@^3.1.8, ejs@^3.1.9:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.668:
-  version "1.4.744"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.744.tgz#d19cdfdbd81bd800b71773702bcbaa129a3b2e8f"
-  integrity sha512-nAGcF0yeKKfrP13LMFr5U1eghfFSvFLg302VUFzWlcjPOnUYd52yU5x6PBYrujhNbc4jYmZFrGZFK+xasaEzVA==
+  version "1.4.745"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.745.tgz#9c202ce9cbf18a5b5e0ca47145fd127cc4dd2290"
+  integrity sha512-tRbzkaRI5gbUn5DEvF0dV4TQbMZ5CLkWeTAXmpC9IrYT+GE+x76i9p+o3RJ5l9XmdQlI1pPhVtE9uNcJJ0G0EA==
 
 emittery@^1.0.1:
   version "1.0.3"
@@ -6096,9 +6096,9 @@ ipaddr.js@1.9.1:
   integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
 
 ipaddr.js@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-2.1.0.tgz#2119bc447ff8c257753b196fc5f1ce08a4cdf39f"
-  integrity sha512-LlbxQ7xKzfBusov6UMi4MFpEg0m+mAm9xyNGEduwXMEDuf4WfzB/RZwMVYEd7IKGvh4IUkEXYxtAVu9T3OelJQ==
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-2.2.0.tgz#d33fa7bac284f4de7af949638c9d68157c6b92e8"
+  integrity sha512-Ag3wB2o37wslZS19hZqorUnrnzSkpOVy+IiiDEiTqNubEYpYuHWIf6K4psgN2ZWKExS4xhVCrRVfb/wfW8fWJA==
 
 irregular-plurals@^3.3.0:
   version "3.5.0"
@@ -9393,9 +9393,9 @@ smart-buffer@^4.2.0:
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
 snyk@^1.1285.1:
-  version "1.1289.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1289.0.tgz#a20a15a5e864c7ee16fee6bb3858ff99cb5ae2b2"
-  integrity sha512-TROGQWqdHVMH3YuhNtGBRGQ8JYhHoysR4e6gygKkIVAcExGhVj61sGw6ZdcQo7bu+HOAHf08jBQNZ+VaenMezA==
+  version "1.1290.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1290.0.tgz#0b4865ccfe8104b2d268fd8c095db5078527cdbc"
+  integrity sha512-AD72kAeGZ9f5AguB4S4LnUFrpkCg3fww9pykAiLRkkBT4ueGWsN2QyAwH4tpdxUVs3R1SUnY1OornrBXRFkdNg==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
