@@ -1425,7 +1425,7 @@ class CMDSickChillAddRootDir(ApiCall):
         else:
             root_dirs = settings.ROOT_DIRS.split("|")
 
-        if not self.location.lower() in [root_dir.lower() for root_dir in root_dirs[1:]]:
+        if self.location.lower() not in [root_dir.lower() for root_dir in root_dirs[1:]]:
             root_dirs.append(self.location)
 
         if self.default:

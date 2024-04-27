@@ -1649,7 +1649,7 @@ def imdb_from_tvdbid_on_tvmaze(indexer_id: Union[str, int]) -> str:
         try:
             imdb_id = data["externals"]["imdb"]
         except (SyntaxError, IndexError, ValueError):
-            logger.debug(f"attempt to use tvmaze to get imdbid failed")
+            logger.debug("attempt to use tvmaze to get imdbid failed")
 
     return imdb_id
 

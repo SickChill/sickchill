@@ -99,7 +99,7 @@ class ComingEpisodes(object):
 
         for index, item in enumerate(results):
             results[index]["localtime"] = scdatetime.convert_to_setting(parse_date_time(item["airdate"], item["airs"], item["network"]))
-            results[index]["snatchedsort"] = int(not results[index]["epstatus"] in SNATCHED)
+            results[index]["snatchedsort"] = int(results[index]["epstatus"] not in SNATCHED)
             if results[index]["custom_name"]:
                 results[index]["show_name"] = results[index]["custom_name"]
 

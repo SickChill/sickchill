@@ -32,7 +32,7 @@ class AniDBMapper:
         """Return an hex string with the correct bit set corresponding to the wanted fields in the map"""
         bit = 0
         for index, field in enumerate(map):
-            if field in wanted and not field in self.blacklist:
+            if field in wanted and field not in self.blacklist:
                 bit = bit ^ (1 << len(map) - index - 1)
 
         bit = str(hex(bit)).lstrip("0x").rstrip("L")
@@ -46,7 +46,7 @@ class AniDBMapper:
         bitChain = int(bitChain, 16)
         mapLength = len(map)
         for i in reversed(list(range(mapLength))):
-            if bitChain & (2**i):
+            if bitChain & (2 ** i):
                 codeList.append(map[mapLength - i - 1])
         return codeList
 
