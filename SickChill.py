@@ -25,12 +25,7 @@ except (ModuleNotFoundError, ImportError):
 
 from sickchill import logger, settings
 from sickchill.helper.common import choose_data_dir
-from sickchill.init_helpers import (
-    check_installed,
-    get_current_version,
-    remove_pid_file,
-    setup_gettext,
-)
+from sickchill.init_helpers import check_installed, get_current_version, remove_pid_file, setup_gettext
 from sickchill.movies import MovieList
 from sickchill.oldbeard.name_parser.parser import NameParser, ParseResult
 

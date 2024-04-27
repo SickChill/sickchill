@@ -205,7 +205,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # Replace double curly quotes
             sanitizedDescription = sanitizedDescription.replace("\u201c", '"').replace("\u201d", '"')
             # Replace single curly quotes
-            sanitizedDescription = sanitizedDescription.replace("\u2018", "'").replace("\u2019", "'").replace("\u02BC", "'")
+            sanitizedDescription = sanitizedDescription.replace("\u2018", "'").replace("\u2019", "'").replace("\u02bc", "'")
 
             data.append(f"description : {sanitizedDescription}")
 

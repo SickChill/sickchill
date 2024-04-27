@@ -1336,7 +1336,7 @@ def handle_requests_exception(
         "urllib3.exceptions.URLSchemeUnknown",
         "urllib3.exceptions.UnrewindableBodyError",
         # "urllib3.exceptions.httplib_IncompleteRead",
-    ]
+    ],
 ):
     def get_level(exception):
         return (logger.ERROR, logger.WARNING)[exception and "s,t,o,p,b,r,e,a,k,i,n,g,f" in str(exception)]
