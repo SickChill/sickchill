@@ -16,6 +16,7 @@ import traceback
 import urllib.request
 import uuid
 import zipfile
+from collections.abc import Iterable
 from contextlib import closing
 from itertools import cycle
 from pathlib import Path
@@ -35,8 +36,8 @@ from urllib3 import disable_warnings
 
 import sickchill
 from sickchill import adba, logger, settings
-from sickchill.helper import episode_num, pretty_file_size, SUBTITLE_EXTENSIONS
-from sickchill.helper.common import is_media_file, replace_extension, USER_AGENT
+from sickchill.helper import SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
+from sickchill.helper.common import USER_AGENT, is_media_file, replace_extension
 from sickchill.show.Show import Show
 
 from . import db
@@ -692,7 +693,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from OpenSSL import crypto
 
-        from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
+        from sickchill.certgen import TYPE_RSA, createCertificate, createCertRequest, createKeyPair
     except ModuleNotFoundError:
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))
@@ -852,6 +853,9 @@ def decrypt(data, encryption_version=0):
 
 
 def full_sanitizeSceneName(name):
+    # if the name is an iterable, but not a string, then join it with spaces.
+    if isinstance(name, Iterable) and not isinstance(name, str):
+        name = " ".join(name)
     return re.sub("[. -]", " ", sanitizeSceneName(name)).lower().strip()
 
 
@@ -1337,7 +1341,7 @@ def handle_requests_exception(
         "urllib3.exceptions.URLSchemeUnknown",
         "urllib3.exceptions.UnrewindableBodyError",
         # "urllib3.exceptions.httplib_IncompleteRead",
-    ]
+    ],
 ):
     def get_level(exception):
         return (logger.ERROR, logger.WARNING)[exception and "s,t,o,p,b,r,e,a,k,i,n,g,f" in str(exception)]
