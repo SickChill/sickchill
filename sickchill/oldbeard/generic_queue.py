@@ -1,7 +1,7 @@
 import datetime
 import threading
 
-from .. import logger
+from sickchill import logger
 
 
 class QueuePriorities(object):

@@ -1,9 +1,9 @@
 import re
 from xml.etree import ElementTree
 
-from .. import logger
-from . import classes, helpers
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill import logger
+from sickchill.oldbeard import classes, helpers
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 
 def get_season_nzbs(name, url_data, season):

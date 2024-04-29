@@ -37,9 +37,8 @@ import sickchill
 from sickchill import adba, logger, settings
 from sickchill.helper import episode_num, pretty_file_size, SUBTITLE_EXTENSIONS
 from sickchill.helper.common import is_media_file, replace_extension, USER_AGENT
+from sickchill.oldbeard import db
 from sickchill.show.Show import Show
-
-from . import db
 
 # Add some missing languages
 LOCALE_NAMES.update(
@@ -792,7 +791,7 @@ def check_url(url):
     We only check the URL header.
     """
     try:
-        requests.head(url, verify=False).raise_for_status()
+        requests.head(url, verify=False, timeout=10).raise_for_status()
     except Exception as error:
         # noinspection PyTypeChecker
         handle_requests_exception(error)
@@ -1337,7 +1336,7 @@ def handle_requests_exception(
         "urllib3.exceptions.URLSchemeUnknown",
         "urllib3.exceptions.UnrewindableBodyError",
         # "urllib3.exceptions.httplib_IncompleteRead",
-    ]
+    ],
 ):
     def get_level(exception):
         return (logger.ERROR, logger.WARNING)[exception and "s,t,o,p,b,r,e,a,k,i,n,g,f" in str(exception)]
@@ -1650,7 +1649,7 @@ def imdb_from_tvdbid_on_tvmaze(indexer_id: Union[str, int]) -> str:
         try:
             imdb_id = data["externals"]["imdb"]
         except (SyntaxError, IndexError, ValueError):
-            logger.debug(f"attempt to use tvmaze to get imdbid failed")
+            logger.debug("attempt to use tvmaze to get imdbid failed")
 
     return imdb_id
 
@@ -1725,7 +1724,7 @@ def manage_torrents_url(reset=False):
 
     def test_exists(url):
         try:
-            h = requests.head(url)
+            h = requests.head(url, timeout=10)
             return h.status_code != 404
         except requests.exceptions.RequestException:
             return False

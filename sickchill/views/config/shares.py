@@ -3,9 +3,8 @@ from tornado.web import addslash
 from sickchill import logger, settings
 from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from . import Config
 
 
 @Route("/config/shares(/?.*)", name="config:shares")

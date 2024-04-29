@@ -1,7 +1,7 @@
 from threading import Lock
 
-from .aniDBerrors import AniDBIncorrectParameterError, AniDBInternalError
-from .aniDBresponses import MylistResponse, NoSuchFileResponse, NoSuchMylistEntryResponse, ProducerResponse
+from sickchill.adba.aniDBerrors import AniDBIncorrectParameterError, AniDBInternalError
+from sickchill.adba.aniDBresponses import MylistResponse, NoSuchFileResponse, NoSuchMylistEntryResponse, ProducerResponse
 
 
 class Command(object):

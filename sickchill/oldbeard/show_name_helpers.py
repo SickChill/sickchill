@@ -1,14 +1,11 @@
 import re
 from pathlib import Path
 
-import validators
-
 from sickchill import logger, settings
-
-from ..helper.common import remove_extension
-from . import common
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from .scene_exceptions import get_scene_exceptions
+from sickchill.helper.common import remove_extension, valid_url
+from sickchill.oldbeard import common
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.scene_exceptions import get_scene_exceptions
 
 resultFilters = {"sub(bed|ed|pack|s)", "(dir|sub|nfo)fix", "(?<!shomin.)sample", "(dvd)?extras", "dub(bed)?"}
 
@@ -137,7 +134,7 @@ def determine_release_name(directory=None, release_name=None):
     """Determine a release name from a nzb file and/or folder name"""
 
     if release_name is not None:
-        if validators.url(release_name) is True:
+        if valid_url(release_name) is True:
             logger.info(_("Downloader returned a download url rather than a release name"))
             return release_name
 

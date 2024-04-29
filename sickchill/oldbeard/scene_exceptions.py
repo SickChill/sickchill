@@ -5,9 +5,8 @@ from typing import Generator, Union
 
 import sickchill
 from sickchill import adba, logger, settings
+from sickchill.oldbeard import db, helpers
 from sickchill.show.Show import Show
-
-from . import db, helpers
 
 exceptions_cache = {}
 
@@ -47,7 +46,9 @@ def get_scene_exceptions(indexer_id: int, season: int = -1) -> list:
 
     if indexer_id not in exceptions_cache or season not in exceptions_cache[indexer_id]:
         cache_db_con = db.DBConnection("cache.db")
-        exceptions = cache_db_con.select("SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ?", [indexer_id, season])
+        exceptions = cache_db_con.select(
+            "SELECT show_name FROM scene_exceptions WHERE indexer_id = ? and season = ? ORDER BY show_name COLLATE NOCASE", [indexer_id, season]
+        )
         if exceptions:
             exceptions_list = list({cur_exception["show_name"] for cur_exception in exceptions})
             if indexer_id not in exceptions_cache:
@@ -87,7 +88,9 @@ def get_all_scene_exceptions(indexer_id: int) -> dict:
     all_exceptions_dict = {}
 
     cache_db_con = db.DBConnection("cache.db")
-    exceptions = cache_db_con.select("SELECT show_name, season, custom FROM scene_exceptions WHERE indexer_id = ?", [indexer_id])
+    exceptions = cache_db_con.select(
+        "SELECT show_name, season, custom FROM scene_exceptions WHERE indexer_id = ? ORDER BY show_name COLLATE NOCASE", [indexer_id]
+    )
 
     if indexer_id in exceptions_cache:
         del exceptions_cache[indexer_id]
@@ -128,6 +131,10 @@ def get_all_scene_exceptions(indexer_id: int) -> dict:
                 all_exceptions_dict[-1].append({"show_name": sanitized_custom_name, "custom": False})
                 if sanitized_custom_name not in exceptions_cache[indexer_id][-1]:
                     exceptions_cache[indexer_id][-1].append(sanitized_custom_name)
+
+    # sort season in exceptions dict by "custom" then "show_name" so alphabetical and custom names are bottom of list
+    for ind, ele in enumerate(all_exceptions_dict):
+        all_exceptions_dict[ele] = sorted(all_exceptions_dict[ele], key=lambda x: (x["custom"], x["show_name"].lower()))
 
     logger.debug(f"get_all_scene_exceptions: {all_exceptions_dict}")
     logger.debug(f"exceptions_cache for {indexer_id}: {exceptions_cache.get(indexer_id)}")
@@ -227,7 +234,7 @@ def _sickchill_exceptions_generator() -> Union[Generator[int, str, int], None]:
     if not should_refresh("sickchill"):
         return
 
-    logger.info(f"Checking for scene exception updates from sickchill.github.io")
+    logger.info("Checking for scene exception updates from sickchill.github.io")
     url = "https://sickchill.github.io/scene_exceptions/scene_exceptions.json"
 
     # noinspection PyBroadException

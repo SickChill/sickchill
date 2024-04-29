@@ -2,7 +2,7 @@ import threading
 import traceback
 from queue import Empty, Queue
 
-from .. import logger
+from sickchill import logger
 
 
 class Event(object):
