@@ -29,7 +29,7 @@ class DelugeBase(object):
         options.update({"file_priorities": priority_map[result.priority]})
         # options.update({'file_priorities': priority_map[result.priority] * num_files})
 
-        if result.ratio:
+        if result.ratio and float(result.ratio) != -1.0 and float(result.ratio) >= 0.0:
             options.update({"stop_at_ratio": True})
             options.update({"stop_ratio": float(result.ratio)})
             # options.update({'remove_at_ratio': True})
