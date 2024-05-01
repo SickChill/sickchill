@@ -1,12 +1,11 @@
 import json
 from pathlib import Path
 
+from sickchill import settings
 from sickchill.oldbeard import config
 from sickchill.oldbeard.browser import folders_at_path
-
-from .. import settings
-from .index import WebRoot
-from .routes import Route
+from sickchill.views.index import WebRoot
+from sickchill.views.routes import Route
 
 
 @Route("/browser(/?.*)", name="filebrowser")

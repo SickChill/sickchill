@@ -9,10 +9,9 @@ import tvdbsimple
 # from sickchill import logger
 import sickchill.start
 from sickchill import logger, settings
+from sickchill.show.indexers.base import Indexer
+from sickchill.show.indexers.wrappers import ExceptionDecorator
 from sickchill.tv import TVEpisode
-
-from .base import Indexer
-from .wrappers import ExceptionDecorator
 
 
 class TVDB(Indexer):

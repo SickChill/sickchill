@@ -1,5 +1,5 @@
-from .authentication import KeyHandler
-from .webapi import (
+from sickchill.views.api.authentication import KeyHandler
+from sickchill.views.api.webapi import (
     ApiCall,
     ApiError,
     ApiHandler,

@@ -160,7 +160,7 @@ class Result(Base):
             return
 
         if not self.session.query(Movie).filter(Movie.name.like(f"{guess['title']}%")).count():
-            logging.debug(f"This result does not match any of our movies")
+            logging.debug("This result does not match any of our movies")
             return
 
         self.info_hash = result["hash"]

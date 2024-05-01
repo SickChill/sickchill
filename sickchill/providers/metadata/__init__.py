@@ -1,6 +1,6 @@
 import sys
 
-from . import generic, helpers, kodi, mede8er, mediabrowser, ps3, tivo, wdtv
+from sickchill.providers.metadata import generic, helpers, kodi, mede8er, mediabrowser, ps3, tivo, wdtv
 
 __all__ = ["generic", "helpers", "kodi", "mede8er", "mediabrowser", "ps3", "tivo", "wdtv"]
 

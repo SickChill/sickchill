@@ -59,7 +59,7 @@ class Client(GenericClient):
         if settings.TRACKERS_LIST and result.provider.public:
             trackers = list({x.strip() for x in settings.TRACKERS_LIST.split(",") if x.strip()})
             if trackers:
-                logger.debug(f"Adding trackers to public torrent")
+                logger.debug("Adding trackers to public torrent")
                 return self.api.torrents_add_trackers(torrent_hash=result.hash.lower(), urls=trackers)
 
     def _add_torrent_uri(self, result: "TorrentSearchResult"):

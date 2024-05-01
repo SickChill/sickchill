@@ -3,11 +3,11 @@ from typing import Dict, List, TYPE_CHECKING
 from urllib.parse import urljoin
 
 from sickchill import logger, settings
+from sickchill.helper.common import valid_url
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
-
-from .TorrentProvider import TorrentProvider
+from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode
@@ -76,7 +76,7 @@ class FrenchTorrentProvider(TorrentProvider):
     def url(self):
         if self._recheck_url:
             if self.custom_url:
-                if self.valid_url(self.custom_url):
+                if valid_url(self.custom_url):
                     self._used_url = self.custom_url
                 else:
                     logger.warning("Invalid custom url set, please check your settings")

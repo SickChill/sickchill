@@ -446,8 +446,8 @@ def _is_int(data):
         int(data)
     except (TypeError, ValueError, OverflowError):
         return False
-    else:
-        return True
+
+    return True
 
 
 def _rename_element(dict_obj, old_key, new_key):
@@ -840,10 +840,10 @@ class AbstractStartScheduler(ApiCall):
                 self.scheduler_class_str, time_remain, next_run
             )
             return _responds(RESULT_SUCCESS, msg=result_str)
-        else:
-            # Scheduler is currently active
-            error_str = "{}: {} search underway. Time remaining: {}.".format(error_str, self.scheduler_class_str, time_remain)
-            return _responds(RESULT_FAILURE, msg=error_str)
+
+        # Scheduler is currently active
+        error_str = "{}: {} search underway. Time remaining: {}.".format(error_str, self.scheduler_class_str, time_remain)
+        return _responds(RESULT_FAILURE, msg=error_str)
 
 
 class CMDFullSubtitleSearch(AbstractStartScheduler):
@@ -997,8 +997,8 @@ class CMDEpisodeSetStatus(ApiCall):
 
         if failure:
             return _responds(RESULT_FAILURE, ep_results, "Failed to set all or some status. Check data." + extra_msg)
-        else:
-            return _responds(RESULT_SUCCESS, msg="All status set successfully." + extra_msg)
+
+        return _responds(RESULT_SUCCESS, msg="All status set successfully." + extra_msg)
 
 
 # noinspection PyAbstractClass
@@ -1425,7 +1425,7 @@ class CMDSickChillAddRootDir(ApiCall):
         else:
             root_dirs = settings.ROOT_DIRS.split("|")
 
-        if not self.location.lower() in [root_dir.lower() for root_dir in root_dirs[1:]]:
+        if self.location.lower() not in [root_dir.lower() for root_dir in root_dirs[1:]]:
             root_dirs.append(self.location)
 
         if self.default:
@@ -1483,9 +1483,9 @@ class CMDSickChillBackup(ApiCall):
         if result:
             logger.info(_("API: sc.backup successful!"))
             return _responds(RESULT_SUCCESS, msg="Backup successful")
-        else:
-            logger.warning(_("API: sc.backup failed!"))
-            return _responds(RESULT_FAILURE, msg="Backup failed")
+
+        logger.warning(_("API: sc.backup failed!"))
+        return _responds(RESULT_FAILURE, msg="Backup failed")
 
 
 # noinspection PyAbstractClass
@@ -1606,9 +1606,9 @@ class CMDSickChillPauseBacklog(ApiCall):
         if self.pause:
             settings.searchQueueScheduler.action.pause_backlog()  # @UndefinedVariable
             return _responds(RESULT_SUCCESS, msg="Backlog paused")
-        else:
-            settings.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
-            return _responds(RESULT_SUCCESS, msg="Backlog un-paused")
+
+        settings.searchQueueScheduler.action.unpause_backlog()  # @UndefinedVariable
+        return _responds(RESULT_SUCCESS, msg="Backlog un-paused")
 
 
 # noinspection PyAbstractClass
@@ -1619,8 +1619,8 @@ class CMDSickChillPing(ApiCall):
         """Ping SickChill to check if it is running"""
         if settings.started:
             return _responds(RESULT_SUCCESS, {"pid": settings.PID}, "Pong")
-        else:
-            return _responds(RESULT_SUCCESS, msg="Pong")
+
+        return _responds(RESULT_SUCCESS, msg="Pong")
 
 
 # noinspection PyAbstractClass
@@ -2116,8 +2116,8 @@ class CMDShowAddNew(ApiCall):
             if not dir_exists:
                 logger.exception(f"API :: Unable to create the folder {'show_path'}, can't add the show")
                 return _responds(RESULT_FAILURE, {"path": show_path}, f"Unable to create the folder {'show_path'}, can't add the show")
-            else:
-                helpers.chmodAsParent(show_path)
+
+            helpers.chmodAsParent(show_path)
 
         settings.showQueueScheduler.action.add_show(
             int(indexer),

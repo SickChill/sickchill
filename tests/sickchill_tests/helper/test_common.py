@@ -392,7 +392,6 @@ class CommonTests(unittest.TestCase):
         Test sanitize filename
         """
         # noinspection PyByteLiteral
-        # pylint: noqa
         test_cases = {
             None: "",
             42: "",

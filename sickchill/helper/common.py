@@ -8,6 +8,7 @@ from typing import Union
 
 import appdirs
 import rarfile
+import validators
 
 from sickchill import settings
 from sickchill.init_helpers import get_current_version
@@ -344,9 +345,9 @@ def replace_extension(filename: Union[Path, PathLike, str], new_extension: str) 
         return filename
     if not path.suffix:
         return filename
-    else:
-        if new_extension and not new_extension.startswith("."):
-            new_extension = f".{new_extension}"
+
+    if new_extension and not new_extension.startswith("."):
+        new_extension = f".{new_extension}"
 
     return type(filename)(path.with_suffix(new_extension))
 
@@ -372,7 +373,19 @@ def sanitize_filename(filename):
     return ""
 
 
-def try_int(candidate, default_value=0):
+def valid_url(url):
+    try:
+        valid = validators.url(url)
+    except validators.utils.ValidationError:
+        valid = False  # ValidationError isn't an exception so doesn't actually get here
+
+    if not valid:
+        valid = False  # if ValidationError in response set to False
+
+    return valid
+
+
+def try_int(candidate, default_value=0) -> int:
     """
     Try to convert ``candidate`` to int, or return the ``default_value``.
     :param candidate: The value to convert to int
@@ -386,7 +399,7 @@ def try_int(candidate, default_value=0):
         return default_value
 
 
-def try_float(candidate, default_value=0):
+def try_float(candidate, default_value=0) -> float:
     """
     Try to convert ``candidate`` to int, or return the ``default_value``.
     :param candidate: The value to convert to int

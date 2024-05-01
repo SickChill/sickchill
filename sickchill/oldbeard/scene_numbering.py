@@ -9,10 +9,9 @@ import traceback
 
 import sickchill
 from sickchill import logger, settings
+from sickchill.oldbeard import db
+from sickchill.oldbeard.scene_exceptions import xem_session
 from sickchill.show.Show import Show
-
-from . import db
-from .scene_exceptions import xem_session
 
 
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):

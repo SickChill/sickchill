@@ -438,7 +438,7 @@ class TVShow(object):
     def update_metadata(self):
         if not os.path.isdir(self._location):
             logger.info(f"{self.indexerid}: Show dir doesn't exist, skipping NFO generation")
-            return
+            return False
 
         result = False
 
@@ -979,9 +979,9 @@ class TVShow(object):
             NewConnectionError,
             MaxRetryError,
         ) as error:
-            logger.info(f"Could not get IMDB info: see debug logs for details")
+            logger.info("Could not get IMDB info: see debug logs for details")
             logger.debug(f"IMDB traceback: {error}", exc_info=True)
-        except (SyntaxError, KeyError):
+        except SyntaxError:
             logger.info("Could not get info from IDMb, pip install lxml")
 
     def next_episode(self):
@@ -1370,30 +1370,30 @@ class TVShow(object):
 
         if ep_status == WANTED:
             return Overview.WANTED
-        elif ep_status in (UNAIRED, UNKNOWN):
+        if ep_status in (UNAIRED, UNKNOWN):
             return Overview.UNAIRED
-        elif ep_status in (SKIPPED, IGNORED):
+        if ep_status in (SKIPPED, IGNORED):
             return Overview.SKIPPED
-        elif ep_status in Quality.ARCHIVED:
+        if ep_status in Quality.ARCHIVED:
             return Overview.GOOD
-        elif ep_status in Quality.FAILED:
+        if ep_status in Quality.FAILED:
             return Overview.WANTED
-        elif ep_status in Quality.SNATCHED:
+        if ep_status in Quality.SNATCHED:
             return Overview.SNATCHED
-        elif ep_status in Quality.SNATCHED_PROPER:
+        if ep_status in Quality.SNATCHED_PROPER:
             return Overview.SNATCHED_PROPER
-        elif ep_status in Quality.SNATCHED_BEST:
+        if ep_status in Quality.SNATCHED_BEST:
             return Overview.SNATCHED_BEST
-        elif ep_status in Quality.DOWNLOADED:
+        if ep_status in Quality.DOWNLOADED:
             allowed_qualities, preferred_qualities = Quality.splitQuality(self.quality)
             ep_status, cur_quality = Quality.splitCompositeStatus(ep_status)
 
             if cur_quality not in allowed_qualities + preferred_qualities and not backlog:
                 return Overview.QUAL
-            elif preferred_qualities and cur_quality not in preferred_qualities and not backlog:
+            if preferred_qualities and cur_quality not in preferred_qualities and not backlog:
                 return Overview.QUAL
-            else:
-                return Overview.GOOD
+
+            return Overview.GOOD
         else:
             logger.error(f"Could not parse episode status into a valid overview status: {episode_status}")
 
@@ -1684,9 +1684,9 @@ class TVEpisode(object):
             if self.name:
                 logger.debug("{} timed out, but we have enough info from other sources, allowing the error".format(self.indexer_name))
                 return
-            else:
-                logger.error("{} timed out, unable to create the episode".format(self.indexer_name))
-                return False
+
+            logger.error("{} timed out, unable to create the episode".format(self.indexer_name))
+            return False
 
         if not indexer_episode.get("episodeName"):
             if self.name:
@@ -1999,37 +1999,37 @@ class TVEpisode(object):
                             ep_id,
                         ],
                     ]
-                else:
-                    # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
-                    return [
-                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
-                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
-                        [
-                            self.indexerid,
-                            self.indexer,
-                            self.name,
-                            self.description,
-                            self.subtitles_searchcount,
-                            self.subtitles_lastsearch,
-                            self.airdate.toordinal(),
-                            self.has_nfo,
-                            self.has_tbn,
-                            self.status,
-                            self.location,
-                            self.file_size,
-                            self.release_name,
-                            self.is_proper,
-                            self.show.indexerid,
-                            self.season,
-                            self.episode,
-                            self.absolute_number,
-                            self.version,
-                            self.release_group,
-                            ep_id,
-                        ],
-                    ]
+
+                # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
+                return [
+                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
+                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                    [
+                        self.indexerid,
+                        self.indexer,
+                        self.name,
+                        self.description,
+                        self.subtitles_searchcount,
+                        self.subtitles_lastsearch,
+                        self.airdate.toordinal(),
+                        self.has_nfo,
+                        self.has_tbn,
+                        self.status,
+                        self.location,
+                        self.file_size,
+                        self.release_name,
+                        self.is_proper,
+                        self.show.indexerid,
+                        self.season,
+                        self.episode,
+                        self.absolute_number,
+                        self.version,
+                        self.release_group,
+                        ep_id,
+                    ],
+                ]
             else:
                 # use a custom insert method to get the data into the DB.
                 return [
@@ -2111,8 +2111,8 @@ class TVEpisode(object):
     def full_path(self):
         if self.location is None or self.location == "":
             return None
-        else:
-            return os.path.join(self.show.location, self.location)
+
+        return os.path.join(self.show.location, self.location)
 
     def create_strings(self, pattern=None):
         patterns = ["%S.N.S%SE%0E", "%S.N.S%0SE%E", "%S.N.S%SE%E", "%S.N.S%0SE%0E", "%SN S%SE%0E", "%SN S%0SE%E", "%SN S%SE%E", "%SN S%0SE%0E"]
@@ -2434,7 +2434,7 @@ class TVEpisode(object):
                 if multi in (NAMING_LIMITED_EXTEND, NAMING_LIMITED_EXTEND_E_PREFIXED) and other_ep != self.related_episodes[-1]:
                     continue
 
-                elif multi == NAMING_DUPLICATE:
+                if multi == NAMING_DUPLICATE:
                     # add " - S01"
                     ep_string += sep + season_format
 
@@ -2502,8 +2502,8 @@ class TVEpisode(object):
             return result
 
         # if not we append the folder on and use that
-        else:
-            result = os.path.join(self.formatted_dir(anime_type=anime_type), result)
+
+        result = os.path.join(self.formatted_dir(anime_type=anime_type), result)
 
         return result
 
@@ -2528,8 +2528,8 @@ class TVEpisode(object):
 
         if len(name_groups) == 1:
             return ""
-        else:
-            return self.naming_pattern(os.sep.join(name_groups[:-1]), multi, anime_type)
+
+        return self.naming_pattern(os.sep.join(name_groups[:-1]), multi, anime_type)
 
     def formatted_filename(self, pattern=None, multi=None, anime_type=None):
         """

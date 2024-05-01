@@ -2,7 +2,7 @@ import html
 import os
 import warnings
 
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.oldbeard import common
 
 # noinspection PyUnresolvedReferences

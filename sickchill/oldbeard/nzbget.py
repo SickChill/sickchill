@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
+from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.helpers import make_context
 
-from .common import Quality
-
 if TYPE_CHECKING:
-    from .classes import SearchResult
+    from sickchill.oldbeard.classes import SearchResult
 
 
 def get_proxy(https: bool, host: str, username: str, password: str, verify: bool) -> xmlrpc.client.ServerProxy:
