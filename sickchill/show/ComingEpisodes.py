@@ -69,6 +69,7 @@ class ComingEpisodes(object):
                 "showid",
                 "e.status as epstatus",
                 "s.status",
+                "custom_name",
             ]
         )
 
@@ -98,7 +99,9 @@ class ComingEpisodes(object):
 
         for index, item in enumerate(results):
             results[index]["localtime"] = scdatetime.convert_to_setting(parse_date_time(item["airdate"], item["airs"], item["network"]))
-            results[index]["snatchedsort"] = int(not results[index]["epstatus"] in SNATCHED)
+            results[index]["snatchedsort"] = int(results[index]["epstatus"] not in SNATCHED)
+            if results[index]["custom_name"]:
+                results[index]["show_name"] = results[index]["custom_name"]
 
         results.sort(key=ComingEpisodes.sorts[sort])
 
@@ -117,8 +120,8 @@ class ComingEpisodes(object):
             if result["epstatus"] in SNATCHED:
                 if result["location"]:
                     continue
-                else:
-                    category = "snatched"
+
+                category = "snatched"
             elif result["airdate"] < today:
                 category = "missed"
             elif result["airdate"] >= next_week:

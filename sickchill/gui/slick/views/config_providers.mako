@@ -69,17 +69,15 @@
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
-
                     <fieldset class="component-group-list">
-
                         <ul id="provider_order_list">
                             % for provider in providers.sorted_provider_list(only_enabled=True):
-                            <%
-                                if hasattr(provider, 'custom_url'):
-                                    provider_url = provider.custom_url or provider.url
-                                else:
-                                    provider_url = provider.url
-                            %>
+                                <%
+                                    if hasattr(provider, 'custom_url'):
+                                        provider_url = provider.custom_url or provider.url
+                                    else:
+                                        provider_url = provider.url
+                                %>
                                 <li class="ui-state-default ${('nzb-provider', 'torrent-provider')[provider.provider_type == GenericProvider.TORRENT]}" id="${provider.get_id()}">
                                     <input type="checkbox" id="enable_${provider.get_id()}" name="enable_${provider.get_id()}" class="provider_enabler" ${checked(provider.is_enabled)} />
                                     <a href="${anon_url(provider_url)}" class="imgLink" rel="noreferrer" target="_blank">

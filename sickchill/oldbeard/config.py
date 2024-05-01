@@ -10,8 +10,7 @@ import rarfile
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
-
-from . import db, helpers, naming
+from sickchill.oldbeard import db, helpers, naming
 
 # Address poor support for scgi over unix domain sockets
 # this is not nicely handled by python currently

@@ -299,7 +299,7 @@ class AddPreferWords(InitialSchema):
 
 
 class AddCustomNameToShow(AddPreferWords):
-    """Adding column rls_prefer_words to tv_shows"""
+    """Adding column custom_name to tv_shows"""
 
     def test(self):
         return self.has_column("tv_shows", "custom_name")

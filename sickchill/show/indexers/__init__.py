@@ -1,5 +1,5 @@
 from typing import Union
 
-from .handler import ShowIndexer
+from sickchill.show.indexers.handler import ShowIndexer
 
 indexer: Union[ShowIndexer, None] = None

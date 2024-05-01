@@ -6,10 +6,9 @@ from typing import List
 
 from sickchill.helper import video_screen_size
 from sickchill.init_helpers import setup_gettext
+from sickchill.oldbeard.numdict import NumDict
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
-
-from .numdict import NumDict
 
 setup_gettext()
 

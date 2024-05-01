@@ -6,9 +6,8 @@ import sickchill.update_manager
 from sickchill import settings
 from sickchill.oldbeard import helpers
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from .index import Config
 
 
 @Route("/config/backuprestore(/?.*)", name="config:backup")

@@ -20,27 +20,20 @@ class PostProcess(Home):
             action="postProcess",
         )
 
-    def processEpisode(
-        self,
-        proc_dir=None,
-        nzbName=None,
-        quiet=None,
-        process_method=None,
-        force=None,
-        is_priority=None,
-        delete_on="0",
-        failed="0",
-        proc_type="manual",
-        force_next=False,
-        *args_,
-        **kwargs,
-    ):
-        mode = kwargs.get("type", proc_type)
-        process_path = self.get_argument("dir", default=self.get_argument("proc_dir", default=""))
+    def processEpisode(self):
+        # Manual mode post processing
+        mode = "manual"
+        release_name = self.get_body_argument("nzbName", default=None)
+        process_method = self.get_body_argument("process_method", default=None)
+        delete_on = self.get_body_argument("delete_on", default="0")
+        force = config.checkbox_to_value(self.get_body_argument("force", default="False"))
+        is_priority = config.checkbox_to_value(self.get_body_argument("is_priority", default="False"))
+        failed = config.checkbox_to_value(self.get_body_argument("failed", default="False"))
+        force_next = config.checkbox_to_value(self.get_body_argument("force_next", default="False"))
+
+        process_path = self.get_body_argument("dir", self.get_body_argument("proc_dir", default=""))
         if not process_path:
             return self.redirect("/home/postprocess/")
-
-        release_name = self.get_argument("nzbName", default=None)
 
         result = settings.postProcessorTaskScheduler.action.add_item(
             process_path,
@@ -53,9 +46,6 @@ class PostProcess(Home):
             mode=mode,
             force_next=force_next,
         )
-
-        if config.checkbox_to_value(quiet):
-            return result
 
         if result:
             result = result.replace("\n", "<br>\n")

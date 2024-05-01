@@ -76,7 +76,7 @@
                                         <a href="${scRoot}/home/displayShow?show=${loading_show.id}">
                                     % endif
                                     <img src="${static_url('images/banner.png')}" data-src="${static_url(loading_show.show_image_url('banner'))}"
-                                         class="${settings.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}" />
+                                        class="${settings.HOME_LAYOUT}" alt="${loading_show.name}" title="${loading_show.name}" />
                                     % if curLoadingShow.show:
                                         </a>
                                     % endif

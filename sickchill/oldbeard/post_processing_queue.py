@@ -4,9 +4,8 @@ import time
 import traceback
 
 from sickchill import logger, settings
-
-from . import common, config, generic_queue
-from .processTV import log_helper, process_dir
+from sickchill.oldbeard import common, config, generic_queue
+from sickchill.oldbeard.processTV import log_helper, process_dir
 
 MANUAL_POST_PROCESS = 120
 AUTO_POST_PROCESS = 100

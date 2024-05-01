@@ -11,14 +11,8 @@ from tornado.locale import load_gettext_translations
 
 import sickchill
 from sickchill import logger, settings, show_updater, update_manager
-from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickchill.oldbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
-from sickchill.oldbeard.databases import failed, main
-from sickchill.oldbeard.providers.newznab import NewznabProvider
-from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
-
-from .init_helpers import locale_dir, setup_gettext
-from .oldbeard import (
+from sickchill.init_helpers import locale_dir, setup_gettext
+from sickchill.oldbeard import (
     clients,
     config,
     dailysearcher,
@@ -37,9 +31,13 @@ from .oldbeard import (
     subtitles,
     traktChecker,
 )
-from .oldbeard.databases import cache
-from .providers import metadata
-from .system.Shutdown import Shutdown
+from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
+from sickchill.oldbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
+from sickchill.oldbeard.databases import cache, failed, main
+from sickchill.oldbeard.providers.newznab import NewznabProvider
+from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+from sickchill.providers import metadata
+from sickchill.system.Shutdown import Shutdown
 
 
 def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool = False, disable_file_logging: bool = False) -> bool:

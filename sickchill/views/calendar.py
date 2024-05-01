@@ -4,9 +4,8 @@ from tornado.web import authenticated
 
 from sickchill import logger, settings
 from sickchill.helper import try_int
-
-from ..oldbeard import db, network_timezones
-from .index import BaseHandler
+from sickchill.oldbeard import db, network_timezones
+from sickchill.views.index import BaseHandler
 
 
 class CalendarHandler(BaseHandler):
