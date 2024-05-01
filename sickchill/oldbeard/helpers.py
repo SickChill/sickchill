@@ -692,7 +692,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from OpenSSL import crypto
 
-        from sickchill.certgen import TYPE_RSA, createCertificate, createCertRequest, createKeyPair
+        from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
     except ModuleNotFoundError:
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))
