@@ -74,7 +74,7 @@ class SearchTest(conftest.SickChillTestDBCase):
         return _create_fake_xml(search_items)
 
     @property
-    def _fake_is_active(self):
+    def readonly_fake_is_active(self):
         """
         Fake is active
         """
@@ -90,7 +90,7 @@ class SearchTest(conftest.SickChillTestDBCase):
 
         for provider in sickchill.oldbeard.providers.sorted_provider_list():
             provider.get_url = self._fake_get_url
-            provider.is_active = self._fake_is_active
+            provider.is_active = self.readonly_fake_is_active
 
         super().__init__(something)
 
