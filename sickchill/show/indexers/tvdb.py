@@ -110,38 +110,42 @@ class TVDB(Indexer):
         if not name:
             return result
 
-        if re.match(r"^t?t?\d{7,8}$", name) or re.match(r"^\d{6}$", name):
-            try:
-                if re.match(r"^t?t?\d{7,8}$", name):
-                    result = self._search(imdbId=f'tt{name.strip("t")}', language=language)
-                elif re.match(r"^\d{6}$", name):
-                    series = self._series(name, language=language)
-                    if series:
-                        result = [series.info(language)]
-            except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
-                logger.debug(traceback.format_exc())
-        else:
-            # Name as provided (usually from nfo)
-            names = [name]
-            if not exact:
-                # Name without year and separator
-                test = re.match(r"^(.+?)[. -]+\(\d{4}\)?$", name)
-                if test:
-                    names.append(test.group(1).strip())
-                # Name with spaces
-                if re.match(r"[. -_]", name):
-                    names.append(re.sub(r"[. -_]", " ", name).strip())
-                    if test:
-                        # Name with spaces and without year
-                        names.append(re.sub(r"[. -_]", " ", test.group(1)).strip())
-
-            for attempt in set(n for n in names if n.strip()):
+        if isinstance(name, str):
+            if re.match(r"^t?t?\d{7,8}$", name) or re.match(r"^\d{6}$", name):
                 try:
-                    result = self._search(attempt, language=language)
-                    if result:
-                        break
+                    if re.match(r"^t?t?\d{7,8}$", name):
+                        result = self._search(imdbId=f'tt{name.strip("t")}', language=language)
+                    elif re.match(r"^\d{6}$", name):
+                        series = self._series(name, language=language)
+                        if series:
+                            result = [series.info(language)]
                 except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
                     logger.debug(traceback.format_exc())
+            else:
+                # Name as provided (usually from nfo)
+                names = [name]
+                if not exact:
+                    # Name without year and separator
+                    test = re.match(r"^(.+?)[. -]+\(\d{4}\)?$", name)
+                    if test:
+                        names.append(test.group(1).strip())
+                    # Name with spaces
+                    if re.match(r"[. -_]", name):
+                        names.append(re.sub(r"[. -_]", " ", name).strip())
+                        if test:
+                            # Name with spaces and without year
+                            names.append(re.sub(r"[. -_]", " ", test.group(1)).strip())
+    
+                for attempt in set(n for n in names if n.strip()):
+                    try:
+                        result = self._search(attempt, language=language)
+                        if result:
+                            break
+                    except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
+                        logger.debug(traceback.format_exc())
+        else:
+            for n in name:
+                result.extend(self.search(n, language, exact, indexer_id))
 
         return result
 
