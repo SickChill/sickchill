@@ -64,7 +64,7 @@ flake8-quotes = "^3.3.0"
 flake8-docstrings = "^1.6.0"
 flake9 = "^3.8.3"
 codecov = "^2.1.12"
-pytest = ">=7.0.1,<9.0.0"
+pytest = ">=7.0.1,<9.0.0,!=8.2.0"
 isort = "^5.10.1"
 poethepoet = ">=0.16,<0.27"
 po2json = "^0.2.2"
@@ -158,6 +158,7 @@ builtins = ["_"]
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py"]
 addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail"
+filterwarnings = ['ignore:.*telnetlib.*is deprecated:DeprecationWarning']
 
 [tool.isort]
 profile = "black"
@@ -271,7 +272,7 @@ tmdbsimple = "^2.8.0"
 tornado = "^6.3.2"
 tvdbsimple = "^1.0.6"
 Unidecode = "^1.2.0"
-validators = ">=0.18.2,<0.25.0"
+validators = ">=0.18.2,<0.29.0"
 enzyme = "^0.4.1"
 python3-fanart = "^2.0.0"
 gntp = "^1.0.3"
