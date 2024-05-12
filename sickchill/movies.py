@@ -10,9 +10,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from tmdbsimple import movies, search
 
-from . import settings
-from .oldbeard.databases import movie
-from .oldbeard.db import db_cons, db_full_path, db_locks
+from sickchill import settings
+from sickchill.oldbeard.databases import movie
+from sickchill.oldbeard.db import db_cons, db_full_path, db_locks
 
 logger = logging.getLogger("sickchill.movie")
 

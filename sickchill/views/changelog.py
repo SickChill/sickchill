@@ -1,10 +1,10 @@
 import markdown2
 
-from .. import logger
-from ..oldbeard import helpers
-from .common import PageTemplate
-from .home import Home
-from .routes import Route
+from sickchill import logger
+from sickchill.oldbeard import helpers
+from sickchill.views.common import PageTemplate
+from sickchill.views.home import Home
+from sickchill.views.routes import Route
 
 
 @Route("/changes(/?.*)", name="changelog")

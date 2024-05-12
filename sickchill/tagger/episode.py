@@ -128,10 +128,10 @@ class EpisodeTags(object):
             return "dlmux"
         if self.netflix:
             return self.netflix
-        else:
-            attr = "web"
-            match = self._get_match_obj(attr)
-            return "" if not match else match.group("type") or "dl"
+
+        attr = "web"
+        match = self._get_match_obj(attr)
+        return "" if not match else match.group("type") or "dl"
 
     @property
     def sat(self):

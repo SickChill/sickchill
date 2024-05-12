@@ -3,8 +3,7 @@ from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from sickchill import logger, settings
-
-from . import helpers
+from sickchill.oldbeard import helpers
 
 session = helpers.make_session()
 

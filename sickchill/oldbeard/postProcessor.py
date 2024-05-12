@@ -19,12 +19,11 @@ import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
 from sickchill.helper.common import episode_num, get_extension, is_rar_file, remove_extension, replace_extension, SUBTITLE_EXTENSIONS
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
+from sickchill.oldbeard import common, db, helpers, notifiers, show_name_helpers
+from sickchill.oldbeard.helpers import verify_freespace
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.show.History import History
 from sickchill.show.Show import Show
-
-from . import common, db, helpers, notifiers, show_name_helpers
-from .helpers import verify_freespace
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 METHOD_COPY = "copy"
 METHOD_MOVE = "move"
@@ -1206,6 +1205,9 @@ class PostProcessor(object):
             # do the library update for EMBY
             notifiers.emby_notifier.update_library(episode_object.show)
 
+            # do the library update for JELLYFIN
+            notifiers.jellyfin_notifier.update_library(episode_object.show)
+
             # do the library update for NMJ
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
 
@@ -1233,9 +1235,14 @@ class PostProcessor(object):
 
 
 def guessit_findit(name: str) -> Union["ParseResult", None]:
-    logger.debug(f"Trying a new way to verify if we can parse this file")
+    logger.debug(f"Trying a new way to verify if we can parse this file; {name}")
     title = guessit(name, {"type": "episode"}).get("title")
+
     if title:
+        # if the title is a list instead of a string, then join it with spaces.
+        if isinstance(title, list):
+            title = " ".join(title)
+
         show: "TVShow" = helpers.get_show(title)
         if show:
             try:

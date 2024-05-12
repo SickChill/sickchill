@@ -2,10 +2,9 @@ import markdown2
 
 import sickchill.start
 from sickchill import logger, settings
-
-from .common import PageTemplate
-from .home import Home
-from .routes import Route
+from sickchill.views.common import PageTemplate
+from sickchill.views.home import Home
+from sickchill.views.routes import Route
 
 
 @Route("/news(/?.*)", name="news")

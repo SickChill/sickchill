@@ -5,11 +5,10 @@ from xml.etree import ElementTree
 from babelfish import Country
 
 import sickchill
+from sickchill import logger
 from sickchill.helper.common import dateFormat
 from sickchill.oldbeard import helpers
-
-from ... import logger
-from . import generic
+from sickchill.providers.metadata import generic
 
 
 class KODIMetadata(generic.GenericMetadata):

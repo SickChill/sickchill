@@ -17,7 +17,7 @@ class Route(object):
     @classmethod
     def get_routes(cls, web_root=""):
         cls.routes.reverse()
-        routes = [tornado.web.url(web_root + _uri, handler, name=name) for _uri, handler, name, in cls.routes]
+        routes = [tornado.web.url(web_root + _uri, handler, name=name) for _uri, handler, name in cls.routes]
         return routes
 
 

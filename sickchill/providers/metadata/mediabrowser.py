@@ -7,8 +7,7 @@ import sickchill
 from sickchill import logger, settings
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.oldbeard import helpers
-
-from . import generic
+from sickchill.providers.metadata import generic
 
 
 class MediaBrowserMetadata(generic.GenericMetadata):

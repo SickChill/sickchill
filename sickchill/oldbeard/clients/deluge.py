@@ -3,9 +3,8 @@ from base64 import b64encode
 from urllib.parse import urljoin
 
 from sickchill import logger, settings
+from sickchill.oldbeard.clients.__deluge_base import DelugeBase
 from sickchill.oldbeard.clients.generic import GenericClient
-
-from .__deluge_base import DelugeBase
 
 
 class Client(GenericClient, DelugeBase):

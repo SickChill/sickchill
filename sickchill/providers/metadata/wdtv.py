@@ -3,11 +3,10 @@ import os
 import re
 from xml.etree import ElementTree
 
+from sickchill import logger
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.oldbeard import helpers
-
-from ... import logger
-from . import generic
+from sickchill.providers.metadata import generic
 
 
 class WDTVMetadata(generic.GenericMetadata):

@@ -1,6 +1,6 @@
 import os
 
-from . import generic
+from sickchill.providers.metadata import generic
 
 
 class PS3Metadata(generic.GenericMetadata):

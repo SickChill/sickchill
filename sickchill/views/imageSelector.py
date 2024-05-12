@@ -7,9 +7,8 @@ from sickchill.oldbeard.helpers import make_indexer_session
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.show.indexers.handler import ShowIndexer
 from sickchill.show.Show import Show
-
-from .home import Home
-from .routes import Route
+from sickchill.views.home import Home
+from sickchill.views.routes import Route
 
 
 @Route("/imageSelector(/?.*)", name="imageselector")
