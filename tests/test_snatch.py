@@ -5,6 +5,7 @@ Test snatching
 import unittest
 
 import sickchill.oldbeard.providers
+from unittest.mock import patch, PropertyMock
 from sickchill import settings
 from sickchill.oldbeard import common as common, search as search
 from sickchill.tv import TVEpisode, TVShow
@@ -90,7 +91,9 @@ class SearchTest(conftest.SickChillTestDBCase):
 
         for provider in sickchill.oldbeard.providers.sorted_provider_list():
             provider.get_url = self._fake_get_url
-            provider.is_active = self._fake_is_active
+            with patch.object(type(provider), 'is_active', new_callable=PropertyMock) as mock_is_active:
+                mock_is_active.return_value = self._fake_is_active
+            # provider.is_active = self._fake_is_active
 
         super().__init__(something)
 
