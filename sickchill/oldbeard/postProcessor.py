@@ -1237,7 +1237,12 @@ class PostProcessor(object):
 def guessit_findit(name: str) -> Union["ParseResult", None]:
     logger.debug(f"Trying a new way to verify if we can parse this file; {name}")
     title = guessit(name, {"type": "episode"}).get("title")
+
     if title:
+        # if the title is a list instead of a string, then join it with spaces.
+        if isinstance(title, list):
+            title = " ".join(title)
+
         show: "TVShow" = helpers.get_show(title)
         if show:
             try:

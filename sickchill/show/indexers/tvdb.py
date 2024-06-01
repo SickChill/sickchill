@@ -6,7 +6,6 @@ import traceback
 import requests
 import tvdbsimple
 
-# from sickchill import logger
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.show.indexers.base import Indexer
