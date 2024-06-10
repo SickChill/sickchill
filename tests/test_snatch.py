@@ -3,6 +3,7 @@ Test snatching
 """
 
 import unittest
+
 # from unittest.mock import patch, PropertyMock
 
 import sickchill.oldbeard.helpers
@@ -93,11 +94,6 @@ class SearchTest(conftest.SickChillTestDBCase):
 
     @unittest.expectedFailure
     def test_search(self):
-        import logging
-        logger = logging.getLogger(__file__)
-        logger.setLevel(logging.DEBUG)
-        logger.addHandler(logging.StreamHandler())
-
         settings.USE_TORRENTS = True
         settings.USE_NZBS = True
 
