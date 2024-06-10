@@ -11,35 +11,32 @@ class Notifier(object):
     def _make_headers(self, jellyfin_apikey=None):
         return CaseInsensitiveDict({"X-Emby-Token": jellyfin_apikey or settings.JELLYFIN_APIKEY, "Content-Type": "application/json"})
 
-    def _notify_jellyfin(self, host=None, jellyfin_apikey=None):
-        """Handles notifying Jellyfin host via HTTP API
+    ##############################################################################
+    # Public functions
+    ##############################################################################
+
+    def test_notify(self, host, jellyfin_apikey):
+       """Handles testing Jellyfin connection via HTTP API
         Returns:
             Returns True for no issue or False if there was an error
         """
-        # https://api.jellyfin.org/#tag/System/operation/GetEndpointInfo
-        url = urljoin(host or settings.JELLYFIN_HOST, "System/Endpoint")
 
         if not settings.USE_JELLYFIN:
             logger.debug("Notification for Jellyfin not enabled, skipping this notification")
             return False
+
+        # https://api.jellyfin.org/#tag/System/operation/GetEndpointInfo
+        url = urljoin(host or settings.JELLYFIN_HOST, "System/Endpoint")
 
         try:
             response = requests.get(url, headers=self._make_headers(jellyfin_apikey))
             if response:
                 logger.debug(_("JELLYFIN: HTTP response: {content}").format(content=response.content))
             response.raise_for_status()
-
             return True
         except RequestException as error:
             logger.warning(_("JELLYFIN: Warning: Could not contact Jellyfin at {url} {error}").format(url=url, error=error))
             return False
-
-    ##############################################################################
-    # Public functions
-    ##############################################################################
-
-    def test_notify(self, host, jellyfin_apikey):
-        return self._notify_jellyfin(host, jellyfin_apikey)
 
     def update_library(self, show=None):
         """Handles updating the Jellyfin Media Server via HTTP API
@@ -69,5 +66,4 @@ class Notifier(object):
 
             except requests.exceptions.RequestException as error:
                 logger.warning(_("JELLYFIN: Warning: Could not contact Jellyfin at {url} {error}").format(url=url, error=error))
-
                 return False
