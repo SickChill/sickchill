@@ -4,13 +4,14 @@ Test snatching
 
 import unittest
 
-# from unittest.mock import patch, PropertyMock
-
 import sickchill.oldbeard.helpers
 from sickchill import settings
 from sickchill.oldbeard import common as common, search as search
 from sickchill.tv import TVEpisode, TVShow
 from tests import conftest
+
+# from unittest.mock import patch, PropertyMock
+
 
 TESTS_DATA = {
     "Dexter": {
