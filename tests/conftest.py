@@ -356,7 +356,7 @@ def patch_open(open_func, files):
     return open_patched
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=False, scope="session")
 def cleanup_files():
     # yield
     for file in [os.path.join("tests", "sickchill.db"), os.path.join("tests", "cache.db"), os.path.join("tests", "failed.db")]:
