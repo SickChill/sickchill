@@ -16,7 +16,7 @@ class Notifier(object):
     ##############################################################################
 
     def test_notify(self, host, jellyfin_apikey):
-       """Handles testing Jellyfin connection via HTTP API
+        """Handles testing Jellyfin connection via HTTP API
         Returns:
             Returns True for no issue or False if there was an error
         """
@@ -67,3 +67,4 @@ class Notifier(object):
             except requests.exceptions.RequestException as error:
                 logger.warning(_("JELLYFIN: Warning: Could not contact Jellyfin at {url} {error}").format(url=url, error=error))
                 return False
+
