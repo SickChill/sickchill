@@ -26,7 +26,6 @@ import pytest
 from configobj import ConfigObj
 
 import sickchill.logger
-
 import sickchill.oldbeard.tvcache
 import sickchill.start
 from sickchill import settings
