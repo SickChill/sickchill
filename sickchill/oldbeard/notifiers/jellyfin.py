@@ -67,4 +67,3 @@ class Notifier(object):
             except requests.exceptions.RequestException as error:
                 logger.warning(_("JELLYFIN: Warning: Could not contact Jellyfin at {url} {error}").format(url=url, error=error))
                 return False
-
