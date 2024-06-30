@@ -1720,7 +1720,9 @@ class Home(WebRoot):
             action="previewRename",
         )
 
-    def doRename(self, show=None, eps=None):
+    def doRename(self):
+        show = self.get_body_argument("show", None)
+        eps = self.get_body_argument("eps", None)
         if not (show and eps):
             return self._genericMessage(_("Error"), _("You must specify a show and at least one episode"))
 
