@@ -8536,14 +8536,14 @@ postcss@^8.4.32, postcss@^8.4.33, postcss@^8.4.38:
     source-map-js "^1.2.0"
 
 preferred-pm@^3.0.3:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/preferred-pm/-/preferred-pm-3.1.3.tgz#4125ea5154603136c3b6444e5f5c94ecf90e4916"
-  integrity sha512-MkXsENfftWSRpzCzImcp4FRsCc3y1opwB73CfCNWyzMqArju2CrlMHlqB7VexKiPEOjGMbttv1r9fSCn5S610w==
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/preferred-pm/-/preferred-pm-3.1.4.tgz#b99cf3da129cdb63555649b226b7530e82769769"
+  integrity sha512-lEHd+yEm22jXdCphDrkvIJQU66EuLojPPtvZkpKIkiD+l0DMThF/niqZKJSoU8Vl7iuvtmzyMhir9LdVy5WMnA==
   dependencies:
     find-up "^5.0.0"
     find-yarn-workspace-root2 "1.2.16"
     path-exists "^4.0.0"
-    which-pm "2.0.0"
+    which-pm "^2.2.0"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -10904,10 +10904,10 @@ which-boxed-primitive@^1.0.2:
     is-string "^1.0.5"
     is-symbol "^1.0.3"
 
-which-pm@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/which-pm/-/which-pm-2.0.0.tgz#8245609ecfe64bf751d0eef2f376d83bf1ddb7ae"
-  integrity sha512-Lhs9Pmyph0p5n5Z3mVnN0yWcbQYUAD7rbQUiMsQxOJ3T57k7RFe35SUwWMf7dsbDZks1uOmw4AecB/JMDj3v/w==
+which-pm@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/which-pm/-/which-pm-2.2.0.tgz#6b5d8efd7b5089b97cd51a36c60dd8e4ec7eca59"
+  integrity sha512-MOiaDbA5ZZgUjkeMWM5EkJp4loW5ZRoa5bc3/aeMox/PJelMhE6t7S/mLuiY43DBupyxH+S0U1bTui9kWUlmsw==
   dependencies:
     load-yaml-file "^0.2.0"
     path-exists "^4.0.0"
