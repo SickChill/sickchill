@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 
-from sickchill import logger, settings
+from sickchill import logger
 
 blueprint = Blueprint("config", __name__, template_folder="templates", static_folder="static", url_prefix="/config")
 

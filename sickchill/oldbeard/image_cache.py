@@ -6,10 +6,9 @@ import imagesize
 import sickchill
 from sickchill import logger, settings
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
+from sickchill.oldbeard import helpers
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.providers.metadata.helpers import getShowImage
-
-from . import helpers
 
 
 class ImageCache(object):
@@ -87,7 +86,7 @@ class ImageCache(object):
         Returns true if a cached poster exists for the given Indexer ID
         """
         poster_path = self.poster_path(indexer_id)
-        logger.debug(f"Checking if file poster_path exists")
+        logger.debug(f"Checking if file poster_path exists; {poster_path}")
         return os.path.isfile(poster_path)
 
     def has_banner(self, indexer_id):
@@ -95,7 +94,7 @@ class ImageCache(object):
         Returns true if a cached banner exists for the given Indexer ID
         """
         banner_path = self.banner_path(indexer_id)
-        logger.debug(f"Checking if file banner_path exists")
+        logger.debug("Checking if file banner_path exists")
         return os.path.isfile(banner_path)
 
     def has_fanart(self, indexer_id):
@@ -103,7 +102,7 @@ class ImageCache(object):
         Returns true if a cached fanart exists for the given Indexer ID
         """
         fanart_path = self.fanart_path(indexer_id)
-        logger.debug(f"Checking if file fanart_path exists")
+        logger.debug("Checking if file fanart_path exists")
         return os.path.isfile(fanart_path)
 
     def has_poster_thumb(self, indexer_id):
@@ -111,7 +110,7 @@ class ImageCache(object):
         Returns true if a cached poster thumbnail exists for the given Indexer ID
         """
         poster_thumb_path = self.poster_thumb_path(indexer_id)
-        logger.debug(f"Checking if file poster_thumb_path exists")
+        logger.debug("Checking if file poster_thumb_path exists")
         return os.path.isfile(poster_thumb_path)
 
     def has_banner_thumb(self, indexer_id):
@@ -119,7 +118,7 @@ class ImageCache(object):
         Returns true if a cached banner exists for the given Indexer ID
         """
         banner_thumb_path = self.banner_thumb_path(indexer_id)
-        logger.debug(f"Checking if file banner_thumb_path exists")
+        logger.debug("Checking if file banner_thumb_path exists")
         return os.path.isfile(banner_thumb_path)
 
     def image_url(self, indexer_id, which):

@@ -555,6 +555,39 @@ const SICKCHILL = {
                 });
             });
 
+            $('#testJELLYFIN').on('click', function () {
+                const jellyfin = {};
+                jellyfin.host = $('#jellyfin_host').val();
+                jellyfin.apikey = $('#jellyfin_apikey').val();
+                if (!jellyfin.host || !jellyfin.apikey) {
+                    $('#testJELLYFIN-result').html(_('Please fill out the necessary fields above.'));
+                    if (jellyfin.host) {
+                        $('#jellyfin_host').removeClass('warning');
+                    } else {
+                        $('#jellyfin_host').addClass('warning');
+                    }
+
+                    if (jellyfin.apikey) {
+                        $('#jellyfin_apikey').removeClass('warning');
+                    } else {
+                        $('#jellyfin_apikey').addClass('warning');
+                    }
+
+                    return;
+                }
+
+                $('#jellyfin_host,#jellyfin_apikey').removeClass('warning');
+                $(this).prop('disabled', true);
+                $('#testJELLYFIN-result').html(loading);
+                $.get(scRoot + '/home/testJELLYFIN', {
+                    host: jellyfin.host,
+                    jellyfin_apikey: jellyfin.apikey, // eslint-disable-line camelcase
+                }).done(data => {
+                    $('#testJELLYFIN-result').html(data);
+                    $('#testJELLYFIN').prop('disabled', false);
+                });
+            });
+
             $('#testBoxcar2').on('click', function () {
                 const boxcar2 = {};
                 boxcar2.accesstoken = $.trim($('#boxcar2_accesstoken').val());
@@ -3358,6 +3391,7 @@ const SICKCHILL = {
                     columnSelector_columns: { // eslint-disable-line camelcase
                         12: false,
                     },
+                    stickyHeaders_offset: 50, // eslint-disable-line camelcase
                     filter_cssFilter: 'text-center text-capitalize', // eslint-disable-line camelcase
                     filter_hideFilters: false, // eslint-disable-line camelcase
                     filter_ignoreCase: true, // eslint-disable-line camelcase

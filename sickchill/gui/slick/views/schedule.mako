@@ -24,9 +24,9 @@
                 % if 'calendar' != layout:
                     <b>${_('Key')}:</b>
                     <span class="listing-key listing-overdue">${_('Missed')}</span>
-                % if settings.COMING_EPS_DISPLAY_SNATCHED:
-                    <span class="listing-key listing-snatched">${_('Snatched')}</span>
-                % endif
+                    % if settings.COMING_EPS_DISPLAY_SNATCHED:
+                        <span class="listing-key listing-snatched">${_('Snatched')}</span>
+                    % endif
                     <span class="listing-key listing-current">${_('Today')}</span>
                     <span class="listing-key listing-default">${_('Soon')}</span>
                     <span class="listing-key listing-toofar">${_('Later')}</span>
@@ -199,29 +199,29 @@
                                     <td align="center" style="vertical-align: middle;">
                                         % if cur_result['imdb_id']:
                                             <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
-                                               target="_blank"
-                                               title="http://www.imdb.com/title/${cur_result['imdb_id']}">
+                                                target="_blank"
+                                                title="http://www.imdb.com/title/${cur_result['imdb_id']}">
                                                 <span class="displayshow-icon-imdb"></span>
                                             </a>
                                             <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
-                                               target="_blank"
-                                               title="https://trakt.tv/shows/${cur_result['imdb_id']}">
+                                                target="_blank"
+                                                title="https://trakt.tv/shows/${cur_result['imdb_id']}">
                                                 <span class="displayshow-icon-trakt"></span>
                                             </a>
                                         % endif
                                         <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
-                                           rel="noreferrer" target="_blank"
-                                           title="${show_indexer.show_url(cur_indexer)}${cur_result['showid']}">
+                                            rel="noreferrer" target="_blank"
+                                            title="${show_indexer.show_url(cur_indexer)}${cur_result['showid']}">
                                             <img alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
-                                                 src="${static_url(show_indexer.icon(cur_indexer))}" />
+                                                src="${static_url(show_indexer.icon(cur_indexer))}" />
                                         </a>
                                     </td>
                                     <td class="text-center">
                                         <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
-                                           title="Manual Search" class="forceUpdate epSearch"
-                                           id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}">
+                                            title="Manual Search" class="forceUpdate epSearch"
+                                            id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}">
                                             <span id="forceUpdateImage-${cur_result['showid']}"
-                                                  class="displayshow-icon-search"></span>
+                                                class="displayshow-icon-search"></span>
                                         </a>
                                     </td>
                                 </tr>
@@ -418,94 +418,91 @@
                         % endif
                     % endif
                 % endif
-                    <div class="${show_div}" id="listing-${cur_result['showid']}">
-                        <div class="tvshowDiv">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
-                                        <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
-                                            <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
-                                                 src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
-                                            />
+                <div class="${show_div}" id="listing-${cur_result['showid']}">
+                    <div class="tvshowDiv">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <th ${('class="nobg"', 'rowspan="3"')[layout == 'poster']} valign="top">
+                                    <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">
+                                        <img alt="" class="${('posterThumb', 'bannerThumb')[layout == 'banner']}"
+                                             src="${static_url(settings.IMAGE_CACHE.image_url(cur_result['showid'], (layout, 'poster_thumb')[layout == 'poster']))}"
+                                        />
+                                    </a>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="next_episode">
+                                    <div class="clearfix"></div>
+                                    <span class="tvshowTitle">
+                                        <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}
+                                            ${('', '<span class="pause">[paused]</span>')[int(cur_result['paused'])]}
                                         </a>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td class="next_episode">
-                                        <div class="clearfix"></div>
-                                        <span class="tvshowTitle">
-                                            <a href="${scRoot}/home/displayShow?show=${cur_result['showid']}">${cur_result['show_name']}
-                                                ${('', '<span class="pause">[paused]</span>')[int(cur_result['paused'])]}
-                                            </a>
-                                        </span>
+                                    </span>
 
-                                        <span class="tvshowTitleIcons">
-                                            % if cur_result['imdb_id']:
-                                                <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
-                                                   target="_blank" title="http://www.imdb.com/title/${cur_result['imdb_id']}">
-                                                    <span class="displayshow-icon-imdb"></span>
-                                                </a>
-                                                <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
-                                                   target="_blank" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
-                                                    <span class="displayshow-icon-trakt"></span>
-                                                </a>
-                                            % endif
-                                            <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
-                                               rel="noreferrer" target="_blank"
-                                               title="${show_indexer.show_url(cur_indexer)}"><img
-                                                    alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
-                                                    src="${static_url(show_indexer.icon(cur_indexer))}" />
+                                    <span class="tvshowTitleIcons">
+                                        % if cur_result['imdb_id']:
+                                            <a href="${anon_url('http://www.imdb.com/title/', cur_result['imdb_id'])}" rel="noreferrer"
+                                               target="_blank" title="http://www.imdb.com/title/${cur_result['imdb_id']}">
+                                                <span class="displayshow-icon-imdb"></span>
                                             </a>
-                                            <span>
-                                                <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
-                                                   title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}"
-                                                   class="epSearch forceUpdate">
-                                                    <span id="forceUpdateImage-${cur_result['showid']}"
-                                                          class="displayshow-icon-search"></span>
-                                                </a>
-                                            </span>
-                                        </span>
-                                        <br/>
-                                        <br/>
-                                        <span class="title">${_('Next Episode')}:</span>
+                                            <a href="${anon_url('https://trakt.tv/shows/', cur_result['imdb_id'])}" rel="noreferrer"
+                                               target="_blank" title="https://trakt.tv/shows/${cur_result['imdb_id']}">
+                                                <span class="displayshow-icon-trakt"></span>
+                                            </a>
+                                        % endif
+                                        <a href="${anon_url(show_indexer.show_url(cur_indexer), cur_result['showid'])}"
+                                            rel="noreferrer" target="_blank"
+                                            title="${show_indexer.show_url(cur_indexer)}"><img
+                                            alt="${show_indexer.name(cur_indexer)}" height="16" width="16"
+                                            src="${static_url(show_indexer.icon(cur_indexer))}" />
+                                        </a>
                                         <span>
-                                            ${'S{:02}E{:02} - {}'.format(int(cur_result['season']), int(cur_result['episode']), cur_result['name'])}
+                                            <a href="${scRoot}/home/searchEpisode?show=${cur_result['showid']}&amp;season=${cur_result['season']}&amp;episode=${cur_result['episode']}"
+                                                title="Manual Search" id="forceUpdate-${cur_result['showid']}x${cur_result['season']}x${cur_result['episode']}"
+                                                class="epSearch forceUpdate">
+                                                <span id="forceUpdateImage-${cur_result['showid']}" class="displayshow-icon-search"></span>
+                                            </a>
                                         </span>
+                                    </span>
+                                    <br/>
+                                    <br/>
+                                    <span class="title">${_('Next Episode')}:</span>
+                                    <span>
+                                        ${'S{:02}E{:02} - {}'.format(int(cur_result['season']), int(cur_result['episode']), cur_result['name'])}
+                                    </span>
 
-                                        <div class="clearfix">
-                                            <span class="title">${_('Airs')}:</span>
-                                            <span class="airdate">
-                                                ${scdatetime.scdatetime.scfdatetime(cur_result['localtime'])}
-                                            </span>
-                                            ${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
-                                        </div>
+                                    <div class="clearfix">
+                                        <span class="title">${_('Airs')}:</span>
+                                        <span class="airdate">
+                                            ${scdatetime.scdatetime.scfdatetime(cur_result['localtime'])}
+                                        </span>
+                                        ${('', '<span> on %s</span>' % cur_result['network'])[bool(cur_result['network'])]}
+                                    </div>
 
-                                        <div class="clearfix">
-                                            <span class="title">${_('Quality')}:</span>
-                                            ${renderQualityPill(cur_result['quality'], showTitle=True)}
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="vertical-align: top;">
-                                        <div>
-                                            % if cur_result['description']:
-                                                <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
-                                                <img class="ep_summaryTrigger" src="${static_url('images/plus.png')}" height="16" width="16" alt=""
-                                                     title="Toggle Summary" />
-                                                <div class="ep_summary">${cur_result['description']}</div>
-                                            % else:
-                                                <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
-                                                <img class="ep_summaryTriggerNone" src="${static_url('images/plus.png')}" height="16" width="16"
-                                                     alt="" />
-                                            % endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+                                    <div class="clearfix">
+                                        <span class="title">${_('Quality')}:</span>
+                                        ${renderQualityPill(cur_result['quality'], showTitle=True)}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <div>
+                                        % if cur_result['description']:
+                                            <span class="title" style="vertical-align:middle;">${_('Plot')}:</span>
+                                            <img class="ep_summaryTrigger" src="${static_url('images/plus.png')}" height="16" width="16" alt="" title="Toggle Summary" />
+                                            <div class="ep_summary">${cur_result['description']}</div>
+                                        % else:
+                                            <span class="title ep_summaryTriggerNone" style="vertical-align:middle;">${_('Plot')}:</span>
+                                            <img class="ep_summaryTriggerNone" src="${static_url('images/plus.png')}" height="16" width="16" alt="" />
+                                        % endif
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
-                    <!-- end ${cur_result['show_name']} //-->
+                </div>
+                <!-- end ${cur_result['show_name']} //-->
                 % endfor
             </div>
         % endif

@@ -7,8 +7,7 @@ from requests.exceptions import RequestException
 from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings
-
-from .exceptions import traktException
+from sickchill.oldbeard.trakt_api.exceptions import traktException
 
 
 class TraktAPI:

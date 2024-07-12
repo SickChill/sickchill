@@ -2,8 +2,8 @@ import threading
 from time import localtime, sleep, strftime, time
 from types import FunctionType, MethodType
 
-from .aniDBAbstracter import Anime, Episode
-from .aniDBcommands import (
+from sickchill.adba.aniDBAbstracter import Anime, Episode
+from sickchill.adba.aniDBcommands import (
     AnimeCommand,
     AuthCommand,
     BuddyAcceptCommand,
@@ -40,8 +40,8 @@ from .aniDBcommands import (
     VersionCommand,
     VoteCommand,
 )
-from .aniDBerrors import AniDBBannedError, AniDBCommandTimeoutError, AniDBError, AniDBIncorrectParameterError, AniDBInternalError
-from .aniDBlink import AniDBLink
+from sickchill.adba.aniDBerrors import AniDBBannedError, AniDBCommandTimeoutError, AniDBError, AniDBIncorrectParameterError, AniDBInternalError
+from sickchill.adba.aniDBlink import AniDBLink
 
 version = 100
 

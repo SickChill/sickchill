@@ -4,13 +4,12 @@ from typing import TYPE_CHECKING
 
 import rarfile
 
+from sickchill.init_helpers import setup_gettext, sickchill_dir
 from sickchill.oldbeard.common import SD
 from sickchill.oldbeard.numdict import NumDict
 
-from .init_helpers import setup_gettext, sickchill_dir
-
 if TYPE_CHECKING:
-    from .movies import MovieList
+    from sickchill.movies import MovieList
 
 setup_gettext()
 
@@ -190,6 +189,8 @@ INDEXER_TIMEOUT = None
 INIT_LOCK = Lock()
 ITASA_PASS = None
 ITASA_USER = None
+JELLYFIN_APIKEY = None
+JELLYFIN_HOST = None
 JOIN_APIKEY = ""
 JOIN_ID = ""
 JOIN_NOTIFY_ONDOWNLOAD = False
@@ -530,6 +531,7 @@ USE_BOXCAR2 = False
 USE_DISCORD = False
 USE_EMAIL = False
 USE_EMBY = False
+USE_JELLYFIN = False
 USE_FAILED_DOWNLOADS = False
 USE_FREE_SPACE_CHECK = True
 USE_FREEMOBILE = False

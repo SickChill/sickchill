@@ -2,9 +2,8 @@ import logging
 
 from sickchill import settings
 from sickchill.oldbeard import config
-
-from .common import PageTemplate
-from .index import WebRoot
+from sickchill.views.common import PageTemplate
+from sickchill.views.index import WebRoot
 
 logger = logging.getLogger("sickchill.movie")
 

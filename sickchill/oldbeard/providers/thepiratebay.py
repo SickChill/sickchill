@@ -144,7 +144,7 @@ class Provider(TorrentProvider):
                                 continue
 
                             # Accept Torrent only from Good People for every Episode Search
-                            if self.confirmed and not result["status"] in ("trusted", "vip"):
+                            if self.confirmed and result["status"] not in ("trusted", "vip"):
                                 if mode != "RSS":
                                     logger.debug("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title))
                                 continue

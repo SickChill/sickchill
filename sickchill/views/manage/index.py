@@ -553,14 +553,15 @@ class Manage(Home, WebRoot):
             else:
                 new_show_dir = show_object.get_location
 
-            new_paused = ("off", "on")[(paused == "enable", show_object.paused)[paused == "keep"]]
-            new_default_ep_status = (default_ep_status, show_object.default_ep_status)[default_ep_status == "keep"]
-            new_anime = ("off", "on")[(anime == "enable", show_object.anime)[anime == "keep"]]
-            new_sports = ("off", "on")[(sports == "enable", show_object.sports)[sports == "keep"]]
-            new_scene = ("off", "on")[(scene == "enable", show_object.scene)[scene == "keep"]]
-            new_air_by_date = ("off", "on")[(air_by_date == "enable", show_object.air_by_date)[air_by_date == "keep"]]
-            new_season_folders = ("off", "on")[(season_folders == "enable", show_object.season_folders)[season_folders == "keep"]]
-            new_subtitles = ("off", "on")[(subtitles == "enable", show_object.subtitles)[subtitles == "keep"]]
+            # Explicitly handle "enable", "disable", and "keep" states
+            new_paused = 1 if paused == "enable" else (0 if paused == "disable" else show_object.paused)
+            new_anime = 1 if anime == "enable" else (0 if anime == "disable" else show_object.anime)
+            new_sports = 1 if sports == "enable" else (0 if sports == "disable" else show_object.sports)
+            new_scene = 1 if scene == "enable" else (0 if scene == "disable" else show_object.scene)
+            new_air_by_date = 1 if air_by_date == "enable" else (0 if air_by_date == "disable" else show_object.air_by_date)
+            new_season_folders = 1 if season_folders == "enable" else (0 if season_folders == "disable" else show_object.season_folders)
+            new_subtitles = 1 if subtitles == "enable" else (0 if subtitles == "disable" else show_object.subtitles)
+            new_default_ep_status = show_object.default_ep_status if default_ep_status == "keep" else default_ep_status
 
             # new mass words update section
             if ignore_words == "new":
@@ -591,25 +592,24 @@ class Manage(Home, WebRoot):
 
             exceptions_list = []
 
-            current_show_errors += self.editShow(
-                current_show,
-                new_show_dir,
-                any_qualities,
-                best_qualities,
-                exceptions_list,
-                defaultEpStatus=new_default_ep_status,
-                season_folders=new_season_folders,
-                paused=new_paused,
-                sports=new_sports,
-                subtitles=new_subtitles,
-                rls_ignore_words=new_ignore_words,
-                rls_prefer_words=new_prefer_words,
-                rls_require_words=new_require_words,
-                anime=new_anime,
-                scene=new_scene,
-                air_by_date=new_air_by_date,
-                directCall=True,
-            )
+            self.current_show = current_show
+            self.new_show_dir = new_show_dir
+            self.any_qualities = any_qualities
+            self.best_qualities = best_qualities
+            self.exceptions_list = exceptions_list
+            self.new_default_ep_status = new_default_ep_status
+            self.new_season_folders = new_season_folders
+            self.new_paused = new_paused
+            self.new_sports = new_sports
+            self.new_subtitles = new_subtitles
+            self.new_ignore_words = new_ignore_words
+            self.new_prefer_words = new_prefer_words
+            self.new_require_words = new_require_words
+            self.new_anime = new_anime
+            self.new_scene = new_scene
+            self.new_air_by_date = new_air_by_date
+
+            current_show_errors += self.editShow(direct_call=True)
 
             if current_show_errors:
                 logger.exception(f"Errors: {current_show_errors}")
