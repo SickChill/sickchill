@@ -1,8 +1,7 @@
 from sickchill import logger, settings
-
-from ..oldbeard import config, notifiers
-from .common import PageTemplate
-from .index import BaseHandler
+from sickchill.oldbeard import config, notifiers
+from sickchill.views.common import PageTemplate
+from sickchill.views.index import BaseHandler
 
 login_error = ""
 

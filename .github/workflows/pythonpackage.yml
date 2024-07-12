@@ -158,7 +158,7 @@ jobs:
         with:
           config: /tmp/buildkitd.toml
       - name: Test Docker Build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64
           push: false
@@ -212,7 +212,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - if: success()
         name: Build and Push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: ${{ env.TARGET_PLATFORMS }}
           push: ${{ github.event_name != 'pull_request' && !env.ACT }}
@@ -227,7 +227,7 @@ jobs:
             security.insecure
       - if: success()
         name: Snag wheels
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: Dockerfile
           platforms: ${{ env.TARGET_PLATFORMS }}

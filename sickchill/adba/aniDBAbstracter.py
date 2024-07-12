@@ -2,11 +2,11 @@ import re
 import string
 from pathlib import Path
 
-from . import aniDBfileInfo as fileInfo
-from .aniDBerrors import AniDBIncorrectParameterError
-from .aniDBfileInfo import read_anidb_xml
-from .aniDBmapper import AniDBMapper
-from .aniDBtvDBmaper import TvDBMap
+from sickchill.adba import aniDBfileInfo as fileInfo
+from sickchill.adba.aniDBerrors import AniDBIncorrectParameterError
+from sickchill.adba.aniDBfileInfo import read_anidb_xml
+from sickchill.adba.aniDBmapper import AniDBMapper
+from sickchill.adba.aniDBtvDBmaper import TvDBMap
 
 
 class AniDBabstractObject(object):

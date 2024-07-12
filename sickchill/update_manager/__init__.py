@@ -1,2 +1,2 @@
-from .pip import PipUpdateManager
-from .runner import UpdateManager
+from sickchill.update_manager.pip import PipUpdateManager
+from sickchill.update_manager.runner import UpdateManager

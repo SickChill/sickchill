@@ -86,6 +86,7 @@ notifiers = RegistrableExtensionManager(
         "join = oldbeard.notifiers.join:Notifier",
         "growl = oldbeard.notifiers.growl:Notifier",
         "emby = oldbeard.notifiers.emby:Notifier",
+        "jellyfin = oldbeard.notifiers.jellyfin:Notifier",
         "pushbullet = oldbeard.notifiers.pushbullet:Notifier",
         "nmjv2 = oldbeard.notifiers.nmjv2:Notifier",
         "tweet = oldbeard.notifiers.tweet:Notifier",

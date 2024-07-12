@@ -1,10 +1,10 @@
-from .api import ApiCall, ApiHandler, function_mapper, KeyHandler
-from .authentication import LoginHandler, LogoutHandler
-from .browser import WebFileBrowser
-from .calendar import CalendarHandler
-from .changelog import HomeChangeLog
-from .common import PageTemplate
-from .config import (
+from sickchill.views.api import ApiCall, ApiHandler, function_mapper, KeyHandler
+from sickchill.views.authentication import LoginHandler, LogoutHandler
+from sickchill.views.browser import WebFileBrowser
+from sickchill.views.calendar import CalendarHandler
+from sickchill.views.changelog import HomeChangeLog
+from sickchill.views.common import PageTemplate
+from sickchill.views.config import (
     Config,
     ConfigAnime,
     ConfigBackupRestore,
@@ -15,12 +15,12 @@ from .config import (
     ConfigShares,
     ConfigSubtitles,
 )
-from .history import History
-from .home import Home
-from .imageSelector import ImageSelector
-from .index import BaseHandler, WebHandler, WebRoot
-from .logs import ErrorLogs
-from .manage import AddShows, Manage, ManageSearches, PostProcess
-from .movies import MoviesHandler
-from .news import HomeNews
-from .routes import Route
+from sickchill.views.history import History
+from sickchill.views.home import Home
+from sickchill.views.imageSelector import ImageSelector
+from sickchill.views.index import BaseHandler, WebHandler, WebRoot
+from sickchill.views.logs import ErrorLogs
+from sickchill.views.manage import AddShows, Manage, ManageSearches, PostProcess
+from sickchill.views.movies import MoviesHandler
+from sickchill.views.news import HomeNews
+from sickchill.views.routes import Route

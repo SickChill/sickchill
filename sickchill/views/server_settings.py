@@ -14,8 +14,7 @@ from sickchill import logger, settings
 from sickchill.oldbeard.helpers import create_https_certificates, generateApiKey
 from sickchill.views import CalendarHandler, LoginHandler, LogoutHandler, MoviesHandler
 from sickchill.views.api import ApiHandler, KeyHandler
-
-from .routes import Route
+from sickchill.views.routes import Route
 
 
 class SickChillStaticFileHandler(StaticFileHandler):

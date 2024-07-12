@@ -2,9 +2,8 @@ import re
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
+from sickchill.show.indexers.tvdb import TVDB
 from sickchill.tv import Show, TVEpisode
-
-from .tvdb import TVDB
 
 
 class ShowIndexer(object):

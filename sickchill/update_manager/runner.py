@@ -7,8 +7,7 @@ import time
 from sickchill import logger, settings
 from sickchill.helper.exceptions import UpdaterException
 from sickchill.oldbeard import db, helpers, ui
-
-from .pip import PipUpdateManager
+from sickchill.update_manager.pip import PipUpdateManager
 
 
 class UpdateManager(object):
@@ -63,10 +62,10 @@ class UpdateManager(object):
                 logger.info("Config backup successful, updating...")
                 ui.notifications.message(_("Backup"), _("Config backup successful, updating..."))
                 return True
-            else:
-                logger.exception("Config backup failed, aborting update")
-                ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
-                return False
+
+            logger.exception("Config backup failed, aborting update")
+            ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
+            return False
         except Exception as error:
             logger.exception(f"Update: Config backup failed. Error: {error}")
             ui.notifications.message(_("Backup"), _("Config backup failed, aborting update"))
@@ -140,17 +139,17 @@ class UpdateManager(object):
             if not settings.autoPostProcessorScheduler.action.amActive:
                 logger.debug("We can proceed with the update. Post-Processor is not running")
                 return True
-            else:
-                logger.debug("We can't proceed with the update. Post-Processor is running")
-                return False
+
+            logger.debug("We can't proceed with the update. Post-Processor is running")
+            return False
 
         def showupdate_safe():
             if not settings.showUpdateScheduler.action.amActive:
                 logger.debug("We can proceed with the update. Shows are not being updated")
                 return True
-            else:
-                logger.debug("We can't proceed with the update. Shows are being updated")
-                return False
+
+            logger.debug("We can't proceed with the update. Shows are being updated")
+            return False
 
         db_safe = db_safe()
         postprocessor_safe = postprocessor_safe()
@@ -159,9 +158,9 @@ class UpdateManager(object):
         if db_safe and postprocessor_safe and showupdate_safe:
             logger.debug("Proceeding with auto update")
             return True
-        else:
-            logger.debug("Auto update aborted")
-            return False
+
+        logger.debug("Auto update aborted")
+        return False
 
     def compare_db_version(self):
         try:

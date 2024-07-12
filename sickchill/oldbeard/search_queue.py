@@ -8,7 +8,7 @@ from sickchill.show.History import History
 if TYPE_CHECKING:
     from sickchill.oldbeard.databases.movie import Movie
 
-from . import common, generic_queue, search, ui
+from sickchill.oldbeard import common, generic_queue, search, ui
 
 BACKLOG_SEARCH = 10
 DAILY_SEARCH = 20

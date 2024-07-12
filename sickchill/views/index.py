@@ -7,7 +7,6 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from secrets import compare_digest
-from typing import Any
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
@@ -17,12 +16,11 @@ from tornado.web import authenticated, HTTPError, RequestHandler
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.init_helpers import check_installed, locale_dir
+from sickchill.oldbeard import config, db, helpers, network_timezones, ui
 from sickchill.show.ComingEpisodes import ComingEpisodes
+from sickchill.views.api.webapi import function_mapper
+from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
-
-from ..oldbeard import config, db, helpers, network_timezones, ui
-from .api.webapi import function_mapper
-from .common import PageTemplate
 
 try:
     import jwt
@@ -54,8 +52,8 @@ class BaseHandler(RequestHandler):
             if url[:3] != "api":
                 t = PageTemplate(rh=self, filename="404.mako")
                 return t.render(title="404", header=_("Oops: 404 Not Found"))
-            else:
-                return self.finish(_("Wrong API key used"))
+
+            return self.finish(_("Wrong API key used"))
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
@@ -172,7 +170,7 @@ class WebHandler(BaseHandler):
             try:
                 await self.finish(results)
             except Exception as e:
-                if 0:
+                if settings.DEVELOPER:
                     logger.debug(f"self.finish exception {e}, result {results}")
                 else:
                     logger.debug(f"self.finish exception {e}")

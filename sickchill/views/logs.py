@@ -1,13 +1,12 @@
 from tornado.web import addslash
 
 import sickchill.oldbeard
+from sickchill import logger
 from sickchill.helper import try_int
-
-from .. import logger
-from ..oldbeard import classes, ui
-from .common import PageTemplate
-from .index import WebRoot
-from .routes import Route
+from sickchill.oldbeard import classes
+from sickchill.views.common import PageTemplate
+from sickchill.views.index import WebRoot
+from sickchill.views.routes import Route
 
 
 @Route("/errorlogs(/?.*)", name="logs:error")

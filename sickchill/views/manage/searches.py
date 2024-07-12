@@ -1,9 +1,8 @@
 from sickchill import logger, settings
 from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
+from sickchill.views.manage.index import Manage
 from sickchill.views.routes import Route
-
-from . import Manage
 
 
 @Route("/manage/manageSearches(/?.*)", name="manage:searches")

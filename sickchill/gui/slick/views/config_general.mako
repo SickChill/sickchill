@@ -18,7 +18,8 @@
 <%block name="tabs">
     <li><a href="#misc">${_('Misc')}</a></li>
     <li><a href="#interface">${_('Interface')}</a></li>
-    <li><a href="#advanced-settings">${_('Advanced Settings')}</a></li>
+    <li><a href="#logging-settings">${_('Logging')}</a></li>
+    <li><a href="#advanced-settings">${_('Advanced')}</a></li>
 </%block>
 
 <%block name="pages">
@@ -31,7 +32,8 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Misc')}</h3>
-                        <p>${_('Startup options. Indexer options. Log and show file locations.')}</p>
+                        <p>${_('Startup and Indexer options.')}</p>
+                        <p>${_('Show file locations.')}</p>
                         <p><b>${_('Some options may require a manual restart to take effect.')}</b></p>
                     </div>
                 </div>
@@ -181,42 +183,6 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Number of Log files saved')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="number" min="1" step="1" name="log_nr" id="log_nr" value="${settings.LOG_NR}" class="form-control input-sm input75" autocapitalize="off" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="log_nr">${_('number of log files saved when rotating logs (default: 5) (REQUIRES RESTART)')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Size of Log files saved')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="number" min="0.5" step="0.1" name="log_size" id="log_size" value="${settings.LOG_SIZE}" class="form-control input-sm input75" autocapitalize="off" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="log_size">${_('maximum size in MB of the log file (default: 1MB) (REQUIRES RESTART)')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Use initial indexer set to')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -299,11 +265,11 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Check software updates')}</label>
+                                <label class="component-title">${_('Check for software updates')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="version_notify" id="version_notify" ${checked(settings.VERSION_NOTIFY)}/>
-                                <label for="version_notify">${_('''and display notifications when updates are available. Checks are run on startup and at the frequency set below*''')}</label>
+                                <label for="version_notify">${_('''display notifications when updates are available. Checks are run on startup and at the frequency set below*''')}</label>
                             </div>
                         </div>
 
@@ -386,7 +352,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="gui_language" class="red-text">${_('for appearance to take effect, save then refresh your browser')}</label>
+                                        <label for="gui_language">${_('for appearance to take effect, save then refresh your browser')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -407,7 +373,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="theme_name" class="red-text">${_('for appearance to take effect, save then refresh your browser')}</label>
+                                        <label for="theme_name">${_('for appearance to take effect, save then refresh your browser')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -680,8 +646,8 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Web Interface')}</h3>
-                        <p>${_('it is recommended that you enable a username and password to secure SickChill from being tampered with remotely.')}</p>
-                        <p><b>${_('these options require a manual restart to take effect.')}</b></p>
+                        <p>${_('It is recommended that you enable a username and password to secure SickChill from being tampered with remotely.')}</p>
+                        <p><b>${_('These options require a manual restart to take effect.')}</b></p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -861,6 +827,123 @@
             </div>
         </div>
 
+        <!-- /logging settings //-->
+        <div id="logging-settings">
+
+            <!-- Logging settings -->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <h3>${_('Logging Settings')}</h3>
+                        <p>${_('Options for Logging.')}</p>
+                        <p>${_('RESTART REQUIRED after saving changes.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                <label class="component-title">${_('Log Dir')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" name="log_dir" id="log_dir" value="${settings.LOG_DIR}"
+                                               class="form-control input-sm input350" autocapitalize="off"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span>${_('The folder where sickchill log/s go.')}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span><b>${_('note')}
+                                            :</b>&nbsp;${_('please make sure that sickchill user has the right permissions for the folder.')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Notify on Logged Errors')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" name="notify_on_logged_error"
+                                       id="notify_on_logged_error" ${checked(settings.NOTIFY_ON_LOGGED_ERROR)}/>
+                                <label for="notify_on_logged_error">${_('send logged errors to notifiers')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable debug')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" name="debug" id="debug" ${checked(settings.DEBUG)}/>
+                                <label for="debug">${_('enable debug logging')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable database debug')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" name="dbdebug" id="dbdebug" ${checked(settings.DBDEBUG)}/>
+                                <label for="dbdebug">${_('enable database debug logging')}</label>
+                            </div>
+                        </div>
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Number of Log files saved')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="number" min="1" step="1" name="log_nr" id="log_nr"
+                                               value="${settings.LOG_NR}" class="form-control input-sm input75"
+                                               autocapitalize="off"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label
+                                            for="log_nr">${_('number of log files saved when rotating logs (default: 5)')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Size of Log files saved')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="number" min="0.5" step="0.1" name="log_size" id="log_size"
+                                               value="${settings.LOG_SIZE}" class="form-control input-sm input75"
+                                               autocapitalize="off"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label
+                                            for="log_size">${_('maximum size in MB of the log file (default: 1MB, max: 100MB)')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
         <!-- /advanced settings //-->
         <div id="advanced-settings">
 
@@ -869,6 +952,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Advanced Settings')}</h3>
+                        <p>${_('The special options.')}</p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -911,59 +995,6 @@
                                         <label for="anon_redirect">${_('backlink protection via anonymizer service, must end in "?" (default: {} )').format(settings.DEFAULT_ANON_REDIRECT)}</label>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
-                                <label class="component-title">${_('Log Dir')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 pull-right component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="text" name="log_dir" id="log_dir" value="${settings.LOG_DIR}" class="form-control input-sm input350" autocapitalize="off" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <span>${_('The folder where sickchill log goes.')}</span>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <span><b>${_('note')}:</b>&nbsp;${_('please make sure that sickchill user has the rights permissions for the folder.')}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Enable debug')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="debug" id="debug" ${checked(settings.DEBUG)}/>
-                                <label for="debug">${_('enable debug logs')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Enable database debug')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="dbdebug" id="dbdebug" ${checked(settings.DBDEBUG)}/>
-                                <label for="dbdebug">${_('enable database debug logs')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Notify on Errors')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <input type="checkbox" name="notify_on_logged_error" id="notify_on_logged_error" ${checked(settings.NOTIFY_ON_LOGGED_ERROR)}/>
-                                <label for="notify_on_logged_error">${_('send logged errors to notifiers')}</label>
                             </div>
                         </div>
 
@@ -1152,7 +1183,7 @@
                     </fieldset>
                 </div>
             </div>
-        </div>
 
+        </div>
     </form>
 </%block>

@@ -1,11 +1,8 @@
 import threading
 
-from sickchill import settings
-from sickchill.oldbeard import helpers, scene_exceptions
+from sickchill import logger, settings
+from sickchill.oldbeard import db, helpers, scene_exceptions
 from sickchill.show.Show import Show
-
-from .. import logger
-from . import db
 
 name_cache = {}
 name_cache_lock = threading.Lock()
