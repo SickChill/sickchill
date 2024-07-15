@@ -1,10 +1,7 @@
-import datetime
 import re
-import sys
 from typing import List, TYPE_CHECKING, Union
 
 import sickchill
-from sickchill.helper.common import dateTimeFormat
 from sickchill.oldbeard.common import Quality
 
 if TYPE_CHECKING:
@@ -188,64 +185,3 @@ class Proper(object):
         return "{date} {name} {season}x{episode} of {series_id} from {indexer}".format(
             date=self.date, name=self.name, season=self.season, episode=self.episode, series_id=self.indexerid, indexer=sickchill.indexer.name(self.indexer)
         )
-
-
-class ErrorViewer(object):
-    """
-    Keeps a static list of UIErrors to be displayed on the UI and allows
-    the list to be cleared.
-    """
-
-    errors = []
-
-    def __init__(self):
-        ErrorViewer.errors = []
-
-    @staticmethod
-    def add(error):
-        ErrorViewer.errors = [e for e in ErrorViewer.errors if e.message != error.message]
-        ErrorViewer.errors.append(error)
-
-    @staticmethod
-    def clear():
-        ErrorViewer.errors = []
-
-    @staticmethod
-    def get():
-        return ErrorViewer.errors
-
-
-class WarningViewer(object):
-    """
-    Keeps a static list of (warning) UIErrors to be displayed on the UI and allows
-    the list to be cleared.
-    """
-
-    errors = []
-
-    def __init__(self):
-        WarningViewer.errors = []
-
-    @staticmethod
-    def add(error):
-        WarningViewer.errors = [e for e in WarningViewer.errors if e.message != error.message]
-        WarningViewer.errors.append(error)
-
-    @staticmethod
-    def clear():
-        WarningViewer.errors = []
-
-    @staticmethod
-    def get():
-        return WarningViewer.errors
-
-
-class UIError(object):
-    """
-    Represents an error to be displayed in the web UI.
-    """
-
-    def __init__(self, message):
-        self.title = sys.exc_info()[-2] or message
-        self.message = message
-        self.time = datetime.datetime.now().strftime(dateTimeFormat)

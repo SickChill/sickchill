@@ -9,9 +9,10 @@ import jsonrpclib
 from sickchill import logger, settings
 from sickchill.helper.common import episode_num
 from sickchill.helper.exceptions import AuthException
-from sickchill.oldbeard import classes, scene_exceptions, tvcache
+from sickchill.oldbeard import scene_exceptions, tvcache
 from sickchill.oldbeard.common import cpu_presets
 from sickchill.oldbeard.helpers import sanitizeSceneName
+from sickchill.providers import result_classes
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 if TYPE_CHECKING:
@@ -233,7 +234,7 @@ class Provider(TorrentProvider):
                     if result_date and (not search_date or result_date > search_date):
                         title, url = self._get_title_and_url(item)
                         if title and url:
-                            results.append(classes.Proper(title, url, result_date, self.show))
+                            results.append(result_classes.Proper(title, url, result_date, self.show))
 
         return results
 

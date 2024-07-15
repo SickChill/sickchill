@@ -1,7 +1,7 @@
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
-from sickchill.oldbeard.classes import NZBSearchResult, TorrentSearchResult
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.result_classes import NZBSearchResult, TorrentSearchResult
 
 
 class NZBProvider(GenericProvider):

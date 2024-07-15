@@ -120,6 +120,11 @@
         <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <%
+                    if error_count == UNDEFINED:
+                        error_count = 0
+                    if warning_count == UNDEFINED:
+                        warning_count = 0
+
                     total_warning_error_count = error_count + warning_count + settings.NEWS_UNREAD
                     if total_warning_error_count:
                         if error_count:
