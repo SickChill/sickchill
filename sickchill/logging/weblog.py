@@ -90,9 +90,6 @@ class __WebErrorViewer(object):
     def len(self):
         return self.num_errors() + self.num_warnings()
 
-    def get(self):
-        return self.__errors
-
 
 WebErrorViewer = __WebErrorViewer()
 
