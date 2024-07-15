@@ -1,5 +1,4 @@
-version: '2'
-
+version: '3.9'
 services:
   sickchill:
     image: sickchill/sickchill:latest
@@ -7,9 +6,10 @@ services:
     restart: unless-stopped
     ports:
       - 8081:8081
+    user: "1000:1000" #optional change two numbers to match the user and group Sickchill should run as or delete this line to run as root
     volumes:
-      - /docker/sickchill/data:/data
-      - /docker/sickchill/downloads:/downloads
-      - /docker/sickchill/tv:/tv
-      - /docker/sickchill/cache:/app/sickchill/sickchill/gui/slick/cache
+      - /path/to/shows:/path/to/shows
+      - /path/to/downloads:/path/to/downloads #optional if the downloads are in a different path than the show storage
+      - /path/to/data:/data #where Sickchill will store its settings between container deployments
+      - /path/to/data/cache/gui:/app/sickchill/gui/slick/cache
       - /etc/localtime:/etc/localtime:ro
