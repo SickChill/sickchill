@@ -4440,9 +4440,9 @@ eslint-plugin-prettier@^5.1.3:
     synckit "^0.9.1"
 
 eslint-plugin-promise@^6.1.1:
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-6.5.0.tgz#b5ebe2c1b6b7f4fd65490bad6754406f5d7ec890"
-  integrity sha512-Sa4irPRhXB0mNjv88rWidu0WUhRLUMLAY3wj5MZyCKH/aMZKCRa3PzfIUaaLe4/U3RjAfRJvNP2rPvZ09lsmTg==
+  version "6.5.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-6.5.1.tgz#b9f1e72a27376ce3055996c0b612e6ed559e15aa"
+  integrity sha512-KEYBjj9nCynXAquwKrYEnIJ1zK+e+O5jqwn/9Aln/FhdOXm6WwsmCVatDM6OAxkEzbigsyD79Fi3DUWWqulTEA==
 
 eslint-plugin-unicorn@^51.0.1:
   version "51.0.1"
@@ -5540,7 +5540,18 @@ grunt-bower-task@^0.6.2:
     lodash "^4.17.21"
     rimraf "^2.6.1"
 
-grunt-cli@^1.4.3, grunt-cli@~1.4.3:
+grunt-cli@^1.4.3:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/grunt-cli/-/grunt-cli-1.5.0.tgz#24fa92225946b2002c535c7583a003e15203876f"
+  integrity sha512-rILKAFoU0dzlf22SUfDtq2R1fosChXXlJM5j7wI6uoW8gwmXDXzbUvirlKZSYCdXl3LXFbR+8xyS+WFo+b6vlA==
+  dependencies:
+    grunt-known-options "~2.0.0"
+    interpret "~1.1.0"
+    liftup "~3.0.1"
+    nopt "~5.0.0"
+    v8flags "^4.0.1"
+
+grunt-cli@~1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/grunt-cli/-/grunt-cli-1.4.3.tgz#22c9f1a3d2780bf9b0d206e832e40f8f499175ff"
   integrity sha512-9Dtx/AhVeB4LYzsViCjUQkd0Kw0McN2gYpdmGYKtE2a5Yt7v1Q+HYZVWhqXc/kGnxlMtqKDxSwotiGeFmkrCoQ==
@@ -7664,7 +7675,7 @@ nomnom@1.8.1:
     chalk "~0.4.0"
     underscore "~1.6.0"
 
-nopt@^5.0.0:
+nopt@^5.0.0, nopt@~5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-5.0.0.tgz#530942bb58a512fccafe53fe210f13a25355dc88"
   integrity sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==
@@ -10597,6 +10608,11 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+v8flags@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/v8flags/-/v8flags-4.0.1.tgz#98fe6c4308317c5f394d85a435eb192490f7e132"
+  integrity sha512-fcRLaS4H/hrZk9hYwbdRM35D0U8IYMfEClhXxCivOojl+yTRAZH3Zy2sSy6qVCiGbV9YAtPssP6jaChqC9vPCg==
 
 v8flags@~3.2.0:
   version "3.2.0"
