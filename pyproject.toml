@@ -300,3 +300,4 @@ beekeeper-alt = ">=2022.9.3"
 stevedore = "^5.1.0"
 cachecontrol = ">=0.13.1,<0.15.0"
 cinemagoer = {version = "^2023.5.1", allow-prereleases = true}
+appdirs = "^1.4.4"
