@@ -8,7 +8,8 @@ from urllib.parse import quote
 
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
-from sickchill.oldbeard import classes, notifiers
+from sickchill.logging.weblog import WebErrorViewer
+from sickchill.oldbeard import notifiers
 
 # log levels
 ERROR = logging.ERROR
@@ -58,7 +59,8 @@ class DispatchFormatter(logging.Formatter, object):
 
         for item in censored:
             try:
-                # passwords that include ++ for example will error. Cannot escape or it wont match at all.
+                # passwords that include ++ for example will error. Cannot escape or it won't match at all.
+                # Always use 8 *'s, so people cant guess censored item length for things like passwords.
                 msg = re.sub(rf"\b({item})\b", "*" * 8, msg)
             except re.error:
                 msg = msg.replace(item, "*" * 8)
@@ -68,12 +70,10 @@ class DispatchFormatter(logging.Formatter, object):
         # Needed because Newznab apikey isn't stored as key=value in a section.
         msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, re.I)
 
-        if record.levelno == ERROR:
-            classes.ErrorViewer.add(classes.UIError(msg))
-            notifiers.notify_logged_error(classes.UIError(msg))
+        # Set the new message into the record!
+        record.msg = msg
 
-        elif record.levelno == WARNING:
-            classes.WarningViewer.add(classes.UIError(msg))
+        WebErrorViewer.add(record)
 
         return super().format(record)
 
@@ -271,7 +271,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
     data = []
     for _log_file in log_files:
         if len(data) < max_lines:
-            with open(_log_file, "r") as f:
+            with open(_log_file) as f:
                 data += [line.strip() + "\n" for line in reversed(f.readlines()) if line.strip()]
         else:
             break

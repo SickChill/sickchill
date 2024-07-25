@@ -28,6 +28,7 @@ from sickchill.oldbeard.scene_numbering import (
     set_scene_numbering,
 )
 from sickchill.oldbeard.trakt_api import TraktAPI
+from sickchill.providers import result_classes
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.providers.metadata.helpers import getShowImage
@@ -1825,11 +1826,11 @@ class Home(WebRoot):
         if result:
             provider = sickchill.oldbeard.providers.getProviderClass(result.get("provider"))
             if provider.provider_type == GenericProvider.TORRENT:
-                result = sickchill.oldbeard.classes.TorrentSearchResult.make_result(result)
+                result = result_classes.TorrentSearchResult.make_result(result)
             elif provider.provider_type == GenericProvider.NZB:
-                result = sickchill.oldbeard.classes.NZBSearchResult.make_result(result)
+                result = result_classes.NZBSearchResult.make_result(result)
             elif provider.provider_type == GenericProvider.NZBDATA:
-                result = sickchill.oldbeard.classes.NZBDataSearchResult.make_result(result)
+                result = result_classes.NZBDataSearchResult.make_result(result)
             else:
                 result = json.dumps({"result": "failure", "message": _("Result provider not found, cannot determine type")})
         else:
@@ -1837,7 +1838,7 @@ class Home(WebRoot):
 
         if isinstance(result, str):
             sickchill.logger.info(_("Could not snatch manually selected result: {result}").format(result=result))
-        elif isinstance(result, sickchill.oldbeard.classes.SearchResult):
+        elif isinstance(result, result_classes.SearchResult):
             sickchill.oldbeard.search.snatch_episode(result, SNATCHED_BEST)
 
         return self.redirect("/home/displayShow?show=" + show)

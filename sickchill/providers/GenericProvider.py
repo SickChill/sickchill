@@ -15,13 +15,13 @@ import sickchill.oldbeard
 from sickchill import logger
 from sickchill.helper.common import sanitize_filename, valid_url
 from sickchill.oldbeard import filters
-from sickchill.oldbeard.classes import Proper, SearchResult
 from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
 from sickchill.oldbeard.tvcache import TVCache
+from sickchill.providers.result_classes import Proper, SearchResult
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode

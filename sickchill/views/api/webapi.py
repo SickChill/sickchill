@@ -17,7 +17,8 @@ from sickchill.helper.common import dateFormat, dateTimeFormat, pretty_file_size
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
 from sickchill.helper.quality import get_quality_string
 from sickchill.init_helpers import get_current_version
-from sickchill.oldbeard import classes, db, helpers, network_timezones, scdatetime, search_queue, ui
+from sickchill.logging.weblog import WebErrorViewer
+from sickchill.oldbeard import db, helpers, network_timezones, scdatetime, search_queue, ui
 from sickchill.oldbeard.common import (
     ARCHIVED,
     DOWNLOADED,
@@ -1296,18 +1297,8 @@ class CMDLogsClear(ApiCall):
 
     def run(self):
         """Clear the logs"""
-        if self.level == "error":
-            msg = "Error logs cleared"
-
-            classes.ErrorViewer.clear()
-        elif self.level == "warning":
-            msg = "Warning logs cleared"
-
-            classes.WarningViewer.clear()
-        else:
-            return _responds(RESULT_FAILURE, msg="Unknown log level: {0}".format(self.level))
-
-        return _responds(RESULT_SUCCESS, msg=msg)
+        message = WebErrorViewer.clear(self.level)
+        return _responds(RESULT_SUCCESS, msg=message)
 
 
 # noinspection PyAbstractClass

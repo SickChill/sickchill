@@ -11,7 +11,7 @@ from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
 
 if TYPE_CHECKING:
-    from sickchill.oldbeard.classes import SearchResult
+    from sickchill.providers.result_classes import SearchResult
 
 
 class Client(GenericClient):
