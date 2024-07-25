@@ -1721,7 +1721,9 @@ class Home(WebRoot):
             action="previewRename",
         )
 
-    def doRename(self, show=None, eps=None):
+    def doRename(self):
+        show = self.get_body_argument("show", None)
+        eps = self.get_body_argument("eps", None)
         if not (show and eps):
             return self._genericMessage(_("Error"), _("You must specify a show and at least one episode"))
 
@@ -1841,14 +1843,18 @@ class Home(WebRoot):
 
         return self.redirect("/home/displayShow?show=" + show)
 
-    def searchEpisode(self, show=None, season=None, episode=None, downCurQuality=0):
+    def searchEpisode(self):
+        show = self.get_query_argument("show", None)
+        season = self.get_query_argument("season", None)
+        episode = self.get_query_argument("episode", None)
+        down_cur_quality = int(self.get_query_argument("downCurQuality", str(0)))
         # retrieve the episode object and fail if we can't get one
         episode_object, error_msg = self._getEpisode(show, season, episode)
         if error_msg or not episode_object:
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.ManualSearchQueueItem(episode_object.show, episode_object, bool(int(downCurQuality)))
+        ep_queue_item = search_queue.ManualSearchQueueItem(episode_object.show, episode_object, bool(down_cur_quality))
 
         settings.searchQueueScheduler.action.add_item(ep_queue_item)
 
@@ -1968,7 +1974,10 @@ class Home(WebRoot):
 
         return quality_class
 
-    def searchEpisodeSubtitles(self, show=None, season=None, episode=None):
+    def searchEpisodeSubtitles(self):
+        show = self.get_query_argument("show", None)
+        season = self.get_query_argument("season", None)
+        episode = self.get_query_argument("episode", None)
         # retrieve the episode object and fail if we can't get one
         episode_object, error_msg = self._getEpisode(show, season, episode)
         if error_msg or not episode_object:
@@ -1989,7 +1998,11 @@ class Home(WebRoot):
         ui.notifications.message(episode_object.show.name, status)
         return json.dumps({"result": status, "subtitles": ",".join(episode_object.subtitles)})
 
-    def playOnKodi(self, show, season, episode, host):
+    def playOnKodi(self):
+        show = self.get_query_argument("show", None)
+        season = self.get_query_argument("season", None)
+        episode = self.get_query_argument("episode", None)
+        host = self.get_query_argument("host", None)
         episode_object, error_msg = self._getEpisode(show, season, episode)
         if error_msg or not episode_object:
             print("error")
@@ -1998,7 +2011,11 @@ class Home(WebRoot):
         sickchill.oldbeard.notifiers.kodi_notifier.play_episode(episode_object, host)
         return json.dumps({"result": "success"})
 
-    def retrySearchSubtitles(self, show, season, episode, lang):
+    def retrySearchSubtitles(self):
+        show = self.get_query_argument("show", None)
+        season = self.get_query_argument("season", None)
+        episode = self.get_query_argument("episode", None)
+        lang = self.get_query_argument("lang", None)
         # retrieve the episode object and fail if we can't get one
         episode_object, error_msg = self._getEpisode(show, season, episode)
         if error_msg or not episode_object:
@@ -2095,14 +2112,18 @@ class Home(WebRoot):
 
         return json.dumps(result)
 
-    def retryEpisode(self, show, season, episode, downCurQuality=0):
+    def retryEpisode(self):
+        show = self.get_query_argument("show", None)
+        season = self.get_query_argument("season", None)
+        episode = self.get_query_argument("episode", None)
+        down_cur_quality = int(self.get_query_argument("downCurQuality", str(0)))
         # retrieve the episode object and fail if we can't get one
         episode_object, error_msg = self._getEpisode(show, season, episode)
         if error_msg or not episode_object:
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
         # make a queue item for it and put it on the queue
-        ep_queue_item = search_queue.FailedQueueItem(episode_object.show, [episode_object], bool(int(downCurQuality)))
+        ep_queue_item = search_queue.FailedQueueItem(episode_object.show, [episode_object], bool(down_cur_quality))
         settings.searchQueueScheduler.action.add_item(ep_queue_item)
 
         if not ep_queue_item.started and ep_queue_item.success is None:
