@@ -7,7 +7,7 @@ from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
 
 if TYPE_CHECKING:  # pragma: no cover
-    from sickchill.oldbeard.classes import TorrentSearchResult
+    from sickchill.providers.result_classes import TorrentSearchResult
 
 
 class Client(GenericClient):

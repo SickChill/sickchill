@@ -103,7 +103,6 @@ class SearchTest(conftest.SickChillTestDBCase):
             provider.enabled = True
 
         for show_name, data in TESTS_DATA.items():
-
             if not data["active"]:
                 continue
 
