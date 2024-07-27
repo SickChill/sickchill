@@ -1,5 +1,4 @@
-version: '2'
-
+version: '3'
 services:
   sickchill:
     image: sickchill/sickchill:latest
@@ -7,6 +6,7 @@ services:
     restart: unless-stopped
     ports:
       - 8081:8081
+    user: "1000:1000" #optional change two numbers to match the user and group Sickchill should run as or delete this line to run as root
     volumes:
       - /docker/sickchill/data:/data
       - /docker/sickchill/downloads:/downloads
