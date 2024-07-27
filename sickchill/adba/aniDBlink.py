@@ -5,9 +5,9 @@ import zlib
 from time import sleep, time
 from typing import Any, Dict
 
-from .aniDBcommands import Command
-from .aniDBerrors import AniDBBannedError, AniDBError, AniDBMustAuthError, AniDBPacketCorruptedError
-from .aniDBresponses import ResponseResolver
+from sickchill.adba.aniDBcommands import Command
+from sickchill.adba.aniDBerrors import AniDBBannedError, AniDBError, AniDBMustAuthError, AniDBPacketCorruptedError
+from sickchill.adba.aniDBresponses import ResponseResolver
 
 
 class AniDBLink(threading.Thread):
@@ -181,8 +181,8 @@ class AniDBLink(threading.Thread):
     def _cmd_dequeue(self, resp) -> Command:
         if not resp.restag:
             return None
-        else:
-            return self.cmd_queue.pop(resp.restag)
+
+        return self.cmd_queue.pop(resp.restag)
 
     def _delay(self):
         return self.delay < 2.1 and 2.1 or self.delay

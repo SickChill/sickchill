@@ -6,14 +6,12 @@ import traceback
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import validators
 from rarfile import BadRarFile, Error, NeedFirstVolume, PasswordRequired, RarCRCError, RarExecError, RarFile, RarOpenError, RarWrongPassword
 
 from sickchill import logger, settings
-from sickchill.helper.common import is_media_file, is_rar_file, is_sync_file, is_torrent_or_nzb_file, remove_extension
+from sickchill.helper.common import is_media_file, is_rar_file, is_sync_file, is_torrent_or_nzb_file, remove_extension, valid_url
 from sickchill.helper.exceptions import EpisodePostProcessingFailedException, FailedPostProcessingFailedException
-
-from . import common, db, failedProcessor, helpers, postProcessor
+from sickchill.oldbeard import common, db, failedProcessor, helpers, postProcessor
 
 if TYPE_CHECKING:
     from sickchill.oldbeard.name_parser.parser import ParseResult
@@ -158,7 +156,7 @@ def process_dir(process_path, release_name=None, process_method=None, force=Fals
         directories_from_rars = set()
 
         # If we have a release name (probably from nzbToMedia), and it is a rar/video, only process that file
-        if release_name and validators.url(release_name) is True:
+        if release_name and valid_url(release_name) is True:
             result.output += log_helper(_("Processing {release_name}").format(release_name=release_name))
             generator_to_use = [("", [], [release_name])]
         elif release_name and (is_media_file(release_name) or is_rar_file(release_name)):

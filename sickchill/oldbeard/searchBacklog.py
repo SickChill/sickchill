@@ -2,8 +2,7 @@ import datetime
 import threading
 
 from sickchill import logger, settings
-
-from . import common, db, scheduler, search_queue, ui
+from sickchill.oldbeard import common, db, scheduler, search_queue, ui
 
 
 class BacklogSearchScheduler(scheduler.Scheduler):

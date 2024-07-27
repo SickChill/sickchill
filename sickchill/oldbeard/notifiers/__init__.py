@@ -8,6 +8,7 @@ from sickchill.oldbeard.notifiers import (  # twilio_notify,
     freemobile,
     gotify,
     growl,
+    jellyfin,
     join,
     kodi,
     libnotify,
@@ -35,6 +36,7 @@ from sickchill.oldbeard.notifiers import (  # twilio_notify,
 kodi_notifier = kodi.Notifier()
 plex_notifier = plex.Notifier()
 emby_notifier = emby.Notifier()
+jellyfin_notifier = jellyfin.Notifier()
 nmj_notifier = nmj.Notifier()
 nmjv2_notifier = nmjv2.Notifier()
 synoindex_notifier = synoindex.Notifier()

@@ -4,9 +4,8 @@ import threading
 import sickchill.oldbeard.search_queue
 from sickchill import logger, settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
+from sickchill.oldbeard import common, db, network_timezones
 from sickchill.show.Show import Show
-
-from . import common, db, network_timezones
 
 
 class DailySearcher(object):

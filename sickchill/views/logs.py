@@ -1,13 +1,12 @@
 from tornado.web import addslash
 
 import sickchill.oldbeard
+from sickchill import logger
 from sickchill.helper import try_int
-
-from .. import logger
-from ..oldbeard import classes, ui
-from .common import PageTemplate
-from .index import WebRoot
-from .routes import Route
+from sickchill.logging.weblog import WebErrorViewer
+from sickchill.views.common import PageTemplate
+from sickchill.views.index import WebRoot
+from sickchill.views.routes import Route
 
 
 @Route("/errorlogs(/?.*)", name="logs:error")
@@ -47,19 +46,15 @@ class ErrorLogs(WebRoot):
 
     @staticmethod
     def haveErrors():
-        return len(classes.ErrorViewer.errors) > 0
+        return WebErrorViewer.have_errors()
 
     @staticmethod
     def haveWarnings():
-        return len(classes.WarningViewer.errors) > 0
+        return WebErrorViewer.have_warnings()
 
     def clearerrors(self):
         level = try_int(self.get_query_argument("level", str(logger.ERROR)), logger.ERROR)
-        if int(level) == logger.WARNING:
-            classes.WarningViewer.clear()
-        else:
-            classes.ErrorViewer.clear()
-
+        WebErrorViewer.clear(level)
         return self.redirect("/errorlogs/viewlog/")
 
     def viewlog(self):

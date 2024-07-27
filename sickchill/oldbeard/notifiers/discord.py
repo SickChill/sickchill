@@ -1,6 +1,10 @@
+from typing import TYPE_CHECKING
+
 from sickchill import logger, settings
 from sickchill.oldbeard import common
-from sickchill.oldbeard.classes import UIError
+
+if TYPE_CHECKING:
+    from sickchill.logging.weblog import UIError
 
 
 class Notifier(object):
@@ -28,7 +32,7 @@ class Notifier(object):
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_discord(title + " - " + update_text.format(ipaddress))
 
-    def notify_logged_error(self, ui_error: UIError):
+    def notify_logged_error(self, ui_error: "UIError"):
         if settings.USE_DISCORD:
             update_text = ui_error.message
             title = ui_error.title

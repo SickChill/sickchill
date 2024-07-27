@@ -6,8 +6,7 @@ import requests
 from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings
-
-from . import common, generic_queue
+from sickchill.oldbeard import common, generic_queue
 
 DISCORD = 600
 

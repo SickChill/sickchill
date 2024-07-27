@@ -1,9 +1,10 @@
 import re
 from xml.etree import ElementTree
 
-from .. import logger
-from . import classes, helpers
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill import logger
+from sickchill.oldbeard import helpers
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.providers import result_classes
 
 
 def get_season_nzbs(name, url_data, season):
@@ -175,7 +176,7 @@ def split_result(obj):
         ep_obj_list = [obj.show.get_episode(season, ep) for ep in parsed_obj.episode_numbers]
 
         # make a result
-        cur_obj = classes.NZBDataSearchResult(ep_obj_list)
+        cur_obj = result_classes.NZBDataSearchResult(ep_obj_list)
         cur_obj.name = new_nzb
         cur_obj.provider = obj.provider
         cur_obj.quality = obj.quality

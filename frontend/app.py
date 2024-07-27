@@ -6,10 +6,9 @@ import threading
 from logging.config import dictConfig
 
 from flask import Flask
-
-from .config import blueprint as config_blueprint
-from .movies import blueprint as movies_blueprint
-from .shows import blueprint as shows_blueprint
+from frontend.config import blueprint as config_blueprint
+from frontend.movies import blueprint as movies_blueprint
+from frontend.shows import blueprint as shows_blueprint
 
 
 class FlaskServer(threading.Thread):

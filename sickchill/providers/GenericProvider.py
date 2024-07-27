@@ -8,21 +8,20 @@ from random import shuffle
 from typing import Callable, Dict, Iterable, List, TYPE_CHECKING, Union
 from urllib.parse import urljoin
 
-import validators
 from requests.structures import CaseInsensitiveDict
 from requests.utils import add_dict_to_cookiejar
 
 import sickchill.oldbeard
 from sickchill import logger
-from sickchill.helper.common import sanitize_filename
+from sickchill.helper.common import sanitize_filename, valid_url
 from sickchill.oldbeard import filters
-from sickchill.oldbeard.classes import Proper, SearchResult
 from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
 from sickchill.oldbeard.tvcache import TVCache
+from sickchill.providers.result_classes import Proper, SearchResult
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode
@@ -597,18 +596,9 @@ class GenericProvider(object):
 
             return setattr(self, option, cast(value))
 
-    @staticmethod
-    def valid_url(url):
-        try:
-            valid = validators.url(url)
-        except validators.utils.ValidationError:
-            valid = False
-
-        return valid is True
-
     @classmethod
     def invalid_url(cls, url):
-        return not cls.valid_url(url)
+        return not valid_url(url)
 
     def __store_original_urls(self):
         if not self.__original_url:
@@ -631,7 +621,7 @@ class GenericProvider(object):
         custom_url_valid = True
         if hasattr(self, "custom_url") and hasattr(self, "url") and hasattr(self, "urls"):
             has_custom_url = bool(self.custom_url)
-            custom_url_valid = self.valid_url(self.custom_url)
+            custom_url_valid = valid_url(self.custom_url)
             if has_custom_url and custom_url_valid:
                 self.__store_original_urls()
 

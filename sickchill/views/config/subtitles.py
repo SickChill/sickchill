@@ -6,9 +6,8 @@ import sickchill.start
 from sickchill import settings
 from sickchill.oldbeard import config, filters, subtitles as subtitle_module, ui
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from . import Config
 
 
 @Route("/config/subtitles(/?.*)", name="config:subtitles")
@@ -26,67 +25,46 @@ class ConfigSubtitles(Config):
             action="subtitles",
         )
 
-    def saveSubtitles(
-        self,
-        use_subtitles=None,
-        subtitles_include_specials=None,
-        subtitles_languages=None,
-        subtitles_dir=None,
-        subtitles_perfect_match=None,
-        service_order=None,
-        subtitles_history=None,
-        subtitles_finder_frequency=None,
-        subtitles_multi=None,
-        embedded_subtitles_all=None,
-        subtitles_extra_scripts=None,
-        subtitles_hearing_impaired=None,
-        addic7ed_user=None,
-        addic7ed_pass=None,
-        itasa_user=None,
-        itasa_pass=None,
-        opensubtitles_user=None,
-        opensubtitles_pass=None,
-        subscenter_user=None,
-        subscenter_pass=None,
-        subtitles_keep_only_wanted=None,
-    ):
-        config.change_subtitle_finder_frequency(subtitles_finder_frequency)
-        config.change_use_subtitles(use_subtitles)
+    def saveSubtitles(self):
+        config.change_subtitle_finder_frequency(self.get_body_argument("subtitles_finder_frequency", default=None))
+        config.change_use_subtitles(self.get_body_argument("use_subtitles", default=None))
 
-        settings.SUBTITLES_INCLUDE_SPECIALS = config.checkbox_to_value(subtitles_include_specials)
+        subtitles_languages = self.get_body_argument("subtitles_languages", default=None)
+        settings.SUBTITLES_INCLUDE_SPECIALS = config.checkbox_to_value(self.get_body_argument("subtitles_include_specials", default=None))
         settings.SUBTITLES_LANGUAGES = (
             [code.strip() for code in subtitles_languages.split(",") if code.strip() in subtitle_module.subtitle_code_filter()] if subtitles_languages else []
         )
 
-        settings.SUBTITLES_DIR = subtitles_dir
-        settings.SUBTITLES_PERFECT_MATCH = config.checkbox_to_value(subtitles_perfect_match)
-        settings.SUBTITLES_HISTORY = config.checkbox_to_value(subtitles_history)
-        settings.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(embedded_subtitles_all)
-        settings.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(subtitles_hearing_impaired)
-        settings.SUBTITLES_MULTI = config.checkbox_to_value(subtitles_multi)
-        settings.SUBTITLES_KEEP_ONLY_WANTED = config.checkbox_to_value(subtitles_keep_only_wanted)
+        subtitles_extra_scripts = self.get_body_argument("subtitles_extra_scripts", default=None)
+        settings.SUBTITLES_DIR = self.get_body_argument("subtitles_dir", default=None)
+        settings.SUBTITLES_PERFECT_MATCH = config.checkbox_to_value(self.get_body_argument("subtitles_perfect_match", default=None))
+        settings.SUBTITLES_HISTORY = config.checkbox_to_value(self.get_body_argument("subtitles_history", default=None))
+        settings.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(self.get_body_argument("embedded_subtitles_all", default=None))
+        settings.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(self.get_body_argument("subtitles_hearing_impaired", default=None))
+        settings.SUBTITLES_MULTI = config.checkbox_to_value(self.get_body_argument("subtitles_multi", default=None))
+        settings.SUBTITLES_KEEP_ONLY_WANTED = config.checkbox_to_value(self.get_body_argument("subtitles_keep_only_wanted", default=None))
         settings.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split("|") if x.strip()]
 
         # Subtitles services
-        services_str_list = service_order.split()
+        services_str_list = self.get_body_argument("service_order", default=None).split()
         subtitles_services_list = []
         subtitles_services_enabled = []
-        for curServiceStr in services_str_list:
-            curService, curEnabled = curServiceStr.split(":")
-            subtitles_services_list.append(curService)
-            subtitles_services_enabled.append(int(curEnabled))
+        for cur_service_str in services_str_list:
+            cur_service, cur_enabled = cur_service_str.split(":")
+            subtitles_services_list.append(cur_service)
+            subtitles_services_enabled.append(int(cur_enabled))
 
         settings.SUBTITLES_SERVICES_LIST = subtitles_services_list
         settings.SUBTITLES_SERVICES_ENABLED = subtitles_services_enabled
 
-        settings.ADDIC7ED_USER = addic7ed_user or ""
-        settings.ADDIC7ED_PASS = filters.unhide(settings.ADDIC7ED_PASS, addic7ed_pass) or ""
-        settings.ITASA_USER = itasa_user or ""
-        settings.ITASA_PASS = filters.unhide(settings.ITASA_PASS, itasa_pass) or ""
-        settings.OPENSUBTITLES_USER = opensubtitles_user or ""
-        settings.OPENSUBTITLES_PASS = filters.unhide(settings.OPENSUBTITLES_PASS, opensubtitles_pass) or ""
-        settings.SUBSCENTER_USER = subscenter_user or ""
-        settings.SUBSCENTER_PASS = filters.unhide(settings.SUBSCENTER_PASS, subscenter_pass) or ""
+        settings.ADDIC7ED_USER = self.get_body_argument("addic7ed_user", default="")
+        settings.ADDIC7ED_PASS = filters.unhide(settings.ADDIC7ED_PASS, self.get_body_argument("addic7ed_pass", default=""))
+        settings.ITASA_USER = self.get_body_argument("itasa_user", default="")
+        settings.ITASA_PASS = filters.unhide(settings.ITASA_PASS, self.get_body_argument("itasa_pass", default="")) or ""
+        settings.OPENSUBTITLES_USER = self.get_body_argument("opensubtitles_user", default="")
+        settings.OPENSUBTITLES_PASS = filters.unhide(settings.OPENSUBTITLES_PASS, self.get_body_argument("opensubtitles_pass", default=""))
+        settings.SUBSCENTER_USER = self.get_body_argument("subscenter_user", default="")
+        settings.SUBSCENTER_PASS = filters.unhide(settings.SUBSCENTER_PASS, self.get_body_argument("subscenter_pass", default=""))
 
         sickchill.start.save_config()
         # Reset provider pool so next time we use the newest settings

@@ -3,13 +3,12 @@ from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 from sickchill import logger, settings
-
-from . import helpers
+from sickchill.oldbeard import helpers
 
 session = helpers.make_session()
 
 if TYPE_CHECKING:
-    from sickchill.oldbeard.classes import SearchResult
+    from sickchill.providers.result_classes import SearchResult
 
 
 def send_nzb(result: "SearchResult"):

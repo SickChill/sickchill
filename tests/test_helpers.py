@@ -587,19 +587,34 @@ class HelpersMiscTests(unittest.TestCase):
         """
         pass
 
-    @unittest.skip("Not yet implemented")
     def test_sanitize_scene_name(self):
         """
         Test sanitizeSceneName
         """
-        pass
+        cases = [
+            {"name": "", "anime": False, "expected": ""},
+            {"name": "Name, with: bad (chars)!", "anime": False, "expected": "Name.with.bad.chars"},
+            {"name": "Rock & Roll", "anime": False, "expected": "Rock.and.Roll"},
+            {"name": "This is a-test", "anime": False, "expected": "This.is.a.test"},
+            {"name": "Trailing dot.", "anime": False, "expected": "Trailing.dot"},
+            {"name": "Kuroko's Basketball", "anime": True, "expected": "Kuroko's.Basketball"},
+            {"name": "Name with — unusual & characters…", "anime": False, "expected": "Name.with.—.unusual.and.characters"},
+            {"name": "Too....many....dots...", "anime": False, "expected": "Too.many.dots"},
+            {"name": "'Single' and “Double” quotes", "anime": False, "expected": "Single.and.“Double”.quotes"},
+        ]
 
-    @unittest.skip("Not yet implemented")
+        for case in cases:
+            with self.subTest(case=case):
+                self.assertEqual(helpers.sanitizeSceneName(case["name"], anime=case["anime"]), case["expected"])
+
     def test_full_sanitize_scene_name(self):
-        """
-        Test full_sanitizeSceneName
-        """
-        pass
+        cases = [
+            {"name": "Name, with: bad (chars)!", "expected": "name with bad chars"},
+            {"name": "a basic name", "expected": "a basic name"},
+        ]
+        for case in cases:
+            with self.subTest(case=case):
+                self.assertEqual(helpers.full_sanitizeSceneName(case["name"]), case["expected"])
 
     @unittest.skip("Not yet implemented")
     def test_remove_article(self):

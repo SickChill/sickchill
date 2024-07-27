@@ -2,7 +2,7 @@ import os
 import traceback
 from collections import namedtuple
 from operator import attrgetter
-from typing import overload, Tuple, Union
+from typing import Union
 
 import dateutil.parser
 
@@ -17,14 +17,13 @@ from sickchill.helper.exceptions import (
     MultipleShowObjectsException,
     ShowDirectoryNotFoundException,
 )
+from sickchill.oldbeard import generic_queue, name_cache, notifiers, scene_numbering, ui
+from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList
+from sickchill.oldbeard.common import WANTED
+from sickchill.oldbeard.helpers import chmodAsParent, makeDir, sortable_name
 from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.show.Show import Show
 from sickchill.tv import TVShow
-
-from . import generic_queue, name_cache, notifiers, scene_numbering, ui
-from .blackandwhitelist import BlackAndWhiteList
-from .common import WANTED
-from .helpers import chmodAsParent, makeDir, sortable_name
 
 
 class ShowQueue(generic_queue.GenericQueue):
@@ -460,24 +459,19 @@ class QueueItemAdd(ShowQueueItem):
             # if self.show.classification and 'sports' in self.show.classification.lower():
             #     self.show.sports = 1
 
-        except Exception as error:
-            error_string = f"Unable to add {self.show.name if self.show else 'show'} due to an error with {sickchill.indexer.name(self.indexer)}"
-
-            logger.exception(f"{error_string}: {error}")
-
-            logger.exception(f"Error trying to add show: {error}")
-            logger.debug(traceback.format_exc())
-
-            ui.notifications.error(_("Unable to add show"), error_string)
-
-            self._finish_early()
-            return
-
         except MultipleShowObjectsException:
             error_string = _("The show in {show_dir} is already in your show list, skipping").format(show_dir=self.show_dir)
             logger.warning(error_string)
             ui.notifications.error(_("Show skipped"), error_string)
+            self._finish_early()
+            return
 
+        except Exception as error:
+            error_string = f"Unable to add {self.show.name if self.show else 'show'} due to an error with {sickchill.indexer.name(self.indexer)}"
+            logger.exception(f"{error_string}: {error}")
+            logger.exception(f"Error trying to add show: {error}")
+            logger.debug(traceback.format_exc())
+            ui.notifications.error(_("Unable to add show"), error_string)
             self._finish_early()
             return
 
@@ -745,6 +739,9 @@ class QueueItemRemove(ShowQueueItem):
 
             # do the library update for EMBY
             notifiers.emby_notifier.update_library(self.show)
+
+            # do the library update for JELLYFIN
+            notifiers.jellyfin_notifier.update_library(self.show)
 
             # do the library update for NMJ
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)

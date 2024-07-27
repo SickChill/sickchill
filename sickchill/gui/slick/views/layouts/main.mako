@@ -120,6 +120,11 @@
         <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <%
+                    if error_count == UNDEFINED:
+                        error_count = 0
+                    if warning_count == UNDEFINED:
+                        warning_count = 0
+
                     total_warning_error_count = error_count + warning_count + settings.NEWS_UNREAD
                     if total_warning_error_count:
                         if error_count:
@@ -200,6 +205,9 @@
                                     % endif
                                     % if settings.USE_EMBY and settings.EMBY_HOST != "" and settings.EMBY_APIKEY != "":
                                         <li><a href="${static_url('home/updateEMBY/', include_version=False)}"><i class="menu-icon-emby"></i>&nbsp;${_('Update Emby')}</a></li>
+                                    % endif
+                                    % if settings.USE_JELLYFIN and settings.JELLYFIN_HOST != "" and settings.JELLYFIN_APIKEY != "":
+                                        <li><a href="${static_url('home/updateJELLYFIN/', include_version=False)}"><i class="menu-icon-jellyfin"></i>&nbsp;${_('Update Jellyfin')}</a></li>
                                     % endif
                                     % if manage_torrents_url:
                                         <li><a href="${manage_torrents_url}" target="_blank"><i class="fa fa-fw fa-download"></i>&nbsp;${_('Manage Torrents')}</a></li>
@@ -330,7 +338,7 @@
                 % else:
                     <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
                 % endif
-                    <%block name="content" />
+                <%block name="content" />
                 </div>
             </div>
 

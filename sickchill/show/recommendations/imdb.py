@@ -45,8 +45,8 @@ class imdbPopular(object):
             return "{0}V1._{1}{2}_{3}{4},{5},{6},{7}_.jpg".format(
                 matches[0], matches[1], matches[2], matches[3], matches[4], matches[5], matches[6], matches[7]
             )
-        else:
-            return image_url
+
+        return image_url
 
     def cache_image(self, image_url):
         """

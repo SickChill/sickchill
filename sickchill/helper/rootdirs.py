@@ -14,7 +14,7 @@ class RootDirectories:
         if self.default:
             logger.debug(f"default root directory: {self[self.default]}")
         else:
-            logger.debug(f"no default root directory set")
+            logger.debug("no default root directory set")
 
     def parse(self, root_directories_string: str = "", root_directories_list: Union[list, None] = None) -> None:
         split_setting = root_directories_list or root_directories_string.split("|")

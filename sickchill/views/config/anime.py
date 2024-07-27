@@ -6,9 +6,8 @@ import sickchill.start
 from sickchill import settings
 from sickchill.oldbeard import config, filters, ui
 from sickchill.views.common import PageTemplate
+from sickchill.views.config.index import Config
 from sickchill.views.routes import Route
-
-from .index import Config
 
 
 @Route("/config/anime(/?.*)", name="config:anime")
@@ -26,13 +25,13 @@ class ConfigAnime(Config):
             action="anime",
         )
 
-    def saveAnime(self, use_anidb=None, anidb_username=None, anidb_password=None, anidb_use_mylist=None, split_home=None, split_home_in_tabs=None):
-        settings.USE_ANIDB = config.checkbox_to_value(use_anidb)
-        settings.ANIDB_USERNAME = anidb_username
-        settings.ANIDB_PASSWORD = filters.unhide(settings.ANIDB_PASSWORD, anidb_password)
-        settings.ANIDB_USE_MYLIST = config.checkbox_to_value(anidb_use_mylist)
-        settings.ANIME_SPLIT_HOME = config.checkbox_to_value(split_home)
-        settings.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(split_home_in_tabs)
+    def saveAnime(self):
+        settings.USE_ANIDB = config.checkbox_to_value(self.get_body_argument("use_anidb", default=None))
+        settings.ANIDB_USERNAME = self.get_body_argument("anidb_username", default=None)
+        settings.ANIDB_PASSWORD = filters.unhide(settings.ANIDB_PASSWORD, self.get_body_argument("anidb_password", default=None))
+        settings.ANIDB_USE_MYLIST = config.checkbox_to_value(self.get_body_argument("anidb_use_mylist", default=None))
+        settings.ANIME_SPLIT_HOME = config.checkbox_to_value(self.get_body_argument("split_home", default=None))
+        settings.ANIME_SPLIT_HOME_IN_TABS = config.checkbox_to_value(self.get_body_argument("split_home_in_tabs", default=None))
 
         sickchill.start.save_config()
         ui.notifications.message(_("Configuration Saved"), os.path.join(settings.CONFIG_FILE))

@@ -4,10 +4,10 @@ import bencode
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
-from sickchill.oldbeard.classes import Proper, TorrentSearchResult
 from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.db import DBConnection
 from sickchill.providers.GenericProvider import GenericProvider
+from sickchill.providers.result_classes import Proper, TorrentSearchResult
 from sickchill.show.Show import Show
 
 

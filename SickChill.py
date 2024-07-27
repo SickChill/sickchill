@@ -430,7 +430,7 @@ class SickChill:
 
         updater = UpdateManager()
         if not updater.updater:
-            self.log(f"Unable to install files, the updater is disabled", 1)
+            self.log("Unable to install files, the updater is disabled", 1)
             return False
 
         self.log(f"Creating a backup of your database and config before installing {file.name}")

@@ -346,6 +346,11 @@ inc_top.mako
     background-position: -614px 0;
 }
 
+.menu-icon-jellyfin {
+    background: url("../images/16px_jellyfin_notifier.png");
+    background-size: 16px;
+}
+
 .menu-icon-blackhole {
     background-position: -632px 0;
 }
@@ -2084,6 +2089,11 @@ div.metadataDiv .disabled {
 
 .icon-notifiers-emby {
     background-position: -104px 0;
+}
+
+.icon-notifiers-jellyfin {
+    background: url("../images/32px_jellyfin_notifier.png");
+    background-size: 32px;
 }
 
 .icon-notifiers-nmj {

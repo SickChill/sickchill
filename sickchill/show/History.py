@@ -7,7 +7,7 @@ import subliminal
 
 from sickchill import logger, settings
 from sickchill.helper.metaclasses import Singleton
-from sickchill.oldbeard.classes import SearchResult
+from sickchill.providers.result_classes import SearchResult
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow

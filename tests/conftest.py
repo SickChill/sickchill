@@ -26,7 +26,6 @@ import pytest
 from configobj import ConfigObj
 
 import sickchill.logger
-import sickchill.oldbeard.config
 import sickchill.oldbeard.tvcache
 import sickchill.start
 from sickchill import settings
@@ -54,6 +53,7 @@ PROCESSING_DIR = os.path.join(TEST_DIR, "Downloads")
 NUM_SEASONS = 5
 EPISODES_PER_SEASON = 20
 
+
 # =================
 #  prepare env functions
 # =================
@@ -80,7 +80,6 @@ def create_test_cache_folder():
 # =================
 #  SickChill globals
 # =================
-
 
 settings.show_list = []
 settings.QUALITY_DEFAULT = 4  # hdtv
@@ -282,7 +281,7 @@ def teardown_test_db():
     #        try:
     #            os.remove(filename)
     #        except Exception as error:
-    #            print(f'ERROR: Failed to remove {filename}')
+    #            print(f"ERROR: Failed to remove {filename}")
     #            print(Exception(error))
 
 
@@ -356,7 +355,7 @@ def patch_open(open_func, files):
     return open_patched
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=False, scope="session")
 def cleanup_files():
     # yield
     for file in [os.path.join("tests", "sickchill.db"), os.path.join("tests", "cache.db"), os.path.join("tests", "failed.db")]:
