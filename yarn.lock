@@ -1119,10 +1119,10 @@
     hyperdyperid "^1.2.0"
     thingies "^1.20.0"
 
-"@jsonjoy.com/util@^1.1.2":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@jsonjoy.com/util/-/util-1.2.0.tgz#0fe9a92de72308c566ebcebe8b5a3f01d3149df2"
-  integrity sha512-4B8B+3vFsY4eo33DMKyJPlQ3sBMpPFUZK2dr3O3rXrOGKKbYG44J0XSFkDo1VOQiri5HFEhIeVvItjR2xcazmg==
+"@jsonjoy.com/util@^1.1.2", "@jsonjoy.com/util@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@jsonjoy.com/util/-/util-1.3.0.tgz#e5623885bb5e0c48c1151e4dae422fb03a5887a1"
+  integrity sha512-Cebt4Vk7k1xHy87kHY7KSPLT77A7Ev7IfOblyLZhtYEhrdQ6fX4EoLq3xOQ3O/DRMEh2ok5nyC180E+ABS8Wmw==
 
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.5"
@@ -3667,9 +3667,9 @@ debug@2.6.9:
     ms "2.0.0"
 
 debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4, debug@^4.3.5:
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.5.tgz#e83444eceb9fedd4a1da56d671ae2446a01a6e1e"
-  integrity sha512-pt0bNEmneDIvdL1Xsd9oDQ/wrQRkXDT4AUWlNZNPKvW5x/jyO9VFXkJUP07vQ2upmw5PlaITaPKc31jK13V+jg==
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.6.tgz#2ab2c38fbaffebf8aa95fdfe6d88438c7a13c52b"
+  integrity sha512-O/09Bd4Z1fBrU4VzkhFqVgpPzaGbw6Sm9FEkBT1A/YBXQFGuuSxa1dN2nxgxS34JmKXqYx8CZAwEVoJFImUXIg==
   dependencies:
     ms "2.1.2"
 
@@ -7229,12 +7229,12 @@ mem-fs@^4.0.0:
     vinyl-file "^5.0.0"
 
 memfs@^4.6.0:
-  version "4.9.4"
-  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.9.4.tgz#803eb7f2091d1c6198ec9ba9b582505ad8699c9e"
-  integrity sha512-Xlj8b2rU11nM6+KU6wC7cuWcHQhVINWCUgdPS4Ar9nPxLaOya3RghqK7ALyDW2QtGebYAYs6uEdEVnwPVT942A==
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.11.0.tgz#6bbecbc05f52a6befb27411a12896536d74f4b91"
+  integrity sha512-+6kz90/YQoZuHvg3rn1CGPMZfEMaU5xe7xIavZMNiom2RNesiI8S37p9O9n+PlIUnUgretjLdM6HnqpZYl3X2g==
   dependencies:
     "@jsonjoy.com/json-pack" "^1.0.3"
-    "@jsonjoy.com/util" "^1.1.2"
+    "@jsonjoy.com/util" "^1.3.0"
     tree-dump "^1.0.1"
     tslib "^2.0.0"
 
