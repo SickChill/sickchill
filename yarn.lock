@@ -4438,6 +4438,28 @@ eslint-plugin-unicorn@^54.0.0:
     semver "^7.6.1"
     strip-indent "^3.0.0"
 
+eslint-plugin-unicorn@^55.0.0:
+  version "55.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-55.0.0.tgz#e2aeb397914799895702480970e7d148df5bcc7b"
+  integrity sha512-n3AKiVpY2/uDcGrS3+QsYDkjPfaOrNrsfQxU9nt5nitd9KuvVXrfAvgCO9DYPSfap+Gqjw9EOrXIsBp5tlHZjA==
+  dependencies:
+    "@babel/helper-validator-identifier" "^7.24.5"
+    "@eslint-community/eslint-utils" "^4.4.0"
+    ci-info "^4.0.0"
+    clean-regexp "^1.0.0"
+    core-js-compat "^3.37.0"
+    esquery "^1.5.0"
+    globals "^15.7.0"
+    indent-string "^4.0.0"
+    is-builtin-module "^3.2.1"
+    jsesc "^3.0.2"
+    pluralize "^8.0.0"
+    read-pkg-up "^7.0.1"
+    regexp-tree "^0.1.27"
+    regjsparser "^0.10.0"
+    semver "^7.6.1"
+    strip-indent "^3.0.0"
+
 eslint-rule-docs@^1.1.235:
   version "1.1.235"
   resolved "https://registry.yarnpkg.com/eslint-rule-docs/-/eslint-rule-docs-1.1.235.tgz#be6ef1fc3525f17b3c859ae2997fedadc89bfb9b"
@@ -5413,7 +5435,7 @@ globals@^14.0.0:
   resolved "https://registry.yarnpkg.com/globals/-/globals-14.0.0.tgz#898d7413c29babcf6bafe56fcadded858ada724e"
   integrity sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==
 
-globals@^15.8.0:
+globals@^15.7.0, globals@^15.8.0:
   version "15.8.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-15.8.0.tgz#e64bb47b619dd8cbf32b3c1a0a61714e33cbbb41"
   integrity sha512-VZAJ4cewHTExBWDHR6yptdIBlx9YSSZuwojj9Nt5mBRXQzrKakDsVKQ1J63sklLvzAJm0X5+RpO4i3Y2hcOnFw==
