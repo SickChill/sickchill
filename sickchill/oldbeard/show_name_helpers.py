@@ -34,6 +34,26 @@ def containsAtLeastOneWord(name, words):
             return word
     return False
 
+def containsAllWords(name, words):
+    """
+    Filters out results based on filter_words
+
+    name: name to check
+    words : string of words separated by a ',' or list of words
+
+    Returns: True if all words from the list are present in name, or the first word from the list not found in name.
+    """
+    if isinstance(words, str):
+        words = words.split(",")
+
+    words = {word.strip() for word in words if word.strip()}
+    if not any(words):
+        return True
+
+    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.I) for word in words}.items():
+        if not regexp.search(name):
+            return word
+    return True
 
 def filter_bad_releases(name, parse=True, show=None):
     """
@@ -81,8 +101,9 @@ def filter_bad_releases(name, parse=True, show=None):
     if settings.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
         require_words = require_words.difference(clean_set(settings.IGNORE_WORDS))
 
-    if require_words and not containsAtLeastOneWord(name, require_words):
-        logger.info("Release: " + name + " doesn't contain any of " + ", ".join(set(require_words)) + ", ignoring it")
+    word = containsAllWords(name, require_words)
+    if isinstance(word, str):
+        logger.info("Release: {} doesn't contain required word {}, ignoring it".format(name, word))
         return False
 
     return True
