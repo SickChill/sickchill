@@ -13,7 +13,7 @@ if hasattr("General", "ignored_subs_list") and settings.IGNORED_SUBS_LIST:
     resultFilters.add("(" + settings.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
 
 
-def containsAtLeastOneWord(name, words):
+def contains_at_least_one_word(name, words):
     """
     Filters out results based on filter_words
 
@@ -34,7 +34,8 @@ def containsAtLeastOneWord(name, words):
             return word
     return False
 
-def containsAllWords(name, words):
+
+def contains_all_words(name, words):
     """
     Filters out results based on filter_words
 
@@ -54,6 +55,7 @@ def containsAllWords(name, words):
         if not regexp.search(name):
             return word
     return True
+
 
 def filter_bad_releases(name, parse=True, show=None):
     """
@@ -88,9 +90,9 @@ def filter_bad_releases(name, parse=True, show=None):
     if settings.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
         ignore_words = ignore_words.difference(clean_set(settings.REQUIRE_WORDS))
 
-    word = containsAtLeastOneWord(name, ignore_words)
+    word = contains_at_least_one_word(name, ignore_words)
     if word:
-        logger.info("Release: {} contains {}, ignoring it".format(name, word))
+        logger.info(f"Release: {name} contains {word}, ignoring it")
         return False
 
     # if any of the good strings aren't in the name then say no
@@ -101,9 +103,9 @@ def filter_bad_releases(name, parse=True, show=None):
     if settings.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
         require_words = require_words.difference(clean_set(settings.IGNORE_WORDS))
 
-    word = containsAllWords(name, require_words)
+    word = contains_all_words(name, require_words)
     if isinstance(word, str):
-        logger.info("Release: {} doesn't contain required word {}, ignoring it".format(name, word))
+        logger.info(f"Release: {name} doesn't contain required word {word}, ignoring it")
         return False
 
     return True
@@ -189,8 +191,8 @@ def determine_release_name(directory=None, release_name=None):
     return None
 
 
-def hasPreferredWords(name, show=None):
-    """Determine based on the full episode (file)name combined with the preferred words what the weight its preference should be"""
+def has_preferred_words(name, show=None):
+    """Determine based on the full episode (file) name combined with the preferred words what the weight its preference should be"""
 
     name = name.lower()
 
