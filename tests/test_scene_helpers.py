@@ -25,7 +25,7 @@ class SceneTests(conftest.SickChillTestDBCase):
         show = Show(1, indexerid)
         show.name = name
 
-        result = show_name_helpers.allPossibleShowNames(show)
+        result = show_name_helpers.all_possible_show_names(show)
         assert len(set(expected).intersection(set(result))) == len(expected)
 
     def test_all_possible_show_names(self):

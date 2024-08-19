@@ -13,7 +13,7 @@ if hasattr("General", "ignored_subs_list") and settings.IGNORED_SUBS_LIST:
     resultFilters.add("(" + settings.IGNORED_SUBS_LIST.replace(",", "|") + ")sub(bed|ed|s)?")
 
 
-def containsAtLeastOneWord(name, words):
+def contains_at_least_one_word(name, words):
     """
     Filters out results based on filter_words
 
@@ -65,12 +65,12 @@ def filter_bad_releases(name, parse=True, show=None):
     ignore_words = ignore_words.union(clean_set(show and show.rls_ignore_words or ""))  # Show specific ignored words
     ignore_words = ignore_words.union(clean_set(settings.IGNORE_WORDS))  # Plus Global ignored words
     ignore_words = ignore_words.difference(clean_set(show and show.rls_require_words or ""))  # Minus show specific required words
-    if settings.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we arent using show ignore words
+    if settings.REQUIRE_WORDS and not (show and show.rls_ignore_words):  # Only remove global require words from the list if we aren't using show ignore words
         ignore_words = ignore_words.difference(clean_set(settings.REQUIRE_WORDS))
 
-    word = containsAtLeastOneWord(name, ignore_words)
+    word = contains_at_least_one_word(name, ignore_words)
     if word:
-        logger.info("Release: {} contains {}, ignoring it".format(name, word))
+        logger.info(f"Release: {name} contains {word}, ignoring it")
         return False
 
     # if any of the good strings aren't in the name then say no
@@ -81,14 +81,14 @@ def filter_bad_releases(name, parse=True, show=None):
     if settings.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
         require_words = require_words.difference(clean_set(settings.IGNORE_WORDS))
 
-    if require_words and not containsAtLeastOneWord(name, require_words):
-        logger.info("Release: " + name + " doesn't contain any of " + ", ".join(set(require_words)) + ", ignoring it")
+    if require_words and not contains_at_least_one_word(name, require_words):
+        logger.info(f"Release: {name} doesn't contain required word {word}, ignoring it")
         return False
 
     return True
 
 
-def allPossibleShowNames(show, season=-1):
+def all_possible_show_names(show, season=-1):
     """
     Figures out every possible variation of the name for a particular show. Includes TVDB name, TVRage name,
     country codes on the end, eg. "Show Name (AU)", and any scene exception names.
@@ -98,36 +98,36 @@ def allPossibleShowNames(show, season=-1):
     Returns: a list of all the possible show names
     """
 
-    showNames = get_scene_exceptions(show.indexerid, season=season)
-    if not showNames:  # if we don't have any season specific exceptions fallback to generic exceptions
+    show_names = get_scene_exceptions(show.indexerid, season=season)
+    if not show_names:  # if we don't have any season specific exceptions fallback to generic exceptions
         season = -1
-        showNames = get_scene_exceptions(show.indexerid, season=season)
+        show_names = get_scene_exceptions(show.indexerid, season=season)
 
-    showNames.append(show.name)
+    show_names.append(show.name)
 
     if not show.is_anime:
-        newShowNames = []
+        new_show_names = []
         country_list = common.countryList
         country_list.update({common.countryList[k]: k for k in common.countryList})
-        for curName in set(showNames):
-            if not curName:
+        for current_name in set(show_names):
+            if not current_name:
                 continue
 
             # if we have "Show Name Australia" or "Show Name (Australia)" this will add "Show Name (AU)" for
             # any countries defined in common.countryList
             # (and vice versa)
-            for curCountry in country_list:
-                if curName.endswith(" " + curCountry):
-                    newShowNames.append(curName.replace(" " + curCountry, " (" + country_list[curCountry] + ")"))
-                elif curName.endswith(" (" + curCountry + ")"):
-                    newShowNames.append(curName.replace(" (" + curCountry + ")", " (" + country_list[curCountry] + ")"))
+            for current_country in country_list:
+                if current_name.endswith(" " + current_country):
+                    new_show_names.append(current_name.replace(" " + current_country, " (" + country_list[current_country] + ")"))
+                elif current_name.endswith(" (" + current_country + ")"):
+                    new_show_names.append(current_name.replace(" (" + current_country + ")", " (" + country_list[current_country] + ")"))
 
             # # if we have "Show Name (2013)" this will strip the (2013) show year from the show name
-            # newShowNames.append(re.sub('\(\d{4}\)', '', curName))
+            # new_show_names.append(re.sub('\(\d{4}\)', '', current_name))
 
-        showNames += newShowNames
+        show_names += new_show_names
 
-    return set(showNames)
+    return set(show_names)
 
 
 def determine_release_name(directory=None, release_name=None):
@@ -168,8 +168,8 @@ def determine_release_name(directory=None, release_name=None):
     return None
 
 
-def hasPreferredWords(name, show=None):
-    """Determine based on the full episode (file)name combined with the preferred words what the weight its preference should be"""
+def has_preferred_words(name, show=None):
+    """Determine based on the full episode (file) name combined with the preferred words what the weight its preference should be"""
 
     name = name.lower()
 
@@ -187,7 +187,7 @@ def hasPreferredWords(name, show=None):
 
     prefer_words = []
 
-    # Because we weigh values, we can not union global and show based values, so we don't do that
+    # Because we weigh values, we cannot union global and show based values, so we don't do that
     if settings.PREFER_WORDS:
         prefer_words = clean_set(settings.PREFER_WORDS)
     if show and show.rls_prefer_words:

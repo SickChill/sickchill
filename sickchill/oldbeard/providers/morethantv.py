@@ -9,7 +9,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
-from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
+from sickchill.oldbeard.show_name_helpers import all_possible_show_names
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 if TYPE_CHECKING:
@@ -185,7 +185,7 @@ class Provider(TorrentProvider):
     def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
         search_string = {"Season": set()}
 
-        for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
+        for show_name in all_possible_show_names(episode.show, season=episode.scene_season):
             season_string = show_name + " "
 
             if episode.show.air_by_date or episode.show.sports:
