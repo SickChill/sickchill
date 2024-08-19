@@ -82,7 +82,7 @@ def filter_bad_releases(name, parse=True, show=None):
         require_words = require_words.difference(clean_set(settings.IGNORE_WORDS))
 
     if require_words and not contains_at_least_one_word(name, require_words):
-        logger.info(f"Release: {name} doesn't contain required word {word}, ignoring it")
+        logger.info(f"Release: {name} doesn't contain a required word {require_words}, ignoring it")
         return False
 
     return True
