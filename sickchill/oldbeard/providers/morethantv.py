@@ -97,9 +97,9 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
-                searchedSeason = "0"
+                searched_season = "0"
                 if mode == "Season":
-                    searchedSeason = re.match(r".*\s(Season\s\d+|S\d+)", search_string).group(1)
+                    searched_season = re.match(r".*\s(Season\s\d+|S\d+)", search_string).group(1)
 
                 search_params["searchstr"] = search_string
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")
@@ -131,7 +131,7 @@ class Provider(TorrentProvider):
                             if mode == "Season":
                                 # Skip if torrent isn't the right season, we can't search
                                 # for an exact season on MTV, it returns all of them
-                                if searchedSeason not in title:
+                                if searched_season not in title:
                                     continue
 
                                 # If torrent is grouped, we need a folder name for title
@@ -142,10 +142,10 @@ class Provider(TorrentProvider):
                                     group_params = {"torrentid": torrentid}
 
                                     # Obtain folder name to use as title
-                                    torrentInfo = self.get_url(self.urls["search"], params=group_params, returns="text").replace("\n", "")
+                                    torrent_info = self.get_url(self.urls["search"], params=group_params, returns="text").replace("\n", "")
 
                                     releaseregex = '.*files_{0}.*?;">/(.+?(?=/))'.format(re.escape(torrentid))
-                                    releasename = re.search(releaseregex, torrentInfo).group(1)
+                                    releasename = re.search(releaseregex, torrent_info).group(1)
                                     title = releasename
 
                             download_url = urljoin(self.url, result.find("span", title="Download").parent["href"])
