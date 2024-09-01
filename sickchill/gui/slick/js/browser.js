@@ -36,7 +36,21 @@
             let list = null;
             let link = null;
 
-            const innerData = $.grep(data, (value, index) => index !== 0);
+            // Log data to debug
+            console.log("Received data:", data);
+
+            const preData = $.grep(data, (value, index) => index !== 0);
+            // Separate folders and files
+            const folders = preData.filter(item => item.type === 'folder');
+            const files = preData.filter(item => item.type !== 'folder');
+
+            // Sort folders and files alphabetically
+            folders.sort((a, b) => a.name.localeCompare(b.name));
+            files.sort((a, b) => a.name.localeCompare(b.name));
+
+            // Concatenate sorted folders and files
+            const innerData = folders.concat(files);
+
             const inputContainer = $('<div class="fileBrowserFieldContainer"></div>');
 
             $('<input type="text" class="form-control input-sm">').val(currentBrowserPath).on('keypress', event => {
