@@ -314,8 +314,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with one or more words from this list will be ignored.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option adds to the globally ignored words!')}</label>
+                                                <label>${_('search results with one or more words from this list will be ignored.<br/>'
+                                                '<b>note:</b> this option adds to the globally ignored words!')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -341,8 +341,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with these words will be preferred in this order.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option overrides the globally preferred words!')}</label>
+                                                <label>${_('search results with these words will be preferred in this order.<br/>'
+                                                '<b>note:</b> this option overrides the globally preferred words!')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -369,8 +369,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with no words from this list will be ignored.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option overrides the globally required words, and globally ignored words!')}</label>
+                                                <label>${_('search results with no words from this list will be ignored.<br/>'
+                                                '<b>note:</b> this option overrides the globally required words, and globally ignored words!')}</label>
                                             </div>
                                         </div>
                                     </div>

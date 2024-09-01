@@ -64,17 +64,17 @@ class BaseHandler(RequestHandler):
             self.set_header("Content-Type", "text/html")
             return self.finish(
                 """<html>
-                                 <title>{0}</title>
-                                 <body>
-                                    <h2>Error</h2>
-                                    <p>{1}</p>
-                                    <h2>Traceback</h2>
-                                    <p>{2}</p>
-                                    <h2>Request Info</h2>
-                                    <p>{3}</p>
-                                    <button onclick="window.location='{4}/errorlogs/';">View Log(Errors)</button>
-                                 </body>
-                               </html>""".format(
+                    <title>{0}</title>
+                    <body>
+                        <h2>Error</h2>
+                        <p>{1}</p>
+                        <h2>Traceback</h2>
+                        <p>{2}</p>
+                        <h2>Request Info</h2>
+                        <p>{3}</p>
+                        <button onclick="window.location='{4}/errorlogs/';">View Log(Errors)</button>
+                    </body>
+                    </html>""".format(
                     error, error, trace_info, request_info, settings.WEB_ROOT
                 )
             )
