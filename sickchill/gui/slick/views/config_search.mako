@@ -223,7 +223,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="require_words">${_('''results with no word from this list will be ignored<br>separate words with a comma, e.g. "word1,word2,word3"''')}</label>
+                                            <label for="require_words">${_('''results with no word from this list will be ignored<br>separate words with a comma, e.g. "word1,word2,word3"<br>words starting with a plus sign must always be present''')}</label>
                                         </div>
                                     </div>
                                 </div>
