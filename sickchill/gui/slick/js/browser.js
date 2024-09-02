@@ -37,7 +37,7 @@
             let link = null;
 
             // Log data to debug
-            console.log("Received data:", data);
+            console.log('Received data:', data);
 
             const preData = $.grep(data, (value, index) => index !== 0);
             // Separate folders and files
