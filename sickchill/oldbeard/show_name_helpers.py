@@ -81,9 +81,9 @@ def filter_bad_releases(name, parse=True, show=None):
 
     def clean_set(words):
         return {x.strip() for x in set((words or "").lower().split(",")) if x.strip()}
-    
+
     def remove_plus_sign(words):
-        return {s[1:] if s.startswith('+') else s for s in words}
+        return {s[1:] if s.startswith("+") else s for s in words}
 
     # if any of the bad strings are in the name then say no
     ignore_words = resultFilters
@@ -102,7 +102,7 @@ def filter_bad_releases(name, parse=True, show=None):
     require_words = set()
     require_words = require_words.union(clean_set(show and show.rls_require_words or ""))  # Show specific required words
     require_words = require_words.union(clean_set(settings.REQUIRE_WORDS))  # Plus Global required words
-    require_words_absolute = {s[1:] for s in require_words if s.startswith('+')}  # Check for words starting with '+' which are an absolute requirement
+    require_words_absolute = {s[1:] for s in require_words if s.startswith("+")}  # Check for words starting with '+' which are an absolute requirement
     require_words = remove_plus_sign(require_words)  # Clean require_words (remove leading '+')
     require_words = require_words.difference(clean_set(show and show.rls_ignore_words or ""))  # Minus show specific ignored words
     if settings.IGNORE_WORDS and not (show and show.rls_require_words):  # Only remove global ignore words from the list if we arent using show require words
@@ -114,7 +114,7 @@ def filter_bad_releases(name, parse=True, show=None):
         if isinstance(word, str):
             logger.info(f"Release: {name} doesn't contain required word {word}, ignoring it")
             return False
- 
+
     if require_words and not containsAtLeastOneWord(name, require_words):
         logger.info("Release: " + name + " doesn't contain any of " + ", ".join(set(require_words)) + ", ignoring it")
         return False
