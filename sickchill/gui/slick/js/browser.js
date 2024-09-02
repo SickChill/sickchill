@@ -5,7 +5,7 @@
             url: scRoot + '/browser/',
             autocompleteURL: scRoot + '/browser/complete',
             includeFiles: 0,
-            fileTypes: [], // File extensions to include, 'images' is an alias for image types
+            fileTypes: ['zip'], // File extensions to include, 'images' is an alias for image types
             showBrowseButton: true,
         },
     };
@@ -41,15 +41,16 @@
 
             const preData = $.grep(data, (value, index) => index !== 0);
             // Separate folders and files
-            const folders = preData.filter(item => item.type === 'folder');
-            const files = preData.filter(item => item.type !== 'folder');
+            const folders = preData.filter(item => item.isFile === false);
+            const files = preData.filter(item => item.isFile === true);
 
             // Sort folders and files alphabetically
             folders.sort((a, b) => a.name.localeCompare(b.name));
             files.sort((a, b) => a.name.localeCompare(b.name));
 
             // Concatenate sorted folders and files
-            const innerData = folders.concat(files);
+            const folderFileData = folders.concat(files);
+            const innerData = [preData[0], ...folderFileData];
 
             const inputContainer = $('<div class="fileBrowserFieldContainer"></div>');
 
