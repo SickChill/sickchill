@@ -370,7 +370,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label>${_('search results with no words from this list will be ignored.')}</label>
-                                                <label>${_('words starting with a plus sign must always be present.')}</label>
+                                                <label>${_('all words starting with a plus sign must all be present.')}</label>
                                                 <label><b>${_('note')}:</b> ${_('this option overrides the globally required words, and globally ignored words!')}</label>
                                             </div>
                                         </div>

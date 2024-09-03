@@ -204,7 +204,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="prefer_words">${_('''search results with these words will be preferred in this order<br>separate words with a comma, e.g. "word1,word2,word3"''')}</label>
+                                            <label for="prefer_words">${_('''search results with these words will be preferred in this order<br>
+                                                separate words with a comma, e.g. "word1,word2,word3"''')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -223,7 +224,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="require_words">${_('''results with no word from this list will be ignored<br>separate words with a comma, e.g. "word1,word2,word3"<br>words starting with a plus sign must always be present''')}</label>
+                                            <label for="require_words">${_('''results with no word from this list will be ignored<br>
+                                                separate words with a comma, e.g. "word1,word2,word3"<br>
+                                                all words starting with a plus sign must all be present''')}</label>
                                         </div>
                                     </div>
                                 </div>

@@ -120,9 +120,9 @@
         <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <%
-                    if error_count == UNDEFINED:
+                    if 'error_count' not in locals():
                         error_count = 0
-                    if warning_count == UNDEFINED:
+                    if 'warning_count' not in locals():
                         warning_count = 0
 
                     total_warning_error_count = error_count + warning_count + settings.NEWS_UNREAD
