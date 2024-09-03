@@ -138,7 +138,7 @@
             class: 'btn',
             click() {
                 // Store the browsed path to the associated text field
-                callback(newOptions.includeFiles ? currentBrowserPath : $(this).find('.fileBrowserField').val() , newOptions);
+                callback(newOptions.includeFiles ? currentBrowserPath : $(this).find('.fileBrowserField').val(), newOptions);
                 $(this).dialog('close');
             },
         }, {
