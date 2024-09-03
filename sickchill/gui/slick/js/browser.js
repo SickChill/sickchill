@@ -36,21 +36,16 @@
             let list = null;
             let link = null;
 
-            // Log data to debug
-            console.log('Received data:', data);
-
-            const preData = $.grep(data, (value, index) => index !== 0);
             // Separate folders and files
-            const folders = preData.filter(item => item.isFile === false);
-            const files = preData.filter(item => item.isFile === true);
+            const folders = data.filter(item => item.isFile === false);
+            const files = data.filter(item => item.isFile === true);
 
             // Sort folders and files alphabetically
             folders.sort((a, b) => a.name.localeCompare(b.name));
             files.sort((a, b) => a.name.localeCompare(b.name));
 
             // Concatenate sorted folders and files
-            const folderFileData = folders.concat(files);
-            const innerData = [preData[0], ...folderFileData];
+            const innerData = [data[1], ...folders, ...files];
 
             const inputContainer = $('<div class="fileBrowserFieldContainer"></div>');
 
