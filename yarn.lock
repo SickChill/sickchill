@@ -1799,9 +1799,9 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "22.5.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.5.3.tgz#91a374e42c6e7ccb5893a87f1775f36ce1671d65"
-  integrity sha512-njripolh85IA9SQGTAqbmnNZTdxv7X/4OYGPz8tgy5JDr8MP+uDBa921GpYEoDDnwm0Hmn5ZPeJgiiSTPoOzkQ==
+  version "22.5.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.5.4.tgz#83f7d1f65bc2ed223bdbf57c7884f1d5a4fa84e8"
+  integrity sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==
   dependencies:
     undici-types "~6.19.2"
 
@@ -1811,16 +1811,16 @@
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
 
 "@types/node@^18.18.5":
-  version "18.19.49"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.49.tgz#2f55cba5214da8f16d48f02724bee58b104f374e"
-  integrity sha512-ALCeIR6n0nQ7j0FUF1ycOhrp6+XutJWqEu/vtdEqXFUQwkBfgUA5cEg3ZNmjWGF/ZYA/FcF9QMkL55Ar0O6UrA==
+  version "18.19.50"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.19.50.tgz#8652b34ee7c0e7e2004b3f08192281808d41bf5a"
+  integrity sha512-xonK+NRrMBRtkL1hVCc3G+uXtjh1Al4opBLjqVmipe5ZAaBYWW6cNAiBVZ1BvmkBhep698rP3UM3aRAdSALuhg==
   dependencies:
     undici-types "~5.26.4"
 
 "@types/node@^20.8.3":
-  version "20.16.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.16.4.tgz#2e3d9e1da4761a0fdb725d9497df4bb091e9c2f1"
-  integrity sha512-ioyQ1zK9aGEomJ45zz8S8IdzElyxhvP1RVWnPrXDf6wFaUb+kk1tEcVVJkF7RPGM0VWI7cp5U57oCPIn5iN1qg==
+  version "20.16.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.16.5.tgz#d43c7f973b32ffdf9aa7bd4f80e1072310fd7a53"
+  integrity sha512-VwYCweNo3ERajwy0IUlqqcyZ8/A7Zwa9ZP3MnENWcB11AejO+tLy3pu850goUW2FC/IJMdZUfKpX/yxL1gymCA==
   dependencies:
     undici-types "~6.19.2"
 
@@ -3964,9 +3964,9 @@ ejs@^3.1.10, ejs@^3.1.6, ejs@^3.1.8:
     jake "^10.8.5"
 
 electron-to-chromium@^1.5.4:
-  version "1.5.13"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.13.tgz#1abf0410c5344b2b829b7247e031f02810d442e6"
-  integrity sha512-lbBcvtIJ4J6sS4tb5TLp1b4LyfCdMkwStzXPyAgVgTRAsep4bvrAGaBOP7ZJtQMNJpSQ9SqG4brWOroNaQtm7Q==
+  version "1.5.14"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.14.tgz#8de5fd941f4deede999f90503c4b5923fbe1962b"
+  integrity sha512-bEfPECb3fJ15eaDnu9LEJ2vPGD6W1vt7vZleSVyFhYuMIKm3vz/g9lt7IvEzgdwj58RjbPKUF2rXTCN/UW47tQ==
 
 emittery@^1.0.1:
   version "1.0.3"
@@ -8542,9 +8542,9 @@ postcss-value-parser@^4.1.0, postcss-value-parser@^4.2.0:
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
 postcss@^8.4.32, postcss@^8.4.33, postcss@^8.4.41:
-  version "8.4.44"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.44.tgz#d56834ef6508610ba224bb22b2457b2169ed0480"
-  integrity sha512-Aweb9unOEpQ3ezu4Q00DPvvM2ZTUitJdNKeP/+uQgr1IBIqu574IaZoURId7BKtWMREwzKa9OgzPzezWGPWFQw==
+  version "8.4.45"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.45.tgz#538d13d89a16ef71edbf75d895284ae06b79e603"
+  integrity sha512-7KTLTdzdZZYscUc65XmjFiB73vBhBfbPztCYdUNvlaso9PrzjzcmjqBPR0lNGkcVlcO4BjiO5rK/qNz+XAen1Q==
   dependencies:
     nanoid "^3.3.7"
     picocolors "^1.0.1"
