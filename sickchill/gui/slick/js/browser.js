@@ -5,7 +5,7 @@
             url: scRoot + '/browser/',
             autocompleteURL: scRoot + '/browser/complete',
             includeFiles: 0,
-            fileTypes: ['zip'], // File extensions to include, 'images' is an alias for image types
+            fileTypes: [], // File extensions to include, 'images' is an alias for image types
             showBrowseButton: true,
         },
     };

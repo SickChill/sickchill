@@ -398,7 +398,7 @@ const SICKCHILL = {
             });
 
             $('#backupDirectory').fileBrowser({title: _('Select backup folder to save to'), key: 'backupPath'});
-            $('#backupFile').fileBrowser({title: _('Select backup files to restore'), key: 'backupFile', includeFiles: 1});
+            $('#backupFile').fileBrowser({title: _('Select backup files to restore'), key: 'backupFile', includeFiles: 1, fileTypes: ['zip']});
             $('#config-components').tabs();
         },
         notifications() {
