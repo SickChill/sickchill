@@ -31,7 +31,7 @@ class Provider(TorrentProvider):
         # URLs
         self.url = "https://thepiratebay.org"
         self.api = "https://apibay.org"
-        self.queries = {"top": ["top100:208", "top100:205"]}
+        self.queries = {"top": ["top100:212", "top100:208", "top100:205"]}
         self.script_url = "https://torrindex.net/static/main.js"
 
         # "https://apibay.org/precompiled/data_top100_48h_205.json"
@@ -42,7 +42,11 @@ class Provider(TorrentProvider):
 
         self.urls = {
             "search": urljoin(self.api, "q.php"),
-            "rss": [urljoin(self.api, "precompiled/data_top100_48h_208.json"), urljoin(self.api, "precompiled/data_top100_48h_205.json")],
+            "rss": [
+                urljoin(self.api, "precompiled/data_top100_48h_212.json"),
+                urljoin(self.api, "precompiled/data_top100_48h_208.json"),
+                urljoin(self.api, "precompiled/data_top100_48h_205.json"),
+            ],
         }
 
         # Cache
