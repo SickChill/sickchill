@@ -9,7 +9,7 @@ reviews:
   high_level_summary_placeholder: '@coderabbitai summary'
   auto_title_placeholder: '@coderabbitai'
   review_status: true
-  poem: true
+  poem: false
   collapse_walkthrough: false
   sequence_diagrams: true
   changed_files_summary: true
