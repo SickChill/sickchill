@@ -181,6 +181,7 @@ exclude = 'contrib/scmaintools|\.venv|venv|\.git|\.hg|\.mypy_cache|\.tox|_build|
 [tool.ruff]
 line-length = 160
 builtins = ["_"]
+target-version = 'py310'
 
 [tool.poe.tasks]
 pytest = "pytest"

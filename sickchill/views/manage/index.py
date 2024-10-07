@@ -16,6 +16,11 @@ from sickchill.views.routes import Route
 
 @Route("/manage(/?.*)", name="manage:main")
 class Manage(Home, WebRoot):
+    def __init__(self, backend, back2=None):
+        super().__init__(backend, back2)
+        self.to_change_show = None
+        self.to_change_eps = None
+
     def index(self):
         t = PageTemplate(rh=self, filename="manage.mako")
         return t.render(
