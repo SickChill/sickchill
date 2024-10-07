@@ -43,28 +43,28 @@ reviews:
     hadolint:
       enabled: true
     swiftlint:
-      enabled: true
+      enabled: false
     phpstan:
       enabled: true
       level: default
     golangci-lint:
-      enabled: true
+      enabled: false
     yamllint:
       enabled: true
     gitleaks:
       enabled: true
     checkov:
-      enabled: true
+      enabled: false
     detekt:
-      enabled: true
+      enabled: false
     eslint:
       enabled: true
     rubocop:
-      enabled: true
+      enabled: false
     buf:
-      enabled: true
+      enabled: false
     regal:
-      enabled: true
+      enabled: false
     actionlint:
       enabled: true
     pmd:
@@ -74,18 +74,6 @@ reviews:
     semgrep:
       enabled: true
     circleci:
-      enabled: true
+      enabled: false
 chat:
   auto_reply: true
-knowledge_base:
-  opt_out: false
-  learnings:
-    scope: auto
-  issues:
-    scope: auto
-  jira:
-    project_keys: []
-  linear:
-    team_keys: []
-  pull_requests:
-    scope: auto
