@@ -23,7 +23,7 @@ reviews:
     ignore_title_keywords: ["chore", "bump"]
     labels: []
     drafts: true
-    base_branches: []
+    base_branches: [".*"]
   tools:
     shellcheck:
       enabled: true
