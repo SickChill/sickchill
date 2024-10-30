@@ -4395,6 +4395,16 @@ eslint-plugin-no-use-extend-native@^0.5.0:
     is-obj-prop "^1.0.0"
     is-proto-prop "^2.0.0"
 
+eslint-plugin-no-use-extend-native@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-no-use-extend-native/-/eslint-plugin-no-use-extend-native-0.7.2.tgz#ff496acbca062a7baf8af1d37351fbfed67efaab"
+  integrity sha512-hUBlwaTXIO1GzTwPT6pAjvYwmSHe4XduDhAiQvur4RUujmBUFjd8Nb2+e7WQdsQ+nGHWGRlogcUWXJRGqizTWw==
+  dependencies:
+    is-get-set-prop "^2.0.0"
+    is-js-type "^3.0.0"
+    is-obj-prop "^2.0.0"
+    is-proto-prop "^3.0.1"
+
 eslint-plugin-node@^11.1.0:
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-node/-/eslint-plugin-node-11.1.0.tgz#c95544416ee4ada26740a30474eefc5402dc671d"
@@ -5316,6 +5326,11 @@ get-set-props@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/get-set-props/-/get-set-props-0.1.0.tgz#998475c178445686d0b32246da5df8dbcfbe8ea3"
   integrity sha512-7oKuKzAGKj0ag+eWZwcGw2fjiZ78tXnXQoBgY0aU7ZOxTu4bB7hSuQSDgtKy978EDH062P5FmD2EWiDpQS9K9Q==
+
+get-set-props@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/get-set-props/-/get-set-props-0.2.0.tgz#b5f5af9878e13f0db62f6318da1eaa5d9600e8da"
+  integrity sha512-YCmOj+4YAeEB5Dd9jfp6ETdejMet4zSxXjNkgaa4npBEKRI9uDOGB5MmAdAgi2OoFGAKshYhCbmLq2DS03CgVA==
 
 get-stdin@^9.0.0:
   version "9.0.0"
@@ -6382,6 +6397,14 @@ is-get-set-prop@^1.0.0:
     get-set-props "^0.1.0"
     lowercase-keys "^1.0.0"
 
+is-get-set-prop@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/is-get-set-prop/-/is-get-set-prop-2.0.0.tgz#76c288b572c329af0a7cb1417f7d5480c1579cd4"
+  integrity sha512-C32bqXfHJfRwa0U5UIMqSGziZhALszXDJZ8n8mz8WZ6c6V7oYGHEWwJvftliBswypY3P3EQqdY5lpDSEKvTS1Q==
+  dependencies:
+    get-set-props "^0.2.0"
+    lowercase-keys "^3.0.0"
+
 is-glob@^4.0.0, is-glob@^4.0.1, is-glob@^4.0.3, is-glob@~4.0.1:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/is-glob/-/is-glob-4.0.3.tgz#64f61e42cbbb2eec2071a9dac0b28ba1e65d5084"
@@ -6407,6 +6430,13 @@ is-js-type@^2.0.0:
   integrity sha512-Aj13l47+uyTjlQNHtXBV8Cji3jb037vxwMWCgopRR8h6xocgBGW3qG8qGlIOEmbXQtkKShKuBM9e8AA1OeQ+xw==
   dependencies:
     js-types "^1.0.0"
+
+is-js-type@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/is-js-type/-/is-js-type-3.0.0.tgz#8c5bc02f5d01ccdcd11b021e2155096e547cfc58"
+  integrity sha512-IbPf3g3vxm1D902xaBaYp2TUHiXZWwWRu5bM9hgKN9oAQcFaKALV6Gd13PGhXjKE5u2n8s1PhLhdke/E1fchxQ==
+  dependencies:
+    js-types "^4.0.0"
 
 is-lambda@^1.0.1:
   version "1.0.1"
@@ -6452,6 +6482,14 @@ is-obj-prop@^1.0.0:
   dependencies:
     lowercase-keys "^1.0.0"
     obj-props "^1.0.0"
+
+is-obj-prop@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/is-obj-prop/-/is-obj-prop-2.0.0.tgz#2062f02e1fb46ffc9e610fa8cec056ae6e18a2c5"
+  integrity sha512-2/VFrbzXSZVJIscazpxoB+pOQx2jBOAAL9Gui4cRKxflznUNBpsr8IDvBA4UGol3e40sltLNiY3qnZv/7qSUxA==
+  dependencies:
+    lowercase-keys "^3.0.0"
+    obj-props "^2.0.0"
 
 is-obj@^1.0.1:
   version "1.0.1"
@@ -6507,6 +6545,14 @@ is-proto-prop@^2.0.0:
   dependencies:
     lowercase-keys "^1.0.0"
     proto-props "^2.0.0"
+
+is-proto-prop@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/is-proto-prop/-/is-proto-prop-3.0.1.tgz#a5fa2efeae240899778bd221fc17579020cd54e1"
+  integrity sha512-S8xSxNMGJO4eZD86kO46zrq2gLIhA+rN9443lQEvt8Mz/l8cxk72p/AWFmofY6uL9g9ILD6cXW6j8QQj4F3Hcw==
+  dependencies:
+    lowercase-keys "^3.0.0"
+    prototype-properties "^5.0.0"
 
 is-regex@^1.1.4:
   version "1.1.4"
@@ -6716,6 +6762,11 @@ js-types@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/js-types/-/js-types-1.0.0.tgz#d242e6494ed572ad3c92809fc8bed7f7687cbf03"
   integrity sha512-bfwqBW9cC/Lp7xcRpug7YrXm0IVw+T9e3g4mCYnv0Pjr3zIzU9PCQElYU9oSGAWzXlbdl9X5SAMPejO9sxkeUw==
+
+js-types@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/js-types/-/js-types-4.0.0.tgz#901aa719585fab5ddf2633c0bc807d4658c2376a"
+  integrity sha512-/c+n06zvqFQGxdz1BbElF7S3nEghjNchLN1TjQnk2j10HYDaUc57rcvl6BbnziTx8NQmrg0JOs/iwRpvcYaxjQ==
 
 js-yaml@^3.13.0, js-yaml@^3.14.1, js-yaml@~3.14.0:
   version "3.14.1"
@@ -7107,6 +7158,11 @@ lowercase-keys@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/lowercase-keys/-/lowercase-keys-1.0.1.tgz#6f9e30b47084d971a7c820ff15a6c5167b74c26f"
   integrity sha512-G2Lj61tXDnVFFOi8VZds+SoQjtQC3dgokKdDG2mTm1tx4m50NUHBOZSBwQQHyy0V12A0JTG4icfZQH+xPyh8VA==
+
+lowercase-keys@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/lowercase-keys/-/lowercase-keys-3.0.0.tgz#c5e7d442e37ead247ae9db117a9d0a467c89d4f2"
+  integrity sha512-ozCC6gdQ+glXOQsveKD0YsDy8DSQFjDTz4zyzEHNV5+JP5D62LmfDZ6o1cycFx9ouG940M5dE8C8CTewdj2YWQ==
 
 lru-cache@^10.2.0:
   version "10.4.3"
@@ -7987,6 +8043,11 @@ obj-props@^1.0.0:
   resolved "https://registry.yarnpkg.com/obj-props/-/obj-props-1.4.0.tgz#9a9beebb6faf8b287ff7dc1cd133a4247dc85641"
   integrity sha512-p7p/7ltzPDiBs6DqxOrIbtRdwxxVRBj5ROukeNb9RgA+fawhrz5n2hpNz8DDmYR//tviJSj7nUnlppGmONkjiQ==
 
+obj-props@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/obj-props/-/obj-props-2.0.0.tgz#adf32dc8a802e248b1392ee238207f10c1f02133"
+  integrity sha512-Q/uLAAfjdhrzQWN2czRNh3fDCgXjh7yRIkdHjDgIHTwpFP0BsshxTA3HRNffHR7Iw/XGTH30u8vdMXQ+079urA==
+
 object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
@@ -8736,6 +8797,11 @@ proto-props@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/proto-props/-/proto-props-2.0.0.tgz#8ac6e6dec658545815c623a3bc81580deda9a181"
   integrity sha512-2yma2tog9VaRZY2mn3Wq51uiSW4NcPYT1cQdBagwyrznrilKSZwIZ0UG3ZPL/mx+axEns0hE35T5ufOYZXEnBQ==
+
+prototype-properties@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/prototype-properties/-/prototype-properties-5.0.0.tgz#784e6ab88e0dd8c65e4666ef28e6bb7a8f0f6a58"
+  integrity sha512-uCWE2QqnGlwvvJXTwiHTPTyHE62+zORO5hpFWhAwBGDtEtTmNZZleNLJDoFsqHCL4p/CeAP2Q1uMKFUKALuRGQ==
 
 proxy-addr@~2.0.7:
   version "2.0.7"
