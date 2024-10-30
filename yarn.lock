@@ -4321,6 +4321,20 @@ eslint-plugin-ava@^14.0.0:
     pkg-dir "^5.0.0"
     resolve-from "^5.0.0"
 
+eslint-plugin-ava@^15.0.1:
+  version "15.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-ava/-/eslint-plugin-ava-15.0.1.tgz#0968c54ffc6d8196f41203316989eae4c2554dba"
+  integrity sha512-eRX7mLFPvalGDWztJ4zm+anez2X6J/88r9CqLFfPAIMvFlGyJ+dUoFppoohgUQZLV09mIBNz5guP07zFJOLF8g==
+  dependencies:
+    enhance-visitors "^1.0.0"
+    eslint-utils "^3.0.0"
+    espree "^9.0.0"
+    espurify "^2.1.1"
+    import-modules "^2.1.0"
+    micro-spelling-correcter "^1.1.1"
+    pkg-dir "^5.0.0"
+    resolve-from "^5.0.0"
+
 eslint-plugin-es-x@^7.5.0:
   version "7.8.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-es-x/-/eslint-plugin-es-x-7.8.0.tgz#a207aa08da37a7923f2a9599e6d3eb73f3f92b74"
