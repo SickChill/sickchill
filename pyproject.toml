@@ -262,7 +262,7 @@ configobj = "^5.0.6"
 greenlet = {version = ">=2.0.0", allow-prereleases = true}
 ipaddress = "^1.0.23"
 jsonrpclib-pelix = "^0.4.2"
-Mako = "^1.1.4"
+Mako = "^1.1.4,!=1.3.7"
 markdown2 = "^2.4.0"
 pyOpenSSL = ">=20.0.1,<25.0.0"
 python-dateutil = "^2.8.1"
