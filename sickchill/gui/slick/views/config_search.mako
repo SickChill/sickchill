@@ -82,8 +82,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="flaresolverr_uri">${_('''the URL of your flaresolverr server.  Example:  http://localhost:8191/v1'<br>
-                                            <b>note:</b> this is experimental and not fully implemented.''')}</label>
+                                            <label for="flaresolverr_uri">${_('the URL of your flaresolverr server.  Example:  http://localhost:8191/v1')}<br>
+                                                <b>${_('note')}:</b> ${_('this is experimental and not fully implemented.')}</label>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -185,7 +185,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="ignore_words">${_('''results with one or more word from this list will be ignored<br>separate words with a comma, e.g. "word1,word2,word3"''')}</label>
+                                            <label for="ignore_words">${_('results with one or more word from this list will be ignored')}<br>
+                                                ${_('separate words with a comma, e.g. "word1,word2,word3"')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -204,8 +205,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="prefer_words">${_('''search results with these words will be preferred in this order<br>
-                                                separate words with a comma, e.g. "word1,word2,word3"''')}</label>
+                                            <label for="prefer_words">${_('search results with these words will be preferred in this order')}<br>
+                                                ${_('separate words with a comma, e.g. "word1,word2,word3"')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -224,9 +225,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="require_words">${_('''results with no word from this list will be ignored<br>
-                                                separate words with a comma, e.g. "word1,+word2,word3"<br>
-                                                words starting with a plus sign must all be present''')}</label>
+                                            <label for="require_words">${_('results with no word from this list will be ignored')}<br>
+                                                ${_('separate words with a comma, e.g. "word1,+word2,word3"')}<br>
+                                                ${_('words starting with a plus sign must all be present.')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -245,9 +246,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="ignored_subs_list">${_('''ignore subbed releases based on language names <br>
-                                                Example: "dk" will ignore words: dksub, dksubs, dksubbed, dksubed <br>
-                                                separate languages with a comma, e.g. "lang1,lang2,lang3''')}</label>
+                                            <label for="ignored_subs_list">${_('ignore subbed releases based on language names')}<br>
+                                                ${_('Example: "dk" will ignore words: dksub, dksubs, dksubbed, dksubed')}<br>
+                                                ${_('separate languages with a comma, e.g. "lang1,lang2,lang3')}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -966,7 +967,8 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label for="trackers_list">
-                                                    ${_('''trackers that will be added to magnets without trackers<br>separate trackers with a comma, e.g. "tracker1,tracker2,tracker3"''')}
+                                                    ${_('trackers that will be added to magnets without trackers')}<br>
+                                                    ${_('separate trackers with a comma, e.g. "tracker1,tracker2,tracker3"')}
                                                 </label>
                                             </div>
                                         </div>

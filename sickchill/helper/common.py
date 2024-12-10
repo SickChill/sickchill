@@ -1,7 +1,7 @@
+import os
 import platform
 import re
 import uuid
-import os
 from fnmatch import fnmatch
 from os import PathLike
 from pathlib import Path

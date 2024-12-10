@@ -435,8 +435,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('disabled entries come from a central file on github,<br/>
-                                                    if you think something is wrong please go to <a href="https://discord.com/channels/502612977271439372/502612977803984898">Discord Chat</a>.')}</label>
+                                                <label>${_('disabled entries come from a central file on github,')} <br>
+                                                    ${_('if you think something is wrong please go to <a href="https://discord.com/channels/502612977271439372/502612977803984898">Discord Chat</a>.')}</label>
                                             </div>
                                         </div>
                                     </div>
