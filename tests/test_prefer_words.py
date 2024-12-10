@@ -1,7 +1,7 @@
 import unittest
 
 from sickchill import settings
-from sickchill.oldbeard.show_name_helpers import hasPreferredWords
+from sickchill.oldbeard.show_name_helpers import has_preferred_words
 
 
 class PreferWordFilterTest(unittest.TestCase):
@@ -20,13 +20,13 @@ class PreferWordFilterTest(unittest.TestCase):
         ]
 
     def test_prefer_words_determine_weight(self):
-        assert hasPreferredWords(self.results_names_only_source[0]) == 0
-        assert hasPreferredWords(self.results_names_only_source[1]) == 1
-        assert hasPreferredWords(self.results_names_only_source[2]) == 3
-        assert hasPreferredWords(self.results_names_only_source[3]) == 5
-        assert hasPreferredWords(self.results_names_only_source[4]) == 5
-        assert hasPreferredWords(self.results_names_only_source[5]) == 4
-        assert hasPreferredWords(self.results_names_only_source[6]) == 2
+        assert has_preferred_words(self.results_names_only_source[0]) == 0
+        assert has_preferred_words(self.results_names_only_source[1]) == 1
+        assert has_preferred_words(self.results_names_only_source[2]) == 3
+        assert has_preferred_words(self.results_names_only_source[3]) == 5
+        assert has_preferred_words(self.results_names_only_source[4]) == 5
+        assert has_preferred_words(self.results_names_only_source[5]) == 4
+        assert has_preferred_words(self.results_names_only_source[6]) == 2
 
 
 if __name__ == "__main__":

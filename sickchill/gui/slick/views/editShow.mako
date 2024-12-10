@@ -314,8 +314,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with one or more words from this list will be ignored.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option adds to the globally ignored words!')}</label>
+                                                <label>${_('''search results with one or more words from this list will be ignored. <br>
+                                                    <b>note:</b> this option adds to the globally ignored words!''')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -341,8 +341,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with these words will be preferred in this order.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option overrides the globally preferred words!')}</label>
+                                                <label>${_('''search results with these words will be preferred in this order. <br>
+                                                    <b>note:</b> this option overrides the globally preferred words!''')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -364,14 +364,14 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="rls_require_words">${_('comma-separated <i>e.g. "word1,word2,word3</i>"')}</label>
+                                                <label for="rls_require_words">${_('comma-separated <i>e.g. "word1,+word2,word3</i>"')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with no words from this list will be ignored.')}</label>
-                                                <label>${_('all words starting with a plus sign must all be present.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option overrides the globally required words, and globally ignored words!')}</label>
+                                                <label>${_('''search results with no words from this list will be ignored.<br>
+                                                    words starting with a plus sign must all be present. <br>
+                                                    <b>note:</b> this option overrides the globally required words!''')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -435,7 +435,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href="//github.com/sickchill/sickchill.github.io/issues">here</a>.')}</label>
+                                                <label>${_('disabled entries come from a central file on github,<br/>
+                                                    if you think something is wrong please go to <a href="https://discord.com/channels/502612977271439372/502612977803984898">Discord Chat</a>.')}</label>
                                             </div>
                                         </div>
                                     </div>

@@ -178,7 +178,7 @@ def pick_best_result(results, show):
     picked_result = None
 
     # order the list so that preferred releases are at the top
-    results.sort(key=lambda ep: show_name_helpers.hasPreferredWords(ep.name, ep.show), reverse=True)
+    results.sort(key=lambda ep: show_name_helpers.has_preferred_words(ep.name, ep.show), reverse=True)
 
     # find the best result for the current episode
     for result in results:

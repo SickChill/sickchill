@@ -1,6 +1,7 @@
 import platform
 import re
 import uuid
+import os
 from fnmatch import fnmatch
 from os import PathLike
 from pathlib import Path
@@ -440,6 +441,6 @@ def choose_data_dir(program_dir) -> Path:
     proper_data_dir = Path(appdirs.user_config_dir(appname="sickchill"))
     for location in [old_data_dir, old_profile_path, proper_data_dir]:
         for check in ["sickbeard.db", "sickchill.db", "config.ini"]:
-            if location.joinpath(check).exists():
+            if os.access(location.joinpath(check), os.R_OK):
                 return location.resolve()
     return proper_data_dir.resolve()

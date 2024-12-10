@@ -19,7 +19,7 @@ from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
+from sickchill.oldbeard.show_name_helpers import all_possible_show_names
 from sickchill.oldbeard.tvcache import TVCache
 from sickchill.providers.result_classes import Proper, SearchResult
 
@@ -417,7 +417,7 @@ class GenericProvider(object):
 
         search_string = {"Episode": set()}
 
-        for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
+        for show_name in all_possible_show_names(episode.show, season=episode.scene_season):
             episode_string = show_name + " "
             episode_string_fallback = None
 
@@ -450,7 +450,7 @@ class GenericProvider(object):
     def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
         search_string = {"Season": set()}
 
-        for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
+        for show_name in all_possible_show_names(episode.show, season=episode.scene_season):
             season_string = show_name + " "
 
             if episode.show.air_by_date or episode.show.sports:

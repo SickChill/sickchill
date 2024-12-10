@@ -190,7 +190,7 @@ class SickChill:
 
                     sys.exit(int(not result))  # Ok -> 0 , Error -> 1
                 else:
-                    self.log(f"Cannot process this upgrade directory, you have files that don't belong in it. Continuing with startup", 1)
+                    self.log(f"Cannot process this upgrade directory, you have files that don't belong in {upgrade_dir}. Continuing with startup", 1)
                     sys.exit(1)  # Ok -> 0 , Error -> 1
 
         # Load the config and publish it to the oldbeard package
