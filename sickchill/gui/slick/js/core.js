@@ -815,7 +815,7 @@ const SICKCHILL = {
                 $('#testNMJv2-result').html(loading);
                 nmjv2.host = $('#nmjv2_host').val();
                 nmjv2.dbloc = '';
-                const radios = document.getElementsByName('nmjv2_dbloc');
+                const radios = document.getElementsByName('nmjv2_dbloc'); // eslint-disable-line unicorn/prefer-query-selector
                 for (const element of radios) {
                     if (element.checked) {
                         nmjv2.dbloc = element.value;
