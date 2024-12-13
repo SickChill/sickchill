@@ -132,14 +132,14 @@ class Provider(TorrentProvider):
             if url_torrent.startswith("http"):
                 self.headers.update({"Referer": "/".join(url_torrent.split("/")[:3]) + "/"})
 
-            logger.info(_("Downloading a result from {0}".format(url)))
+            logger.info(_("Downloading a result from {0}").format(url))
 
             if helpers.download_file(url_torrent, filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
-                    logger.info(_("Saved result to {0}".format(filename)))
+                    logger.info(_("Saved result to {0}").format(filename))
                     return True
                 else:
-                    logger.warning(_("Could not download {0}".format(url)))
+                    logger.warning(_("Could not download {0}").format(url))
                     helpers.remove_file_failed(filename)
 
         if urls:

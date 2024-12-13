@@ -101,7 +101,7 @@ class Provider(TorrentProvider):
                 for k, v in replace_chars.items():
                     search_string = search_string.replace(k, v)
 
-                logger.debug(_("Sanitized string: {0}".format(search_string)))
+                logger.debug(_("Sanitized string: {0}").format(search_string))
 
                 try:
                     search_params = {"category": "2145", "sub_category": "all", "name": re.sub(r"[()]", "", search_string), "do": "search"}

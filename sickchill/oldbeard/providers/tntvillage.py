@@ -153,11 +153,11 @@ class Provider(TorrentProvider):
                 try:
                     file_quality = file_quality + " " + img_type["src"].replace("style_images/mkportal-636/", "").replace(".gif", "").replace(".png", "")
                 except Exception:
-                    logger.exception(_("Failed parsing quality. Traceback: {0}".format(traceback.format_exc())))
+                    logger.exception(_("Failed parsing quality. Traceback: {0}").format(traceback.format_exc()))
 
         else:
             file_quality = (torrent_rows("td"))[1].get_text()
-            logger.debug(_("Episode quality: {0}".format(file_quality)))
+            logger.debug(_("Episode quality: {0}").format(file_quality))
 
         def checkName(options, func):
             return func([re.search(option, file_quality, re.I) for option in options])
@@ -361,7 +361,7 @@ class Provider(TorrentProvider):
                                 items.append(item)
 
                     except Exception:
-                        logger.exception(_("Failed parsing provider. Traceback: {0}".format(traceback.format_exc())))
+                        logger.exception(_("Failed parsing provider. Traceback: {0}").format(traceback.format_exc()))
 
                 # For each search mode sort all the items by seeders if available if available
                 items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

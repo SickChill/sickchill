@@ -70,7 +70,7 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search string: {0}".format(search_string)))
+                    logger.debug(_("Search string: {0}").format(search_string))
 
                     categories = ["26", "32", "35"]
                     if mode != "Episode":

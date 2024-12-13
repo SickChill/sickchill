@@ -98,7 +98,7 @@ class Provider(TorrentProvider):
 
                 while has_next_page and next_page <= self.max_back_pages:
                     search_params["page"] = next_page
-                    logger.debug(_("Page Search: {0}".format(next_page)))
+                    logger.debug(_("Page Search: {0}").format(next_page))
                     next_page += 1
 
                     response = self.session.get(self.urls["search"], params=search_params)
@@ -139,7 +139,7 @@ class Provider(TorrentProvider):
 
             # ignore next page in RSS mode
             has_next_page = mode != "RSS" and html.find("a", class_="pager_next") is not None
-            logger.debug(_("More Pages? {0}".format(has_next_page)))
+            logger.debug(_("More Pages? {0}").format(has_next_page))
 
             # Continue only if at least one Release is found
             if len(torrent_rows) < 2:

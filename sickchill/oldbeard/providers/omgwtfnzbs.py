@@ -38,7 +38,7 @@ class Provider(NZBProvider):
             if "information is incorrect" in description_text:
                 logger.warning(_("Invalid api key. Check your settings"))
             elif "0 results matched your terms" not in description_text:
-                logger.debug(_("Unknown error: {0}".format(description_text)))
+                logger.debug(_("Unknown error: {0}").format(description_text))
             return False
 
         return True

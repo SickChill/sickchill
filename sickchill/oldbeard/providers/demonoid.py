@@ -50,7 +50,7 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 search_params["query"] = search_string
-                logger.debug(_("Search string: {0}".format(search_string)))
+                logger.debug(_("Search string: {0}").format(search_string))
 
                 time.sleep(cpu_presets[settings.CPU_PRESET])
 

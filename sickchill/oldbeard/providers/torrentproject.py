@@ -64,7 +64,7 @@ class Provider(TorrentProvider):
                     leechers = try_int(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != "RSS":
-                            logger.debug(_("Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title)))
+                            logger.debug(_("Torrent doesn't meet minimum seeds & leechers not selecting : {0}").format(title))
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]

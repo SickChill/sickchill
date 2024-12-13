@@ -53,7 +53,7 @@ class Provider(TorrentProvider):
                 error_code = jdata.pop("error", {})
                 if error_code.get("code"):
                     if error_code.get("code") != 2:
-                        logger.warning(_("{0}".format(error_code.get("descr", "Error code 2 - no description available"))))
+                        logger.warning(_("{0}").format(error_code.get("descr", "Error code 2 - no description available")))
                         return results
                     continue
 

@@ -306,7 +306,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 search_params.pop("season", "")
 
             items = []
-            logger.debug(_("Search Mode: {0}".format(mode)))
+            logger.debug(_("Search Mode: {0}").format(mode))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))

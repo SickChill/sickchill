@@ -99,7 +99,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {0}".format(mode)))
+            logger.debug(_("Search Mode: {0}").format(mode))
 
             all_search_strings = search_strings[mode]
             if mode != "RSS" and self.show and self.show.imdb_id:
@@ -113,7 +113,7 @@ class Provider(TorrentProvider):
                 for search_url in search_urls:
                     if mode != "RSS":
                         search_params["q"] = search_string
-                        logger.debug(_("Search string: {0}".format(search_string)))
+                        logger.debug(_("Search string: {0}").format(search_string))
 
                         data = self.get_url(search_url, params=search_params, returns="json")
                     else:

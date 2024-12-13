@@ -88,7 +88,7 @@ class Provider(TorrentProvider):
         """
 
         file_quality = (torrent_rows("td"))[1].find("a")["href"].replace("_", " ")
-        logger.debug(_("Episode quality: {0}".format(file_quality)))
+        logger.debug(_("Episode quality: {0}").format(file_quality))
 
         def checkName(options, func):
             return func([re.search(option, file_quality, re.I) for option in options])
@@ -246,11 +246,11 @@ class Provider(TorrentProvider):
                                     title += filename_qt
 
                                 if not self._is_italian(title) and not self.subtitle:
-                                    logger.debug(_("Torrent is subtitled, skipping: {0}".format(title)))
+                                    logger.debug(_("Torrent is subtitled, skipping: {0}").format(title))
                                     continue
 
                                 if self.engrelease and not self._is_english(title):
-                                    logger.debug(_("Torrent isn't english audio/subtitled, skipping: {0}".format(title)))
+                                    logger.debug(_("Torrent isn't english audio/subtitled, skipping: {0}").format(title))
                                     continue
 
                                 search_show = re.split(r"([Ss][\d{1,2}]+)", search_string)[0]

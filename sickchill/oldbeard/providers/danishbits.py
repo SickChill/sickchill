@@ -51,7 +51,7 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug(_("Search string: {0}".format(search_string)))
+                    logger.debug(_("Search string: {0}").format(search_string))
 
                     search_params["latest"] = "false"
                     search_params["search"] = search_string

@@ -112,7 +112,7 @@ class Provider(TorrentProvider):
 
             for list_item in list_items:
                 title = "{0}{1}".format(str(list_item.find("span").next_sibling), str(list_item.find("strong").text))
-                logger.debug(_("Found title {0}".format(title)))
+                logger.debug(_("Found title {0}").format(title))
                 episode_url = "/#".join(list_item.find("a")["href"].rsplit("#", 1))
                 episode = episode_url.split("#", 1)[1]
 
@@ -133,12 +133,12 @@ class Provider(TorrentProvider):
     def __getShowId(self, target_url):
         data = self.get_url(target_url, returns="text")
         if not data:
-            logger.debug(_("Could not fetch url: {0}".format(target_url)))
+            logger.debug(_("Could not fetch url: {0}").format(target_url))
             return None
 
         with BS4Parser(data) as soup:
             show_id = re.sub(r"[^0-9]", "", soup(text=re.compile("hs_showid"))[0])
-            logger.debug(_("show id: {0}".format(show_id)))
+            logger.debug(_("show id: {0}").format(show_id))
 
         return show_id
 
