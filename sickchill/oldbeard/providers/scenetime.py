@@ -47,7 +47,7 @@ class Provider(TorrentProvider):
 
             response = self.get_url(self.urls["login"], post_data=login_params, returns="response")
             if not response or response.status_code != 200:
-                logger.warning("Unable to connect to provider")
+                logger.warning(f"Unable to connect to provider {self.name}")
                 return False
 
             if dict_from_cookiejar(self.session.cookies).get("uid") in response.text:

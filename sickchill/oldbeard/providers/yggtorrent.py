@@ -67,14 +67,14 @@ class Provider(TorrentProvider):
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
         if not response or response.status_code != 200:
-            logger.warning("Unable to connect to provider")
+            logger.warning(f"Unable to connect to provider {self.name}")
             return False
         else:
             # It seems we are logged, let's verify that !
             response = self.get_url(self.url, returns="response")
 
             if response.status_code != 200:
-                logger.warning("Unable to connect to provider")
+                logger.warning(f"Unable to connect to provider {self.name}")
                 return False
             if "logout" not in response.text:
                 logger.warning("Invalid username or password. Check your settings")

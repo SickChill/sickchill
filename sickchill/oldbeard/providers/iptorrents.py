@@ -56,7 +56,7 @@ class Provider(TorrentProvider):
         # Get the index, redirects to log in
         data = self.get_url(self.custom_url or self.url, returns="text")
         if not data:
-            logger.warning("Unable to connect to provider")
+            logger.warning(f"Unable to connect to provider {self.name}")
             return False
 
         with BS4Parser(data) as html:
@@ -67,7 +67,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns="text", flaresolverr=True)
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(f"Unable to connect to provider {self.name}")
             return False
 
         # Invalid username and password combination

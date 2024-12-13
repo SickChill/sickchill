@@ -49,7 +49,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(f"Unable to connect to provider {self.name}")
             return False
 
         if re.search("Invalid Username/password", response) or re.search("<title>Login :: AlphaRatio.cc</title>", response):
