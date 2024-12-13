@@ -36,7 +36,7 @@ class Provider(TorrentProvider):
         """Check that we are authenticated."""
 
         if "status" in parsed_json and "message" in parsed_json and parsed_json.get("status") == 5:
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
 
         return True
 
@@ -69,7 +69,7 @@ class Provider(TorrentProvider):
             if parsed_json and "data" in parsed_json:
                 items = parsed_json["data"]
             else:
-                logger.exception("Resulting JSON from provider isn't correct, not parsing it")
+                logger.exception(_("Resulting JSON from provider isn't correct, not parsing it"))
                 items = []
 
             for item in items:

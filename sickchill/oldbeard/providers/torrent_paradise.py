@@ -34,11 +34,11 @@ class Provider(TorrentProvider):
             data = self.get_url(self.urls["search"], params={"q": search_string}, returns="json")
 
             if not isinstance(data, list):
-                logger.debug("No data returned from provider")
+                logger.debug(_("No data returned from provider"))
                 continue
 
             if not data:
-                logger.debug("Data returned from provider does not contain any torrents")
+                logger.debug(_("Data returned from provider does not contain any torrents"))
                 continue
 
             logger.info(f"Number of torrents found on {self.name} = {len(data)}")
