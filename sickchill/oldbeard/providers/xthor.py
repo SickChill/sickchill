@@ -22,7 +22,7 @@ class Provider(TorrentProvider):
         if self.api_key:
             return True
 
-        logger.warning(_("Your authentication credentials for {0} are missing, check your config.".format(self.name)))
+        logger.warning(_("Your authentication credentials for {0} are missing, check your config.").format(self.name))
         return False
 
     def search(self, search_strings):

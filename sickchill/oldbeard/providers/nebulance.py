@@ -91,7 +91,7 @@ class Provider(TorrentProvider):
                     with BS4Parser(data) as html:
                         torrent_table = html.find("table", {"id": "torrent_table"})
                         if not torrent_table:
-                            logger.debug(_("Data returned from {0} does not contain any torrents".format(self.name)))
+                            logger.debug(_("Data returned from {0} does not contain any torrents").format(self.name))
                             continue
 
                         labels = [x.get_text(strip=True) or x.a.img.get("alt") for x in torrent_table.find("tr", class_="colhead").find_all("td")]
@@ -99,7 +99,7 @@ class Provider(TorrentProvider):
 
                         # Continue only if one Release is found
                         if not torrent_rows:
-                            logger.debug(_("Data returned from {0} does not contain any torrents".format(self.name)))
+                            logger.debug(_("Data returned from {0} does not contain any torrents").format(self.name))
                             continue
 
                         for torrent_row in torrent_rows:
@@ -147,7 +147,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers)))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
                 except Exception:

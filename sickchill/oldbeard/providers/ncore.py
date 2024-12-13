@@ -105,7 +105,7 @@ class Provider(TorrentProvider):
                         size = convert_size(torrent_size) or -1
 
                         if mode != "RSS":
-                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size)))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers with a file size {3}").format(title, seeders, leechers, size))
 
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         items.append(result)

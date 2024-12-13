@@ -83,7 +83,7 @@ class Provider(TorrentProvider):
                         size = torrent["size"]
                         size = convert_size(size) or -1
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
-                        logger.debug(_("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers)))
+                        logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
                         items.append(item)
 
                 if "error" in result:

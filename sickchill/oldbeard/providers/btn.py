@@ -97,7 +97,7 @@ class Provider(TorrentProvider):
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
-                    logger.debug(_("Found result: {0} ".format(title)))
+                    logger.debug(_("Found result: {0} ").format(title))
                     results.append(torrent_info)
 
         return sorted(results, key=lambda x: self._get_seeders_and_leechers(x)[0], reverse=True)

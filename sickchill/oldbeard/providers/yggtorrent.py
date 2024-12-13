@@ -59,7 +59,7 @@ class Provider(TorrentProvider):
         response = self.get_url(self.urls["login"], post_data=login_params, returns="response")
         if response and self.url not in response.url:
             new_url = response.url.split("user/login")[0]
-            logger.debug(_("Changing base url from {} to {}".format(self.url, new_url)))
+            logger.debug(_("Changing base url from {} to {}").format(self.url, new_url))
             if not self.update_urls(new_url):
                 return False
 
@@ -165,7 +165,7 @@ class Provider(TorrentProvider):
                             items.append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.exception(_("Failed parsing provider {}.".format(self.name)))
+                    logger.exception(_("Failed parsing provider {}.").format(self.name))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

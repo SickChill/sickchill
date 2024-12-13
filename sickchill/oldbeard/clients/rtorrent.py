@@ -47,7 +47,7 @@ class Client(GenericClient):
             return True
 
         except Exception as error:
-            logger.warning(_("Error while sending torrent: {error}".format(error=error)))
+            logger.warning(_("Error while sending torrent: {error}").format(error=error))
             return False
 
     def _add_torrent_file(self, result):
@@ -65,7 +65,7 @@ class Client(GenericClient):
 
         except Exception as error:
             logger.info(traceback.format_exc())
-            logger.warning(_("Error while sending torrent: {error}".format(error=error)))
+            logger.warning(_("Error while sending torrent: {error}").format(error=error))
             return False
 
     def test_client_connection(self):

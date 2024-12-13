@@ -235,7 +235,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 category_ids = values[3]
                 enabled = values[4]
         except ValueError:
-            logger.exception(_("Skipping Newznab provider string: '{0}', incorrect format".format(config)))
+            logger.exception(_("Skipping Newznab provider string: '{0}', incorrect format").format(config))
             return None
 
         if search_mode == "sponly":

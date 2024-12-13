@@ -141,7 +141,7 @@ class Provider(TorrentProvider):
                         torrent_hash = self.hash_from_magnet(download_url)
 
                         if mode != "RSS":
-                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers)))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                         items.append(result)

@@ -65,7 +65,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {}".format(mode)))
+            logger.debug(_("Search Mode: {}").format(mode))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
                     search_url = self.urls["search"] % quote_plus(search_string)
@@ -76,7 +76,7 @@ class Provider(TorrentProvider):
                 if self.freeleech:
                     search_url = search_url.replace("active=1", "active=5")
 
-                logger.debug(_("Search URL: {}".format(search_url)))
+                logger.debug(_("Search URL: {}").format(search_url))
 
                 data = self.get_url(search_url)
                 if not data or "Error" in data:
@@ -155,7 +155,7 @@ class Provider(TorrentProvider):
 
                         item = title, download_url, size, seeders, leechers
                         if mode != "RSS":
-                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers)))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         items.append(item)
 

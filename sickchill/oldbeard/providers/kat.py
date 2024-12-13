@@ -72,7 +72,7 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
-                    logger.info(_("{url} did not return any data, it may be disabled. Trying to get a new domain".format(url=self.url)))
+                    logger.info(_("{url} did not return any data, it may be disabled. Trying to get a new domain").format(url=self.url))
                     self.disabled_mirrors.append(self.url)
                     self.find_domain()
                     if self.url in self.disabled_mirrors:
@@ -85,7 +85,7 @@ class Provider(TorrentProvider):
 
                 with BS4Parser(data) as html:
                     labels = [cell.get_text() for cell in html.find(class_="firstr")("th")]
-                    logger.info(_("Found {} results".format(len(html("tr", **self.rows_selector)))))
+                    logger.info(_("Found {} results").format(len(html("tr", **self.rows_selector))))
                     for result in html("tr", **self.rows_selector):
                         try:
                             download_url = urllib.parse.unquote_plus(result.find(title="Torrent magnet link")["href"].split("url=")[1]) + self._custom_trackers
@@ -119,7 +119,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":
-                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers)))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
 

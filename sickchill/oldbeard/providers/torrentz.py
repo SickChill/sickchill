@@ -93,7 +93,7 @@ class Provider(TorrentProvider):
                             result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": t_hash}
                             items.append(result)
                 except Exception:
-                    logger.exception(_("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc())))
+                    logger.exception(_("Failed parsing provider. Traceback: {0!r}").format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

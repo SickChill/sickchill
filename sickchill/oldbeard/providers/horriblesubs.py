@@ -73,7 +73,7 @@ class Provider(TorrentProvider):
                 download_url = item.find("link").text
 
                 entry = {"title": title, "link": download_url, "size": 333, "seeders": 1, "leechers": 1, "hash": ""}
-                logger.debug(_("Found result: {title}".format(title=title)))
+                logger.debug(_("Found result: {title}").format(title=title))
 
                 entries.append(entry)
 

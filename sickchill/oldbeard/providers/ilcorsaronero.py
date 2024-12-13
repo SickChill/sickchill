@@ -191,7 +191,7 @@ class Provider(TorrentProvider):
                     if last_page:
                         break
 
-                    logger.debug(_("Processing page {0} of results".format(page)))
+                    logger.debug(_("Processing page {0} of results").format(page))
                     search_url = self.urls["search"].format(search_string, page)
 
                     data = self.get_url(search_url, returns="text")
