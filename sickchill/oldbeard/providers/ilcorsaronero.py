@@ -131,12 +131,12 @@ class Provider(TorrentProvider):
                 continue
 
             if re.search("ita", name.split(sub)[0], re.I):
-                logger.debug(_("Found Italian release: " + name))
+                logger.debug(_("Found Italian release: {name}").format(name=name))
                 italian = True
                 break
 
         if not subFound and re.search("ita", name, re.I):
-            logger.debug(_("Found Italian release: " + name))
+            logger.debug(_("Found Italian release: {name}").format(name=name))
             italian = True
 
         return italian
@@ -148,7 +148,7 @@ class Provider(TorrentProvider):
 
         english = False
         if re.search("eng", name, re.I):
-            logger.debug(_("Found English release: " + name))
+            logger.debug(_("Found English release: {name}").format(name=name))
             english = True
 
         return english

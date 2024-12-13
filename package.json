@@ -97,7 +97,9 @@
     "space": 4,
     "rules": {
       "unicorn/filename-case": "off",
-      "unicorn/prefer-node-append": "off"
+      "unicorn/prefer-node-append": "off",
+      "unicorn/prefer-global-this": "off",
+      "unicorn/expiring-todo-comments": "off"
     },
     "esnext": true,
     "envs": [

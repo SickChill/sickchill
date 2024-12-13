@@ -39,7 +39,7 @@ class Provider(TorrentProvider):
                     continue
 
                 search_params["imdb_id"] = self.show.imdb_id.strip("tt")
-                logger.debug(_("Search string: {}".format(self.show.imdb_id)))
+                logger.debug(_("Search string: {0}").format(self.show.imdb_id))
             else:
                 search_params.pop("imdb_id")
 

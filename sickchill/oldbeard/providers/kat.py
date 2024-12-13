@@ -115,7 +115,7 @@ class Provider(TorrentProvider):
 
                             if self.confirmed and not result.find(class_="ka-green"):
                                 if mode != "RSS":
-                                    logger.debug(_("Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it"))
+                                    logger.debug(_("Found result {title} but that doesn't seem like a verified result so I'm ignoring it").format(title=title))
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":

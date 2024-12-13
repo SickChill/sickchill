@@ -45,7 +45,7 @@ class Provider(TorrentProvider):
                     search_params.pop("fl", "")
 
                 if mode != "RSS":
-                    logger.debug(_("Search string: " + search_string.strip()))
+                    logger.debug(_("Search string: {search}").format(search=search_string.strip()))
                     search_params["search"] = search_string
                 else:
                     search_params.pop("search", "")
