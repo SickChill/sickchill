@@ -54,7 +54,9 @@ class Provider(TorrentProvider):
                     leechers = item.pop("l")
 
                     if seeders < self.minseed or leechers < self.minleech:
-                        logger.debug(_("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(title, seeders, leechers))
+                        logger.debug(
+                            _("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(title, seeders, leechers)
+                        )
                         continue
 
                     size = item.pop("len")
