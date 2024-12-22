@@ -40,7 +40,7 @@ class Provider(TorrentProvider):
         if self.cookies:
             success, status = self.add_cookies_from_ui()
             if not success:
-                logger.info(status)
+                logger.info(_("Status: {}").format(status))
                 return False
 
             login_params = {"username": self.username, "password": self.password}

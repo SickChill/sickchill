@@ -41,7 +41,7 @@ class Provider(TorrentProvider):
                 logger.debug(_("Data returned from provider does not contain any torrents"))
                 continue
 
-            logger.info(f"Number of torrents found on {self.name} = {len(data)}")
+            logger.info(_("Number of torrents found on {0} = {1}").format(self.name, len(data)))
 
             for item in data:
                 try:
@@ -54,11 +54,11 @@ class Provider(TorrentProvider):
                     leechers = item.pop("l")
 
                     if seeders < self.minseed or leechers < self.minleech:
-                        logger.debug(f"Discarding torrent because it doesn't meet the minimum seeders or leechers: {title} (S:{seeders} L:{leechers})")
+                        logger.debug(_("Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})").format(title, seeders, leechers))
                         continue
 
                     size = item.pop("len")
-                    logger.debug(f"Found result: {title} with {seeders} seeders and {leechers} leechers with a file size {size}")
+                    logger.debug(_("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size)))
 
                     items.append(
                         {

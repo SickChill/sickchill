@@ -168,7 +168,7 @@ class Provider(TorrentProvider):
 
                             items.append(item)
                         except Exception as error:
-                            logger.debug(f"Unable to process torrent on {self.name}: {error}")
+                            logger.debug(_("Unable to process torrent on {0}: {1}".format(self.name, error)))
                             logger.debug(traceback.format_exc())
                             continue
 
