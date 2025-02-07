@@ -49,11 +49,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         if re.search("Invalid Username/password", response) or re.search("<title>Login :: AlphaRatio.cc</title>", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -89,13 +89,13 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_("Search string: {0}").format(search_string))
 
                 search_params["searchstr"] = search_string
                 search_url = self.urls["search"]
                 data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 with BS4Parser(data) as html:
@@ -104,7 +104,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     # "", "", "Name /Year", "Files", "Time", "Size", "Snatches", "Seeders", "Leechers"
@@ -139,7 +139,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
                         except Exception:

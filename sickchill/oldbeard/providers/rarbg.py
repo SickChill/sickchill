@@ -42,7 +42,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["api"], params=login_params, returns="json")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         self.token = response.get("token")
@@ -102,7 +102,7 @@ class Provider(TorrentProvider):
                 time.sleep(cpu_presets[settings.CPU_PRESET] + 2)
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")
                 if not isinstance(data, dict):
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 error = data.get("error")
@@ -116,7 +116,7 @@ class Provider(TorrentProvider):
 
                 torrent_results = data.get("torrent_results")
                 if not torrent_results:
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 
                 for item in torrent_results:
@@ -141,7 +141,7 @@ class Provider(TorrentProvider):
                         torrent_hash = self.hash_from_magnet(download_url)
 
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                         items.append(result)

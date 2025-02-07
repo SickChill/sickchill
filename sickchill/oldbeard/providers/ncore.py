@@ -39,11 +39,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         if re.search("images/warning.png", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -55,7 +55,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_("Search Mode: {0}").format(mode))
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
@@ -71,16 +71,16 @@ class Provider(TorrentProvider):
                     continue
 
                 if not isinstance(parsed_json, dict):
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 torrent_results = parsed_json["total_results"]
 
                 if not torrent_results:
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 
-                logger.info("Number of torrents found on nCore = " + str(torrent_results))
+                logger.info(_("Number of torrents found on nCore = " + str(torrent_results)))
 
                 for item in parsed_json["results"]:
                     try:
@@ -105,7 +105,7 @@ class Provider(TorrentProvider):
                         size = convert_size(torrent_size) or -1
 
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers with a file size {3}").format(title, seeders, leechers, size))
 
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         items.append(result)

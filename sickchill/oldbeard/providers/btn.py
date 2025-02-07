@@ -38,7 +38,7 @@ class Provider(TorrentProvider):
 
     def _check_auth(self):
         if not self.api_key:
-            logger.warning("Invalid api key. Check your settings")
+            logger.warning(_("Invalid api key. Check your settings"))
 
         return True
 
@@ -65,7 +65,7 @@ class Provider(TorrentProvider):
 
         data = self._api_call(search_params)
         if not data:
-            logger.debug("No data returned from provider")
+            logger.debug(_("No data returned from provider"))
             return results
 
         found = {}
@@ -97,7 +97,7 @@ class Provider(TorrentProvider):
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
-                    logger.debug("Found result: {0} ".format(title))
+                    logger.debug(_("Found result: {0} ").format(title))
                     results.append(torrent_info)
 
         return sorted(results, key=lambda x: self._get_seeders_and_leechers(x)[0], reverse=True)
@@ -110,16 +110,16 @@ class Provider(TorrentProvider):
             time.sleep(cpu_presets[settings.CPU_PRESET])
         except jsonrpclib.jsonrpc.ProtocolError as error:
             if error == (-32001, "Invalid API Key"):
-                logger.warning("The API key you provided was rejected because it is invalid. Check your provider configuration.")
+                logger.warning(_("The API key you provided was rejected because it is invalid. Check your provider configuration."))
             elif error == (-32002, "Call Limit Exceeded"):
-                logger.warning("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account")
+                logger.warning(_("You have exceeded the limit of 150 calls per hour, per API key which is unique to your user account"))
             else:
                 logger.exception(f"JSON-RPC protocol error while accessing provider. Error: {error} ")
             data = {"api-error": f"{error}"}
             return data
 
         except socket.timeout:
-            logger.warning("Timeout while accessing provider")
+            logger.warning(_("Timeout while accessing provider"))
 
         except socket.error as error:
             # Note that sometimes timeouts are thrown as socket errors

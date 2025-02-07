@@ -48,7 +48,7 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 
                 with BS4Parser(data) as html:
@@ -77,7 +77,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
 

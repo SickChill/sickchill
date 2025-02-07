@@ -42,7 +42,7 @@ class Provider(TorrentProvider):
 
             # Only search if user conditions are true
             if self.only_spanish_search and lang_info != "es" and mode != "RSS":
-                logger.debug("Show info is not spanish, skipping provider search")
+                logger.debug(_("Show info is not spanish, skipping provider search"))
                 continue
 
             search_params["bus_de_"] = ("semana", "All")[mode != "RSS"]
@@ -63,7 +63,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 3:  # Headers + 1 Torrent + Pagination
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     # 'Fecha', 'Título', 'Tamaño', ''
@@ -132,18 +132,18 @@ class Provider(TorrentProvider):
             if url_torrent.startswith("http"):
                 self.headers.update({"Referer": "/".join(url_torrent.split("/")[:3]) + "/"})
 
-            logger.info("Downloading a result from {0}".format(url))
+            logger.info(_("Downloading a result from {0}").format(url))
 
             if helpers.download_file(url_torrent, filename, session=self.session, headers=self.headers):
                 if self._verify_download(filename):
-                    logger.info("Saved result to {0}".format(filename))
+                    logger.info(_("Saved result to {0}").format(filename))
                     return True
                 else:
-                    logger.warning("Could not download {0}".format(url))
+                    logger.warning(_("Could not download {0}").format(url))
                     helpers.remove_file_failed(filename)
 
         if urls:
-            logger.warning("Failed to download any results")
+            logger.warning(_("Failed to download any results"))
 
         return False
 

@@ -38,11 +38,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         if re.search("Error: Username or password incorrect!", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -78,7 +78,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     labels = [label.img["title"] if label.img else label.get_text(strip=True) for label in torrent_rows[0]("td")]

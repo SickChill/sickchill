@@ -40,7 +40,7 @@ class Provider(TorrentProvider):
             if custom:
                 logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
             else:
-                logger.debug("Url changing has failed!")
+                logger.debug(_("Url changing has failed!"))
 
             return False
 
@@ -59,7 +59,7 @@ class Provider(TorrentProvider):
         response = self.get_url(self.urls["login"], post_data=login_params, returns="response")
         if response and self.url not in response.url:
             new_url = response.url.split("user/login")[0]
-            logger.debug("Changing base url from {} to {}".format(self.url, new_url))
+            logger.debug(_("Changing base url from {} to {}").format(self.url, new_url))
             if not self.update_urls(new_url):
                 return False
 
@@ -67,17 +67,17 @@ class Provider(TorrentProvider):
 
         # The login is now an AJAX call (401 : Bad credentials, 200 : Logged in, other : server failure)
         if not response or response.status_code != 200:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
         else:
             # It seems we are logged, let's verify that !
             response = self.get_url(self.url, returns="response")
 
             if response.status_code != 200:
-                logger.warning("Unable to connect to provider")
+                logger.warning(_("Unable to connect to provider}"))
                 return False
             if "logout" not in response.text:
-                logger.warning("Invalid username or password. Check your settings")
+                logger.warning(_("Invalid username or password. Check your settings"))
                 return False
 
         return True
@@ -101,7 +101,7 @@ class Provider(TorrentProvider):
                 for k, v in replace_chars.items():
                     search_string = search_string.replace(k, v)
 
-                logger.debug("Sanitized string: {0}".format(search_string))
+                logger.debug(_("Sanitized string: {0}").format(search_string))
 
                 try:
                     search_params = {"category": "2145", "sub_category": "all", "name": re.sub(r"[()]", "", search_string), "do": "search"}
@@ -111,7 +111,7 @@ class Provider(TorrentProvider):
                         continue
 
                     if "logout" not in data:
-                        logger.debug("Refreshing cookies")
+                        logger.debug(_("Refreshing cookies"))
                         self.login()
 
                     with BS4Parser(data) as html:
@@ -120,7 +120,7 @@ class Provider(TorrentProvider):
 
                         # Continue only if at least one Release is found
                         if len(torrent_rows) < 2:
-                            logger.debug("Data returned from provider does not contain any torrents")
+                            logger.debug(_("Data returned from provider does not contain any torrents"))
                             continue
 
                         # Skip column headers
@@ -165,7 +165,7 @@ class Provider(TorrentProvider):
                             items.append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.exception("Failed parsing provider {}.".format(self.name))
+                    logger.exception(_("Failed parsing provider {}.").format(self.name))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

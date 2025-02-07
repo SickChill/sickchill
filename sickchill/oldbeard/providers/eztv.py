@@ -39,14 +39,14 @@ class Provider(TorrentProvider):
                     continue
 
                 search_params["imdb_id"] = self.show.imdb_id.strip("tt")
-                logger.debug("Search string: {}".format(self.show.imdb_id))
+                logger.debug(_("Search string: {0}").format(self.show.imdb_id))
             else:
                 search_params.pop("imdb_id")
 
             data = self.get_url(self.api, params=search_params, returns="json")
 
             if not (data and isinstance(data, dict) and "torrents" in data):
-                logger.debug("URL did not return data")
+                logger.debug(_("URL did not return data"))
                 continue
 
             for result in data["torrents"]:
@@ -75,7 +75,7 @@ class Provider(TorrentProvider):
 
                     item = {"title": title, "link": link, "size": torrent_size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
                     if mode != "RSS":
-                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                        logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                     items.append(item)
                 except Exception:

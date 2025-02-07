@@ -20,7 +20,7 @@ class Provider(NZBProvider):
 
     def _check_auth(self):
         if not self.username or not self.api_key:
-            logger.warning("Invalid api key. Check your settings")
+            logger.warning(_("Invalid api key. Check your settings"))
             return False
 
         return True
@@ -36,9 +36,9 @@ class Provider(NZBProvider):
         if "notice" in parsed_data:
             description_text = parsed_data.get("notice")
             if "information is incorrect" in description_text:
-                logger.warning("Invalid api key. Check your settings")
+                logger.warning(_("Invalid api key. Check your settings"))
             elif "0 results matched your terms" not in description_text:
-                logger.debug("Unknown error: {0}".format(description_text))
+                logger.debug(_("Unknown error: {0}").format(description_text))
             return False
 
         return True

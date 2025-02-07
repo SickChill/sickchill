@@ -57,11 +57,11 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(search_url, params={"f": search_string}, returns="text")
                 if not data:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 if not data.startswith("<?xml"):
-                    logger.info("Expected xml but got something else, is your mirror failing?")
+                    logger.info(_("Expected xml but got something else, is your mirror failing?"))
                     continue
 
                 try:
@@ -93,7 +93,7 @@ class Provider(TorrentProvider):
                             result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": t_hash}
                             items.append(result)
                 except Exception:
-                    logger.exception("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()))
+                    logger.exception(_("Failed parsing provider. Traceback: {0!r}").format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

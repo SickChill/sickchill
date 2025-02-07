@@ -43,7 +43,7 @@ class Provider(TorrentProvider):
         if self.cookies:
             success, status = self.add_cookies_from_ui()
             if not success:
-                logger.info(status)
+                logger.info(_("Status: {}").format(status))
                 return False
 
         login_params = {"username": self.username, "password": self.password, "login": "submit"}
@@ -56,33 +56,33 @@ class Provider(TorrentProvider):
         # Get the index, redirects to log in
         data = self.get_url(self.custom_url or self.url, returns="text")
         if not data:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         with BS4Parser(data) as html:
             action = html.find("form", {"action": re.compile(r".*login.*")}).get("action")
             if not action:
-                logger.warning("Could not find the login form. Try adding cookies instead")
+                logger.warning(_("Could not find the login form. Try adding cookies instead"))
                 return False
 
         response = self.get_url(urljoin(self.custom_url or self.url, action), post_data=login_params, returns="text", flaresolverr=True)
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         # Invalid username and password combination
         if re.search("Invalid username and password combination", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         # You tried too often, please try again after 2 hours!
         if re.search("You tried too often", response):
-            logger.warning("You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours")
+            logger.warning(_("You tried too often, please try again after 2 hours! Disable IPTorrents for at least 2 hours"))
             return False
 
         # Captcha!
         if re.search("Captcha verification failed.", response):
-            logger.warning("Stupid captcha")
+            logger.warning(_("Stupid captcha"))
             return False
 
         return True
@@ -119,11 +119,11 @@ class Provider(TorrentProvider):
                     data = re.sub(r"(?im)<button.+?</button>", "", data, 0)
                     with BS4Parser(data) as html:
                         if not html:
-                            logger.debug("No data returned from provider")
+                            logger.debug(_("No data returned from provider"))
                             continue
 
                         if html.find(text="No Torrents Found!"):
-                            logger.debug("Data returned from provider does not contain any torrents")
+                            logger.debug(_("Data returned from provider does not contain any torrents"))
                             continue
 
                         torrent_table = html.find("table", id="torrents")
@@ -131,7 +131,7 @@ class Provider(TorrentProvider):
 
                         # Continue only if one Release is found
                         if not torrents or len(torrents) < 2:
-                            logger.debug("Data returned from provider does not contain any torrents")
+                            logger.debug(_("Data returned from provider does not contain any torrents"))
                             continue
 
                         for result in torrents[1:]:
@@ -160,7 +160,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
 

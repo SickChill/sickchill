@@ -36,7 +36,7 @@ class Provider(TorrentProvider):
         """Check that we are authenticated."""
 
         if "status" in parsed_json and "message" in parsed_json and parsed_json.get("status") == 3:
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
 
         return True
 
@@ -69,7 +69,7 @@ class Provider(TorrentProvider):
                 if self.check_auth_from_data(parsed_json):
                     json_items = parsed_json.get("data", "")
                     if not json_items:
-                        logger.exception("Resulting JSON from provider is not correct, " "not parsing it")
+                        logger.exception(_("Resulting JSON from provider is not correct, " "not parsing it"))
 
                     for item in json_items.get("torrents", []):
                         title = item.pop("name", "")

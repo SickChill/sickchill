@@ -72,12 +72,12 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(search_url, params=search_params, returns="text")
                 if not data:
-                    logger.info("{url} did not return any data, it may be disabled. Trying to get a new domain".format(url=self.url))
+                    logger.info(_("{url} did not return any data, it may be disabled. Trying to get a new domain").format(url=self.url))
                     self.disabled_mirrors.append(self.url)
                     self.find_domain()
                     if self.url in self.disabled_mirrors:
-                        logger.info("Could not find a better mirror to try.")
-                        logger.info("The search did not return data, if the results are on the site maybe try a custom url, or a different one")
+                        logger.info(_("Could not find a better mirror to try."))
+                        logger.info(_("The search did not return data, if the results are on the site maybe try a custom url, or a different one"))
                         return results
 
                     # This will recurse a few times until all of the mirrors are exhausted if none of them work.
@@ -85,7 +85,7 @@ class Provider(TorrentProvider):
 
                 with BS4Parser(data) as html:
                     labels = [cell.get_text() for cell in html.find(class_="firstr")("th")]
-                    logger.info("Found {} results".format(len(html("tr", **self.rows_selector))))
+                    logger.info(_("Found {} results").format(len(html("tr", **self.rows_selector))))
                     for result in html("tr", **self.rows_selector):
                         try:
                             download_url = urllib.parse.unquote_plus(result.find(title="Torrent magnet link")["href"].split("url=")[1]) + self._custom_trackers
@@ -97,7 +97,7 @@ class Provider(TorrentProvider):
 
                             if not (title and download_url):
                                 if mode != "RSS":
-                                    logger.debug("Discarding torrent because We could not parse the title and url")
+                                    logger.debug(_("Discarding torrent because We could not parse the title and url"))
                                 continue
 
                             seeders = try_int(result.find(class_="green").get_text(strip=True))
@@ -115,15 +115,11 @@ class Provider(TorrentProvider):
 
                             if self.confirmed and not result.find(class_="ka-green"):
                                 if mode != "RSS":
-                                    logger.debug("Found result " + title + " but that doesn't seem like a verified result so I'm ignoring it")
-                                continue
-
-                            torrent_size = result("td")[labels.index("size")].get_text(strip=True)
-                            size = convert_size(torrent_size) or -1
+                                    logger.debug(_("Found result {title} but that doesn't seem like a verified result so I'm ignoring it").format(title=title))
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
 
@@ -153,7 +149,7 @@ class Provider(TorrentProvider):
 
         if self.mirrors:
             self.url = self.mirrors[0]
-            logger.info("Setting mirror to use to {url}".format(url=self.url))
+            logger.info(_("Setting mirror to use to {url}").format(url=self.url))
         else:
             logger.warning(
                 "Unable to get a working mirror for KickassTorrent. You might need to enable another provider and disable KAT until it starts working again."

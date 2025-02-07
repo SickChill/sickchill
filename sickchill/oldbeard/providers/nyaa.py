@@ -54,7 +54,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
                 results = []
                 data = self.get_url(self.custom_url or self.url, params=search_params)
                 if not data:
-                    logger.debug("No data was returned from the provider")
+                    logger.debug(_("No data was returned from the provider"))
                     continue
 
                 with BS4Parser(data, language="xml") as html:
