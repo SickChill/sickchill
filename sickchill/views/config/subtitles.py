@@ -63,6 +63,7 @@ class ConfigSubtitles(Config):
         settings.ITASA_PASS = filters.unhide(settings.ITASA_PASS, self.get_body_argument("itasa_pass", default="")) or ""
         settings.OPENSUBTITLES_USER = self.get_body_argument("opensubtitles_user", default="")
         settings.OPENSUBTITLES_PASS = filters.unhide(settings.OPENSUBTITLES_PASS, self.get_body_argument("opensubtitles_pass", default=""))
+        settings.OPENSUBTITLES_APIKEY = self.get_body_argument("opensubtitles_apikey", default="")
         settings.SUBSCENTER_USER = self.get_body_argument("subscenter_user", default="")
         settings.SUBSCENTER_PASS = filters.unhide(settings.SUBSCENTER_PASS, self.get_body_argument("subscenter_pass", default=""))
 

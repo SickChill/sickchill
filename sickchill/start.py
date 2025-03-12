@@ -699,6 +699,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.OPENSUBTITLES_USER = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_username", censor_log=True)
         settings.OPENSUBTITLES_PASS = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_password", censor_log=True)
+        settings.OPENSUBTITLES_APIKEY = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_apikey", censor_log=True)
 
         settings.SUBSCENTER_USER = check_setting_str(settings.CFG, "Subtitles", "subscenter_username", censor_log=True)
         settings.SUBSCENTER_PASS = check_setting_str(settings.CFG, "Subtitles", "subscenter_password", censor_log=True)
@@ -1658,6 +1659,7 @@ def save_config():
                 "itasa_password": helpers.encrypt(settings.ITASA_PASS, settings.ENCRYPTION_VERSION),
                 "opensubtitles_username": settings.OPENSUBTITLES_USER,
                 "opensubtitles_password": helpers.encrypt(settings.OPENSUBTITLES_PASS, settings.ENCRYPTION_VERSION),
+                "opensubtitles_apikey": settings.OPENSUBTITLES_APIKEY,
                 "subscenter_username": settings.SUBSCENTER_USER,
                 "subscenter_password": helpers.encrypt(settings.SUBSCENTER_PASS, settings.ENCRYPTION_VERSION),
             },

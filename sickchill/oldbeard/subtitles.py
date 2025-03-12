@@ -18,10 +18,14 @@ from sickchill.oldbeard import db
 from sickchill.oldbeard.common import Quality
 from sickchill.show.History import History
 from sickchill.show.Show import Show
+from sickchill.providers.subtitle.opensubtitles import OpenSubtitlesRESTProvider
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
 # 'legendastv' closed down
+# Lines ~26-28
+if "opensubtitles" not in subliminal.provider_manager.names():
+    subliminal.provider_manager.register("opensubtitles", OpenSubtitlesRESTProvider)
 if "itasa" not in subliminal.provider_manager.names():
     subliminal.provider_manager.register("itasa = sickchill.providers.subtitle.itasa:ItaSAProvider")
 if "wizdom" not in subliminal.provider_manager.names():
@@ -38,13 +42,13 @@ subliminal.region.configure("dogpile.cache.memory")
 PROVIDER_URLS = {
     "addic7ed": "https://www.addic7ed.com",
     "bsplayer": "http://bsplayer-subtitles.com",
-    "itasa": "http://www.italiansubs.net/",
-    "napiprojekt": "http://www.napiprojekt.pl",
+    "itasa": "https://www.italiansubs.net/",
+    "napiprojekt": "https://www.napiprojekt.pl",
     "opensubtitles": "https://www.opensubtitles.com",
-    "podnapisi": "http://www.podnapisi.net",
+    "podnapisi": "https://www.podnapisi.net",
     "subtitulamos": "https://www.subtitulamos.tv",
-    "wizdom": "http://wizdom.xyz",
-    "tvsubtitles": "http://www.tvsubtitles.net",
+    "wizdom": "https://wizdom.xyz",
+    "tvsubtitles": "https://www.tvsubtitles.net/",
 }
 
 
@@ -71,9 +75,13 @@ class SubtitleProviderPool(object):
         with SubtitleProviderPool._lock:
             providers = enabled_service_list()
             provider_configs = {
+                "opensubtitles":{
+                    "api_key":settings.OPENSUBTITLES_APIKEY,
+                    "username":settings.OPENSUBTITLES_USER,
+                    "password":settings.OPENSUBTITLES_PASS
+                },
                 "addic7ed": {"username": settings.ADDIC7ED_USER, "password": settings.ADDIC7ED_PASS},
                 "itasa": {"username": settings.ITASA_USER, "password": settings.ITASA_PASS},
-                "opensubtitles": {"username": settings.OPENSUBTITLES_USER, "password": settings.OPENSUBTITLES_PASS},
                 "subscenter": {"username": settings.SUBSCENTER_USER, "password": settings.SUBSCENTER_PASS},
             }
 

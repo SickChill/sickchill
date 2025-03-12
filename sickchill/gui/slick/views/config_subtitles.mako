@@ -326,10 +326,10 @@
                     <fieldset class="component-group-list">
                         <%
                             providerLoginDict = {
-                                'addic7ed': {'user': settings.ADDIC7ED_USER, 'pass': settings.ADDIC7ED_PASS},
-                                'itasa': {'user': settings.ITASA_USER, 'pass': settings.ITASA_PASS},
-                                'opensubtitles': {'user': settings.OPENSUBTITLES_USER, 'pass': settings.OPENSUBTITLES_PASS},
-                                'subscenter': {'user': settings.SUBSCENTER_USER, 'pass': settings.SUBSCENTER_PASS}
+                                'addic7ed': {'user': settings.ADDIC7ED_USER, 'pass': settings.ADDIC7ED_PASS, 'apikey': None},
+                                'itasa': {'user': settings.ITASA_USER, 'pass': settings.ITASA_PASS, 'apikey': None},
+                                'opensubtitles': {'user': settings.OPENSUBTITLES_USER, 'pass': settings.OPENSUBTITLES_PASS, 'apikey': settings.OPENSUBTITLES_APIKEY},
+                                'subscenter': {'user': settings.SUBSCENTER_USER, 'pass': settings.SUBSCENTER_PASS, 'apikey': None}
                             }
                         %>
                         % for curService in subtitles.sorted_service_list():
@@ -338,7 +338,7 @@
                                     continue
                             %>
                             <div class="field-pair row">
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <span class="component-title">${curService['name'].capitalize()} ${_('User Name')}</span>
@@ -347,14 +347,14 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="text" name="${curService['name']}_user"
-                                                   id="${curService['name']}_user"
-                                                   value="${providerLoginDict[curService['name']]['user']}"
-                                                   class="form-control input-sm input300" autocapitalize="off"
-                                                   autocomplete="no" title="Username" />
+                                                id="${curService['name']}_user"
+                                                value="${providerLoginDict[curService['name']]['user']}"
+                                                class="form-control input-sm input300" autocapitalize="off"
+                                                autocomplete="no" title="Username" />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <span class="component-title">${curService['name'].capitalize()} ${_('Password')}</span>
@@ -367,6 +367,22 @@
                                                 value="${providerLoginDict[curService['name']]['pass']|hide}"
                                                 class="form-control input-sm input300" autocomplete="no" autocapitalize="off" title="Password"
                                             />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <span class="component-title">${curService['name'].capitalize()} ${_('API Key')}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="${curService['name']}_apikey"
+                                                id="${curService['name']}_apikey"
+                                                value="${providerLoginDict[curService['name']]['apikey']}"
+                                                class="form-control input-sm input300" autocapitalize="off"
+                                                autocomplete="no" title="apikey" />
                                         </div>
                                     </div>
                                 </div>
