@@ -16,9 +16,9 @@ from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file
 from sickchill.oldbeard import db
 from sickchill.oldbeard.common import Quality
+from sickchill.providers.subtitle.opensubtitles import OpenSubtitlesRESTProvider
 from sickchill.show.History import History
 from sickchill.show.Show import Show
-from sickchill.providers.subtitle.opensubtitles import OpenSubtitlesRESTProvider
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
@@ -75,11 +75,7 @@ class SubtitleProviderPool(object):
         with SubtitleProviderPool._lock:
             providers = enabled_service_list()
             provider_configs = {
-                "opensubtitles":{
-                    "api_key":settings.OPENSUBTITLES_APIKEY,
-                    "username":settings.OPENSUBTITLES_USER,
-                    "password":settings.OPENSUBTITLES_PASS
-                },
+                "opensubtitles": {"api_key": settings.OPENSUBTITLES_APIKEY, "username": settings.OPENSUBTITLES_USER, "password": settings.OPENSUBTITLES_PASS},
                 "addic7ed": {"username": settings.ADDIC7ED_USER, "password": settings.ADDIC7ED_PASS},
                 "itasa": {"username": settings.ITASA_USER, "password": settings.ITASA_PASS},
                 "subscenter": {"username": settings.SUBSCENTER_USER, "password": settings.SUBSCENTER_PASS},
