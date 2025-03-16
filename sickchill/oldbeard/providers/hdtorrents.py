@@ -37,7 +37,7 @@ class Provider(TorrentProvider):
 
     def _check_auth(self):
         if not self.username or not self.password:
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
 
         return True
 
@@ -49,11 +49,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         if re.search("You need cookies enabled to log in.", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -78,11 +78,11 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(search_url, returns="text")
                 if not data or "please try later" in data:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 if data.find("No torrents here") != -1:
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 
                 # Search result page contains some invalid html that prevents html parser from returning all data.
@@ -91,14 +91,14 @@ class Provider(TorrentProvider):
                 try:
                     index = data.lower().index('<table class="mainblockcontenttt"')
                 except ValueError:
-                    logger.debug("Could not find table of torrents mainblockcontenttt")
+                    logger.debug(_("Could not find table of torrents mainblockcontenttt"))
                     continue
 
                 data = data[index:]
 
                 with BS4Parser(data) as html:
                     if not html:
-                        logger.debug("No html data parsed from provider")
+                        logger.debug(_("No html data parsed from provider"))
                         continue
 
                     torrent_rows = []
@@ -107,7 +107,7 @@ class Provider(TorrentProvider):
                         torrent_rows = torrent_table("tr")
 
                     if not torrent_rows:
-                        logger.debug("Could not find results in returned data")
+                        logger.debug(_("Could not find results in returned data"))
                         continue
 
                     # Cat., Active, Filename, Dl, Wl, Added, Size, Uploader, S, L, C
@@ -145,7 +145,7 @@ class Provider(TorrentProvider):
 
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         items.append(item)
 

@@ -25,7 +25,7 @@ class Provider(TorrentProvider):
         if self.username and self.api_key:
             return True
 
-        logger.warning("Your authentication credentials for {0} are missing, check your config.".format(self.name))
+        logger.warning(_("Your authentication credentials for {0} are missing, check your config.").format(self.name))
         return False
 
     def search(self, search_strings):
@@ -45,7 +45,7 @@ class Provider(TorrentProvider):
                     search_params.pop("fl", "")
 
                 if mode != "RSS":
-                    logger.debug("Search string: " + search_string.strip())
+                    logger.debug(_("Search string: {search}").format(search=search_string.strip()))
                     search_params["search"] = search_string
                 else:
                     search_params.pop("search", "")
@@ -53,11 +53,11 @@ class Provider(TorrentProvider):
                 try:
                     jdata = self.get_url(self.urls["search"], params=search_params, returns="json")
                 except ValueError:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 if not jdata:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 error = jdata.get("error")
@@ -67,7 +67,7 @@ class Provider(TorrentProvider):
 
                 try:
                     if jdata["0"]["total_results"] == 0:
-                        logger.debug("Provider has no results for this search")
+                        logger.debug(_("Provider has no results for this search"))
                         continue
                 except Exception:
                     continue
@@ -95,7 +95,7 @@ class Provider(TorrentProvider):
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
 
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         items.append(item)
                     except Exception:

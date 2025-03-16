@@ -98,7 +98,7 @@ class Provider(TorrentProvider):
 
                 while has_next_page and next_page <= self.max_back_pages:
                     search_params["page"] = next_page
-                    logger.debug("Page Search: {0}".format(next_page))
+                    logger.debug(_("Page Search: {0}").format(next_page))
                     next_page += 1
 
                     response = self.session.get(self.urls["search"], params=search_params)
@@ -139,11 +139,11 @@ class Provider(TorrentProvider):
 
             # ignore next page in RSS mode
             has_next_page = mode != "RSS" and html.find("a", class_="pager_next") is not None
-            logger.debug("More Pages? {0}".format(has_next_page))
+            logger.debug(_("More Pages? {0}").format(has_next_page))
 
             # Continue only if at least one Release is found
             if len(torrent_rows) < 2:
-                logger.debug("Data returned from provider does not contain any torrents")
+                logger.debug(_("Data returned from provider does not contain any torrents"))
                 return {"has_next_page": has_next_page, "items": []}
 
             # '', '', 'Name /Year', 'Files', 'Time', 'Size', 'Snatches', 'Seeders', 'Leechers'
@@ -227,7 +227,7 @@ class Provider(TorrentProvider):
                         )
 
                 except (AttributeError, TypeError, KeyError, ValueError, IndexError):
-                    logger.exception("Failed parsing provider.")
+                    logger.exception(_("Failed parsing provider."))
 
         return {"has_next_page": has_next_page, "items": items}
 
@@ -253,11 +253,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         if re.search("<title>Login :: BJ-Share</title>", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True

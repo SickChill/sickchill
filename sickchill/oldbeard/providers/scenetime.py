@@ -40,20 +40,20 @@ class Provider(TorrentProvider):
         if self.cookies:
             success, status = self.add_cookies_from_ui()
             if not success:
-                logger.info(status)
+                logger.info(_("Status: {}").format(status))
                 return False
 
             login_params = {"username": self.username, "password": self.password}
 
             response = self.get_url(self.urls["login"], post_data=login_params, returns="response")
             if not response or response.status_code != 200:
-                logger.warning("Unable to connect to provider")
+                logger.warning(_("Unable to connect to provider}"))
                 return False
 
             if dict_from_cookiejar(self.session.cookies).get("uid") in response.text:
                 return True
             else:
-                logger.warning("Failed to login, check your cookies")
+                logger.warning(_("Failed to login, check your cookies"))
                 return False
 
     def search(self, search_strings):
@@ -85,7 +85,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     # Scenetime apparently uses different number of cells in #torrenttable based
@@ -127,7 +127,7 @@ class Provider(TorrentProvider):
 
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         items.append(item)
 

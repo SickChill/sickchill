@@ -73,7 +73,7 @@ class Provider(TorrentProvider):
                 download_url = item.find("link").text
 
                 entry = {"title": title, "link": download_url, "size": 333, "seeders": 1, "leechers": 1, "hash": ""}
-                logger.debug(_("Found result: {title}".format(title=title)))
+                logger.debug(_("Found result: {title}").format(title=title))
 
                 entries.append(entry)
 
@@ -107,12 +107,12 @@ class Provider(TorrentProvider):
 
             # Continue only if one Release is found
             if len(list_items) < 1:
-                logger.debug("Data returned from provider does not contain any torrents")
+                logger.debug(_("Data returned from provider does not contain any torrents"))
                 return []
 
             for list_item in list_items:
                 title = "{0}{1}".format(str(list_item.find("span").next_sibling), str(list_item.find("strong").text))
-                logger.debug("Found title {0}".format(title))
+                logger.debug(_("Found title {0}").format(title))
                 episode_url = "/#".join(list_item.find("a")["href"].rsplit("#", 1))
                 episode = episode_url.split("#", 1)[1]
 
@@ -120,7 +120,7 @@ class Provider(TorrentProvider):
                 show_id = self.__getShowId(page_url)
 
                 if not show_id:
-                    logger.debug("Could not find show ID")
+                    logger.debug(_("Could not find show ID"))
                     continue
 
                 fetch_params = {"method": "getshows", "type": "show", "mode": "filter", "showid": show_id, "value": episode}
@@ -133,12 +133,12 @@ class Provider(TorrentProvider):
     def __getShowId(self, target_url):
         data = self.get_url(target_url, returns="text")
         if not data:
-            logger.debug("Could not fetch url: {0}".format(target_url))
+            logger.debug(_("Could not fetch url: {0}").format(target_url))
             return None
 
         with BS4Parser(data) as soup:
             show_id = re.sub(r"[^0-9]", "", soup(text=re.compile("hs_showid"))[0])
-            logger.debug("show id: {0}".format(show_id))
+            logger.debug(_("show id: {0}").format(show_id))
 
         return show_id
 

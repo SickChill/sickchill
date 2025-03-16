@@ -47,7 +47,7 @@ class Provider(TorrentProvider):
         if self.cookies:
             success, status = self.add_cookies_from_ui()
             if not success:
-                logger.info(status)
+                logger.info(_("Status: {}").format(status))
                 return False
 
             login_params = {"username": self.username, "password": self.password, "submit.x": 0, "submit.y": 0}
@@ -61,20 +61,20 @@ class Provider(TorrentProvider):
 
             response = self.get_url(login_url, post_data=login_params, returns="response")
             if not response or response.status_code != 200:
-                logger.warning("Unable to connect to provider")
+                logger.warning(_("Unable to connect to provider}"))
                 return False
 
             if re.search("You tried too often", response.text):
-                logger.warning("Too many login access attempts")
+                logger.warning(_("Too many login access attempts"))
                 return False
 
             if dict_from_cookiejar(self.session.cookies).get("uid") in response.text:
                 return True
             else:
-                logger.warning("Failed to login, check your cookies")
+                logger.warning(_("Failed to login, check your cookies"))
                 return False
         else:
-            logger.info("You need to set your cookies to use torrentday")
+            logger.info(_("You need to set your cookies to use torrentday"))
             return False
 
     def search(self, search_strings):
@@ -111,7 +111,7 @@ class Provider(TorrentProvider):
                     # Make sure it is iterable #4304
                     iter(torrents)
                 except (TypeError, AssertionError):
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 
                 for torrent in torrents:

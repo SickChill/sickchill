@@ -28,8 +28,7 @@ class LoginHandler(BaseHandler):
             logger.warning(_("User attempted a failed login to the SickChill web interface from IP: ") + self.request.remote_ip)
             login_error = _("Incorrect username or password! Both username and password are case sensitive!")
 
-        next_ = self.get_query_argument("next", next_)
-        self.redirect(next_ or "/" + settings.DEFAULT_PAGE + "/")
+        self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
 
 class LogoutHandler(BaseHandler):

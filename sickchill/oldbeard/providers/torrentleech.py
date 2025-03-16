@@ -47,11 +47,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         if re.search("Invalid Username/password", response) or re.search("<title>Login :: TorrentLeech.org</title>", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -70,7 +70,7 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_("Search string: {0}").format(search_string))
 
                     categories = ["26", "32", "35"]
                     if mode != "Episode":
@@ -88,14 +88,14 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(search_url, returns="json")
                 if not data:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 # TODO: Handle more than 35 torrents in return. (Max 35 per call)
                 torrent_list = data["torrentList"]
 
                 if len(torrent_list) < 1:
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 
                 for torrent in torrent_list:
@@ -119,7 +119,7 @@ class Provider(TorrentProvider):
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
 
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         items.append(item)
                     except Exception:

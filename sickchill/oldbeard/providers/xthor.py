@@ -22,7 +22,7 @@ class Provider(TorrentProvider):
         if self.api_key:
             return True
 
-        logger.warning("Your authentication credentials for {0} are missing, check your config.".format(self.name))
+        logger.warning(_("Your authentication credentials for {0} are missing, check your config.").format(self.name))
         return False
 
     def search(self, search_strings):
@@ -39,7 +39,7 @@ class Provider(TorrentProvider):
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug("Search string: " + search_string.strip())
+                    logger.debug(_("Search string: {search}").format(search=search_string.strip()))
                     search_params["search"] = search_string
                 else:
                     search_params.pop("search", "")
@@ -53,18 +53,18 @@ class Provider(TorrentProvider):
                 error_code = jdata.pop("error", {})
                 if error_code.get("code"):
                     if error_code.get("code") != 2:
-                        logger.warning("{0}".format(error_code.get("descr", "Error code 2 - no description available")))
+                        logger.warning(_("{0}").format(error_code.get("descr", "Error code 2 - no description available")))
                         return results
                     continue
 
                 account_ok = jdata.pop("user", {}).get("can_leech")
                 if not account_ok:
-                    logger.warning("Sorry, your account is not allowed to download, check your ratio")
+                    logger.warning(_("Sorry, your account is not allowed to download, check your ratio"))
                     return results
 
                 torrents = jdata.pop("torrents", None)
                 if not torrents:
-                    logger.debug("Provider has no results for this search")
+                    logger.debug(_("Provider has no results for this search"))
                     continue
 
                 for torrent in torrents:

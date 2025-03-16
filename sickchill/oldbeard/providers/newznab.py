@@ -189,7 +189,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
         Returns: True/False
         """
         if self.needs_auth and not self.key:
-            logger.warning("Invalid api key. Check your settings")
+            logger.warning(_("Invalid api key. Check your settings"))
             return False
 
         return True
@@ -235,7 +235,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 category_ids = values[3]
                 enabled = values[4]
         except ValueError:
-            logger.exception("Skipping Newznab provider string: '{0}', incorrect format".format(config))
+            logger.exception(_("Skipping Newznab provider string: '{0}', incorrect format").format(config))
             return None
 
         if search_mode == "sponly":
@@ -306,7 +306,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 search_params.pop("season", "")
 
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_("Search Mode: {0}").format(mode))
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
@@ -318,7 +318,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                 data = self.get_url(self.request_url, params=search_params, returns="text")
 
                 if not data:
-                    logger.debug("No data was returned from the provider")
+                    logger.debug(_("No data was returned from the provider"))
                     break
 
                 with BS4Parser(data, language="xml") as html:

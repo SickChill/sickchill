@@ -1,4 +1,5 @@
 import re
+import time
 from urllib.parse import quote_plus
 
 from requests.utils import dict_from_cookiejar
@@ -31,6 +32,7 @@ class Provider(TorrentProvider):
 
         self.url = self.urls["base_url"]
         self.categories = "&c7=1&c33=1&c55=1"
+        self.pattern = r'<table[^>]*id=["\']zbtable["\'][^>]*>'
 
         self.cache = tvcache.TVCache(self, min_time=30)  # only poll Zamunda every 30 minutes max
 
@@ -95,10 +97,11 @@ class Provider(TorrentProvider):
                 # Search result page contains some invalid html that prevents html parser from returning all data.
                 # We cut everything before the table that contains the data we are interested in thus eliminating
                 # the invalid html portions
-                try:
-                    index = data.lower().index('<table align="center" id="zbtable"')
-                except ValueError:
-                    logger.debug(_("Could not find table of torrents zbtable"))
+                match = re.search(self.pattern, data, re.IGNORECASE)
+                if match:
+                    index = match.start()
+                else:
+                    logger.debug(_("Table not found"))
                     continue
 
                 data = data[index:]
@@ -159,5 +162,7 @@ class Provider(TorrentProvider):
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
 
             results += items
+        logger.debug(_("Waiting to prevent flood protection..."))
+        time.sleep(2)
 
         return results

@@ -46,7 +46,7 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(search_url, returns="text")
                 if not data:
-                    logger.debug("URL did not return results/data, if the results are on the site maybe try a custom url, or a different one")
+                    logger.debug(_("URL did not return results/data, if the results are on the site maybe try a custom url, or a different one"))
                     continue
 
                 with BS4Parser(data) as html:
@@ -57,7 +57,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if not torrent_rows:
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     labels = [x.get_text(strip=True) for x in torrent_table.find("thead").find("tr")("th")]
@@ -88,7 +88,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": magnet + self._custom_trackers, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
                         except Exception as error:

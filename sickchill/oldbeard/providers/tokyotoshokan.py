@@ -49,7 +49,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if one Release is found
                     if len(torrent_rows) < 2:
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     a = 1 if len(torrent_rows[0]("td")) < 2 else 0
@@ -85,7 +85,7 @@ class Provider(TorrentProvider):
 
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         items.append(item)
 

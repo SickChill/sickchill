@@ -100,7 +100,7 @@ class TorrentRssProvider(TorrentProvider):
                 name = values[0]
                 url = values[1]
         except ValueError:
-            logger.exception("Skipping RSS Torrent provider string: {0}, incorrect format".format(config))
+            logger.exception(_("Skipping RSS Torrent provider string: {0}, incorrect format").format(config))
             return None
 
         new_provider = TorrentRssProvider(

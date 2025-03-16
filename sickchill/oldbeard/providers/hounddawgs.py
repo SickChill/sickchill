@@ -52,7 +52,7 @@ class Provider(TorrentProvider):
         self.get_url(self.urls["base_url"], returns="text")
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         if (
@@ -60,7 +60,7 @@ class Provider(TorrentProvider):
             or re.search("<title>Login :: HoundDawgs</title>", response)
             or re.search("Dine cookies er ikke aktiveret.", response)
         ):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -81,7 +81,7 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(self.urls["search"], params=self.search_params, returns="text")
                 if not data:
-                    logger.debug("URL did not return data")
+                    logger.debug(_("URL did not return data"))
                     continue
 
                 strTableStart = '<table class="torrent_table'
@@ -95,7 +95,7 @@ class Provider(TorrentProvider):
                         result_table = html.find("table", {"id": "torrent_table"})
 
                         if not result_table:
-                            logger.debug("Data returned from provider does not contain any torrents")
+                            logger.debug(_("Data returned from provider does not contain any torrents"))
                             continue
 
                         result_tbody = result_table.find("tbody")
@@ -112,7 +112,7 @@ class Provider(TorrentProvider):
                             try:
                                 notinternal = result.find_next("img", src="/static//common/user_upload.png")
                                 if self.ranked and notinternal:
-                                    logger.debug("Found a user uploaded release, Ignoring it..")
+                                    logger.debug(_("Found a user uploaded release, Ignoring it.."))
                                     continue
                                 freeleech = result.find_next("img", src="/static//common/browse/freeleech.png")
                                 if self.freeleech and not freeleech:
@@ -143,12 +143,12 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
 
                 except Exception:
-                    logger.exception("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()))
+                    logger.exception(_("Failed parsing provider. Traceback: {0}").format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

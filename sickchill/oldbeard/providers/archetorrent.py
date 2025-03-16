@@ -48,13 +48,13 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         search = self.get_url(self.urls["search"])
 
         if not search or not re.search("torrents.php", search):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -88,9 +88,9 @@ class Provider(TorrentProvider):
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
-                logger.debug("Search String: {0} for mode {1}".format(search_strings[mode], mode))
+                logger.debug(_("Search String: {0} for mode {1}").format(search_strings[mode], mode))
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_("Search string: {0}").format(search_string))
 
                 search_params["search"] = re.sub(r"[()]", "", search_string)
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")
@@ -103,7 +103,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     # Catégorie, Release, Date, DL, Size, C, S, L

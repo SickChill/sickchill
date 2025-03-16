@@ -52,11 +52,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider}"))
             return False
 
         if re.search("Your username or password was incorrect.", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -84,14 +84,14 @@ class Provider(TorrentProvider):
 
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")
                 if not data:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 try:
                     with BS4Parser(data) as html:
                         torrent_table = html.find("table", {"id": "torrent_table"})
                         if not torrent_table:
-                            logger.debug("Data returned from {0} does not contain any torrents".format(self.name))
+                            logger.debug(_("Data returned from {0} does not contain any torrents").format(self.name))
                             continue
 
                         labels = [x.get_text(strip=True) or x.a.img.get("alt") for x in torrent_table.find("tr", class_="colhead").find_all("td")]
@@ -99,7 +99,7 @@ class Provider(TorrentProvider):
 
                         # Continue only if one Release is found
                         if not torrent_rows:
-                            logger.debug("Data returned from {0} does not contain any torrents".format(self.name))
+                            logger.debug(_("Data returned from {0} does not contain any torrents").format(self.name))
                             continue
 
                         for torrent_row in torrent_rows:
@@ -147,11 +147,11 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
                 except Exception:
-                    logger.exception("Failed parsing provider. Traceback: {0}".format(traceback.format_exc()))
+                    logger.exception(_("Failed parsing provider. Traceback: {0}").format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)
