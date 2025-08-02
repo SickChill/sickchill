@@ -1094,20 +1094,35 @@
   resolved "https://registry.yarnpkg.com/@jsonjoy.com/base64/-/base64-1.1.2.tgz#cf8ea9dcb849b81c95f14fc0aaa151c6b54d2578"
   integrity sha512-q6XAnWQDIMA3+FTiOYajoYqySkO+JSat0ytXGSuRdq9uXE7o92gzuQwQM14xaCRlBLGq3v5miDGC4vkVTn54xA==
 
+"@jsonjoy.com/buffers@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@jsonjoy.com/buffers/-/buffers-1.0.0.tgz#ade6895b7d3883d70f87b5743efaa12c71dfef7a"
+  integrity sha512-NDigYR3PHqCnQLXYyoLbnEdzMMvzeiCWo1KOut7Q0CoIqg9tUAPKJ1iq/2nFhc5kZtexzutNY0LFjdwWL3Dw3Q==
+
 "@jsonjoy.com/json-pack@^1.0.3":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@jsonjoy.com/json-pack/-/json-pack-1.4.0.tgz#9ec96358c50c89398f3fff533a59fefb57337826"
-  integrity sha512-Akn8XZqN3xO9YGcgvIiTauBBXTP92QSvw6EcGha+p5nm7brhbwvev5gw4fi+ouLGrBpfPpb72+S5pxl4mkMIGQ==
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@jsonjoy.com/json-pack/-/json-pack-1.7.0.tgz#43b86091fcdf4b53e32ef5309fc203396dffa40a"
+  integrity sha512-XHjFn3QhP8uMak/Mm+0W+f7XPBk1f10LWe1Ba/IoOtd+tRJtNU4m9g5UJpJESVQMousq9BdBNNDNqOFiRnyj5g==
   dependencies:
     "@jsonjoy.com/base64" "^1.1.1"
+    "@jsonjoy.com/json-pointer" "^1.0.1"
     "@jsonjoy.com/util" "^1.1.2"
     hyperdyperid "^1.2.0"
     thingies "^1.20.0"
 
+"@jsonjoy.com/json-pointer@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@jsonjoy.com/json-pointer/-/json-pointer-1.0.1.tgz#3b710158e8a212708a2886ea5e38d92e2ea4f4a0"
+  integrity sha512-tJpwQfuBuxqZlyoJOSZcqf7OUmiYQ6MiPNmOv4KbZdXE/DdvBSSAwhos0zIlJU/AXxC8XpuO8p08bh2fIl+RKA==
+  dependencies:
+    "@jsonjoy.com/util" "^1.3.0"
+
 "@jsonjoy.com/util@^1.1.2", "@jsonjoy.com/util@^1.3.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@jsonjoy.com/util/-/util-1.8.0.tgz#3b5d276f8c7ebab0599d92a81c829e4874920ec8"
-  integrity sha512-HeR0JQNEdBozt+FrfyM5T0X3R+fIN0D+BRDkxPP5o41fTWzHfeZEqtK16aTW8haU+h+SG7XYq9PP5kobvOmkSA==
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/@jsonjoy.com/util/-/util-1.8.1.tgz#62387224001e59ded1ca3744b88b44cdb808e7f9"
+  integrity sha512-26hOMkQx15sYBpt/bCK3/S7Bep8vMy+VKGBhWQax7GXYd+mwP5mc0HNX5oqLws/JQZ9GRjn9rvXoDbcq1OC2xA==
+  dependencies:
+    "@jsonjoy.com/buffers" "^1.0.0"
 
 "@keyv/serialize@^1.1.0":
   version "1.1.0"
@@ -7704,9 +7719,9 @@ mem-fs@^4.0.0:
     vinyl-file "^5.0.0"
 
 memfs@^4.6.0:
-  version "4.28.0"
-  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.28.0.tgz#757e8510e022515fa245535846ef78fd2495864c"
-  integrity sha512-b+hDyduUpkxKXpi/fIG5e2HTbcldi0pGdbcCUzXmFJM/ImnQgnSO+qe5ssB52lTbHJfzfEkda2zhmOGK1UtaQA==
+  version "4.34.0"
+  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.34.0.tgz#02c420db08a802b5bf9a8e41df0ca281e0d5107d"
+  integrity sha512-grcxk6xaTzKOJggz8H+rjN7IMPvMZkH3VbRzjOqfGUUqCrdKStCvD77pvpArqZQzyiNB1HWRmyijzmLQlyQyfw==
   dependencies:
     "@jsonjoy.com/json-pack" "^1.0.3"
     "@jsonjoy.com/util" "^1.3.0"
