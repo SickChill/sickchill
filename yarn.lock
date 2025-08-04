@@ -2862,7 +2862,7 @@ async@^2.3.0, async@^2.6.0, async@^2.6.1:
   dependencies:
     lodash "^4.17.14"
 
-async@^3.2.3, async@~3.2.0:
+async@^3.2.3, async@^3.2.6, async@~3.2.0:
   version "3.2.6"
   resolved "https://registry.yarnpkg.com/async/-/async-3.2.6.tgz#1b0728e14929d51b85b449b7f06e27c1145e38ce"
   integrity sha512-htCUDlxyyCLMgaM3xXg0C0LW2xqfuQ6p05pCEIsXuyQ+a1koYKTuBMzRNwmybfLgvJDMd0r1LTn4+E0Ti6C2AA==
@@ -3357,9 +3357,9 @@ caseless@~0.12.0:
   integrity sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==
 
 cbor@^10.0.9:
-  version "10.0.9"
-  resolved "https://registry.yarnpkg.com/cbor/-/cbor-10.0.9.tgz#a0ef66aac57cf176e928bdc70d37ae305f2db2f8"
-  integrity sha512-KEWYehb/vJkRmigctVQLsz73Us2RNnITo/wOwQV5AtZpLGH1r2PPlsNHdsX460YuHZCyhLklbYzAOuJfOeg34Q==
+  version "10.0.10"
+  resolved "https://registry.yarnpkg.com/cbor/-/cbor-10.0.10.tgz#788f9a20a1eaac4bf7c1d07f9d6eaafb745fcfea"
+  integrity sha512-EirvzAg0G4okCsdTfTjLWHU+tToQ2V2ptO3577Vyy2GOTeVJad99uCIuDqdK7ppFRRcEuigyJY6TJ59wv5JpSg==
   dependencies:
     nofilter "^3.0.2"
 
@@ -3383,7 +3383,7 @@ chalk@^2.4.1:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-chalk@^4.0.0, chalk@^4.0.2, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2, chalk@~4.1.0, chalk@~4.1.2:
+chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2, chalk@~4.1.0, chalk@~4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
   integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
@@ -3392,9 +3392,9 @@ chalk@^4.0.0, chalk@^4.0.2, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2, chalk@~4.1
     supports-color "^7.1.0"
 
 chalk@^5.3.0, chalk@^5.4.1:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.4.1.tgz#1b48bf0963ec158dce2aacf69c093ae2dd2092d8"
-  integrity sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.5.0.tgz#67ada1df5ca809dc84c9b819d76418ddcf128428"
+  integrity sha512-1tm8DTaJhPBG3bIkVeZt1iZM9GfSX2lzOeDVZH9R9ffRHpmHvxZ/QhgQH/aDTkswQVt+YHdXAdS/In/30OjCbg==
 
 chalk@~0.4.0:
   version "0.4.0"
@@ -7064,14 +7064,13 @@ jackspeak@^3.1.2:
     "@pkgjs/parseargs" "^0.11.0"
 
 jake@^10.8.5:
-  version "10.9.2"
-  resolved "https://registry.yarnpkg.com/jake/-/jake-10.9.2.tgz#6ae487e6a69afec3a5e167628996b59f35ae2b7f"
-  integrity sha512-2P4SQ0HrLQ+fw6llpLnOaGAvN2Zu6778SJMrCUwns4fOoG9ayrTiZk3VV8sCPkVZF8ab0zksVpS8FDY5pRCNBA==
+  version "10.9.4"
+  resolved "https://registry.yarnpkg.com/jake/-/jake-10.9.4.tgz#d626da108c63d5cfb00ab5c25fadc7e0084af8e6"
+  integrity sha512-wpHYzhxiVQL+IV05BLE2Xn34zW1S223hvjtqk0+gsPrwd/8JNLXJgZZM/iPFsYc1xyphF+6M6EvdE5E9MBGkDA==
   dependencies:
-    async "^3.2.3"
-    chalk "^4.0.2"
+    async "^3.2.6"
     filelist "^1.0.4"
-    minimatch "^3.1.2"
+    picocolors "^1.1.1"
 
 jest-worker@^27.4.5:
   version "27.5.1"
@@ -7725,9 +7724,9 @@ mem-fs@^4.0.0:
     vinyl-file "^5.0.0"
 
 memfs@^4.6.0:
-  version "4.35.0"
-  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.35.0.tgz#9b1c11db861f78d9ef0eb9f4c36bd2b8c88b5da3"
-  integrity sha512-Jso9wm2YC3uIee9vhbwMpLla4BNH0oQoOOnL4Ej7v6idah8dRSiuGyP4blmosXfbAbngJkWx+8BbqknWpMYSxg==
+  version "4.36.0"
+  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.36.0.tgz#b9fa8d97ddda3cb8c06908bceec956560c33d979"
+  integrity sha512-mfBfzGUdoEw5AZwG8E965ej3BbvW2F9LxEWj4uLxF6BEh1dO2N9eS3AGu9S6vfenuQYrVjsbUOOZK7y3vz4vyQ==
   dependencies:
     "@jsonjoy.com/json-pack" "^1.0.3"
     "@jsonjoy.com/util" "^1.3.0"
