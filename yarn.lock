@@ -4309,9 +4309,9 @@ ejs@^3.1.10, ejs@^3.1.6, ejs@^3.1.8:
     jake "^10.8.5"
 
 electron-to-chromium@^1.5.173:
-  version "1.5.196"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.196.tgz#bb9bfe456d03328f3aaf6d2723e052e70396c376"
-  integrity sha512-FnnXV0dXANe7YNtKl/Af1raw+sBBUPuwcNEWfLOJyumXBvfQEBsnc0Gn+yEnVscq4x3makTtrlf4TjAo7lcXTQ==
+  version "1.5.198"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.198.tgz#ac12b539ac1bb3dece1a4cd2d8882d0349c71c55"
+  integrity sha512-G5COfnp3w+ydVu80yprgWSfmfQaYRh9DOxfhAxstLyetKaLyl55QrNjx8C38Pc/C+RaDmb1M0Lk8wPEMQ+bGgQ==
 
 emittery@^1.2.0:
   version "1.2.0"
@@ -4363,9 +4363,9 @@ enhance-visitors@^1.0.0:
     lodash "^4.13.1"
 
 enhanced-resolve@^5.17.1, enhanced-resolve@^5.17.2:
-  version "5.18.2"
-  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.18.2.tgz#7903c5b32ffd4b2143eeb4b92472bd68effd5464"
-  integrity sha512-6Jw4sE1maoRJo3q8MsSIn2onJFbLTOjY9hlx4DZXmOKvLRd1Ok2kXmAGXaafL2+ijsJZ1ClYbl/pmqr9+k4iUQ==
+  version "5.18.3"
+  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.18.3.tgz#9b5f4c5c076b8787c78fe540392ce76a88855b44"
+  integrity sha512-d4lC8xfavMeBjzGr2vECC3fsGXziXZQyJxD868h2M/mBI3PwAuODxAkLkq5HYuvrPYcUtiLzsTo8U3PgX3Ocww==
   dependencies:
     graceful-fs "^4.2.4"
     tapable "^2.2.0"
@@ -4800,9 +4800,9 @@ eslint-plugin-node@^11.1.0:
     semver "^6.1.0"
 
 eslint-plugin-prettier@^5.5.1:
-  version "5.5.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-5.5.3.tgz#1f88e9220a72ac8be171eec5f9d4e4d529b5f4a0"
-  integrity sha512-NAdMYww51ehKfDyDhv59/eIItUVzU0Io9H2E8nHNGKEeeqlnci+1gCvrHib6EmZdf6GxF+LCV5K7UC65Ezvw7w==
+  version "5.5.4"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-5.5.4.tgz#9d61c4ea11de5af704d4edf108c82ccfa7f2e61c"
+  integrity sha512-swNtI95SToIz05YINMA6Ox5R057IMAmWZ26GqPxusAp1TZzj+IdY9tXNWWD3vkF/wEqydCONcwjTFpxybBqZsg==
   dependencies:
     prettier-linter-helpers "^1.0.0"
     synckit "^0.11.7"
@@ -10176,9 +10176,9 @@ spdx-expression-parse@^3.0.0:
     spdx-license-ids "^3.0.0"
 
 spdx-license-ids@^3.0.0:
-  version "3.0.21"
-  resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-3.0.21.tgz#6d6e980c9df2b6fc905343a3b2d702a6239536c3"
-  integrity sha512-Bvg/8F5XephndSK3JffaRqdT+gyhfqIPwDHpX80tJrF8QQRYMo8sNMeaZ2Dp5+jhwKnUmIOyFFQfHRkjJm5nXg==
+  version "3.0.22"
+  resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-3.0.22.tgz#abf5a08a6f5d7279559b669f47f0a43e8f3464ef"
+  integrity sha512-4PRT4nh1EImPbt2jASOKHX7PB7I+e4IWNLvkKFDxNhJlfjbYlleYQh285Z/3mPTHSAK/AvdMmw5BNNuYH8ShgQ==
 
 spdy-transport@^3.0.0:
   version "3.0.0"
