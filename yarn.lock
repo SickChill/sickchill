@@ -1020,9 +1020,9 @@
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
 "@inquirer/external-editor@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@inquirer/external-editor/-/external-editor-1.0.0.tgz#a4b53af494049093ebc3c5c73fa949258e013cec"
-  integrity sha512-5v3YXc5ZMfL6OJqXPrX9csb4l7NlQA2doO1yynUjpUChT9hg4JcuBVP0RbsEJ/3SL/sxWEyFjT2W69ZhtoBWqg==
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@inquirer/external-editor/-/external-editor-1.0.1.tgz#ab0a82c5719a963fb469021cde5cd2b74fea30f8"
+  integrity sha512-Oau4yL24d2B5IL4ma4UpbQigkVhzPDXLoqy1ggK4gnHg/stmkffJE4oOXHXF3uz0UEpywG68KcyXsyYpA1Re/Q==
   dependencies:
     chardet "^2.1.0"
     iconv-lite "^0.6.3"
