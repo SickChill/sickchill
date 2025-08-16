@@ -1113,9 +1113,9 @@
   integrity sha512-E8Oy+08cmCf0EK/NMxpaJZmOxPqM+6iSe2S4nlSBrPZOORoDJILxtbSUEDKQyTamm/BVAhIGllOBNU79/dwf0g==
 
 "@jsonjoy.com/json-pack@^1.0.3":
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/@jsonjoy.com/json-pack/-/json-pack-1.10.1.tgz#a9e9c79605d66c83662c6b9b588bf6f85ca0e325"
-  integrity sha512-XgVydQHFY0mZXJhG8yKVFoXO1295IdKQf/YE2jDlbp+1TUVB9p/Bul34E5HcqB/bH+0Rx1HIgqmmZm57MK0dhQ==
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@jsonjoy.com/json-pack/-/json-pack-1.11.0.tgz#3d40d3d8042f5e9eeb005658a76b788e8ca84ac0"
+  integrity sha512-nLqSTAYwpk+5ZQIoVp7pfd/oSKNWlEdvTq2LzVA4r2wtWZg6v+5u0VgBOaDJuUfNOuw/4Ysq6glN5QKSrOCgrA==
   dependencies:
     "@jsonjoy.com/base64" "^1.1.2"
     "@jsonjoy.com/buffers" "^1.0.0"
@@ -1974,9 +1974,9 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@>=18":
-  version "24.2.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-24.2.1.tgz#83e41543f0a518e006594bb394e2cd961de56727"
-  integrity sha512-DRh5K+ka5eJic8CjH7td8QpYEV6Zo10gfRkjHCO3weqZHWDtAaSTFtl4+VMqOJ4N5jcuhZ9/l+yy8rVgw7BQeQ==
+  version "24.3.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-24.3.0.tgz#89b09f45cb9a8ee69466f18ee5864e4c3eb84dec"
+  integrity sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==
   dependencies:
     undici-types "~7.10.0"
 
@@ -4319,9 +4319,9 @@ ejs@^3.1.10, ejs@^3.1.6, ejs@^3.1.8:
     jake "^10.8.5"
 
 electron-to-chromium@^1.5.199:
-  version "1.5.201"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.201.tgz#bdc8f13e828e2f65d2c925ab2e8b02604928632f"
-  integrity sha512-ZG65vsrLClodGqywuigc+7m0gr4ISoTQttfVh7nfpLv0M7SIwF4WbFNEOywcqTiujs12AUeeXbFyQieDICAIxg==
+  version "1.5.203"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.203.tgz#ef7fc2f7e1b816fa4535c861d1ec1348204142b6"
+  integrity sha512-uz4i0vLhfm6dLZWbz/iH88KNDV+ivj5+2SA+utpgjKaj9Q0iDLuwk6Idhe9BTxciHudyx6IvTvijhkPvFGUQ0g==
 
 emittery@^1.2.0:
   version "1.2.0"
@@ -11911,9 +11911,9 @@ xmlchars@^2.1.1:
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
 
 xo@^1.1.0:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/xo/-/xo-1.2.1.tgz#a72c3c8c18919090d17f9062442bb2a8012cb9d4"
-  integrity sha512-CPv9yCCa8WkS8JMME5igrBQhqwOlQ+YFFsF2JP0vjQjuGdme5PLYgnDu8LnawMahtDq2PzpOWbMu2EEIxrOfBA==
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/xo/-/xo-1.2.2.tgz#06cd56a0f13200283264e1f27237abca5f68f154"
+  integrity sha512-8l565N0q5ROdSez8flcltMt1gi8OiEEYR1sGiRqc+QRrGf0Z8NEbhPkxYRrHn36iF+Hmyles79036LwuKREA5w==
   dependencies:
     "@eslint-community/eslint-plugin-eslint-comments" "^4.5.0"
     "@sindresorhus/tsconfig" "^7.0.0"
