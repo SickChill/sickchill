@@ -3182,12 +3182,12 @@ browser-process-hrtime@^1.0.0:
   integrity sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow==
 
 browserslist@^4.24.0, browserslist@^4.25.3:
-  version "4.25.3"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.25.3.tgz#9167c9cbb40473f15f75f85189290678b99b16c5"
-  integrity sha512-cDGv1kkDI4/0e5yON9yM5G/0A5u8sf5TnmdX5C9qHzI9PPu++sQ9zjm1k9NiOrf3riY4OkK0zSGqfvJyJsgCBQ==
+  version "4.25.4"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.25.4.tgz#ebdd0e1d1cf3911834bab3a6cd7b917d9babf5af"
+  integrity sha512-4jYpcjabC606xJ3kw2QwGEZKX0Aw7sgQdZCvIK9dhVSPh76BKo+C+btT1RRofH7B+8iNpEbgGNVWiLki5q93yg==
   dependencies:
-    caniuse-lite "^1.0.30001735"
-    electron-to-chromium "^1.5.204"
+    caniuse-lite "^1.0.30001737"
+    electron-to-chromium "^1.5.211"
     node-releases "^2.0.19"
     update-browserslist-db "^1.1.3"
 
@@ -3357,7 +3357,7 @@ camel-case@^4.1.2:
     pascal-case "^3.1.2"
     tslib "^2.0.3"
 
-caniuse-lite@^1.0.30001735:
+caniuse-lite@^1.0.30001737:
   version "1.0.30001737"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001737.tgz#8292bb7591932ff09e9a765f12fdf5629a241ccc"
   integrity sha512-BiloLiXtQNrY5UyF0+1nSJLXUENuhka2pzy2Fx5pGxqavdrxSCW4U6Pn/PoG3Efspi2frRbHpBV2XsrPE6EDlw==
@@ -4319,7 +4319,7 @@ ejs@^3.1.10, ejs@^3.1.6, ejs@^3.1.8:
   dependencies:
     jake "^10.8.5"
 
-electron-to-chromium@^1.5.204:
+electron-to-chromium@^1.5.211:
   version "1.5.211"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.211.tgz#749317bf9cf894c06f67980940cf8074e5eb08ca"
   integrity sha512-IGBvimJkotaLzFnwIVgW9/UD/AOJ2tByUmeOrtqBfACSbAw5b1G0XpvdaieKyc7ULmbwXVx+4e4Be8pOPBrYkw==
@@ -4330,9 +4330,9 @@ emittery@^1.2.0:
   integrity sha512-KxdRyyFcS85pH3dnU8Y5yFUm2YJdaHwcBZWrfG8o89ZY9a13/f9itbN+YG3ELbBo9Pg5zvIozstmuV8bX13q6g==
 
 emoji-regex@^10.3.0:
-  version "10.4.0"
-  resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-10.4.0.tgz#03553afea80b3975749cfcb36f776ca268e413d4"
-  integrity sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-10.5.0.tgz#be23498b9e39db476226d8e81e467f39aca26b78"
+  integrity sha512-lb49vf1Xzfx080OKA0o6l8DQQpV+6Vg95zyCJX9VB/BqKYlhG7N4wgROUUHRA+ZPUefLnteQOad7z1kT2bV7bg==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -7027,9 +7027,9 @@ isbinaryfile@^4.0.10:
   integrity sha512-iHrqe5shvBUcFbmZq9zOQHBoeOhZJu6RQGrDpBgenUm/Am+F3JM2MgQj+rK3Z601fzrL5gLZWtAPH2OBaSVcyw==
 
 isbinaryfile@^5.0.0:
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/isbinaryfile/-/isbinaryfile-5.0.5.tgz#5a29c56b97ef337394c3ec4cc304066042ae81e8"
-  integrity sha512-vh9MWXjhhblwrHlt/yutrubDuBD01kKFscyVndE2/VEeEU5aAizrzuWAsEaCjo997k+IluhN6C4jgxfS69SCIw==
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/isbinaryfile/-/isbinaryfile-5.0.6.tgz#01eac28867aeffaebaee7eaf21d1dd3a67d7c0c7"
+  integrity sha512-I+NmIfBHUl+r2wcDd6JwE9yWje/PIVY/R5/CmV8dXLZd5K+L9X2klAOwfAHNnondLXkbHyTAleQAWonpTJBTtw==
 
 isexe@^2.0.0:
   version "2.0.0"
