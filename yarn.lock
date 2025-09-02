@@ -832,9 +832,9 @@
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
 "@dual-bundle/import-meta-resolve@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@dual-bundle/import-meta-resolve/-/import-meta-resolve-4.1.0.tgz#519c1549b0e147759e7825701ecffd25e5819f7b"
-  integrity sha512-+nxncfwHM5SgAtrVzgpzJOI1ol0PkumhVo469KCf9lUi21IGcY90G98VuHm9VRrUypmAzawAHO9bs6hqeADaVg==
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@dual-bundle/import-meta-resolve/-/import-meta-resolve-4.2.1.tgz#cd0b25b3808cd9e684cd6cd549bbf8e1dcf05ee7"
+  integrity sha512-id+7YRUgoUX6CgV0DtuhirQWodeeA7Lf4i2x71JS/vtA5pRb/hIGWlw+G6MeXvsM+MXrz0VAydTGElX1rAfgPg==
 
 "@emnapi/core@^1.4.3":
   version "1.5.0"
@@ -10057,9 +10057,9 @@ smob@^1.0.0:
   integrity sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==
 
 snyk@^1.1285.1:
-  version "1.1298.3"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1298.3.tgz#cac6e7cf5bea6d96ffd17d6eae13b72aa0d55acf"
-  integrity sha512-f9cpSgLlVn36zAACEJllXxNNTKiJiSjgNpZVnPvNCz4GPRf+i12xnfcxmHi9Sjwh7Jjdn6lWVht+o2WmdxalDw==
+  version "1.1299.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1299.0.tgz#1ed11d75b5c61eb57335f05b383fb20105bc5cd5"
+  integrity sha512-kBq4sW80A8BSFzm+71SnDoD47S/1Hh/jKvKE4XbPuLnSjrJthBIT3I3I+Yi/kb29W9f6+I8MilMReoRvYCDxHQ==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
