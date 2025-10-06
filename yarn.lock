@@ -3401,9 +3401,9 @@ camel-case@^4.1.2:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001746:
-  version "1.0.30001747"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001747.tgz#2cfbbb7f1f046439ebaf34bba337ee3d3474c7e5"
-  integrity sha512-mzFa2DGIhuc5490Nd/G31xN1pnBnYMadtkyTjefPI7wzypqgCEpeWu9bJr0OnDsyKrW75zA9ZAt7pbQFmwLsQg==
+  version "1.0.30001748"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001748.tgz#628a5a9293014e58f8ba1216bb4966b04c58bee0"
+  integrity sha512-5P5UgAr0+aBmNiplks08JLw+AW/XG/SurlgZLgB1dDLfAw7EfRGxIwzPHxdSCGY/BTKDqIVyJL87cCN6s0ZR0w==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -3507,9 +3507,9 @@ chunkd@^2.0.1:
   integrity sha512-7d58XsFmOq0j6el67Ug9mHf9ELUXsQXYJBkyxhH/k+6Ke0qXRnv0kbemx+Twc6fRJ07C49lcbdgm9FL1Ei/6SQ==
 
 ci-info@^4.2.0, ci-info@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-4.3.0.tgz#c39b1013f8fdbd28cd78e62318357d02da160cd7"
-  integrity sha512-l+2bNRMiQgcfILUi33labAZYIWlH1kWDp+ecNo5iisRKrbm0xcRyCww71/YU0Fkw0mAFpz9bJayXPjey6vkmaQ==
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-4.3.1.tgz#355ad571920810b5623e11d40232f443f16f1daa"
+  integrity sha512-Wdy2Igu8OcBpI2pZePZ5oWjPC38tmDVx5WKUXKwlLYkA0ozo85sLsLvkBbBn/sZaSCMFOGZJ14fvW9t5/d7kdA==
 
 ci-parallel-vars@^1.0.1:
   version "1.0.1"
@@ -4185,9 +4185,9 @@ detect-libc@^1.0.3:
   integrity sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==
 
 detect-libc@^2.0.0:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.1.1.tgz#9f1e511ace6bb525efea4651345beac424dac7b9"
-  integrity sha512-ecqj/sy1jcK1uWrwpR67UhYrIFQ+5WlGxth34WquCbamhFA6hkkwiu37o6J5xCHdo1oixJRfVRw+ywV+Hq/0Aw==
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.1.2.tgz#689c5dcdc1900ef5583a4cb9f6d7b473742074ad"
+  integrity sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==
 
 detect-node@^2.0.4:
   version "2.1.0"
@@ -4445,9 +4445,9 @@ env-paths@^2.2.0, env-paths@^2.2.1:
   integrity sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==
 
 envinfo@^7.7.3:
-  version "7.16.0"
-  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-7.16.0.tgz#3e6335ac118b19446db940724cdd0b533aaa077f"
-  integrity sha512-LqGbDxROFEWnYpUm9KiU2xHiYbjlHZS6NZQUpm1Lg1To4p+FJLks5crEhUnw+s/ZLHzI8U0QB+oVG7e8cXckMg==
+  version "7.16.1"
+  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-7.16.1.tgz#69a0e2a7c1bd1306ab5902f7d709f81b967fdb81"
+  integrity sha512-IugkinfKJlINIece0m1tAtjn4LGNP3APqchokVe090oSI5E3mixxKuc34ZiDHO17MTPODwjHWEt7QdC8Y+xtyQ==
 
 err-code@^2.0.2:
   version "2.0.3"
