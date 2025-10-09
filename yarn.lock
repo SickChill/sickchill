@@ -1135,9 +1135,9 @@
   integrity sha512-E8Oy+08cmCf0EK/NMxpaJZmOxPqM+6iSe2S4nlSBrPZOORoDJILxtbSUEDKQyTamm/BVAhIGllOBNU79/dwf0g==
 
 "@jsonjoy.com/json-pack@^1.11.0":
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/@jsonjoy.com/json-pack/-/json-pack-1.16.0.tgz#c121497683f38286f81ce507a708b6740d1add13"
-  integrity sha512-L4/W6WRI7pXYJbPGqzYH1zJfckE/0ZP8ttNg/EPLwC+P23wSZYRmz2DNydAu2a8uc20bPlxsvWcYvDYoBJ5BYQ==
+  version "1.19.0"
+  resolved "https://registry.yarnpkg.com/@jsonjoy.com/json-pack/-/json-pack-1.19.0.tgz#247e069d5ce375a065670c8ea89b150d8c88ed8b"
+  integrity sha512-ed3bz2NTJOH+i/HoVOGDjI9FCIA1yW2xLFuB+7PABRJrs0Dj+SoUpHMhQgNe2xYZ3zTiT2jb6xp8VTvM1MBdcQ==
   dependencies:
     "@jsonjoy.com/base64" "^1.1.2"
     "@jsonjoy.com/buffers" "^1.2.0"
@@ -3049,9 +3049,9 @@ base64-js@^1.3.1:
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 baseline-browser-mapping@^2.8.9:
-  version "2.8.13"
-  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.8.13.tgz#3d49a18ee27114765401f4985bdc27018603854e"
-  integrity sha512-7s16KR8io8nIBWQyCYhmFhd+ebIzb9VKTzki+wOJXHTxTnV6+mFGH3+Jwn1zoKaY9/H9T/0BcKCZnzXljPnpSQ==
+  version "2.8.14"
+  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.8.14.tgz#b73b0ae23efcb967e30b381c09a1a001777ec927"
+  integrity sha512-GM9c0cWWR8Ga7//Ves/9KRgTS8nLausCkP3CGiFLrnwA2CDUluXgaQqvrULoR2Ujrd/mz/lkX87F5BHFsNr5sQ==
 
 batch@0.6.1:
   version "0.6.1"
@@ -3404,9 +3404,9 @@ camel-case@^4.1.2:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001746:
-  version "1.0.30001748"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001748.tgz#628a5a9293014e58f8ba1216bb4966b04c58bee0"
-  integrity sha512-5P5UgAr0+aBmNiplks08JLw+AW/XG/SurlgZLgB1dDLfAw7EfRGxIwzPHxdSCGY/BTKDqIVyJL87cCN6s0ZR0w==
+  version "1.0.30001749"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001749.tgz#21a43b923577932097fe32bcaabb6da7f4677632"
+  integrity sha512-0rw2fJOmLfnzCRbkm8EyHL8SvI2Apu5UbnQuTsJ0ClgrH8hcwFooJ1s5R0EP8o8aVrFu8++ae29Kt9/gZAZp/Q==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -5726,9 +5726,9 @@ get-symbol-description@^1.1.0:
     get-intrinsic "^1.2.6"
 
 get-tsconfig@^4.10.1, get-tsconfig@^4.8.1:
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-4.11.0.tgz#5a4acc944244a2630c2ed3318b55e6dc051d034b"
-  integrity sha512-sNsqf7XKQ38IawiVGPOoAlqZo1DMrO7TU+ZcZwi7yLl7/7S0JwmoBMKz/IkUPhSoXM0Ng3vT0yB1iCe5XavDeQ==
+  version "4.12.0"
+  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-4.12.0.tgz#cfb3a4446a2abd324a205469e8bda4e7e44cbd35"
+  integrity sha512-LScr2aNr2FbjAjZh2C6X6BxRx1/x+aTDExct/xyq2XKbYOiG5c0aK7pMsSuyc0brz3ibr/lbQiHD9jzt4lccJw==
   dependencies:
     resolve-pkg-maps "^1.0.0"
 
@@ -7476,9 +7476,9 @@ load-yaml-file@^0.2.0:
     strip-bom "^3.0.0"
 
 loader-runner@^4.2.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-4.3.0.tgz#c1b4a163b99f614830353b16755e7149ac2314e1"
-  integrity sha512-3R/1M+yS3j5ou80Me59j7F9IMs4PXs3VqRrm0TU3AbKPxlmpoY1TNscJV/oGJXo8qCatFGTfDbY6W6ipGOYXfg==
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-4.3.1.tgz#6c76ed29b0ccce9af379208299f07f876de737e3"
+  integrity sha512-IWqP2SCPhyVFTBtRcgMHdzlf9ul25NwaFx4wCEH/KjAXuuHY4yNjvPXsBokp8jCB936PyWRaPKUNh8NvylLp2Q==
 
 localforage@^1.8.1:
   version "1.10.0"
@@ -10134,9 +10134,9 @@ smob@^1.0.0:
   integrity sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==
 
 snyk@^1.1285.1:
-  version "1.1299.1"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1299.1.tgz#135c004de4d60a49419ccd16d7a166c8dc1ed4ed"
-  integrity sha512-JMVqIDy2pP2vXBDmqP3OeArrAEdnhyeK6NDfIHGbx3tC8iI9gu7MluBx3bQX9c/Xt/iN5Bfu7LuelBHWwhQgCQ==
+  version "1.1300.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1300.0.tgz#366de8a3425f7535bd56ea1747fed8b392c2df30"
+  integrity sha512-ARcMAHyCurt+yig1nrbNap4omkWtmVLCRViNJTU+4udkf0KcQ6nA9q9mInHUqdlgUAy5s3BDUNq69Mq5m88+JA==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
