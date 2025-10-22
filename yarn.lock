@@ -3050,9 +3050,9 @@ base64-js@^1.3.1:
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 baseline-browser-mapping@^2.8.9:
-  version "2.8.18"
-  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.8.18.tgz#b44b18cadddfa037ee8440dafaba4a329dfb327c"
-  integrity sha512-UYmTpOBwgPScZpS4A+YbapwWuBwasxvO/2IOHArSsAhL/+ZdmATBXTex3t+l2hXwLVYK382ibr/nKoY9GKe86w==
+  version "2.8.19"
+  resolved "https://registry.yarnpkg.com/baseline-browser-mapping/-/baseline-browser-mapping-2.8.19.tgz#8d99bb7f06bc6ea5c9c1b961e631a1713069bbe0"
+  integrity sha512-zoKGUdu6vb2jd3YOq0nnhEDQVbPcHhco3UImJrv5dSkvxTc2pl2WjOPsjZXDwPDSl5eghIMuY3R6J9NDKF3KcQ==
 
 batch@0.6.1:
   version "0.6.1"
@@ -4367,9 +4367,9 @@ ejs@^3.1.10, ejs@^3.1.6, ejs@^3.1.8:
     jake "^10.8.5"
 
 electron-to-chromium@^1.5.227:
-  version "1.5.237"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.237.tgz#eacf61cef3f6345d0069ab427585c5a04d7084f0"
-  integrity sha512-icUt1NvfhGLar5lSWH3tHNzablaA5js3HVHacQimfP8ViEBOQv+L7DKEuHdbTZ0SKCO1ogTJTIL1Gwk9S6Qvcg==
+  version "1.5.238"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.238.tgz#cdf5ee412df435174490f5aa5793df815b4ee157"
+  integrity sha512-khBdc+w/Gv+cS8e/Pbnaw/FXcBUeKrRVik9IxfXtgREOWyJhR4tj43n3amkVogJ/yeQUqzkrZcFhtIxIdqmmcQ==
 
 emittery@^1.2.0:
   version "1.2.0"
@@ -8217,9 +8217,9 @@ node-gyp@^9.0.0:
     which "^2.0.2"
 
 node-releases@^2.0.21:
-  version "2.0.25"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.25.tgz#95479437bd409231e03981c1f6abee67f5e962df"
-  integrity sha512-4auku8B/vw5psvTiiN9j1dAOsXvMoGqJuKJcR+dTdqiXEK20mMTk1UEo3HS16LeGQsVG6+qKTPM9u/qQ2LqATA==
+  version "2.0.26"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.26.tgz#fdfa272f2718a1309489d18aef4ef5ba7f5dfb52"
+  integrity sha512-S2M9YimhSjBSvYnlr5/+umAnPHE++ODwt5e2Ij6FoX45HA/s4vHdkDx1eax2pAPeAOqu4s9b7ppahsyEFdVqQA==
 
 nofilter@^3.0.2:
   version "3.1.0"
@@ -10134,9 +10134,9 @@ smob@^1.0.0:
   integrity sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==
 
 snyk@^1.1285.1:
-  version "1.1300.0"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1300.0.tgz#366de8a3425f7535bd56ea1747fed8b392c2df30"
-  integrity sha512-ARcMAHyCurt+yig1nrbNap4omkWtmVLCRViNJTU+4udkf0KcQ6nA9q9mInHUqdlgUAy5s3BDUNq69Mq5m88+JA==
+  version "1.1300.1"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1300.1.tgz#7b5c1eacd3ad59feca0cb03b23effe94964d0004"
+  integrity sha512-aBNcTwYsGmCr7XU6iBhh9bMcMNng2Bk4RhMS0p93KQpvVoJwpe0AQsNfQifHd/xrWb4DKDnYlV+f0lZmVO3Iog==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
