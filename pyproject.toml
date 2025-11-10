@@ -261,7 +261,7 @@ python = ">=3.8,<4"
 configobj = "^5.0.6"
 greenlet = {version = ">=2.0.0", allow-prereleases = true}
 ipaddress = "^1.0.23"
-jsonrpclib-pelix = "^0.4.2"
+jsonrpclib-pelix = ">=0.4.2,<1.1.0"
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
 pyOpenSSL = ">=20.0.1,<26.0.0"
