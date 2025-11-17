@@ -798,29 +798,22 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
-"@cacheable/memoize@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@cacheable/memoize/-/memoize-2.0.3.tgz#64b18a6b42f987fe8a9e9e2e4391b14cbf85680f"
-  integrity sha512-hl9wfQgpiydhQEIv7fkjEzTGE+tcosCXLKFDO707wYJ/78FVOlowb36djex5GdbSyeHnG62pomYLMuV/OT8Pbw==
+"@cacheable/memory@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@cacheable/memory/-/memory-2.0.5.tgz#318ab34664a4347fb4b21828761da9794cf518e2"
+  integrity sha512-fkiAxCvssEyJZ5fxX4tcdZFRmW9JehSTGvvqmXn6rTzG5cH6V/3C4ad8yb01vOjp2xBydHkHrgpW0qeGtzt6VQ==
   dependencies:
-    "@cacheable/utils" "^2.0.3"
-
-"@cacheable/memory@^2.0.3":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@cacheable/memory/-/memory-2.0.4.tgz#f1bddf450d2c62285eb49c175190407b7925ee28"
-  integrity sha512-cCmJKCKlT1t7hNBI1+gFCwmKFd9I4pS3zqBeNGXTSODnpa0EeDmORHY8oEMTuozfdg3cgsVh8ojLaPYb6eC7Cg==
-  dependencies:
-    "@cacheable/utils" "^2.2.0"
+    "@cacheable/utils" "^2.3.0"
     "@keyv/bigmap" "^1.1.0"
     hookified "^1.12.2"
-    keyv "^5.5.3"
+    keyv "^5.5.4"
 
-"@cacheable/utils@^2.0.3", "@cacheable/utils@^2.1.0", "@cacheable/utils@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@cacheable/utils/-/utils-2.2.0.tgz#00f454fc27f1376dc1c3c3d5b85f90ee36c9b5fb"
-  integrity sha512-7xaQayO3msdVcxXLYcLU5wDqJBNdQcPPPHr6mdTEIQI7N7TbtSVVTpWOTfjyhg0L6AQwQdq7miKdWtTDBoBldQ==
+"@cacheable/utils@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@cacheable/utils/-/utils-2.3.0.tgz#6da69bf12b90ff392d5badd3486b2a05d76fc5f7"
+  integrity sha512-qznqu6bpEei96zojGW+/IX1VXTOihznnVOK/kzyQWcqgn7SqkC3216nsX7M4BQfGwQgnxUXZ1xX7xiUoedqLPA==
   dependencies:
-    keyv "^5.5.3"
+    hashery "^1.2.0"
 
 "@csstools/css-parser-algorithms@^3.0.5":
   version "3.0.5"
@@ -3348,17 +3341,16 @@ cacache@^17.0.0:
     tar "^6.1.11"
     unique-filename "^3.0.0"
 
-cacheable@^2.1.0:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/cacheable/-/cacheable-2.1.1.tgz#b42c08c6136bd860c6a78e98d4db1747777e8875"
-  integrity sha512-LmF4AXiSNdiRbI2UjH8pAp9NIXxeQsTotpEaegPiDcnN0YPygDJDV3l/Urc0mL72JWdATEorKqIHEx55nDlONg==
+cacheable@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/cacheable/-/cacheable-2.2.0.tgz#1b63ff365016a2bae9072e2d022393170abf603e"
+  integrity sha512-LEJxRqfeomiiRd2t0uON6hxAtgOoWDfY3fugebbz+J3vDLO+SkdfFChQcOHTZhj9SYa9iwE9MGYNX72dKiOE4w==
   dependencies:
-    "@cacheable/memoize" "^2.0.3"
-    "@cacheable/memory" "^2.0.3"
-    "@cacheable/utils" "^2.1.0"
-    hookified "^1.12.2"
-    keyv "^5.5.3"
-    qified "^0.5.0"
+    "@cacheable/memory" "^2.0.5"
+    "@cacheable/utils" "^2.3.0"
+    hookified "^1.13.0"
+    keyv "^5.5.4"
+    qified "^0.5.2"
 
 call-bind-apply-helpers@^1.0.0, call-bind-apply-helpers@^1.0.1, call-bind-apply-helpers@^1.0.2:
   version "1.0.2"
@@ -3405,9 +3397,9 @@ camel-case@^4.1.2:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001754:
-  version "1.0.30001754"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001754.tgz#7758299d9a72cce4e6b038788a15b12b44002759"
-  integrity sha512-x6OeBXueoAceOmotzx3PO4Zpt4rzpeIFsSr6AAePTZxSkXiYDUmpypEl7e2+8NCd9bD7bXjqyef8CJYPC1jfxg==
+  version "1.0.30001755"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001755.tgz#c01cfb1c30f5acf1229391666ec03492f4c332ff"
+  integrity sha512-44V+Jm6ctPj7R52Na4TLi3Zri4dWUljJd+RDm+j8LtNCc/ihLCT+X1TzoOAkRETEWqjuLnh9581Tl80FvK7jVA==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -5470,13 +5462,13 @@ flat-cache@^4.0.0:
     keyv "^4.5.4"
 
 flat-cache@^6.1.13:
-  version "6.1.18"
-  resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-6.1.18.tgz#da3fea921032680ba9519bd8d12886107f92e97f"
-  integrity sha512-JUPnFgHMuAVmLmoH9/zoZ6RHOt5n9NlUw/sDXsTbROJ2SFoS2DS4s+swAV6UTeTbGH/CAsZIE6M8TaG/3jVxgQ==
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-6.1.19.tgz#20e5b201c9b181a7b773b3b150108932077d2bbf"
+  integrity sha512-l/K33newPTZMTGAnnzaiqSl6NnH7Namh8jBNjrgjprWxGmZUuxx/sJNIRaijOh3n7q7ESbhNZC+pvVZMFdeU4A==
   dependencies:
-    cacheable "^2.1.0"
+    cacheable "^2.2.0"
     flatted "^3.3.3"
-    hookified "^1.12.0"
+    hookified "^1.13.0"
 
 flat@^5.0.2:
   version "5.0.2"
@@ -6255,7 +6247,7 @@ hooker@^0.2.3, hooker@~0.2.3:
   resolved "https://registry.yarnpkg.com/hooker/-/hooker-0.2.3.tgz#b834f723cc4a242aa65963459df6d984c5d3d959"
   integrity sha512-t+UerCsQviSymAInD01Pw+Dn/usmz1sRO+3Zk1+lx8eg+WKpD2ulcwWqHHL0+aseRBr+3+vIhiG1K1JTwaIcTA==
 
-hookified@^1.12.0, hookified@^1.12.2, hookified@^1.13.0:
+hookified@^1.12.2, hookified@^1.13.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/hookified/-/hookified-1.13.0.tgz#fa7f8ab04897d77eecba52f35fe29e3d1f97dbbf"
   integrity sha512-6sPYUY8olshgM/1LDNW4QZQN0IqgKhtl/1C8koNZBJrKLBk3AZl6chQtNwpNztvfiApHMEwMHek5rv993PRbWw==
@@ -7373,7 +7365,7 @@ keyv@^4.5.4:
   dependencies:
     json-buffer "3.0.1"
 
-keyv@^5.5.3:
+keyv@^5.5.4:
   version "5.5.4"
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-5.5.4.tgz#0f26a32183a5058f93fc6e02ced6318f66e8a9ea"
   integrity sha512-eohl3hKTiVyD1ilYdw9T0OiB4hnjef89e3dMYKz+mVKDzj+5IteTseASUsOB+EU9Tf6VNTCjDePcP6wkDGmLKQ==
@@ -9270,7 +9262,7 @@ punycode@^2.1.0, punycode@^2.1.1, punycode@^2.3.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.1.tgz#027422e2faec0b25e1549c3e1bd8309b9133b6e5"
   integrity sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
 
-qified@^0.5.0:
+qified@^0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/qified/-/qified-0.5.2.tgz#fa6af2e48eb40d06d56a203a8aa1ab37bc00d2b5"
   integrity sha512-7gJ6mxcQb9vUBOtbKm5mDevbe2uRcOEVp1g4gb/Q+oLntB3HY8eBhOYRxFI2mlDFlY1e4DOSCptzxarXRvzxCA==
