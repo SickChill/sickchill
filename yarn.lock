@@ -7598,9 +7598,9 @@ lru-cache@^10.2.0:
   integrity sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==
 
 lru-cache@^11.0.0:
-  version "11.2.2"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-11.2.2.tgz#40fd37edffcfae4b2940379c0722dc6eeaa75f24"
-  integrity sha512-F9ODfyqML2coTIsQpSkRHnLSZMtkU8Q+mSfcaIyKwy58u+8k5nvAYeiNhsyMARvzNcXJ9QfWVrcPsC9e9rAxtg==
+  version "11.2.4"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-11.2.4.tgz#ecb523ebb0e6f4d837c807ad1abaea8e0619770d"
+  integrity sha512-B5Y16Jr9LB9dHVkh6ZevG+vAbOsNOYCX+sXvFWFu7B3Iz5mijW3zdbMyhsh8ANd2mSWBYdJgnqi+mL7/LrOPYg==
 
 lru-cache@^5.1.1:
   version "5.1.1"
@@ -7817,9 +7817,9 @@ mem-fs@^4.0.0:
     vinyl-file "^5.0.0"
 
 memfs@^4.43.1:
-  version "4.51.0"
-  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.51.0.tgz#f33b5eff5e2faa01bfacc02aacf23ec7d8c84c94"
-  integrity sha512-4zngfkVM/GpIhC8YazOsM6E8hoB33NP0BCESPOA6z7qaL6umPJNqkO8CNYaLV2FB2MV6H1O3x2luHHOSqppv+A==
+  version "4.51.1"
+  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.51.1.tgz#25945de4a90d1573945105e187daa9385e1bca73"
+  integrity sha512-Eyt3XrufitN2ZL9c/uIRMyDwXanLI88h/L3MoWqNY747ha3dMR9dWqp8cRT5ntjZ0U1TNuq4U91ZXK0sMBjYOQ==
   dependencies:
     "@jsonjoy.com/json-pack" "^1.11.0"
     "@jsonjoy.com/util" "^1.9.0"
