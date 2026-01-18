@@ -798,7 +798,7 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
-"@cacheable/memory@^2.0.6":
+"@cacheable/memory@^2.0.7":
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/@cacheable/memory/-/memory-2.0.7.tgz#1e066dc543b7c6797d0d230ce23d90898aca14c7"
   integrity sha512-RbxnxAMf89Tp1dLhXMS7ceft/PGsDl1Ip7T20z5nZ+pwIAsQ1p2izPjVG69oCLv/jfQ7HDPHTWK0c9rcAWXN3A==
@@ -808,7 +808,7 @@
     hookified "^1.14.0"
     keyv "^5.5.5"
 
-"@cacheable/utils@^2.3.2", "@cacheable/utils@^2.3.3":
+"@cacheable/utils@^2.3.3":
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/@cacheable/utils/-/utils-2.3.3.tgz#56f0c0a3b2cad85f32ee2de3c73ff05d455e2c6c"
   integrity sha512-JsXDL70gQ+1Vc2W/KUFfkAJzgb4puKwwKehNLuB+HrNKWf91O736kGfxn4KujXCCSuh6mRRL4XEB0PkAFjWS0A==
@@ -3488,16 +3488,16 @@ cacache@^17.0.0:
     tar "^6.1.11"
     unique-filename "^3.0.0"
 
-cacheable@^2.2.0:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/cacheable/-/cacheable-2.3.1.tgz#db374342fbb48b032d57a2a7d296555be4ad574e"
-  integrity sha512-yr+FSHWn1ZUou5LkULX/S+jhfgfnLbuKQjE40tyEd4fxGZVMbBL5ifno0J0OauykS8UiCSgHi+DV/YD+rjFxFg==
+cacheable@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/cacheable/-/cacheable-2.3.2.tgz#89800b4864c3ab8b23dae6dca8b6232cbf49b299"
+  integrity sha512-w+ZuRNmex9c1TR9RcsxbfTKCjSL0rh1WA5SABbrWprIHeNBdmyQLSYonlDy9gpD+63XT8DgZ/wNh1Smvc9WnJA==
   dependencies:
-    "@cacheable/memory" "^2.0.6"
-    "@cacheable/utils" "^2.3.2"
-    hookified "^1.14.0"
+    "@cacheable/memory" "^2.0.7"
+    "@cacheable/utils" "^2.3.3"
+    hookified "^1.15.0"
     keyv "^5.5.5"
-    qified "^0.5.3"
+    qified "^0.6.0"
 
 call-bind-apply-helpers@^1.0.0, call-bind-apply-helpers@^1.0.1, call-bind-apply-helpers@^1.0.2:
   version "1.0.2"
@@ -3866,9 +3866,9 @@ commander@^8.3.0:
   integrity sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==
 
 comment-parser@^1.4.1:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-1.4.3.tgz#abd9076d8f83a809c573c304e2e1eba09d2362c4"
-  integrity sha512-qvEp8Hk/uxsIbBe2gnu87CrP2wSFLzG0fIgcxF27DiBlD12Nlyydt91T4KQNiRxfebMxU5QEoWQBNiha+A9I3A==
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-1.4.4.tgz#45b16f7d9de769b1271ba22e8a3ecf2bb0873c63"
+  integrity sha512-0D6qSQ5IkeRrGJFHRClzaMOenMeT0gErz3zIw3AprKMqhRN6LNU2jQOdkPG/FZ+8bCgXE1VidrgSzlBBDZRr8A==
 
 common-ancestor-path@^1.0.1:
   version "1.0.1"
@@ -5443,11 +5443,11 @@ figures@^6.1.0:
     is-unicode-supported "^2.0.0"
 
 file-entry-cache@^11.1.1:
-  version "11.1.1"
-  resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-11.1.1.tgz#728918c624dbeb09372276837ea0c413ec78806b"
-  integrity sha512-TPVFSDE7q91Dlk1xpFLvFllf8r0HyOMOlnWy7Z2HBku5H3KhIeOGInexrIeg2D64DosVB/JXkrrk6N/7Wriq4A==
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-11.1.2.tgz#5b2014aac2259b5591ae6fd7f6d1ed2153545abe"
+  integrity sha512-N2WFfK12gmrK1c1GXOqiAJ1tc5YE+R53zvQ+t5P8S5XhnmKYVB5eZEiLNZKDSmoG8wqqbF9EXYBBW/nef19log==
   dependencies:
-    flat-cache "^6.1.19"
+    flat-cache "^6.1.20"
 
 file-entry-cache@^8.0.0:
   version "8.0.0"
@@ -5598,14 +5598,14 @@ flat-cache@^4.0.0:
     flatted "^3.2.9"
     keyv "^4.5.4"
 
-flat-cache@^6.1.19:
-  version "6.1.19"
-  resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-6.1.19.tgz#20e5b201c9b181a7b773b3b150108932077d2bbf"
-  integrity sha512-l/K33newPTZMTGAnnzaiqSl6NnH7Namh8jBNjrgjprWxGmZUuxx/sJNIRaijOh3n7q7ESbhNZC+pvVZMFdeU4A==
+flat-cache@^6.1.20:
+  version "6.1.20"
+  resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-6.1.20.tgz#9db7bf5278c4ca29c92492dcb0c6a52a7017ff83"
+  integrity sha512-AhHYqwvN62NVLp4lObVXGVluiABTHapoB57EyegZVmazN+hhGhLTn3uZbOofoTw4DSDvVCadzzyChXhOAvy8uQ==
   dependencies:
-    cacheable "^2.2.0"
+    cacheable "^2.3.2"
     flatted "^3.3.3"
-    hookified "^1.13.0"
+    hookified "^1.15.0"
 
 flat@^5.0.2:
   version "5.0.2"
@@ -6391,7 +6391,7 @@ hooker@^0.2.3, hooker@~0.2.3:
   resolved "https://registry.yarnpkg.com/hooker/-/hooker-0.2.3.tgz#b834f723cc4a242aa65963459df6d984c5d3d959"
   integrity sha512-t+UerCsQviSymAInD01Pw+Dn/usmz1sRO+3Zk1+lx8eg+WKpD2ulcwWqHHL0+aseRBr+3+vIhiG1K1JTwaIcTA==
 
-hookified@^1.13.0, hookified@^1.14.0:
+hookified@^1.13.0, hookified@^1.14.0, hookified@^1.15.0:
   version "1.15.0"
   resolved "https://registry.yarnpkg.com/hookified/-/hookified-1.15.0.tgz#d51db9fe134b8bd19c1aa88f9fcd7878995e4b66"
   integrity sha512-51w+ZZGt7Zw5q7rM3nC4t3aLn/xvKDETsXqMczndvwyVQhAHfUmUuFBRFcos8Iyebtk7OAE9dL26wFNzZVVOkw==
@@ -7944,9 +7944,9 @@ mem-fs@^4.0.0:
     vinyl-file "^5.0.0"
 
 memfs@^4.43.1:
-  version "4.52.0"
-  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.52.0.tgz#6f9be8a82d39f112f577dcf8b088ef9119f3a917"
-  integrity sha512-dG5ZY1wUCPWhtl4M2mlc7Wx4OrMGtiI79axnScxwDoPR/25biQYrYm21OpKyZcnKv8pvWaX95SRtZgecZ84gFg==
+  version "4.53.0"
+  resolved "https://registry.yarnpkg.com/memfs/-/memfs-4.53.0.tgz#93eb74dd4f748a9140756bf270a24d2e622f31f2"
+  integrity sha512-TKFRsKjJA30iAc9ZeGH/77v5nLcNUD0GBOL/tAj4O63RPIKNxGDZ54ZyuQM4KjEKEj7gfer/Ta1xAzB+HrEnrA==
   dependencies:
     "@jsonjoy.com/json-pack" "^1.11.0"
     "@jsonjoy.com/util" "^1.9.0"
@@ -9445,12 +9445,12 @@ pvutils@^1.1.3:
   resolved "https://registry.yarnpkg.com/pvutils/-/pvutils-1.1.5.tgz#84b0dea4a5d670249aa9800511804ee0b7c2809c"
   integrity sha512-KTqnxsgGiQ6ZAzZCVlJH5eOjSnvlyEgx1m8bkRJfOhmGRqfo5KLvmAlACQkrjEtOQ4B7wF9TdSLIs9O90MX9xA==
 
-qified@^0.5.3:
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/qified/-/qified-0.5.3.tgz#2d01866eb99c8de3a18965a4a809d9349e26210a"
-  integrity sha512-kXuQdQTB6oN3KhI6V4acnBSZx8D2I4xzZvn9+wFLLFCoBNQY/sFnCW6c43OL7pOQ2HvGV4lnWIXNmgfp7cTWhQ==
+qified@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/qified/-/qified-0.6.0.tgz#a9c33f51fa37d03003065638bb7dff45d7a81297"
+  integrity sha512-tsSGN1x3h569ZSU1u6diwhltLyfUWDp3YbFHedapTmpBl0B3P6U3+Qptg7xu+v+1io1EwhdPyyRHYbEw0KN2FA==
   dependencies:
-    hookified "^1.13.0"
+    hookified "^1.14.0"
 
 qs@^6.4.0, qs@~6.14.0:
   version "6.14.1"
