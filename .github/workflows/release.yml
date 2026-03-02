@@ -45,7 +45,7 @@ jobs:
           poetry build
         env:
           YARN_VERSION_GIT_TAG: ""
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Result
           path: |
