@@ -874,9 +874,9 @@
     tslib "^2.4.0"
 
 "@eslint-community/eslint-plugin-eslint-comments@^4.5.0":
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/@eslint-community/eslint-plugin-eslint-comments/-/eslint-plugin-eslint-comments-4.6.0.tgz#2b38e666f7f1680fbe22c76c62ddf0cad12a7866"
-  integrity sha512-2EX2bBQq1ez++xz2o9tEeEQkyvfieWgUFMH4rtJJri2q0Azvhja3hZGXsjPXs31R4fQkZDtWzNDDK2zQn5UE5g==
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@eslint-community/eslint-plugin-eslint-comments/-/eslint-plugin-eslint-comments-4.7.0.tgz#71be90d9057a89982070d8b0bfc77b9f8a27e049"
+  integrity sha512-wxyEBQOUAXp4HjnYWucQy7iq58RR1WXJhm6bjw+sGlMDEKJmzJVe2MLnd6iazmQFYGOxoUrw27EsJfpoqiI7tQ==
   dependencies:
     escape-string-regexp "^4.0.0"
     ignore "^7.0.5"
