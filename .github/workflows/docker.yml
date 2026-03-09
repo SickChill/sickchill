@@ -42,7 +42,7 @@ jobs:
           cat /tmp/buildkitd.toml
       - name: Docker meta
         id: docker
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             ${{ github.repository }}
