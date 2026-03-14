@@ -7853,9 +7853,9 @@ lru-cache@^10.2.0:
   integrity sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==
 
 lru-cache@^11.0.0:
-  version "11.2.6"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-11.2.6.tgz#356bf8a29e88a7a2945507b31f6429a65a192c58"
-  integrity sha512-ESL2CrkS/2wTPfuend7Zhkzo2u0daGJ/A2VucJOgQ/C48S/zB8MMeMHSGKYpXhIjbPxfuezITkaBH1wqv00DDQ==
+  version "11.2.7"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-11.2.7.tgz#9127402617f34cd6767b96daee98c28e74458d35"
+  integrity sha512-aY/R+aEsRelme17KGQa/1ZSIpLpNYYrhcrepKTZgE+W3WM16YMCaPwOHLHsmopZHELU0Ojin1lPVxKR0MihncA==
 
 lru-cache@^5.1.1:
   version "5.1.1"
@@ -9555,9 +9555,9 @@ prop-types@^15.8.1:
     react-is "^16.13.1"
 
 prototype-properties@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/prototype-properties/-/prototype-properties-5.0.0.tgz#784e6ab88e0dd8c65e4666ef28e6bb7a8f0f6a58"
-  integrity sha512-uCWE2QqnGlwvvJXTwiHTPTyHE62+zORO5hpFWhAwBGDtEtTmNZZleNLJDoFsqHCL4p/CeAP2Q1uMKFUKALuRGQ==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/prototype-properties/-/prototype-properties-5.1.0.tgz#ece5ed9740d15e972d7ffff369cca75e5f19b3d6"
+  integrity sha512-lq/vK1+nYV/bbjZ70pDmaTzin143xX9hVAU5CrsNQL57A8j4Q6AfjsY8kRFoUpCBncaUdfkz9MdsQ8PFtiKrUQ==
 
 proxy-addr@~2.0.7:
   version "2.0.7"
