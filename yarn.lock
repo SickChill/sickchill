@@ -3668,9 +3668,9 @@ camel-case@^4.1.2:
     tslib "^2.0.3"
 
 caniuse-lite@^1.0.30001782:
-  version "1.0.30001784"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001784.tgz#bdf9733a0813ccfb5ab4d02f2127e62ee4c6b718"
-  integrity sha512-WU346nBTklUV9YfUl60fqRbU5ZqyXlqvo1SgigE1OAXK5bFL8LL9q1K7aap3N739l4BvNqnkm3YrGHiY9sfUQw==
+  version "1.0.30001785"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001785.tgz#31f8e3ec1059430d2a7b04fff44c27672c4482df"
+  integrity sha512-blhOL/WNR+Km1RI/LCVAvA73xplXA7ZbjzI4YkMK9pa6T/P3F2GxjNpEkyw5repTw9IvkyrjyHpwjnhZ5FOvYQ==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -9880,9 +9880,9 @@ regjsparser@^0.12.0:
     jsesc "~3.0.2"
 
 regjsparser@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.13.0.tgz#01f8351335cf7898d43686bc74d2dd71c847ecc0"
-  integrity sha512-NZQZdC5wOE/H3UT28fVGL+ikOZcEzfMGk/c3iN9UGxzWHMa1op7274oyiUVrAG4B2EuFhus8SvkaYnhvW92p9Q==
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.13.1.tgz#0593cbacb27527927692030928ae4d3b878d6f8d"
+  integrity sha512-dLsljMd9sqwRkby8zhO1gSg3PnJIBFid8f4CQj/sXx+7cKx+E7u0PKhZ+U4wmhx7EfmtvnA318oVaIkAB1lRJw==
   dependencies:
     jsesc "~3.1.0"
 
