@@ -12,7 +12,7 @@ $(document).ready(() => {
             getSortData: {
                 name(itemElement) {
                     const name = $(itemElement).attr('data-name') || '';
-                    const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                    const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
                     return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase();
                 },
                 rating: '[data-rating] parseInt',
