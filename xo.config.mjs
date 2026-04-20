@@ -3,11 +3,11 @@ import globals from 'globals';
 const xoConfig = [
     {
         ignores: [
-            'core.min.js',
-            'vendor.min.js',
+            '**/core.min.js',
+            '**/vendor.min.js',
             'lib/**/*',
             'Gruntfile.js',
-            'sickchill/gui/slick/js/lib/*',
+            'sickchill/gui/slick/js/lib/**',
             'tests/js/index.js',
             'frontend/static/**',
             'frontend/movies/static/**',
