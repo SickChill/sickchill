@@ -6,7 +6,7 @@
 # -v /etc/localtime:/etc/localtime:ro
 # -p 8080:8081 sickchill/sickchill
 
-FROM --platform=$TARGETPLATFORM python:3.10-slim-bullseye as base
+FROM --platform=$TARGETPLATFORM python:3.11-slim-bookworm as base
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
@@ -111,6 +111,10 @@ ENV HOME=/data
 WORKDIR /data
 
 VOLUME /data /downloads /tv
+
+# Add startup logging to debug
+CMD ["bash", "-c", "echo 'Starting SickChill...' && sickchill --nolaunch --datadir /data --port 8081 || (echo 'SickChill failed to start'; sleep 10; exit 1)"]
+EXPOSE 8081
 
 CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
 EXPOSE 8081
