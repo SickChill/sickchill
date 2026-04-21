@@ -39,7 +39,9 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 
 RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 
-RUN sed -i -e "s/ main/ main contrib non-free/gm" /etc/apt/sources.list
+# RUN sed -i -e "s/ main/ main contrib non-free/gm" /etc/apt/sources.list
+RUN mkdir -p /etc/apt/sources.list.d && \
+    echo "deb http://deb.debian.org/debian bookworm main contrib non-free" > /etc/apt/sources.list.d/debian.sources
 RUN apt-get update -qq && apt-get upgrade -yqq && \
  apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
  apt-get clean -yqq && \
