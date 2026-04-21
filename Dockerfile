@@ -41,7 +41,7 @@ RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 
 RUN sed -i -e "s/ main/ main contrib non-free/gm" /etc/apt/sources.list
 RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar && \
+ apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
  apt-get clean -yqq && \
  rm -rf /var/lib/apt/lists/*
 
@@ -114,10 +114,9 @@ VOLUME /data /downloads /tv
 
 # Add startup logging to debug
 CMD ["bash", "-c", "echo 'Starting SickChill...' && sickchill --nolaunch --datadir /data --port 8081 || (echo 'SickChill failed to start'; sleep 10; exit 1)"]
-EXPOSE 8081
-
-CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
+# CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
 EXPOSE 8081
 
 HEALTHCHECK --interval=5m --timeout=3s \
- CMD bash -c 'if [ $(curl -f http://localhost:8081/ui/get_messages -s) == "{}" ]; then echo "sickchill is alive"; elif [ $(curl -f https://localhost:8081/ui/get_messages -s) == "{}" ]; then echo "sickchill is alive"; else echo 1; fi'
+# CMD bash -c 'if [ $(curl -f http://localhost:8081/ui/get_messages -s) == "{}" ]; then echo "sickchill is alive"; elif [ $(curl -f https://localhost:8081/ui/get_messages -s) == "{}" ]; then echo "sickchill is alive"; else echo 1; fi'
+CMD bash -c '[ "$(curl -fs http://localhost:8081/ui/get_messages)" = "{}" ] && echo "sickchill is alive" || exit 1'
