@@ -42,18 +42,20 @@ RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 # RUN sed -i -e "s/ main/ main contrib non-free/gm" /etc/apt/sources.list
 RUN mkdir -p /etc/apt/sources.list.d && \
     echo "deb http://deb.debian.org/debian bookworm main contrib non-free" > /etc/apt/sources.list.d/debian.sources
-RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
- apt-get clean -yqq && \
- rm -rf /var/lib/apt/lists/*
-
-FROM base as builder
 RUN rm -f /etc/apt/sources.list.d/debian.sources && \
     apt-get update -qq && \
     apt-get upgrade -yqq && \
     apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
     apt-get clean -yqq && \
     rm -rf /var/lib/apt/lists/*
+
+FROM base as builder
+
+RUN apt-get update -qq && apt-get upgrade -yqq && \
+     apt-get install -yqq build-essential python3-distutils-extra python3-dev \
+     libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev findutils sed && \
+     apt-get clean -yqq && \
+     rm -rf /var/lib/apt/lists/*
 
 ENV HOME="/root/"
 ENV CARGO_HOME="/root/.cargo"
