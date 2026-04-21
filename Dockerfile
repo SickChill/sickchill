@@ -41,8 +41,7 @@ RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 
 # RUN sed -i -e "s/ main/ main contrib non-free/gm" /etc/apt/sources.list
 RUN mkdir -p /etc/apt/sources.list.d && \
-    echo "deb http://deb.debian.org/debian bookworm main contrib non-free" > /etc/apt/sources.list.d/debian.sources
-RUN rm -f /etc/apt/sources.list.d/debian.sources && \
+    echo "deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware" > /etc/apt/sources.list.d/debian.sources && \
     apt-get update -qq && \
     apt-get upgrade -yqq && \
     apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
