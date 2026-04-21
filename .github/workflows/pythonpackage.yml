@@ -46,7 +46,7 @@ jobs:
           key: ${{ github.workflow }}-environment
       - name: Create buildkitd config
         run: |
-          echo 'experimantal = true' > /tmp/buildkitd.toml
+          echo 'experimental = true' > /tmp/buildkitd.toml
           echo 'debug = true' >> /tmp/buildkitd.toml
           echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
           # echo '[worker.oci]' >> /tmp/buildkitd.toml
@@ -80,7 +80,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ 3.8, 3.9, "3.10", "3.11" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
         experimental: [ false ]
         include:
           - os: windows-latest
