@@ -48,11 +48,12 @@ RUN apt-get update -qq && apt-get upgrade -yqq && \
  rm -rf /var/lib/apt/lists/*
 
 FROM base as builder
-RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq build-essential python3-distutils-extra python3-dev \
- libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev findutils sed && \
- apt-get clean -yqq && \
- rm -rf /var/lib/apt/lists/*
+RUN rm -f /etc/apt/sources.list.d/debian.sources && \
+    apt-get update -qq && \
+    apt-get upgrade -yqq && \
+    apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
+    apt-get clean -yqq && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV HOME="/root/"
 ENV CARGO_HOME="/root/.cargo"
