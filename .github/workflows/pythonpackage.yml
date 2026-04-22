@@ -127,7 +127,10 @@ jobs:
         run: poetry run poe pytest
       - if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
         name: Coverage
-        run: poetry run poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: OS
   Test-Docker:
     needs: [ Environment, Test ]
     runs-on: ubuntu-22.04

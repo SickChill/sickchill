@@ -63,7 +63,6 @@ flake8-commas = "^2.0.0"
 flake8-quotes = "^3.3.0"
 flake8-docstrings = "^1.6.0"
 flake9 = "^3.8.3"
-codecov = "^2.1.12"
 pytest = ">=7.0.1,<9.0.0,!=8.2.0"
 isort = "^5.10.1"
 poethepoet = ">=0.27.0,<0.31"
@@ -200,7 +199,6 @@ test_providers = {cmd = "pytest tests/sickchill_tests/providers/torrent/test_par
 crowdin_upload = "crowdin-cli-py upload sources -c .github/crowdin.yml"
 crowdin_download = "crowdin-cli-py download -c .github/crowdin.yml"
 po2json = "po2json --format jed "
-codecov = "codecov"
 
 lint = ["_black", "_isort", "flake8"]
 format = ["black", "isort", "flake8"]
