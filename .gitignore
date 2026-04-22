@@ -45,6 +45,7 @@ Session.vim
 .ropeproject/*
 *.iml
 .idea
+.vscode
 *.ipr
 .settings/*
 

@@ -32,6 +32,8 @@ if "subtitulamos" not in subliminal.provider_manager.names():
     subliminal.provider_manager.register("subtitulamos = sickchill.providers.subtitle.subtitulamos:SubtitulamosProvider")
 if "bsplayer" not in subliminal.provider_manager.names():
     subliminal.provider_manager.register("bsplayer = sickchill.providers.subtitle.bsplayer:BSPlayerProvider")
+if "opensubtitlescom" not in subliminal.provider_manager.names():
+    subliminal.provider_manager.register("opensubtitlescom = subliminal.providers.opensubtitlescom:OpenSubtitlesComProvider")
 
 subliminal.region.configure("dogpile.cache.memory")
 
@@ -40,7 +42,8 @@ PROVIDER_URLS = {
     "bsplayer": "http://bsplayer-subtitles.com",
     "itasa": "http://www.italiansubs.net/",
     "napiprojekt": "http://www.napiprojekt.pl",
-    "opensubtitles": "https://www.opensubtitles.com",
+    "opensubtitles": "https://www.opensubtitles.org",
+    "opensubtitlescom": "https://www.opensubtitles.com",
     "podnapisi": "http://www.podnapisi.net",
     "subtitulamos": "https://www.subtitulamos.tv",
     "wizdom": "http://wizdom.xyz",
@@ -74,6 +77,7 @@ class SubtitleProviderPool(object):
                 "addic7ed": {"username": settings.ADDIC7ED_USER, "password": settings.ADDIC7ED_PASS},
                 "itasa": {"username": settings.ITASA_USER, "password": settings.ITASA_PASS},
                 "opensubtitles": {"username": settings.OPENSUBTITLES_USER, "password": settings.OPENSUBTITLES_PASS},
+                "opensubtitlescom": {"username": settings.OPENSUBTITLESCOM_USER, "password": settings.OPENSUBTITLESCOM_PASS},
                 "subscenter": {"username": settings.SUBSCENTER_USER, "password": settings.SUBSCENTER_PASS},
             }
 
@@ -365,7 +369,7 @@ class SubtitlesFinder(object):
             return
 
         if not enabled_service_list():
-            logger.warning("Not enough services selected. At least 1 service is required to " "search subtitles in the background")
+            logger.warning("Not enough services selected. At least 1 service is required to search subtitles in the background")
             return
 
         self.amActive = True

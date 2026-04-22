@@ -700,6 +700,9 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.OPENSUBTITLES_USER = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_username", censor_log=True)
         settings.OPENSUBTITLES_PASS = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_password", censor_log=True)
 
+        settings.OPENSUBTITLESCOM_USER = check_setting_str(settings.CFG, "Subtitles", "opensubtitlescom_username", censor_log=True)
+        settings.OPENSUBTITLESCOM_PASS = check_setting_str(settings.CFG, "Subtitles", "opensubtitlescom_password", censor_log=True)
+
         settings.SUBSCENTER_USER = check_setting_str(settings.CFG, "Subtitles", "subscenter_username", censor_log=True)
         settings.SUBSCENTER_PASS = check_setting_str(settings.CFG, "Subtitles", "subscenter_password", censor_log=True)
 
@@ -1658,6 +1661,8 @@ def save_config():
                 "itasa_password": helpers.encrypt(settings.ITASA_PASS, settings.ENCRYPTION_VERSION),
                 "opensubtitles_username": settings.OPENSUBTITLES_USER,
                 "opensubtitles_password": helpers.encrypt(settings.OPENSUBTITLES_PASS, settings.ENCRYPTION_VERSION),
+                "opensubtitlescom_username": settings.OPENSUBTITLESCOM_USER,
+                "opensubtitlescom_password": helpers.encrypt(settings.OPENSUBTITLESCOM_PASS, settings.ENCRYPTION_VERSION),
                 "subscenter_username": settings.SUBSCENTER_USER,
                 "subscenter_password": helpers.encrypt(settings.SUBSCENTER_PASS, settings.ENCRYPTION_VERSION),
             },

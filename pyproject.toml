@@ -145,6 +145,7 @@ ignore = [
     "D103",
     "D104",
     "D106",
+    "E402",
     "S101",
     "PT009",
     "PT017"
@@ -182,6 +183,36 @@ exclude = 'contrib/scmaintools|\.venv|venv|\.git|\.hg|\.mypy_cache|\.tox|_build|
 line-length = 160
 builtins = ["_"]
 target-version = 'py310'
+
+[tool.ruff.lint]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D106",
+    "D200",
+    "D205",
+    "D400",
+    "D401",
+    "D403",
+    "D406",
+    "D407",
+    "E402",
+    "PT009",
+    "PT017",
+    "S101"
+]
+exclude = [
+    ".eggs",
+    ".git",
+    "__pycache__",
+    "__init__.py",
+    "docs/source/conf.py",
+    "build",
+    "dist",
+]
 
 [tool.poe.tasks]
 pytest = "pytest"
@@ -268,7 +299,7 @@ pyOpenSSL = ">=20.0.1,<26.0.0"
 python-dateutil = "^2.8.1"
 python-twitter = "^3.5"
 rarfile = "^4.0"
-subliminal = "^2.1.0"
+subliminal = "^2.3.0"
 tmdbsimple = "^2.8.0"
 tornado = "^6.3.2"
 tvdbsimple = "^1.0.6"
@@ -288,7 +319,7 @@ deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = ">=2021.3.18,<2025.0.0"
-packaging = ">=20.9,<26.0"
+packaging = ">=24.2,<26.0"
 timeago = "^1.0.15"
 SQLAlchemy = ">=2.0.0,<3.0.0"
 python-slugify = ">=4.0.1,<9.0.0"
