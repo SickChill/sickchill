@@ -8,7 +8,7 @@ $.tablesorter.addParser({
             return s.replace(_('Loading...'), '000');
         }
 
-        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+        const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
         return latinize(metaToBool('settings.SORT_ARTICLE') ? (s || '') : (s || '').replace(regex, '').normalize('NFC'));
     },
     type: 'text',
