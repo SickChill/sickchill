@@ -222,14 +222,12 @@
         newOptions.field.addClass('fileBrowserField');
         if (newOptions.showBrowseButton) {
             // Append the browse button and give it a click behaviour
-            newOptions.field.after(
-                $('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser">').on('click', function () {
-                    const optionsWithInitialDirectory = $.extend({}, newOptions, {initialDirectory: newOptions.field.val() || (newOptions.key && path) || ''});
-                    $(this).nFileBrowser(callback, optionsWithInitialDirectory);
+            newOptions.field.after($('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser">').on('click', function () {
+                const optionsWithInitialDirectory = $.extend({}, newOptions, {initialDirectory: newOptions.field.val() || (newOptions.key && path) || ''});
+                $(this).nFileBrowser(callback, optionsWithInitialDirectory);
 
-                    return false;
-                }),
-            );
+                return false;
+            }));
         }
 
         return newOptions.field;
