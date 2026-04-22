@@ -26,7 +26,7 @@ env:
   DOCKER_CONTAINER_NAME: sickchill_test
   TARGET_PLATFORMS: "linux/amd64,linux/arm64"
   CRYPTOGRAPHY_DONT_BUILD_RUST: 1
-  PYTHON_TEST_VERSION: "3.11"
+  PYTHON_TEST_VERSION: "3.13"
 
 defaults:
   run:
@@ -67,14 +67,14 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
         experimental: [ false ]
         include:
           - os: windows-latest
-            python-version: "3.11"
+            python-version: "3.13"
             experimental: false
           - os: macos-latest
-            python-version: "3.11"
+            python-version: "3.13"
             experimental: false
       fail-fast: true
     continue-on-error: ${{ matrix.experimental }}
