@@ -116,4 +116,4 @@ CMD ["sickchill", "--nolaunch", "--datadir", "/data", "--port", "8081"]
 EXPOSE 8081
 
 HEALTHCHECK --interval=5m --timeout=3s \
- CMD bash -c 'if [ $(curl -f http://localhost:8081/ui/get_messages -s) == "{}" ]; then echo "sickchill is alive"; elif [ $(curl -f https://localhost:8081/ui/get_messages -s) == "{}" ]; then echo "sickchill is alive"; else echo 1; fi'
+ CMD bash -c 'if [ "$(curl -f http://localhost:8081/ui/get_messages -s)" == "{}" ]; then echo "sickchill is alive"; elif [ "$(curl -fk https://localhost:8081/ui/get_messages -s)" == "{}" ]; then echo "sickchill is alive"; else echo "sickchill is not responding" && exit 1; fi'
