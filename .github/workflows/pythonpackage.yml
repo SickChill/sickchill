@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SLEEP: 60
+  SLEEP: 120
   DOCKER_BUILDKIT: '1'
   DOCKER_TEST_TAG: sickchill/sickchill:test
   DOCKER_CONTAINER_NAME: sickchill_test
@@ -46,7 +46,7 @@ jobs:
           key: ${{ github.workflow }}-environment
       - name: Create buildkitd config
         run: |
-          echo 'experimantal = true' > /tmp/buildkitd.toml
+          echo 'experimental = true' > /tmp/buildkitd.toml
           echo 'debug = true' >> /tmp/buildkitd.toml
           echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
           # echo '[worker.oci]' >> /tmp/buildkitd.toml
@@ -80,7 +80,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ 3.8, 3.9, "3.10", "3.11" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
         experimental: [ false ]
         include:
           - os: windows-latest
@@ -174,11 +174,30 @@ jobs:
       - name: Test Docker Image
         run: |
           docker run -d --rm -p 8081:8081 --name ${{ env.DOCKER_CONTAINER_NAME }} ${{ env.DOCKER_TEST_TAG }}
-          echo "Waiting ${{ env.SLEEP }} seconds for the container to start..." && sleep ${{ env.SLEEP }}
+
+          echo "Waiting for container to become ready (up to ${{ env.SLEEP }}s)..."
+          for i in $(seq 1 ${{ env.SLEEP }}); do
+            RESPONSE="$(curl -s http://localhost:8081/ui/get_messages 2>/dev/null || true)"
+            if [ "$RESPONSE" == "{}" ]; then
+              echo "Container ready after ${i}s"
+              break
+            fi
+            if [ "$i" -eq "${{ env.SLEEP }}" ]; then
+              echo "Container failed to become ready after ${{ env.SLEEP }}s"
+              echo "Last response: $RESPONSE"
+              docker logs ${{ env.DOCKER_CONTAINER_NAME }}
+              exit 1
+            fi
+            sleep 1
+          done
+
           echo "Checking if container is alive..."
-          [ $(curl http://localhost:8081/ui/get_messages -s) == "{}" ] && echo "Success!" || (echo "Failed" && exit 1)
+          RESPONSE="$(curl -s http://localhost:8081/ui/get_messages)"
+          [ "$RESPONSE" == "{}" ] && echo "Success!" || (echo "Failed - got: $RESPONSE" && docker logs ${{ env.DOCKER_CONTAINER_NAME }} && exit 1)
+
           echo "Checking if we have a working home page..."
-          $(curl http://localhost:8081/home/ -s | grep -q "site-notification-modal") && echo "Success!" || (echo "Failed" && exit 1)
+          curl http://localhost:8081/home/ -s | grep -q "site-notification-modal" && echo "Success!" || (echo "Failed" && docker logs ${{ env.DOCKER_CONTAINER_NAME }} && exit 1)
+
           echo "Stopping and removing container..."
           docker stop ${{ env.DOCKER_CONTAINER_NAME }}
   Deploy:
