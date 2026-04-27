@@ -699,7 +699,6 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.OPENSUBTITLES_USER = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_username", censor_log=True)
         settings.OPENSUBTITLES_PASS = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_password", censor_log=True)
-
         settings.OPENSUBTITLESCOM_USER = check_setting_str(settings.CFG, "Subtitles", "opensubtitlescom_username", censor_log=True)
         settings.OPENSUBTITLESCOM_PASS = check_setting_str(settings.CFG, "Subtitles", "opensubtitlescom_password", censor_log=True)
 

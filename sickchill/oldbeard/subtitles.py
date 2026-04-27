@@ -35,6 +35,7 @@ if "bsplayer" not in subliminal.provider_manager.names():
 if "opensubtitlescom" not in subliminal.provider_manager.names():
     subliminal.provider_manager.register("opensubtitlescom = subliminal.providers.opensubtitlescom:OpenSubtitlesComProvider")
 
+
 subliminal.region.configure("dogpile.cache.memory")
 
 PROVIDER_URLS = {

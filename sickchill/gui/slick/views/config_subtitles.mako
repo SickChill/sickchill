@@ -377,6 +377,5 @@
                 </div>
             </div>
         </div>
-
     </form>
 </%block>

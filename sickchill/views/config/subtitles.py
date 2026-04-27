@@ -65,6 +65,7 @@ class ConfigSubtitles(Config):
         settings.OPENSUBTITLES_PASS = filters.unhide(settings.OPENSUBTITLES_PASS, self.get_body_argument("opensubtitles_pass", default=""))
         settings.OPENSUBTITLESCOM_USER = self.get_body_argument("opensubtitlescom_user", default="")
         settings.OPENSUBTITLESCOM_PASS = filters.unhide(settings.OPENSUBTITLESCOM_PASS, self.get_body_argument("opensubtitlescom_pass", default=""))
+
         settings.SUBSCENTER_USER = self.get_body_argument("subscenter_user", default="")
         settings.SUBSCENTER_PASS = filters.unhide(settings.SUBSCENTER_PASS, self.get_body_argument("subscenter_pass", default=""))
 
