@@ -12397,10 +12397,10 @@ yarn-minify@^1.0.1:
     mock-fs "^4.12.0"
     semver "^7.3.2"
 
-yarn-upgrade-all@^0.7.2:
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/yarn-upgrade-all/-/yarn-upgrade-all-0.7.5.tgz#dc0a8335234298a6d548d0956d78c45471aa34e8"
-  integrity sha512-yC2DgKX2Vzeb4LznSHukF/U5AapE7i/A4cBoh8P2FsEy1RBPaXEdd320ZK5Phgj6/Y/1pmFkP36S7GxS0YrzCg==
+yarn-upgrade-all@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/yarn-upgrade-all/-/yarn-upgrade-all-0.8.1.tgz#facb7fc20f5a9038396f87b52b73c51baadfcea8"
+  integrity sha512-th40yKDBrjfOGtaIfF12+g2DdSxt7jREPcJczYXOVP+kN0tshG5TuP6mV73DyOdwPNH/QxO7ocrqoCk1kqIpUA==
   dependencies:
     color-loggers "^0.3.2"
 

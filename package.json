@@ -75,7 +75,7 @@
     "workbox-webpack-plugin": "^7.0.0",
     "xo": "^1.1.0",
     "yarn-minify": "^1.0.1",
-    "yarn-upgrade-all": "^0.7.2"
+    "yarn-upgrade-all": "^0.8.1"
   },
   "ava": {
     "require": [
