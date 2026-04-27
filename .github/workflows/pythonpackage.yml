@@ -173,10 +173,17 @@ jobs:
             security.insecure
       - name: Test Docker Image
         run: |
-          docker run -d --rm -p 8081:8081 --name ${{ env.DOCKER_CONTAINER_NAME }} ${{ env.DOCKER_TEST_TAG }}
+          docker run -d -p 8081:8081 --name ${{ env.DOCKER_CONTAINER_NAME }} ${{ env.DOCKER_TEST_TAG }}
 
           echo "Waiting for container to become ready (up to ${{ env.SLEEP }}s)..."
           for i in $(seq 1 ${{ env.SLEEP }}); do
+            if ! docker ps --filter "name=${{ env.DOCKER_CONTAINER_NAME }}" --filter "status=running" -q | grep -q .; then
+              echo "Container exited after ${i}s"
+              echo "=== Container logs ==="
+              docker logs ${{ env.DOCKER_CONTAINER_NAME }}
+              docker rm ${{ env.DOCKER_CONTAINER_NAME }} 2>/dev/null || true
+              exit 1
+            fi
             RESPONSE="$(curl -s http://localhost:8081/ui/get_messages 2>/dev/null || true)"
             if [ "$RESPONSE" == "{}" ]; then
               echo "Container ready after ${i}s"
@@ -185,7 +192,9 @@ jobs:
             if [ "$i" -eq "${{ env.SLEEP }}" ]; then
               echo "Container failed to become ready after ${{ env.SLEEP }}s"
               echo "Last response: $RESPONSE"
+              echo "=== Container logs ==="
               docker logs ${{ env.DOCKER_CONTAINER_NAME }}
+              docker stop ${{ env.DOCKER_CONTAINER_NAME }} && docker rm ${{ env.DOCKER_CONTAINER_NAME }} 2>/dev/null || true
               exit 1
             fi
             sleep 1
@@ -199,7 +208,7 @@ jobs:
           curl http://localhost:8081/home/ -s | grep -q "site-notification-modal" && echo "Success!" || (echo "Failed" && docker logs ${{ env.DOCKER_CONTAINER_NAME }} && exit 1)
 
           echo "Stopping and removing container..."
-          docker stop ${{ env.DOCKER_CONTAINER_NAME }}
+          docker stop ${{ env.DOCKER_CONTAINER_NAME }} && docker rm ${{ env.DOCKER_CONTAINER_NAME }} 2>/dev/null || true
   Deploy:
     needs: [ Environment, Test, Test-Docker ]
     runs-on: ubuntu-22.04
