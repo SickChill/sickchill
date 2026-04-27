@@ -39,19 +39,6 @@ jobs:
       docker_tags: ${{ steps.docker.outputs.tags }}
       docker_labels: ${{ steps.docker.outputs.labels }}
     steps:
-      - name: Cache environment files
-        uses: actions/cache@v4
-        with:
-          path: /tmp/buildkitd.toml
-          key: ${{ github.workflow }}-environment
-      - name: Create buildkitd config
-        run: |
-          echo 'experimental = true' > /tmp/buildkitd.toml
-          echo 'debug = true' >> /tmp/buildkitd.toml
-          echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
-          # echo '[worker.oci]' >> /tmp/buildkitd.toml
-          # echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
-          cat /tmp/buildkitd.toml
       - name: Docker meta
         id: docker
         uses: docker/metadata-action@v5
@@ -145,18 +132,15 @@ jobs:
     needs: [ Environment, Test ]
     runs-on: ubuntu-22.04
     steps:
-      - name: Restore environment files
-        uses: actions/cache@v4
-        with:
-          path: /tmp/buildkitd.toml
-          key: ${{ github.workflow }}-environment
-          restore-keys: ${{ github.workflow }}-environment
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          config: /tmp/buildkitd.toml
+          buildkitd-config-inline: |
+            experimental = true
+            debug = true
+            insecure-entitlements = [ "security.insecure" ]
       - name: Test Docker Build
         uses: docker/build-push-action@v6
         with:
@@ -211,20 +195,18 @@ jobs:
           docker stop ${{ env.DOCKER_CONTAINER_NAME }} && docker rm ${{ env.DOCKER_CONTAINER_NAME }} 2>/dev/null || true
   Deploy:
     needs: [ Environment, Test, Test-Docker ]
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-22.04
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      - name: Cache environment files
-        uses: actions/cache@v4
-        with:
-          path: /tmp/buildkitd.toml
-          key: ${{ github.workflow }}-environment
-          restore-keys: ${{ github.workflow }}-environment
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          config: /tmp/buildkitd.toml
+          buildkitd-config-inline: |
+            experimental = true
+            debug = true
+            insecure-entitlements = [ "security.insecure" ]
       - if: success() && !env.ACT
         name: Login to DockerHub
         uses: docker/login-action@v3
@@ -289,6 +271,9 @@ jobs:
   complete:
     name: Packaging tests completed
     runs-on: [ ubuntu-latest ]
+    if: always()
     needs: [ Environment, Test, Test-Docker, Deploy ]
     steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
       - run: echo "Success!"
