@@ -260,7 +260,6 @@ python = ">=3.8,<4"
 "bencode.py" = "^4.0.0"
 configobj = "^5.0.6"
 greenlet = {version = ">=2.0.0", allow-prereleases = true}
-ipaddress = "^1.0.23"
 jsonrpclib-pelix = "^0.4.2"
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
