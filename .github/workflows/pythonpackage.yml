@@ -87,7 +87,7 @@ jobs:
           persist-credentials: false
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Lint shell scripts
-        uses: ludeeus/action-shellcheck@master
+        uses: ludeeus/action-shellcheck@2.0.0
         with:
           format: diff
       - name: Setup Poetry
@@ -266,11 +266,6 @@ jobs:
         with:
           name: arm64
           path: /tmp/sickchill-wheels/linux_arm64
-      - name: Upload linux/arm/v7 wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: armv7
-          path: /tmp/sickchill-wheels/linux_arm_v7
   complete:
     name: Packaging tests completed
     runs-on: [ ubuntu-latest ]
