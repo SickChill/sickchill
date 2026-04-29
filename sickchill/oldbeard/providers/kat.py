@@ -102,6 +102,7 @@ class Provider(TorrentProvider):
 
                             seeders = try_int(result.find(class_="green").get_text(strip=True))
                             leechers = try_int(result.find(class_="red").get_text(strip=True))
+                            size = -1
 
                             # Filter unseeded torrent
                             if seeders < self.minseed or leechers < self.minleech:

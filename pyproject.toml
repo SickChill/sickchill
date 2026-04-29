@@ -58,11 +58,7 @@ mock = ">=4.0.3,<6.0.0"
 Babel = "^2.9.0"
 pytest-cov = ">=3,<6"
 pytest-isort = ">=3,<5"
-flake8-pytest-style = "^1.5.1"
-flake8-commas = "^2.0.0"
-flake8-quotes = "^3.3.0"
-flake8-docstrings = "^1.6.0"
-flake9 = "^3.8.3"
+ruff = ">=0.4.0,<1.0"
 pytest = ">=7.0.1,<9.0.0,!=8.2.0"
 isort = "^5.10.1"
 poethepoet = ">=0.27.0,<0.31"
@@ -116,43 +112,13 @@ frontend = ["frontend"]
 requires = ["poetry-core>=1.2.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.flake8]
-exclude = [
-    ".eggs",
-    ".git",
-    "__pycache__",
-    "docs/source/conf.py",
-    "build",
-    "dist",
-]
-inline-quotes = "double"
-docstring-convention = "numpy"
-ignore = [
-    "C812",
-    "D4",
-    "D400",
-    "D401",
-    "D403",
-    "D406",
-    "D407",
-    "D200",
-    "D202",
-    "D205",
-    "D100",
-    "D101",
-    "D102",
-    "D103",
-    "D104",
-    "D106",
-    "S101",
-    "PT009",
-    "PT017"
-]
-
-max_line_length = 160
-show_source = "True"
+[tool.ruff]
+line-length = 160
 builtins = ["_"]
-#select = 'C103'
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["F821"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py"]
@@ -177,11 +143,6 @@ target_version = ['py310']
 include = '\.pyi?$'
 exclude = 'contrib/scmaintools|\.venv|venv|\.git|\.hg|\.mypy_cache|\.tox|_build|buck-out|build|dist|node_modules|bower_components'
 
-[tool.ruff]
-line-length = 160
-builtins = ["_"]
-target-version = 'py310'
-
 [tool.poe.tasks]
 pytest = "pytest"
 yarn = "yarn"
@@ -190,7 +151,7 @@ ava = "ava"
 
 _black = {cmd = "black . --check --diff", help = "Check code style using black"}
 _isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
-flake8 = {cmd = "flake8 --select C103 sickchill tests SickChill.py", help = "Check for undefined variables"}
+flake8 = {cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Check for undefined variables"}
 
 isort = {cmd = "isort .", help = "Fix import order"}
 black = {cmd = "black .", help = "Reformat code using black"}
