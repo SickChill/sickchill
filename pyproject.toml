@@ -26,9 +26,10 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10"
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 
 packages = [
@@ -53,17 +54,13 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = ">=22.8,<25.0"
-coveralls = "^3.3.1"
+coveralls = ">=4.0,<5.0"
 mock = ">=4.0.3,<6.0.0"
 Babel = "^2.9.0"
 pytest-cov = ">=3,<6"
+pytest-timeout = ">=2.0,<3.0"
 pytest-isort = ">=3,<5"
-flake8-pytest-style = "^1.5.1"
-flake8-commas = "^2.0.0"
-flake8-quotes = "^3.3.0"
-flake8-docstrings = "^1.6.0"
-flake9 = "^3.8.3"
-codecov = "^2.1.12"
+ruff = ">=0.4.0,<1.0"
 pytest = ">=7.0.1,<9.0.0,!=8.2.0"
 isort = "^5.10.1"
 poethepoet = ">=0.27.0,<0.31"
@@ -75,7 +72,7 @@ optional = true
 
 [tool.poetry.group.speedups.dependencies]
 html5lib = "^1.1"
-lxml = ">=4.9.1,<6.0.0"
+lxml = ">=4.9.1,<7.0.0"
 Js2Py = ">=0.71,<0.75"
 pymediainfo = ">=5.0.3,<7.0.0"
 
@@ -117,48 +114,17 @@ frontend = ["frontend"]
 requires = ["poetry-core>=1.2.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.flake8]
-exclude = [
-    ".eggs",
-    ".git",
-    "__pycache__",
-    "docs/source/conf.py",
-    "build",
-    "dist",
-]
-inline-quotes = "double"
-docstring-convention = "numpy"
-ignore = [
-    "C812",
-    "D4",
-    "D400",
-    "D401",
-    "D403",
-    "D406",
-    "D407",
-    "D200",
-    "D202",
-    "D205",
-    "D100",
-    "D101",
-    "D102",
-    "D103",
-    "D104",
-    "D106",
-    "E402",
-    "S101",
-    "PT009",
-    "PT017"
-]
-
-max_line_length = 160
-show_source = "True"
+[tool.ruff]
+line-length = 160
 builtins = ["_"]
-#select = 'C103'
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["F821"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py"]
-addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail"
+addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail -v --timeout=120"
 filterwarnings = ['ignore:.*telnetlib.*is deprecated:DeprecationWarning']
 
 [tool.isort]
@@ -179,41 +145,6 @@ target_version = ['py310']
 include = '\.pyi?$'
 exclude = 'contrib/scmaintools|\.venv|venv|\.git|\.hg|\.mypy_cache|\.tox|_build|buck-out|build|dist|node_modules|bower_components'
 
-[tool.ruff]
-line-length = 160
-builtins = ["_"]
-target-version = 'py310'
-
-[tool.ruff.lint]
-ignore = [
-    "D100",
-    "D101",
-    "D102",
-    "D103",
-    "D104",
-    "D106",
-    "D200",
-    "D205",
-    "D400",
-    "D401",
-    "D403",
-    "D406",
-    "D407",
-    "E402",
-    "PT009",
-    "PT017",
-    "S101"
-]
-exclude = [
-    ".eggs",
-    ".git",
-    "__pycache__",
-    "__init__.py",
-    "docs/source/conf.py",
-    "build",
-    "dist",
-]
-
 [tool.poe.tasks]
 pytest = "pytest"
 yarn = "yarn"
@@ -222,7 +153,7 @@ ava = "ava"
 
 _black = {cmd = "black . --check --diff", help = "Check code style using black"}
 _isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
-flake8 = {cmd = "flake8 --select C103 sickchill tests SickChill.py", help = "Check for undefined variables"}
+flake8 = {cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Check for undefined variables"}
 
 isort = {cmd = "isort .", help = "Fix import order"}
 black = {cmd = "black .", help = "Reformat code using black"}
@@ -231,7 +162,6 @@ test_providers = {cmd = "pytest tests/sickchill_tests/providers/torrent/test_par
 crowdin_upload = "crowdin-cli-py upload sources -c .github/crowdin.yml"
 crowdin_download = "crowdin-cli-py download -c .github/crowdin.yml"
 po2json = "po2json --format jed "
-codecov = "codecov"
 
 lint = ["_black", "_isort", "flake8"]
 format = ["black", "isort", "flake8"]
@@ -287,11 +217,10 @@ pybabel update
 """
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.10,<4"
 "bencode.py" = "^4.0.0"
 configobj = "^5.0.6"
 greenlet = {version = ">=2.0.0", allow-prereleases = true}
-ipaddress = "^1.0.23"
 jsonrpclib-pelix = "^0.4.2"
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
@@ -319,7 +248,7 @@ deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = ">=2021.3.18,<2025.0.0"
-packaging = ">=24.2,<26.0"
+packaging = ">=20.9,<27.0"
 timeago = "^1.0.15"
 SQLAlchemy = ">=2.0.0,<3.0.0"
 python-slugify = ">=4.0.1,<9.0.0"

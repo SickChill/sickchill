@@ -26,7 +26,7 @@ env:
   DOCKER_CONTAINER_NAME: sickchill_test
   TARGET_PLATFORMS: "linux/amd64,linux/arm64"
   CRYPTOGRAPHY_DONT_BUILD_RUST: 1
-  PYTHON_TEST_VERSION: "3.11"
+  PYTHON_TEST_VERSION: "3.13"
 
 defaults:
   run:
@@ -39,19 +39,6 @@ jobs:
       docker_tags: ${{ steps.docker.outputs.tags }}
       docker_labels: ${{ steps.docker.outputs.labels }}
     steps:
-      - name: Cache environment files
-        uses: actions/cache@v4
-        with:
-          path: /tmp/buildkitd.toml
-          key: ${{ github.workflow }}-environment
-      - name: Create buildkitd config
-        run: |
-          echo 'experimental = true' > /tmp/buildkitd.toml
-          echo 'debug = true' >> /tmp/buildkitd.toml
-          echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
-          # echo '[worker.oci]' >> /tmp/buildkitd.toml
-          # echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
-          cat /tmp/buildkitd.toml
       - name: Docker meta
         id: docker
         uses: docker/metadata-action@v5
@@ -80,14 +67,14 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
         experimental: [ false ]
         include:
           - os: windows-latest
-            python-version: "3.11"
+            python-version: "3.13"
             experimental: false
           - os: macos-latest
-            python-version: "3.11"
+            python-version: "3.13"
             experimental: false
       fail-fast: true
     continue-on-error: ${{ matrix.experimental }}
@@ -100,7 +87,7 @@ jobs:
           persist-credentials: false
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Lint shell scripts
-        uses: ludeeus/action-shellcheck@master
+        uses: ludeeus/action-shellcheck@2.0.0
         with:
           format: diff
       - name: Setup Poetry
@@ -140,23 +127,23 @@ jobs:
         run: poetry run poe pytest
       - if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
         name: Coverage
-        run: poetry run poe codecov --env OS=${{ runner.os }} Interpreter="$(poetry run python -V)" -t ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: OS
   Test-Docker:
     needs: [ Environment, Test ]
     runs-on: ubuntu-22.04
     steps:
-      - name: Restore environment files
-        uses: actions/cache@v4
-        with:
-          path: /tmp/buildkitd.toml
-          key: ${{ github.workflow }}-environment
-          restore-keys: ${{ github.workflow }}-environment
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          config: /tmp/buildkitd.toml
+          buildkitd-config-inline: |
+            experimental = true
+            debug = true
+            insecure-entitlements = [ "security.insecure" ]
       - name: Test Docker Build
         uses: docker/build-push-action@v6
         with:
@@ -211,20 +198,18 @@ jobs:
           docker stop ${{ env.DOCKER_CONTAINER_NAME }} && docker rm ${{ env.DOCKER_CONTAINER_NAME }} 2>/dev/null || true
   Deploy:
     needs: [ Environment, Test, Test-Docker ]
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-22.04
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      - name: Cache environment files
-        uses: actions/cache@v4
-        with:
-          path: /tmp/buildkitd.toml
-          key: ${{ github.workflow }}-environment
-          restore-keys: ${{ github.workflow }}-environment
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          config: /tmp/buildkitd.toml
+          buildkitd-config-inline: |
+            experimental = true
+            debug = true
+            insecure-entitlements = [ "security.insecure" ]
       - if: success() && !env.ACT
         name: Login to DockerHub
         uses: docker/login-action@v3
@@ -281,14 +266,12 @@ jobs:
         with:
           name: arm64
           path: /tmp/sickchill-wheels/linux_arm64
-      - name: Upload linux/arm/v7 wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: armv7
-          path: /tmp/sickchill-wheels/linux_arm_v7
   complete:
     name: Packaging tests completed
     runs-on: [ ubuntu-latest ]
+    if: always()
     needs: [ Environment, Test, Test-Docker, Deploy ]
     steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
       - run: echo "Success!"
