@@ -47,6 +47,7 @@ Session.vim
 .idea
 *.ipr
 .settings/*
+.vscode
 
 # OS generated files #
 ######################
