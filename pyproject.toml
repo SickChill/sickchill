@@ -26,9 +26,10 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10"
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 
 packages = [
@@ -53,10 +54,11 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = ">=22.8,<25.0"
-coveralls = "^3.3.1"
+coveralls = ">=4.0,<5.0"
 mock = ">=4.0.3,<6.0.0"
 Babel = "^2.9.0"
 pytest-cov = ">=3,<6"
+pytest-timeout = ">=2.0,<3.0"
 pytest-isort = ">=3,<5"
 ruff = ">=0.4.0,<1.0"
 pytest = ">=7.0.1,<9.0.0,!=8.2.0"
@@ -152,7 +154,7 @@ ignore = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py"]
-addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail"
+addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail -v --timeout=120"
 filterwarnings = ['ignore:.*telnetlib.*is deprecated:DeprecationWarning']
 
 [tool.isort]
@@ -245,7 +247,7 @@ pybabel update
 """
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.10,<4"
 "bencode.py" = "^4.0.0"
 configobj = "^5.0.6"
 greenlet = {version = ">=2.0.0", allow-prereleases = true}
