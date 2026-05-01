@@ -118,9 +118,38 @@ build-backend = "poetry.core.masonry.api"
 line-length = 160
 builtins = ["_"]
 target-version = "py310"
+exclude = [
+    ".eggs",
+    ".git",
+    "__pycache__",
+    "docs/source/conf.py",
+    "build",
+    "dist",
+    ".venv",
+    ".vscode",
+]
 
 [tool.ruff.lint]
-select = ["F821"]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D106",
+    "D200",
+    "D205",
+    "D400",
+    "D401",
+    "D403",
+    "D406",
+    "D407",
+    "E402",
+    "F601",
+    "PT009",
+    "PT017",
+    "S101",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py"]
@@ -153,7 +182,7 @@ ava = "ava"
 
 _black = {cmd = "black . --check --diff", help = "Check code style using black"}
 _isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
-flake8 = {cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Check for undefined variables"}
+flake8 = {cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Run Ruff lint checks"}
 
 isort = {cmd = "isort .", help = "Fix import order"}
 black = {cmd = "black .", help = "Reformat code using black"}
@@ -228,7 +257,7 @@ pyOpenSSL = ">=20.0.1,<26.0.0"
 python-dateutil = "^2.8.1"
 python-twitter = "^3.5"
 rarfile = "^4.0"
-subliminal = "^2.2.1"
+subliminal = "^2.3.2"
 tmdbsimple = "^2.8.0"
 tornado = "^6.3.2"
 tvdbsimple = "^1.0.6"
@@ -248,7 +277,7 @@ deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = ">=2021.3.18,<2025.0.0"
-packaging = ">=20.9,<27.0"
+packaging = ">=24.2,<27.0"
 timeago = "^1.0.15"
 SQLAlchemy = ">=2.0.0,<3.0.0"
 python-slugify = ">=4.0.1,<9.0.0"

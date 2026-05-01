@@ -49,6 +49,7 @@ Session.vim
 .vscode
 *.ipr
 .settings/*
+.vscode
 
 # OS generated files #
 ######################
