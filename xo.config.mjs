@@ -24,6 +24,11 @@ const xoConfig = [
             'unicorn/prefer-node-append': 'off',
             'unicorn/prefer-global-this': 'off',
             'unicorn/expiring-todo-comments': 'off',
+            'unicorn/no-immediate-mutation': 'off',
+            'unicorn/no-array-sort': 'off',
+            'require-unicode-regexp': 'off',
+            '@stylistic/curly-newline': 'off',
+            'max-lines': 'off',
         },
         languageOptions: {
             globals: {
