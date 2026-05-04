@@ -26,9 +26,10 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10"
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 
 packages = [
@@ -53,10 +54,11 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = ">=22.8,<25.0"
-coveralls = "^3.3.1"
+coveralls = ">=4.0,<5.0"
 mock = ">=4.0.3,<6.0.0"
 Babel = "^2.9.0"
 pytest-cov = ">=3,<6"
+pytest-timeout = ">=2.0,<3.0"
 pytest-isort = ">=3,<5"
 ruff = ">=0.4.0,<1.0"
 pytest = ">=7.0.1,<9.0.0,!=8.2.0"
@@ -116,13 +118,42 @@ build-backend = "poetry.core.masonry.api"
 line-length = 160
 builtins = ["_"]
 target-version = "py310"
+exclude = [
+    ".eggs",
+    ".git",
+    "__pycache__",
+    "docs/source/conf.py",
+    "build",
+    "dist",
+    ".venv",
+    ".vscode",
+]
 
 [tool.ruff.lint]
-select = ["F821"]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D106",
+    "D200",
+    "D205",
+    "D400",
+    "D401",
+    "D403",
+    "D406",
+    "D407",
+    "E402",
+    "F601",
+    "PT009",
+    "PT017",
+    "S101",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py"]
-addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail"
+addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail -v --timeout=120"
 filterwarnings = ['ignore:.*telnetlib.*is deprecated:DeprecationWarning']
 
 [tool.isort]
@@ -151,7 +182,7 @@ ava = "ava"
 
 _black = {cmd = "black . --check --diff", help = "Check code style using black"}
 _isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
-flake8 = {cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Check for undefined variables"}
+flake8 = {cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Run Ruff lint checks"}
 
 isort = {cmd = "isort .", help = "Fix import order"}
 black = {cmd = "black .", help = "Reformat code using black"}
@@ -215,7 +246,7 @@ pybabel update
 """
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.10,<4"
 "bencode.py" = "^4.0.0"
 configobj = "^5.0.6"
 greenlet = {version = ">=2.0.0", allow-prereleases = true}
@@ -226,7 +257,7 @@ pyOpenSSL = ">=20.0.1,<26.0.0"
 python-dateutil = "^2.8.1"
 python-twitter = "^3.5"
 rarfile = "^4.0"
-subliminal = "^2.1.0"
+subliminal = "^2.3.2"
 tmdbsimple = "^2.8.0"
 tornado = "^6.3.2"
 tvdbsimple = "^1.0.6"
@@ -246,7 +277,7 @@ deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
 new-rtorrent-python = "^1.0.1-alpha.0"
 qbittorrent-api = ">=2021.3.18,<2025.0.0"
-packaging = ">=20.9,<27.0"
+packaging = ">=24.2,<27.0"
 timeago = "^1.0.15"
 SQLAlchemy = ">=2.0.0,<3.0.0"
 python-slugify = ">=4.0.1,<9.0.0"
