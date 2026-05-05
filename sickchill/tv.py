@@ -45,15 +45,15 @@ from sickchill.oldbeard.common import (
     NAMING_LIMITED_EXTEND,
     NAMING_LIMITED_EXTEND_E_PREFIXED,
     NAMING_SEPARATED_REPEAT,
-    Overview,
-    Quality,
     SKIPPED,
     SNATCHED,
     SNATCHED_PROPER,
-    statusStrings,
     UNAIRED,
     UNKNOWN,
     WANTED,
+    Overview,
+    Quality,
+    statusStrings,
 )
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.show.Show import Show
@@ -664,8 +664,7 @@ class TVShow(object):
                 # if there is a new file associated with this ep then re-check the quality
                 if episode.location and os.path.normpath(episode.location) != os.path.normpath(filepath):
                     logger.debug(
-                        f"{self.indexerid}: The old episode had a different file associated with it, "
-                        f"re-checking the quality using the new filename {filepath}"
+                        f"{self.indexerid}: The old episode had a different file associated with it, re-checking the quality using the new filename {filepath}"
                     )
                     check_quality_again = True
 
@@ -1317,8 +1316,7 @@ class TVShow(object):
         elif manual_search:
             if (down_cur_quality and quality >= cur_quality) or (not down_cur_quality and quality != cur_quality):
                 logger.debug(
-                    "Usually ignoring found result, but forced search allows the quality,"
-                    " getting found result for {name} {ep} with quality {quality}".format(
+                    "Usually ignoring found result, but forced search allows the quality, getting found result for {name} {ep} with quality {quality}".format(
                         name=self.name, ep=episode_num(season, episode), quality=Quality.qualityStrings[quality]
                     )
                 )

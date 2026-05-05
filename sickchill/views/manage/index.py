@@ -7,7 +7,7 @@ from sickchill import logger, settings
 from sickchill.helper import episode_num, try_int
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
 from sickchill.oldbeard import db, subtitles as subtitle_module, ui
-from sickchill.oldbeard.common import Overview, Quality, SNATCHED
+from sickchill.oldbeard.common import SNATCHED, Overview, Quality
 from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home, WebRoot

@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import Dict, Iterable, List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, Iterable, List, Union
 from urllib.parse import urlencode, urljoin
 
 from sickchill import logger

@@ -1,7 +1,7 @@
 import logging
 import tempfile
 from pathlib import Path
-from unittest import skip, TestCase
+from unittest import TestCase, skip
 from unittest.mock import patch
 
 from sickchill.helper.rootdirs import RootDirectories

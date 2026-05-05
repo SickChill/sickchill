@@ -6,10 +6,11 @@ import stat
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
     from processTV import ParseResult
+
     from sickchill.tv import TVShow
 
 from guessit import guessit
@@ -17,7 +18,7 @@ from guessit import guessit
 import sickchill.helper.common
 import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
-from sickchill.helper.common import episode_num, get_extension, is_rar_file, remove_extension, replace_extension, SUBTITLE_EXTENSIONS
+from sickchill.helper.common import SUBTITLE_EXTENSIONS, episode_num, get_extension, is_rar_file, remove_extension, replace_extension
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
 from sickchill.oldbeard import common, db, helpers, notifiers, show_name_helpers
 from sickchill.oldbeard.helpers import verify_freespace

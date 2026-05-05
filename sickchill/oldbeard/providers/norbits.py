@@ -69,7 +69,7 @@ class Provider(TorrentProvider):
                 if self.check_auth_from_data(parsed_json):
                     json_items = parsed_json.get("data", "")
                     if not json_items:
-                        logger.exception(_("Resulting JSON from provider is not correct, " "not parsing it"))
+                        logger.exception(_("Resulting JSON from provider is not correct, not parsing it"))
 
                     for item in json_items.get("torrents", []):
                         title = item.pop("name", "")
@@ -83,8 +83,9 @@ class Provider(TorrentProvider):
 
                         if seeders < self.minseed or leechers < self.minleech:
                             logger.debug(
-                                "Discarding torrent because it does not meet "
-                                "the minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                "Discarding torrent because it does not meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                    title, seeders, leechers
+                                )
                             )
                             continue
 

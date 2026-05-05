@@ -17,7 +17,7 @@ from babelfish import Language, language_converters
 from requests.structures import CaseInsensitiveDict
 from subliminal import __short_version__
 from subliminal.providers import Provider, TimeoutSafeTransport
-from subliminal.subtitle import fix_line_ending, Subtitle
+from subliminal.subtitle import Subtitle, fix_line_ending
 
 from sickchill import settings
 from sickchill.oldbeard.helpers import make_context
@@ -151,7 +151,7 @@ class BSPlayerProvider(Provider):
         logger.error("[BSPlayer] ERROR: Too many tries (%d)..." % tries)
 
     def initialize(self):
-        root = self._api_request(func_name="logIn", params=("<username></username>" "<password></password>" "<AppID>BSPlayer v2.67</AppID>"))
+        root = self._api_request(func_name="logIn", params=("<username></username><password></password><AppID>BSPlayer v2.67</AppID>"))
         res = root.find(".//return")
         if res.find("status").text == "OK":
             self.token = res.find("data").text

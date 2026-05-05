@@ -6,7 +6,7 @@ from collections import OrderedDict
 from datetime import date
 from operator import attrgetter
 from threading import Lock
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from dateutil.parser import parse
 

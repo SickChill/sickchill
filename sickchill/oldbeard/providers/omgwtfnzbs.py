@@ -82,7 +82,7 @@ class Provider(NZBProvider):
                     if not self._get_title_and_url(item):
                         continue
 
-                    logger.debug(_("Found result: ") + f'{item.get("release")}')
+                    logger.debug(_("Found result: ") + f"{item.get('release')}")
                     items.append(item)
 
             results += items

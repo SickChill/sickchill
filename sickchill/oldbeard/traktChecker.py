@@ -6,7 +6,7 @@ import sickchill
 from sickchill import logger, settings
 from sickchill.helper.common import episode_num, sanitize_filename
 from sickchill.oldbeard import db, helpers, search_queue
-from sickchill.oldbeard.common import Quality, SKIPPED, UNKNOWN, WANTED
+from sickchill.oldbeard.common import SKIPPED, UNKNOWN, WANTED, Quality
 from sickchill.oldbeard.trakt_api import TraktAPI, traktException
 from sickchill.show.Show import Show
 

@@ -2,7 +2,7 @@ import math
 import socket
 import time
 from datetime import datetime
-from typing import Dict, Iterable, List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, Iterable, List, Union
 
 import jsonrpclib
 

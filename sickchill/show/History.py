@@ -10,13 +10,13 @@ from sickchill.helper.metaclasses import Singleton
 from sickchill.providers.result_classes import SearchResult
 
 if TYPE_CHECKING:
-    from sickchill.tv import TVEpisode, TVShow
     from sickchill.oldbeard.subtitles import Scores
     from sickchill.providers.GenericProvider import GenericProvider
+    from sickchill.tv import TVEpisode, TVShow
 
 from sickchill.helper.common import remove_extension, try_int
 from sickchill.helper.exceptions import EpisodeNotFoundException
-from sickchill.oldbeard.common import FAILED, Quality, SNATCHED, SUBTITLED, WANTED
+from sickchill.oldbeard.common import FAILED, SNATCHED, SUBTITLED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
 
 

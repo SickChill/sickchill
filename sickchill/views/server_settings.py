@@ -110,9 +110,9 @@ class SCWebServer(threading.Thread):
             autoreload=True,
             gzip=settings.WEB_USE_GZIP,
             cookie_secret=settings.WEB_COOKIE_SECRET,
-            login_url=f'{self.options["web_root"]}/login/',
+            login_url=f"{self.options['web_root']}/login/",
             static_path=self.options["data_root"],
-            static_url_prefix=f'{self.options["web_root"]}/',
+            static_url_prefix=f"{self.options['web_root']}/",
             static_handler_class=SickChillStaticFileHandler,
         )
 
@@ -121,27 +121,27 @@ class SCWebServer(threading.Thread):
             ".*$",
             [
                 url(
-                    rf'{self.options["web_root"]}/(favicon\.ico)',
+                    rf"{self.options['web_root']}/(favicon\.ico)",
                     SickChillStaticFileHandler,
                     {"path": os.path.join(self.options["data_root"], "images/ico")},
                     name="favicon",
                 ),
                 url(
-                    rf'{self.options["web_root"]}/images/(.*)',
+                    rf"{self.options['web_root']}/images/(.*)",
                     SickChillStaticFileHandler,
                     {"path": os.path.join(self.options["data_root"], "images")},
                     name="images",
                 ),
                 url(
-                    rf'{self.options["web_root"]}/cache/images/(.*)',
+                    rf"{self.options['web_root']}/cache/images/(.*)",
                     SickChillStaticFileHandler,
                     {"path": os.path.join(settings.CACHE_DIR, "images")},
                     name="image_cache",
                 ),
-                url(rf'{self.options["web_root"]}/css/(.*)', SickChillStaticFileHandler, {"path": os.path.join(self.options["data_root"], "css")}, name="css"),
-                url(rf'{self.options["web_root"]}/js/(.*)', SickChillStaticFileHandler, {"path": os.path.join(self.options["data_root"], "js")}, name="js"),
+                url(rf"{self.options['web_root']}/css/(.*)", SickChillStaticFileHandler, {"path": os.path.join(self.options["data_root"], "css")}, name="css"),
+                url(rf"{self.options['web_root']}/js/(.*)", SickChillStaticFileHandler, {"path": os.path.join(self.options["data_root"], "js")}, name="js"),
                 url(
-                    rf'{self.options["web_root"]}/fonts/(.*)',
+                    rf"{self.options['web_root']}/fonts/(.*)",
                     SickChillStaticFileHandler,
                     {"path": os.path.join(self.options["data_root"], "fonts")},
                     name="fonts",
@@ -153,18 +153,18 @@ class SCWebServer(threading.Thread):
         self.app.add_handlers(
             ".*$",
             [
-                url(rf'{self.options["api_root"]}(/?.*)', ApiHandler, name="api"),
-                url(rf'{self.options["web_root"]}/getkey(/?.*)', KeyHandler, name="get_api_key"),
-                url(rf'{self.options["web_root"]}/api/builder', RedirectHandler, {"url": self.options["web_root"] + "/apibuilder/"}, name="apibuilder"),
-                url(rf'{self.options["web_root"]}/login(/?)', LoginHandler, name="login"),
-                url(rf'{self.options["web_root"]}/logout(/?)', LogoutHandler, name="logout"),
-                url(rf'{self.options["web_root"]}/calendar/?', CalendarHandler, name="calendar"),
-                url(rf'{self.options["web_root"]}/movies/(?P<route>details)/(?P<slug>.*)/', MoviesHandler, name="movies-details"),
-                url(rf'{self.options["web_root"]}/movies/(?P<route>remove)/(?P<pk>.*)/', MoviesHandler, name="movies-remove"),
-                url(rf'{self.options["web_root"]}/movies/(?P<route>add)/', MoviesHandler, name="movies-add"),
-                url(rf'{self.options["web_root"]}/movies/(?P<route>search)/', MoviesHandler, name="movies-search"),
-                url(rf'{self.options["web_root"]}/movies/(?P<route>list)/', MoviesHandler, name="movies-list"),
-                url(rf'{self.options["web_root"]}/movies/(.*)', MoviesHandler, name="movies"),
+                url(rf"{self.options['api_root']}(/?.*)", ApiHandler, name="api"),
+                url(rf"{self.options['web_root']}/getkey(/?.*)", KeyHandler, name="get_api_key"),
+                url(rf"{self.options['web_root']}/api/builder", RedirectHandler, {"url": self.options["web_root"] + "/apibuilder/"}, name="apibuilder"),
+                url(rf"{self.options['web_root']}/login(/?)", LoginHandler, name="login"),
+                url(rf"{self.options['web_root']}/logout(/?)", LogoutHandler, name="logout"),
+                url(rf"{self.options['web_root']}/calendar/?", CalendarHandler, name="calendar"),
+                url(rf"{self.options['web_root']}/movies/(?P<route>details)/(?P<slug>.*)/", MoviesHandler, name="movies-details"),
+                url(rf"{self.options['web_root']}/movies/(?P<route>remove)/(?P<pk>.*)/", MoviesHandler, name="movies-remove"),
+                url(rf"{self.options['web_root']}/movies/(?P<route>add)/", MoviesHandler, name="movies-add"),
+                url(rf"{self.options['web_root']}/movies/(?P<route>search)/", MoviesHandler, name="movies-search"),
+                url(rf"{self.options['web_root']}/movies/(?P<route>list)/", MoviesHandler, name="movies-list"),
+                url(rf"{self.options['web_root']}/movies/(.*)", MoviesHandler, name="movies"),
                 # routes added by @route decorator
                 # Plus naked index with missing web_root prefix
             ]

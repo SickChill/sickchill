@@ -1,5 +1,5 @@
 import re
-from typing import List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, List, Union
 
 import sickchill
 from sickchill.oldbeard.common import Quality

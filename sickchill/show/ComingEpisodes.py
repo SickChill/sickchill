@@ -4,7 +4,7 @@ from operator import itemgetter
 from sickchill import settings
 from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string
-from sickchill.oldbeard.common import Quality, UNAIRED, WANTED
+from sickchill.oldbeard.common import UNAIRED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.network_timezones import parse_date_time
 from sickchill.oldbeard.scdatetime import scdatetime

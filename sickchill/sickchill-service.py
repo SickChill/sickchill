@@ -3,9 +3,10 @@ import os.path
 import sys
 
 import servicemanager
-import SickChill
 import win32service
 import win32serviceutil
+
+import SickChill
 
 
 class SickChillService(win32serviceutil.ServiceFramework):
