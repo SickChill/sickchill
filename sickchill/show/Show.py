@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Union
 
 from sickchill import settings
 from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, MultipleShowObjectsException
-from sickchill.oldbeard.common import Quality, SKIPPED, WANTED
+from sickchill.oldbeard.common import SKIPPED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
 
 if TYPE_CHECKING:

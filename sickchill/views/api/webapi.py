@@ -24,15 +24,15 @@ from sickchill.oldbeard.common import (
     DOWNLOADED,
     FAILED,
     IGNORED,
-    Overview,
-    Quality,
     SKIPPED,
     SNATCHED,
     SNATCHED_PROPER,
-    statusStrings_bare,
     UNAIRED,
     UNKNOWN,
     WANTED,
+    Overview,
+    Quality,
+    statusStrings_bare,
 )
 from sickchill.oldbeard.postProcessor import PROCESS_METHODS
 from sickchill.show.ComingEpisodes import ComingEpisodes
@@ -837,9 +837,7 @@ class AbstractStartScheduler(ApiCall):
         if self.scheduler.forceRun():
             cycle_time = self.scheduler.cycleTime
             next_run = datetime.datetime.now() + cycle_time
-            result_str = "Force run successful: {0} search underway. Time Remaining: {1}. " "Next Run: {2}".format(
-                self.scheduler_class_str, time_remain, next_run
-            )
+            result_str = "Force run successful: {0} search underway. Time Remaining: {1}. Next Run: {2}".format(self.scheduler_class_str, time_remain, next_run)
             return _responds(RESULT_SUCCESS, msg=result_str)
 
         # Scheduler is currently active
@@ -1228,7 +1226,7 @@ class CMDLogs(ApiCall):
         "desc": "Get the logs",
         "optionalParameters": {
             "min_level": {
-                "desc": "The minimum level classification of log entries to return. " "Each level inherits its above levels: debug < info < warning < error"
+                "desc": "The minimum level classification of log entries to return. Each level inherits its above levels: debug < info < warning < error"
             },
         },
     }
@@ -1715,7 +1713,7 @@ class CMDSickChillSearchTVRAGE(CMDSickChillSearchIndexers):
     """
 
     _help = {
-        "desc": "Search for a show with a given name on TVRage, in a specific language. " "This command should not longer be used, as TVRage was shut down.",
+        "desc": "Search for a show with a given name on TVRage, in a specific language. This command should not longer be used, as TVRage was shut down.",
         "optionalParameters": {
             "name": {"desc": "The name of the show you want to search for"},
             "lang": {"desc": "The 2-letter language code of the desired show"},

@@ -3,17 +3,17 @@ import io
 import logging
 import re
 from xml.etree import ElementTree
-from zipfile import is_zipfile, ZipFile
+from zipfile import ZipFile, is_zipfile
 
 from babelfish import Language
 from guessit import guessit
 from requests import Session
 from subliminal import __version__
-from subliminal.cache import EPISODE_EXPIRATION_TIME, region, SHOW_EXPIRATION_TIME
+from subliminal.cache import EPISODE_EXPIRATION_TIME, SHOW_EXPIRATION_TIME, region
 from subliminal.exceptions import AuthenticationError, ConfigurationError, DownloadLimitExceeded
 from subliminal.matches import guess_matches, sanitize
 from subliminal.providers import Provider
-from subliminal.subtitle import fix_line_ending, Subtitle
+from subliminal.subtitle import Subtitle, fix_line_ending
 from subliminal.video import Episode
 
 logger = logging.getLogger(__name__)

@@ -41,9 +41,9 @@ class Notifier(object):
                     msg = MIMEMultipart("alternative")
                     msg.attach(
                         MIMEText(
-                            "SickChill Notification - Snatched\n"
-                            "Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n"
-                            "Powered by SickChill.".format(show[0], show[1], show[2], show[3])
+                            "SickChill Notification - Snatched\nShow: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\nPowered by SickChill.".format(
+                                show[0], show[1], show[2], show[3]
+                            )
                         )
                     )
                     msg.attach(
@@ -95,9 +95,9 @@ class Notifier(object):
                     msg = MIMEMultipart("alternative")
                     msg.attach(
                         MIMEText(
-                            "SickChill Notification - Downloaded\n"
-                            "Show: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\n"
-                            "Powered by SickChill.".format(show[0], show[1], show[2], show[3])
+                            "SickChill Notification - Downloaded\nShow: {0}\nEpisode Number: {1}\nEpisode: {2}\nQuality: {3}\n\nPowered by SickChill.".format(
+                                show[0], show[1], show[2], show[3]
+                            )
                         )
                     )
                     msg.attach(
@@ -252,7 +252,7 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart("alternative")
-                    msg.attach(MIMEText("SickChill Notification - Updated\n" "Version: {}\n\n" "Powered by SickChill.".format(new_version)))
+                    msg.attach(MIMEText("SickChill Notification - Updated\nVersion: {}\n\nPowered by SickChill.".format(new_version)))
                     msg.attach(
                         MIMEText(
                             '<body style="font-family:Helvetica, Arial, sans-serif;">'
@@ -294,7 +294,7 @@ class Notifier(object):
             else:
                 try:
                     msg = MIMEMultipart("alternative")
-                    msg.attach(MIMEText("SickChill Notification - Remote Login\n" "New login from IP: {0}\n\n" "Powered by SickChill.".format(ipaddress)))
+                    msg.attach(MIMEText("SickChill Notification - Remote Login\nNew login from IP: {0}\n\nPowered by SickChill.".format(ipaddress)))
                     msg.attach(
                         MIMEText(
                             '<body style="font-family:Helvetica, Arial, sans-serif;">'

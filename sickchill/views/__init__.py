@@ -1,4 +1,4 @@
-from sickchill.views.api import ApiCall, ApiHandler, function_mapper, KeyHandler
+from sickchill.views.api import ApiCall, ApiHandler, KeyHandler, function_mapper
 from sickchill.views.authentication import LoginHandler, LogoutHandler
 from sickchill.views.browser import WebFileBrowser
 from sickchill.views.calendar import CalendarHandler

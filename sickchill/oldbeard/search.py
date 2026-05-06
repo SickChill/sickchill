@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from sickchill.providers.result_classes import SearchResult
 
 from sickchill.oldbeard import clients, common, db, helpers, notifiers, nzbget, nzbSplitter, sab, show_name_helpers, ui
-from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER
+from sickchill.oldbeard.common import MULTI_EP_RESULT, SEASON_RESULT, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER, Quality
 
 
 def _download_result(result: "SearchResult"):

@@ -5,7 +5,7 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
-from typing import Callable, Dict, Iterable, List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Union
 from urllib.parse import urljoin
 
 from requests.structures import CaseInsensitiveDict
@@ -15,7 +15,7 @@ import sickchill.oldbeard
 from sickchill import logger
 from sickchill.helper.common import sanitize_filename, valid_url
 from sickchill.oldbeard import filters
-from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
+from sickchill.oldbeard.common import MULTI_EP_RESULT, SEASON_RESULT, Quality
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser

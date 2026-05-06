@@ -4,7 +4,7 @@ from typing import List
 
 import guessit
 from slugify import slugify
-from sqlalchemy import ForeignKey, JSON
+from sqlalchemy import JSON, ForeignKey
 from sqlalchemy.event import listen
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker

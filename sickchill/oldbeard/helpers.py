@@ -35,8 +35,8 @@ from urllib3 import disable_warnings
 
 import sickchill
 from sickchill import adba, logger, settings
-from sickchill.helper import episode_num, pretty_file_size, SUBTITLE_EXTENSIONS
-from sickchill.helper.common import is_media_file, replace_extension, USER_AGENT
+from sickchill.helper import SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
+from sickchill.helper.common import USER_AGENT, is_media_file, replace_extension
 from sickchill.oldbeard import db
 from sickchill.show.Show import Show
 
@@ -691,7 +691,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from OpenSSL import crypto
 
-        from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
+        from sickchill.certgen import TYPE_RSA, createCertificate, createCertRequest, createKeyPair
     except ModuleNotFoundError:
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))

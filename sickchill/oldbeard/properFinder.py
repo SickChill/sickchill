@@ -8,7 +8,7 @@ import traceback
 from sickchill import logger, oldbeard, settings
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import db, helpers
-from sickchill.oldbeard.common import cpu_presets, DOWNLOADED, Quality, SNATCHED, SNATCHED_PROPER
+from sickchill.oldbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.oldbeard.scdatetime import sctimeago
 from sickchill.oldbeard.search import pick_best_result, snatch_episode

@@ -1,6 +1,6 @@
 import os
 import sys
-from argparse import ArgumentParser, SUPPRESS
+from argparse import SUPPRESS, ArgumentParser
 
 
 class SickChillArgumentParser:
@@ -19,8 +19,9 @@ class SickChillArgumentParser:
         self.parser.add_argument("-p", "--port", type=int, help="the port to listen on")
         self.parser.add_argument(
             "--datadir",
-            help="full path to a folder where the database, config, cache and log files should be stored. Default: {data_dir}"
-            "{sep}".format(data_dir=self.data_dir, sep=os.sep),
+            help="full path to a folder where the database, config, cache and log files should be stored. Default: {data_dir}{sep}".format(
+                data_dir=self.data_dir, sep=os.sep
+            ),
         )
         self.parser.add_argument(
             "--config",
@@ -35,7 +36,7 @@ class SickChillArgumentParser:
         self.parser.add_argument(
             "--force-update",
             action="store_true",
-            help="download the latest stable version and force an " "update (use when you're unable to do so using " "the web ui)",
+            help="download the latest stable version and force an update (use when you're unable to do so using the web ui)",
         )
         self.parser.add_argument(
             "--install-file",

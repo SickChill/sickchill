@@ -93,7 +93,7 @@ class QualityStringTests(unittest.TestCase):
             "Test.Show.S01E02.1080p.iTunes.H.264.AAC-GROUP",
             "Test Show S01E02 1080p iTunes H 264 AAC-GROUP",
             "Test_Show_S01E02_1080p_iTunes_H_264_AAC-GROUP",
-            "Test.Show.S01E02.Episode.Name.1080p.Itunes.WEB-DL.x264" "Test.Show.S01E02.Episode.Name.1080p.ItunesHD.WEB-DL.x264",
+            "Test.Show.S01E02.Episode.Name.1080p.Itunes.WEB-DL.x264Test.Show.S01E02.Episode.Name.1080p.ItunesHD.WEB-DL.x264",
             "Test.Show.S01E02.Episode.Name.1080p.ItunesUHD.WEB-DL.x264",
             "Test.Show.S01E02.Episode.Name.1080p.AMZN.WEB-DL.x264",
             "Test.Show.S01E02.Episode.Name.1080p.Amazon.WEB-DL.x264",

@@ -57,6 +57,6 @@ from sickchill.views.api.webapi import (
     CMDSickChillShutdown,
     CMDSickChillUpdate,
     CMDSubtitleSearch,
-    function_mapper,
     TVDBShorthandWrapper,
+    function_mapper,
 )

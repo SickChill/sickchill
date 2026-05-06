@@ -53,17 +53,14 @@ sickchill = "SickChill:main"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = ">=22.8,<25.0"
 coveralls = ">=4.0,<5.0"
 mock = ">=4.0.3,<6.0.0"
 Babel = "^2.9.0"
-pytest-cov = ">=3,<6"
+pytest-cov = ">=3,<8"
 pytest-timeout = ">=2.0,<3.0"
-pytest-isort = ">=3,<5"
 ruff = ">=0.4.0,<1.0"
-pytest = ">=7.0.1,<9.0.0,!=8.2.0"
-isort = "^5.10.1"
-poethepoet = ">=0.27.0,<0.31"
+pytest = ">=7.0.1,!=8.2.0,<10.0.0"
+poethepoet = ">=0.27.0,<0.46"
 po2json = "^0.2.2"
 pre-commit = ">=2.20,<4.0"
 
@@ -81,13 +78,13 @@ optional = true
 
 [tool.poetry.group.types.dependencies]
 types-attrs = "^19.1.0"
-types-pyOpenSSL = ">=22.0.10,<25.0.0"
+types-pyOpenSSL = ">=22.0.10,<26.0.0"
 types-python-dateutil = "^2.8.19"
 types-python-slugify = ">=6.1,<9.0"
 types-requests = "^2.28.11"
 types-chardet = "^5.0.4"
-types-pytz = ">=2022.2.1,<2025.0.0"
-types-setuptools = ">=65.3,<76.0"
+types-pytz = ">=2022.2.1,<2027.0.0"
+types-setuptools = ">=65.3,<83.0"
 types-six = "^1.16.20"
 
 [tool.poetry.group.experimental]
@@ -150,29 +147,16 @@ ignore = [
     "PT017",
     "S101",
 ]
+extend-select = ["F821", "I"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["sickchill"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py"]
 addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail -v --timeout=120"
 filterwarnings = ['ignore:.*telnetlib.*is deprecated:DeprecationWarning']
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-line_length = 160
-combine_as_imports = true
-order_by_type = false
-remove_imports = [ "from __future__ import absolute_import", "from __future__ import print_function", "from __future__ import unicode_literals" ]
-known_first_party = "sickchill"
-extra_standard_library = [ "posixpath", "ntpath" ]
-use_parentheses = true
-src_paths = [ "sickchill", "tests", "SickChill.py", "setup.py" ]
-
-[tool.black]
-line-length = 160
-target_version = ['py310']
-include = '\.pyi?$'
-exclude = 'contrib/scmaintools|\.venv|venv|\.git|\.hg|\.mypy_cache|\.tox|_build|buck-out|build|dist|node_modules|bower_components'
 
 [tool.poe.tasks]
 pytest = "pytest"
@@ -180,20 +164,19 @@ yarn = "yarn"
 xo = "xo"
 ava = "ava"
 
-_black = {cmd = "black . --check --diff", help = "Check code style using black"}
-_isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
-flake8 = {cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Run Ruff lint checks"}
+_format_check = {cmd = "ruff format --check --diff .", help = "Check code formatting using ruff"}
+_isort_check = {cmd = "ruff check --select I .", help = "Check import order"}
+flake8 = {cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Check for undefined variables"}
 
-isort = {cmd = "isort .", help = "Fix import order"}
-black = {cmd = "black .", help = "Reformat code using black"}
+format = {cmd = "ruff format .", help = "Reformat code using ruff"}
+isort = {cmd = "ruff check --select I --fix .", help = "Fix import order"}
 
 test_providers = {cmd = "pytest tests/sickchill_tests/providers/torrent/test_parsing.py", help = "Run provider tests"}
 crowdin_upload = "crowdin-cli-py upload sources -c .github/crowdin.yml"
 crowdin_download = "crowdin-cli-py download -c .github/crowdin.yml"
 po2json = "po2json --format jed "
 
-lint = ["_black", "_isort", "flake8"]
-format = ["black", "isort", "flake8"]
+lint = ["_format_check", "_isort_check", "flake8"]
 
 _poetry_update = {shell = "poetry update", help = "update python dependancies"}
 _yarn_upgrade = {cmd = "yarn upgrade", help = "update yarn dependancies"}
@@ -253,7 +236,7 @@ greenlet = {version = ">=2.0.0", allow-prereleases = true}
 jsonrpclib-pelix = "^0.4.2"
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
-pyOpenSSL = ">=20.0.1,<26.0.0"
+pyOpenSSL = ">=20.0.1,<27.0.0"
 python-dateutil = "^2.8.1"
 python-twitter = "^3.5"
 rarfile = "^4.0"
@@ -262,7 +245,7 @@ tmdbsimple = "^2.8.0"
 tornado = "^6.3.2"
 tvdbsimple = "^1.0.6"
 Unidecode = "^1.2.0"
-validators = ">=0.30.0,<0.35.0"
+validators = ">=0.30.0,<0.36.0"
 enzyme = ">=0.5.0,<0.6.0"
 python3-fanart = "^2.0.0"
 gntp = "^1.0.3"
@@ -276,7 +259,7 @@ Send2Trash = ">=1.5.0"
 deluge-client = "^1.9.0"
 ifaddr = ">=0.1.7,<0.3.0"
 new-rtorrent-python = "^1.0.1-alpha.0"
-qbittorrent-api = ">=2021.3.18,<2025.0.0"
+qbittorrent-api = ">=2021.3.18,<2027.0.0"
 packaging = ">=24.2,<27.0"
 timeago = "^1.0.15"
 SQLAlchemy = ">=2.0.0,<3.0.0"

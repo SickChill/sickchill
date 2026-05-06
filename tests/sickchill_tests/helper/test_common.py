@@ -9,6 +9,8 @@ from pathlib import Path
 
 from sickchill import settings
 from sickchill.helper.common import (
+    MEDIA_EXTENSIONS,
+    SUBTITLE_EXTENSIONS,
     convert_size,
     episode_num,
     http_code_description,
@@ -16,12 +18,10 @@ from sickchill.helper.common import (
     is_rar_file,
     is_sync_file,
     is_torrent_or_nzb_file,
-    MEDIA_EXTENSIONS,
     pretty_file_size,
     remove_extension,
     replace_extension,
     sanitize_filename,
-    SUBTITLE_EXTENSIONS,
     try_int,
 )
 

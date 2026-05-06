@@ -365,7 +365,7 @@ class SubtitlesFinder(object):
             return
 
         if not enabled_service_list():
-            logger.warning("Not enough services selected. At least 1 service is required to " "search subtitles in the background")
+            logger.warning("Not enough services selected. At least 1 service is required to search subtitles in the background")
             return
 
         self.amActive = True

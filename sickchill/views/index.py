@@ -11,7 +11,7 @@ from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
 from tornado.concurrent import run_on_executor
-from tornado.web import authenticated, HTTPError, RequestHandler
+from tornado.web import HTTPError, RequestHandler, authenticated
 
 import sickchill.start
 from sickchill import logger, settings
@@ -74,9 +74,7 @@ class BaseHandler(RequestHandler):
                         <p>{3}</p>
                         <button onclick="window.location='{4}/errorlogs/';">View Log(Errors)</button>
                     </body>
-                    </html>""".format(
-                    error, error, trace_info, request_info, settings.WEB_ROOT
-                )
+                    </html>""".format(error, error, trace_info, request_info, settings.WEB_ROOT)
             )
 
     def redirect(self, url, permanent=False, status=None):
@@ -241,7 +239,7 @@ class WebRoot(WebHandler):
 
         episodes = {}
 
-        results = main_db_con.select("SELECT episode, season, showid " "FROM tv_episodes " "ORDER BY season, episode")
+        results = main_db_con.select("SELECT episode, season, showid FROM tv_episodes ORDER BY season, episode")
 
         for result in results:
             if result["showid"] not in episodes:

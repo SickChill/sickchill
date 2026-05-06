@@ -139,7 +139,7 @@ class MovieList:
         def add_tmdb_genres():
             for genre in tmdb_object["genres"]:
                 if genre["name"] not in imdb_genres:
-                    logger.debug(f'Adding tmdb genre {genre["name"]}')
+                    logger.debug(f"Adding tmdb genre {genre['name']}")
                     tmdb_data.genres.append(movie.Genres(pk=genre["name"]))
             instance.indexer_data.append(tmdb_data)
 

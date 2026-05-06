@@ -62,16 +62,16 @@ class CalendarHandler(BaseHandler):
 
                 # Create event for episode
                 ical += "BEGIN:VEVENT\r\n"
-                ical += f'DTSTART:{air_date_time.strftime("%Y%m%d")}T{air_date_time.strftime("%H%M%S")}Z\r\n'
-                ical += f'DTEND:{air_date_time_end.strftime("%Y%m%d")}T{air_date_time_end.strftime("%H%M%S")}Z\r\n'
+                ical += f"DTSTART:{air_date_time.strftime('%Y%m%d')}T{air_date_time.strftime('%H%M%S')}Z\r\n"
+                ical += f"DTEND:{air_date_time_end.strftime('%Y%m%d')}T{air_date_time_end.strftime('%H%M%S')}Z\r\n"
                 if settings.CALENDAR_ICONS:
                     ical += "X-GOOGLE-CALENDAR-CONTENT-ICON:https://sickchill.github.io/images/ico/favicon-16.png\r\n"
                     ical += "X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n"
-                ical += f'SUMMARY: {show["show_name"]} - {episode["season"]}x{episode["episode"]} - {episode["name"]}\r\n'
-                ical += f'UID:SickChill-{datetime.date.today().isoformat()}-{show["show_name"].replace(" ", "-")}-S{episode["season"]}E{episode["episode"]}\r\n'
-                ical += f'DESCRIPTION:{show["airs"] or "(Unknown airs)"} on {show["network"] or "Unknown network"}'
+                ical += f"SUMMARY: {show['show_name']} - {episode['season']}x{episode['episode']} - {episode['name']}\r\n"
+                ical += f"UID:SickChill-{datetime.date.today().isoformat()}-{show['show_name'].replace(' ', '-')}-S{episode['season']}E{episode['episode']}\r\n"
+                ical += f"DESCRIPTION:{show['airs'] or '(Unknown airs)'} on {show['network'] or 'Unknown network'}"
                 if episode["description"]:
-                    ical += f' \\n\\n {episode["description"].splitlines()[0]}'
+                    ical += f" \\n\\n {episode['description'].splitlines()[0]}"
                 ical += "\r\nEND:VEVENT\r\n"
 
         # Ending the iCal
