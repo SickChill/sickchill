@@ -45,9 +45,9 @@ Session.vim
 .ropeproject/*
 *.iml
 .idea
+.vscode
 *.ipr
 .settings/*
-.vscode
 
 # OS generated files #
 ######################

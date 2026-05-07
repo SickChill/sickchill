@@ -329,6 +329,7 @@
                                 'addic7ed': {'user': settings.ADDIC7ED_USER, 'pass': settings.ADDIC7ED_PASS},
                                 'itasa': {'user': settings.ITASA_USER, 'pass': settings.ITASA_PASS},
                                 'opensubtitles': {'user': settings.OPENSUBTITLES_USER, 'pass': settings.OPENSUBTITLES_PASS},
+                                'opensubtitlescom': {'user': settings.OPENSUBTITLESCOM_USER, 'pass': settings.OPENSUBTITLESCOM_PASS},
                                 'subscenter': {'user': settings.SUBSCENTER_USER, 'pass': settings.SUBSCENTER_PASS}
                             }
                         %>
@@ -376,6 +377,5 @@
                 </div>
             </div>
         </div>
-
     </form>
 </%block>
