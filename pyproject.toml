@@ -37,6 +37,7 @@ packages = [
     { include = "SickChill.py" },
     { include = "frontend" }
 ]
+package-mode = false
 
 [tool.poetry.urls]
 "Changelog" = "https://github.com/SickChill/SickChill/blob/master/CHANGES.md"
