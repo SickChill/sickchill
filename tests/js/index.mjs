@@ -1,4 +1,4 @@
-const test = require('ava');
+import test from 'ava';
 
 test.failing('getMeta', t => {
     const meta = document.createElement('meta', {
