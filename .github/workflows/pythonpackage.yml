@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Docker meta
         id: docker
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             ${{ github.repository }}
@@ -81,7 +81,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
           persist-credentials: false
@@ -90,17 +90,18 @@ jobs:
         uses: ludeeus/action-shellcheck@2.0.0
         with:
           format: diff
-      - name: Setup Poetry
-        uses: 5yutan5/setup-poetry-env@v1.1.0
+      - name: Install Poetry
+        run: pipx install poetry
+      - name: Setup Python
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-          python-cache-dependency-path: pyproject.toml
+          cache: 'poetry'
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
-          cache: 'yarn'
+          node-version: '22.x'
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Install yarn
         run: npm install -g yarn
@@ -136,16 +137,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           buildkitd-config-inline: |
             experimental = true
             debug = true
             insecure-entitlements = [ "security.insecure" ]
       - name: Test Docker Build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64
           push: false
@@ -202,9 +203,9 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
         with:
           buildkitd-config-inline: |
             experimental = true
@@ -212,20 +213,20 @@ jobs:
             insecure-entitlements = [ "security.insecure" ]
       - if: success() && !env.ACT
         name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - if: success() && !env.ACT
         name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - if: success()
         name: Build and Push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           platforms: ${{ env.TARGET_PLATFORMS }}
           push: ${{ github.event_name != 'pull_request' && !env.ACT }}
@@ -240,7 +241,7 @@ jobs:
             security.insecure
       - if: success()
         name: Snag wheels
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           file: Dockerfile
           platforms: ${{ env.TARGET_PLATFORMS }}
