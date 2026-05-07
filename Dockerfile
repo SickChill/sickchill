@@ -6,7 +6,7 @@
 # -v /etc/localtime:/etc/localtime:ro
 # -p 8080:8081 sickchill/sickchill
 
-FROM --platform=$TARGETPLATFORM python:3.10-slim-bullseye as base
+FROM --platform=$TARGETPLATFORM python:3.13-slim-bookworm AS base
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
@@ -28,7 +28,6 @@ ENV POETRY_HOME="$HOME/.poetry"
 
 ENV PATH=$POETRY_VIRTUALENVS_PATH/local/bin:$POETRY_VIRTUALENVS_PATH/bin:$PATH
 
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 # ENV SODIUM_INSTALL=system
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=on
@@ -39,13 +38,13 @@ ENV PIP_EXTRA_INDEX_URL=$PIP_EXTRA_INDEX_URL
 
 RUN mkdir -m 777 -p /sickchill "$POETRY_CACHE_DIR"
 
-RUN sed -i -e "s/ main/ main contrib non-free/gm" /etc/apt/sources.list
+RUN sed -i "s/Components: main/Components: main contrib non-free/" /etc/apt/sources.list.d/debian.sources
 RUN apt-get update -qq && apt-get upgrade -yqq && \
- apt-get install -yqq curl libxml2 libxslt1.1 libffi7 libssl1.1 libmediainfo0v5 mediainfo unrar && \
+ apt-get install -yqq curl libxml2 libxslt1.1 libffi8 libssl3 libmediainfo0v5 mediainfo unrar && \
  apt-get clean -yqq && \
  rm -rf /var/lib/apt/lists/*
 
-FROM base as builder
+FROM base AS builder
 RUN apt-get update -qq && apt-get upgrade -yqq && \
  apt-get install -yqq build-essential python3-distutils-extra python3-dev \
  libxml2-dev libxslt1-dev libffi-dev libssl-dev libmediainfo-dev findutils sed && \
@@ -102,7 +101,7 @@ fi
 FROM scratch AS sickchill-wheels
 COPY --from=builder /sickchill-wheels /
 
-FROM base as sickchill-final
+FROM base AS sickchill-final
 
 COPY --from=builder "$POETRY_VIRTUALENVS_PATH" "$POETRY_VIRTUALENVS_PATH"
 
