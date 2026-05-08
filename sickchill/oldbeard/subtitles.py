@@ -303,7 +303,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
 
         # external subtitles
         if subtitles:
-            video.subtitle_languages |= set(subliminal.core.search_external_subtitles(video_path, directory=subtitles_path).values())
+            video.subtitles.extend(subliminal.core.search_external_subtitles(video_path, directory=subtitles_path).values())
 
         if embedded_subtitles is None:
             embedded_subtitles = bool(not settings.EMBEDDED_SUBTITLES_ALL and video_path.endswith(".mkv"))
