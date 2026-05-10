@@ -41,6 +41,7 @@ class ConfigSubtitles(Config):
         settings.SUBTITLES_HISTORY = config.checkbox_to_value(self.get_body_argument("subtitles_history", default=None))
         settings.EMBEDDED_SUBTITLES_ALL = config.checkbox_to_value(self.get_body_argument("embedded_subtitles_all", default=None))
         settings.SUBTITLES_HEARING_IMPAIRED = config.checkbox_to_value(self.get_body_argument("subtitles_hearing_impaired", default=None))
+        settings.SUBTITLES_FOREIGN_ONLY = config.checkbox_to_value(self.get_body_argument("subtitles_foreign_only", default=None))
         settings.SUBTITLES_MULTI = config.checkbox_to_value(self.get_body_argument("subtitles_multi", default=None))
         settings.SUBTITLES_KEEP_ONLY_WANTED = config.checkbox_to_value(self.get_body_argument("subtitles_keep_only_wanted", default=None))
         settings.SUBTITLES_EXTRA_SCRIPTS = [x.strip() for x in subtitles_extra_scripts.split("|") if x.strip()]

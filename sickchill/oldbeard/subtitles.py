@@ -243,6 +243,7 @@ def download_subtitles(episode, force_lang=None):
             video,
             languages=languages,
             hearing_impaired=settings.SUBTITLES_HEARING_IMPAIRED,
+            foreign_only=settings.SUBTITLES_FOREIGN_ONLY,
             min_score=user_score,
             only_one=not settings.SUBTITLES_MULTI,
         )

@@ -686,6 +686,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.SUBTITLES_PERFECT_MATCH = check_setting_bool(settings.CFG, "Subtitles", "subtitles_perfect_match", True)
         settings.EMBEDDED_SUBTITLES_ALL = check_setting_bool(settings.CFG, "Subtitles", "embedded_subtitles_all")
         settings.SUBTITLES_HEARING_IMPAIRED = check_setting_bool(settings.CFG, "Subtitles", "subtitles_hearing_impaired")
+        settings.SUBTITLES_FOREIGN_ONLY = check_setting_bool(settings.CFG, "Subtitles", "subtitles_foreign_only")
         settings.SUBTITLES_FINDER_FREQUENCY = check_setting_int(settings.CFG, "Subtitles", "subtitles_finder_frequency", 1, min_val=1)
         settings.SUBTITLES_MULTI = check_setting_bool(settings.CFG, "Subtitles", "subtitles_multi", True)
         settings.SUBTITLES_KEEP_ONLY_WANTED = check_setting_bool(settings.CFG, "Subtitles", "subtitles_keep_only_wanted")
@@ -1650,6 +1651,7 @@ def save_config():
                 "subtitles_perfect_match": int(settings.SUBTITLES_PERFECT_MATCH),
                 "embedded_subtitles_all": int(settings.EMBEDDED_SUBTITLES_ALL),
                 "subtitles_hearing_impaired": int(settings.SUBTITLES_HEARING_IMPAIRED),
+                "subtitles_foreign_only": int(settings.SUBTITLES_FOREIGN_ONLY),
                 "subtitles_finder_frequency": int(settings.SUBTITLES_FINDER_FREQUENCY),
                 "subtitles_multi": int(settings.SUBTITLES_MULTI),
                 "subtitles_extra_scripts": "|".join(settings.SUBTITLES_EXTRA_SCRIPTS),
