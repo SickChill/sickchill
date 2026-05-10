@@ -173,7 +173,7 @@ class AddShows(Home):
         posts them to addNewShow
         """
         show_to_add = self.get_body_argument("show_to_add", show_to_add)
-        other_shows = self.get_body_argument("other_shows", other_shows)
+        other_shows = self.get_body_arguments("other_shows") or other_shows
         search_string = self.get_body_argument("search_string", search_string)
 
         t = PageTemplate(rh=self, filename="addShows_newShow.mako")
@@ -430,7 +430,7 @@ class AddShows(Home):
         indexer_language = self.get_body_argument("indexerLang", default=settings.INDEXER_DEFAULT_LANGUAGE)
 
         # grab our list of other dirs if given
-        other_shows = self.get_body_argument("other_shows", default=None)
+        other_shows = self.get_body_arguments("other_shows")
         full_show_path = self.get_body_argument("fullShowPath", default=None)
         root_dir = self.get_body_argument("rootDir", default=None)
 
