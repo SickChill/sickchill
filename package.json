@@ -44,7 +44,7 @@
     "load-grunt-tasks": "^5.1.0",
     "mini-css-extract-plugin": "^2.8.0",
     "sass": "^1.71.0",
-    "sass-loader": "^16.0.0",
+    "sass-loader": "^16.0.8",
     "snyk": "^1.1285.1",
     "stylelint": "^16.2.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
