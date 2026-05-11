@@ -202,3 +202,67 @@ class TestComputeScore(unittest.TestCase):
         self.assertEqual(params[1], "video")
         # hearing_impaired should NOT be a named parameter (only **kwargs)
         self.assertNotIn("hearing_impaired", params)
+
+
+class TestForcedSubtitles(unittest.TestCase):
+    """Test forced/foreign-only subtitle support."""
+
+    def test_setting_exists(self):
+        """SUBTITLES_FOREIGN_ONLY setting should exist."""
+        self.assertTrue(hasattr(settings, "SUBTITLES_FOREIGN_ONLY"))
+
+    def test_setting_default_is_false(self):
+        """SUBTITLES_FOREIGN_ONLY should default to False."""
+        self.assertFalse(settings.SUBTITLES_FOREIGN_ONLY)
+
+    def test_subliminal_supports_foreign_only(self):
+        """subliminal's download_best_subtitles should accept foreign_only parameter."""
+        import inspect
+
+        sig = inspect.signature(subliminal.ProviderPool.download_best_subtitles)
+        self.assertIn("foreign_only", sig.parameters)
+
+    @patch("sickchill.oldbeard.subtitles.subliminal.save_subtitles")
+    @patch("sickchill.oldbeard.subtitles.log_scores")
+    @patch("sickchill.oldbeard.subtitles.get_needed_languages")
+    @patch("sickchill.oldbeard.subtitles.get_subtitles_path", return_value=None)
+    @patch("sickchill.oldbeard.subtitles.enabled_service_list", return_value=[])
+    @patch("sickchill.oldbeard.subtitles.SubtitleProviderPool")
+    @patch("sickchill.oldbeard.subtitles.get_video")
+    @patch("sickchill.oldbeard.subtitles.needs_subtitles", return_value=True)
+    def test_download_forwards_foreign_only(self, mock_needs, mock_get_video, mock_pool_cls, mock_enabled, mock_path, mock_langs, mock_log_scores, mock_save):
+        """download_subtitles should pass foreign_only=True to pool.download_best_subtitles."""
+        from sickchill.oldbeard.subtitles import download_subtitles
+
+        mock_langs.return_value = {Language("eng")}
+
+        # Setup mocks
+        video = MagicMock()
+        video.name = "/tmp/video.mkv"
+        mock_get_video.return_value = video
+
+        pool = mock_pool_cls.return_value
+        pool.list_subtitles.return_value = [MagicMock()]
+        pool.download_best_subtitles.return_value = []
+        pool.discarded_providers = set()
+
+        # Setup settings with guaranteed restore
+        original_foreign = settings.SUBTITLES_FOREIGN_ONLY
+        original_hi = settings.SUBTITLES_HEARING_IMPAIRED
+        self.addCleanup(setattr, settings, "SUBTITLES_FOREIGN_ONLY", original_foreign)
+        self.addCleanup(setattr, settings, "SUBTITLES_HEARING_IMPAIRED", original_hi)
+        settings.SUBTITLES_FOREIGN_ONLY = True
+        settings.SUBTITLES_HEARING_IMPAIRED = False
+
+        # Create a fake episode
+        episode = MagicMock()
+        episode.subtitles = []
+        episode.location = "/tmp/video.mkv"
+        episode.pretty_name = "Test S01E01"
+
+        download_subtitles(episode)
+
+        # Verify foreign_only was passed through
+        pool.download_best_subtitles.assert_called_once()
+        call_kwargs = pool.download_best_subtitles.call_args[1]
+        self.assertTrue(call_kwargs.get("foreign_only"))
