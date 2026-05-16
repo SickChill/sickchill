@@ -186,7 +186,7 @@ class Manage(Home, WebRoot):
         return json.dumps(result)
 
     def subtitleMissed(self):
-        which_subs = self.get_argument("whichSubs", None)
+        which_subs = self.get_body_argument("whichSubs", None)
         t = PageTemplate(rh=self, filename="manage_subtitleMissed.mako")
 
         if not which_subs:
