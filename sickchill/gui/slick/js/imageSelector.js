@@ -2,18 +2,8 @@
     const imageTypeSizes = {
         poster: {
             minHeight: 269,
-            ratio: 40 / 57,
-            validate(img) {
-                return img.height >= this.minHeight
-                    && img.width / img.height === this.ratio;
-            },
-            errorMsg: 'The height of the poster can not be lower than 269 pixels and the aspect ratio should be 40:57.',
-        },
-        banner: {
-            minHeight: 37,
-            targetRatio: 200 / 37,
-            tolerance: 0.03,
-
+            targetRatio: 40 / 57,
+            tolerance: 0.02,
             validate(img) {
                 if (img.height < this.minHeight) {
                     return false;
@@ -21,7 +11,21 @@
 
                 const actualRatio = img.width / img.height;
                 const diff = Math.abs(actualRatio - this.targetRatio);
+                return diff <= this.tolerance;
+            },
+            errorMsg: 'Poster must have aspect ratio ≈ 40:57 (≈0.7018) and height ≥ 269px.',
+        },
+        banner: {
+            minHeight: 37,
+            targetRatio: 200 / 37,
+            tolerance: 0.03,
+            validate(img) {
+                if (img.height < this.minHeight) {
+                    return false;
+                }
 
+                const actualRatio = img.width / img.height;
+                const diff = Math.abs(actualRatio - this.targetRatio);
                 return diff <= this.tolerance;
             },
             errorMsg: 'Banner must have aspect ratio ≈ 200:37 (5.405:1) and height ≥ 37px.',
