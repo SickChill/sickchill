@@ -10,19 +10,19 @@
             errorMsg: 'The height of the poster can not be lower than 269 pixels and the aspect ratio should be 40:57.',
         },
         banner: {
-            targetRatio: 200 / 37,
             minHeight: 37,
-            tolerance: 0.03,              // 3% tolerance (very reasonable)
+            targetRatio: 200 / 37,
+            tolerance: 0.03,
 
             validate(img) {
                 if (img.height < this.minHeight) {
                     return false;
-                    }
+                }
 
-                    const actualRatio = img.width / img.height;
-                    const diff = Math.abs(actualRatio - this.targetRatio);
+                const actualRatio = img.width / img.height;
+                const diff = Math.abs(actualRatio - this.targetRatio);
 
-                    return diff <= this.tolerance
+                return diff <= this.tolerance;
             },
             errorMsg: 'Banner must have aspect ratio ≈ 200:37 (5.405:1) and height ≥ 37px.',
         },
