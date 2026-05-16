@@ -20,7 +20,7 @@
         <br>
         % endif
 
-        <form action="${scRoot}/manage/subtitleMissed" method="get">
+        <form action="${scRoot}/manage/subtitleMissed" method="post">
             % if settings.SUBTITLES_MULTI:
                 ${_('Manage episodes without')} <select name="whichSubs" class="form-control form-control-inline input-sm">
                 <option value="all">${_('All')}</option>
