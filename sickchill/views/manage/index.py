@@ -16,12 +16,27 @@ from sickchill.views.routes import Route
 
 @Route("/manage(/?.*)", name="manage:main")
 class Manage(Home, WebRoot):
+    """
+    Handle manage-section pages and actions.
+
+    This controller renders the mass update, episode status, missing subtitle,
+    backlog, mass edit, and failed downloads management views. It also handles
+    form submissions that queue show updates, refreshes, renames, subtitle
+    downloads, metadata actions, deletions, and bulk episode status changes.
+    """
+
     def __init__(self, backend, back2=None):
+        """
+        Initialize the manage controller.
+        """
         super().__init__(backend, back2)
         self.to_change_show = None
         self.to_change_eps = None
 
     def index(self):
+        """
+        Render the mass update landing page.
+        """
         t = PageTemplate(rh=self, filename="manage.mako")
         return t.render(
             title=_("Mass Update"),
@@ -33,6 +48,13 @@ class Manage(Home, WebRoot):
 
     @staticmethod
     def showEpisodeStatuses(indexer_id, whichStatus):
+        """
+        Retrieve episode statuses for a given show and status filter.
+
+        :param indexer_id: The indexer ID of the show.
+        :param whichStatus: The status filter for episodes.
+        :return: JSON-formatted episode status data.
+        """
         status_list = [int(whichStatus)]
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
@@ -56,6 +78,13 @@ class Manage(Home, WebRoot):
         return json.dumps(result)
 
     def episodeStatuses(self):
+        """
+        Render the episode status overview page.
+
+        When a status is selected, this builds per-show episode counts for all
+        matching episodes. Without a selected status, it renders the selection
+        form only.
+        """
         which_status = self.get_query_argument("whichStatus", None)
         if which_status:
             status_list = [int(which_status)]
@@ -115,6 +144,18 @@ class Manage(Home, WebRoot):
 
     # noinspection PyUnusedLocal
     def changeEpisodeStatuses(self, oldStatus, newStatus, *args, **kwargs):
+        """
+        Change selected episodes from one status to another.
+
+        Selected episodes are collected from submitted checkbox arguments. A
+        submitted `all` marker expands to all matching episodes for that show.
+
+        :param oldStatus: Current status to change from.
+        :param newStatus: New status to apply.
+        :param args: Unused positional route arguments.
+        :param kwargs: Submitted checkbox values keyed by show and episode.
+        :return: Redirect to the episode status overview.
+        """
         status_list = [int(oldStatus)]
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
@@ -156,6 +197,16 @@ class Manage(Home, WebRoot):
 
     @staticmethod
     def showSubtitleMissed(indexer_id, whichSubs):
+        """
+        Return missing-subtitle episode rows for a show.
+
+        Used by the missing subtitles management page to lazily expand a show
+        and fetch episodes that still need the requested subtitle language.
+
+        :param indexer_id: Show identifier.
+        :param whichSubs: Subtitle language code, or `all` for all wanted languages.
+        :return: JSON mapping seasons and episodes to episode names and subtitles.
+        """
         main_db_con = db.DBConnection()
         cur_show_results = main_db_con.select(
             "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? {0} AND (status LIKE '%4' OR status LIKE '%6') and "
@@ -186,7 +237,13 @@ class Manage(Home, WebRoot):
         return json.dumps(result)
 
     def subtitleMissed(self):
-        which_subs = self.get_body_argument("whichSubs", None)
+        """
+        Render the missing subtitles management page.
+        When a subtitle language is selected, this builds per-show counts for
+        episodes missing that language. Without a selected language, it renders
+        the selection form only.
+        """
+        which_subs = self.get_query_argument("whichSubs", None)
         t = PageTemplate(rh=self, filename="manage_subtitleMissed.mako")
 
         if not which_subs:
@@ -244,6 +301,13 @@ class Manage(Home, WebRoot):
 
     # noinspection PyUnusedLocal
     def downloadSubtitleMissed(self, *args, **kwargs):
+        """
+        Queue subtitle downloads for selected missing-subtitle episodes.
+
+        :param args: Unused positional arguments.
+        :param kwargs: Keyword arguments mapping show identifiers to subtitle languages.
+        :return: None
+        """
         to_download = {}
 
         # make a list of all shows and their associated args
@@ -280,6 +344,13 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/subtitleMissed/")
 
     def backlogShow(self):
+        """
+        Queue a show for backlog processing.
+        The target show is read from the `indexer_id` query argument.
+        :param args: Unused positional arguments.
+        :param kwargs: Keyword arguments mapping show identifiers to subtitle languages.
+        :return: None
+        """
         show = self.get_query_argument("indexer_id")
         show_object = Show.find(settings.show_list, show)
 
@@ -289,6 +360,10 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/backlogOverview/")
 
     def backlogOverview(self):
+        """
+        Render the backlog overview page.
+        """
+
         t = PageTemplate(rh=self, filename="manage_backlogOverview.mako")
 
         show_counts = {}
@@ -366,6 +441,11 @@ class Manage(Home, WebRoot):
 
     @staticmethod
     def __gooey_path(name, method):
+        """
+        Wrapper around os.path and ntpath methods to handle both Windows and Unix paths.
+        The active OS path module is tried first, followed by Windows and POSIX
+        path handling. This helps handle paths created on different platforms.
+        """
         result = getattr(os.path, method)(name)
         if result == name or not result:
             result = getattr(ntpath, method)(name)
@@ -376,6 +456,11 @@ class Manage(Home, WebRoot):
 
     # noinspection PyProtectedMember
     def massEdit(self):
+        """
+        Render the mass edit page for shows.
+        Determines shared field values across selected shows so the form can
+        display common settings or leave mixed settings unset.
+        """
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
         edit = self.get_body_arguments("edit")
@@ -517,6 +602,10 @@ class Manage(Home, WebRoot):
 
     # noinspection PyProtectedMember, PyUnusedLocal
     def massEditSubmit(self):
+        """
+        Process mass edit form submission for shows.
+        Handles updating show settings based on form inputs and selected shows.
+        """
         paused = self.get_body_argument("paused", None)
         default_ep_status = self.get_body_argument("default_ep_status", None)
         anime = self.get_body_argument("anime", None)
@@ -628,6 +717,10 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self):
+        """
+        Process mass update actions for shows.
+        Handles refreshing, updating, renaming, subtitle management, deletion, removal, and metadata updates for selected shows.
+        """
         update = self.get_body_arguments("update")
         refresh = self.get_body_arguments("refresh")
         rename = self.get_body_arguments("rename")
@@ -718,6 +811,10 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def failedDownloads(self):
+        """
+        Handle failed downloads management.
+        Processes removal of failed downloads and redirects to the failed downloads page.
+        """
         remove = self.get_body_arguments("remove[]")
         limit = self.get_argument("limit", "100")
         failed_db_con = db.DBConnection("failed.db")
