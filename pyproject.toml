@@ -62,7 +62,7 @@ ruff = ">=0.4.0,<1.0"
 pytest = ">=7.0.1,!=8.2.0,<10.0.0"
 poethepoet = ">=0.27.0,<0.46"
 po2json = "^0.2.2"
-pre-commit = ">=2.20,<4.0"
+pre-commit = ">=2.20,<5.0"
 
 [tool.poetry.group.speedups]
 optional = true
