@@ -131,15 +131,10 @@
                     const thumb = selectedImage.data('thumb');
                     const source = selectedImage.attr('src');
 
-                    let finalValue = '';
-
                     // Special handling for uploaded images
-                    if (source && source.startsWith('data:image')) {
-                        finalValue = source;
-                    } else {
-                        // Original behavior for web sources
-                        finalValue = (image ? image + '|' : '') + thumb;
-                    }
+                    const finalValue = source && source.startsWith('data:image')
+                        ? source
+                        : (image ? image + '|' : '') + thumb;
 
                     // Update hidden field and main preview
                     $('[name=' + imageType + ']').val(finalValue);
@@ -193,7 +188,7 @@
                 console.log('📤 File selected:', file.name);
 
                 const reader = new FileReader();
-                reader.onload = function (event_) {
+                reader.addEventListener('load', event_ => {
                     const dataUrl = event_.target.result;
 
                     if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image')) {
@@ -204,7 +199,7 @@
                     console.log('📸 Data URL length:', dataUrl.length);
 
                     const img = new Image();
-                    img.onload = function () {
+                    img.addEventListener('load', () => {
                         if (imageTypeSizes[imageType].validate(img)) {
                             console.log('✅ Image validated for', imageType);
 
@@ -213,15 +208,17 @@
                             const selectors = [
                                 'input[name="' + imageType + '"]',
                                 '#' + imageType,
-                                'input[type="hidden"][name="' + imageType + '"]'
+                                'input[type="hidden"][name="' + imageType + '"]',
                             ];
 
                             for (const sel of selectors) {
                                 hiddenInput = $(sel);
-                                if (hiddenInput.length > 0) break;
+                                if (hiddenInput.length > 0) {
+                                    break;
+                                }
                             }
 
-                            if (hiddenInput && hiddenInput.length) {
+                            if (hiddenInput && hiddenInput.length > 0) {
                                 hiddenInput.val(dataUrl);
                                 console.log('✅ SUCCESS: Hidden field updated using selector');
                             } else {
@@ -229,21 +226,20 @@
                             }
 
                             // Update preview
-                            $('.image-selector-dialog .images').empty().append(
-                                $('<img>')
-                                    .attr('src', dataUrl)
-                                    .css({
-                                        'max-width': '100%',
-                                        'max-height': '320px',
-                                        'object-fit': 'contain'
-                                    })
-                            );
+                            $('.image-selector-dialog .images').empty().append($('<img alt="Selector preview">')
+                                .attr('src', dataUrl)
+                                .css({
+                                    'max-width': '100%',
+                                    'max-height': '320px',
+                                    'object-fit': 'contain',
+                                }));
                         } else {
                             imageSelectorElement.children('.error').text(imageTypeSizes[imageType].errorMsg).show();
                         }
-                    };
+                    });
+
                     img.src = dataUrl;
-                };
+                });
 
                 reader.readAsDataURL(file);
             }
