@@ -1101,13 +1101,16 @@ class Home(WebRoot):
         return "<br>".join(out)
 
     # noinspection PyUnboundLocalVariable
-    def editShow(self, direct_call=False):
+    def editShow(self, direct_call=False, **kwargs):
+        """Edit show settings"""
         if direct_call is False:
+            # Original + safe image handling
             show_id = self.get_query_argument("show", default=None)
             location = self.get_body_argument("location", default=None)
             any_qualities = self.get_body_arguments("anyQualities")
             best_qualities = self.get_body_arguments("bestQualities")
             season_folders = config.checkbox_to_value(self.get_body_argument("season_folders", default="False"))
+
             if show_id is None:
                 show_id = self.get_body_argument("show")
                 blacklist = self.get_body_argument("blacklist", default=None)
@@ -1124,6 +1127,19 @@ class Home(WebRoot):
                 sports = config.checkbox_to_value(self.get_body_argument("sports", default="False"))
                 anime = config.checkbox_to_value(self.get_body_argument("anime", default="False"))
                 subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default="False"))
+
+            # === IMAGE UPLOAD SUPPORT ===
+            banner = self.get_body_argument("banner", default=None)
+            fanart = self.get_body_argument("fanart", default=None)
+            poster = self.get_body_argument("poster", default=None)
+
+            if "banner" in self.request.files:
+                banner = self.request.files["banner"][0]
+            if "fanart" in self.request.files:
+                fanart = self.request.files["fanart"][0]
+            if "poster" in self.request.files:
+                poster = self.request.files["poster"][0]
+
         else:
             show_id = self.current_show
             location = self.new_show_dir
@@ -1260,43 +1276,40 @@ class Home(WebRoot):
         metadata_generator = GenericMetadata()
 
         def get_images(image):
-            def unwrap_image_selector_url(value):
-                parsed_url = urllib.parse.urlparse(value)
-                if parsed_url.path.endswith("/imageSelector/url_wrap/"):
-                    wrapped_urls = urllib.parse.parse_qs(parsed_url.query).get("url")
-                    if wrapped_urls:
-                        return wrapped_urls[0]
+            """Handle both uploaded images (data URL) and remote URLs"""
+            if not image:
+                return None, None
 
-                return value
-
-            image = unwrap_image_selector_url(image)
-
-            if image.startswith("data:image"):
+            # 1. Upload from imageSelector (data:image;base64...)
+            if isinstance(image, str) and image.startswith("data:image"):
                 try:
                     header, image_data = image.split(",", 1)
-                except ValueError:
-                    raise ValueError("Invalid image data URL")
+                    if ";base64" not in header.lower():
+                        return None, None
 
-                if ";base64" not in header.lower():
-                    raise ValueError("Image data URL is not base64 encoded")
+                    image_data = "".join(image_data.split())
+                    image_data += "=" * (-len(image_data) % 4)
 
-                image_data = image_data.strip().replace(" ", "+")
-                image_data = "".join(image_data.split())
-                image_data += "=" * (-len(image_data) % 4)
-
-                try:
                     _img_data = base64.b64decode(image_data, validate=True)
-                except binascii.Error as error:
-                    raise ValueError("Invalid base64 image data") from error
+                    return _img_data, _img_data
 
-                return _img_data, _img_data
+                except (ValueError, binascii.Error, TypeError) as e:
+                    logger.warning(f"Failed to decode uploaded image: {e}")
+                    return None, None
 
-            image_parts = image.split("|")
-            _img_data = getShowImage(image_parts[0])
-            if len(image_parts) > 1:
-                return _img_data, getShowImage(image_parts[1])
+            # 2. Remote URL (TheTVDB, Fanart.tv, etc.)
+            elif isinstance(image, str):
+                try:
+                    image_parts = image.split("|")
+                    _img_data = getShowImage(image_parts[0])
+                    if len(image_parts) > 1:
+                        return _img_data, getShowImage(image_parts[1])
+                    return _img_data, _img_data
+                except Exception as e:  # Keep this one broader as getShowImage can raise various errors
+                    logger.warning(f"Failed to fetch remote image: {e}")
+                    return None, None
 
-            return _img_data, _img_data
+            return None, None
 
         if poster:
             img_data, img_thumb_data = get_images(poster)
@@ -1426,7 +1439,7 @@ class Home(WebRoot):
             ui.notifications.error(
                 _("{num_errors:d} error{plural} while saving changes:").format(num_errors=len(errors), plural="" if len(errors) == 1 else "s"),
                 "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
-                )
+            )
 
         return self.redirect("/home/displayShow?show=" + show_id + "&from_edit=1")
 
