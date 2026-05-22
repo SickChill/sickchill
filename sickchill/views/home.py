@@ -1101,7 +1101,7 @@ class Home(WebRoot):
         return "<br>".join(out)
 
     # noinspection PyUnboundLocalVariable
-    def editShow(self, direct_call=False, **kwargs):
+    def editShow(self, direct_call=False):
         """Edit show settings"""
         if direct_call is False:
             # Original + safe image handling
@@ -1221,9 +1221,13 @@ class Home(WebRoot):
                 action="editShow",
             )
 
-        banner = self.get_body_argument("banner", default=None)
-        fanart = self.get_body_argument("fanart", default=None)
-        poster = self.get_body_argument("poster", default=None)
+        # Read from body if not already set
+        if banner is None:
+            banner = self.get_body_argument("banner", default=None)
+        if fanart is None:
+            fanart = self.get_body_argument("fanart", default=None)
+        if poster is None:
+            poster = self.get_body_argument("poster", default=None)
         indexer_lang = self.get_body_argument("indexerLang", default=None)
         custom_name = self.get_body_argument("custom_name", default="")
         subtitles_sc_metadata = config.checkbox_to_value(self.get_body_argument("subtitles_sc_metadata", default="False"))
