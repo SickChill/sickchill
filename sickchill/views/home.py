@@ -1,5 +1,6 @@
 import ast
 import base64
+import binascii
 import datetime
 import json
 import os
@@ -63,6 +64,7 @@ class Home(WebRoot):
         self.new_anime = None
         self.new_scene = None
         self.new_air_by_date = None
+        self.from_edit = None
 
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
@@ -867,6 +869,14 @@ class Home(WebRoot):
     def displayShow(self):
         show = self.get_query_argument("show")
 
+        from_edit = self.get_query_argument("from_edit", default="0") == "1"
+
+        if from_edit:
+            # Force fresh page + images
+            self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+            self.set_header("Pragma", "no-cache")
+            self.set_header("Expires", "0")
+
         # todo: add more comprehensive show validation
         try:
             show_obj = Show.find(settings.show_list, int(show))
@@ -1064,6 +1074,7 @@ class Home(WebRoot):
             title=show_obj.name,
             controller="home",
             action="displayShow",
+            from_edit=from_edit,
         )
 
     def plotDetails(self):
@@ -1249,9 +1260,35 @@ class Home(WebRoot):
         metadata_generator = GenericMetadata()
 
         def get_images(image):
+            def unwrap_image_selector_url(value):
+                parsed_url = urllib.parse.urlparse(value)
+                if parsed_url.path.endswith("/imageSelector/url_wrap/"):
+                    wrapped_urls = urllib.parse.parse_qs(parsed_url.query).get("url")
+                    if wrapped_urls:
+                        return wrapped_urls[0]
+
+                return value
+
+            image = unwrap_image_selector_url(image)
+
             if image.startswith("data:image"):
-                start = image.index("base64,") + 7
-                _img_data = base64.b64decode(image[start:])
+                try:
+                    header, image_data = image.split(",", 1)
+                except ValueError:
+                    raise ValueError("Invalid image data URL")
+
+                if ";base64" not in header.lower():
+                    raise ValueError("Image data URL is not base64 encoded")
+
+                image_data = image_data.strip().replace(" ", "+")
+                image_data = "".join(image_data.split())
+                image_data += "=" * (-len(image_data) % 4)
+
+                try:
+                    _img_data = base64.b64decode(image_data, validate=True)
+                except binascii.Error as error:
+                    raise ValueError("Invalid base64 image data") from error
+
                 return _img_data, _img_data
 
             image_parts = image.split("|")
@@ -1389,9 +1426,9 @@ class Home(WebRoot):
             ui.notifications.error(
                 _("{num_errors:d} error{plural} while saving changes:").format(num_errors=len(errors), plural="" if len(errors) == 1 else "s"),
                 "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
-            )
+                )
 
-        return self.redirect("/home/displayShow?show=" + show_id)
+        return self.redirect("/home/displayShow?show=" + show_id + "&from_edit=1")
 
     def togglePause(self):
         show = self.get_query_argument("show")
