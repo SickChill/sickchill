@@ -1134,11 +1134,11 @@ class Home(WebRoot):
             poster = self.get_body_argument("poster", default=None)
 
             if "banner" in self.request.files:
-                banner = self.request.files["banner"][0]
+                banner = self.request.files["banner"][0].get("body")
             if "fanart" in self.request.files:
-                fanart = self.request.files["fanart"][0]
+                fanart = self.request.files["fanart"][0].get("body")
             if "poster" in self.request.files:
-                poster = self.request.files["poster"][0]
+                poster = self.request.files["poster"][0].get("body")
 
         else:
             show_id = self.current_show
@@ -1277,8 +1277,9 @@ class Home(WebRoot):
 
         def get_images(image):
             """Handle both uploaded images (data URL) and remote URLs"""
-            if not image:
-                return None, None
+            if isinstance(image, (bytes, bytearray)):
+                data = bytes(image)
+                return data, data
 
             # 1. Upload from imageSelector (data:image;base64...)
             if isinstance(image, str) and image.startswith("data:image"):

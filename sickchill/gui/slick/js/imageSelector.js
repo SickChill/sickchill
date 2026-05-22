@@ -134,7 +134,7 @@
                     // Special handling for uploaded images
                     const finalValue = source && source.startsWith('data:image')
                         ? source
-                        : (image ? image + '|' : '') + thumb;
+                        : (image ? image + '|' : '') + (thumb || '');
 
                     // Update hidden field and main preview
                     $('[name=' + imageType + ']').val(finalValue);
@@ -220,13 +220,15 @@
 
                             if (hiddenInput && hiddenInput.length > 0) {
                                 hiddenInput.val(dataUrl);
-                                console.log('✅ SUCCESS: Hidden field updated using selector');
+                                console.log('SUCCESS: Hidden field updated using selector');
                             } else {
-                                console.error('❌ Could not find hidden input for', imageType);
+                                console.error('Could not find hidden input for', imageType);
                             }
 
-                            // Update preview
+                            // Keep selection in dialog; commit on OK
                             $('.image-selector-dialog .images').empty().append($('<img alt="Selector preview">')
+                                .addClass('image-selector-item image-selector-item-selected')
+                                .attr('data-image', dataUrl)
                                 .attr('src', dataUrl)
                                 .css({
                                     'max-width': '100%',
