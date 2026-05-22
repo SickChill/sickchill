@@ -1,5 +1,6 @@
 import ast
 import base64
+import binascii
 import datetime
 import json
 import os
@@ -63,6 +64,7 @@ class Home(WebRoot):
         self.new_anime = None
         self.new_scene = None
         self.new_air_by_date = None
+        self.from_edit = None
 
     def _genericMessage(self, subject=None, message=None):
         t = PageTemplate(rh=self, filename="genericMessage.mako")
@@ -867,6 +869,14 @@ class Home(WebRoot):
     def displayShow(self):
         show = self.get_query_argument("show")
 
+        from_edit = self.get_query_argument("from_edit", default="0") == "1"
+
+        if from_edit:
+            # Force fresh page + images
+            self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+            self.set_header("Pragma", "no-cache")
+            self.set_header("Expires", "0")
+
         # todo: add more comprehensive show validation
         try:
             show_obj = Show.find(settings.show_list, int(show))
@@ -1064,6 +1074,7 @@ class Home(WebRoot):
             title=show_obj.name,
             controller="home",
             action="displayShow",
+            from_edit=from_edit,
         )
 
     def plotDetails(self):
@@ -1091,12 +1102,15 @@ class Home(WebRoot):
 
     # noinspection PyUnboundLocalVariable
     def editShow(self, direct_call=False):
+        """Edit show settings"""
         if direct_call is False:
+            # Original + safe image handling
             show_id = self.get_query_argument("show", default=None)
             location = self.get_body_argument("location", default=None)
             any_qualities = self.get_body_arguments("anyQualities")
             best_qualities = self.get_body_arguments("bestQualities")
             season_folders = config.checkbox_to_value(self.get_body_argument("season_folders", default="False"))
+
             if show_id is None:
                 show_id = self.get_body_argument("show")
                 blacklist = self.get_body_argument("blacklist", default=None)
@@ -1113,6 +1127,19 @@ class Home(WebRoot):
                 sports = config.checkbox_to_value(self.get_body_argument("sports", default="False"))
                 anime = config.checkbox_to_value(self.get_body_argument("anime", default="False"))
                 subtitles = config.checkbox_to_value(self.get_body_argument("subtitles", default="False"))
+
+            # === IMAGE UPLOAD SUPPORT ===
+            banner = self.get_body_argument("banner", default=None)
+            fanart = self.get_body_argument("fanart", default=None)
+            poster = self.get_body_argument("poster", default=None)
+
+            if "banner" in self.request.files:
+                banner = self.request.files["banner"][0].get("body")
+            if "fanart" in self.request.files:
+                fanart = self.request.files["fanart"][0].get("body")
+            if "poster" in self.request.files:
+                poster = self.request.files["poster"][0].get("body")
+
         else:
             show_id = self.current_show
             location = self.new_show_dir
@@ -1194,9 +1221,13 @@ class Home(WebRoot):
                 action="editShow",
             )
 
-        banner = self.get_body_argument("banner", default=None)
-        fanart = self.get_body_argument("fanart", default=None)
-        poster = self.get_body_argument("poster", default=None)
+        # Read from body if not already set
+        if banner is None:
+            banner = self.get_body_argument("banner", default=None)
+        if fanart is None:
+            fanart = self.get_body_argument("fanart", default=None)
+        if poster is None:
+            poster = self.get_body_argument("poster", default=None)
         indexer_lang = self.get_body_argument("indexerLang", default=None)
         custom_name = self.get_body_argument("custom_name", default="")
         subtitles_sc_metadata = config.checkbox_to_value(self.get_body_argument("subtitles_sc_metadata", default="False"))
@@ -1249,17 +1280,41 @@ class Home(WebRoot):
         metadata_generator = GenericMetadata()
 
         def get_images(image):
-            if image.startswith("data:image"):
-                start = image.index("base64,") + 7
-                _img_data = base64.b64decode(image[start:])
-                return _img_data, _img_data
+            """Handle both uploaded images (data URL) and remote URLs"""
+            if isinstance(image, (bytes, bytearray)):
+                data = bytes(image)
+                return data, data
 
-            image_parts = image.split("|")
-            _img_data = getShowImage(image_parts[0])
-            if len(image_parts) > 1:
-                return _img_data, getShowImage(image_parts[1])
+            # 1. Upload from imageSelector (data:image;base64...)
+            if isinstance(image, str) and image.startswith("data:image"):
+                try:
+                    header, image_data = image.split(",", 1)
+                    if ";base64" not in header.lower():
+                        return None, None
 
-            return _img_data, _img_data
+                    image_data = "".join(image_data.split())
+                    image_data += "=" * (-len(image_data) % 4)
+
+                    _img_data = base64.b64decode(image_data, validate=True)
+                    return _img_data, _img_data
+
+                except (ValueError, binascii.Error, TypeError) as e:
+                    logger.warning(f"Failed to decode uploaded image: {e}")
+                    return None, None
+
+            # 2. Remote URL (TheTVDB, Fanart.tv, etc.)
+            elif isinstance(image, str):
+                try:
+                    image_parts = image.split("|")
+                    _img_data = getShowImage(image_parts[0])
+                    if len(image_parts) > 1:
+                        return _img_data, getShowImage(image_parts[1])
+                    return _img_data, _img_data
+                except Exception as e:  # Keep this one broader as getShowImage can raise various errors
+                    logger.warning(f"Failed to fetch remote image: {e}")
+                    return None, None
+
+            return None, None
 
         if poster:
             img_data, img_thumb_data = get_images(poster)
@@ -1391,7 +1446,7 @@ class Home(WebRoot):
                 "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
             )
 
-        return self.redirect("/home/displayShow?show=" + show_id)
+        return self.redirect("/home/displayShow?show=" + show_id + "&from_edit=1")
 
     def togglePause(self):
         show = self.get_query_argument("show")

@@ -28,7 +28,17 @@ class ImageSelector(Home):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
         self.set_header("Content-Type", "application/json")
 
-        provider = int(provider)
+        # Handle Upload option (-1)
+        if provider == -1 or provider is None or str(provider) == "-1":
+            # For upload, we don't return external images — just an empty list
+            # The frontend handles the upload locally
+            return json.dumps([])
+
+        try:
+            provider = int(provider)
+        except (TypeError, ValueError):
+            provider = None
+
         if provider == ShowIndexer.FANART:
             metadata_generator = GenericMetadata()
             images = metadata_generator._retrieve_show_image_urls_from_fanart(show_obj, imageType, multiple=True)
