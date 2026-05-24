@@ -20,50 +20,48 @@ function disableLink(link) {
 // Helper function for pill styling
 function buildStatusPill(statusText, quality) {
     if (!statusText) {
-        return '';
+        return statusText || '';
     }
 
-    let displayText = statusText.trim();
-    let cssClass = 'unknown';
-    const lower = displayText.toLowerCase();
+    let html = statusText; // Default to original text
 
-    // === Status Class Logic ===
-    if (lower === 'success' || lower === 'skipped' || lower.startsWith('skipped')) {
-        cssClass = 'archived'; // Gray for Skipped
-    } else if (lower.includes('downloaded')) {
-        cssClass = 'downloaded';
-    } else if (lower.includes('snatched')) {
-        cssClass = 'snatched';
-    } else if (lower.includes('wanted')) {
-        cssClass = 'wanted';
-    } else if (lower.includes('archived')) {
-        cssClass = 'archived';
-    } else if (lower.includes('failed')) {
-        cssClass = 'failed';
-    }
-
-    // === Clean up status text if it already includes quality ===
-    const qualityRegex = /\(([^)]+)\)/;
-    const match = displayText.match(qualityRegex);
-    let qualityInStatus = '';
-
+    // If it already has quality in parentheses, wrap status part
+    const match = statusText.match(/^(.+?)\s*\((.+?)\)$/);
     if (match) {
-        qualityInStatus = match[1].trim(); // E.g. "1080p WEB-DL"
-        displayText = displayText.replace(qualityRegex, '').trim(); // Remove quality from status text
-    }
-
-    // Use provided quality if better
-    const finalQuality = quality && quality !== 'N/A' && quality !== '' ? quality : qualityInStatus;
-
-    let html = `<span class="status pill-${cssClass}">${displayText}</span>`;
-
-    // Add quality pill only if we have one
-    if (finalQuality) {
-        const qClass = finalQuality.toLowerCase().replaceAll(/\s+/g, '-');
-        html += ` <span class="quality ${qClass}">${finalQuality}</span>`;
+        const statusPart = match[1].trim();
+        const qualityPart = match[2].trim();
+        html = `<span class="status pill-${getPillClass(statusPart)}">${statusPart}</span> <span class="quality ${quality}">${qualityPart}</span>`;
+    } else {
+        // Plain status (like "Downloaded", "Skipped", etc.)
+        html = `<span class="status pill-${getPillClass(statusText)}">${statusText}</span>`;
     }
 
     return html;
+}
+
+function getPillClass(status) {
+    const lower = status.toLowerCase().trim();
+    if (lower.includes('downloaded') || lower === 'success') {
+        return 'downloaded';
+    }
+
+    if (lower.includes('snatched')) {
+        return 'snatched';
+    }
+
+    if (lower.includes('skipped') || lower.includes('ignored')) {
+        return 'archived';
+    }
+
+    if (lower.includes('wanted')) {
+        return 'wanted';
+    }
+
+    if (lower.includes('failed')) {
+        return 'failed';
+    }
+
+    return 'unknown';
 }
 
 function updateImages(data) {
@@ -107,15 +105,7 @@ function updateImages(data) {
 
                 // Update status and quality
                 htmlContent = buildStatusPill(ep.status, ep.quality);
-
-                // Improved row class - respect actual status
-                let rowClass = ep.overview || 'wanted';
-                const statusLower = (ep.status || '').toLowerCase().trim();
-                if (statusLower === 'skipped' || statusLower === 'success' || statusLower.startsWith('skipped')) {
-                    rowClass = 'skipped';
-                }
-
-                parent.closest('tr').prop('class', rowClass + ' season-' + ep.season + ' seasonstyle');
+                parent.closest('tr').prop('class', ep.overview + ' season-' + ep.season + ' seasonstyle');
             }
 
             // Update the status column if it exists
@@ -194,7 +184,7 @@ $(document).ready(checkManualSearches);
                     parent.parent().removeClass('skipped wanted qual good unaired').addClass('snatched');
                 }
 
-                // In the success update the status with the result
+                // With search success update the status with the result
                 const htmlContent = buildStatusPill(data.result, data.quality);
                 parent.siblings('.col-status').html(htmlContent);
                 // Only if the queuing was successful, disable the onClick event of the loading image
