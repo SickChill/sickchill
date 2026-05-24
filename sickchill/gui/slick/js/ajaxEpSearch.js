@@ -17,6 +17,54 @@ function disableLink(link) {
     link.fadeTo('fast', 0.5);
 }
 
+function buildStatusPill(statusText, quality) {
+    if (!statusText) {
+        return '';
+    }
+
+    let displayText = statusText.trim();
+    let cssClass = 'unknown';
+    const lower = displayText.toLowerCase();
+
+    // === Status Class Logic ===
+    if (lower === 'success' || lower === 'skipped' || lower.startsWith('skipped')) {
+        cssClass = 'archived'; // Grey for Skipped
+    } else if (lower.includes('downloaded')) {
+        cssClass = 'downloaded';
+    } else if (lower.includes('snatched')) {
+        cssClass = 'snatched';
+    } else if (lower.includes('wanted')) {
+        cssClass = 'wanted';
+    } else if (lower.includes('archived')) {
+        cssClass = 'archived';
+    } else if (lower.includes('failed')) {
+        cssClass = 'failed';
+    }
+
+    // === Clean up status text if it already includes quality ===
+    const qualityRegex = /\(([^)]+)\)/;
+    const match = displayText.match(qualityRegex);
+    let qualityInStatus = '';
+
+    if (match) {
+        qualityInStatus = match[1].trim(); // E.g. "1080p WEB-DL"
+        displayText = displayText.replace(qualityRegex, '').trim(); // Remove quality from status text
+    }
+
+    // Use provided quality if better
+    const finalQuality = quality && quality !== 'N/A' && quality !== '' ? quality : qualityInStatus;
+
+    let html = `<span class="status pill-${cssClass}">${displayText}</span>`;
+
+    // Add quality pill only if we have one
+    if (finalQuality) {
+        const qClass = finalQuality.toLowerCase().replaceAll(/\s+/g, '-');
+        html += ` <span class="quality ${qClass}">${finalQuality}</span>`;
+    }
+
+    return html;
+}
+
 function updateImages(data) {
     $.each(data.episodes, (name, ep) => {
         // Get td element for current ep
@@ -26,11 +74,10 @@ function updateImages(data) {
 
         // Try to get the <a> Element
         const link = $('a[id=' + ep.show + 'x' + ep.season + 'x' + ep.episode + ']');
-        if (link) {
+        if (link.length > 0) {
             const icon = link.children('span');
             const parent = link.parent();
 
-            let rSearchTerm = '';
             let htmlContent = '';
 
             if (ep.searchstatus.toLowerCase() === 'searching') {
@@ -39,7 +86,7 @@ function updateImages(data) {
                 icon.prop('alt', 'Searching');
 
                 disableLink(link);
-                htmlContent = ep.searchstatus.title;
+                htmlContent = '<span class="status pill-wanted">Searching...</span>'; // Optional nice pill
             } else if (ep.searchstatus.toLowerCase() === 'queued') {
                 icon.prop('class', queuedClass);
                 icon.prop('title', 'Queued');
@@ -55,13 +102,19 @@ function updateImages(data) {
 
                 icon.prop('title', 'Search');
                 icon.prop('alt', 'Search');
-
                 enableLink(link);
 
-                // Update Status and Quality
-                rSearchTerm = /(\w+)\s\((.+?)\)/;
-                htmlContent = ep.status.replace(rSearchTerm, '$1 <span class="quality ' + ep.quality + '">$2</span>');
-                parent.closest('tr').prop('class', ep.overview + ' season-' + ep.season + ' seasonstyle');
+                // Fixed status pill
+                htmlContent = buildStatusPill(ep.status, ep.quality);
+
+                // Improved row class - respect actual status
+                let rowClass = ep.overview || 'wanted';
+                const statusLower = (ep.status || '').toLowerCase().trim();
+                if (statusLower === 'skipped' || statusLower === 'success' || statusLower.startsWith('skipped')) {
+                    rowClass = 'skipped';
+                }
+
+                parent.closest('tr').prop('class', rowClass + ' season-' + ep.season + ' seasonstyle');
             }
 
             // Update the status column if it exists
@@ -73,40 +126,6 @@ function updateImages(data) {
             // And qtip location
             if (ep.location) {
                 parent.siblings('.episode').html('<span title="' + ep.location + '" class="addQTip">' + ep.episode + '</span>');
-            }
-        }
-
-        const elementCompleteEpisodes = $('a[id=forceUpdate-' + ep.show + 'x' + ep.season + 'x' + ep.episode + ']');
-        const spanCompleteEpisodes = elementCompleteEpisodes.children('span');
-        if (elementCompleteEpisodes) {
-            if (ep.searchstatus.toLowerCase() === 'searching') {
-                spanCompleteEpisodes.prop('class', loadingClass);
-                spanCompleteEpisodes.prop('title', 'Searching');
-                spanCompleteEpisodes.prop('alt', 'Searching');
-                disableLink(elementCompleteEpisodes);
-            } else if (ep.searchstatus.toLowerCase() === 'queued') {
-                spanCompleteEpisodes.prop('class', queuedClass);
-                spanCompleteEpisodes.prop('title', 'Queued');
-                spanCompleteEpisodes.prop('alt', 'Queued');
-                disableLink(elementCompleteEpisodes);
-            } else if (ep.searchstatus.toLowerCase() === 'finished') {
-                spanCompleteEpisodes.prop('class', searchClass);
-                spanCompleteEpisodes.prop('title', 'Search');
-                spanCompleteEpisodes.prop('alt', 'Search');
-                if (ep.overview.toLowerCase() === 'snatched') {
-                    // Find Banner or Poster
-                    let actionElement = elementCompleteEpisodes.closest('div.ep_listing');
-                    if (actionElement.length === 0 && elementCompleteEpisodes.closest('table.calendarTable').length === 0) {
-                        actionElement = elementCompleteEpisodes.closest('tr');
-                    }
-
-                    if (actionElement.length > 0) {
-                        // Remove any listing-* classes and add listing-snatched (keeping non listing-* classes)
-                        actionElement.attr('class', (i, value) => value.replaceAll(/(^|\s)listing-\S+/g, '')).addClass('listing-snatched');
-                    }
-                }
-
-                enableLink(elementCompleteEpisodes);
             }
         }
     });
@@ -174,10 +193,8 @@ $(document).ready(checkManualSearches);
                     parent.parent().removeClass('skipped wanted qual good unaired').addClass('snatched');
                 }
 
-                // Applying the quality class
-                const rSearchTerm = /(\w+)\s\((.+?)\)/;
-                const htmlContent = data.result.replace(rSearchTerm, '$1 <span class="quality ' + data.quality + '">$2</span>');
-                // Update the status column if it exists
+                // In the success callback (~line 178)
+                const htmlContent = buildStatusPill(data.result, data.quality);
                 parent.siblings('.col-status').html(htmlContent);
                 // Only if the queuing was successful, disable the onClick event of the loading image
                 disableLink(link);
