@@ -23,22 +23,23 @@ function buildStatusPill(statusText, quality) {
         return statusText || '';
     }
 
-    let html = statusText; // Default to original text
+    let displayText = statusText; // Default to original text
 
     // If it already has quality in parentheses, wrap status part
     const match = statusText.match(/^(.+?)\s*\((.+?)\)$/);
     if (match) {
         const statusPart = match[1].trim();
         const qualityPart = match[2].trim();
-        html = `<span class="status pill-${getPillClass(statusPart)}">${statusPart}</span> <span class="quality ${quality}">${qualityPart}</span>`;
+        displayText = `<span class="status pill-${getPillClass(statusPart)}">${statusPart}</span> <span class="quality ${quality}">${qualityPart}</span>`;
     } else {
         // Plain status (like "Downloaded", "Skipped", etc.)
-        html = `<span class="status pill-${getPillClass(statusText)}">${statusText}</span>`;
+        displayText = `<span class="status pill-${getPillClass(statusText)}">${statusText}</span>`;
     }
 
-    return html;
+    return displayText;
 }
 
+// Helper function for pill class
 function getPillClass(status) {
     const lower = status.toLowerCase().trim();
     if (lower.includes('downloaded') || lower === 'success') {
@@ -50,6 +51,10 @@ function getPillClass(status) {
     }
 
     if (lower.includes('skipped') || lower.includes('ignored')) {
+        return 'archived';
+    }
+
+    if (lower.includes('archived')) {
         return 'archived';
     }
 
@@ -76,7 +81,6 @@ function updateImages(data) {
         if (link.length > 0) {
             const icon = link.children('span');
             const parent = link.parent();
-
             let htmlContent = '';
 
             if (ep.searchstatus.toLowerCase() === 'searching') {
@@ -130,7 +134,6 @@ function checkManualSearches() {
         url,
         success(data) {
             pollInterval = data.episodes ? 5000 : 15_000;
-
             updateImages(data);
         },
         error() {
