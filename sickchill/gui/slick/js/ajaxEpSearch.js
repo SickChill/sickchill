@@ -17,6 +17,7 @@ function disableLink(link) {
     link.fadeTo('fast', 0.5);
 }
 
+// Helper function for pill styling
 function buildStatusPill(statusText, quality) {
     if (!statusText) {
         return '';
@@ -28,7 +29,7 @@ function buildStatusPill(statusText, quality) {
 
     // === Status Class Logic ===
     if (lower === 'success' || lower === 'skipped' || lower.startsWith('skipped')) {
-        cssClass = 'archived'; // Grey for Skipped
+        cssClass = 'archived'; // Gray for Skipped
     } else if (lower.includes('downloaded')) {
         cssClass = 'downloaded';
     } else if (lower.includes('snatched')) {
@@ -104,7 +105,7 @@ function updateImages(data) {
                 icon.prop('alt', 'Search');
                 enableLink(link);
 
-                // Fixed status pill
+                // Update status and quality
                 htmlContent = buildStatusPill(ep.status, ep.quality);
 
                 // Improved row class - respect actual status
@@ -193,7 +194,7 @@ $(document).ready(checkManualSearches);
                     parent.parent().removeClass('skipped wanted qual good unaired').addClass('snatched');
                 }
 
-                // In the success callback (~line 178)
+                // In the success update the status with the result
                 const htmlContent = buildStatusPill(data.result, data.quality);
                 parent.siblings('.col-status').html(htmlContent);
                 // Only if the queuing was successful, disable the onClick event of the loading image
