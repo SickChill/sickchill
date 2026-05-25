@@ -964,24 +964,21 @@ class TVShow(object):
             }
 
             logger.debug(f"{self.indexerid}: Obtained info from IMDb ->{self.imdb_info}")
-        except KeyError:
+        except (SyntaxError, KeyError):
             logger.info(f"Could not get IMDB info for {self.name}")
         except (
             TypeError,
             ValueError,
             LookupError,
-            IOError,
-            OperationalError,
+            OSError,
             TimeoutError,
-            imdb.IMDbDataAccessError,
             imdb.IMDbError,
+            # Urllib error items
             NewConnectionError,
             MaxRetryError,
         ) as error:
             logger.info("Could not get IMDB info: see debug logs for details")
             logger.debug(f"IMDB traceback: {error}", exc_info=True)
-        except SyntaxError:
-            logger.info("Could not get info from IDMb, pip install lxml")
 
     def next_episode(self):
         current_date = datetime.date.today().toordinal()
@@ -1016,7 +1013,11 @@ class TVShow(object):
         main_db_con.mass_action(sql_l)
 
         cache_db_con = db.DBConnection("cache.db")
-        sql_l = [["DELETE FROM scene_exceptions WHERE indexer_id = ?", [self.indexerid]], ["DELETE FROM scene_names WHERE indexer_id = ?", [self.indexerid]]]
+        sql_l = [
+            ["DELETE FROM scene_exceptions WHERE indexer_id = ?", [self.indexerid]],
+            ["DELETE FROM scene_names WHERE indexer_id = ?", [self.indexerid]],
+            ["DELETE FROM results WHERE indexerid = ?", [self.indexerid]],
+        ]
 
         cache_db_con.mass_action(sql_l)
 
