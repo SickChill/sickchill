@@ -7839,10 +7839,10 @@ smob@^1.0.0:
   resolved "https://registry.yarnpkg.com/smob/-/smob-1.6.1.tgz#930607366738545aee542a93e03e47b54e0303e0"
   integrity sha512-KAkBqZl3c2GvNgNhcoyJae1aKldDW0LO279wF9bk1PnluRTETKBq0WyzRXxEhoQLk56yHaOY4JCBEKDuJIET5g==
 
-snyk@^1.1304.3:
-  version "1.1304.3"
-  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1304.3.tgz#ab0ca6d2a8e0f32f4d98fa29aa2d98054f2c5713"
-  integrity sha512-nJFn3mlfTK0jZFxPFrhBSIlNO8utWlNxfK+PaWHrUQk66TsfXt4OJnPKjlHzzjrJgMJOC1JzQ6TsIsXf6UPoSw==
+snyk@^1.1305.0:
+  version "1.1305.0"
+  resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.1305.0.tgz#32b7b8dae77e1bf72c3e0b419aef12b083e693c7"
+  integrity sha512-dFBJW92gbJW0B85aSwq6ZCuC0jO1dDDyjN0WnKVjsfUdKNi7CXvlSPiXteUgaPNy0qbM4jJec9fQZB5/A2LHwg==
   dependencies:
     "@sentry/node" "^7.36.0"
     global-agent "^3.0.0"
