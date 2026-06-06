@@ -1103,6 +1103,12 @@ class Home(WebRoot):
     # noinspection PyUnboundLocalVariable
     def editShow(self, direct_call=False):
         """Edit show settings"""
+
+        # Initialize image variables for ALL call paths
+        banner = None
+        fanart = None
+        poster = None
+
         if direct_call is False:
             # Original + safe image handling
             show_id = self.get_query_argument("show", default=None)
