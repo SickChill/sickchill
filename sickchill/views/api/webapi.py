@@ -40,6 +40,7 @@ from sickchill.show.History import History
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
+from sickchill.tv import TVShow
 from sickchill.update_manager import UpdateManager
 
 indexer_ids = ["indexerid", "tvdbid"]
@@ -2378,7 +2379,7 @@ class CMDShowRefresh(ApiCall):
 
     def run(self):
         """Refresh a show in SickChill"""
-        error, show = Show.refresh(self.indexerid)
+        error, show = self.indexerid.refresh(self, force=False)
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 

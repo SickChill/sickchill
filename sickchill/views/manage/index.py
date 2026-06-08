@@ -9,6 +9,7 @@ from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShow
 from sickchill.oldbeard import db, subtitles as subtitle_module, ui
 from sickchill.oldbeard.common import SNATCHED, Overview, Quality
 from sickchill.show.Show import Show
+from sickchill.tv import TVShow
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home, WebRoot
 from sickchill.views.routes import Route
@@ -764,7 +765,7 @@ class Manage(Home, WebRoot):
             # don't bother refreshing shows that were updated anyway
             if curShowID in refresh and curShowID not in update:
                 try:
-                    Show.refresh(show_object, force=True)
+                    show_object.refresh(self, force=True)
                     refreshes.append(show_object.name)
                 except CantRefreshShowException as error:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))

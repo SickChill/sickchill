@@ -169,24 +169,16 @@ class Show(object):
     @staticmethod
     def refresh(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
         """
-        Try to refresh a show
-        :param force: Force refresh
-        :param show_or_id: The unique id or object of the show to refresh
-        :return: A tuple containing:
-         - an error message if the show could not be refreshed, ``None`` otherwise
-         - the show object that was refreshed, if it exists, ``None`` otherwise
+        Refresh a show moved to tv.py
+        :param show_or_id: The unique id or object of the show to refresh. force: Force refresh
         """
 
         error, show = Show.validate_indexer_id(show_or_id)
         if error is not None:
             return error, show
 
-        try:
-            settings.showQueueScheduler.action.refresh_show(show, force)
-        except CantRefreshShowException as exception:
-            return str(exception), show
-
-        return None, show
+        # Delegate to the instance method
+        return show.refresh(force=force)
 
     @staticmethod
     def update(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):

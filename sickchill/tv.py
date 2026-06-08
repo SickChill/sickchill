@@ -14,7 +14,7 @@ from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
 import imdb
-from imdb import Cinemagoer
+from imdb import Cinemagoer, IMDbError
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
@@ -24,6 +24,9 @@ import sickchill.oldbeard.scene_numbering
 from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (
+    CantRefreshShowException,
+    CantRemoveShowException,
+    CantUpdateShowException,
     EpisodeDeletedException,
     EpisodeNotFoundException,
     MultipleEpisodesInDatabaseException,
@@ -263,6 +266,22 @@ class TVShow(object):
             self.episodes[current_season].clear()
 
         self.episodes.clear()
+
+    def refresh(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
+        """
+        Refresh this show.
+        Returns (error_message or None, self) to maintain consistent API with Show.refresh()
+        """
+
+        try:
+            settings.showQueueScheduler.action.refresh_show(self, force)
+            return None, self
+
+        except CantRefreshShowException as exception:
+            return str(exception), self
+
+        except Exception as error:
+            return str(error), self
 
     def get_all_episodes(self, season=None, has_location=False):
         # detect multi-episodes
@@ -972,7 +991,7 @@ class TVShow(object):
             LookupError,
             OSError,
             TimeoutError,
-            imdb.IMDbError,
+            IMDbError,
             # Urllib error items
             NewConnectionError,
             MaxRetryError,

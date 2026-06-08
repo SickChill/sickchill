@@ -1370,7 +1370,7 @@ class Home(WebRoot):
 
             if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
-                error, show = Show.refresh(show_obj)
+                error, show = show_obj.refresh(self, force=False)
                 if error:
                     errors.append(_("Unable to refresh this show: {error}").format(error=error))
 
@@ -1405,7 +1405,7 @@ class Home(WebRoot):
                     # change it
                     try:
                         show_obj.location = location
-                        error, show = Show.refresh(show_obj, True)
+                        error, show = show_obj.refresh(self, force=True)
                         if error:
                             errors.append(_("Unable to refresh this show: {error}").format(error=error))
                             # grab updated info from TVDB
@@ -1494,7 +1494,7 @@ class Home(WebRoot):
         show = self.get_query_argument("show")
         force = bool(try_int(self.get_query_argument("force", default="0")))
 
-        error, show = Show.refresh(show, force)
+        error, show = show.refresh(self, force=True)
 
         # This is a show validation error
         if error and not show:

@@ -7,6 +7,7 @@ from sickchill import logger, settings
 from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
 from sickchill.oldbeard import db, network_timezones, ui
 from sickchill.show.Show import Show
+from sickchill.tv import TVShow
 
 
 class ShowUpdater(object):
@@ -71,7 +72,7 @@ class ShowUpdater(object):
                         elif not skip_update:
                             # TODO: do we really need to refresh every show every day if it is not updated?
                             # Temporarily use the same duration for paused as ended
-                            pi_list.append(Show.refresh(cur_show, force))
+                            pi_list.append(cur_show.refresh(self, force=True))
                     except (CantUpdateShowException, CantRefreshShowException) as error:
                         logger.info(_("Automatic update failed: {error}").format(error=error))
 
