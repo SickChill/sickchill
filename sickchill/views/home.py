@@ -1112,7 +1112,7 @@ class Home(WebRoot):
         fanart = None
         poster = None
 
-        if direct_call is False:
+        if not direct_call:
             # Original + safe image handling
             show_id = self.get_query_argument("show", default=None)
             location = self.get_body_argument("location", default=None)
@@ -1373,7 +1373,7 @@ class Home(WebRoot):
 
             if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
-                error, show = show_obj.refresh(self, force=False)
+                error, show = show_obj.refresh(force=False)
                 if error:
                     errors.append(_("Unable to refresh this show: {error}").format(error=error))
 
@@ -1408,7 +1408,7 @@ class Home(WebRoot):
                     # change it
                     try:
                         show_obj.location = location
-                        error, show = show_obj.refresh(self, force=True)
+                        error, show = show_obj.refresh(force=True)
                         if error:
                             errors.append(_("Unable to refresh this show: {error}").format(error=error))
                             # grab updated info from TVDB
@@ -1446,7 +1446,7 @@ class Home(WebRoot):
             except CantUpdateShowException:
                 errors.append(_("Unable to force an update on scene numbering of the show."))
 
-        if direct_call is True:
+        if direct_call:
             return errors
 
         if errors:
