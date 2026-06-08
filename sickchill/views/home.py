@@ -1425,7 +1425,7 @@ class Home(WebRoot):
 
         # force the update
         if do_update:
-            error, show = show_obj.update(self, force=True)
+            error, show = Show.update(show_obj, True)
             if error:
                 errors.append(_("Unable to update show: {error}").format(error=error))
 
@@ -1459,7 +1459,7 @@ class Home(WebRoot):
 
     def togglePause(self):
         show = self.get_query_argument("show")
-        error, show = show.pause(self)
+        error, show = Show.pause(show)
         if error:
             return self._genericMessage(_("Error"), error)
 
@@ -1473,7 +1473,7 @@ class Home(WebRoot):
         show = self.get_query_argument("show")
         full = bool(try_int(self.get_query_argument("full")))
 
-        error, show = show.delete(self, remove_files=full)
+        error, show = Show.delete(show, full)
         if error:
             return self._genericMessage(_("Error"), error)
 
@@ -1497,7 +1497,7 @@ class Home(WebRoot):
         show = self.get_query_argument("show")
         force = bool(try_int(self.get_query_argument("force", default="0")))
 
-        error, show = show.refresh(self, force=force)
+        error, show = Show.refresh(show, force)
 
         # This is a show validation error
         if error and not show:
@@ -1516,7 +1516,7 @@ class Home(WebRoot):
         force = bool(try_int(self.get_query_argument("force", default="0")))
 
         # force the update
-        error, show = show.update(self, force=force)
+        error, show = Show.update(show, force)
 
         # This is a show validation error
         if error and not show:

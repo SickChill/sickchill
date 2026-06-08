@@ -760,7 +760,7 @@ class Manage(Home, WebRoot):
 
             if curShowID in update:
                 try:
-                    show_object.update(self, force=True)
+                    show_object.update(force=True)
                     updates.append(show_object.name)
                 except CantUpdateShowException as error:
                     errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
@@ -768,7 +768,7 @@ class Manage(Home, WebRoot):
             # don't bother refreshing shows that were updated anyway
             if curShowID in refresh and curShowID not in update:
                 try:
-                    show_object.refresh(self, force=True)
+                    show_object.refresh(force=True)
                     refreshes.append(show_object.name)
                 except CantRefreshShowException as error:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))
