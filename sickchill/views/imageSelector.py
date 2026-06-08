@@ -21,7 +21,7 @@ class ImageSelector(Home):
         if not show:
             return self._genericMessage(_("Error"), _("You must specify a show"))
 
-        show_obj = Show.find(sickchill.settings.show_list, int(show))
+        show_obj = Show.find(settings.show_list, int(show))
         if not show_obj:
             return self._genericMessage(_("Error"), _("Show not in show list"))
 

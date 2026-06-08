@@ -270,7 +270,8 @@ class TVShow(object):
     def refresh(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
         """
         Refresh this show.
-        Returns (error_message or None, self) to maintain consistent API with Show.refresh()
+        :param force: Force update
+        :return: A tuple: an error message if not refreshed, the show self object
         """
 
         try:
@@ -279,6 +280,53 @@ class TVShow(object):
 
         except CantRefreshShowException as exception:
             return str(exception), self
+
+        except Exception as error:
+            return str(error), self
+
+    def update(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
+        """
+        Update this show from indexer.
+        Returns (error_message or None, self) to maintain consistent API.
+        """
+        try:
+            settings.showQueueScheduler.action.update_show(self, bool(force))
+            return None, self
+
+        except CantUpdateShowException as exception:
+            return str(exception), self
+
+        except Exception as error:
+            return str(error), self
+
+    def delete(self, remove_files: bool = False) -> tuple[Union[str, None], "TVShow"]:
+        """
+        Delete this show.
+        Returns (error_message or None, self) to maintain consistent API.
+        """
+        try:
+            settings.showQueueScheduler.action.remove_show(self, bool(remove_files))
+            return None, self
+
+        except CantRemoveShowException as exception:
+            return str(exception), self
+
+        except Exception as error:
+            return str(error), self
+
+    def pause(self, pause: Union[bool, None] = None) -> tuple[Union[str, None], "TVShow"]:
+        """
+        Pause or unpause this show.
+        Returns (error_message or None, self) to maintain consistent API.
+        """
+        try:
+            if pause is None:
+                self.paused = not self.paused
+            else:
+                self.paused = pause
+
+            self.save_to_db()
+            return None, self
 
         except Exception as error:
             return str(error), self

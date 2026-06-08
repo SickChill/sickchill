@@ -7,6 +7,7 @@ import os
 import time
 import urllib.parse
 from pathlib import Path
+from typing import TYPE_CHECKING
 from urllib.parse import unquote_plus
 
 import requests
@@ -36,11 +37,13 @@ from sickchill.providers.metadata.helpers import getShowImage
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
-from sickchill.tv import TVShow
 from sickchill.update_manager import UpdateManager
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 from sickchill.views.routes import Route
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVShow
 
 
 @Route("/home(/?.*)", name="home")
@@ -1422,7 +1425,7 @@ class Home(WebRoot):
 
         # force the update
         if do_update:
-            error, show = Show.update(show_obj, True)
+            error, show = show_obj.update(self, force=True)
             if error:
                 errors.append(_("Unable to update show: {error}").format(error=error))
 
@@ -1456,7 +1459,7 @@ class Home(WebRoot):
 
     def togglePause(self):
         show = self.get_query_argument("show")
-        error, show = Show.pause(show)
+        error, show = show.pause(self)
         if error:
             return self._genericMessage(_("Error"), error)
 
@@ -1470,7 +1473,7 @@ class Home(WebRoot):
         show = self.get_query_argument("show")
         full = bool(try_int(self.get_query_argument("full")))
 
-        error, show = Show.delete(show, full)
+        error, show = show.delete(self, remove_files=full)
         if error:
             return self._genericMessage(_("Error"), error)
 
@@ -1494,7 +1497,7 @@ class Home(WebRoot):
         show = self.get_query_argument("show")
         force = bool(try_int(self.get_query_argument("force", default="0")))
 
-        error, show = show.refresh(self, force=True)
+        error, show = show.refresh(self, force=force)
 
         # This is a show validation error
         if error and not show:
@@ -1513,7 +1516,7 @@ class Home(WebRoot):
         force = bool(try_int(self.get_query_argument("force", default="0")))
 
         # force the update
-        error, show = Show.update(show, force)
+        error, show = show.update(self, force=force)
 
         # This is a show validation error
         if error and not show:

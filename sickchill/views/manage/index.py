@@ -2,6 +2,7 @@ import json
 import ntpath
 import os
 import posixpath
+from typing import TYPE_CHECKING
 
 from sickchill import logger, settings
 from sickchill.helper import episode_num, try_int
@@ -9,10 +10,12 @@ from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShow
 from sickchill.oldbeard import db, subtitles as subtitle_module, ui
 from sickchill.oldbeard.common import SNATCHED, Overview, Quality
 from sickchill.show.Show import Show
-from sickchill.tv import TVShow
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home, WebRoot
 from sickchill.views.routes import Route
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVShow
 
 
 @Route("/manage(/?.*)", name="manage:main")
@@ -746,18 +749,18 @@ class Manage(Home, WebRoot):
                 continue
 
             if curShowID in delete:
-                Show.delete(show_object, True)
+                show_object.delete(remove_files=True)
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in remove:
-                Show.delete(show_object)
+                show_object.delete(remove_files=False)
                 # don't do anything else if it's being removed
                 continue
 
             if curShowID in update:
                 try:
-                    Show.update(show_object, True)
+                    show_object.update(self, force=True)
                     updates.append(show_object.name)
                 except CantUpdateShowException as error:
                     errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
