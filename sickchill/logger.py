@@ -53,6 +53,8 @@ class DispatchFormatter(logging.Formatter, object):
         # sort the list in order of descending length so that entire item is censored
         # e.g. password and password_1 both get censored instead of getting ********_1
         censored.sort(key=len, reverse=True)
+        # remove sickchill from the list of censored items
+        censored = [item for item in censored if item and not any(ex in item.lower() for ex in ["sickchill"])]
 
         if not isinstance(msg, (str, bytes)):
             msg = repr(msg)

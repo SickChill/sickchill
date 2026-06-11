@@ -25,6 +25,7 @@ server.key
 /tests/cache.db*
 /tests/failed.db
 /tests/data/
+/tests/base.*
 
 #  Compiled source   #
 ######################
