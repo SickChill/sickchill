@@ -9,7 +9,6 @@ from urllib.parse import quote
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
 from sickchill.logging.weblog import WebErrorViewer
-from sickchill.oldbeard import notifiers
 
 # log levels
 ERROR = logging.ERROR
@@ -54,7 +53,7 @@ class DispatchFormatter(logging.Formatter, object):
         # e.g. password and password_1 both get censored instead of getting ********_1
         censored.sort(key=len, reverse=True)
         # remove sickchill from the list of censored items
-        censored = [item for item in censored if item and not any(ex in item.lower() for ex in ["sickchill"])]
+        censored = [item for item in censored if item and item.lower() != "sickchill"]
 
         if not isinstance(msg, (str, bytes)):
             msg = repr(msg)

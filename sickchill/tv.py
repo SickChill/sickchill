@@ -13,7 +13,6 @@ from typing import Union
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
-import imdb
 from imdb import Cinemagoer, IMDbError
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
