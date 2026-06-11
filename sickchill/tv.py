@@ -151,12 +151,8 @@ class TVShow(object):
             setattr(self, f"_{attribute}", value)
             self.dirty = True
             """
-            TODO: move refresh, update, pause, etc logic here from Show
-            It is incredibly inefficient to send just the indexerid
-            and then have to iterate over the whole show list to
-            find the show object so we can do an action on it.
-            This makes every refresh use a ton more cpu cycles for example,
-            and the larger their show list is the worse it gets
+            Refresh, update, delete, and pause logic moved here from Show.
+            Show still exists for key validation, but above logic is now here.
             Also, having all of the logic that only acts on one class
             within the class itself makes it easier to find what methods exist.
             """
