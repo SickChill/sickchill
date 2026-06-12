@@ -55,6 +55,7 @@ class ShowUpdater(object):
                         cur_show.next_episode()
 
                         skip_update = False
+                        result = None, None
                         # Skip ended or paused shows until interval is met
                         if (cur_show.status == "Ended" or cur_show.paused) and settings.ENDED_SHOWS_UPDATE_INTERVAL != 0:  # 0 is always
                             if settings.ENDED_SHOWS_UPDATE_INTERVAL == -1:  # Never
@@ -66,12 +67,18 @@ class ShowUpdater(object):
 
                         # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
                         if not last_update or (cur_show.indexerid in updated_shows and not skip_update):
-                            pi_list.append(cur_show.update(force))
+                            result = cur_show.update(force)  # TVShow.update()
                         elif not skip_update:
                             # TODO: do we really need to refresh every show every day if it is not updated?
                             # Temporarily use the same duration for paused as ended
-                            pi_list.append(cur_show.refresh(force=True))
-                    except (CantUpdateShowException, CantRefreshShowException) as error:
+                            result = cur_show.refresh(force=True)  # TVShow.refresh()
+
+                        # Handle the returned tuple from TVShow .update() / .refresh() and handle errors
+                        if result and isinstance(result, tuple) and result[0]:
+                            error_msg = result[0]
+                            logger.info(_("Automatic update failed for {show}: {error}").format(show=cur_show.name, error=error_msg))
+
+                    except Exception as error:
                         logger.info(_("Automatic update failed: {error}").format(error=error))
 
                 ui.ProgressIndicators.setIndicator("dailyUpdate", ui.QueueProgressIndicator("Daily Update", pi_list))
