@@ -4,7 +4,6 @@ import time
 
 import sickchill
 from sickchill import logger, settings
-from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
 from sickchill.oldbeard import db, network_timezones, ui
 
 
