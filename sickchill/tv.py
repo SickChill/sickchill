@@ -285,7 +285,7 @@ class TVShow(object):
         Returns (error_message or None, self) to maintain consistent API.
         """
         try:
-            settings.showQueueScheduler.action.update_show(self, bool(force))
+            settings.showQueueScheduler.action.update_show(self, force)
             return None, self
 
         except CantUpdateShowException as exception:
@@ -300,7 +300,7 @@ class TVShow(object):
         Returns (error_message or None, self) to maintain consistent API.
         """
         try:
-            settings.showQueueScheduler.action.remove_show(self, bool(remove_files))
+            settings.showQueueScheduler.action.remove_show(self, remove_files)
             return None, self
 
         except CantRemoveShowException as exception:
@@ -314,6 +314,7 @@ class TVShow(object):
         Pause or unpause this show.
         Returns (error_message or None, self) to maintain consistent API.
         """
+        old_paused = self.paused
         try:
             if pause is None:
                 self.paused = not self.paused
@@ -324,6 +325,7 @@ class TVShow(object):
             return None, self
 
         except Exception as error:
+            self.paused = old_paused
             return str(error), self
 
     def get_all_episodes(self, season=None, has_location=False):

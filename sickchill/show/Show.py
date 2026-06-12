@@ -140,6 +140,9 @@ class Show(object):
         except MultipleShowObjectsException:
             return "Unable to find the specified show", None
 
+        if show is None:
+            return "Unable to find the specified show", None
+
         return None, show
 
     @staticmethod

@@ -744,21 +744,21 @@ class Manage(Home, WebRoot):
                 continue
 
             if curShowID in delete:
-                error, _ = show_object.delete(remove_files=True)
+                error, show = show_object.delete(remove_files=True)
                 if error:
                     errors.append(_("Unable to delete show {show_name}: {error}").format(show_name=show_object.name, error=error))
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in remove:
-                error, _ = show_object.delete(remove_files=False)
+                error, show = show_object.delete(remove_files=False)
                 if error:
-                    errors.append(_("Unable to delete show {show_name}: {error}").format(show_name=show_object.name, error=error))
+                    errors.append(_("Unable to remove show {show_name}: {error}").format(show_name=show_object.name, error=error))
                 # don't do anything else if it's being removed
                 continue
 
             if curShowID in update:
-                error, _ = show_object.update(force=True)
+                error, show = show_object.update(force=True)
                 if error:
                     errors.append(_("Unable to update show {show_name}: {error}").format(show_name=show_object.name, error=error))
                 else:
@@ -766,7 +766,7 @@ class Manage(Home, WebRoot):
 
             # don't bother refreshing shows that were updated anyway
             if curShowID in refresh and curShowID not in update:
-                error, _ = show_object.refresh(force=True)
+                error, show = show_object.refresh(force=True)
                 if error:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))
                 else:

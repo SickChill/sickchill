@@ -2660,7 +2660,7 @@ class CMDShowUpdate(ApiCall):
         """Update a show in SickChill"""
         error, show = Show.update(self.indexerid, force=True)
         if error:
-            return _responds(RESULT_FAILURE, msg=f"Unable to update {show.name} {error}")
+            return _responds(RESULT_FAILURE, msg=f"Unable to update {show} {error}")
 
         return _responds(RESULT_SUCCESS, msg=str(show.name) + " has queued to be updated")
 
