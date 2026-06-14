@@ -127,11 +127,11 @@ class TVDB(Indexer):
                 if test:
                     names.append(test.group(1).strip())
                 # Name with spaces
-                if re.match(r"[. -_]", name):
-                    names.append(re.sub(r"[. -_]", " ", name).strip())
+                if re.search(r"[. _-]", name):
+                    names.append(re.sub(r"[. _-]", " ", name).strip())
                     if test:
                         # Name with spaces and without year
-                        names.append(re.sub(r"[. -_]", " ", test.group(1)).strip())
+                        names.append(re.sub(r"[. _-]", " ", test.group(1)).strip())
 
             for attempt in set(n for n in names if n.strip()):
                 try:
