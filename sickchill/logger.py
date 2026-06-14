@@ -69,7 +69,7 @@ class DispatchFormatter(logging.Formatter, object):
                 print(msg)
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, re.I)
+        msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, flags=re.I)
 
         # Set the new message into the record!
         record.msg = msg
