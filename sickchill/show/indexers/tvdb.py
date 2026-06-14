@@ -123,7 +123,7 @@ class TVDB(Indexer):
             names = [name]
             if not exact:
                 # Name without year and separator
-                test = re.match(r"^(.+?)[. -]+\(\d{4}\)?$", name)
+                test = re.match(r"^(.+?)[. _-]+\(\d{4}\)?$", name)
                 if test:
                     names.append(test.group(1).strip())
                 # Name with spaces
