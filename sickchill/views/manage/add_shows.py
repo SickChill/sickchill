@@ -173,7 +173,7 @@ class AddShows(Home):
         posts them to addNewShow
         """
         show_to_add = self.get_body_argument("show_to_add", show_to_add)
-        other_shows = self.get_body_arguments("other_shows") or other_shows
+        other_shows = other_shows if other_shows is not None else self.get_body_arguments("other_shows")
         search_string = self.get_body_argument("search_string", search_string)
 
         t = PageTemplate(rh=self, filename="addShows_newShow.mako")
@@ -442,6 +442,9 @@ class AddShows(Home):
             # peel off the next one
             next_show = other_shows[0]
             remaining_shows = other_shows[1:]
+
+            if not remaining_shows:
+                return self.newShow(next_show, [])
 
             # go to add the next show
             return self.newShow(next_show, remaining_shows)

@@ -100,30 +100,30 @@ class ShowIndexer(object):
 
         assert bool(indexerid) or bool(name), "Must provide either a name or an indexer id to search indexers with"
 
-        for n in name or "X":
-            n = [re.sub("[. -]", " ", n)]
-            for i in indexer:
-                search = (name, indexerid)[bool(indexerid)]
+        for name_query in name or "X":
+            name_query = re.sub("[. -]", " ", name_query)
+            for indexer_num in indexer:
+                search = (name_query, indexerid)[bool(indexerid)]
                 # noinspection PyUnresolvedReferences
-                logger.debug("Trying to find {} on {}".format(search, self.name(i)))
+                logger.debug("Trying to find {} on {}".format(search, self.name(indexer_num)))
                 if indexerid:
-                    result = self.indexers[i].get_series_by_id(indexerid, language)
+                    result = self.indexers[indexer_num].get_series_by_id(indexerid, language)
                 else:
-                    result = self.indexers[i].get_series_by_name(n, indexerid, language)
+                    result = self.indexers[indexer_num].get_series_by_name(name_query, indexerid, language)
 
                 try:
                     # noinspection PyUnusedLocal
                     garbage = result.seriesName, result.id
                 except AttributeError:
                     # noinspection PyUnresolvedReferences
-                    logger.debug("Failed to find {} on {}".format(search, self.name(i)))
+                    logger.debug("Failed to find {} on {}".format(search, self.name(indexer_num)))
                     continue
 
                 show = Show.find(settings.show_list, result.id)
                 if indexerid and show and show.indexerid == result.id:
-                    return i, result
+                    return indexer_num, result
                 elif indexerid and indexerid == result.id:
-                    return i, result
+                    return indexer_num, result
 
         return None, None
 
