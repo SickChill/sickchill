@@ -1425,7 +1425,7 @@ class Home(WebRoot):
 
         # force the update
         if do_update:
-            error, show = Show.update(show_obj, True)
+            error, show = show_obj.update(force=True)
             if error:
                 errors.append(_("Unable to update show: {error}").format(error=error))
 
@@ -1836,14 +1836,6 @@ class Home(WebRoot):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
 
         cache_db_con = db.DBConnection("cache.db", row_type="dict")
-        # show_object: TVShow = Show.find(settings.show_list, show)
-        # sickchill.oldbeard.search.search_providers(
-        #     show_object,
-        #     show_object.get_episode(season=season, episode=episode or 1),
-        #     downCurQuality=True,
-        #     manual=True,
-        #     manual_snatch=('season', 'episode')[episode is not None]
-        # )
 
         if episode is not None:
             results = cache_db_con.select(
