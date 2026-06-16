@@ -53,6 +53,8 @@ class DispatchFormatter(logging.Formatter, object):
         # sort the list in order of descending length so that entire item is censored
         # e.g. password and password_1 both get censored instead of getting ********_1
         censored.sort(key=len, reverse=True)
+        # remove sickchill from the list of censored items
+        censored = [item for item in censored if item and item.lower() != "sickchill"]
 
         if not isinstance(msg, (str, bytes)):
             msg = repr(msg)
@@ -68,7 +70,7 @@ class DispatchFormatter(logging.Formatter, object):
                 print(msg)
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, re.I)
+        msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, flags=re.I)
 
         # Set the new message into the record!
         record.msg = msg
