@@ -1545,20 +1545,20 @@ class Home(WebRoot):
         return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
     def updateKODI(self, show=None):
-        showName = None
+        show_name = None
         show_obj = None
 
         if show:
             show_obj = Show.find(settings.show_list, int(show))
             if show_obj:
-                showName = urllib.parse.quote_plus(show_obj.name)
+                show_name = urllib.parse.quote_plus(show_obj.name)
 
         if settings.KODI_UPDATE_ONLYFIRST:
             host = settings.KODI_HOST.split(",")[0].strip()
         else:
             host = settings.KODI_HOST
 
-        if notifiers.kodi_notifier.update_library(show_name=showName):
+        if notifiers.kodi_notifier.update_library(show_name=show_name):
             ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
         else:
             ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
@@ -1608,7 +1608,7 @@ class Home(WebRoot):
         return self.redirect("/home/")
 
     def setStatus(self, direct=False):
-        if direct is True:
+        if direct:
             # noinspection PyUnresolvedReferences
             show = self.to_change_show
             # noinspection PyUnresolvedReferences
@@ -1620,22 +1620,22 @@ class Home(WebRoot):
             status = self.get_body_argument("status")
 
         if status not in statusStrings:
-            errMsg = _("Invalid status")
+            err_msg = _("Invalid status")
             if direct:
-                ui.notifications.error(_("Error"), errMsg)
+                ui.notifications.error(_("Error"), err_msg)
                 return json.dumps({"result": "error"})
 
-            return self._genericMessage(_("Error"), errMsg)
+            return self._genericMessage(_("Error"), err_msg)
 
         show_obj = Show.find(settings.show_list, int(show))
 
         if not show_obj:
-            errMsg = _("Show not in show list")
+            err_msg = _("Show not in show list")
             if direct:
-                ui.notifications.error(_("Error"), errMsg)
+                ui.notifications.error(_("Error"), err_msg)
                 return json.dumps({"result": "error"})
 
-            return self._genericMessage(_("Error"), errMsg)
+            return self._genericMessage(_("Error"), err_msg)
 
         segments = {}
         if eps:
