@@ -1634,8 +1634,13 @@ class TVEpisode(object):
             self.subtitles = []
             self.subtitles_searchcount = 0
             self.subtitles_lastsearch = str(datetime.datetime.min)
-            self.location = ""  # important for ghost files
+            existing_location = self._location
+            self.location = ""
             self.file_size = 0
+            if existing_location:
+                self._location = existing_location
+                if os.path.isfile(existing_location):
+                    self.file_size = os.path.getsize(existing_location)
             self.release_name = ""
             self.release_group = ""
             self._release_group = ""
@@ -1658,11 +1663,6 @@ class TVEpisode(object):
             # don't overwrite my location
             if sql_results[0]["location"] and not self._location:
                 self.location = os.path.normpath(sql_results[0]["location"])
-
-            if sql_results[0]["file_size"]:
-                self.file_size = int(sql_results[0]["file_size"])
-            else:
-                self.file_size = 0
 
             self.indexerid = int(sql_results[0]["indexerid"])
             self.indexer = int(sql_results[0]["indexer"])
