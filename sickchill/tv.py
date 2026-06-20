@@ -134,6 +134,13 @@ class TVShow(object):
         self._sports = 0
         self._air_by_date = 0
 
+        for show in list(settings.show_list):
+            if show.indexerid == indexerid:
+                logger.warning(f"Found and removing ghost show object for {indexerid} from settings.show_list")
+                settings.show_list.remove(show)
+                show.flush_episodes()
+                break
+
         other_show = Show.find(settings.show_list, self.indexerid)
         if other_show is not None:
             raise MultipleShowObjectsException("Can't create a show if it already exists")
@@ -1038,6 +1045,8 @@ class TVShow(object):
         if self in settings.show_list:
             settings.show_list.remove(self)
 
+        self.flush_episodes()
+
         # clear the cache
         image_cache_dir = os.path.join(settings.CACHE_DIR, "images")
         for cache_file in glob.glob(os.path.join(glob.escape(image_cache_dir), f"{self.indexerid}.*")):
@@ -1617,15 +1626,32 @@ class TVEpisode(object):
             logger.debug("{id}: Episode {ep} not found in the database".format(id=self.show.indexerid, ep=episode_num(season, episode)))
             return False
         else:
+            self.dirty = True
+
+            # Reset episode object state before populating
+            self.name = ""
+            self.description = ""
+            self.subtitles = []
+            self.subtitles_searchcount = 0
+            self.subtitles_lastsearch = str(datetime.datetime.min)
+            existing_location = self._location
+            self.location = ""
+            self.file_size = 0
+            if existing_location:
+                self._location = existing_location
+                if os.path.isfile(existing_location):
+                    self.file_size = os.path.getsize(existing_location)
+            self.release_name = ""
+            self.release_group = ""
+            self._release_group = ""
+
             if sql_results[0]["name"]:
                 self.name = sql_results[0]["name"]
 
             self.season = season
             self.episode = episode
             self.absolute_number = try_int(sql_results[0]["absolute_number"])
-            self.description = sql_results[0]["description"]
-            if not self.description:
-                self.description = ""
+            self.description = sql_results[0]["description"] or ""
             if sql_results[0]["subtitles"] and sql_results[0]["subtitles"]:
                 self.subtitles = sql_results[0]["subtitles"].split(",")
             self.subtitles_searchcount = int(sql_results[0]["subtitles_searchcount"])
@@ -1637,11 +1663,6 @@ class TVEpisode(object):
             # don't overwrite my location
             if sql_results[0]["location"] and not self._location:
                 self.location = os.path.normpath(sql_results[0]["location"])
-
-            if sql_results[0]["file_size"]:
-                self.file_size = int(sql_results[0]["file_size"])
-            else:
-                self.file_size = 0
 
             self.indexerid = int(sql_results[0]["indexerid"])
             self.indexer = int(sql_results[0]["indexer"])
