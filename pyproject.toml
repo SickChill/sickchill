@@ -239,7 +239,7 @@ greenlet = {version = ">=2.0.0", allow-prereleases = true}
 jsonrpclib-pelix = ">=0.4.2,<1.2.0"
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
-pyOpenSSL = ">=20.0.1,<26.3.0"
+pyOpenSSL = ">=20.0.1,<26.4.0"
 python-dateutil = "^2.8.1"
 python-twitter = "^3.5"
 rarfile = "^4.0"
