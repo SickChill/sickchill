@@ -6,7 +6,6 @@ import time
 import traceback
 import warnings
 from sqlite3 import OperationalError
-from typing import List
 
 from sickchill import logger, settings
 
