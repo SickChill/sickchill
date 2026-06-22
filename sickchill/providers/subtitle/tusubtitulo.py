@@ -119,7 +119,7 @@ class TuSubtituloSubtitle(Subtitle):
 class TuSubtituloProvider(Provider):
     """TuSubtitulo Provider."""
 
-    languages = {Language("por", "BR")} | {Language(l) for l in ["cat", "eng", "glg", "por", "spa"]}
+    languages = {Language("por", "BR")} | {Language(lang) for lang in ["cat", "eng", "glg", "por", "spa"]}
     video_types = (Episode,)
     server_url = "https://www.tusubtitulo.com/"
     series_url = server_url + "series.php"

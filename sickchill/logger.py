@@ -9,7 +9,6 @@ from urllib.parse import quote
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
 from sickchill.logging.weblog import WebErrorViewer
-from sickchill.oldbeard import notifiers
 
 # log levels
 ERROR = logging.ERROR

@@ -108,7 +108,7 @@ class BSPlayerSubtitle(Subtitle):
 class BSPlayerProvider(Provider):
     """BSPlayer Provider."""
 
-    languages = {Language.fromalpha3b(l) for l in language_converters["alpha3b"].codes}
+    languages = {Language.fromalpha3b(lang) for lang in language_converters["alpha3b"].codes}
     server_url = "https://api.bsplayer.org/xml-rpc"
     user_agent = "subliminal v%s" % __short_version__
 
@@ -173,7 +173,7 @@ class BSPlayerProvider(Provider):
                 "<movieSize>{movie_size}</movieSize>"
                 "<languageId>{language_ids}</languageId>"
                 "<imdbId>*</imdbId>"
-            ).format(token=self.token, movie_hash=name_hash, movie_size=size, language_ids=",".join([l.alpha3 for l in languages])),
+            ).format(token=self.token, movie_hash=name_hash, movie_size=size, language_ids=",".join([lang.alpha3 for lang in languages])),
         )
         res = root.find(".//return/result")
         if res.find("status").text != "OK":
