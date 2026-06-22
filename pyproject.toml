@@ -236,7 +236,7 @@ python = ">=3.10,<4"
 "bencode.py" = "^4.0.0"
 configobj = "^5.0.6"
 greenlet = {version = ">=2.0.0", allow-prereleases = true}
-jsonrpclib-pelix = "^0.4.2"
+jsonrpclib-pelix = ">=0.4.2,<1.2.0"
 Mako = "^1.1.4"
 markdown2 = "^2.4.0"
 pyOpenSSL = ">=20.0.1,<26.3.0"
