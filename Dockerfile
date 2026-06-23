@@ -89,11 +89,14 @@ COPY . /sickchill/
 
 # https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
 # hadolint ignore=SC2215,SC1089
-RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
+RUN --mount=type=tmpfs,target="$CARGO_HOME" \
+    if [ -z "$SOURCE" ]; then \
       pip install --upgrade "sickchill[speedups]"; \
     else \
-      pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
-      poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)[speedups]"; \
+      pip install --upgrade poetry && \
+      poetry run pip install -U setuptools-rust pycparser && \
+      poetry build --no-interaction --no-ansi && \
+      pip install --upgrade "$(ls ./dist/sickchill-*.whl)[speedups]"; \
     fi
 
 # Prepare wheels for the sickchill-wheels target (optional export)
@@ -102,9 +105,9 @@ RUN mkdir -m 777 /sickchill-wheels && \
     rm -rf /sickchill-wheels/*none-any.whl && \
     rm -rf /sickchill-wheels/*.gz;
 
-RUN if [ -z "$SOURCE" ]; then \
+RUN if [ -n "$SOURCE" ]; then \
       rm -rf /sickchill-wheels/sickchill*.whl && \
-      cp dist/sickchill*.whl /sickchill-wheels/; \
+      cp dist/sickchill-*.whl /sickchill-wheels/ || true; \
     fi
 
 FROM scratch AS sickchill-wheels
@@ -114,9 +117,6 @@ FROM base AS sickchill-final
 
 # Copy the pre-built venv (will be deployed to persistent datadir/.venv by entrypoint)
 COPY --from=builder "$VENV_IMAGE_PATH" "$VENV_IMAGE_PATH"
-
-# Copy build info for entrypoint to detect image updates
-COPY --from=builder /sickchill/BUILD_INFO /sickchill/BUILD_INFO
 
 # Runtime configuration - datadir will also host the persistent .venv
 ENV HOME=/data

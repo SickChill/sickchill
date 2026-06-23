@@ -30,35 +30,13 @@ umask "$UMASK"
 # Ensure datadir exists
 mkdir -p "$DATADIR"
 
-# -----------------------------
 # PUID/PGID handling (run as root to setup)
-# -----------------------------
 if [ "$(id -u)" = "0" ]; then
-    echo "==> Configuring permissions for PUID=$PUID PGID=$PGID"
-
-    # Group
-    if getent group "$PGID" >/dev/null 2>&1; then
-        groupmod -g "$PGID" sickchill 2>/dev/null || true
-    else
-        groupadd -g "$PGID" sickchill
-    fi
-
-    # User
-    if id -u "$PUID" >/dev/null 2>&1; then
-        usermod -u "$PUID" -g "$PGID" -d "$DATADIR" sickchill 2>/dev/null || true
-    else
-        useradd -u "$PUID" -g "$PGID" -d "$DATADIR" -s /bin/bash sickchill
-    fi
-
-    # Fix ownership of datadir (where .venv, config.ini, cache/ will live)
-    # Only chown what we control - do NOT recursively chown /tv or /downloads
-    # if they are large media libraries (can take forever or cause issues)
+    echo "==> Setting ownership on $DATADIR to PUID=$PUID PGID=$PGID"
     chown -R "$PUID:$PGID" "$DATADIR" || true
 fi
 
-# -----------------------------
 # Persistent venv initialization / update
-# -----------------------------
 if [ ! -x "$VENV_PERSISTENT/bin/sickchill" ]; then
     echo "==> First run or missing venv: copying pre-built Python environment to $VENV_PERSISTENT"
     echo "    (This puts the full venv + sickchill + all dependencies inside your persistent NAS folder)"
@@ -90,9 +68,7 @@ else
     fi
 fi
 
-# -----------------------------
 # Launch SickChill from the persistent venv
-# -----------------------------
 SICKCHILL_BIN="$VENV_PERSISTENT/bin/sickchill"
 
 if [ ! -x "$SICKCHILL_BIN" ]; then
@@ -105,7 +81,9 @@ echo "==> Launching sickchill from persistent venv ($VENV_PERSISTENT)"
 
 # Drop to non-root user if we started as root and PUID != 0
 if [ "$(id -u)" = "0" ] && [ "$PUID" != "0" ]; then
-    exec gosu "$PUID:$PGID" "$SICKCHILL_BIN" --nolaunch --datadir "$DATADIR" --port "$PORT" "$@"
+    echo "==> Dropping privileges to $PUID:$PGID and starting SickChill..."
+    exec gosu "$PUID:$PGID" "$@"
 else
-    exec "$SICKCHILL_BIN" --nolaunch --datadir "$DATADIR" --port "$PORT" "$@"
+    echo "==> Starting SickChill as $(id -u):$(id -g)..."
+    exec "$@"
 fi

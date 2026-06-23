@@ -30,7 +30,7 @@ services:
       # - /docker/downloads:/downloads
       # - /your_media/Series:/tv
 
-      # Timezone (optional as asigned above)
+      # Timezone (optional as assigned above)
       # - /etc/localtime:/etc/localtime:ro
 
     ports:
