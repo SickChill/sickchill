@@ -3,12 +3,9 @@
 set -euo pipefail
 
 # SickChill Docker entrypoint.sh
-# - Makes the Python venv persistent inside your datadir (e.g. /data/.venv)
-#   so the entire Python environment lives alongside config, cache, logs etc.
-#   Perfect for NAS backups and universal installs.
-# - Minimal PUID/PGID support (only chown on datadir)
-# - Auto-copies pre-built venv from image on first start
-# - Auto-updates venv when Docker image is upgraded (via BUILD_INFO)
+# - Persistent venv in datadir
+# - Minimal PUID/PGID support
+# - Auto-update detection via image revision marker
 
 echo "==> SickChill container starting..."
 
@@ -24,37 +21,32 @@ VENV_PERSISTENT="${DATADIR}/.venv"
 umask "$UMASK"
 mkdir -p "$DATADIR"
 
-# PUID/PGID — only chown datadir
-if [ "$(id -u)" = "0" ]; then
-    echo "==> Setting ownership on $DATADIR to PUID=$PUID PGID=$PGID"
-    chown -R "$PUID:$PGID" "$DATADIR" || true
-fi
-
 # Persistent venv initialization / update
 if [ ! -x "$VENV_PERSISTENT/bin/sickchill" ]; then
     echo "==> First run or missing venv: copying pre-built Python environment to $VENV_PERSISTENT"
     rm -rf "$VENV_PERSISTENT"
     cp -a "$VENV_IMAGE" "$VENV_PERSISTENT"
 
-    if [ -f /sickchill/BUILD_INFO ]; then
-        cp /sickchill/BUILD_INFO "$VENV_PERSISTENT/BUILD_INFO"
+    # First run: chown the whole datadir
+    if [ "$(id -u)" = "0" ]; then
+        chown -R "$PUID:$PGID" "$DATADIR" || true
     fi
     echo "==> Persistent venv initialized successfully."
+
 else
-    if [ -f "$VENV_PERSISTENT/BUILD_INFO" ] && [ -f /sickchill/BUILD_INFO ]; then
-        if ! cmp -s "$VENV_PERSISTENT/BUILD_INFO" /sickchill/BUILD_INFO; then
-            echo "==> New image detected - updating persistent venv..."
+    # Compare image revision for auto-update detection
+    if [ -f "/sickchill/.image_revision" ] && [ -f "$VENV_PERSISTENT/.image_revision" ]; then
+        if ! cmp -s "/sickchill/.image_revision" "$VENV_PERSISTENT/.image_revision"; then
+            echo "==> New image revision detected — updating persistent venv..."
             rm -rf "$VENV_PERSISTENT"
             cp -a "$VENV_IMAGE" "$VENV_PERSISTENT"
-            cp /sickchill/BUILD_INFO "$VENV_PERSISTENT/BUILD_INFO"
+
+            if [ "$(id -u)" = "0" ]; then
+                chown -R "$PUID:$PGID" "$VENV_PERSISTENT" || true
+            fi
             echo "==> Persistent venv updated."
         fi
     fi
-fi
-
-# Ensure correct ownership on the (possibly newly copied) venv
-if [ "$(id -u)" = "0" ]; then
-    chown -R "$PUID:$PGID" "$VENV_PERSISTENT" || true
 fi
 
 # Launch SickChill
