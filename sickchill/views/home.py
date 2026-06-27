@@ -7,6 +7,7 @@ import os
 import time
 import urllib.parse
 from pathlib import Path
+from typing import TYPE_CHECKING
 from urllib.parse import unquote_plus
 
 import requests
@@ -36,11 +37,13 @@ from sickchill.providers.metadata.helpers import getShowImage
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
-from sickchill.tv import TVShow
 from sickchill.update_manager import UpdateManager
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
 from sickchill.views.routes import Route
+
+if TYPE_CHECKING:
+    from sickchill.tv import TVShow
 
 
 @Route("/home(/?.*)", name="home")
@@ -1109,7 +1112,7 @@ class Home(WebRoot):
         fanart = None
         poster = None
 
-        if direct_call is False:
+        if not direct_call:
             # Original + safe image handling
             show_id = self.get_query_argument("show", default=None)
             location = self.get_body_argument("location", default=None)
@@ -1370,7 +1373,7 @@ class Home(WebRoot):
 
             if bool(show_obj.season_folders) != season_folders:
                 show_obj.season_folders = season_folders
-                error, show = Show.refresh(show_obj)
+                error, show = show_obj.refresh(force=False)
                 if error:
                     errors.append(_("Unable to refresh this show: {error}").format(error=error))
 
@@ -1405,7 +1408,7 @@ class Home(WebRoot):
                     # change it
                     try:
                         show_obj.location = location
-                        error, show = Show.refresh(show_obj, True)
+                        error, show = show_obj.refresh(force=True)
                         if error:
                             errors.append(_("Unable to refresh this show: {error}").format(error=error))
                             # grab updated info from TVDB
@@ -1422,7 +1425,7 @@ class Home(WebRoot):
 
         # force the update
         if do_update:
-            error, show = Show.update(show_obj, True)
+            error, show = show_obj.update(force=True)
             if error:
                 errors.append(_("Unable to update show: {error}").format(error=error))
 
@@ -1443,7 +1446,7 @@ class Home(WebRoot):
             except CantUpdateShowException:
                 errors.append(_("Unable to force an update on scene numbering of the show."))
 
-        if direct_call is True:
+        if direct_call:
             return errors
 
         if errors:
@@ -1542,20 +1545,20 @@ class Home(WebRoot):
         return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
     def updateKODI(self, show=None):
-        showName = None
+        show_name = None
         show_obj = None
 
         if show:
             show_obj = Show.find(settings.show_list, int(show))
             if show_obj:
-                showName = urllib.parse.quote_plus(show_obj.name)
+                show_name = urllib.parse.quote_plus(show_obj.name)
 
         if settings.KODI_UPDATE_ONLYFIRST:
             host = settings.KODI_HOST.split(",")[0].strip()
         else:
             host = settings.KODI_HOST
 
-        if notifiers.kodi_notifier.update_library(show_name=showName):
+        if notifiers.kodi_notifier.update_library(show_name=show_name):
             ui.notifications.message(_("Library update command sent to KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
         else:
             ui.notifications.error(_("Unable to contact one or more KODI host(s)): {kodi_hosts}").format(kodi_hosts=host))
@@ -1605,7 +1608,7 @@ class Home(WebRoot):
         return self.redirect("/home/")
 
     def setStatus(self, direct=False):
-        if direct is True:
+        if direct:
             # noinspection PyUnresolvedReferences
             show = self.to_change_show
             # noinspection PyUnresolvedReferences
@@ -1617,22 +1620,22 @@ class Home(WebRoot):
             status = self.get_body_argument("status")
 
         if status not in statusStrings:
-            errMsg = _("Invalid status")
+            err_msg = _("Invalid status")
             if direct:
-                ui.notifications.error(_("Error"), errMsg)
+                ui.notifications.error(_("Error"), err_msg)
                 return json.dumps({"result": "error"})
 
-            return self._genericMessage(_("Error"), errMsg)
+            return self._genericMessage(_("Error"), err_msg)
 
         show_obj = Show.find(settings.show_list, int(show))
 
         if not show_obj:
-            errMsg = _("Show not in show list")
+            err_msg = _("Show not in show list")
             if direct:
-                ui.notifications.error(_("Error"), errMsg)
+                ui.notifications.error(_("Error"), err_msg)
                 return json.dumps({"result": "error"})
 
-            return self._genericMessage(_("Error"), errMsg)
+            return self._genericMessage(_("Error"), err_msg)
 
         segments = {}
         if eps:
@@ -1833,14 +1836,6 @@ class Home(WebRoot):
         self.set_header("Cache-Control", "max-age=0,no-cache,no-store")
 
         cache_db_con = db.DBConnection("cache.db", row_type="dict")
-        # show_object: TVShow = Show.find(settings.show_list, show)
-        # sickchill.oldbeard.search.search_providers(
-        #     show_object,
-        #     show_object.get_episode(season=season, episode=episode or 1),
-        #     downCurQuality=True,
-        #     manual=True,
-        #     manual_snatch=('season', 'episode')[episode is not None]
-        # )
 
         if episode is not None:
             results = cache_db_con.select(

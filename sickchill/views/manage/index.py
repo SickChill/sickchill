@@ -5,7 +5,6 @@ import posixpath
 
 from sickchill import logger, settings
 from sickchill.helper import episode_num, try_int
-from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
 from sickchill.oldbeard import db, subtitles as subtitle_module, ui
 from sickchill.oldbeard.common import SNATCHED, Overview, Quality
 from sickchill.show.Show import Show
@@ -745,29 +744,33 @@ class Manage(Home, WebRoot):
                 continue
 
             if curShowID in delete:
-                Show.delete(show_object, True)
+                error, show = show_object.delete(remove_files=True)
+                if error:
+                    errors.append(_("Unable to delete show {show_name}: {error}").format(show_name=show_object.name, error=error))
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in remove:
-                Show.delete(show_object)
+                error, show = show_object.delete(remove_files=False)
+                if error:
+                    errors.append(_("Unable to remove show {show_name}: {error}").format(show_name=show_object.name, error=error))
                 # don't do anything else if it's being removed
                 continue
 
             if curShowID in update:
-                try:
-                    Show.update(show_object, True)
+                error, show = show_object.update(force=True)
+                if error:
+                    errors.append(_("Unable to update show {show_name}: {error}").format(show_name=show_object.name, error=error))
+                else:
                     updates.append(show_object.name)
-                except CantUpdateShowException as error:
-                    errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
 
             # don't bother refreshing shows that were updated anyway
             if curShowID in refresh and curShowID not in update:
-                try:
-                    Show.refresh(show_object, force=True)
-                    refreshes.append(show_object.name)
-                except CantRefreshShowException as error:
+                error, show = show_object.refresh(force=True)
+                if error:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))
+                else:
+                    refreshes.append(show_object.name)
 
             if curShowID in rename:
                 settings.showQueueScheduler.action.rename_show_episodes(show_object)
