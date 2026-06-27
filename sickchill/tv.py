@@ -13,8 +13,7 @@ from typing import Union
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
-import imdb
-from imdb import Cinemagoer
+from imdb import Cinemagoer, IMDbError
 from unidecode import unidecode
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
@@ -24,6 +23,9 @@ import sickchill.oldbeard.scene_numbering
 from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file, remove_extension, replace_extension, sanitize_filename, try_int
 from sickchill.helper.exceptions import (
+    CantRefreshShowException,
+    CantRemoveShowException,
+    CantUpdateShowException,
     EpisodeDeletedException,
     EpisodeNotFoundException,
     MultipleEpisodesInDatabaseException,
@@ -155,12 +157,8 @@ class TVShow(object):
             setattr(self, f"_{attribute}", value)
             self.dirty = True
             """
-            TODO: move refresh, update, pause, etc logic here from Show
-            It is incredibly inefficient to send just the indexerid
-            and then have to iterate over the whole show list to
-            find the show object so we can do an action on it.
-            This makes every refresh use a ton more cpu cycles for example,
-            and the larger their show list is the worse it gets
+            Refresh, update, delete, and pause logic moved here from Show.
+            Show still exists for key validation, but above logic is now here.
             Also, having all of the logic that only acts on one class
             within the class itself makes it easier to find what methods exist.
             """
@@ -270,6 +268,72 @@ class TVShow(object):
             self.episodes[current_season].clear()
 
         self.episodes.clear()
+
+    def refresh(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
+        """
+        Refresh this show.
+        :param force: Force update
+        :return: A tuple: an error message if not refreshed, the show self object
+        """
+
+        try:
+            settings.showQueueScheduler.action.refresh_show(self, force)
+            return None, self
+
+        except CantRefreshShowException as exception:
+            return str(exception), self
+
+        except Exception as error:
+            return str(error), self
+
+    def update(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
+        """
+        Update this show from indexer.
+        Returns (error_message or None, self) to maintain consistent API.
+        """
+        try:
+            settings.showQueueScheduler.action.update_show(self, force)
+            return None, self
+
+        except CantUpdateShowException as exception:
+            return str(exception), self
+
+        except Exception as error:
+            return str(error), self
+
+    def delete(self, remove_files: bool = False) -> tuple[Union[str, None], "TVShow"]:
+        """
+        Delete this show.
+        Returns (error_message or None, self) to maintain consistent API.
+        """
+        try:
+            settings.showQueueScheduler.action.remove_show(self, remove_files)
+            return None, self
+
+        except CantRemoveShowException as exception:
+            return str(exception), self
+
+        except Exception as error:
+            return str(error), self
+
+    def pause(self, pause: Union[bool, None] = None) -> tuple[Union[str, None], "TVShow"]:
+        """
+        Pause or unpause this show.
+        Returns (error_message or None, self) to maintain consistent API.
+        """
+        old_paused = self.paused
+        try:
+            if pause is None:
+                self.paused = not self.paused
+            else:
+                self.paused = pause
+
+            self.save_to_db()
+            return None, self
+
+        except Exception as error:
+            self.paused = old_paused
+            return str(error), self
 
     def get_all_episodes(self, season=None, has_location=False):
         # detect multi-episodes
@@ -979,7 +1043,7 @@ class TVShow(object):
             LookupError,
             OSError,
             TimeoutError,
-            imdb.IMDbError,
+            IMDbError,
             # Urllib error items
             NewConnectionError,
             MaxRetryError,

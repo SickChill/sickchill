@@ -2,7 +2,7 @@ from datetime import date
 from typing import TYPE_CHECKING, Union
 
 from sickchill import settings
-from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, MultipleShowObjectsException
+from sickchill.helper.exceptions import MultipleShowObjectsException
 from sickchill.oldbeard.common import SKIPPED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
 
@@ -140,6 +140,9 @@ class Show(object):
         except MultipleShowObjectsException:
             return "Unable to find the specified show", None
 
+        if show is None:
+            return "Unable to find the specified show", None
+
         return None, show
 
     @staticmethod
@@ -157,36 +160,22 @@ class Show(object):
         if error is not None:
             return error, show
 
-        if pause is None:
-            show.paused = not show.paused
-        else:
-            show.paused = pause
-
-        show.save_to_db()
-
-        return None, show
+        return show.pause(pause=pause)
 
     @staticmethod
     def refresh(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
         """
-        Try to refresh a show
-        :param force: Force refresh
-        :param show_or_id: The unique id or object of the show to refresh
-        :return: A tuple containing:
-         - an error message if the show could not be refreshed, ``None`` otherwise
-         - the show object that was refreshed, if it exists, ``None`` otherwise
+        Refresh a show moved to tv.py
+        :param show_or_id: The unique id or object of the show to refresh. force: Force refresh
+        :param force: to purposely refresh the show
         """
 
         error, show = Show.validate_indexer_id(show_or_id)
         if error is not None:
             return error, show
 
-        try:
-            settings.showQueueScheduler.action.refresh_show(show, force)
-        except CantRefreshShowException as exception:
-            return str(exception), show
-
-        return None, show
+        # Delegate to the instance method
+        return show.refresh(force=force)
 
     @staticmethod
     def update(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
@@ -202,12 +191,7 @@ class Show(object):
         if error is not None:
             return error, show
 
-        try:
-            settings.showQueueScheduler.action.update_show(show, bool(force))
-        except CantUpdateShowException as exception:
-            return str(exception), show
-
-        return None, show
+        return show.update(force=force)
 
     @staticmethod
     def delete(show_or_id: Union[int, str, "TVShow"], remove_files: bool = False) -> (Union[str, None], Union["TVShow", None]):
@@ -223,9 +207,4 @@ class Show(object):
         if error is not None:
             return error, show
 
-        try:
-            settings.showQueueScheduler.action.remove_show(show, bool(remove_files))
-        except CantRemoveShowException as exception:
-            return str(exception), show
-
-        return None, show
+        return show.delete(remove_files=remove_files)

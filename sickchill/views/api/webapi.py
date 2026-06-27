@@ -2378,7 +2378,7 @@ class CMDShowRefresh(ApiCall):
 
     def run(self):
         """Refresh a show in SickChill"""
-        error, show = Show.refresh(self.indexerid)
+        error, show = Show.refresh(self.indexerid, force=False)
         if error:
             return _responds(RESULT_FAILURE, msg=error)
 
@@ -2658,9 +2658,9 @@ class CMDShowUpdate(ApiCall):
 
     def run(self):
         """Update a show in SickChill"""
-        error, show = Show.update(self.indexerid, True)
+        error, show = Show.update(self.indexerid, force=True)
         if error:
-            _responds(RESULT_FAILURE, msg=f"Unable to update {show.name}")
+            return _responds(RESULT_FAILURE, msg=f"Unable to update {self.indexerid} {error}")
 
         return _responds(RESULT_SUCCESS, msg=str(show.name) + " has queued to be updated")
 
