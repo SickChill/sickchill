@@ -1,7 +1,7 @@
 import datetime
 import time
 from pathlib import Path
-from typing import Generator, Union
+from typing import Generator
 
 import sickchill
 from sickchill import adba, logger, settings
@@ -211,11 +211,19 @@ def retrieve_exceptions() -> None:
     updated_shows = set()
     cache_db_con = db.DBConnection("cache.db")
 
+    seen = set()
     generators = (_sickchill_exceptions_generator(), _xem_exceptions_generator(), _anidb_exceptions_generator())
     for generator in generators:
+        if generator is None:
+            continue
         for indexerid, name, season in generator:
-            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? and show_name = ? and  season = ? and custom = 1;", [indexerid, name, season]])
-            queries.append(["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
+            key = (indexerid, name, season)
+            if key in seen:
+                continue
+            seen.add(key)
+
+            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ?;", [indexerid, name, season]])
+            queries.append(["INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
             updated_shows.add(indexerid)
 
     if queries:
@@ -230,7 +238,7 @@ def retrieve_exceptions() -> None:
 github_session = helpers.make_indexer_session()
 
 
-def _sickchill_exceptions_generator() -> Union[Generator[int, str, int], None]:
+def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
     if not should_refresh("sickchill"):
         return
 
@@ -262,7 +270,7 @@ def _sickchill_exceptions_generator() -> Union[Generator[int, str, int], None]:
     set_last_refresh("sickchill")
 
 
-def _anidb_exceptions_generator() -> Union[Generator[int, str, int], None]:
+def _anidb_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
     if not should_refresh("anidb"):
         return
 
@@ -288,7 +296,7 @@ def _anidb_exceptions_generator() -> Union[Generator[int, str, int], None]:
 xem_session = helpers.make_indexer_session()
 
 
-def _xem_exceptions_generator() -> Union[Generator[int, str, int], None]:
+def _xem_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
     if not should_refresh("xem"):
         return
 
