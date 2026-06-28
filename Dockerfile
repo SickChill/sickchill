@@ -57,8 +57,8 @@ RUN python3 -m venv "$VENV_IMAGE_PATH" --upgrade --upgrade-deps
 ENV PATH="$VENV_IMAGE_PATH/bin:$PATH"
 
 RUN pip install -U wheel setuptools-rust
-RUN pip install --upgrade "setuptools>=70.0.0" && \
-    pip install --no-deps --force-reinstall "setuptools>=70.0.0"
+# Pin setuptools for pkg_resources compatibility (enzyme dependency on Python 3.13)
+RUN pip install --upgrade "setuptools>=70.0,<82.0"
 
 WORKDIR /sickchill
 COPY . /sickchill/
