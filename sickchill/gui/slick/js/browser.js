@@ -74,8 +74,7 @@
 
                     const isZipRequested
                         = fileTypes.includes('zip')
-                            || fileTypes.includes('archives')
-                            || fileTypes.includes('*');
+                            || fileTypes.includes('archives');
 
                     const isAllowed
                         = entry.isAllowed
