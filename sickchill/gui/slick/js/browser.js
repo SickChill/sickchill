@@ -69,8 +69,16 @@
                  * @param entry.isAllowed
                  */
                 // noinspection OverlyComplexBooleanExpressionJS
-                if (entry.isFile && fileTypes) {
-                    const isAllowed = (entry.isAllowed || (fileTypes.includes('images') && entry.isImage));
+                if (entry.isFile && fileTypes && fileTypes.length > 0) {
+                    const ext = entry.name.split('.').pop().toLowerCase();
+                    const allowedExts = ['zip', 'rar'];
+
+                    const isAllowed = (entry.isAllowed
+                        || (fileTypes.includes('images') && entry.isImage)
+                        || allowedExts.includes(ext)
+                        || fileTypes.includes('*')
+                        || fileTypes.includes('archives'));
+
                     if (!isAllowed) {
                         return true;
                     }
