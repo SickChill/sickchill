@@ -58,7 +58,7 @@ ENV PATH="$VENV_IMAGE_PATH/bin:$PATH"
 
 RUN pip install -U wheel setuptools-rust
 # Pin setuptools for pkg_resources compatibility (enzyme dependency on Python 3.13)
-RUN pip install --upgrade "setuptools>=70.0,<82.0"
+RUN pip install --upgrade "setuptools>=70.0,<81.0"
 
 WORKDIR /sickchill
 COPY . /sickchill/
@@ -69,6 +69,8 @@ RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
       pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
       poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)[speedups]"; \
     fi
+
+RUN pip install --upgrade "subliminal>=2.5.0,<3.0"
 
 # Prepare wheels for sickchill-wheels target
 RUN mkdir -m 777 /sickchill-wheels && \
