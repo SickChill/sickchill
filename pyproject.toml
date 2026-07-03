@@ -60,7 +60,7 @@ pytest-cov = ">=3,<8"
 pytest-timeout = ">=2.0,<3.0"
 ruff = ">=0.4.0,<1.0"
 pytest = ">=7.0.1,!=8.2.0,<10.0.0"
-poethepoet = ">=0.27.0,<0.47"
+poethepoet = ">=0.27.0,<0.48"
 po2json = "^0.2.2"
 pre-commit = ">=2.20,<5.0"
 
