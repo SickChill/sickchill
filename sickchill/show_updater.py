@@ -66,10 +66,10 @@ class ShowUpdater(object):
 
                         # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
                         if not last_update or (cur_show.indexerid in updated_shows and not skip_update):
-                            pi_list.append(Show.update(cur_show, force))
+                            pi_list.append(cur_show.update(force))
                         elif not skip_update:
                             # Temporarily use the same duration for paused as ended
-                            pi_list.append(Show.refresh(cur_show, force=True))
+                            pi_list.append(cur_show.refresh(force))
 
                     except Exception as error:
                         logger.info(_("Automatic update failed: {error}").format(error=error))
