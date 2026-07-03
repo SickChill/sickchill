@@ -34,7 +34,6 @@
         </div>
     </div>
     <br/>
-    % if 0:
     <div class="row">
         <div class="col-md-12">
             <a href="${static_url('addShows/popularShows/', include_version=False)}" id="btnNewShow" class="btn btn-large">
@@ -47,6 +46,7 @@
         </div>
     </div>
     <br/>
+% if 0:
     <div class="row">
         <div class="col-md-12">
             <a href="${static_url('addShows/favoriteShows/', include_version=False)}" id="btnNewShow" class="btn btn-large btn-block">

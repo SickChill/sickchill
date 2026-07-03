@@ -309,34 +309,67 @@ class AddShows(Home):
         """
         t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
         try:
-            popular_shows = imdb_popular.fetch_popular_shows()
+            popular = imdb_popular.fetch_popular_shows()
+            popular_shows = []
 
-            popular_shows = {
-                show
-                for show in popular_shows
-                if show.getID() and show.getID().strip("tt") not in {show.imdb_id.strip("tt") for show in settings.show_list if show.imdb_id}
-            }
+            for show in popular[:100]:  # Should only be 100 but safety cut
+                try:
+                    imdb_id = show.get("id") or show.get("tconst")
+                    if not imdb_id:
+                        continue
+
+                    title = show.get("title") or show.get("l", "Unknown")
+                    year = show.get("year")
+
+                    image_data = show.get("image")
+                    image_url = None
+                    if isinstance(image_data, dict):
+                        image_url = image_data.get("url")
+                    elif isinstance(image_data, str):
+                        image_url = image_data
+
+                    popular_shows.append({"imdb_id": imdb_id, "name": title, "year": year, "image": image_url, "current_imdb_id": None})
+                except Exception:
+                    continue
+
+            # Mark existing shows
             for show in popular_shows:
-                show.setdefault("rating", "0.0")
-                show.setdefault("votes", "0")
+                show["current_imdb_id"] = self._get_current_imdb_id(show["imdb_id"])
 
-            imdb_exception = None
-        except Exception as error:
-            logger.warning(f"Could not get popular shows: {error}")
-            logger.debug(traceback.format_exc())
-            popular_shows = None
-            imdb_exception = error
+            return t.render(
+                title=_("Popular Shows"),
+                header=_("Popular Shows"),
+                popular_shows=popular_shows,
+                imdb_exception=None,
+                imdb_url=imdb_popular.imdb_url,  # ← This is the key fix
+                topmenu="home",
+                controller="addShows",
+                action="popularShows",
+            )
 
-        return t.render(
-            title=_("Popular Shows"),
-            header=_("Popular Shows"),
-            popular_shows=popular_shows,
-            imdb_exception=imdb_exception,
-            imdb_url=imdb_popular.imdb_url,
-            topmenu="home",
-            controller="addShows",
-            action="popularShows",
-        )
+        except Exception as e:
+            logger.exception(f"Failed to load popular IMDb shows: {e}")
+            t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
+            return t.render(
+                popular_shows=[],
+                title="Popular Shows",
+                header="Popular Shows",
+                imdb_exception=None,
+                imdb_url=lambda x: "#",  # fallback
+                topmenu="home",
+                controller="addShows",
+                action="popularShows",
+            )
+
+    def _get_current_imdb_id(self, imdb_id):
+        """Check if show already exists"""
+        try:
+            from sickchill.oldbeard import db
+
+            result = db.select("SELECT show_id FROM tv_shows WHERE imdb_id = ?", [imdb_id])
+            return result[0]["show_id"] if result else None
+        except:
+            return None
 
     def favoriteShows(self):
         """

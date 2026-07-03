@@ -13,9 +13,8 @@ from typing import Union
 from weakref import WeakKeyDictionary
 from xml.etree import ElementTree
 
-from imdb import Cinemagoer, IMDbError
+from imdbpie import Imdb, ImdbFacade
 from unidecode import unidecode
-from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 import sickchill
 import sickchill.oldbeard.providers
@@ -943,113 +942,82 @@ class TVShow(object):
             self.imdb_id = ""
 
     def load_imdb_info(self):
-        # TODO: Create shows only database from s3 datasets, possibly distributable from sickchill.github.io until they are integrated into sickindexer
-
-        # Check that the imdb_id we have is valid for searching
+        """Load / refresh IMDb information for this show"""
         self.check_imdb_id()
 
+        # Load existing data from DB
+        main_db_con = db.DBConnection()
+        sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
+
+        if sql_results:
+            self.imdb_info = dict(zip(sql_results[0].keys(), sql_results[0]))
+        else:
+            self.imdb_info = {}
+
+        # Find imdb_id if missing
         if not self.imdb_id:
-            # TODO: Load tvmaze/tvdb info into other imdb_info fields
-            # noinspection PyBroadException
             try:
                 self.imdb_id = helpers.imdb_from_tvdbid_on_tvmaze(self.indexerid)
             except Exception:
-                self.imdb_id = None
+                pass
 
-        try:
-            client = Cinemagoer()
-
-            if self.name and not self.imdb_id:
-                logger.debug(f"{self.indexerid}: Trying to find the imdbID for {self.name}")
-                # Add regular name and custom name to be searched first
-                attempts = set()
-                # custom name first, then the name returned by thetvdb
-                for name in {self.custom_name, self.show_name}:
-                    if name:
-                        if self.startyear and not name.strip(")").endswith(f"{self.startyear}"):
-                            # add name (year) first, as it is the most restrictive for matching
-                            attempts.add(f"{name} ({self.startyear})".strip('" '))
-                        # then bare name, without year
-                        attempts.add(name.strip('" '))
-
-                for attempt in attempts:
-                    logger.debug(f"{self.indexerid}: searching IMDb with {attempt}")
-                    result = client.title2imdbID(attempt, kind="tv series")
-                    if not result:
-                        continue
-
-                    if isinstance(result, str):
-                        # if the result is a string each criterion has matched, we can stop searching and use it
-                        logger.debug(f"{self.indexerid}: found IMDb id: {result} for {attempt}, using it")
-                        self.imdb_id = result
+        if not self.imdb_id and self.name:
+            logger.debug(f"{self.indexerid}: Searching for IMDb ID")
+            try:
+                client = Imdb()
+                results = client.search_for_title(self.name)
+                for r in results[:10]:
+                    if r.get("type") and any(x in str(r.get("type", "")).lower() for x in ["tv", "series"]):
+                        self.imdb_id = r.get("imdb_id")
                         break
+            except Exception as e:
+                logger.debug(f"Search failed: {e}")
 
-                if not self.imdb_id:
-                    logger.debug(f"{self.indexerid}: new method failed to determine IMDb id, trying a modified old method")
-                    for attempt in attempts:
-                        results = client.search_movie_advanced(attempt, adult=True)
+        self.check_imdb_id()
 
-                        series_results = [
-                            x for x in results if x["title"].strip('" ') in attempts and x["kind"].startswith("tv") and not x["kind"].endswith("episode")
-                        ]
-                        if self.startyear:
-                            series_results = [x for x in results if x["year"] == self.startyear]
+        if not self.imdb_id:
+            logger.debug(f"{self.indexerid}: No IMDb ID")
+            return
 
-                        imdb_id_set = {x.getID() for x in series_results}
-                        if len(imdb_id_set) == 1:
-                            self.imdb_id = imdb_id_set.pop()
-                            break
+        # Refresh from IMDb
+        logger.debug(f"{self.indexerid}: Refreshing IMDb info")
+        try:
+            client = Imdb()
+            facade = ImdbFacade(client=client)
 
-                        if len(series_results) == 1:
-                            self.imdb_id = list(series_results)[0].getID()
-                            break
+            title = facade.get_title(self.imdb_id.strip("tT"))
 
-                        logger.debug(f"{self.indexerid}: more than imdb one result was found with titles in {attempts}, not using any of them")
+            if title:
+                new_title = getattr(title, "title", self.name)
+                new_imdb_id = getattr(title, "imdb_id", self.imdb_id)
 
-            # Make sure the lib didn't give us back something bogus
-            self.check_imdb_id()
+                self.imdb_info.update(
+                    {
+                        "indexer_id": self.indexerid,
+                        "imdb_id": new_imdb_id,
+                        "title": new_title,
+                        "year": getattr(title, "year", self.startyear),
+                        "akas": self.imdb_info.get("akas", ""),
+                        "runtimes": getattr(title, "runtime", self.runtime),
+                        "genres": "|".join(getattr(title, "genres", [])),
+                        "countries": self.imdb_info.get("countries", ""),
+                        "country_codes": self.imdb_info.get("country_codes", ""),
+                        "certificates": getattr(title, "certification", ""),
+                        "rating": str(getattr(title, "rating", 0.0)),
+                        "votes": str(getattr(title, "rating_count", 0)),
+                        "last_update": datetime.date.today().toordinal(),
+                    }
+                )
+                # make sure we save this once refreshed
+                self.dirty = True
+                self.save_to_db()
 
-            if not self.imdb_id:
-                logger.debug(f"{self.indexerid}: not loading show info from IMDb, because we don't know the imdb_id")
-                return
+                logger.debug(f"{self.indexerid}: IMDb info refreshed → {new_title} ({new_imdb_id})")
+            else:
+                logger.warning(f"No live IMDb data for {self.imdb_id}")
 
-            logger.debug(f"{self.indexerid}: Loading show info from IMDb")
-            imdb_title: dict = client.get_movie(self.imdb_id.strip("t"))
-            if not imdb_title:
-                return
-
-            self.imdb_info = {
-                "indexer_id": self.indexerid,
-                "imdb_id": imdb_title.setdefault("imdbID", self.imdb_id),
-                "title": imdb_title.setdefault("title", self.name),
-                "year": imdb_title.setdefault("year", self.startyear),
-                "akas": "|".join(imdb_title.setdefault("akas", [])),
-                "runtimes": imdb_title.setdefault("runtimes", [self.runtime])[0],
-                "genres": "|".join(imdb_title.setdefault("genres", [])),
-                "countries": "|".join(imdb_title.get("countries", [])),
-                "country_codes": "|".join(imdb_title.get("country codes", [])),
-                "certificates": "|".join(imdb_title.setdefault("certificates", [])),
-                "rating": str(imdb_title.setdefault("rating", 0.0)),
-                "votes": str(imdb_title.setdefault("votes", 0)),
-                "last_update": datetime.date.today().toordinal(),
-            }
-
-            logger.debug(f"{self.indexerid}: Obtained info from IMDb ->{self.imdb_info}")
-        except (SyntaxError, KeyError):
-            logger.info(f"Could not get IMDB info for {self.name}")
-        except (
-            TypeError,
-            ValueError,
-            LookupError,
-            OSError,
-            TimeoutError,
-            IMDbError,
-            # Urllib error items
-            NewConnectionError,
-            MaxRetryError,
-        ) as error:
-            logger.info("Could not get IMDB info: see debug logs for details")
-            logger.debug(f"IMDB traceback: {error}", exc_info=True)
+        except Exception as e:
+            logger.info(f"IMDb refresh failed: {e}")
 
     def next_episode(self):
         current_date = datetime.date.today().toordinal()
@@ -1310,9 +1278,28 @@ class TVShow(object):
         main_db_con = db.DBConnection()
         main_db_con.upsert("tv_shows", new_value_dict, control_value_dict)
 
+        # Save IMDb info to database
         if self.imdb_id and self.imdb_info:
+            # Ensure all expected columns exist and have values
+            imdb_data = {
+                "indexer_id": self.indexerid,
+                "imdb_id": self.imdb_id or "",
+                "title": self.imdb_info.get("title") or self.name or "",
+                "year": self.imdb_info.get("year") or self.startyear or 0,
+                "akas": self.imdb_info.get("akas") or "",
+                "runtimes": self.imdb_info.get("runtimes") or self.runtime or "",
+                "genres": self.imdb_info.get("genres") or "",
+                "countries": self.imdb_info.get("countries") or "",
+                "country_codes": self.imdb_info.get("country_codes") or "",
+                "certificates": self.imdb_info.get("certificates") or self.imdb_info.get("certification") or "",
+                "rating": str(self.imdb_info.get("rating") or 0.0),
+                "votes": str(self.imdb_info.get("votes") or 0),
+                "last_update": self.imdb_info.get("last_update") or datetime.date.today().toordinal(),
+            }
+
             main_db_con = db.DBConnection()
-            main_db_con.upsert("imdb_info", self.imdb_info, control_value_dict)
+            main_db_con.upsert("imdb_info", imdb_data, control_value_dict)
+            logger.debug(f"{self.indexerid}: Saved IMDb info to database")
 
     def __str__(self):
         info_list = [
