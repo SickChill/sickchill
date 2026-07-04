@@ -14,6 +14,7 @@ from sickchill.oldbeard.db import db_cons, db_full_path, db_locks
 
 # import imdb
 # from imdb.parser.http.piculet import Path, Rule
+# TODO: Implement imdbpie throughout, presently commented out so no errors.
 logger = logging.getLogger("sickchill.movie")
 
 

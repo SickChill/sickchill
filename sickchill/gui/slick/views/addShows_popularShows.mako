@@ -47,7 +47,7 @@
                     % else:
                         % for current_result in popular_shows:
                             <div class="traktContainer"
-                                 data-name="${current_result.get('title') or current_result.get('name', '')|u}"
+                                 data-name="${current_result.get('name', '')|h}"
                                  data-rank="${current_result.get('currentRank') or loop.index}"
                                  data-year="${current_result.get('year') or 0}">
                                 <div class="trakt-image">
@@ -60,7 +60,7 @@
                                 </div>
 
                                 <div class="show-title">
-                                    ${current_result.get('title') or current_result.get('name', 'Unknown')}
+                                    ${current_result.get('name', 'Unknown')}
                                     % if current_result.get('year'):
                                         <br><small>(${current_result['year']})</small>
                                     % endif
@@ -75,7 +75,7 @@
                                     % if current_result.get('current_imdb_id'):
                                         <span class="btn btn-xs btn-default disabled">Already Added</span>
                                     % else:
-                                        <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_result['imdb_id']}&amp;show_name=${current_result.get('name') or current_result.get('title') | u}&amp;indexer=IMDB"
+                                        <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_result['imdb_id']}&amp;show_name=${current_result.get('name')}&amp;indexer=IMDB"
                                            class="btn btn-xs btn-success">
                                             ${_('Add Show')}
                                         </a>

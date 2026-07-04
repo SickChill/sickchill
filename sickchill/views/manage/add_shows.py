@@ -309,8 +309,6 @@ class AddShows(Home):
         """
         t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
         try:
-            from sickchill.show.recommendations.imdb import imdb_popular
-
             popular = imdb_popular.fetch_popular_shows()
             popular_shows = []
 
@@ -346,9 +344,16 @@ class AddShows(Home):
                     logger.debug(f"Skipping malformed IMDb popular show item: {error}")
                     continue
 
-            # Mark existing shows
+            # Mark existing shows in a single query
+            imdb_ids = [show["imdb_id"] for show in popular_shows]
+            existing_map = {}
+            if imdb_ids:
+                main_db_con = db.DBConnection()
+                placeholders = ",".join("?" * len(imdb_ids))
+                for row in main_db_con.select(f"SELECT show_id, imdb_id FROM tv_shows WHERE imdb_id IN ({placeholders})", imdb_ids):
+                    existing_map[row["imdb_id"]] = row["show_id"]
             for show in popular_shows:
-                show["current_imdb_id"] = self._get_current_imdb_id(show["imdb_id"])
+                show["current_imdb_id"] = existing_map.get(show["imdb_id"])
 
             return t.render(
                 title=_("Popular Shows"),
@@ -375,19 +380,10 @@ class AddShows(Home):
                 action="popularShows",
             )
 
-    def _get_current_imdb_id(self, imdb_id):
-        """Check if show already exists"""
-        try:
-            main_db_con = db.DBConnection()
-            result = main_db_con.select("SELECT show_id FROM tv_shows WHERE imdb_id = ?", [imdb_id])
-            return result[0]["show_id"] if result else None
-        except Exception as error:
-            logger.debug(f"Failed to check existing IMDb show {imdb_id}: {error}")
-            return None
-
     def favoriteShows(self):
         """
-        Fetches data from IMDB to show a list of popular shows.
+        Fetches data from IMDB to show a list of favorite shows.
+        Presently this is not possible due to IMDB
         """
         t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
         error = None
