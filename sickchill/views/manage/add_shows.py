@@ -309,27 +309,39 @@ class AddShows(Home):
         """
         t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
         try:
+            from sickchill.show.recommendations.imdb import imdb_popular
+
             popular = imdb_popular.fetch_popular_shows()
             popular_shows = []
 
-            for show in popular[:100]:  # Should only be 100 but safety cut
+            for idx, show in enumerate(popular[:100], 1):
                 try:
                     imdb_id = show.get("id") or show.get("tconst")
                     if not imdb_id:
                         continue
 
+                    # Clean ID if needed
+                    if isinstance(imdb_id, str) and imdb_id.startswith('/title/'):
+                        imdb_id = imdb_id.split('/')[2]
+
                     title = show.get("title") or show.get("l", "Unknown")
                     year = show.get("year")
 
+                    # Image
                     image_data = show.get("image")
-                    image_url = None
-                    if isinstance(image_data, dict):
-                        image_url = image_data.get("url")
-                    elif isinstance(image_data, str):
-                        image_url = image_data
+                    image_url = image_data.get("url") if isinstance(image_data, dict) else None
 
-                    popular_shows.append({"imdb_id": imdb_id, "name": title, "year": year, "image": image_url, "current_imdb_id": None})
-                except Exception:
+                    popular_shows.append({
+                        "id": imdb_id,
+                        "imdb_id": imdb_id,
+                        "name": title,
+                        "year": year,
+                        "image": image_url,
+                        "currentRank": show.get("currentRank") or idx,
+                        "current_imdb_id": None
+                    })
+                except Exception as error:
+                    logger.debug(f"Skipping malformed IMDb popular show item: {error}")
                     continue
 
             # Mark existing shows
@@ -341,7 +353,7 @@ class AddShows(Home):
                 header=_("Popular Shows"),
                 popular_shows=popular_shows,
                 imdb_exception=None,
-                imdb_url=imdb_popular.imdb_url,  # ← This is the key fix
+                imdb_url=imdb_popular.imdb_url,
                 topmenu="home",
                 controller="addShows",
                 action="popularShows",
@@ -355,7 +367,7 @@ class AddShows(Home):
                 title="Popular Shows",
                 header="Popular Shows",
                 imdb_exception=None,
-                imdb_url=lambda x: "#",  # fallback
+                imdb_url=lambda x: "#",
                 topmenu="home",
                 controller="addShows",
                 action="popularShows",
@@ -364,11 +376,11 @@ class AddShows(Home):
     def _get_current_imdb_id(self, imdb_id):
         """Check if show already exists"""
         try:
-            from sickchill.oldbeard import db
-
-            result = db.select("SELECT show_id FROM tv_shows WHERE imdb_id = ?", [imdb_id])
+            main_db_con = db.DBConnection()
+            result = main_db_con.select("SELECT show_id FROM tv_shows WHERE imdb_id = ?", [imdb_id])
             return result[0]["show_id"] if result else None
-        except:
+        except Exception as error:
+            logger.debug(f"Failed to check existing IMDb show {imdb_id}: {error}")
             return None
 
     def favoriteShows(self):

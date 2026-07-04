@@ -19,6 +19,15 @@
                         <select id="showsort" class="form-control form-control-inline input-sm">
                             <option value="name">${_('Name')}</option>
                             <option value="rank" selected>${_('Rank')}</option>
+                            <option value="year">${_('Year')}</option>
+                        </select>
+                    </label>
+                    &nbsp;
+                    <label>
+                        <span>${_('Sort Order')}:</span>
+                        <select id="showsortdirection" class="form-control form-control-inline input-sm">
+                            <option value="asc" selected>${_('Asc')}</option>
+                            <option value="desc">${_('Desc')}</option>
                         </select>
                     </label>
                 </div>
@@ -37,7 +46,10 @@
                         </div>
                     % else:
                         % for current_result in popular_shows:
-                            <div class="traktContainer">
+                            <div class="traktContainer"
+                                 data-name="${current_result.get('title') or current_result.get('name', '')|u}"
+                                 data-rank="${current_result.get('currentRank') or loop.index}"
+                                 data-year="${current_result.get('year') or 0}">
                                 <div class="trakt-image">
                                     <a href="${anon_url(imdb_url(current_result))}" target="_blank">
                                         <img src="${current_result.get('image') or static_url('images/poster.png')}"
@@ -48,17 +60,22 @@
                                 </div>
 
                                 <div class="show-title">
-                                    ${current_result.get('name', 'Unknown')}
+                                    ${current_result.get('title') or current_result.get('name', 'Unknown')}
                                     % if current_result.get('year'):
                                         <br><small>(${current_result['year']})</small>
                                     % endif
+                                </div>
+
+                                <!-- Rank display -->
+                                <div class="clearfix">
+                                    <span class="rank">#${current_result.get('currentRank') or 'N/A'}</span>
                                 </div>
 
                                 <div class="traktShowTitleIcons">
                                     % if current_result.get('current_imdb_id'):
                                         <span class="btn btn-xs btn-default disabled">Already Added</span>
                                     % else:
-                                        <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_result['imdb_id']}&amp;show_name=${current_result['name'] | u}&amp;indexer=IMDB"
+                                        <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_result['imdb_id']}&amp;show_name=${current_result.get('name') or current_result.get('title') | u}&amp;indexer=IMDB"
                                            class="btn btn-xs btn-success">
                                             ${_('Add Show')}
                                         </a>

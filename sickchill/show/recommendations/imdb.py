@@ -4,7 +4,7 @@ import re
 from imdbpie import Imdb, ImdbFacade
 from imdbpie.exceptions import ImdbAPIError
 
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.oldbeard import helpers
 
 
@@ -32,8 +32,8 @@ class imdbPopular(object):
 
             return []
 
-        except Exception as e:
-            print(f"IMDb popular shows fetch failed: {type(e).__name__}: {e}")
+        except ImdbAPIError as e:
+            logger.warning(f"IMDb popular shows fetch failed:{e}")
             return []
 
     def get_title(self, imdb_id):
@@ -65,15 +65,15 @@ class imdbPopular(object):
 
         try:
             matches = list(match.groups())
-            # Scale the main dimension fields (indices 6,7,8)
-            for i in (6, 7, 8):
+            # Scale requested size plus crop coordinates/dimensions.
+            for i in (3, 5, 6, 7, 8):
                 if matches[i].isdigit():
                     matches[i] = str(int(matches[i]) * factor)
 
             return (
                 f"{matches[0]}V{matches[1]}_{matches[2]}{matches[3]}_{matches[4]}{matches[5]},{matches[6]},{matches[7]},{matches[8]}_{matches[9]}{matches[10]}"
             )
-        except Exception:
+        except (IndexError, ValueError):
             return image_url
 
     def cache_image(self, image_url):

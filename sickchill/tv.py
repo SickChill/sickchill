@@ -1282,7 +1282,6 @@ class TVShow(object):
         if self.imdb_id and self.imdb_info:
             # Ensure all expected columns exist and have values
             imdb_data = {
-                "indexer_id": self.indexerid,
                 "imdb_id": self.imdb_id or "",
                 "title": self.imdb_info.get("title") or self.name or "",
                 "year": self.imdb_info.get("year") or self.startyear or 0,
