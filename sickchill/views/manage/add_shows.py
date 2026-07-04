@@ -368,7 +368,6 @@ class AddShows(Home):
 
         except Exception as e:
             logger.exception(f"Failed to load popular IMDb shows: {e}")
-            t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
             return t.render(
                 popular_shows=[],
                 title="Popular Shows",
