@@ -321,8 +321,8 @@ class AddShows(Home):
                         continue
 
                     # Clean ID if needed
-                    if isinstance(imdb_id, str) and imdb_id.startswith('/title/'):
-                        imdb_id = imdb_id.split('/')[2]
+                    if isinstance(imdb_id, str) and imdb_id.startswith("/title/"):
+                        imdb_id = imdb_id.split("/")[2]
 
                     title = show.get("title") or show.get("l", "Unknown")
                     year = show.get("year")
@@ -331,15 +331,17 @@ class AddShows(Home):
                     image_data = show.get("image")
                     image_url = image_data.get("url") if isinstance(image_data, dict) else None
 
-                    popular_shows.append({
-                        "id": imdb_id,
-                        "imdb_id": imdb_id,
-                        "name": title,
-                        "year": year,
-                        "image": image_url,
-                        "currentRank": show.get("currentRank") or idx,
-                        "current_imdb_id": None
-                    })
+                    popular_shows.append(
+                        {
+                            "id": imdb_id,
+                            "imdb_id": imdb_id,
+                            "name": title,
+                            "year": year,
+                            "image": image_url,
+                            "currentRank": show.get("currentRank") or idx,
+                            "current_imdb_id": None,
+                        }
+                    )
                 except Exception as error:
                     logger.debug(f"Skipping malformed IMDb popular show item: {error}")
                     continue
