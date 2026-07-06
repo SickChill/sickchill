@@ -8,12 +8,18 @@ from sickchill import adba, logger, settings
 from sickchill.oldbeard import db, helpers
 from sickchill.show.Show import Show
 
-# Session for requests (created once)
-github_session = helpers.make_indexer_session()
-xem_session = helpers.make_indexer_session()
-
 # Cache for exceptions (used by rebuild_exception_cache, etc.)
 exceptions_cache = {}
+
+
+def _get_github_session():
+    """Return a fresh github session (lazy + respects current settings)."""
+    return helpers.make_indexer_session()
+
+
+def get_xem_session():
+    """Return a fresh xem session (lazy + respects current settings)."""
+    return helpers.make_indexer_session()
 
 
 def should_refresh(exception_provider: str) -> bool:
@@ -220,50 +226,47 @@ def update_custom_scene_exceptions(indexer_id, scene_exceptions: dict) -> None:
 def retrieve_exceptions() -> None:
     """
     Looks up the exceptions on GitHub, parses them into a dict, and inserts them into the
-    scene_exceptions table in cache.db. Also clears the scene name cache.
-    Prevent duplicate entries.
+    scene_exceptions table in cache.db. Preserves custom=1 exceptions.
     """
     queries = []
     updated_shows = set()
     cache_db_con = db.DBConnection("cache.db")
 
     seen = set()
-    generators = (_sickchill_exceptions_generator(), _xem_exceptions_generator(), _anidb_exceptions_generator())
+    generators = (
+        _sickchill_exceptions_generator(),
+        _xem_exceptions_generator(),
+        _anidb_exceptions_generator(),
+    )
 
-    for generator in generators:
-        if generator is None:
+    for gen in generators:
+        if gen is None:
             continue
-
-        for indexerid, name, season in generator:
-            if name is None:
-                continue
-
-            # Normalize for better duplicate detection
-            norm_name = name.strip().lower()
-            key = (indexerid, norm_name, season)
-
+        for indexerid, name, season in gen:
+            key = (indexerid, name, season)
             if key in seen:
                 continue
             seen.add(key)
 
-            # Delete any existing (to handle updates/renames)
-            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ?;", [indexerid, name, season]])
-
-            # Insert fresh
-            queries.append(["INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
-
+            # Delete ONLY official versions (preserve user custom exceptions)
+            queries.append([
+                "DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;",
+                [indexerid, name, season]
+            ])
+            queries.append([
+                "INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);",
+                [indexerid, name, season]
+            ])
             updated_shows.add(indexerid)
 
     if queries:
         cache_db_con.mass_action(queries)
 
-        # Rebuild cache for affected shows
-        for show in updated_shows:
+        for show in list(updated_shows):
+            exceptions_cache.pop(show, None)
             rebuild_exception_cache(show)
 
-        logger.debug(f"Updated scene exceptions for {len(updated_shows)} shows (total entries: {len(seen)})")
-    else:
-        logger.debug("No scene exceptions to update")
+        logger.debug("Updated scene exceptions")
 
 
 def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
@@ -275,17 +278,17 @@ def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, N
 
     # noinspection PyBroadException
     try:
-        jdata: dict = helpers.getURL(url, session=github_session, returns="json")
+        session = _get_github_session()
+        raw = helpers.getURL(url, session=session, returns="json")
+        jdata: dict = raw if isinstance(raw, dict) else {}
     except Exception:
         jdata = {}
 
     if not jdata:
-        # When jdata is None, trouble connecting to GitHub, or reading file failed
         logger.debug(f"Check scene exceptions update failed (no data). Unable to update from {url}")
         return
 
     for indexer, shows in jdata.items():
-        # noinspection PyBroadException
         try:
             for indexer_id, exceptions in shows.items():
                 for season, names in exceptions.items():
@@ -330,7 +333,13 @@ def _xem_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
 
         url = f"https://thexem.info/map/allNames?origin={instance.slug}&seasonNumbers=1"
 
-        parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns="json")
+        try:
+            session = get_xem_session()
+            parsed_json = helpers.getURL(url, session=session, timeout=90, returns="json")
+        except Exception:
+            logger.debug(f"Check scene exceptions update failed for XEM: {url}")
+            continue
+
         if not parsed_json:
             logger.debug(f'Check scene exceptions update failed for "theTVDB", Unable to get URL: {url}')
             continue
