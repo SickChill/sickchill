@@ -960,7 +960,7 @@ class TVShow(object):
         if not self.imdb_id:
             try:
                 self.imdb_id = helpers.imdb_from_tvdbid_on_tvmaze(self.indexerid)
-            except Exception ar error:
+            except Exception as error:
                 logger.debug(f"{self.indexerid}: TVmaze IMDb lookup failed: {error}")
 
         if not self.imdb_id and self.name:
