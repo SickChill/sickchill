@@ -930,21 +930,21 @@ class TVShow(object):
         self.status = getattr(indexer_show, "status", "Unknown")
 
     def check_imdb_id(self):
-        if self.imdb_id:
-            self.imdb_id = re.sub(r"\D", "", self.imdb_id)
+        """Ensure IMDb ID is in full 'tt' format"""
+        if not self.imdb_id:
+            return
 
-        if self.imdb_id:
-            self.imdb_id = "tt" + self.imdb_id
+        # Remove any non-digit characters first
+        clean_id = re.sub(r"\D", "", self.imdb_id)
 
-        try:
-            int(self.imdb_id.lstrip("t"))
-        except (ValueError, TypeError, AttributeError):
+        if clean_id:
+            self.imdb_id = "tt" + clean_id
+        else:
             self.imdb_id = ""
 
     def load_imdb_info(self):
         """Load / refresh IMDb information for this show"""
-        self.check_imdb_id()
-
+        
         # Load existing data from DB
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
@@ -954,12 +954,14 @@ class TVShow(object):
         else:
             self.imdb_info = {}
 
+        self.check_imdb_id()
+
         # Find imdb_id if missing
         if not self.imdb_id:
             try:
                 self.imdb_id = helpers.imdb_from_tvdbid_on_tvmaze(self.indexerid)
-            except Exception:
-                pass
+            except Exception ar error:
+                logger.debug(f"{self.indexerid}: TVmaze IMDb lookup failed: {error}")
 
         if not self.imdb_id and self.name:
             logger.debug(f"{self.indexerid}: Searching for IMDb ID")
@@ -984,8 +986,6 @@ class TVShow(object):
         try:
             client = Imdb()
             facade = ImdbFacade(client=client)
-
-            title = facade.get_title(self.imdb_id.strip("tT"))
 
             if title:
                 new_title = getattr(title, "title", self.name)

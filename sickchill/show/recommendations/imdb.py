@@ -46,7 +46,12 @@ class imdbPopular(object):
 
     def imdb_url(self, result):
         """Return full IMDb URL"""
-        imdb_id = result.get("id") or result.get("tconst") or getattr(result, "imdb_id", None)
+        if isinstance(result, dict):
+            imdb_id = result.get("id") or result.get("tconst")
+        else:
+            imdb_id = getattr(result, "imdb_id", None)
+            if callable(imdb_id):
+                imdb_id = imdb_id()
         if imdb_id:
             return f"https://www.imdb.com/title/{imdb_id}/"
         return None
