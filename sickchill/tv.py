@@ -984,6 +984,7 @@ class TVShow(object):
         try:
             client = Imdb()
             facade = ImdbFacade(client=client)
+            title = facade.get_title(self.imdb_id)
 
             if title:
                 new_title = getattr(title, "title", self.name)
