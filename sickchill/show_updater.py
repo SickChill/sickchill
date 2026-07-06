@@ -5,7 +5,6 @@ import time
 import sickchill
 from sickchill import logger, settings
 from sickchill.oldbeard import db, network_timezones, ui
-from sickchill.show.Show import Show
 
 
 class ShowUpdater(object):
