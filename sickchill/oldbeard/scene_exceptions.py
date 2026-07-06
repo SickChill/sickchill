@@ -249,14 +249,8 @@ def retrieve_exceptions() -> None:
             seen.add(key)
 
             # Delete ONLY official versions (preserve user custom exceptions)
-            queries.append([
-                "DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;",
-                [indexerid, name, season]
-            ])
-            queries.append([
-                "INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);",
-                [indexerid, name, season]
-            ])
+            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;", [indexerid, name, season]])
+            queries.append(["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
             updated_shows.add(indexerid)
 
     if queries:
