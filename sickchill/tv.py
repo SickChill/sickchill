@@ -944,8 +944,6 @@ class TVShow(object):
 
     def load_imdb_info(self):
         """Load / refresh IMDb information for this show"""
-        
-        # Load existing data from DB
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT * FROM imdb_info WHERE indexer_id = ?", [self.indexerid])
 
