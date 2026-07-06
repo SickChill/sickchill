@@ -1099,7 +1099,6 @@ class TVShow(object):
         failed_db_con = db.DBConnection("failed.db")
         sql_l = [
             ["DELETE FROM history WHERE showid = ?", [self.indexerid]],
-            ["DELETE FROM failed WHERE showid = ?", [self.indexerid]],
         ]
 
         failed_db_con.mass_action(sql_l)
