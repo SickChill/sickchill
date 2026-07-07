@@ -331,12 +331,8 @@ def _xem_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
 
         url = f"https://thexem.info/map/allNames?origin={instance.slug}&seasonNumbers=1"
 
-        try:
-            session = get_xem_session()
-            parsed_json = helpers.getURL(url, session=session, timeout=90, returns="json")
-        except Exception:
-            logger.debug(f"Check scene exceptions update failed for XEM: {url}")
-            continue
+        session = get_xem_session()
+        parsed_json = helpers.getURL(url, session=session, timeout=90, returns="json")
 
         if not parsed_json:
             logger.debug(f'Check scene exceptions update failed for "theTVDB", Unable to get URL: {url}')
