@@ -159,8 +159,9 @@ class CacheDBConnection(db.DBConnection):
     def __init__(self):
         super().__init__("cache.db")
         db.upgrade_database(self, cache.InitialSchema)
-        # self.action("DELETE from results WHERE added < datetime('now','-30 days')")
+        db.upgrade_database(self, cache.AddCacheIndexes)
 
+        # self.action("DELETE from results WHERE added < datetime(settings.CACHE_RETENTION)")
         self.trim()
 
     def trim(self, provider: str = ""):
