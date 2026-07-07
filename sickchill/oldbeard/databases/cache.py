@@ -68,7 +68,7 @@ class ResultsTable(InitialSchema):
 
 class AddCacheIndexes(ResultsTable):
     def test(self):
-        return self.get_db_version() < 2
+        return self.get_db_version() >= 2
 
     def execute(self):
         self.connection.action("CREATE INDEX IF NOT EXISTS idx_scene_exceptions_lookup ON scene_exceptions (indexer_id, show_name, season);")
