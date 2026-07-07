@@ -983,8 +983,7 @@ class TVShow(object):
         logger.debug(f"{self.indexerid}: Refreshing IMDb info")
         try:
             client = Imdb()
-            facade = ImdbFacade(client=client)
-            title = facade.get_title(self.imdb_id)
+            title = client.get_title(self.imdb_id)
 
             if title:
                 new_title = getattr(title, "title", self.name)
