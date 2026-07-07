@@ -226,19 +226,21 @@ def update_custom_scene_exceptions(indexer_id, scene_exceptions: dict) -> None:
 def retrieve_exceptions() -> None:
     """
     Looks up the exceptions on GitHub, parses them into a dict, and inserts them into the
-    scene_exceptions table in cache.db. Preserves custom=1 exceptions.
+    scene_exceptions table in cache.db. Removes stale official (custom=0) exceptions
+    while preserving user custom=1 entries.
     """
-    queries = []
-    updated_shows = set()
     cache_db_con = db.DBConnection("cache.db")
 
-    seen = set()
+    seen = set()  # (indexerid, name, season)
+    updated_shows = set()
+
     generators = (
         _sickchill_exceptions_generator(),
         _xem_exceptions_generator(),
         _anidb_exceptions_generator(),
     )
 
+    queries = []
     for gen in generators:
         if gen is None:
             continue
@@ -247,15 +249,17 @@ def retrieve_exceptions() -> None:
             if key in seen:
                 continue
             seen.add(key)
-
-            # Delete ONLY official versions (preserve user custom exceptions)
-            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;", [indexerid, name, season]])
-            queries.append(["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
             updated_shows.add(indexerid)
+
+            # Remove any old official version of this exact exception
+            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;", [indexerid, name, season]])
+            # Insert the current official version
+            queries.append(["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
 
     if queries:
         cache_db_con.mass_action(queries)
 
+        # Rebuild in-memory cache for affected shows
         for show in list(updated_shows):
             exceptions_cache.pop(show, None)
             rebuild_exception_cache(show)
