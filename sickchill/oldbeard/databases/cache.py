@@ -24,13 +24,9 @@ class InitialSchema(db.SchemaUpgrade):
                 "failed INTEGER DEFAULT 0, added TEXT DEFAULT CURRENT_TIMESTAMP);",
             ),
             ("INSERT INTO db_version(db_version) VALUES (1);",),
-            # === Existing indexes ===
             ("CREATE UNIQUE INDEX IF NOT EXISTS idx_url ON results (url);",),
             ("CREATE INDEX IF NOT EXISTS provider ON results (provider);",),
             ("CREATE INDEX IF NOT EXISTS seeders ON results (seeders);",),
-            # === NEW indexes ===
-            ("CREATE INDEX IF NOT EXISTS idx_scene_exceptions_lookup ON scene_exceptions (indexer_id, show_name, season);",),
-            ("CREATE INDEX IF NOT EXISTS idx_results_name ON results (name);",),
         )
         for query in queries:
             self.connection.action(query[0])
@@ -68,3 +64,13 @@ class ResultsTable(InitialSchema):
                     [provider_id],
                 )
                 self.connection.action("DROP TABLE {}".format(provider_id))
+
+
+class AddCacheIndexes(ResultsTable):
+    def test(self):
+        return self.get_db_version() < 2
+
+    def execute(self):
+        self.connection.action("CREATE INDEX IF NOT EXISTS idx_scene_exceptions_lookup ON scene_exceptions (indexer_id, show_name, season);")
+        self.connection.action("CREATE INDEX IF NOT EXISTS idx_results_name ON results (name);")
+        self.increment_db_version()
