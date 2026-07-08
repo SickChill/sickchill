@@ -48,7 +48,7 @@
     "snyk": "^1.1305.2",
     "stylelint": "^16.2.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
-    "toml": "^4.1.1",
+    "toml": "^4.1.2",
     "typescript": "^6.0.3",
     "webpack": "^5.108.3",
     "webpack-cli": "^7.2.1",
