@@ -8,7 +8,18 @@ from sickchill import adba, logger, settings
 from sickchill.oldbeard import db, helpers
 from sickchill.show.Show import Show
 
+# Cache for exceptions (used by rebuild_exception_cache, etc.)
 exceptions_cache = {}
+
+
+def _get_github_session():
+    """Return a fresh github session (lazy + respects current settings)."""
+    return helpers.make_indexer_session()
+
+
+def get_xem_session():
+    """Return a fresh xem session (lazy + respects current settings)."""
+    return helpers.make_indexer_session()
 
 
 def should_refresh(exception_provider: str) -> bool:
@@ -96,17 +107,25 @@ def get_all_scene_exceptions(indexer_id: int) -> dict:
         del exceptions_cache[indexer_id]
 
     for cur_exception in exceptions:
-        if cur_exception["season"] not in all_exceptions_dict:
-            all_exceptions_dict[cur_exception["season"]] = []
-        all_exceptions_dict[cur_exception["season"]].append({"show_name": cur_exception["show_name"], "custom": bool(cur_exception["custom"])})
+        season = cur_exception["season"]
+        show_name = cur_exception["show_name"]
+        custom = bool(cur_exception["custom"])
 
+        if season not in all_exceptions_dict:
+            all_exceptions_dict[season] = []
+
+        # Deduplication: only add if this exact show_name hasn't been added yet for this season
+        if not any(e["show_name"] == show_name for e in all_exceptions_dict[season]):
+            all_exceptions_dict[season].append({"show_name": show_name, "custom": custom})
+
+        # Same deduplication for the in-memory cache
         if indexer_id not in exceptions_cache:
             exceptions_cache[indexer_id] = {}
+        if season not in exceptions_cache[indexer_id]:
+            exceptions_cache[indexer_id][season] = []
 
-        if cur_exception["season"] not in exceptions_cache[indexer_id]:
-            exceptions_cache[indexer_id][cur_exception["season"]] = []
-
-        exceptions_cache[indexer_id][cur_exception["season"]].append(cur_exception["show_name"])
+        if show_name not in exceptions_cache[indexer_id][season]:
+            exceptions_cache[indexer_id][season].append(show_name)
 
     show = Show.find(settings.show_list, indexer_id)
     if show:
@@ -123,18 +142,20 @@ def get_all_scene_exceptions(indexer_id: int) -> dict:
             if -1 not in exceptions_cache[indexer_id]:
                 exceptions_cache[indexer_id][-1] = []
 
-            if sanitized_name:
+            if sanitized_name and sanitized_name not in [e["show_name"] for e in all_exceptions_dict.get(-1, [])]:
                 all_exceptions_dict[-1].append({"show_name": sanitized_name, "custom": False})
                 if sanitized_name not in exceptions_cache[indexer_id][-1]:
                     exceptions_cache[indexer_id][-1].append(sanitized_name)
-            if sanitized_custom_name:
+
+            if sanitized_custom_name and sanitized_custom_name not in [e["show_name"] for e in all_exceptions_dict.get(-1, [])]:
                 all_exceptions_dict[-1].append({"show_name": sanitized_custom_name, "custom": False})
                 if sanitized_custom_name not in exceptions_cache[indexer_id][-1]:
                     exceptions_cache[indexer_id][-1].append(sanitized_custom_name)
 
-    # sort season in exceptions dict by "custom" then "show_name" so alphabetical and custom names are bottom of list
-    for ind, ele in enumerate(all_exceptions_dict):
-        all_exceptions_dict[ele] = sorted(all_exceptions_dict[ele], key=lambda x: (x["custom"], x["show_name"].lower()))
+        # sort season in exceptions dict by "custom" then "show_name" so alphabetical and custom names are bottom of list
+        # sort each season's list
+        for season in list(all_exceptions_dict.keys()):
+            all_exceptions_dict[season] = sorted(all_exceptions_dict[season], key=lambda x: (x["custom"], x["show_name"].lower()))
 
     logger.debug(f"get_all_scene_exceptions: {all_exceptions_dict}")
     logger.debug(f"exceptions_cache for {indexer_id}: {exceptions_cache.get(indexer_id)}")
@@ -205,37 +226,45 @@ def update_custom_scene_exceptions(indexer_id, scene_exceptions: dict) -> None:
 def retrieve_exceptions() -> None:
     """
     Looks up the exceptions on GitHub, parses them into a dict, and inserts them into the
-    scene_exceptions table in cache.db. Also clears the scene name cache.
+    scene_exceptions table in cache.db. Removes stale official (custom=0) exceptions
+    while preserving user custom=1 entries.
     """
-    queries = []
-    updated_shows = set()
     cache_db_con = db.DBConnection("cache.db")
 
-    seen = set()
-    generators = (_sickchill_exceptions_generator(), _xem_exceptions_generator(), _anidb_exceptions_generator())
-    for generator in generators:
-        if generator is None:
+    seen = set()  # (indexerid, name, season)
+    updated_shows = set()
+
+    generators = (
+        _sickchill_exceptions_generator(),
+        _xem_exceptions_generator(),
+        _anidb_exceptions_generator(),
+    )
+
+    queries = []
+    for gen in generators:
+        if gen is None:
             continue
-        for indexerid, name, season in generator:
+        for indexerid, name, season in gen:
             key = (indexerid, name, season)
             if key in seen:
                 continue
             seen.add(key)
-
-            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ?;", [indexerid, name, season]])
-            queries.append(["INSERT INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
             updated_shows.add(indexerid)
+
+            # Remove any old official version of this exact exception
+            queries.append(["DELETE FROM scene_exceptions WHERE indexer_id = ? AND show_name = ? AND season = ? AND custom = 0;", [indexerid, name, season]])
+            # Insert the current official version
+            queries.append(["INSERT OR IGNORE INTO scene_exceptions (indexer_id, show_name, season, custom) VALUES (?,?,?, 0);", [indexerid, name, season]])
 
     if queries:
         cache_db_con.mass_action(queries)
 
-        for show in updated_shows:
+        # Rebuild in-memory cache for affected shows
+        for show in list(updated_shows):
+            exceptions_cache.pop(show, None)
             rebuild_exception_cache(show)
 
         logger.debug("Updated scene exceptions")
-
-
-github_session = helpers.make_indexer_session()
 
 
 def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
@@ -247,17 +276,17 @@ def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, N
 
     # noinspection PyBroadException
     try:
-        jdata: dict = helpers.getURL(url, session=github_session, returns="json")
+        session = _get_github_session()
+        raw = helpers.getURL(url, session=session, returns="json")
+        jdata: dict = raw if isinstance(raw, dict) else {}
     except Exception:
         jdata = {}
 
     if not jdata:
-        # When jdata is None, trouble connecting to GitHub, or reading file failed
         logger.debug(f"Check scene exceptions update failed (no data). Unable to update from {url}")
         return
 
     for indexer, shows in jdata.items():
-        # noinspection PyBroadException
         try:
             for indexer_id, exceptions in shows.items():
                 for season, names in exceptions.items():
@@ -293,9 +322,6 @@ def _anidb_exceptions_generator() -> Generator[tuple[int, str, int], None, None]
     set_last_refresh("anidb")
 
 
-xem_session = helpers.make_indexer_session()
-
-
 def _xem_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
     if not should_refresh("xem"):
         return
@@ -305,7 +331,9 @@ def _xem_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
 
         url = f"https://thexem.info/map/allNames?origin={instance.slug}&seasonNumbers=1"
 
-        parsed_json = helpers.getURL(url, session=xem_session, timeout=90, returns="json")
+        session = get_xem_session()
+        parsed_json = helpers.getURL(url, session=session, timeout=90, returns="json")
+
         if not parsed_json:
             logger.debug(f'Check scene exceptions update failed for "theTVDB", Unable to get URL: {url}')
             continue

@@ -309,38 +309,80 @@ class AddShows(Home):
         """
         t = PageTemplate(rh=self, filename="addShows_popularShows.mako")
         try:
-            popular_shows = imdb_popular.fetch_popular_shows()
+            popular = imdb_popular.fetch_popular_shows()
+            popular_shows = []
 
-            popular_shows = {
-                show
-                for show in popular_shows
-                if show.getID() and show.getID().strip("tt") not in {show.imdb_id.strip("tt") for show in settings.show_list if show.imdb_id}
-            }
+            for idx, show in enumerate(popular[:100], 1):
+                try:
+                    imdb_id = show.get("id") or show.get("tconst")
+                    if not imdb_id:
+                        continue
+
+                    # Clean ID if needed
+                    if isinstance(imdb_id, str) and imdb_id.startswith("/title/"):
+                        imdb_id = imdb_id.split("/")[2]
+
+                    title = show.get("title") or show.get("l", "Unknown")
+                    year = show.get("year")
+
+                    # Image
+                    image_data = show.get("image")
+                    image_url = image_data.get("url") if isinstance(image_data, dict) else None
+
+                    popular_shows.append(
+                        {
+                            "id": imdb_id,
+                            "imdb_id": imdb_id,
+                            "name": title,
+                            "year": year,
+                            "image": image_url,
+                            "currentRank": show.get("currentRank") or idx,
+                            "current_imdb_id": None,
+                        }
+                    )
+                except Exception as error:
+                    logger.debug(f"Skipping malformed IMDb popular show item: {error}")
+                    continue
+
+            # Mark existing shows in a single query
+            imdb_ids = [show["imdb_id"] for show in popular_shows]
+            existing_map = {}
+            if imdb_ids:
+                main_db_con = db.DBConnection()
+                placeholders = ",".join("?" * len(imdb_ids))
+                for row in main_db_con.select(f"SELECT show_id, imdb_id FROM tv_shows WHERE imdb_id IN ({placeholders})", imdb_ids):
+                    existing_map[row["imdb_id"]] = row["show_id"]
             for show in popular_shows:
-                show.setdefault("rating", "0.0")
-                show.setdefault("votes", "0")
+                show["current_imdb_id"] = existing_map.get(show["imdb_id"])
 
-            imdb_exception = None
-        except Exception as error:
-            logger.warning(f"Could not get popular shows: {error}")
-            logger.debug(traceback.format_exc())
-            popular_shows = None
-            imdb_exception = error
+            return t.render(
+                title=_("Popular Shows"),
+                header=_("Popular Shows"),
+                popular_shows=popular_shows,
+                imdb_exception=None,
+                imdb_url=imdb_popular.imdb_url,
+                topmenu="home",
+                controller="addShows",
+                action="popularShows",
+            )
 
-        return t.render(
-            title=_("Popular Shows"),
-            header=_("Popular Shows"),
-            popular_shows=popular_shows,
-            imdb_exception=imdb_exception,
-            imdb_url=imdb_popular.imdb_url,
-            topmenu="home",
-            controller="addShows",
-            action="popularShows",
-        )
+        except Exception as e:
+            logger.exception(f"Failed to load popular IMDb shows: {e}")
+            return t.render(
+                popular_shows=[],
+                title="Popular Shows",
+                header="Popular Shows",
+                imdb_exception=None,
+                imdb_url=lambda x: "#",
+                topmenu="home",
+                controller="addShows",
+                action="popularShows",
+            )
 
     def favoriteShows(self):
         """
-        Fetches data from IMDB to show a list of popular shows.
+        Fetches data from IMDB to show a list of favorite shows.
+        Presently this is not possible due to IMDB
         """
         t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
         error = None

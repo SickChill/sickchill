@@ -3,9 +3,7 @@ import json
 import logging
 import threading
 
-import imdb
 import tmdbsimple
-from imdb.parser.http.piculet import Path, Rule
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from tmdbsimple import movies, search
@@ -14,6 +12,9 @@ from sickchill import settings
 from sickchill.oldbeard.databases import movie
 from sickchill.oldbeard.db import db_cons, db_full_path, db_locks
 
+# import imdb
+# from imdb.parser.http.piculet import Path, Rule
+# TODO: Implement imdbpie throughout, presently commented out so no errors.
 logger = logging.getLogger("sickchill.movie")
 
 
@@ -40,13 +41,13 @@ class MovieList:
         else:
             self.session: Session = db_cons[self.filename]
 
-        self.imdb = imdb.IMDb()
-        try:
-            self.imdb.topBottomProxy.moviemeter100_parser.rules[0].extractor.rules.append(
-                Rule(key="cover url", extractor=Path('./td[@class="posterColumn"]/a/img/@src'))
-            )
-        except:
-            pass
+        # self.imdb = imdb.IMDb()
+        # try:
+        #     self.imdb.topBottomProxy.moviemeter100_parser.rules[0].extractor.rules.append(
+        #         Rule(key="cover url", extractor=Path('./td[@class="posterColumn"]/a/img/@src'))
+        #     )
+        # except:
+        #     pass
 
     def __iter__(self):
         for item in self.query.all():
