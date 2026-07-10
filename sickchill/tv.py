@@ -954,7 +954,6 @@ class TVShow(object):
 
         self.check_imdb_id()
 
-        # Find imdb_id if missing
         if not self.imdb_id:
             try:
                 self.imdb_id = helpers.imdb_from_tvdbid_on_tvmaze(self.indexerid)
@@ -979,11 +978,10 @@ class TVShow(object):
             logger.debug(f"{self.indexerid}: No IMDb ID")
             return
 
-        # Refresh from IMDb
         logger.debug(f"{self.indexerid}: Refreshing IMDb info")
         try:
-            client = Imdb()
-            title = client.get_title(self.imdb_id)
+            facade = ImdbFacade()
+            title = facade.get_title(self.imdb_id)
 
             if title:
                 new_title = getattr(title, "title", self.name)
@@ -998,15 +996,14 @@ class TVShow(object):
                         "akas": self.imdb_info.get("akas", ""),
                         "runtimes": getattr(title, "runtime", self.runtime),
                         "genres": "|".join(getattr(title, "genres", [])),
-                        "countries": self.imdb_info.get("countries", ""),
+                        "countries": getattr(title, "countries", "") or self.imdb_info.get("countries", ""),
                         "country_codes": self.imdb_info.get("country_codes", ""),
-                        "certificates": getattr(title, "certification", ""),
+                        "certificates": getattr(title, "certification", "") or "",
                         "rating": str(getattr(title, "rating", 0.0)),
                         "votes": str(getattr(title, "rating_count", 0)),
                         "last_update": datetime.date.today().toordinal(),
                     }
                 )
-                # make sure we save this once refreshed
                 self.dirty = True
                 self.save_to_db()
 
