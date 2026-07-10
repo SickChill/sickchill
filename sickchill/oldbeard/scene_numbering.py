@@ -492,7 +492,7 @@ def xem_refresh(indexer_id, indexer, force=False):
             xem_session = get_xem_session()
             # XEM MAP URL
             url = f"https://thexem.info/map/havemap?origin={sickchill.indexer.slug(indexer)}"
-            parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session(), returns="json")
+            parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
 
             if (
                 not parsed_json
@@ -506,7 +506,7 @@ def xem_refresh(indexer_id, indexer, force=False):
             # XEM API URL
             url = f"https://thexem.info/map/all?id={indexer_id}&origin={sickchill.indexer.slug(indexer)}&destination=scene"
 
-            parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session(), returns="json")
+            parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
 
             if not parsed_json or "result" not in parsed_json or "success" not in parsed_json["result"]:
                 logger.info(f'No XEM data for show "{indexer_id} on {sickchill.indexer.name(indexer)}"')
