@@ -69,9 +69,7 @@ optional = true
 
 [tool.poetry.group.speedups.dependencies]
 html5lib = "^1.1"
-lxml = ">=4.9.1,<7.0.0"
 Js2Py = ">=0.71,<0.75"
-pymediainfo = ">=5.0.3,<8.0.0"
 
 [tool.poetry.group.types]
 optional = true
@@ -272,8 +270,9 @@ requests = "^2.25.1"
 babelfish = ">=0.6.0"
 kodipydent-alt = ">=2022.9.3"
 beekeeper-alt = ">=2022.9.3"
-
+lxml = ">=4.9.1,<7.0.0"
 stevedore = "^5.1.0"
 cachecontrol = ">=0.13.1,<0.15.0"
 imdbpie = ">=5.7.1"
 appdirs = "^1.4.4"
+pymediainfo = ">=5.0.3,<8.0.0"
