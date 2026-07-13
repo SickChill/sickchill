@@ -47,6 +47,7 @@ dependencies = [
     "Unidecode>=1.2.0",
     "appdirs>=1.4.4",
     "babelfish>=0.6.0",
+    "beautifulsoup4>=4.12.0",
     "beekeeper-alt>=2022.9.3",
     "cachecontrol>=0.13.1,<0.15.0",
     "configobj>=5.0.6",
@@ -82,6 +83,7 @@ dependencies = [
     "tornado>=6.4",
     "tvdbsimple>=1.0.6",
     "validators>=0.30.0,<0.36.0",
+    "virtualenv>=20.10.0",
     "win-inet-pton>=1.1.0",
 ]
 
@@ -99,29 +101,29 @@ sickchill = "SickChill:main"
 
 [dependency-groups]
 dev = [
-    "coveralls>=4.0,<5.0",
-    "mock>=4.0.3,<6.0.0",
     "Babel>=2.9.0",
-    "pytest-cov>=3,<8",
-    "pytest-timeout>=2.0,<3.0",
-    "ruff>=0.4.0,<1.0",
-    "pytest>=7.0.1,!=8.2.0,<10.0.0",
-    "poethepoet>=0.27.0,<0.49",
+    "Flask>=2.2.2,<4.0.0",
+    "coveralls>=4.0,<5.0",
+    "flask-sqlalchemy>=3.0.3,<4.0.0",
+    "mock>=4.0.3,<6.0.0",
     "po2json>=0.2.2",
+    "poethepoet>=0.27.0,<0.49",
     "pre-commit>=2.20,<5.0",
     "pyaes>=1.6.1",
+    "pytest-cov>=3,<8",
+    "pytest-timeout>=2.0,<3.0",
+    "pytest>=7.0.1,!=8.2.0,<10.0.0",
+    "ruff>=0.4.0,<1.0",
     "types-attrs>=19.1.0",
+    "types-chardet>=5.0.4",
     "types-pyOpenSSL>=22.0.10,<26.3.0",
     "types-python-dateutil>=2.8.19",
     "types-python-slugify>=6.1,<9.0",
-    "types-requests>=2.28.11",
-    "types-chardet>=5.0.4",
     "types-pytz>=2022.2.1,<2027.0.0",
+    "types-requests>=2.28.11",
     "types-setuptools>=70.1",
     "types-six>=1.16.20",
-    "Flask>=2.2.2,<4.0.0",
     "urllib3<3.0.0",
-    "flask-sqlalchemy>=3.0.3,<4.0.0",
 ]
 
 [build-system]
