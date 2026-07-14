@@ -5,6 +5,10 @@ description = "Automatic Video Library Manager for TV Shows"
 readme = "README.md"
 
 license = "GPL-3.0-or-later"
+license-files = [
+    "LICENSE.md",
+    "COPYING.txt",
+]
 
 authors = [
     { name = "Dustyn Gibson", email = "miigotu@gmail.com" },
@@ -27,12 +31,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13"
-]
-
-packages = [
-    { include = "sickchill" },
-    { include = "SickChill.py" },
-    { include = "frontend" }
 ]
 
 dependencies = [
@@ -87,16 +85,23 @@ dependencies = [
     "win-inet-pton>=1.1.0",
 ]
 
+[tool.poetry]
+packages = [
+    { include = "sickchill" },
+    { include = "SickChill.py" },
+    { include = "frontend" }
+]
+
 [project.urls]
 Homepage = "https://sickchill.github.io"
 Repository = "https://github.com/sickchill/sickchill"
 Changelog = "https://github.com/SickChill/SickChill/blob/master/CHANGES.md"
 News = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/news.md"
+Issues = "https://discord.com/channels/502612977271439372/1048317980343283733"
 Discord = "https://discord.com/invite/U8WPBdf"
 Donate = "https://github.com/SickChill/SickChill/wiki/Donations"
 
 [project.scripts]
-SickChill = "SickChill:main"
 sickchill = "SickChill:main"
 
 [dependency-groups]
@@ -127,7 +132,7 @@ dev = [
 ]
 
 [build-system]
-requires = ["poetry-core>=2.0"]
+requires = ["poetry-core>=2.2,<3.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
