@@ -102,6 +102,7 @@ Discord = "https://discord.com/invite/U8WPBdf"
 Donate = "https://github.com/SickChill/SickChill/wiki/Donations"
 
 [project.scripts]
+SickChill = "SickChill:main"
 sickchill = "SickChill:main"
 
 [dependency-groups]
