@@ -1,30 +1,31 @@
-[tool.poetry]
+[project]
 name = "sickchill"
 version = "2024.3.1"
-description = 'Automatic Video Library Manager for TV Shows'
+description = "Automatic Video Library Manager for TV Shows"
+readme = "README.md"
+
 license = "GPL-3.0-or-later"
+license-files = [
+    "LICENSE.md",
+    "COPYING.txt",
+]
 
 authors = [
-    "Dustyn Gibson <miigotu@gmail.com>",
-    "BKSteve <stephen.rieger@gmail.com>"
+    { name = "Dustyn Gibson", email = "miigotu@gmail.com" },
+    { name = "BKSteve", email = "stephen.rieger@gmail.com" },
 ]
 
 maintainers = [
-    "Dustyn Gibson <miigotu@gmail.com>"
+    { name = "Dustyn Gibson", email = "miigotu@gmail.com" },
 ]
 
-readme = "README.md"
-
-repository = "https://github.com/sickchill/sickchill"
-homepage = "https://sickchill.github.io"
+requires-python = ">=3.10,<4.0"
 
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: System Administrators",
     "Operating System :: OS Independent",
     "Topic :: Multimedia :: Video",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -32,81 +33,109 @@ classifiers = [
     "Programming Language :: Python :: 3.13"
 ]
 
+dependencies = [
+    "appdirs>=1.4.4",
+    "babelfish>=0.6.0",
+    "beautifulsoup4>=4.12.0",
+    "beekeeper-alt>=2022.9.3",
+    "bencode.py (>=4.0.0,<5.0.0)",
+    "cachecontrol>=0.13.1,<0.15.0",
+    "configobj>=5.0.6",
+    "deluge-client>=1.9.0",
+    "enzyme>=0.5.0,<0.6.0",
+    "gntp>=1.0.3",
+    "greenlet>=2.0.2",
+    "guessit>=3.3.1",
+    "html5lib>=1.1",
+    "ifaddr>=0.1.7,<0.3.0",
+    "imagesize (>=1.2.0,<2.0.0)",
+    "imdbpie>=5.7.1",
+    "Js2Py>=0.71,<0.75",
+    "jsonrpclib-pelix>=0.4.2,<1.2.0",
+    "kodipydent-alt>=2022.9.3",
+    "lxml>=4.9.1,<7.0.0",
+    "Mako >=1.1.4",
+    "markdown2>=2.4.0",
+    "new-rtorrent-python>=1.0.1-alpha.0",
+    "packaging>=24.2,<27.0",
+    "profilehooks>=1.12.0",
+    "putio.py (>=8.7.0,<9.0.0)",
+    "pymediainfo>=5.0.3,<8.0.0",
+    "PyNMA >=1.0",
+    "pyOpenSSL>=20.0.1,<26.3.0",
+    "python-dateutil>=2.8.1",
+    "python-slugify>=4.0.1,<9.0.0",
+    "python-twitter>=3.5",
+    "python3-fanart>=2.0.0",
+    "qbittorrent-api>=2021.3.18,<2027.0.0",
+    "rarfile>=4.0",
+    "requests>=2.32.2",
+    "Send2Trash>=1.5.0",
+    "SQLAlchemy (>=2.0.0,<3.0.0)",
+    "stevedore>=5.1.0",
+    "subliminal>=2.3.2",
+    "timeago>=1.0.15",
+    "tmdbsimple>=2.8.0",
+    "tornado>=6.4",
+    "tus.py (>=1.3.4,<2.0.0)",
+    "tvdbsimple>=1.0.6",
+    "Unidecode>=1.2.0",
+    "validators>=0.30.0,<0.36.0",
+    "virtualenv>=20.10.0",
+    "win-inet-pton>=1.1.0",
+]
+
+[tool.poetry]
 packages = [
     { include = "sickchill" },
     { include = "SickChill.py" },
     { include = "frontend" }
 ]
 
-[tool.poetry.urls]
-"Changelog" = "https://github.com/SickChill/SickChill/blob/master/CHANGES.md"
-"Bug Tracker" = "https://github.com/sickchill/sickchill/issues"
-"News" = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/news.md"
-"Discord" = "https://discord.com/invite/U8WPBdf"
-"Donate"= "https://github.com/SickChill/SickChill/wiki/Donations"
+[project.urls]
+Homepage = "https://sickchill.github.io"
+Repository = "https://github.com/sickchill/sickchill"
+Changelog = "https://github.com/SickChill/SickChill/blob/master/CHANGES.md"
+News = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/news.md"
+Issues = "https://discord.com/channels/502612977271439372/1048317980343283733"
+Discord = "https://discord.com/invite/U8WPBdf"
+Donate = "https://github.com/SickChill/SickChill/wiki/Donations"
 
-[tool.poetry.scripts]
+[project.scripts]
 SickChill = "SickChill:main"
 sickchill = "SickChill:main"
 
-[tool.poetry.group.dev]
-optional = true
-
-[tool.poetry.group.dev.dependencies]
-coveralls = ">=4.0,<5.0"
-mock = ">=4.0.3,<6.0.0"
-Babel = "^2.9.0"
-pytest-cov = ">=3,<8"
-pytest-timeout = ">=2.0,<3.0"
-ruff = ">=0.4.0,<1.0"
-pytest = ">=7.0.1,!=8.2.0,<10.0.0"
-poethepoet = ">=0.27.0,<0.49"
-po2json = "^0.2.2"
-pre-commit = ">=2.20,<5.0"
-
-[tool.poetry.group.speedups]
-optional = true
-
-[tool.poetry.group.speedups.dependencies]
-html5lib = "^1.1"
-Js2Py = ">=0.71,<0.75"
-
-[tool.poetry.group.types]
-optional = true
-
-[tool.poetry.group.types.dependencies]
-types-attrs = "^19.1.0"
-types-pyOpenSSL = ">=22.0.10,<26.3.0"
-types-python-dateutil = "^2.8.19"
-types-python-slugify = ">=6.1,<9.0"
-types-requests = "^2.28.11"
-types-chardet = "^5.0.4"
-types-pytz = ">=2022.2.1,<2027.0.0"
-types-setuptools = ">=65.3,<82.0"
-types-six = "^1.16.20"
-
-[tool.poetry.group.experimental]
-optional = true
-
-[tool.poetry.group.experimental.dependencies]
-pyaes = "^1.6.1"
-
-[tool.poetry.group.frontend]
-optional = true
-
-[tool.poetry.group.frontend.dependencies]
-Flask = ">=2.2.2,<4.0.0"
-urllib3 = "<3.0.0"
-flask-sqlalchemy = "^3.0.3"
-
-[tool.poetry.extras]
-experimental = ["experimental"]
-speedups = ["speedups"]
-types = ["types"]
-frontend = ["frontend"]
+[dependency-groups]
+dev = [
+    "Babel>=2.9.0",
+    "coveralls>=4.0,<5.0",
+    "flask-sqlalchemy>=3.0.3,<4.0.0",
+    "Flask>=2.2.2,<4.0.0",
+    "mock>=4.0.3,<6.0.0",
+    "po2json>=0.2.2",
+    "poethepoet>=0.27.0,<0.49",
+    "pre-commit>=2.20,<5.0",
+    "pytest-cov>=3,<8",
+    "pytest-timeout>=2.0,<3.0",
+    "pytest>=7.0.1,!=8.2.0,<10.0.0",
+    "ruff>=0.4.0,<1.0",
+    "urllib3<3.0.0",
+]
+types = [
+    "pyaes>=1.6.1",
+    "types-attrs>=19.1.0",
+    "types-chardet>=5.0.4",
+    "types-pyOpenSSL>=22.0.10,<26.3.0",
+    "types-python-dateutil>=2.8.19",
+    "types-python-slugify>=6.1,<9.0",
+    "types-pytz>=2022.2.1,<2027.0.0",
+    "types-requests>=2.28.11",
+    "types-setuptools>=70.1",
+    "types-six>=1.16.20",
+]
 
 [build-system]
-requires = ["poetry-core>=1.2.0"]
+requires = ["poetry-core>=2.2,<3.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
@@ -229,50 +258,3 @@ pybabel update
 --previous
 """
 
-[tool.poetry.dependencies]
-python = ">=3.10,<4"
-"bencode.py" = "^4.0.0"
-configobj = "^5.0.6"
-greenlet = {version = ">=2.0.0", allow-prereleases = true}
-jsonrpclib-pelix = ">=0.4.2,<1.2.0"
-Mako = "^1.1.4"
-markdown2 = "^2.4.0"
-pyOpenSSL = ">=20.0.1,<26.3.0"
-python-dateutil = "^2.8.1"
-python-twitter = "^3.5"
-rarfile = "^4.0"
-subliminal = "^2.3.2"
-tmdbsimple = "^2.8.0"
-tornado = "^6.3.2"
-tvdbsimple = "^1.0.6"
-Unidecode = "^1.2.0"
-validators = ">=0.30.0,<0.36.0"
-enzyme = ">=0.5.0,<0.6.0"
-python3-fanart = "^2.0.0"
-gntp = "^1.0.3"
-"tus.py" = "^1.3.4"
-win-inet-pton = "^1.1.0"
-PyNMA = "^1.0"
-"putio.py" = "^8.7.0"
-profilehooks = "^1.12.0"
-imagesize = "^1.2.0"
-Send2Trash = ">=1.5.0"
-deluge-client = "^1.9.0"
-ifaddr = ">=0.1.7,<0.3.0"
-new-rtorrent-python = "^1.0.1-alpha.0"
-qbittorrent-api = ">=2021.3.18,<2027.0.0"
-packaging = ">=24.2,<27.0"
-timeago = "^1.0.15"
-SQLAlchemy = ">=2.0.0,<3.0.0"
-python-slugify = ">=4.0.1,<9.0.0"
-guessit = "^3.3.1"
-requests = "^2.25.1"
-babelfish = ">=0.6.0"
-kodipydent-alt = ">=2022.9.3"
-beekeeper-alt = ">=2022.9.3"
-lxml = ">=4.9.1,<7.0.0"
-stevedore = "^5.1.0"
-cachecontrol = ">=0.13.1,<0.15.0"
-imdbpie = ">=5.7.1"
-appdirs = "^1.4.4"
-pymediainfo = ">=5.0.3,<8.0.0"

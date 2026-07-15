@@ -115,7 +115,7 @@ jobs:
           echo -e "$(poetry --version --ansi) is at $(which poetry)\n$(poetry env info --ansi)\n\v$(poetry --ansi run pip -V)"
       - name: Install sickchill
         run: |
-          poetry install --no-interaction --with dev --with speedups
+          poetry install --no-interaction --with dev
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Run yarn
         run: poetry run poe yarn
