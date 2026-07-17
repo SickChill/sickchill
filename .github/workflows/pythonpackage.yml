@@ -292,6 +292,14 @@ jobs:
           allow: |
             security.insecure
 
+      - name: Cache wheels
+        uses: actions/cache@v6
+        with:
+          path: /tmp/sickchill-wheels
+          key: wheels-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}-${{ github.sha }}
+          restore-keys: |
+            wheels-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}-
+
       - if: success()
         name: List wheels directory
         run: |
