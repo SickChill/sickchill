@@ -101,7 +101,6 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
 
       # Enhanced Poetry venv caching with restore-keys
       - name: Cache Poetry virtual environment
