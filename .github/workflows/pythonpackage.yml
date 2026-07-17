@@ -98,13 +98,13 @@ jobs:
         run: pipx install poetry
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
 
       # Enhanced Poetry venv caching with restore-keys
       - name: Cache Poetry virtual environment
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
@@ -113,7 +113,7 @@ jobs:
 
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Set up Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '22.x'
           cache: 'yarn'
