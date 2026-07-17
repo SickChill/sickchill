@@ -1,5 +1,6 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# Optimized for caching (pyproject.toml + yarn.lock) and Docker BuildKit
 
 name: Python Packaging
 
@@ -17,7 +18,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: false
+  cancel-in-progress: true  # Changed to true for PRs to save resources
 
 env:
   SLEEP: 120
@@ -63,12 +64,13 @@ jobs:
             type=edge,branch=develop
             type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
             type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+
   Test:
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
-        experimental: [ false ]
+        os: [ubuntu-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        experimental: [false]
         include:
           - os: windows-latest
             python-version: "3.13"
@@ -81,71 +83,98 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v8
         with:
           fetch-depth: 1
           persist-credentials: false
+
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Lint shell scripts
         uses: ludeeus/action-shellcheck@2.0.0
         with:
           format: diff
+
       - name: Install Poetry
         run: pipx install poetry
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
           cache-dependency-path: pyproject.toml
+
+      # Enhanced Poetry venv caching with restore-keys
+      - name: Cache Poetry virtual environment
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-${{ matrix.python-version }}-
+
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Set up Node
         uses: actions/setup-node@v6
         with:
           node-version: '22.x'
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Install yarn
         run: npm install -g yarn
+
       - name: Install python dependency tools
         run: |
           poetry run pip install --upgrade setuptools wheel
           poetry run pip install --upgrade pytest-github-actions-annotate-failures
+
       - name: Output tooling environment information
         run: |
           echo -e "$(poetry --version --ansi) is at $(which poetry)\n$(poetry env info --ansi)\n\v$(poetry --ansi run pip -V)"
+
       - name: Install sickchill
         run: |
           poetry install --no-interaction --with dev
+
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Run yarn
         run: poetry run poe yarn
+
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Lint Python
         run: poetry run poe lint
+
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Lint and test Javascript
         run: poetry run poe yarn test
+
       - name: Test Python
         run: poetry run poe pytest
+
       - if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
         name: Coverage
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: OS
+
   Test-Docker:
-    needs: [ Environment, Test ]
-    runs-on: ubuntu-22.04
+    needs: [Environment, Test]
+    runs-on: ubuntu-latest  # Updated from 22.04
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
         with:
           buildkitd-config-inline: |
             experimental = true
             debug = true
-            insecure-entitlements = [ "security.insecure" ]
+            insecure-entitlements = ["security.insecure"]
+
       - name: Test Docker Build
         uses: docker/build-push-action@v7
         with:
@@ -156,10 +185,12 @@ jobs:
           labels: ${{ needs.Environment.outputs.docker_labels }}
           target: sickchill-final
           cache-from: type=gha
+          cache-to: type=gha,mode=max  # Added for better reuse
           build-args: |
             SOURCE=1
           allow: |
             security.insecure
+
       - name: Test Docker Image
         run: |
           docker run -d -p 8081:8081 --name ${{ env.DOCKER_CONTAINER_NAME }} ${{ env.DOCKER_TEST_TAG }}
@@ -198,26 +229,30 @@ jobs:
 
           echo "Stopping and removing container..."
           docker stop ${{ env.DOCKER_CONTAINER_NAME }} && docker rm ${{ env.DOCKER_CONTAINER_NAME }} 2>/dev/null || true
+
   Deploy:
-    needs: [ Environment, Test, Test-Docker ]
+    needs: [Environment, Test, Test-Docker]
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest  # Updated from 22.04
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
         with:
           buildkitd-config-inline: |
             experimental = true
             debug = true
-            insecure-entitlements = [ "security.insecure" ]
+            insecure-entitlements = ["security.insecure"]
+
       - if: success() && !env.ACT && github.actor != 'dependabot[bot]'
         name: Login to DockerHub
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
       - if: success() && !env.ACT && github.actor != 'dependabot[bot]'
         name: Login to GitHub Container Registry
         uses: docker/login-action@v4
@@ -225,6 +260,7 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - if: success()
         name: Build and Push
         uses: docker/build-push-action@v7
@@ -234,12 +270,13 @@ jobs:
           tags: ${{ needs.Environment.outputs.docker_tags }}
           labels: ${{ needs.Environment.outputs.docker_labels }}
           target: sickchill-final
-          cache-to: type=gha,mode=max
           cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             SOURCE=1
           allow: |
             security.insecure
+
       - if: success()
         name: Snag wheels
         uses: docker/build-push-action@v7
@@ -254,25 +291,29 @@ jobs:
             SOURCE=1
           allow: |
             security.insecure
+
       - if: success()
         name: List wheels directory
         run: |
           ls -R /tmp/sickchill-wheels
+
       - name: Upload linux/amd64 wheels
         uses: actions/upload-artifact@v4
         with:
           name: amd64
           path: /tmp/sickchill-wheels/linux_amd64
+
       - name: Upload linux/arm64 wheels
         uses: actions/upload-artifact@v4
         with:
           name: arm64
           path: /tmp/sickchill-wheels/linux_arm64
+
   complete:
     name: Packaging tests completed
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ubuntu-latest]
     if: always()
-    needs: [ Environment, Test, Test-Docker, Deploy ]
+    needs: [Environment, Test, Test-Docker, Deploy]
     steps:
       - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         run: exit 1
