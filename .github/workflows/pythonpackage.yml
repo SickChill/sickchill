@@ -83,7 +83,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v8
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
           persist-credentials: false
