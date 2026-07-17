@@ -18,7 +18,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: true  # Changed to true for PRs to save resources
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   SLEEP: 120
@@ -102,7 +102,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
-          cache-dependency-path: pyproject.toml
 
       # Enhanced Poetry venv caching with restore-keys
       - name: Cache Poetry virtual environment
@@ -164,6 +163,7 @@ jobs:
     needs: [Environment, Test]
     runs-on: ubuntu-latest  # Updated from 22.04
     steps:
+      - uses: actions/checkout@v7
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
 
@@ -235,6 +235,7 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest  # Updated from 22.04
     steps:
+      - uses: actions/checkout@v7
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
 
