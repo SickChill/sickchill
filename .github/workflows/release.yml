@@ -40,13 +40,15 @@ jobs:
       - name: Install yarn
         run: npm install -g yarn
 
+      - name: Install Poetry
+        run: pipx install poetry
+
       - name: Setup Python + Poetry
         uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: 'poetry'
           cache-dependency-path: pyproject.toml
-
       # Cache Poetry venv
       - name: Cache Poetry virtual environment
         uses: actions/cache@v6
@@ -56,8 +58,6 @@ jobs:
           restore-keys: |
             venv-release-
 
-      - name: Install Poetry
-        run: pipx install poetry
 
       - name: Build artifacts
         run: |
