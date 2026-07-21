@@ -59,7 +59,7 @@ def createCertificate(req, issuerCert, issuerKey, serial, notBefore, notAfter, d
     """
     Generate a certificate given a certificate request.
 
-    Arguments: req        - Certificate reqeust to use
+    Arguments: req        - Certificate request to use
                issuerCert - The certificate of the issuer
                issuerKey  - The private key of the issuer
                serial     - Serial number for the certificate
