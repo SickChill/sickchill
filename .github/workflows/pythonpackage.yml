@@ -113,7 +113,7 @@ jobs:
 
       - if: success() && startsWith(runner.os, 'Linux') && matrix.python-version == env.PYTHON_TEST_VERSION
         name: Set up Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '22.x'
           cache: 'yarn'
