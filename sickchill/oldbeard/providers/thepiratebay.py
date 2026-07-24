@@ -55,10 +55,10 @@ class Provider(TorrentProvider):
         try:
             data = self.get_url(self.script_url)
 
-            # Lazy import – only when we actually need js2py
+            # Lazy import - only when we actually need js2py
             try:
                 import js2py
-            except (KeyError, ModuleNotFoundError, RuntimeError):
+            except (KeyError, ImportError, ModuleNotFoundError, RuntimeError):
                 js2py = None
 
             if js2py:
