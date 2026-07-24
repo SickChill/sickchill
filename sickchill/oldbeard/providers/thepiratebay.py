@@ -4,11 +4,6 @@ import time
 import traceback
 from urllib.parse import urlencode, urljoin
 
-try:
-    import js2py
-except (KeyError, ModuleNotFoundError, RuntimeError):  # KeyError on python 3.12
-    js2py = None
-
 from sickchill import logger
 from sickchill.helper.common import try_int
 from sickchill.oldbeard import db, tvcache
@@ -59,6 +54,13 @@ class Provider(TorrentProvider):
     def get_tracker_list(self):
         try:
             data = self.get_url(self.script_url)
+
+            # Lazy import - only when we actually need js2py
+            try:
+                import js2py
+            except (KeyError, ImportError, ModuleNotFoundError, RuntimeError):
+                js2py = None
+
             if js2py:
                 context = js2py.EvalJs()
                 context.execute(
