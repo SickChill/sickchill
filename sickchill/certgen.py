@@ -19,9 +19,9 @@ TYPE_RSA = "RSA"  # kept for API compatibility
 TYPE_DSA = "DSA"  # not used by SickChill
 
 
-def createKeyPair(type, bits):
+def createKeyPair(key_type, bits):
     """Return a cryptography private key (RSA only – what SickChill uses)."""
-    if type != TYPE_RSA:
+    if key_type != TYPE_RSA:
         raise ValueError("Only RSA is supported")
     return rsa.generate_private_key(public_exponent=65537, key_size=bits)
 
