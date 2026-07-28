@@ -116,7 +116,7 @@ dev = [
     "poethepoet>=0.48.0,<0.49",
     "pre-commit>=2.20,<5.0",
     "pytest-cov>=3,<8",
-    "pytest-timeout>=2.0,<3.0",
+    "pytest-timeout>=2.4.0,<3.0",
     "pytest>=9.1.1,<10.0.0",
     "ruff>=0.4.0,<1.0",
     "urllib3<3.0.0",
