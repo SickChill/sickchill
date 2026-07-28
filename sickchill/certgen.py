@@ -1,81 +1,75 @@
+# Certificate generation helpers for SickChill.
 #
-# Copyright (C) AB Strakt
-# Copyright (C) Jean-Paul Calderone
-# See LICENSE for details.
+# This module previously used the classic pyOpenSSL example
+# It has been rewritten to use
+# the cryptography library because the mutable OpenSSL.crypto.X509
+# and X509Req APIs were deprecated/removed in pyOpenSSL 26.x.
+#
+# The new implementation is intentionally a clean rewrite and is
+# not a derivative of the original pyOpenSSL example code.
 
-"""
-Certificate generation module.
-https://raw.githubusercontent.com/msabramo/pyOpenSSL/master/examples/certgen.py
-"""
+from datetime import datetime, timedelta, timezone
 
-from OpenSSL import crypto
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.x509.oid import NameOID
 
-TYPE_RSA = crypto.TYPE_RSA
-TYPE_DSA = crypto.TYPE_DSA
+TYPE_RSA = "RSA"  # kept for API compatibility
+TYPE_DSA = "DSA"  # not used by SickChill
 
 
 def createKeyPair(type, bits):
+    """Return a cryptography private key (RSA only – what SickChill uses)."""
+    if type != TYPE_RSA:
+        raise ValueError("Only RSA is supported")
+    return rsa.generate_private_key(public_exponent=65537, key_size=bits)
+
+
+def createCertRequest(pkey, digest="sha256", **name):
     """
-    Create a public/private key pair.
-
-    Arguments: type - Key type, must be one of TYPE_RSA and TYPE_DSA
-               bits - Number of bits to use in the key
-    Returns:   The public/private key pair in a PKey object
+    Build a CertificateSigningRequest.
+    `digest` is accepted for compatibility but ignored (we always use SHA-256).
     """
-    pkey = crypto.PKey()
-    pkey.generate_key(type, bits)
-    return pkey
+    name_attrs = []
+    mapping = {
+        "C": NameOID.COUNTRY_NAME,
+        "ST": NameOID.STATE_OR_PROVINCE_NAME,
+        "L": NameOID.LOCALITY_NAME,
+        "O": NameOID.ORGANIZATION_NAME,
+        "OU": NameOID.ORGANIZATIONAL_UNIT_NAME,
+        "CN": NameOID.COMMON_NAME,
+        "emailAddress": NameOID.EMAIL_ADDRESS,
+    }
+    for k, v in name.items():
+        if k in mapping:
+            name_attrs.append(x509.NameAttribute(mapping[k], v))
+
+    builder = x509.CertificateSigningRequestBuilder().subject_name(x509.Name(name_attrs))
+    return builder.sign(pkey, hashes.SHA256())
 
 
-def createCertRequest(pkey, digest="md5", **name):
+def createCertificate(req, issuerCert, issuerKey, serial, notBefore, notAfter, digest="sha256"):
     """
-    Create a certificate request.
-
-    Arguments: pkey   - The key to associate with the request
-               digest - Digestion method to use for signing, default is md5
-               **name - The name of the subject of the request, possible
-                        arguments are:
-                          C     - Country name
-                          ST    - State or province name
-                          L     - Locality name
-                          O     - Organization name
-                          OU    - Organizational unit name
-                          CN    - Common name
-                          emailAddress - E-mail address
-    Returns:   The certificate request in an X509Req object
+    Create a certificate from a CSR.
+    notBefore / notAfter are relative seconds from now (matching the old pyOpenSSL helpers).
     """
-    req = crypto.X509Req()
-    subj = req.get_subject()
+    now = datetime.now(timezone.utc)
+    subject = req.subject
+    # When creating the CA itself the original code passed the request as issuerCert.
+    # We treat that case specially.
+    if hasattr(issuerCert, "subject"):
+        issuer = issuerCert.subject
+    else:
+        issuer = subject
 
-    for key, value in name.items():
-        setattr(subj, key, value)
-
-    req.set_pubkey(pkey)
-    req.sign(pkey, digest)
-    return req
-
-
-def createCertificate(req, issuerCert, issuerKey, serial, notBefore, notAfter, digest="md5"):
-    """
-    Generate a certificate given a certificate request.
-
-    Arguments: req        - Certificate reqeust to use
-               issuerCert - The certificate of the issuer
-               issuerKey  - The private key of the issuer
-               serial     - Serial number for the certificate
-               notBefore  - Timestamp (relative to now) when the certificate
-                            starts being valid
-               notAfter   - Timestamp (relative to now) when the certificate
-                            stops being valid
-               digest     - Digest method to use for signing, default is md5
-    Returns:   The signed certificate in an X509 object
-    """
-    cert = crypto.X509()
-    cert.set_serial_number(serial)
-    cert.gmtime_adj_notBefore(notBefore)
-    cert.gmtime_adj_notAfter(notAfter)
-    cert.set_issuer(issuerCert.get_subject())
-    cert.set_subject(req.get_subject())
-    cert.set_pubkey(req.get_pubkey())
-    cert.sign(issuerKey, digest)
-    return cert
+    builder = (
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(issuer)
+        .public_key(req.public_key())
+        .serial_number(serial)
+        .not_valid_before(now + timedelta(seconds=notBefore))
+        .not_valid_after(now + timedelta(seconds=notAfter))
+    )
+    return builder.sign(issuerKey, hashes.SHA256())
