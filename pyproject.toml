@@ -130,7 +130,7 @@ types = [
     "types-python-slugify>=6.1,<9.0",
     "types-pytz>=2022.2.1,<2027.0.0",
     "types-requests>=2.33.0.20260712",
-    "types-setuptools>=83.0.0.20260706",
+    "types-setuptools>=83.0.0.20260724",
     "types-six>=1.16.20",
 ]
 
