@@ -29,6 +29,7 @@ import ifaddr
 import requests
 import urllib3.exceptions
 from cachecontrol import CacheControl
+from cryptography.hazmat.primitives import serialization
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 from urllib3 import disable_warnings
@@ -719,8 +720,14 @@ def create_https_certificates(ssl_cert, ssl_key):
     # noinspection PyBroadException
     try:
         # Module has no member
-        Path(ssl_key).write_bytes(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        Path(ssl_cert).write_bytes(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        Path(ssl_key).write_bytes(
+            pkey.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+        )
+        Path(ssl_cert).write_bytes(cert.public_bytes(serialization.Encoding.PEM))
     except Exception as error:
         logger.info(traceback.format_exc())
         logger.warning(_("There was a problem creating the SSL key and certificate. Error: {error}").format(error=error))
