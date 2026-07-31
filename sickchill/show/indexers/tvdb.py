@@ -187,7 +187,7 @@ class TVDB(Indexer):
         api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
         try:
             images = getattr(api_results, keyType)(lang or show.lang)
-        except Exception:  # noqa: E722
+        except Exception:
             return [] if multiple else ""
 
         images = sorted(images, key=lambda img: img["ratingsInfo"]["average"], reverse=True)
