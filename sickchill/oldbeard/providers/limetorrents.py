@@ -59,7 +59,7 @@ class Provider(TorrentProvider):
                             try:
                                 title = item.title.text
                                 download_url = item.enclosure["url"]
-                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.I).group(2)
+                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.IGNORECASE).group(2)
 
                                 if settings.TORRENT_METHOD != "blackhole" and "magnet:?" not in download_url:
                                     download_url = "magnet:?xt=urn:btih:" + torrent_hash + "&dn=" + title + self._custom_trackers

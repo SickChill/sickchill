@@ -8,6 +8,7 @@ import time
 import traceback
 import urllib.parse
 from pathlib import Path
+from typing import ClassVar
 
 from tornado.web import RequestHandler
 
@@ -245,7 +246,7 @@ class ApiHandler(RequestHandler):
 
 # noinspection PyAbstractClass
 class ApiCall(ApiHandler):
-    _help = {"desc": "This command is not documented. Please report this to the developers."}
+    _help: ClassVar[dict] = {"desc": "This command is not documented. Please report this to the developers."}
 
     # noinspection PyMissingConstructor
     def __init__(self, args, kwargs):
@@ -341,10 +342,10 @@ class ApiCall(ApiHandler):
                 self._check_param_value(default, key, allowed_values)
 
         if self._missing:
-            setattr(self, "run", self.return_missing)
+            self.run = self.return_missing
 
         if "help" in kwargs:
-            setattr(self, "run", self.return_help)
+            self.run = self.return_help
 
         return default, args
 
@@ -377,9 +378,7 @@ class ApiCall(ApiHandler):
                 error = True
         elif arg_type == "list":
             value = value.split("|")
-        elif arg_type == "string":
-            pass
-        elif arg_type == "ignore":
+        elif arg_type == "string" or arg_type == "ignore":
             pass
         else:
             logger.exception('API :: Invalid param type: "{0}" can not be checked. Ignoring it.'.format(str(arg_type)))
@@ -413,7 +412,7 @@ class ApiCall(ApiHandler):
 
 # noinspection PyAbstractClass
 class TVDBShorthandWrapper(ApiCall):
-    _help = {"desc": "This is an internal function wrapper. Call the help command directly for more information."}
+    _help: ClassVar[dict] = {"desc": "This is an internal function wrapper. Call the help command directly for more information."}
 
     def __init__(self, args, kwargs, sid):
         super().__init__(args, kwargs)
@@ -624,7 +623,7 @@ class ApiError(Exception):
 
 # noinspection PyAbstractClass
 class CMDHelp(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get help about a given command",
         "optionalParameters": {
             "subject": {"desc": "The name of the command to get the help of"},
@@ -646,7 +645,7 @@ class CMDHelp(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDComingEpisodes(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the coming episodes",
         "optionalParameters": {
             "sort": {"desc": "Change the sort order"},
@@ -664,7 +663,7 @@ class CMDComingEpisodes(ApiCall):
     def run(self):
         """Get the coming episodes"""
         grouped_coming_episodes = ComingEpisodes.get_coming_episodes(self.type, self.sort, True, self.paused)
-        data = {section: [] for section in grouped_coming_episodes.keys()}
+        data = {section: [] for section in grouped_coming_episodes}
 
         for section, coming_episodes in grouped_coming_episodes.items():
             for coming_episode in coming_episodes:
@@ -692,7 +691,7 @@ class CMDComingEpisodes(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDEpisode(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get detailed information about an episode",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -761,7 +760,7 @@ class CMDEpisode(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDEpisodeSearch(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Search for an episode. The response might take some time.",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -849,7 +848,7 @@ class CMDFullSubtitleSearch(AbstractStartScheduler):
     def data_received(self, chunk):
         pass
 
-    _help = {"desc": "Force a subtitle search for all shows."}
+    _help: ClassVar[dict] = {"desc": "Force a subtitle search for all shows."}
 
     @property
     def scheduler(self):
@@ -864,7 +863,7 @@ class CMDProperSearch(AbstractStartScheduler):
     def data_received(self, chunk):
         pass
 
-    _help = {"desc": "Force a proper search for all shows."}
+    _help: ClassVar[dict] = {"desc": "Force a proper search for all shows."}
 
     @property
     def scheduler(self):
@@ -879,7 +878,7 @@ class CMDDailySearch(AbstractStartScheduler):
     def data_received(self, chunk):
         pass
 
-    _help = {"desc": "Force a daily search for all shows."}
+    _help: ClassVar[dict] = {"desc": "Force a daily search for all shows."}
 
     @property
     def scheduler(self):
@@ -892,7 +891,7 @@ class CMDDailySearch(AbstractStartScheduler):
 
 # noinspection PyAbstractClass
 class CMDEpisodeSetStatus(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Set the status of an episode or a season (when no episode is provided)",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -1002,7 +1001,7 @@ class CMDEpisodeSetStatus(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSubtitleSearch(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Search for an episode subtitles. The response might take some time.",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -1052,7 +1051,7 @@ class CMDSubtitleSearch(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDExceptions(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the scene exceptions for all or a given show",
         "optionalParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -1099,7 +1098,7 @@ class HistoryApiCall(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDHistory(HistoryApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the downloaded and/or snatched history",
         "optionalParameters": {
             "limit": {"desc": "The maximum number of results to return"},
@@ -1122,7 +1121,7 @@ class CMDHistory(HistoryApiCall):
             status, quality = Quality.splitCompositeStatus(int(row["action"]))
             status = statusStrings_bare[status]
 
-            if self.type and not status.lower() == self.type:
+            if self.type and status.lower() != self.type:
                 continue
 
             row["status"] = status
@@ -1144,7 +1143,7 @@ class CMDHistory(HistoryApiCall):
 
 # noinspection PyAbstractClass
 class CMDHistoryClear(HistoryApiCall):
-    _help = {"desc": "Clear the entire history"}
+    _help: ClassVar[dict] = {"desc": "Clear the entire history"}
 
     def run(self):
         """Clear the entire history"""
@@ -1155,7 +1154,7 @@ class CMDHistoryClear(HistoryApiCall):
 
 # noinspection PyAbstractClass
 class CMDHistoryTrim(HistoryApiCall):
-    _help = {"desc": "Trim history entries older than 30 days"}
+    _help: ClassVar[dict] = {"desc": "Trim history entries older than 30 days"}
 
     def run(self):
         """Trim history entries older than 30 days"""
@@ -1166,7 +1165,7 @@ class CMDHistoryTrim(HistoryApiCall):
 
 # noinspection PyAbstractClass
 class CMDFailed(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the failed downloads",
         "optionalParameters": {
             "limit": {"desc": "The maximum number of results to return"},
@@ -1193,7 +1192,7 @@ class CMDFailed(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDBacklog(ApiCall):
-    _help = {"desc": "Get the backlogged episodes"}
+    _help: ClassVar[dict] = {"desc": "Get the backlogged episodes"}
 
     def run(self):
         """Get the backlogged episodes"""
@@ -1222,7 +1221,7 @@ class CMDBacklog(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDLogs(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the logs",
         "optionalParameters": {
             "min_level": {
@@ -1282,7 +1281,7 @@ class CMDLogs(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDLogsClear(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Clear the logs",
         "optionalParameters": {
             "level": {"desc": "The level of logs to clear"},
@@ -1301,7 +1300,7 @@ class CMDLogsClear(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDPostProcess(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Manually post-process the files in the download folder",
         "optionalParameters": {
             "path": {"desc": "The path to the folder to post-process"},
@@ -1374,7 +1373,7 @@ class CMDPostProcess(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChill(ApiCall):
-    _help = {"desc": "Get miscellaneous information about SickChill"}
+    _help: ClassVar[dict] = {"desc": "Get miscellaneous information about SickChill"}
 
     def run(self):
         """dGet miscellaneous information about SickChill"""
@@ -1384,7 +1383,7 @@ class CMDSickChill(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillAddRootDir(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Add a new root (parent) directory to SickChill",
         "requiredParameters": {
             "location": {"desc": "The full path to the new root (parent) directory"},
@@ -1426,7 +1425,7 @@ class CMDSickChillAddRootDir(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillCheckVersion(ApiCall):
-    _help = {"desc": "Check if a new version of SickChill is available"}
+    _help: ClassVar[dict] = {"desc": "Check if a new version of SickChill is available"}
 
     def run(self):
         update_manager = UpdateManager()
@@ -1448,7 +1447,7 @@ class CMDSickChillCheckVersion(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillBackup(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Make a backup of settings, databases, and cached images",
         "optionalParameters": {"location": {"desc": "The full path to the folder where you want to save the backup (must exist)"}},
     }
@@ -1479,7 +1478,7 @@ class CMDSickChillBackup(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillCheckScheduler(ApiCall):
-    _help = {"desc": "Get information about the scheduler"}
+    _help: ClassVar[dict] = {"desc": "Get information about the scheduler"}
 
     def run(self):
         """Get information about the scheduler"""
@@ -1501,7 +1500,7 @@ class CMDSickChillCheckScheduler(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillDeleteRootDir(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Delete a root (parent) directory from SickChill",
         "requiredParameters": {
             "location": {"desc": "The full path to the root (parent) directory to remove"},
@@ -1540,7 +1539,7 @@ class CMDSickChillDeleteRootDir(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillGetDefaults(ApiCall):
-    _help = {"desc": "Get SickChill's user default configuration value"}
+    _help: ClassVar[dict] = {"desc": "Get SickChill's user default configuration value"}
 
     def run(self):
         """Get SickChill's user default configuration value"""
@@ -1560,7 +1559,7 @@ class CMDSickChillGetDefaults(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillGetMessages(ApiCall):
-    _help = {"desc": "Get all messages"}
+    _help: ClassVar[dict] = {"desc": "Get all messages"}
 
     def run(self):
         messages = []
@@ -1571,7 +1570,7 @@ class CMDSickChillGetMessages(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillGetRootDirs(ApiCall):
-    _help = {"desc": "Get all root (parent) directories"}
+    _help: ClassVar[dict] = {"desc": "Get all root (parent) directories"}
 
     def run(self):
         """Get all root (parent) directories"""
@@ -1581,7 +1580,7 @@ class CMDSickChillGetRootDirs(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillPauseBacklog(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Pause or un-pause the backlog search",
         "optionalParameters": {"pause": {"desc": "True to pause the backlog search, False to un-pause it"}},
     }
@@ -1602,7 +1601,7 @@ class CMDSickChillPauseBacklog(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillPing(ApiCall):
-    _help = {"desc": "Ping SickChill to check if it is running"}
+    _help: ClassVar[dict] = {"desc": "Ping SickChill to check if it is running"}
 
     def run(self):
         """Ping SickChill to check if it is running"""
@@ -1614,7 +1613,7 @@ class CMDSickChillPing(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillRestart(ApiCall):
-    _help = {"desc": "Restart SickChill"}
+    _help: ClassVar[dict] = {"desc": "Restart SickChill"}
 
     def run(self):
         """Restart SickChill"""
@@ -1626,7 +1625,7 @@ class CMDSickChillRestart(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillSearchIndexers(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Search for a show with a given name on all the indexers, in a specific language",
         "optionalParameters": {
             "name": {"desc": "The name of the show you want to search for"},
@@ -1692,7 +1691,7 @@ class CMDSickChillSearchIndexers(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillSearchTVDB(CMDSickChillSearchIndexers):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Search for a show with a given name on The TVDB, in a specific language",
         "optionalParameters": {
             "name": {"desc": "The name of the show you want to search for"},
@@ -1712,7 +1711,7 @@ class CMDSickChillSearchTVRAGE(CMDSickChillSearchIndexers):
     Deprecated, TVRage is no more.
     """
 
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Search for a show with a given name on TVRage, in a specific language. This command should not longer be used, as TVRage was shut down.",
         "optionalParameters": {
             "name": {"desc": "The name of the show you want to search for"},
@@ -1726,7 +1725,7 @@ class CMDSickChillSearchTVRAGE(CMDSickChillSearchIndexers):
 
 # noinspection PyAbstractClass
 class CMDSickChillSetDefaults(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Set SickChill's user default configuration value",
         "optionalParameters": {
             "initial": {"desc": "The initial quality of a show"},
@@ -1785,7 +1784,7 @@ class CMDSickChillSetDefaults(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillShutdown(ApiCall):
-    _help = {"desc": "Shutdown SickChill"}
+    _help: ClassVar[dict] = {"desc": "Shutdown SickChill"}
 
     def run(self):
         """Shutdown SickChill"""
@@ -1797,7 +1796,7 @@ class CMDSickChillShutdown(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDSickChillUpdate(ApiCall):
-    _help = {"desc": "Update SickChill to the latest version available"}
+    _help: ClassVar[dict] = {"desc": "Update SickChill to the latest version available"}
 
     def run(self):
         update_manager = UpdateManager()
@@ -1812,7 +1811,7 @@ class CMDSickChillUpdate(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShow(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get detailed information about a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -1902,7 +1901,7 @@ class CMDShow(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowAddExisting(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Add an existing show in SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -1985,7 +1984,7 @@ class CMDShowAddExisting(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowAddNew(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Add a new show to SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2127,7 +2126,7 @@ class CMDShowAddNew(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowCache(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Check SickChill's cache to see if the images (poster, banner, fanart) for a show are valid",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2173,7 +2172,7 @@ class CMDShowCache(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowDelete(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Delete a show in SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2200,7 +2199,7 @@ class CMDShowDelete(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowGetQuality(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the quality setting of a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2227,7 +2226,7 @@ class CMDShowGetQuality(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowGetPoster(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the poster of a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2255,7 +2254,7 @@ class CMDShowGetPoster(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowGetBanner(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the banner of a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2283,7 +2282,7 @@ class CMDShowGetBanner(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowGetNetworkLogo(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the network logo of a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2310,7 +2309,7 @@ class CMDShowGetNetworkLogo(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowGetFanArt(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the fan art of a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2335,7 +2334,7 @@ class CMDShowGetFanArt(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowPause(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Pause or un-pause a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2362,7 +2361,7 @@ class CMDShowPause(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowRefresh(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Refresh a show in SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2387,7 +2386,7 @@ class CMDShowRefresh(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowSeasonList(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the list of seasons of a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2420,7 +2419,7 @@ class CMDShowSeasonList(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowSeasons(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get the list of episodes for one or all seasons of a show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2495,7 +2494,7 @@ class CMDShowSeasons(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowSetQuality(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Set the quality setting of a show. If no quality is provided, the default user setting is used.",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2542,7 +2541,7 @@ class CMDShowSetQuality(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowStats(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get episode statistics for a given show",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2642,7 +2641,7 @@ class CMDShowStats(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowUpdate(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Update a show in SickChill",
         "requiredParameters": {
             "indexerid": {"desc": "Unique ID of a show"},
@@ -2667,7 +2666,7 @@ class CMDShowUpdate(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShows(ApiCall):
-    _help = {
+    _help: ClassVar[dict] = {
         "desc": "Get all shows in SickChill",
         "optionalParameters": {
             "sort": {"desc": "The sorting strategy to apply to the list of shows"},
@@ -2724,7 +2723,7 @@ class CMDShows(ApiCall):
 
 # noinspection PyAbstractClass
 class CMDShowsStats(ApiCall):
-    _help = {"desc": "Get the global shows and episodes statistics"}
+    _help: ClassVar[dict] = {"desc": "Get the global shows and episodes statistics"}
 
     def run(self):
         """Get the global shows and episodes statistics"""

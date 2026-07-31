@@ -107,8 +107,7 @@ def sorted_service_list():
     new_list = []
     lmgtfy = "https://blog.lmgtfy.com/?q=%s"
 
-    current_index = 0
-    for current_service in settings.SUBTITLES_SERVICES_LIST:
+    for current_index, current_service in enumerate(settings.SUBTITLES_SERVICES_LIST):
         if current_service in subliminal.provider_manager.names():
             new_list.append(
                 {
@@ -118,7 +117,6 @@ def sorted_service_list():
                     "enabled": settings.SUBTITLES_SERVICES_ENABLED[current_index] == 1,
                 }
             )
-        current_index += 1
 
     for current_service in subliminal.provider_manager.names():
         if current_service not in [service["name"] for service in new_list]:
@@ -540,9 +538,12 @@ def refine_video(video, episode):
 
     for name in metadata_mapping:
         try:
-            if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
-                setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
-            elif episode.show.subtitles_sc_metadata and get_attr_value(episode, metadata_mapping[name]):
+            if (
+                not getattr(video, name)
+                and get_attr_value(episode, metadata_mapping[name])
+                or episode.show.subtitles_sc_metadata
+                and get_attr_value(episode, metadata_mapping[name])
+            ):
                 setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
         except AttributeError:
             logger.debug("Unable to set {}.{} from episode.{} attribute".format(type(video), name, metadata_mapping[name]))

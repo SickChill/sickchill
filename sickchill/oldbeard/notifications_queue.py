@@ -64,12 +64,11 @@ class NotificationsQueue(generic_queue.GenericQueue):
 
         with self.lock:
             if self.queue and not force_next:
-                for index in range(0, len(self.queue)):
-                    if isinstance(self.queue[index], DiscordTask):
-                        if len(self.queue[index]) < 24:
-                            self.queue[index].append(message)
-                            added = True
-                            break
+                for index in range(len(self.queue)):
+                    if isinstance(self.queue[index], DiscordTask) and len(self.queue[index]) < 24:
+                        self.queue[index].append(message)
+                        added = True
+                        break
             if not added:
                 item = DiscordTask(message)
                 if force_next:
@@ -129,7 +128,7 @@ class DiscordTask(generic_queue.QueueItem):
     def __len__(self):
         return len(self.embed["fields"])
 
-    def _send_discord(self, webhook: str = None, name: str = None, avatar: str = None, tts=None):
+    def _send_discord(self, webhook: str | None = None, name: str | None = None, avatar: str | None = None, tts=None):
         discord_webhook = webhook or settings.DISCORD_WEBHOOK
         discord_name = name or settings.DISCORD_NAME
         avatar_icon = avatar or settings.DISCORD_AVATAR_URL

@@ -59,7 +59,7 @@ class Provider(TorrentProvider):
     @staticmethod
     def _isSection(section, text):
         title = r"<title>.+? \| {0}</title>".format(section)
-        return re.search(title, text, re.I)
+        return re.search(title, text, re.IGNORECASE)
 
     def search(self, search_strings):
         results = []

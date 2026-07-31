@@ -53,7 +53,7 @@ class History(object, metaclass=Singleton):
         # noinspection SqlWithoutWhere
         self.db.action("DELETE FROM history")
 
-    def get(self, limit: int = 100, action: str = None):
+    def get(self, limit: int = 100, action: str | None = None):
         """
         :param limit: The maximum number of elements to return
         :param action: The type of action to filter in the history. Either 'downloaded' or 'snatched'. Anything else or
@@ -178,7 +178,7 @@ class History(object, metaclass=Singleton):
                     ],
                 )
 
-    def log_download(self, episode: "TVEpisode", filename: str, quality: int, group: str = None, version: int = -1):
+    def log_download(self, episode: "TVEpisode", filename: str, quality: int, group: str | None = None, version: int = -1):
         """
         Log history of download
 
@@ -237,8 +237,8 @@ class History(object, metaclass=Singleton):
             logger.warning("Release not found in snatch history.")
         elif len(sql_results) > 1:
             logger.warning("Multiple logged snatches found for release")
-            num_sizes = len(set(x["size"] for x in sql_results))
-            providers = len(set(x["provider"] for x in sql_results))
+            num_sizes = len({x["size"] for x in sql_results})
+            providers = len({x["provider"] for x in sql_results})
             if num_sizes == 1:
                 logger.warning("However, they're all the same size. Continuing with found size.")
                 size = sql_results[0]["size"]

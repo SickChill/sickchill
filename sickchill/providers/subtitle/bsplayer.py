@@ -9,6 +9,7 @@ import re
 import struct
 import zlib
 from time import sleep
+from typing import ClassVar
 from xml.etree import ElementTree
 from xmlrpc.client import ServerProxy
 
@@ -108,7 +109,7 @@ class BSPlayerSubtitle(Subtitle):
 class BSPlayerProvider(Provider):
     """BSPlayer Provider."""
 
-    languages = {Language.fromalpha3b(lang) for lang in language_converters["alpha3b"].codes}
+    languages: ClassVar[set[Language]] = {Language.fromalpha3b(lang) for lang in language_converters["alpha3b"].codes}
     server_url = "https://api.bsplayer.org/xml-rpc"
     user_agent = "subliminal v%s" % __short_version__
 

@@ -48,10 +48,9 @@ class Provider(TorrentProvider):
 
         login_params = {"username": self.username, "password": self.password, "login": "submit"}
 
-        if self.custom_url:
-            if self.invalid_url(self.custom_url):
-                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
-                return False
+        if self.custom_url and self.invalid_url(self.custom_url):
+            logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
+            return False
 
         # Get the index, redirects to log in
         data = self.get_url(self.custom_url or self.url, returns="text")

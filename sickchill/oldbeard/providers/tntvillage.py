@@ -97,7 +97,7 @@ class Provider(TorrentProvider):
         return True
 
     def login(self):
-        if len(self.session.cookies) >= 3:
+        if len(self.session.cookies) >= 3:  # noqa: SIM102
             if self.session.cookies.get("pass_hash", "") not in ("0", 0) and self.session.cookies.get("member_id") not in ("0", 0):
                 return True
 
@@ -160,7 +160,7 @@ class Provider(TorrentProvider):
             logger.debug(_("Episode quality: {0}").format(file_quality))
 
         def checkName(options, func):
-            return func([re.search(option, file_quality, re.I) for option in options])
+            return func([re.search(option, file_quality, re.IGNORECASE) for option in options])
 
         dvdOptions = checkName(["dvd", "dvdrip", "dvdmux", "DVD9", "DVD5"], any)
         bluRayOptions = checkName(["BD", "BDmux", "BDrip", "BRrip", "Bluray"], any)
@@ -199,17 +199,17 @@ class Provider(TorrentProvider):
 
         subFound = italian = False
         for sub in self.sub_string:
-            if re.search(sub, name, re.I):
+            if re.search(sub, name, re.IGNORECASE):
                 subFound = True
             else:
                 continue
 
-            if re.search("[ -_.|]ita[ -_.|]", name.lower().split(sub)[0], re.I):
+            if re.search("[ -_.|]ita[ -_.|]", name.lower().split(sub)[0], re.IGNORECASE):
                 logger.debug(_("Found Italian release:  " + name))
                 italian = True
                 break
 
-        if not subFound and re.search("ita", name, re.I):
+        if not subFound and re.search("ita", name, re.IGNORECASE):
             logger.debug(_("Found Italian release:  " + name))
             italian = True
 
@@ -222,7 +222,7 @@ class Provider(TorrentProvider):
             return False
 
         english = False
-        if re.search("eng", name, re.I):
+        if re.search("eng", name, re.IGNORECASE):
             logger.debug(_("Found English release:  " + name))
             english = True
 
@@ -264,7 +264,7 @@ class Provider(TorrentProvider):
 
                 search_string = str(search_string).replace(".", " ")
 
-                for x in range(0, y):
+                for x in range(y):
                     z = x * 20
                     if last_page:
                         break

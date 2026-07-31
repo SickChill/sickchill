@@ -4,6 +4,7 @@ import json
 import logging
 import zipfile
 from collections import defaultdict
+from typing import ClassVar
 
 from babelfish import Language
 from guessit import guessit
@@ -76,7 +77,7 @@ class SubsCenterSubtitle(Subtitle):
 class SubsCenterProvider(Provider):
     """SubsCenter Provider."""
 
-    languages = {Language.fromalpha2(lang) for lang in ["he"]}
+    languages: ClassVar[set[Language]] = {Language.fromalpha2(lang) for lang in ["he"]}
     server_url = "http://www.subscenter.info/he/"
 
     def __init__(self, username=None, password=None):
@@ -137,7 +138,7 @@ class SubsCenterProvider(Provider):
         r.raise_for_status()
 
         # check for redirections
-        if r.history and all([h.status_code == 302 for h in r.history]):
+        if r.history and all(h.status_code == 302 for h in r.history):
             logger.debug("Redirected to the subtitles page")
             links = [r.url]
         else:
@@ -185,7 +186,7 @@ class SubsCenterProvider(Provider):
         subtitles = {}
         for language_code, language_data in results.items():
             for quality_data in language_data.values():
-                for quality, subtitles_data in quality_data.items():
+                for subtitles_data in quality_data.values():
                     for subtitle_item in subtitles_data.values():
                         # read the item
                         language = Language.fromalpha2(language_code)

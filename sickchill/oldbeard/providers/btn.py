@@ -81,7 +81,7 @@ class Provider(TorrentProvider):
             results_per_page = 1000
 
             if "results" in data and int(data["results"]) >= results_per_page:
-                pages_needed = int(math.ceil(int(data["results"]) / results_per_page))
+                pages_needed = math.ceil(int(data["results"]) / results_per_page)
                 if pages_needed > max_pages:
                     pages_needed = max_pages
 
@@ -93,7 +93,7 @@ class Provider(TorrentProvider):
                     if "torrents" in data:
                         found.update(data["torrents"])
 
-            for keys, torrent_info in found.items():
+            for torrent_info in found.values():
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:

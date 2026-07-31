@@ -29,7 +29,7 @@ def contains_at_least_one_word(name, words):
     if not any(words):
         return True
 
-    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.I) for word in words}.items():
+    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.IGNORECASE) for word in words}.items():
         if regexp.search(name):
             return word
     return False
@@ -51,7 +51,7 @@ def contains_all_words(name, words):
     if not any(words):
         return True
 
-    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.I) for word in words}.items():
+    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.IGNORECASE) for word in words}.items():
         if not regexp.search(name):
             return word
     return True
@@ -83,7 +83,7 @@ def filter_bad_releases(name, parse=True, show=None):
         return {x.strip() for x in set((words or "").lower().split(",")) if x.strip()}
 
     def remove_plus_sign(words):
-        return {s[1:] if s.startswith("+") else s for s in words}
+        return {s.removeprefix("+") for s in words}
 
     # if any of the bad strings are in the name then say no
     ignore_words = resultFilters

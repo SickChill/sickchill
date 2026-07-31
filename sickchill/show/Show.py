@@ -113,7 +113,7 @@ class Show(object):
         return stats
 
     @staticmethod
-    def validate_indexer_id(show_or_id: Union["TVShow", str, int], show_list: list = None) -> (Union[str, None], Union["TVShow", None]):
+    def validate_indexer_id(show_or_id: Union["TVShow", str, int], show_list: list | None = None) -> (Union[str, None], Union["TVShow", None]):
         """
         Check that the provided indexer_id is valid and corresponds with a known show
         :param show_or_id: The indexer id or object to check

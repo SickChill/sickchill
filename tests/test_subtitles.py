@@ -134,7 +134,7 @@ class TestRefineVideo(unittest.TestCase):
         ep = subliminal.Episode("test.mkv", series="Test", season=1, episodes=[5])
         self.assertEqual(ep.episode, 5)
         with self.assertRaises(AttributeError):
-            ep.episode = 10  # noqa: B009
+            ep.episode = 10
 
     def test_episodes_attribute_is_settable(self):
         """video.episodes should be settable."""

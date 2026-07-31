@@ -151,38 +151,38 @@ class Provider(TorrentProvider):
     def _process_title(title, url):
         # Remove 'Mas informacion sobre ' literal from title
         title = title[22:]
-        title = re.sub(r" {2,}", " ", title, flags=re.I)
+        title = re.sub(r" {2,}", " ", title, flags=re.IGNORECASE)
 
         # Quality - Use re module to avoid case-sensitive problems with replace
-        title = re.sub(r"\[HDTV 1080p?[^\[]*]", "1080p HDTV x264", title, flags=re.I)
-        title = re.sub(r"\[HDTV 720p?[^\[]*]", "720p HDTV x264", title, flags=re.I)
-        title = re.sub(r"\[ALTA DEFINICION 720p?[^\[]*]", "720p HDTV x264", title, flags=re.I)
-        title = re.sub(r"\[HDTV]", "HDTV x264", title, flags=re.I)
-        title = re.sub(r"\[DVD[^\[]*]", "DVDrip x264", title, flags=re.I)
-        title = re.sub(r"\[BluRay 1080p?[^\[]*]", "1080p BluRay x264", title, flags=re.I)
-        title = re.sub(r"\[BluRay Rip 1080p?[^\[]*]", "1080p BluRay x264", title, flags=re.I)
-        title = re.sub(r"\[BluRay Rip 720p?[^\[]*]", "720p BluRay x264", title, flags=re.I)
-        title = re.sub(r"\[BluRay MicroHD[^\[]*]", "1080p BluRay x264", title, flags=re.I)
-        title = re.sub(r"\[MicroHD 1080p?[^\[]*]", "1080p BluRay x264", title, flags=re.I)
-        title = re.sub(r"\[BLuRay[^\[]*]", "720p BluRay x264", title, flags=re.I)
-        title = re.sub(r"\[BRrip[^\[]*]", "720p BluRay x264", title, flags=re.I)
-        title = re.sub(r"\[BDrip[^\[]*]", "720p BluRay x264", title, flags=re.I)
+        title = re.sub(r"\[HDTV 1080p?[^\[]*]", "1080p HDTV x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[HDTV 720p?[^\[]*]", "720p HDTV x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[ALTA DEFINICION 720p?[^\[]*]", "720p HDTV x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[HDTV]", "HDTV x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[DVD[^\[]*]", "DVDrip x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[BluRay 1080p?[^\[]*]", "1080p BluRay x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[BluRay Rip 1080p?[^\[]*]", "1080p BluRay x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[BluRay Rip 720p?[^\[]*]", "720p BluRay x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[BluRay MicroHD[^\[]*]", "1080p BluRay x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[MicroHD 1080p?[^\[]*]", "1080p BluRay x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[BLuRay[^\[]*]", "720p BluRay x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[BRrip[^\[]*]", "720p BluRay x264", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[BDrip[^\[]*]", "720p BluRay x264", title, flags=re.IGNORECASE)
 
         # detect hdtv/bluray by url
         # hdtv 1080p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-610/hdtv-1080p-ac3-5-1/
         # hdtv 720p example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-26/hdtv-720p-ac3-5-1/
         # hdtv example url: http://www.newpct.com/descargar-serie/foo/capitulo-214/hdtv/
         # bluray compilation example url: http://www.newpct.com/descargar-seriehd/foo/capitulo-11/bluray-1080p/
-        title_hdtv = re.search(r"HDTV", title, flags=re.I)
-        title_720p = re.search(r"720p", title, flags=re.I)
-        title_1080p = re.search(r"1080p", title, flags=re.I)
-        title_x264 = re.search(r"x264", title, flags=re.I)
-        title_bluray = re.search(r"bluray", title, flags=re.I)
-        title_serie_hd = re.search(r"descargar-seriehd", title, flags=re.I)
-        url_hdtv = re.search(r"HDTV", url, flags=re.I)
-        url_720p = re.search(r"720p", url, flags=re.I)
-        url_1080p = re.search(r"1080p", url, flags=re.I)
-        url_bluray = re.search(r"bluray", url, flags=re.I)
+        title_hdtv = re.search(r"HDTV", title, flags=re.IGNORECASE)
+        title_720p = re.search(r"720p", title, flags=re.IGNORECASE)
+        title_1080p = re.search(r"1080p", title, flags=re.IGNORECASE)
+        title_x264 = re.search(r"x264", title, flags=re.IGNORECASE)
+        title_bluray = re.search(r"bluray", title, flags=re.IGNORECASE)
+        title_serie_hd = re.search(r"descargar-seriehd", title, flags=re.IGNORECASE)
+        url_hdtv = re.search(r"HDTV", url, flags=re.IGNORECASE)
+        url_720p = re.search(r"720p", url, flags=re.IGNORECASE)
+        url_1080p = re.search(r"1080p", url, flags=re.IGNORECASE)
+        url_bluray = re.search(r"bluray", url, flags=re.IGNORECASE)
 
         if not title_hdtv and url_hdtv:
             title += " HDTV"
@@ -202,12 +202,12 @@ class Provider(TorrentProvider):
             title += " 720p"
 
         # Language
-        title = re.sub(r"\[Spanish[^\[]*]", "SPANISH AUDIO", title, flags=re.I)
-        title = re.sub(r"\[Castellano[^\[]*]", "SPANISH AUDIO", title, flags=re.I)
-        title = re.sub(r"\[Español[^\[]*]", "SPANISH AUDIO", title, flags=re.I)
-        title = re.sub(r"\[AC3 5\.1 Español[^\[]*]", "SPANISH AUDIO", title, flags=re.I)
+        title = re.sub(r"\[Spanish[^\[]*]", "SPANISH AUDIO", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[Castellano[^\[]*]", "SPANISH AUDIO", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[Español[^\[]*]", "SPANISH AUDIO", title, flags=re.IGNORECASE)
+        title = re.sub(r"\[AC3 5\.1 Español[^\[]*]", "SPANISH AUDIO", title, flags=re.IGNORECASE)
 
-        if re.search(r"\[V.O.[^\[]*]", title, flags=re.I):
+        if re.search(r"\[V.O.[^\[]*]", title, flags=re.IGNORECASE):
             title += "-NEWPCTVO"
         else:
             title += "-NEWPCT"

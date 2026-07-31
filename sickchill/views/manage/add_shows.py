@@ -57,7 +57,7 @@ class AddShows(Home):
         search_list = search_terms  # for safety of terms list.
         for term in search_list:
             # If search term begins with an article, let's also search for it without
-            matches = re.match(r"^(?:a|an|the) (.+)$", term, re.I)
+            matches = re.match(r"^(?:a|an|the) (.+)$", term, re.IGNORECASE)
             if matches:
                 search_terms.append(matches.group(1))
 
@@ -125,7 +125,7 @@ class AddShows(Home):
             # noinspection PyBroadException
             try:
                 file_list = os.listdir(root_dir)
-            except Exception:
+            except Exception:  # noqa: S112
                 continue
 
             for cur_file in file_list:
@@ -138,7 +138,7 @@ class AddShows(Home):
                     # noinspection SpellCheckingInspection
                     if cur_file.lower() in ["#recycle", "@eadir"]:
                         continue
-                except Exception:
+                except Exception:  # noqa: S112
                     continue
 
                 cur_dir = {
@@ -390,9 +390,8 @@ class AddShows(Home):
         if self.get_body_argument("submit", None):
             tvdb_user = self.get_body_argument("tvdb_user")
             tvdb_user_key = filters.unhide(settings.TVDB_USER_KEY, self.get_body_argument("tvdb_user_key"))
-            if tvdb_user and tvdb_user_key:
-                if tvdb_user != settings.TVDB_USER or tvdb_user_key != settings.TVDB_USER_KEY:
-                    favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
+            if tvdb_user and tvdb_user_key and (tvdb_user != settings.TVDB_USER or tvdb_user_key != settings.TVDB_USER_KEY):
+                favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
 
         try:
             favorite_shows = favorites.fetch_indexer_favorites()
@@ -447,7 +446,7 @@ class AddShows(Home):
             if in_list:
                 message = f"{in_list.name} with {in_list.indexerid} is already in your show list."
 
-            logger.info(" ".join([title, message]))
+            logger.info(f"{title} {message}")
             ui.notifications.error(title, message)
 
             return self.redirect("/home/")

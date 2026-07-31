@@ -6,7 +6,7 @@ import stat
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, ClassVar, List, Union
 
 if TYPE_CHECKING:
     from processTV import ParseResult
@@ -45,7 +45,7 @@ class PostProcessor(object):
     EXISTS_SMALLER = 3
     DOESNT_EXIST = 4
 
-    IGNORED_FILESTRINGS = [".AppleDouble", ".DS_Store"]
+    IGNORED_FILESTRINGS: ClassVar[list] = [".AppleDouble", ".DS_Store"]
 
     def __init__(self, directory, release_name=None, process_method=None, is_priority=None):
         """
@@ -308,7 +308,7 @@ class PostProcessor(object):
                 # Check that this is a valid subtitle language for this subtitle, and if so prepend the extension with it so it is retained
                 cur_lang_name = sickchill.oldbeard.subtitles.from_code(cur_lang).name
                 if new_base_name and cur_lang == "pt-BR" or cur_lang_name != "Undetermined":
-                    cur_extension = ".".join((cur_lang, cur_extension))
+                    cur_extension = f"{cur_lang}.{cur_extension}"
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == "nfo" and settings.NFO_RENAME is True:
@@ -316,7 +316,7 @@ class PostProcessor(object):
 
             # If new base name then convert name
             if new_base_name:
-                new_filename = ".".join((new_base_name, cur_extension))
+                new_filename = f"{new_base_name}.{cur_extension}"
             # if we're not renaming we still want to change extensions sometimes
             else:
                 new_filename = os.path.basename(replace_extension(cur_file_path, cur_extension))
@@ -549,7 +549,7 @@ class PostProcessor(object):
 
         # remember whether it's a proper
         if parse_result.extra_info:
-            self.is_proper = re.search(r"\b(proper|repack|real)\b", parse_result.extra_info, re.I) is not None
+            self.is_proper = re.search(r"\b(proper|repack|real)\b", parse_result.extra_info, re.IGNORECASE) is not None
 
         # if the result is complete then remember that for later
         # if the result is complete then set release name
@@ -951,7 +951,7 @@ class PostProcessor(object):
         self._log(_("Processing as - {pretty_name}").format(pretty_name=episode_object.pretty_name))
 
         # get the quality of the episode we're processing
-        if quality and not common.Quality.qualityStrings[quality] == "Unknown":
+        if quality and common.Quality.qualityStrings[quality] != "Unknown":
             self._log(_("Snatch history had a quality in it, using that: ") + common.Quality.qualityStrings[quality], logger.DEBUG)
             new_ep_quality = quality
         else:

@@ -131,7 +131,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 season_dir = cur_dir
                 break
 
-            match = re.match(season_dir_regex, cur_dir, re.I)
+            match = re.match(season_dir_regex, cur_dir, re.IGNORECASE)
             if not match:
                 continue
 
@@ -171,7 +171,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 season_dir = cur_dir
                 break
 
-            match = re.match(season_dir_regex, cur_dir, re.I)
+            match = re.match(season_dir_regex, cur_dir, re.IGNORECASE)
             if not match:
                 continue
 

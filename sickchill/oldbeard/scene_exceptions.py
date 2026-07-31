@@ -103,8 +103,7 @@ def get_all_scene_exceptions(indexer_id: int) -> dict:
         "SELECT show_name, season, custom FROM scene_exceptions WHERE indexer_id = ? ORDER BY show_name COLLATE NOCASE", [indexer_id]
     )
 
-    if indexer_id in exceptions_cache:
-        del exceptions_cache[indexer_id]
+    exceptions_cache.pop(indexer_id, None)
 
     for cur_exception in exceptions:
         season = cur_exception["season"]
@@ -286,7 +285,7 @@ def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, N
         logger.debug(f"Check scene exceptions update failed (no data). Unable to update from {url}")
         return
 
-    for indexer, shows in jdata.items():
+    for shows in jdata.values():
         try:
             for indexer_id, exceptions in shows.items():
                 for season, names in exceptions.items():

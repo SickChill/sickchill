@@ -2,6 +2,7 @@ import copy
 import io
 import logging
 import re
+from typing import ClassVar
 from xml.etree import ElementTree
 from zipfile import ZipFile, is_zipfile
 
@@ -64,7 +65,7 @@ class ItaSASubtitle(Subtitle):
 
 
 class ItaSAProvider(Provider):
-    languages = {Language("ita")}
+    languages: ClassVar[set[Language]] = {Language("ita")}
 
     video_types = (Episode,)
 

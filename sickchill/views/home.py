@@ -292,10 +292,7 @@ class Home(WebRoot):
     @staticmethod
     def haveTORRENT():
         host_good = (settings.TORRENT_HOST[:5] == "http:", settings.TORRENT_HOST[:5] == "https")[settings.ENABLE_HTTPS]
-        if settings.USE_TORRENTS and settings.TORRENT_METHOD != "blackhole" and host_good:
-            return True
-
-        return False
+        return bool(settings.USE_TORRENTS and settings.TORRENT_METHOD != "blackhole" and host_good)
 
     def testSABnzbd(self):
         # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
@@ -670,7 +667,7 @@ class Home(WebRoot):
             notify_list = {"emails": "", "prowlAPIs": ""}
             if r["notify_list"] and len(r["notify_list"]) > 0:
                 # First, handle legacy format (emails only)
-                if not r["notify_list"][0] == "{":
+                if r["notify_list"][0] != "{":
                     notify_list["emails"] = r["notify_list"]
                 else:
                     notify_list = dict(ast.literal_eval(r["notify_list"]))
@@ -695,7 +692,7 @@ class Home(WebRoot):
             notify_list = {"emails": "", "prowlAPIs": ""}
             if r["notify_list"] and len(r["notify_list"]) > 0:
                 # First, handle legacy format (emails only)
-                if not r["notify_list"][0] == "{":
+                if r["notify_list"][0] != "{":
                     notify_list["emails"] = r["notify_list"]
                 else:
                     notify_list = dict(ast.literal_eval(r["notify_list"]))
@@ -931,80 +928,79 @@ class Home(WebRoot):
         elif settings.showQueueScheduler.action.is_in_subtitle_queue(show_obj):
             show_message = _("This show is queued and awaiting subtitles download.")
 
-        if not settings.showQueueScheduler.action.is_being_added(show_obj):
-            if not settings.showQueueScheduler.action.is_being_updated(show_obj):
-                if show_obj.paused:
-                    submenu.append({"title": _("Resume"), "path": f"home/togglePause?show={show_obj.indexerid}", "icon": "fa fa-play"})
-                else:
-                    submenu.append({"title": _("Pause"), "path": f"home/togglePause?show={show_obj.indexerid}", "icon": "fa fa-pause"})
+        if not settings.showQueueScheduler.action.is_being_added(show_obj) and not settings.showQueueScheduler.action.is_being_updated(show_obj):
+            if show_obj.paused:
+                submenu.append({"title": _("Resume"), "path": f"home/togglePause?show={show_obj.indexerid}", "icon": "fa fa-play"})
+            else:
+                submenu.append({"title": _("Pause"), "path": f"home/togglePause?show={show_obj.indexerid}", "icon": "fa fa-pause"})
 
-                # noinspection PyPep8
-                submenu.append(
-                    {
-                        "title": _("Remove"),
-                        "path": f"home/deleteShow?show={show_obj.indexerid}",
-                        "class": "removeshow",
-                        "confirm": True,
-                        "icon": "fa fa-trash",
-                    }
-                )
-                submenu.append({"title": _("Re-scan files"), "path": f"home/refreshShow?show={show_obj.indexerid}&amp;force=1", "icon": "fa fa-refresh"})
-                # noinspection PyPep8
-                submenu.append({"title": _("Force Full Update"), "path": f"home/updateShow?show={show_obj.indexerid}&amp;force=1", "icon": "fa fa-exchange"})
-                # noinspection PyPep8
-                submenu.append(
-                    {
-                        "title": _("Update show in KODI"),
-                        "path": f"home/updateKODI?show={show_obj.indexerid}",
-                        "requires": self.haveKODI(),
-                        "icon": "menu-icon-kodi",
-                    }
-                )
-                # noinspection PyPep8
-                submenu.append(
-                    {
-                        "title": _("Update show in Emby"),
-                        "path": f"home/updateEMBY?show={show_obj.indexerid}",
-                        "requires": self.haveEMBY(),
-                        "icon": "menu-icon-emby",
-                    }
-                )
-                # noinspection PyPep8
-                submenu.append(
-                    {
-                        "title": _("Update show in Jellyfin"),
-                        "path": f"home/updateJELLYFIN?show={show_obj.indexerid}",
-                        "requires": self.haveJELLYFIN(),
-                        "icon": "menu-icon-jellyfin",
-                    }
-                )
-                if season_results and int(season_results[-1]["season"]) == 0:
-                    if settings.DISPLAY_SHOW_SPECIALS:
-                        # noinspection PyPep8
-                        submenu.append(
-                            {
-                                "title": _("Hide specials"),
-                                "path": f"home/toggleDisplayShowSpecials/?show={show_obj.indexerid}",
-                                "confirm": True,
-                                "icon": "fa fa-times",
-                            }
-                        )
-                    else:
-                        # noinspection PyPep8
-                        submenu.append(
-                            {
-                                "title": _("Show specials"),
-                                "path": f"home/toggleDisplayShowSpecials/?show={show_obj.indexerid}",
-                                "confirm": True,
-                                "icon": "fa fa-check",
-                            }
-                        )
-
-                submenu.append({"title": _("Preview Rename"), "path": f"home/testRename?show={show_obj.indexerid}", "icon": "fa fa-tag"})
-
-                if settings.USE_SUBTITLES and show_obj.subtitles and not settings.showQueueScheduler.action.is_being_subtitled(show_obj):
+            # noinspection PyPep8
+            submenu.append(
+                {
+                    "title": _("Remove"),
+                    "path": f"home/deleteShow?show={show_obj.indexerid}",
+                    "class": "removeshow",
+                    "confirm": True,
+                    "icon": "fa fa-trash",
+                }
+            )
+            submenu.append({"title": _("Re-scan files"), "path": f"home/refreshShow?show={show_obj.indexerid}&amp;force=1", "icon": "fa fa-refresh"})
+            # noinspection PyPep8
+            submenu.append({"title": _("Force Full Update"), "path": f"home/updateShow?show={show_obj.indexerid}&amp;force=1", "icon": "fa fa-exchange"})
+            # noinspection PyPep8
+            submenu.append(
+                {
+                    "title": _("Update show in KODI"),
+                    "path": f"home/updateKODI?show={show_obj.indexerid}",
+                    "requires": self.haveKODI(),
+                    "icon": "menu-icon-kodi",
+                }
+            )
+            # noinspection PyPep8
+            submenu.append(
+                {
+                    "title": _("Update show in Emby"),
+                    "path": f"home/updateEMBY?show={show_obj.indexerid}",
+                    "requires": self.haveEMBY(),
+                    "icon": "menu-icon-emby",
+                }
+            )
+            # noinspection PyPep8
+            submenu.append(
+                {
+                    "title": _("Update show in Jellyfin"),
+                    "path": f"home/updateJELLYFIN?show={show_obj.indexerid}",
+                    "requires": self.haveJELLYFIN(),
+                    "icon": "menu-icon-jellyfin",
+                }
+            )
+            if season_results and int(season_results[-1]["season"]) == 0:
+                if settings.DISPLAY_SHOW_SPECIALS:
                     # noinspection PyPep8
-                    submenu.append({"title": _("Download Subtitles"), "path": f"home/subtitleShow?show={show_obj.indexerid}", "icon": "fa fa-language"})
+                    submenu.append(
+                        {
+                            "title": _("Hide specials"),
+                            "path": f"home/toggleDisplayShowSpecials/?show={show_obj.indexerid}",
+                            "confirm": True,
+                            "icon": "fa fa-times",
+                        }
+                    )
+                else:
+                    # noinspection PyPep8
+                    submenu.append(
+                        {
+                            "title": _("Show specials"),
+                            "path": f"home/toggleDisplayShowSpecials/?show={show_obj.indexerid}",
+                            "confirm": True,
+                            "icon": "fa fa-check",
+                        }
+                    )
+
+            submenu.append({"title": _("Preview Rename"), "path": f"home/testRename?show={show_obj.indexerid}", "icon": "fa fa-tag"})
+
+            if settings.USE_SUBTITLES and show_obj.subtitles and not settings.showQueueScheduler.action.is_being_subtitled(show_obj):
+                # noinspection PyPep8
+                submenu.append({"title": _("Download Subtitles"), "path": f"home/subtitleShow?show={show_obj.indexerid}", "icon": "fa fa-language"})
 
         ep_counts = {
             Overview.SKIPPED: 0,
@@ -1739,7 +1735,7 @@ class Home(WebRoot):
             logger.info(f"Some episodes were set to wanted, but {show_obj.name} is paused. Not adding to Backlog until show is unpaused")
 
         if int(status) == FAILED:
-            msg = _(f"Retrying Search was automatically started for the following season of <b>{show_obj.name}</b>")
+            msg = _(f"Retrying Search was automatically started for the following season of <b>{show_obj.name}</b>")  # noqa: INT001
             msg += ":<br><ul>"
 
             for season, segment in segments.items():
@@ -1768,7 +1764,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location  # noqa
+            show_obj.location
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 
@@ -1796,7 +1792,7 @@ class Home(WebRoot):
             return self._genericMessage(_("Error"), _("Show not in show list"))
 
         try:
-            show_obj.location  # noqa
+            show_obj.location
         except ShowDirectoryNotFoundException:
             return self._genericMessage(_("Error"), _("Can't rename episodes when the show dir is missing."))
 

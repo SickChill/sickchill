@@ -68,7 +68,7 @@ class Notifier(object):
             message = f"Error while sending Join message: {error}"
         finally:
             logger.info(message)
-            return success, message
+            return success, message  # noqa: B012
 
     def notify_snatch(self, ep_name, title=notifyStrings[NOTIFY_SNATCH]):
         """

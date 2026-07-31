@@ -32,7 +32,7 @@ class TvDBMap(object):
 
         for anime in self.xmlMap.findall("anime"):
             if int(anime.get("anidbid", False)) == anidb_id:
-                defaultSeason = int(anime.get("defaulttvdbseason", 1))
+                defaultSeason = int(anime.get("defaulttvdbseason", 1))  # noqa: F841
 
         return season, episode
 

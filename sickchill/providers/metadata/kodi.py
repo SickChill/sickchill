@@ -133,7 +133,7 @@ class KODIMetadata(generic.GenericMetadata):
             for country in self._split_info(show_obj.imdb_info["country_codes"]):
                 try:
                     country_name = Country(country.upper()).name.title()
-                except Exception:
+                except Exception:  # noqa: S112
                     continue
 
                 country_element = ElementTree.SubElement(tvshow_element, "country")

@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from operator import itemgetter
+from typing import ClassVar
 
 from sickchill import settings
 from sickchill.helper.common import dateFormat, timeFormat
@@ -21,8 +22,8 @@ class ComingEpisodes(object):
     Later:    later than next week
     """
 
-    categories = ["snatched", "missed", "today", "soon", "later"]
-    sorts = {
+    categories: ClassVar[list] = ["snatched", "missed", "today", "soon", "later"]
+    sorts: ClassVar[dict] = {
         "date": itemgetter("snatchedsort", "localtime", "episode"),
         "network": itemgetter("network", "localtime", "episode"),
         "show": itemgetter("show_name", "localtime", "episode"),
@@ -99,9 +100,9 @@ class ComingEpisodes(object):
 
         for index, item in enumerate(results):
             results[index]["localtime"] = scdatetime.convert_to_setting(parse_date_time(item["airdate"], item["airs"], item["network"]))
-            results[index]["snatchedsort"] = int(results[index]["epstatus"] not in SNATCHED)
-            if results[index]["custom_name"]:
-                results[index]["show_name"] = results[index]["custom_name"]
+            results[index]["snatchedsort"] = int(item["epstatus"] not in SNATCHED)
+            if item["custom_name"]:
+                results[index]["show_name"] = item["custom_name"]
 
         results.sort(key=ComingEpisodes.sorts[sort])
 

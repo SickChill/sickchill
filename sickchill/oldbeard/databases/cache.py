@@ -7,6 +7,7 @@ class InitialSchema(db.SchemaUpgrade):
         return self.has_table("db_version")
 
     def execute(self):
+        # ruff: disable [ISC004]
         queries = (
             ("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);",),
             ("CREATE TABLE lastSearch (provider TEXT, time NUMERIC);",),
@@ -28,6 +29,7 @@ class InitialSchema(db.SchemaUpgrade):
             ("CREATE INDEX IF NOT EXISTS provider ON results (provider);",),
             ("CREATE INDEX IF NOT EXISTS seeders ON results (seeders);",),
         )
+        # ruff: enable [ISC004]
         for query in queries:
             self.connection.action(query[0])
 

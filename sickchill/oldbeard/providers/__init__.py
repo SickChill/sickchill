@@ -132,7 +132,7 @@ broken_providers = [
 ]
 
 
-def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, NZBProvider, GenericProvider]]:
+def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, GenericProvider]]:
     provider_types = List[Union[GenericProvider, TorrentProvider, NZBProvider, TorrentRssProvider]]
     initial_list: provider_types = settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list
 

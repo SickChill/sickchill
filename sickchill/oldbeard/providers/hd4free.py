@@ -69,7 +69,7 @@ class Provider(TorrentProvider):
                     if jdata["0"]["total_results"] == 0:
                         logger.debug(_("Provider has no results for this search"))
                         continue
-                except Exception:
+                except Exception:  # noqa: S112
                     continue
 
                 for i in jdata:
@@ -98,7 +98,7 @@ class Provider(TorrentProvider):
                             logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         items.append(item)
-                    except Exception:
+                    except Exception:  # noqa: S112
                         continue
 
             # For each search mode sort all the items by seeders if available

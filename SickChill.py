@@ -375,7 +375,7 @@ class SickChill:
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()
-        os._exit(0)  # noqa
+        os._exit(0)
 
     def force_update(self):
         """

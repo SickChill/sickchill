@@ -72,8 +72,7 @@ class Provider(TorrentProvider):
                 logger.exception(_("Resulting JSON from provider isn't correct, not parsing it"))
                 items = []
 
-            for item in items:
-                results.append(item)
+            results = list(items)
         # FIXME SORTING
         return results
 

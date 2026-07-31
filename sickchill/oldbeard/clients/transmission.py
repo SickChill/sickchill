@@ -10,7 +10,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Client(GenericClient):
-    def __init__(self, host: str = None, username: str = None, password: str = None):
+    def __init__(self, host: str | None = None, username: str | None = None, password: str | None = None):
         super().__init__("Transmission", host, username, password)
         self.url = "/".join((self.host.rstrip("/"), settings.TORRENT_RPCURL.strip("/"), "rpc"))
 

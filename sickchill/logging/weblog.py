@@ -13,9 +13,6 @@ class __WebErrorViewer(object):
     the list to be cleared.
     """
 
-    __errors = []
-    __warnings = []
-
     def __init__(self):
         self.__errors = []
         self.__warnings = []

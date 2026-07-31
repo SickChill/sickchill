@@ -70,7 +70,7 @@ class ProperFinder(object):
 
             # if they haven't been added by a different provider than add the proper to the list
             for proper in provider_propers:
-                if not re.search(r"\b(proper|repack|real)\b", proper.name, re.I):
+                if not re.search(r"\b(proper|repack|real)\b", proper.name, re.IGNORECASE):
                     logger.debug(_("find_propers returned a non-proper, we have caught and skipped it."))
                     continue
 
@@ -83,7 +83,7 @@ class ProperFinder(object):
             threading.current_thread().name = original_thread_name
 
         # take the list of unique propers and get it sorted by date
-        sorted_propers = sorted(list(propers.values()), key=operator.attrgetter("date"), reverse=True)
+        sorted_propers = sorted(propers.values(), key=operator.attrgetter("date"), reverse=True)
         final_propers = []
 
         for proper in sorted_propers:

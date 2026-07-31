@@ -74,7 +74,7 @@ class GenericClient(object):
         """
         This should be overridden and should return the auth_id needed for the client
         """
-        return None
+        return
 
     def _add_torrent_uri(self, result):  # pylint:disable=unused-argument, no-self-use
         """

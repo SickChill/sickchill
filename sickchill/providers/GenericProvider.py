@@ -5,7 +5,7 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
-from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Union
+from typing import TYPE_CHECKING, Callable, ClassVar, Dict, Iterable, List, Union
 from urllib.parse import urljoin
 
 from requests.structures import CaseInsensitiveDict
@@ -37,7 +37,7 @@ class GenericProvider(object):
     PROVIDER_BACKLOG = 2
     PROVIDER_OK = 3
 
-    ProviderStatus = {
+    ProviderStatus: ClassVar[dict] = {
         PROVIDER_BROKEN: _("Not working"),
         PROVIDER_DAILY: _("Daily/RSS only"),
         PROVIDER_BACKLOG: _("Backlog/Manual Search only"),

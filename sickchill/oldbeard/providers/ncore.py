@@ -110,7 +110,7 @@ class Provider(TorrentProvider):
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         items.append(result)
 
-                    except Exception:
+                    except Exception:  # noqa: S112
                         continue
 
             # For each search mode sort all the items by seeders

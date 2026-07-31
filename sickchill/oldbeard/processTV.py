@@ -533,9 +533,8 @@ def process_failed(process_path, release_name, result):
     if processor:
         result.output += processor.log
 
-    if settings.DELETE_FAILED and result.result:
-        if delete_folder(process_path, check_empty=False):
-            result.output += log_helper(f"Deleted folder: {process_path}", logger.DEBUG)
+    if settings.DELETE_FAILED and result.result and delete_folder(process_path, check_empty=False):
+        result.output += log_helper(f"Deleted folder: {process_path}", logger.DEBUG)
 
     if result.result:
         result.output += log_helper(f"Failed Download Processing succeeded: ({release_name}, {process_path})")

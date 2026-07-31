@@ -1,4 +1,5 @@
 import datetime
+from typing import ClassVar
 
 from sickchill import settings
 
@@ -103,7 +104,7 @@ class ProgressIndicator(object):
 
 
 class ProgressIndicators(object):
-    _pi = {"massUpdate": [], "massAdd": [], "dailyUpdate": []}
+    _pi: ClassVar[dict] = {"massUpdate": [], "massAdd": [], "dailyUpdate": []}
 
     @staticmethod
     def getIndicator(name):

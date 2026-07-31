@@ -95,9 +95,7 @@ class BacklogSearcher(object):
         main_db_con = db.DBConnection()
         sql_results = main_db_con.select("SELECT last_backlog FROM info")
 
-        if not sql_results:
-            lastBacklog = 1
-        elif sql_results[0]["last_backlog"] is None or sql_results[0]["last_backlog"] == "":
+        if not sql_results or sql_results[0]["last_backlog"] is None or sql_results[0]["last_backlog"] == "":
             lastBacklog = 1
         else:
             lastBacklog = int(sql_results[0]["last_backlog"])

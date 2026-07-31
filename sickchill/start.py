@@ -1070,7 +1070,7 @@ def halt():
 
 
 def sig_handler(signum=None, *args, **kwargs):
-    if not isinstance(signum, type(None)):
+    if not (signum is None):
         logger.info(f"Signal {signum} caught, saving and exiting...")
         Shutdown.stop(settings.PID)
 

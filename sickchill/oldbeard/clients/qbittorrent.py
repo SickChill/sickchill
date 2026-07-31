@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Client(GenericClient):
-    def __init__(self, url: str = None, username: str = None, password: str = None):
+    def __init__(self, url: str | None = None, username: str | None = None, password: str | None = None):
         super().__init__("qBittorrent", url, username, password)
         parsed_url = urlparse(self.url or settings.TORRENT_HOST)
         self.url = parsed_url.geturl()

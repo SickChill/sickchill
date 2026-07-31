@@ -60,7 +60,7 @@ from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidS
 from sickchill.show.Show import Show
 
 try:
-    from send2trash import send2trash  # noqa
+    from send2trash import send2trash
 except ModuleNotFoundError:
 
     def send2trash(path):
@@ -361,17 +361,16 @@ class TVShow(object):
                 continue
 
             cur_ep.related_episodes = []
-            if cur_ep.location:
+            if cur_ep.location and cur_result["share_location"] > 0:
                 # if there is a location, check if it's a multi-episode and put them in related_episodes
-                if cur_result["share_location"] > 0:
-                    related_eps_result = main_db_con.select(
-                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode",
-                        [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode],
-                    )
-                    for cur_related_ep in related_eps_result:
-                        related_ep = self.get_episode(cur_related_ep["season"], cur_related_ep["episode"])
-                        if related_ep and related_ep not in cur_ep.related_episodes:
-                            cur_ep.related_episodes.append(related_ep)
+                related_eps_result = main_db_con.select(
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode",
+                    [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode],
+                )
+                for cur_related_ep in related_eps_result:
+                    related_ep = self.get_episode(cur_related_ep["season"], cur_related_ep["episode"])
+                    if related_ep and related_ep not in cur_ep.related_episodes:
+                        cur_ep.related_episodes.append(related_ep)
             ep_list.append(cur_ep)
 
         return ep_list
@@ -419,17 +418,19 @@ class TVShow(object):
 
         return self.episodes[season][episode]
 
-    def should_update(self, update_date=datetime.date.today()):
+    def should_update(self, update_date=None):
         """
         Check current show last and next episode air date
         Decide if we should update Ended status
         """
+        if update_date is None:
+            update_date = datetime.date.today()
 
         # if show is not 'Ended' always update (status 'Continuing')
         if self.status == "Continuing":
             return True
 
-        graceperiod = datetime.timedelta(days=30)
+        grace_period = datetime.timedelta(days=30)
 
         last_airdate = datetime.date.min
 
@@ -441,7 +442,7 @@ class TVShow(object):
 
         if sql_result and sql_result[0]["last_aired"] != 0:
             last_airdate = datetime.date.fromordinal(sql_result[0]["last_aired"])
-            if (update_date - graceperiod) <= last_airdate <= (update_date + graceperiod):
+            if (update_date - grace_period) <= last_airdate <= (update_date + grace_period):
                 return True
 
         # get next unaired episode and compare against grace period
@@ -451,16 +452,13 @@ class TVShow(object):
 
         if sql_result and sql_result[0]["airing_next"] != 0:
             next_airdate = datetime.date.fromordinal(sql_result[0]["airing_next"])
-            if next_airdate <= (update_date + graceperiod):
+            if next_airdate <= (update_date + grace_period):
                 return True
 
         last_update_indexer = datetime.date.fromordinal(self.last_update_indexer)
 
         # Check between 30 and 450 days
-        if (update_date - last_airdate) < datetime.timedelta(days=450) and (update_date - last_update_indexer) > datetime.timedelta(days=30):
-            return True
-
-        return False
+        return bool(update_date - last_airdate < datetime.timedelta(days=450) and update_date - last_update_indexer > datetime.timedelta(days=30))
 
     def write_show_nfo(self):
         result = False
@@ -902,7 +900,7 @@ class TVShow(object):
         logger.debug(f"{self.indexerid}: Loading show info from {self.indexer_name}")
 
         indexer_show = sickchill.indexer.series(self)
-        if not indexer_show or not getattr(indexer_show, "seriesName"):
+        if not indexer_show or not indexer_show.seriesName:
             raise AttributeError(f"Found {self.indexerid}, but attribute 'seriesName' was empty.")
 
         self.name = indexer_show.seriesName.strip()
@@ -1590,7 +1588,7 @@ class TVEpisode(object):
 
         self.subtitles, new_subtitles = subtitles.download_subtitles(self, force_lang)
 
-        self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
+        self.subtitles_searchcount += 1
         self.subtitles_lastsearch = datetime.datetime.now().strftime(dateTimeFormat)
         self.save_to_db()
 
@@ -1641,24 +1639,23 @@ class TVEpisode(object):
     def specify_episode(self, season, episode):
         sql_results = self.load_from_db(season, episode)
 
-        if not sql_results:
+        if not sql_results and os.path.isfile(self.location):
             # only load from NFO if we didn't load from DB
-            if os.path.isfile(self.location):
+            try:
+                self.load_from_nfo(self.location)
+            except NoNFOException:
+                logger.error(f"{self.show.indexerid}: There was an error loading the NFO for episode {episode_num(season, episode)}")
+
+            # if we tried loading it from NFO and didn't find the NFO, try the Indexers
+            if not self.has_nfo:
                 try:
-                    self.load_from_nfo(self.location)
-                except NoNFOException:
-                    logger.error(f"{self.show.indexerid}: There was an error loading the NFO for episode {episode_num(season, episode)}")
+                    result = self.load_from_indexer(season, episode)
+                except EpisodeDeletedException:
+                    result = None
 
-                # if we tried loading it from NFO and didn't find the NFO, try the Indexers
-                if not self.has_nfo:
-                    try:
-                        result = self.load_from_indexer(season, episode)
-                    except EpisodeDeletedException:
-                        result = None
-
-                    # if we failed SQL *and* NFO, Indexers then fail
-                    if not result:
-                        raise EpisodeNotFoundException("Couldn't find episode {ep}".format(ep=episode_num(season, episode)))
+                # if we failed SQL *and* NFO, Indexers then fail
+                if not result:
+                    raise EpisodeNotFoundException("Couldn't find episode {ep}".format(ep=episode_num(season, episode)))
 
     def load_from_db(self, season, episode):
         main_db_con = db.DBConnection()
@@ -2035,10 +2032,12 @@ class TVEpisode(object):
                 # Multi or added subtitle or removed subtitles
                 if settings.SUBTITLES_MULTI or not rows[0]["subtitles"] or not self.subtitles:
                     return [
-                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
-                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                        (
+                            "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
+                            "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                            "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                            "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?"
+                        ),
                         [
                             self.indexerid,
                             self.indexer,
@@ -2067,10 +2066,12 @@ class TVEpisode(object):
 
                 # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
                 return [
-                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
-                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                    (
+                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
+                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?"
+                    ),
                     [
                         self.indexerid,
                         self.indexer,
@@ -2098,11 +2099,13 @@ class TVEpisode(object):
             else:
                 # use a custom insert method to get the data into the DB.
                 return [
-                    "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
-                    "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
-                    "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
-                    "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
-                    ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+                    (
+                        "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
+                        "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
+                        "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
+                        "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
+                        ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
+                    ),
                     [
                         self.show.indexerid,
                         self.season,
@@ -2418,10 +2421,9 @@ class TVEpisode(object):
         result_name = pattern
 
         # if there's no release group in the db, let the user know we replaced it
-        if replace_map["%RG"] and replace_map["%RG"] != "SICKCHILL":
-            if not self._release_group:
-                logger.debug(f"Episode has no release group, replacing it with '{replace_map['%RG']}'")
-                self._release_group = replace_map["%RG"]  # if release_group is not in the db, put it there
+        if replace_map["%RG"] and replace_map["%RG"] != "SICKCHILL" and not self._release_group:
+            logger.debug(f"Episode has no release group, replacing it with '{replace_map['%RG']}'")
+            self._release_group = replace_map["%RG"]  # if release_group is not in the db, put it there
 
         # if there's no release name then replace it with a reasonable facsimile
         if not replace_map["%RN"]:
@@ -2457,8 +2459,8 @@ class TVEpisode(object):
             ep_only_regex = r"(E?%0?E(?![._]?N))"
 
             # try the normal way
-            season_ep_match = re.search(season_ep_regex, cur_name_group, re.I | re.X)
-            ep_only_match = re.search(ep_only_regex, cur_name_group, re.I | re.X)
+            season_ep_match = re.search(season_ep_regex, cur_name_group, re.IGNORECASE | re.VERBOSE)
+            ep_only_match = re.search(ep_only_regex, cur_name_group, re.IGNORECASE | re.VERBOSE)
 
             # if we have a season and episode then collect the necessary data
             if season_ep_match:

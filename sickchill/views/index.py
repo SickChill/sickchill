@@ -125,9 +125,7 @@ class BaseHandler(RequestHandler):
             if auth_header and auth_header.startswith("Basic "):
                 auth_decoded = base64.decodebytes(auth_header[6:].encode()).decode()
                 username, password = auth_decoded.split(":", 2)
-                if compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD):
-                    return True
-                return False
+                return bool(compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD))
         else:
             # Local network
             # strip <scope id> / <zone id> (%value/if_name) from remote_ip IPv6 scoped literal IP Addresses (RFC 4007) until phihag/ipaddress is updated tracking cpython 3.9.
@@ -160,9 +158,8 @@ class WebHandler(BaseHandler):
             from inspect import signature
 
             sig = signature(method)
-            if settings.DEVELOPER:
-                if len(sig.parameters):
-                    logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
+            if settings.DEVELOPER and len(sig.parameters):
+                logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
             results = await self.async_call(method, len(sig.parameters))
             try:

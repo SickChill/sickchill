@@ -330,10 +330,7 @@ class TVCache(RSSTorrentMixin):
 
     def should_clear_cache(self):
         # if daily search hasn't used our previous results yet then don't clear the cache
-        if self.last_update > self.last_search:
-            return False
-
-        return True
+        return self.last_update < self.last_search
 
     def add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
         # check if we passed in a parsed result or should we try and create one
@@ -400,16 +397,15 @@ class TVCache(RSSTorrentMixin):
         cache_db_con = self.get_db()
         sql = "SELECT * FROM results WHERE provider = ? AND name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
         # Add specific provider proper_strings also, like REAL, RERIP, etc.
-        if hasattr(self.provider, "proper_strings"):
-            if self.provider.proper_strings:
-                for item in self.provider.proper_strings:
-                    if "|" in item:
-                        items = item.split("|")
-                        for _item in items:
-                            if _item.upper() not in sql:
-                                sql += " OR name LIKE '%.{}.%'".format(_item)
-                    elif item.upper() not in sql:
-                        sql += " OR name LIKE '%.{}.%'".format(item)
+        if hasattr(self.provider, "proper_strings") and self.provider.proper_strings:
+            for item in self.provider.proper_strings:
+                if "|" in item:
+                    items = item.split("|")
+                    for _item in items:
+                        if _item.upper() not in sql:
+                            sql += " OR name LIKE '%.{}.%'".format(_item)
+                elif item.upper() not in sql:
+                    sql += " OR name LIKE '%.{}.%'".format(item)
 
         if date is not None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
