@@ -26,7 +26,7 @@ class Notifier(object):
                 try:
                     server_name = kodi.Settings.GetSettingValue(setting="services.devicename")["result"]["value"]
                     kodi.name = server_name
-                except:  # noqa: E722
+                except Exception:  # noqa: E722
                     pass
 
                 if kodi not in self._connections:

@@ -395,7 +395,9 @@ class HelpersEncryptionTests(unittest.TestCase):
                 try:
                     test_file.unlink(missing_ok=True)
                 except (OSError, ValueError):
-                    pass
+                    # Best-effort cleanup for test artifacts; ignore failures so cleanup
+                    # does not mask the actual test outcome.
+                    continue
 
         remove_test_files()  # always start clean
 
