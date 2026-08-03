@@ -49,7 +49,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, timeout=30)
         if not response:
-            logger.warning(_("Unable to connect to provider}"))
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("Lei non e registrato in sistema.", response):

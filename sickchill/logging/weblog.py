@@ -30,7 +30,7 @@ class __WebErrorViewer(object):
 
     def add(self, record):
         if record.levelno in (ERROR, WARNING):
-            ui_error = UIError(record.msg, record.levelno)
+            ui_error = UIError(record.getMessage(), record.levelno)
             if record.levelno == ERROR:
                 self.add_error(ui_error)
             if record.levelno == WARNING:

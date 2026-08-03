@@ -145,6 +145,8 @@ def http_code_description(http_code):
 
 
 def get_extension(path: Union[Path, PathLike, str] | None = None, lower: bool = False) -> str:
+    if path is None:
+        return ""
     path = Path(path)
     result = path.suffix.lstrip(".")
     if lower:
@@ -159,6 +161,8 @@ def is_sync_file(filename: Union[Path, PathLike, str] | None = None) -> bool:
     :param filename: The filename to check
     :return: ``True`` if the ``filename`` is a sync file, ``False`` otherwise
     """
+    if filename is None:
+        return False
     sync_extensions = settings.SYNC_FILES.split(",")
     return (
         filename.startswith(".syncthing")
@@ -173,6 +177,8 @@ def is_torrent_or_nzb_file(filename: Union[Path, PathLike, str] | None = None) -
     :param filename: The filename to check
     :return: ``True`` if the ``filename`` is a NZB file or a torrent file, ``False`` otherwise
     """
+    if filename is None:
+        return False
     return get_extension(filename, lower=True) in ("nzb", "torrent")
 
 

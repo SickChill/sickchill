@@ -128,7 +128,7 @@ def short_group_names(groups):
         remove any leading and trailing commas
     :return: list of shortened group names
     """
-    groups = groups.strip(",").split(",")
+    groups = [group.strip() for group in groups.strip(" ,").split(",") if group.strip()]
     short_group_list = []
     if helpers.set_up_anidb_connection():
         for groupName in groups:

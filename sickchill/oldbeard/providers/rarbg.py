@@ -42,7 +42,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["api"], params=login_params, returns="json")
         if not response:
-            logger.warning(_("Unable to connect to provider}"))
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         self.token = response.get("token")

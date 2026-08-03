@@ -249,7 +249,7 @@ class TVShow(object):
 
     @location.setter
     def location(self, new_location):
-        logger.debug(f"Setter sets location to {new_location}")
+        logger.debug(f"Setter sets Show location to {new_location}")
         # Don't validate dir if user wants to add shows without creating a dir
         if settings.ADD_SHOWS_WO_DIR or os.path.isdir(new_location):
             if self._location != new_location:
@@ -1514,7 +1514,7 @@ class TVEpisode(object):
 
     @location.setter
     def location(self, new_location):
-        logger.debug(f"Setter sets location to {new_location}")
+        logger.debug(f"Setter sets Episode location to {new_location}")
 
         # self._location = newLocation
         if self._location != new_location:
