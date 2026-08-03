@@ -84,8 +84,6 @@ def get_scene_exceptions(indexer_id: int, season: int = -1) -> list:
                 results.append(helpers.full_sanitizeSceneName(show.custom_name))
 
     response = list({result for result in results})
-    logger.debug(f"get_scene_exceptions: {response}")
-    logger.debug(f"exceptions_cache: {exceptions_cache.get(indexer_id)}")
     return response
 
 
