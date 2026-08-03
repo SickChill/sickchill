@@ -161,7 +161,10 @@ def all_possible_show_names(show, season=-1):
 
         show_names += new_show_names
 
-    return set(show_names)
+    show_names_clean = {n.lower() for n in show_names if n}
+    logger.debug(f"all_possible_show_names: {show_names_clean}")
+
+    return set(show_names_clean)
 
 
 def determine_release_name(directory=None, release_name=None):
