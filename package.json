@@ -51,7 +51,7 @@
     "toml": "^5.0.0",
     "typescript": "^7.0.2",
     "webpack": "^5.109.0",
-    "webpack-cli": "^7.2.1",
+    "webpack-cli": "^7.2.2",
     "webpack-dev-server": "^6.0.0",
     "workbox-webpack-plugin": "^7.0.0",
     "xo": "^2.0.2"
