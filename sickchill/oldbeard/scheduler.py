@@ -43,20 +43,20 @@ class Scheduler(threading.Thread):
         Check how long we have until we run again
         :return: timedelta
         """
-        if self.is_alive():
-            if self.start_time is None:
-                delta = sc_now() - self.lastRun
-                return (self.cycleTime - delta, self.cycleTime)[delta > self.cycleTime]
-            else:
-                time_now = sc_now()
-                start_time_today = datetime.datetime.combine(time_now.date(), self.start_time)
-                start_time_tomorrow = start_time_today + datetime.timedelta(days=1)
-                if time_now.hour >= self.start_time.hour:
-                    return start_time_tomorrow - time_now
-                elif time_now.hour < self.start_time.hour:
-                    return start_time_today - time_now
-        else:
+        if not self.is_alive():
             return datetime.timedelta(seconds=0)
+
+        if self.start_time is None:
+            delta = sc_now() - self.lastRun
+            return (self.cycleTime - delta, self.cycleTime)[delta > self.cycleTime]
+
+        time_now = sc_now()
+        start_time_today = datetime.datetime.combine(time_now.date(), self.start_time, tzinfo=sc_timezone)
+        start_time_tomorrow = start_time_today + datetime.timedelta(days=1)
+        if time_now.hour >= self.start_time.hour:
+            return start_time_tomorrow - time_now
+        else:
+            return start_time_today - time_now
 
     def forceRun(self):
         if not self.action.amActive:

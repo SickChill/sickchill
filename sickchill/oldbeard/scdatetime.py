@@ -262,13 +262,14 @@ class scdatetime(datetime.datetime):
         return strd
 
 
-def sctimeago(date: datetime, base: bool = False) -> str:
-    """return a timeago string using sickchill timezone data"""
-    if base:
-        tz = datetime.timezone
-        now = sc_now()
-    else:
-        tz = sc_timezone
-        now = scdatetime.now()
+def sctimeago(date) -> str:
+    """Return a timeago string using SickChill timezone data."""
+    if date is None:
+        return ""
 
-    return timeago.format(date, now, tz)
+    # Make sure the incoming date is timezone-aware
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=sc_timezone)
+
+    now = sc_now()
+    return timeago.format(date, now, sc_timezone)
