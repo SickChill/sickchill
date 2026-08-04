@@ -57,7 +57,7 @@ from sickchill.oldbeard.common import (
     statusStrings,
 )
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickchill.oldbeard.network_timezones import sc_now, sc_today
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.show.Show import Show
 
 try:
@@ -1015,7 +1015,7 @@ class TVShow(object):
 
     def next_episode(self):
         current_date = sc_today().toordinal()
-        if not self.next_airdate or self.next_airdate and current_date > try_int(self.next_airdate):
+        if not self.next_airdate or current_date > try_int(self.next_airdate):
             main_db_con = db.DBConnection()
             sql_results = main_db_con.select(
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate LIMIT 1",
@@ -1196,7 +1196,7 @@ class TVShow(object):
                             episode_object.status = new_status
                             episode_object.subtitles = []
                             episode_object.subtitles_searchcount = 0
-                            episode_object.subtitles_lastsearch = str(sc_now().min)
+                            episode_object.subtitles_lastsearch = str(datetime.datetime.min.replace(tzinfo=sc_timezone))
                         episode_object.location = ""
                         episode_object.has_nfo = False
                         episode_object.has_tbn = False
@@ -1467,7 +1467,7 @@ class TVEpisode(object):
     description = DirtySetter("")
     subtitles = DirtySetter(list())
     subtitles_searchcount = DirtySetter(0)
-    subtitles_lastsearch = DirtySetter(str(sc_now().min))
+    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min.replace(tzinfo=sc_timezone)))
     airdate = DirtySetter(datetime.date.min)
     has_nfo = DirtySetter(False)
     has_tbn = DirtySetter(False)
@@ -1676,7 +1676,7 @@ class TVEpisode(object):
             self.description = ""
             self.subtitles = []
             self.subtitles_searchcount = 0
-            self.subtitles_lastsearch = str(sc_now().min)
+            self.subtitles_lastsearch = str(datetime.datetime.min.replace(tzinfo=sc_timezone))
             existing_location = self._location
             self.location = ""
             self.file_size = 0

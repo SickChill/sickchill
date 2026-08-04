@@ -251,7 +251,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             premier_date_element = ElementTree.SubElement(tv_node, "PremiereDate")
             premier_date_element.text = data
             try:
-                year_text = str(datetime.datetime.strptime(data, dateFormat).replace(tzinfo=sc_timezone).year)
+                year_text = str(datetime.datetime.strptime(data, dateFormat).replace(tzinfo=sc_timezone).year)  # satisfy the naive-datetime lint rule
                 if year_text:
                     production_year_element = ElementTree.SubElement(tv_node, "ProductionYear")
                     production_year_element.text = year_text

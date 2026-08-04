@@ -114,7 +114,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         if getattr(indexer_show, "firstAired", None):
             try:
-                year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year)
+                year_text = str(
+                    datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year
+                )  # satisfy the naive-datetime lint rule
                 if year_text:
                     year_element = ElementTree.SubElement(tv_node, "year")
                     year_element.text = year_text
@@ -224,7 +226,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 if getattr(indexer_show, "firstAired", None):
                     try:
-                        year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year)
+                        year_text = str(
+                            datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year
+                        )  # satisfy the naive-datetime lint rule
                         if year_text:
                             year_element = ElementTree.SubElement(episode, "year")
                             year_element.text = year_text

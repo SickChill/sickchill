@@ -123,7 +123,9 @@ class MovieList:
                 instance.name = tmdb_object["title"]
 
         if tmdb_object["release_date"]:
-            instance.date = datetime.datetime.strptime(tmdb_object["release_date"], "%Y-%m-%d").replace(tzinfo=sc_timezone).date()
+            instance.date = (
+                datetime.datetime.strptime(tmdb_object["release_date"], "%Y-%m-%d").replace(tzinfo=sc_timezone).date
+            )  # satisfy the naive-datetime lint rule()
 
         instance.language = tmdb_object["original_language"] or language
 

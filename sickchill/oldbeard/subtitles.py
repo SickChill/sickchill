@@ -421,7 +421,7 @@ class SubtitlesFinder(object):
             try:
                 lastsearched = datetime.datetime.strptime(ep_to_sub["lastsearch"], dateTimeFormat).replace(tzinfo=sc_timezone)
             except ValueError:
-                lastsearched = sc_now().min
+                lastsearched = datetime.datetime.min.replace(tzinfo=sc_timezone)
 
             try:
                 if not force:
