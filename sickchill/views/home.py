@@ -20,6 +20,7 @@ from sickchill.helper.exceptions import CantUpdateShowException, NoNFOException,
 from sickchill.oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
 from sickchill.oldbeard.common import FAILED, IGNORED, SKIPPED, SNATCHED_BEST, UNAIRED, WANTED, Overview, Quality, cpu_presets, statusStrings
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.oldbeard.scene_numbering import (
     get_scene_absolute_numbering,
     get_scene_absolute_numbering_for_show,
@@ -213,7 +214,7 @@ class Home(WebRoot):
     def show_statistics():
         """Loads show and episode statistics from db"""
         main_db_con = db.DBConnection()
-        today = str(datetime.date.today().toordinal())
+        today = str(sc_today().toordinal())
 
         status_quality = "(" + ",".join([str(x) for x in Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST]) + ")"
         status_download = "(" + ",".join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED]) + ")"

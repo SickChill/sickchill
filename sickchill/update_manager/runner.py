@@ -7,6 +7,7 @@ import time
 from sickchill import logger, settings
 from sickchill.helper.exceptions import UpdaterException
 from sickchill.oldbeard import db, helpers, ui
+from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.update_manager.pip import PipUpdateManager
 
 
@@ -241,7 +242,7 @@ class UpdateManager(object):
             return ""
 
         try:
-            last_read = datetime.datetime.strptime(settings.NEWS_LAST_READ, "%Y-%m-%d")
+            last_read = datetime.datetime.strptime(settings.NEWS_LAST_READ, "%Y-%m-%d").replace(tzinfo=sc_timezone)
         except Exception:
             last_read = 0
 
@@ -253,7 +254,7 @@ class UpdateManager(object):
                 settings.NEWS_LATEST = match.group(1)
 
             try:
-                if datetime.datetime.strptime(match.group(1), "%Y-%m-%d") > last_read:
+                if datetime.datetime.strptime(match.group(1), "%Y-%m-%d").replace(tzinfo=sc_timezone) > last_read:
                     settings.NEWS_UNREAD += 1
             except Exception:
                 pass

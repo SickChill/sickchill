@@ -15,6 +15,16 @@ network_dict = {}
 sc_timezone = tz.tzlocal()
 
 
+def sc_now():
+    """Return current datetime in SickChill local timezone (aware)."""
+    return datetime.datetime.now(tz=sc_timezone)
+
+
+def sc_today():
+    """Return current date in SickChill local timezone."""
+    return sc_now().date()
+
+
 class NetworkTimezoneLoadException(Exception):
     """ "Error loading network timezones"""
 

@@ -7,6 +7,7 @@ from urllib.parse import urlencode, urljoin
 from sickchill import logger
 from sickchill.helper.common import try_int
 from sickchill.oldbeard import db, tvcache
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -194,18 +195,18 @@ class TrackerCacheDBConnection(db.DBConnection):
     def get_trackers(self):
         sql_result = self.select_one("SELECT * FROM trackers WHERE provider = ?", [self.provider_id])
         if sql_result:
-            last_time = datetime.datetime.fromtimestamp(sql_result["time"])
-            if last_time > datetime.datetime.now():
-                last_time = datetime.datetime.min
+            last_time = datetime.datetime.fromtimestamp(sql_result["time"], tz=sc_timezone)
+            if last_time > sc_now():
+                last_time = sc_now().min
         else:
-            last_time = datetime.datetime.min
+            last_time = sc_now().min
 
-        if datetime.datetime.now() - last_time > self.update_frequency:
+        if sc_now() - last_time > self.update_frequency:
             trackers = self.provider.get_tracker_list()
 
             self.upsert(
                 "trackers",
-                {"time": int(time.mktime(datetime.datetime.now().timetuple())), "trackers": trackers},
+                {"time": int(time.mktime(sc_now().timetuple())), "trackers": trackers},
                 {"provider": self.provider_id},
             )
             result = trackers

@@ -7,6 +7,7 @@ import subliminal
 
 from sickchill import logger, settings
 from sickchill.helper.metaclasses import Singleton
+from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.providers.result_classes import SearchResult
 
 if TYPE_CHECKING:
@@ -115,7 +116,7 @@ class History(object, metaclass=Singleton):
         """
         Remove all elements older than 30 days from the history
         """
-        back_thirty_days = (datetime.today() - timedelta(days=30)).strftime(self.date_format)
+        back_thirty_days = (sc_now() - timedelta(days=30)).strftime(self.date_format)
         self.db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
         if settings.USE_FAILED_DOWNLOADS:
             self.failed_db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
@@ -136,7 +137,7 @@ class History(object, metaclass=Singleton):
         # DataSource: sickchill.db
         return self.db.action(
             "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [action, datetime.today().strftime(self.date_format), showid, season, episode, quality, resource, provider, version],
+            [action, sc_now().strftime(self.date_format), showid, season, episode, quality, resource, provider, version],
         )
 
     def log_snatch(self, result: SearchResult):
@@ -167,7 +168,7 @@ class History(object, metaclass=Singleton):
                 self.failed_db.action(
                     'INSERT INTO history (date, size, "release", provider, showid, season, episode, old_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                     [
-                        datetime.today().strftime(self.date_format),
+                        sc_now().strftime(self.date_format),
                         result.size,
                         self.prepare_failed_name(result.name),
                         provider,

@@ -6,6 +6,7 @@ import sickchill
 from sickchill import logger
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.oldbeard import helpers
+from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.providers.metadata import mediabrowser
 
 
@@ -113,7 +114,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         if getattr(indexer_show, "firstAired", None):
             try:
-                year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).year)
+                year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year)
                 if year_text:
                     year_element = ElementTree.SubElement(tv_node, "year")
                     year_element.text = year_text
@@ -223,7 +224,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 if getattr(indexer_show, "firstAired", None):
                     try:
-                        year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).year)
+                        year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year)
                         if year_text:
                             year_element = ElementTree.SubElement(episode, "year")
                             year_element.text = year_text

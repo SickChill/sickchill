@@ -34,6 +34,7 @@ from sickchill.oldbeard import (
 from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
 from sickchill.oldbeard.config import ConfigMigrator, check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str
 from sickchill.oldbeard.databases import cache, failed, main
+from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.oldbeard.providers.newznab import NewznabProvider
 from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
 from sickchill.providers import metadata
@@ -124,7 +125,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
                     try:
                         if os.path.isdir(destination):
-                            backup_name = "{0}-{1}".format(path_leaf(destination), datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d_%H%M%S"))
+                            backup_name = "{0}-{1}".format(path_leaf(destination), datetime.datetime.strftime(sc_now(), "%Y%m%d_%H%M%S"))
                             shutil.move(destination, os.path.join(os.path.dirname(destination), backup_name))
 
                         shutil.move(source, destination)

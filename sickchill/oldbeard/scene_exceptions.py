@@ -6,6 +6,7 @@ from typing import Generator
 import sickchill
 from sickchill import adba, logger, settings
 from sickchill.oldbeard import db, helpers
+from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.show.Show import Show
 
 # Cache for exceptions (used by rebuild_exception_cache, etc.)
@@ -35,7 +36,7 @@ def should_refresh(exception_provider: str) -> bool:
     rows = cache_db_con.select("SELECT last_refreshed FROM scene_exceptions_refresh WHERE list = ?", [exception_provider])
     if rows:
         last_refresh = int(rows[0]["last_refreshed"])
-        return int(time.mktime(datetime.datetime.today().timetuple())) > last_refresh + seconds_per_day
+        return int(time.mktime(sc_now().timetuple())) > last_refresh + seconds_per_day
     else:
         return True
 
@@ -47,7 +48,7 @@ def set_last_refresh(exception_provider: str) -> None:
     :param exception_provider: exception list to set refresh time
     """
     cache_db_con = db.DBConnection("cache.db")
-    cache_db_con.upsert("scene_exceptions_refresh", {"last_refreshed": int(time.mktime(datetime.datetime.today().timetuple()))}, {"list": exception_provider})
+    cache_db_con.upsert("scene_exceptions_refresh", {"last_refreshed": int(time.mktime(sc_now().timetuple()))}, {"list": exception_provider})
 
 
 def get_scene_exceptions(indexer_id: int, season: int = -1) -> list:

@@ -9,6 +9,7 @@ import sickchill.oldbeard.name_cache
 import sickchill.oldbeard.providers
 from sickchill import logger, settings
 from sickchill.helper.exceptions import AuthException
+from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.show.History import History
 
@@ -77,7 +78,7 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     if settings.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
         for episode in result.episodes:
-            if datetime.date.today() - episode.airdate <= datetime.timedelta(days=7):
+            if sc_today() - episode.airdate <= datetime.timedelta(days=7):
                 result.priority = 1
 
     end_status = SNATCHED_PROPER if re.search(r"\b(proper|repack|real)\b", result.name, re.IGNORECASE) else end_status

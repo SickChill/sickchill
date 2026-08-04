@@ -35,6 +35,7 @@ from sickchill.oldbeard.common import (
     Quality,
     statusStrings_bare,
 )
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.oldbeard.postProcessor import PROCESS_METHODS
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.show.History import History
@@ -499,7 +500,7 @@ def _ordinal_to_date_form(ordinal):
 
 
 def _history_date_to_datetime_form(time_string):
-    date = datetime.datetime.strptime(time_string, History.date_format)
+    date = datetime.datetime.strptime(time_string, History.date_format).replace(tzinfo=sc_timezone)
     return date.strftime(dateTimeFormat)
 
 
@@ -835,7 +836,7 @@ class AbstractStartScheduler(ApiCall):
         # Force the search to start in order to skip the search interval check
         if self.scheduler.forceRun():
             cycle_time = self.scheduler.cycleTime
-            next_run = datetime.datetime.now() + cycle_time
+            next_run = sc_now() + cycle_time
             result_str = "Force run successful: {0} search underway. Time Remaining: {1}. Next Run: {2}".format(self.scheduler_class_str, time_remain, next_run)
             return _responds(RESULT_SUCCESS, msg=result_str)
 

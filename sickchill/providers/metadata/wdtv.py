@@ -6,6 +6,7 @@ from xml.etree import ElementTree
 from sickchill import logger
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.oldbeard import helpers
+from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.providers.metadata import generic
 
 
@@ -202,7 +203,7 @@ class WDTVMetadata(generic.GenericMetadata):
 
             if getattr(indexer_show, "firstAired", None):
                 try:
-                    year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).year)
+                    year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year)
                     if year_text:
                         year_element = ElementTree.SubElement(episode_element, "year")
                         year_element.text = year_text

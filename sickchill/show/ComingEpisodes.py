@@ -7,7 +7,7 @@ from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string
 from sickchill.oldbeard.common import UNAIRED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
-from sickchill.oldbeard.network_timezones import parse_date_time
+from sickchill.oldbeard.network_timezones import parse_date_time, sc_today
 from sickchill.oldbeard.scdatetime import scdatetime
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
@@ -45,9 +45,9 @@ class ComingEpisodes(object):
         categories = ComingEpisodes._get_categories(categories)
         sort = ComingEpisodes._get_sort(sort)
 
-        today = date.today().toordinal()
-        recently = (date.today() - timedelta(days=settings.COMING_EPS_MISSED_RANGE)).toordinal()
-        next_week = (date.today() + timedelta(days=7)).toordinal()
+        today = sc_today().toordinal()
+        recently = (sc_today() - timedelta(days=settings.COMING_EPS_MISSED_RANGE)).toordinal()
+        next_week = (sc_today() + timedelta(days=7)).toordinal()
 
         db = DBConnection(row_type="dict")
         fields_to_select = ", ".join(

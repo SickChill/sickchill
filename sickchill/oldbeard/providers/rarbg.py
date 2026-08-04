@@ -7,6 +7,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.common import cpu_presets
+from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 if TYPE_CHECKING:
@@ -35,7 +36,7 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self, min_time=10)  # only poll RARBG every 10 minutes max
 
     def login(self):
-        if self.token and self.token_expires and datetime.datetime.now() < self.token_expires:
+        if self.token and self.token_expires and sc_now() < self.token_expires:
             return True
 
         login_params = {"get_token": "get_token", "format": "json", "app_id": "sickchill"}
@@ -46,7 +47,7 @@ class Provider(TorrentProvider):
             return False
 
         self.token = response.get("token")
-        self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
+        self.token_expires = sc_now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
     def search(self, search_strings):

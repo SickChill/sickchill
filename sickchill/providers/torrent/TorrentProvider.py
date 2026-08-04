@@ -6,6 +6,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import try_int
 from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.db import DBConnection
+from sickchill.oldbeard.network_timezones import sc_now, sc_today
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.result_classes import Proper, TorrentSearchResult
 from sickchill.show.Show import Show
@@ -40,7 +41,7 @@ class TorrentProvider(GenericProvider):
                         for item in self.search(search_string):
                             title, url = self._get_title_and_url(item)
 
-                            results.append(Proper(title, url, datetime.today(), show))
+                            results.append(Proper(title, url, sc_now(), show))
 
         return results
 

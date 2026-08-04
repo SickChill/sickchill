@@ -12,6 +12,7 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import scene_exceptions, tvcache
 from sickchill.oldbeard.common import cpu_presets
 from sickchill.oldbeard.helpers import sanitizeSceneName
+from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.providers import result_classes
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -227,7 +228,7 @@ class Provider(TorrentProvider):
             for item in self.search({"release": term}):
                 if item["Time"]:
                     try:
-                        result_date = datetime.fromtimestamp(float(item["Time"]))
+                        result_date = datetime.fromtimestamp(float(item["Time"]), tz=sc_timezone)
                     except TypeError:
                         result_date = None
 

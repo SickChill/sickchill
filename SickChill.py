@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import List, Union
 
 import sickchill.start
+from sickchill.oldbeard.network_timezones import sc_now
 
 try:
     from frontend.app import FlaskServer
@@ -47,9 +48,6 @@ from sickchill.oldbeard.event_queue import Events
 from sickchill.tv import TVShow
 from sickchill.update_manager import PipUpdateManager, UpdateManager
 from sickchill.views.server_settings import SCWebServer
-
-# http://bugs.python.org/issue7980#msg221094
-THROWAWAY = datetime.datetime.strptime("20110101", "%Y%m%d")
 
 signal.signal(signal.SIGINT, sickchill.start.sig_handler)
 signal.signal(signal.SIGTERM, sickchill.start.sig_handler)
@@ -314,7 +312,7 @@ class SickChill:
             for filename in files_list:
                 src_file = os.path.join(src_dir, filename)
                 dst_file = os.path.join(dst_dir, filename)
-                bak_file = os.path.join(dst_dir, "{}.bak-{}".format(filename, datetime.datetime.now().strftime("%Y%m%d_%H%M%S")))
+                bak_file = os.path.join(dst_dir, "{}.bak-{}".format(filename, sc_now().strftime("%Y%m%d_%H%M%S")))
                 sickchill_db = os.path.join(dst_dir, "sickchill.db")
                 sickbeard_db = os.path.join(src_dir, "sickbeard.db")
                 if os.path.isfile(src_file):

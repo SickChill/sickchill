@@ -11,6 +11,7 @@ from tmdbsimple import movies, search
 from sickchill import settings
 from sickchill.oldbeard.databases import movie
 from sickchill.oldbeard.db import db_cons, db_full_path, db_locks
+from sickchill.oldbeard.network_timezones import sc_timezone
 
 # import imdb
 # from imdb.parser.http.piculet import Path, Rule
@@ -122,7 +123,7 @@ class MovieList:
                 instance.name = tmdb_object["title"]
 
         if tmdb_object["release_date"]:
-            instance.date = datetime.datetime.strptime(tmdb_object["release_date"], "%Y-%m-%d").date()
+            instance.date = datetime.datetime.strptime(tmdb_object["release_date"], "%Y-%m-%d").replace(tzinfo=sc_timezone).date()
 
         instance.language = tmdb_object["original_language"] or language
 

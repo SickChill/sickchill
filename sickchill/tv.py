@@ -57,6 +57,7 @@ from sickchill.oldbeard.common import (
     statusStrings,
 )
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.network_timezones import sc_now, sc_today
 from sickchill.show.Show import Show
 
 try:
@@ -424,7 +425,7 @@ class TVShow(object):
         Decide if we should update Ended status
         """
         if update_date is None:
-            update_date = datetime.date.today()
+            update_date = sc_today()
 
         # if show is not 'Ended' always update (status 'Continuing')
         if self.status == "Continuing":
@@ -654,7 +655,7 @@ class TVShow(object):
             scanned_episodes[indexer_episode["airedSeason"]][indexer_episode["airedEpisodeNumber"]] = True
 
         # Done updating save last update date
-        self.last_update_indexer = datetime.datetime.now().toordinal()
+        self.last_update_indexer = sc_now().toordinal()
 
         self.save_to_db()
 
@@ -999,7 +1000,7 @@ class TVShow(object):
                         "certificates": getattr(title, "certification", "") or "",
                         "rating": str(getattr(title, "rating", 0.0)),
                         "votes": str(getattr(title, "rating_count", 0)),
-                        "last_update": datetime.date.today().toordinal(),
+                        "last_update": sc_today().toordinal(),
                     }
                 )
                 self.dirty = True
@@ -1013,12 +1014,12 @@ class TVShow(object):
             logger.info(f"IMDb refresh failed: {e}")
 
     def next_episode(self):
-        current_date = datetime.date.today().toordinal()
+        current_date = sc_today().toordinal()
         if not self.next_airdate or self.next_airdate and current_date > try_int(self.next_airdate):
             main_db_con = db.DBConnection()
             sql_results = main_db_con.select(
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate LIMIT 1",
-                [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED],
+                [self.indexerid, sc_today().toordinal(), UNAIRED, WANTED],
             )
 
             self.next_airdate = sql_results[0]["airdate"] if sql_results else ""
@@ -1195,7 +1196,7 @@ class TVShow(object):
                             episode_object.status = new_status
                             episode_object.subtitles = []
                             episode_object.subtitles_searchcount = 0
-                            episode_object.subtitles_lastsearch = str(datetime.datetime.min)
+                            episode_object.subtitles_lastsearch = str(sc_now().min)
                         episode_object.location = ""
                         episode_object.has_nfo = False
                         episode_object.has_tbn = False
@@ -1286,7 +1287,7 @@ class TVShow(object):
                 "certificates": self.imdb_info.get("certificates") or self.imdb_info.get("certification") or "",
                 "rating": str(self.imdb_info.get("rating") or 0.0),
                 "votes": str(self.imdb_info.get("votes") or 0),
-                "last_update": self.imdb_info.get("last_update") or datetime.date.today().toordinal(),
+                "last_update": self.imdb_info.get("last_update") or sc_today().toordinal(),
             }
 
             main_db_con = db.DBConnection()
@@ -1466,7 +1467,7 @@ class TVEpisode(object):
     description = DirtySetter("")
     subtitles = DirtySetter(list())
     subtitles_searchcount = DirtySetter(0)
-    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min))
+    subtitles_lastsearch = DirtySetter(str(sc_now().min))
     airdate = DirtySetter(datetime.date.min)
     has_nfo = DirtySetter(False)
     has_tbn = DirtySetter(False)
@@ -1589,7 +1590,7 @@ class TVEpisode(object):
         self.subtitles, new_subtitles = subtitles.download_subtitles(self, force_lang)
 
         self.subtitles_searchcount += 1
-        self.subtitles_lastsearch = datetime.datetime.now().strftime(dateTimeFormat)
+        self.subtitles_lastsearch = sc_now().strftime(dateTimeFormat)
         self.save_to_db()
 
         if new_subtitles:
@@ -1675,7 +1676,7 @@ class TVEpisode(object):
             self.description = ""
             self.subtitles = []
             self.subtitles_searchcount = 0
-            self.subtitles_lastsearch = str(datetime.datetime.min)
+            self.subtitles_lastsearch = str(sc_now().min)
             existing_location = self._location
             self.location = ""
             self.file_size = 0
@@ -1837,7 +1838,7 @@ class TVEpisode(object):
             )
 
         if not os.path.isfile(self.location):
-            if self.airdate >= datetime.date.today() or self.airdate <= datetime.date.min:
+            if self.airdate >= sc_today() or self.airdate <= datetime.date.min:
                 logger.debug(f"{self.show.indexerid}: Episode airs in the future or has no airdate, marking it {statusStrings[UNAIRED]}")
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
@@ -1848,7 +1849,7 @@ class TVEpisode(object):
                     if settings.SHOW_SKIP_OLDER > 0 and not force_all:
                         # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
                         # auto-skip specials and check date in delta period too.
-                        if self.airdate < datetime.date.today() - datetime.timedelta(days=settings.SHOW_SKIP_OLDER):
+                        if self.airdate < sc_today() - datetime.timedelta(days=settings.SHOW_SKIP_OLDER):
                             self.status = SKIPPED
                             logger.debug(f"Episode air date is older than settings, marking: {statusStrings[self.status]}")
                         else:
@@ -2376,9 +2377,9 @@ class TVEpisode(object):
             "%Y": str(self.airdate.year) if self.airdate else "",
             "%M": str(self.airdate.month) if self.airdate else "",
             "%D": str(self.airdate.day) if self.airdate else "",
-            "%CY": str(datetime.date.today().year) if self.airdate else "",
-            "%CM": str(datetime.date.today().month) if self.airdate else "",
-            "%CD": str(datetime.date.today().day) if self.airdate else "",
+            "%CY": str(sc_today().year) if self.airdate else "",
+            "%CM": str(sc_today().month) if self.airdate else "",
+            "%CD": str(sc_today().day) if self.airdate else "",
             "%0M": f"{int(self.airdate.month):02d}" if self.airdate else "",
             "%0D": f"{int(self.airdate.day):02d}" if self.airdate else "",
             "%RT": "PROPER" if self.is_proper else "",
@@ -2725,7 +2726,7 @@ class TVEpisode(object):
             if settings.FILE_TIMESTAMP_TIMEZONE == "local":
                 airdatetime = airdatetime.astimezone(network_timezones.sc_timezone)
 
-            file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=airdatetime.tzinfo)
+            file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location), tz=airdatetime.tzinfo)
 
             if file_mtime != airdatetime:
                 # Get airdatetime, remove tm_isdst and set to -1 unknown for autofill by mktime

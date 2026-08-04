@@ -19,6 +19,7 @@ from sickchill.oldbeard.common import MULTI_EP_RESULT, SEASON_RESULT, Quality
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.oldbeard.show_name_helpers import all_possible_show_names
 from sickchill.oldbeard.tvcache import TVCache
 from sickchill.providers.result_classes import Proper, SearchResult
@@ -132,7 +133,7 @@ class GenericProvider(object):
     def find_propers(self, search_date=None):
         results = self.cache.list_propers(search_date)
 
-        return [Proper(x["name"], x["url"], datetime.fromtimestamp(x["time"]), self.show) for x in results]
+        return [Proper(x["name"], x["url"], datetime.fromtimestamp(x["time"], tz=sc_timezone), self.show) for x in results]
 
     def find_search_results(self, show, episodes, search_mode, manual_search=False, download_current_quality=False):
         self._check_auth()

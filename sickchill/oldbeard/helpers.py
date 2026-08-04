@@ -1072,6 +1072,8 @@ def restore_config_zip(archive, targetDir):
     """
 
     try:
+        from sickchill.oldbeard.network_timezones import sc_now
+
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
         else:
@@ -1081,7 +1083,7 @@ def restore_config_zip(archive, targetDir):
                 return tail or os.path.basename(head)
 
             base_backup_name = path_leaf(targetDir)
-            date_time_string = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            date_time_string = sc_now().strftime("%Y%m%d_%H%M%S")
             backup_filename = f"{base_backup_name}-{date_time_string}"
             shutil.move(targetDir, os.path.join(os.path.dirname(targetDir), backup_filename))
 

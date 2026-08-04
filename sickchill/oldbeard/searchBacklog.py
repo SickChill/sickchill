@@ -3,6 +3,7 @@ import threading
 
 from sickchill import logger, settings
 from sickchill.oldbeard import common, db, scheduler, search_queue, ui
+from sickchill.oldbeard.network_timezones import sc_today
 
 
 class BacklogSearchScheduler(scheduler.Scheduler):
@@ -12,7 +13,7 @@ class BacklogSearchScheduler(scheduler.Scheduler):
 
     def nextRun(self):
         if self.action.lastBacklog <= 1:
-            return datetime.date.today()
+            return sc_today()
         else:
             return datetime.date.fromordinal(int(self.action.lastBacklog + self.action.cycleTime))
 
@@ -58,12 +59,12 @@ class BacklogSearcher(object):
 
         self._get_lastBacklog()
 
-        curDate = datetime.date.today().toordinal()
+        curDate = sc_today().toordinal()
         fromDate = datetime.date.min
 
         if not (which_shows or curDate - self.lastBacklog >= self.cycleTime):
             logger.info(f"Running limited backlog on missed episodes {settings.BACKLOG_DAYS} day(s) and older only")
-            fromDate = datetime.date.today() - datetime.timedelta(days=settings.BACKLOG_DAYS)
+            fromDate = sc_today() - datetime.timedelta(days=settings.BACKLOG_DAYS)
 
         # go through non air-by-date shows and see if they need any episodes
         for curShow in show_list:
@@ -99,7 +100,7 @@ class BacklogSearcher(object):
             lastBacklog = 1
         else:
             lastBacklog = int(sql_results[0]["last_backlog"])
-            if lastBacklog > datetime.date.today().toordinal():
+            if lastBacklog > sc_today().toordinal():
                 lastBacklog = 1
 
         self.lastBacklog = lastBacklog

@@ -14,6 +14,7 @@ from sickchill.helper import sanitize_filename, try_int
 from sickchill.oldbeard import config, db, filters, helpers, ui
 from sickchill.oldbeard.blackandwhitelist import short_group_names
 from sickchill.oldbeard.common import Quality
+from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.favorites import favorites
@@ -280,9 +281,9 @@ class AddShows(Home):
         elif trakt_list == "recommended":
             page_url = "recommendations/shows"
         elif trakt_list == "newshow":
-            page_url = "calendars/all/shows/new/{0}/30".format(datetime.date.today().strftime("%Y-%m-%d"))
+            page_url = "calendars/all/shows/new/{0}/30".format(sc_today().strftime("%Y-%m-%d"))
         elif trakt_list == "newseason":
-            page_url = "calendars/all/shows/premieres/{0}/30".format(datetime.date.today().strftime("%Y-%m-%d"))
+            page_url = "calendars/all/shows/premieres/{0}/30".format(sc_today().strftime("%Y-%m-%d"))
         else:
             page_url = "shows/anticipated"
 

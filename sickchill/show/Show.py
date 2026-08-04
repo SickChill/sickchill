@@ -78,9 +78,11 @@ class Show(object):
 
     @staticmethod
     def overall_stats() -> dict:
+        from sickchill.oldbeard.network_timezones import sc_today
+
         db = DBConnection()
         shows = settings.show_list
-        today = date.today().toordinal()
+        today = sc_today().toordinal()
 
         downloaded_status = Quality.DOWNLOADED + Quality.ARCHIVED
         snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST

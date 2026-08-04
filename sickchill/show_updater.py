@@ -5,6 +5,7 @@ import time
 import sickchill
 from sickchill import logger, settings
 from sickchill.oldbeard import db, network_timezones, ui
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 
 
 class ShowUpdater(object):
@@ -59,7 +60,7 @@ class ShowUpdater(object):
                             if settings.ENDED_SHOWS_UPDATE_INTERVAL == -1:  # Never update if neg 1
                                 skip_update = True
                             if (
-                                datetime.datetime.today() - datetime.datetime.fromordinal(cur_show.last_update_indexer or 1)
+                                sc_now() - datetime.datetime.fromordinal(cur_show.last_update_indexer or 1).replace(tzinfo=sc_timezone)
                             ).days < settings.ENDED_SHOWS_UPDATE_INTERVAL:
                                 skip_update = True
 

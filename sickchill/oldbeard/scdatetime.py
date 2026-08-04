@@ -5,7 +5,7 @@ import locale
 import timeago
 
 from sickchill import settings
-from sickchill.oldbeard.network_timezones import sc_timezone
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 
 date_presets = (
     "%Y-%m-%d",
@@ -266,7 +266,7 @@ def sctimeago(date: datetime, base: bool = False) -> str:
     """return a timeago string using sickchill timezone data"""
     if base:
         tz = datetime.timezone
-        now = datetime.datetime.now()
+        now = sc_now()
     else:
         tz = sc_timezone
         now = scdatetime.now()

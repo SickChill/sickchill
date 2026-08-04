@@ -4,6 +4,7 @@ import sys
 from logging import ERROR, WARNING
 
 from sickchill.helper.common import dateTimeFormat
+from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.oldbeard.notifiers import notify_logged_error
 
 
@@ -99,5 +100,5 @@ class UIError(object):
     def __init__(self, message, level):
         self.title = sys.exc_info()[-2] or message
         self.message = message
-        self.time = datetime.datetime.now().strftime(dateTimeFormat)
+        self.time = sc_now().strftime(dateTimeFormat)
         self.level = level

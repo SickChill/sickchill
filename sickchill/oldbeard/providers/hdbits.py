@@ -6,6 +6,7 @@ from urllib.parse import urlencode, urljoin
 from sickchill import logger
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import tvcache
+from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.providers import result_classes
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -85,7 +86,7 @@ class Provider(TorrentProvider):
             for item in self.search(self.make_post_data_json(search_term=term)):
                 if item["utadded"]:
                     try:
-                        result_date = datetime.datetime.fromtimestamp(int(item["utadded"]))
+                        result_date = datetime.datetime.fromtimestamp(int(item["utadded"]), tz=sc_timezone)
                     except Exception:
                         result_date = None
 
