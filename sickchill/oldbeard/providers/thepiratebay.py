@@ -206,7 +206,7 @@ class TrackerCacheDBConnection(db.DBConnection):
 
             self.upsert(
                 "trackers",
-                {"time": int(time.mktime(sc_now().timetuple())), "trackers": trackers},
+                {"time": int(sc_now().timestamp()), "trackers": trackers},
                 {"provider": self.provider_id},
             )
             result = trackers

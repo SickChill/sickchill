@@ -477,7 +477,8 @@ def xem_refresh(indexer_id, indexer, force=False):
     rows = main_db_con.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?", [indexer, indexer_id])
     if rows:
         lastRefresh = int(rows[0]["last_refreshed"])
-        refresh = int(time.mktime(sc_now().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
+        now_epoch = int(sc_now().timestamp())
+        refresh = now_epoch > lastRefresh + MAX_REFRESH_AGE_SECS
     else:
         refresh = True
 
@@ -485,7 +486,7 @@ def xem_refresh(indexer_id, indexer, force=False):
         logger.debug(f"Looking up XEM scene mapping for show {indexer_id} on {sickchill.indexer.name(indexer)}")
 
         # mark refreshed
-        main_db_con.upsert("xem_refresh", {"indexer": indexer, "last_refreshed": int(time.mktime(sc_now().timetuple()))}, {"indexer_id": indexer_id})
+        main_db_con.upsert("xem_refresh", {"indexer": indexer, "last_refreshed": now_epoch}, {"indexer_id": indexer_id})
 
         try:
             xem_session = get_xem_session()

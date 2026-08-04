@@ -36,7 +36,7 @@ class ProperFinder(object):
         if propers:
             self._download_propers(propers)
 
-        self._set_last_proper_search(sc_now()().toordinal())
+        self._set_last_proper_search(sc_now().toordinal())
 
         when = sctimeago(-settings.properFinderScheduler.timeLeft())
         logger.info(_("Completed the search for new propers, next check approximately {when}").format(when=when))
@@ -49,7 +49,7 @@ class ProperFinder(object):
         """
         propers = {}
 
-        search_date = sc_now()() - datetime.timedelta(days=2)
+        search_date = sc_now() - datetime.timedelta(days=2)
 
         # for each provider get a list of the proper releases
         original_thread_name = threading.current_thread().name
