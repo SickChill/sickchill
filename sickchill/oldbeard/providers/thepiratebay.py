@@ -194,12 +194,16 @@ class TrackerCacheDBConnection(db.DBConnection):
 
     def get_trackers(self):
         sql_result = self.select_one("SELECT * FROM trackers WHERE provider = ?", [self.provider_id])
+
+        # Timezone-aware minimum sentinel (far in the past)
+        min_aware = datetime.datetime.min.replace(tzinfo=sc_timezone)
+
         if sql_result:
             last_time = datetime.datetime.fromtimestamp(sql_result["time"], tz=sc_timezone)
             if last_time > sc_now():
-                last_time = sc_now().min
+                last_time = min_aware
         else:
-            last_time = sc_now().min
+            last_time = min_aware
 
         if sc_now() - last_time > self.update_frequency:
             trackers = self.provider.get_tracker_list()
