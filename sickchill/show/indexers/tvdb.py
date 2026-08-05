@@ -126,10 +126,10 @@ class TVDB(Indexer):
                 test = re.match(r"^(.+?)[. -]+\(\d{4}\)?$", name)
                 if test:
                     names.append(test.group(1).strip())
-                if re.match(r"[. -_]", name):
-                    names.append(re.sub(r"[. -_]", " ", name).strip())
+                if re.match(r"[. _-]", name):
+                    names.append(re.sub(r"[. _-]", " ", name).strip())
                     if test:
-                        names.append(re.sub(r"[. -_]", " ", test.group(1)).strip())
+                        names.append(re.sub(r"[. _-]", " ", test.group(1)).strip())
 
             for attempt in {n for n in names if n.strip()}:
                 try:
