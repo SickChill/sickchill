@@ -267,9 +267,12 @@ def sctimeago(date) -> str:
     if date is None:
         return ""
 
+    now = sc_now()
+    if isinstance(date, datetime.timedelta):
+        date = now + date
+
     # Make sure the incoming date is timezone-aware
     if date.tzinfo is None:
         date = date.replace(tzinfo=sc_timezone)
 
-    now = sc_now()
     return timeago.format(date, now, sc_timezone)
