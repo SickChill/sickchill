@@ -395,7 +395,7 @@ class SubtitlesFinder(object):
             "WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ? "
             + ("AND e.season != 0 ", "")[settings.SUBTITLES_INCLUDE_SPECIALS]
             + "AND e.location != '' AND e.status IN ({}) ORDER BY age ASC".format(",".join(["?"] * len(Quality.DOWNLOADED))),
-            [sc_now().toordinal(), wanted_languages(True)] + Quality.DOWNLOADED,
+            [sc_now().toordinal(), wanted_languages(True), *Quality.DOWNLOADED],
         )
 
         if not sql_results:
