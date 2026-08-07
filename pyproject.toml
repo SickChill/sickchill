@@ -81,7 +81,7 @@ dependencies = [
     "tvdbsimple>=1.0.6",
     "Unidecode>=1.4.0",
     "validators>=0.30.0,<0.36.0",
-    "virtualenv>=20.10.0",
+    "virtualenv>=21.7.1",
     "win-inet-pton>=1.1.0",
 ]
 
