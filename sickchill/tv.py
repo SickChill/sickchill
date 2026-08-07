@@ -7,6 +7,7 @@ import stat
 import threading
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from pathlib import Path
 from sqlite3 import OperationalError
 from typing import Union
@@ -978,9 +979,12 @@ class TVShow(object):
             return
 
         logger.debug(f"{self.indexerid}: Refreshing IMDb info")
+
         try:
-            facade = ImdbFacade()
-            title = facade.get_title(self.imdb_id)
+            # Hard timeout so a hung request cannot block the queue
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(self._fetch_imdb_title, self.imdb_id)
+                title = future.result(timeout=25)  # ← 20-30 seconds is usually enough
 
             if title:
                 new_title = getattr(title, "title", self.name)
@@ -1008,10 +1012,17 @@ class TVShow(object):
 
                 logger.debug(f"{self.indexerid}: IMDb info refreshed → {new_title} ({new_imdb_id})")
             else:
-                logger.warning(f"No live IMDb data for {self.imdb_id}")
+                logger.warning(f"{self.indexerid}: No live IMDb data for {self.imdb_id}")
 
+        except FuturesTimeoutError:
+            logger.warning(f"{self.indexerid}: IMDb refresh timed out after 25s (imdb_id={self.imdb_id})")
         except Exception as e:
-            logger.info(f"IMDb refresh failed: {e}")
+            logger.info(f"{self.indexerid}: IMDb refresh failed: {e}")
+
+    def _fetch_imdb_title(self, imdb_id):
+        """Isolated so it can be run in a thread with a timeout"""
+        facade = ImdbFacade()
+        return facade.get_title(imdb_id)
 
     def next_episode(self):
         current_date = sc_today().toordinal()
