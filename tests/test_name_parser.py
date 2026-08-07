@@ -612,7 +612,6 @@ class BasicFailedTests(conftest.SickChillTestDBCase):
         """
         Test combination names
         """
-        pass
 
     @unittest.skip("Not trying indexer")
     def test_scene_date_fmt_names(self):

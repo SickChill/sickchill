@@ -72,8 +72,9 @@ class CacheDBTests(conftest.SickChillTestDBCase):
         super().setUp()
         self.cache_db_con = sickchill.oldbeard.db.DBConnection("cache.db")
         sickchill.oldbeard.db.upgrade_database(self.cache_db_con, sickchill.oldbeard.databases.cache.InitialSchema)
+        from sickchill.oldbeard.network_timezones import sc_timezone
 
-        cur_timestamp = int(time.mktime(datetime.today().timetuple()))
+        cur_timestamp = int(time.mktime(datetime.now(tz=sc_timezone).timetuple()))
         self.record = (
             {
                 "provider": "provider",

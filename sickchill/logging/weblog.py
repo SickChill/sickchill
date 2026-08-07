@@ -4,6 +4,7 @@ import sys
 from logging import ERROR, WARNING
 
 from sickchill.helper.common import dateTimeFormat
+from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.oldbeard.notifiers import notify_logged_error
 
 
@@ -12,9 +13,6 @@ class __WebErrorViewer(object):
     Keeps a static list of UIErrors to be displayed on the UI and allows
     the list to be cleared.
     """
-
-    __errors = []
-    __warnings = []
 
     def __init__(self):
         self.__errors = []
@@ -33,7 +31,7 @@ class __WebErrorViewer(object):
 
     def add(self, record):
         if record.levelno in (ERROR, WARNING):
-            ui_error = UIError(record.msg, record.levelno)
+            ui_error = UIError(record.getMessage(), record.levelno)
             if record.levelno == ERROR:
                 self.add_error(ui_error)
             if record.levelno == WARNING:
@@ -102,5 +100,5 @@ class UIError(object):
     def __init__(self, message, level):
         self.title = sys.exc_info()[-2] or message
         self.message = message
-        self.time = datetime.datetime.now().strftime(dateTimeFormat)
+        self.time = sc_now().strftime(dateTimeFormat)
         self.level = level

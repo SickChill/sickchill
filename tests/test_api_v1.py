@@ -19,7 +19,6 @@ class APITestEpisodes(unittest.TestCase):
 
         :return: None
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_episode_search(self):
@@ -28,7 +27,6 @@ class APITestEpisodes(unittest.TestCase):
         The response might take some time.
         :return: None
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_episode_set_status(self):

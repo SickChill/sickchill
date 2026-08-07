@@ -133,7 +133,7 @@ class TVDB(Indexer):
                         # Name with spaces and without year
                         names.append(re.sub(r"[. _-]", " ", test.group(1)).strip())
 
-            for attempt in set(n for n in names if n.strip()):
+            for attempt in {n for n in names if n.strip()}:
                 try:
                     result = self._search(attempt, language=language)
                     if result:
@@ -187,7 +187,7 @@ class TVDB(Indexer):
         api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
         try:
             images = getattr(api_results, keyType)(lang or show.lang)
-        except:
+        except Exception:
             return [] if multiple else ""
 
         images = sorted(images, key=lambda img: img["ratingsInfo"]["average"], reverse=True)

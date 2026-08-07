@@ -1,11 +1,12 @@
 from threading import Lock
+from typing import ClassVar
 
 from sickchill.adba.aniDBerrors import AniDBIncorrectParameterError, AniDBInternalError
 from sickchill.adba.aniDBresponses import MylistResponse, NoSuchFileResponse, NoSuchMylistEntryResponse, ProducerResponse
 
 
 class Command(object):
-    queue = {None: None}
+    queue: ClassVar[dict] = {None: None}
 
     def __init__(self, command, **parameters):
         self.command = command

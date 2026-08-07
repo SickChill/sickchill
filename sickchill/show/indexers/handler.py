@@ -41,11 +41,10 @@ class ShowIndexer(object):
             def indexer_attribute(indexer=None):
                 # A value was passed, probably a string. Check keys and then try to convert it to int and check again
                 if indexer is not None and not isinstance(indexer, int):
-                    if indexer not in self.indexers:
-                        if len(indexer) == 1:
-                            check = try_int(indexer, indexer)
-                            if check in self.indexers:
-                                indexer = check
+                    if indexer not in self.indexers and len(indexer) == 1:
+                        check = try_int(indexer, indexer)
+                        if check in self.indexers:
+                            indexer = check
 
                     # Loop and find the right index
                     if indexer not in self.indexers:
@@ -113,16 +112,14 @@ class ShowIndexer(object):
 
                 try:
                     # noinspection PyUnusedLocal
-                    garbage = result.seriesName, result.id
+                    garbage = result.seriesName, result.id  # noqa: F841
                 except AttributeError:
                     # noinspection PyUnresolvedReferences
                     logger.debug("Failed to find {} on {}".format(search, self.name(indexer_num)))
                     continue
 
                 show = Show.find(settings.show_list, result.id)
-                if indexerid and show and show.indexerid == result.id:
-                    return indexer_num, result
-                elif indexerid and indexerid == result.id:
+                if indexerid and show and show.indexerid == result.id or indexerid and indexerid == result.id:
                     return indexer_num, result
 
         return None, None
@@ -157,7 +154,7 @@ class ShowIndexer(object):
             return ""
 
         class __TVShow(object):
-            def __init__(self, __indexerid, __language, __indexer):
+            def __init__(self, __indexerid, __language, __indexer, /):
                 self.indexerid = __indexerid
                 self.indexer = __indexer or settings.INDEXER_DEFAULT
                 self.lang = __language or settings.INDEXER_DEFAULT_LANGUAGE

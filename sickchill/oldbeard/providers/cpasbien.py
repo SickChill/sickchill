@@ -31,7 +31,7 @@ class Provider(FrenchTorrentProvider):
                     for result in html.select("table.table-corps tr"):
                         try:
                             title = result.select_one(".titre").get_text(strip=True).replace("HDTV", "HDTV x264-CPasBien")
-                            title = re.sub(r" Saison", " Season", title, flags=re.I)
+                            title = re.sub(r" Saison", " Season", title, flags=re.IGNORECASE)
                             download_url = self._retrieve_dllink_from_url(result.select_one("tr td a").get("href"))
                             if not all([title, download_url]):
                                 logger.debug(_("Could not find title and download url for result"))

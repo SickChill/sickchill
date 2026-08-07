@@ -12,6 +12,7 @@ from sickchill.oldbeard import db, show_name_helpers
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.oldbeard.databases import cache
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.show.Show import Show
 
 provider_cache_db = {}
@@ -275,12 +276,12 @@ class TVCache(RSSTorrentMixin):
 
         if sql_results:
             last_time = int(sql_results[0]["time"])
-            if last_time > int(time.mktime(datetime.datetime.today().timetuple())):
+            if last_time > int(time.mktime(sc_now().timetuple())):
                 last_time = 0
         else:
             last_time = 0
 
-        return datetime.datetime.fromtimestamp(last_time)
+        return datetime.datetime.fromtimestamp(last_time, tz=sc_timezone)
 
     @property
     def last_search(self):
@@ -289,12 +290,12 @@ class TVCache(RSSTorrentMixin):
 
         if sql_results:
             last_time = int(sql_results[0]["time"])
-            if last_time > int(time.mktime(datetime.datetime.today().timetuple())):
+            if last_time > int(time.mktime(sc_now().timetuple())):
                 last_time = 0
         else:
             last_time = 0
 
-        return datetime.datetime.fromtimestamp(last_time)
+        return datetime.datetime.fromtimestamp(last_time, tz=sc_timezone)
 
     def set_last_update(self, to_date=None):
         """
@@ -303,7 +304,7 @@ class TVCache(RSSTorrentMixin):
         :param to_date: date to set to, or None for today
         """
         if not to_date:
-            to_date = datetime.datetime.today()
+            to_date = sc_now()
 
         cache_db_con = self.get_db()
         cache_db_con.upsert("lastUpdate", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
@@ -315,14 +316,14 @@ class TVCache(RSSTorrentMixin):
         :param to_date: date to set to, or None for today
         """
         if not to_date:
-            to_date = datetime.datetime.today()
+            to_date = sc_now()
 
         cache_db_con = self.get_db()
         cache_db_con.upsert("lastSearch", {"time": int(time.mktime(to_date.timetuple()))}, {"provider": self.provider_id})
 
     def should_update(self):
         # if we've updated recently then skip the update
-        if datetime.datetime.today() - self.last_update < datetime.timedelta(minutes=self.min_time):
+        if sc_now() - self.last_update < datetime.timedelta(minutes=self.min_time):
             logger.debug("Last update was too soon, using old cache: " + str(self.last_update) + ". Updated less then " + str(self.min_time) + " minutes ago")
             return False
 
@@ -330,10 +331,7 @@ class TVCache(RSSTorrentMixin):
 
     def should_clear_cache(self):
         # if daily search hasn't used our previous results yet then don't clear the cache
-        if self.last_update > self.last_search:
-            return False
-
-        return True
+        return self.last_update < self.last_search
 
     def add_cache_entry(self, name, url, size, seeders, leechers, parse_result=None, indexer_id=0):
         # check if we passed in a parsed result or should we try and create one
@@ -361,7 +359,7 @@ class TVCache(RSSTorrentMixin):
             episode_text = "|" + "|".join({str(episode) for episode in sorted(episodes) if episode}) + "|"
 
             # get the current timestamp
-            cur_timestamp = int(time.mktime(datetime.datetime.today().timetuple()))
+            cur_timestamp = int(time.mktime(sc_now().timetuple()))
 
             # get quality of release
             quality = parse_result.quality
@@ -400,16 +398,15 @@ class TVCache(RSSTorrentMixin):
         cache_db_con = self.get_db()
         sql = "SELECT * FROM results WHERE provider = ? AND name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
         # Add specific provider proper_strings also, like REAL, RERIP, etc.
-        if hasattr(self.provider, "proper_strings"):
-            if self.provider.proper_strings:
-                for item in self.provider.proper_strings:
-                    if "|" in item:
-                        items = item.split("|")
-                        for _item in items:
-                            if _item.upper() not in sql:
-                                sql += " OR name LIKE '%.{}.%'".format(_item)
-                    elif item.upper() not in sql:
-                        sql += " OR name LIKE '%.{}.%'".format(item)
+        if hasattr(self.provider, "proper_strings") and self.provider.proper_strings:
+            for item in self.provider.proper_strings:
+                if "|" in item:
+                    items = item.split("|")
+                    for _item in items:
+                        if _item.upper() not in sql:
+                            sql += " OR name LIKE '%.{}.%'".format(_item)
+                elif item.upper() not in sql:
+                    sql += " OR name LIKE '%.{}.%'".format(item)
 
         if date is not None:
             sql += " AND time >= " + str(int(time.mktime(date.timetuple())))

@@ -2,7 +2,7 @@ import os
 import traceback
 from collections import namedtuple
 from operator import attrgetter
-from typing import Union
+from typing import ClassVar, Union
 
 import dateutil.parser
 
@@ -207,7 +207,7 @@ class ShowQueueActions(object):
     SUBTITLE = 6
     REMOVE = 7
 
-    names = {
+    names: ClassVar[dict] = {
         REFRESH: _("Refresh"),
         ADD: _("Add"),
         UPDATE: _("Update"),

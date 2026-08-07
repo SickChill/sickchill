@@ -91,7 +91,7 @@ class Provider(TorrentProvider):
         logger.debug(_("Episode quality: {0}").format(file_quality))
 
         def checkName(options, func):
-            return func([re.search(option, file_quality, re.I) for option in options])
+            return func([re.search(option, file_quality, re.IGNORECASE) for option in options])
 
         dvdOptions = checkName(["dvd", "dvdrip", "dvdmux", "DVD9", "DVD5"], any)
         bluRayOptions = checkName(["BD", "BDmux", "BDrip", "BRrip", "Bluray"], any)
@@ -125,17 +125,17 @@ class Provider(TorrentProvider):
 
         subFound = italian = False
         for sub in self.sub_string:
-            if re.search(sub, name, re.I):
+            if re.search(sub, name, re.IGNORECASE):
                 subFound = True
             else:
                 continue
 
-            if re.search("ita", name.split(sub)[0], re.I):
+            if re.search("ita", name.split(sub)[0], re.IGNORECASE):
                 logger.debug(_("Found Italian release: {name}").format(name=name))
                 italian = True
                 break
 
-        if not subFound and re.search("ita", name, re.I):
+        if not subFound and re.search("ita", name, re.IGNORECASE):
             logger.debug(_("Found Italian release: {name}").format(name=name))
             italian = True
 
@@ -147,7 +147,7 @@ class Provider(TorrentProvider):
             return False
 
         english = False
-        if re.search("eng", name, re.I):
+        if re.search("eng", name, re.IGNORECASE):
             logger.debug(_("Found English release: {name}").format(name=name))
             english = True
 
@@ -187,7 +187,7 @@ class Provider(TorrentProvider):
                 logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 last_page = False
-                for page in range(0, self.max_pages):
+                for page in range(self.max_pages):
                     if last_page:
                         break
 

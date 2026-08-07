@@ -10,6 +10,7 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import db, helpers
 from sickchill.oldbeard.common import DOWNLOADED, SNATCHED, SNATCHED_PROPER, Quality, cpu_presets
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.oldbeard.scdatetime import sctimeago
 from sickchill.oldbeard.search import pick_best_result, snatch_episode
 from sickchill.show.History import History
@@ -35,7 +36,7 @@ class ProperFinder(object):
         if propers:
             self._download_propers(propers)
 
-        self._set_last_proper_search(datetime.datetime.today().toordinal())
+        self._set_last_proper_search(sc_now().toordinal())
 
         when = sctimeago(-settings.properFinderScheduler.timeLeft())
         logger.info(_("Completed the search for new propers, next check approximately {when}").format(when=when))
@@ -48,7 +49,7 @@ class ProperFinder(object):
         """
         propers = {}
 
-        search_date = datetime.datetime.today() - datetime.timedelta(days=2)
+        search_date = sc_now() - datetime.timedelta(days=2)
 
         # for each provider get a list of the proper releases
         original_thread_name = threading.current_thread().name
@@ -70,7 +71,7 @@ class ProperFinder(object):
 
             # if they haven't been added by a different provider than add the proper to the list
             for proper in provider_propers:
-                if not re.search(r"\b(proper|repack|real)\b", proper.name, re.I):
+                if not re.search(r"\b(proper|repack|real)\b", proper.name, re.IGNORECASE):
                     logger.debug(_("find_propers returned a non-proper, we have caught and skipped it."))
                     continue
 
@@ -83,7 +84,7 @@ class ProperFinder(object):
             threading.current_thread().name = original_thread_name
 
         # take the list of unique propers and get it sorted by date
-        sorted_propers = sorted(list(propers.values()), key=operator.attrgetter("date"), reverse=True)
+        sorted_propers = sorted(propers.values(), key=operator.attrgetter("date"), reverse=True)
         final_propers = []
 
         for proper in sorted_propers:
@@ -189,7 +190,7 @@ class ProperFinder(object):
         """
 
         for proper in proper_list:
-            history_age = datetime.datetime.today() - datetime.timedelta(days=30)
+            history_age = sc_now() - datetime.timedelta(days=30)
 
             # make sure the episode has been downloaded before
             main_db_con = db.DBConnection()

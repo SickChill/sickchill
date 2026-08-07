@@ -228,28 +228,24 @@ class HelpersDirectoryTests(unittest.TestCase):
         """
         Test make_dirs
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_delete_empty_folders(self):
         """
         Test delete_empty_folders
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_make_dir(self):
         """
         Test makeDir
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_is_hidden_folder(self):
         """
         Test is_hidden_folder
         """
-        pass
 
 
 class HelpersFileTests(unittest.TestCase):
@@ -262,98 +258,84 @@ class HelpersFileTests(unittest.TestCase):
         """
         Test is_file_locked
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_remove_file_failed(self):
         """
         Test remove_file_failed
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_list_media_files(self):
         """
         Test list_media_files
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_copy_file(self):
         """
         Test copyFile
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_move_file(self):
         """
         Test moveFile
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_rename_ep_file(self):
         """
         Test rename_ep_file
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_file_bit_filter(self):
         """
         Test fileBitFilter
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_chmod_as_parent(self):
         """
         Test chmodAsParent
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_backup_versioned_file(self):
         """
         Test backupVersionedFile
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_verify_free_space(self):
         """
         Test verify_freespace
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_get_disk_space_usage(self):
         """
         Test disk_usage
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_download_file(self):
         """
         Test download_file
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_get_size(self):
         """
         Test get_size
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_touch_file(self):
         """
         Test touchFile
         """
-        pass
 
 
 class HelpersFileLinksTests(unittest.TestCase):
@@ -366,28 +348,24 @@ class HelpersFileLinksTests(unittest.TestCase):
         """
         Test link
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_hardlink_file(self):
         """
         Test hardlinkFile
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_symlink(self):
         """
         Test symlink
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_move_and_symlink_file(self):
         """
         Test moveAndSymlinkFile
         """
-        pass
 
 
 class HelpersEncryptionTests(unittest.TestCase):
@@ -397,29 +375,31 @@ class HelpersEncryptionTests(unittest.TestCase):
 
     def test_create_https_certificates(self):
         """
-        Test that create_https_certificates successfully generates certificate and private key
+        Test that create_https_certificates successfully generates a certificate and private key.
         """
         try:
-            import OpenSSL
-        except ModuleNotFoundError as error:
-            self.skipTest("pyOpenSSL is not installed or error importing it")
-            return False
+            import cryptography
+            from cryptography import x509
+            from cryptography.hazmat.primitives import serialization
+        except ModuleNotFoundError:
+            self.skipTest("cryptography is not installed")
         except ImportError as error:
-            self.skipTest(f"OpenSSL module not available: {error}")
-            return False
+            self.skipTest(f"cryptography module not available: {error}")
 
         base_path = Path(__file__).parent.absolute()
         cert_path = base_path / "base.crt"
         pkey_path = base_path / "base.key"
 
-        def removeTestFiles():
-            for test_file in [cert_path, pkey_path]:
+        def remove_test_files():
+            for test_file in (cert_path, pkey_path):
                 try:
-                    test_file.unlink()
-                except (FileNotFoundError, ValueError):
-                    pass
+                    test_file.unlink(missing_ok=True)
+                except (OSError, ValueError):
+                    # Best-effort cleanup for test artifacts; ignore failures so cleanup
+                    # does not mask the actual test outcome.
+                    continue
 
-        removeTestFiles()  # always remove existing
+        remove_test_files()  # always start clean
 
         assert helpers.create_https_certificates(cert_path, pkey_path)
 
@@ -427,42 +407,41 @@ class HelpersEncryptionTests(unittest.TestCase):
         assert cert_path.stat().st_size > 0, "Generated cert is empty"
 
         assert pkey_path.is_file()
-        assert pkey_path.stat().st_size > 0, "Generated pkey is empty"
+        assert pkey_path.stat().st_size > 0, "Generated private key is empty"
 
+        # Basic content sanity checks
+        cert_data = cert_path.read_bytes()
+        key_data = pkey_path.read_bytes()
+        assert b"BEGIN CERTIFICATE" in cert_data
+        assert b"BEGIN" in key_data and b"PRIVATE KEY" in key_data
+
+        # Verify the files can be loaded by the standard library ssl module
         try:
             ctx = helpers.make_context(False)
-            assert ctx
-        except Exception as error:
-            removeTestFiles()
-            self.fail(f"Error creating ssl context: {error}")
-
-        try:
+            assert ctx is not None
             ctx.load_cert_chain(str(cert_path), str(pkey_path))
             ctx.cert_store_stats()
-        except ssl.SSLError as error:
-            removeTestFiles()
-            self.fail(f"Unable to load certificate chain: {error}")
+        except Exception as error:
+            remove_test_files()
+            self.fail(f"Unable to load generated certificate/key into ssl context: {error}")
 
     @unittest.skip("Not yet implemented")
     def test_encrypt(self):
         """
         Test encrypt
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_decrypt(self):
         """
         Test decrypt
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_generate_cookie_secret(self):
         """
         Test generateCookieSecret
         """
-        pass
 
 
 class HelpersShowTests(unittest.TestCase):
@@ -475,35 +454,30 @@ class HelpersShowTests(unittest.TestCase):
         """
         Test searchIndexerForShowID
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_check_against_names(self):
         """
         Test _check_against_names
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_get_show(self):
         """
         Test get_show
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_get_abs_no_from_s_and_e(self):
         """
         Test get_absolute_number_from_season_and_episode
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_get_all_eps_from_abs_no(self):
         """
         Test get_all_episodes_from_absolute_number
         """
-        pass
 
 
 class HelpersConnectionTests(unittest.TestCase):
@@ -516,49 +490,42 @@ class HelpersConnectionTests(unittest.TestCase):
         """
         Test get_lan_ip
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_check_url(self):
         """
         Test check_url
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_anon_url(self):
         """
         Test anon_url
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_set_up_anidb_connection(self):
         """
         Test set_up_anidb_connection
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_set_up_session(self):
         """
         Test _setUpSession
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_get_url(self):
         """
         Test getURL
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_generate_api_key(self):
         """
         Test generateApiKey
         """
-        pass
 
 
 class HelpersMiscTests(unittest.TestCase):
@@ -571,21 +538,18 @@ class HelpersMiscTests(unittest.TestCase):
         """
         Test indentXML
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_remove_non_release_groups(self):
         """
         Test remove_non_release_groups
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_fix_set_group_id(self):
         """
         Test fixSetGroupID
         """
-        pass
 
     def test_sanitize_scene_name(self):
         """
@@ -621,14 +585,12 @@ class HelpersMiscTests(unittest.TestCase):
         """
         Test remove_article
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_pretty_time_delta(self):
         """
         Test pretty_time_delta
         """
-        pass
 
     def test_sortable_name(self):
         """
@@ -652,7 +614,6 @@ class HelpersMiscTests(unittest.TestCase):
         """
         Test manage_torrents_url
         """
-        pass
 
 
 if __name__ == "__main__":

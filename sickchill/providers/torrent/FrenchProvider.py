@@ -46,7 +46,7 @@ class FrenchTorrentProvider(TorrentProvider):
             scripts = html.head.find_all("script")
             if len(scripts):
                 script = scripts[-1].get("src")
-                matches = re.match(regex, script, re.S)
+                matches = re.match(regex, script, re.DOTALL)
                 if matches:
                     return urljoin(self.url, matches[1])
 

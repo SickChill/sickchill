@@ -41,10 +41,7 @@ class Client(GenericClient):
             # Send torrent magnet with params to rTorrent and optionally start download
             torrent = self.auth.load_magnet(result.url, result.hash, start=not settings.TORRENT_PAUSED, params=self._get_params(result))
 
-            if not torrent:
-                return False
-
-            return True
+            return torrent
 
         except Exception as error:
             logger.warning(_("Error while sending torrent: {error}").format(error=error))
@@ -58,10 +55,7 @@ class Client(GenericClient):
             # Send torrent file with params to rTorrent and optionally start download
             torrent = self.auth.load_torrent(result.content, start=not settings.TORRENT_PAUSED, params=self._get_params(result))
 
-            if not torrent:
-                return False
-
-            return True
+            return torrent
 
         except Exception as error:
             logger.info(traceback.format_exc())

@@ -92,4 +92,4 @@ class Notifier(object):
         else:
             logger.debug("Pushbullet notification sent.")
 
-        return False if failed else True
+        return bool(not failed)

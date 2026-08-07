@@ -47,7 +47,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning(_("Unable to connect to provider}"))
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search(r"Username or password incorrect", response) or re.search(r"<title>SceneAccess \| Login</title>", response):
@@ -59,7 +59,7 @@ class Provider(TorrentProvider):
     @staticmethod
     def _isSection(section, text):
         title = r"<title>.+? \| {0}</title>".format(section)
-        return re.search(title, text, re.I)
+        return re.search(title, text, re.IGNORECASE)
 
     def search(self, search_strings):
         results = []

@@ -124,7 +124,7 @@ class ConfigNotifications(Config):
         settings.SLACK_WEBHOOK = self.get_body_argument("slack_webhook", default=None)
         settings.SLACK_ICON_EMOJI = self.get_body_argument("slack_icon_emoji", default=None)
 
-        settings.USE_MATTERMOST = config.checkbox_to_value(self.get_body_argument("trakt_remove_serieslist", default=None))
+        settings.USE_MATTERMOST = config.checkbox_to_value(self.get_body_argument("use_mattermost", default=None))
         settings.MATTERMOST_NOTIFY_SNATCH = config.checkbox_to_value(self.get_body_argument("mattermost_notify_snatch", default=None))
         settings.MATTERMOST_NOTIFY_DOWNLOAD = config.checkbox_to_value(self.get_body_argument("mattermost_notify_download", default=None))
         settings.MATTERMOST_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(self.get_body_argument("mattermost_notify_subtitledownload", default=None))
@@ -132,7 +132,7 @@ class ConfigNotifications(Config):
         settings.MATTERMOST_USERNAME = self.get_body_argument("mattermost_username", default=None)
         settings.MATTERMOST_ICON_EMOJI = self.get_body_argument("mattermost_icon_emoji", default=None)
 
-        settings.USE_MATTERMOSTBOT = config.checkbox_to_value(self.get_body_argument("nmjv2_database", default=None))
+        settings.USE_MATTERMOSTBOT = config.checkbox_to_value(self.get_body_argument("use_mattermostbot", default=None))
         settings.MATTERMOSTBOT_NOTIFY_SNATCH = config.checkbox_to_value(self.get_body_argument("mattermostbot_notify_snatch", default=None))
         settings.MATTERMOSTBOT_NOTIFY_DOWNLOAD = config.checkbox_to_value(self.get_body_argument("mattermostbot_notify_download", default=None))
         settings.MATTERMOSTBOT_NOTIFY_SUBTITLEDOWNLOAD = config.checkbox_to_value(self.get_body_argument("mattermostbot_notify_subtitledownload", default=None))

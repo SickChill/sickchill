@@ -1,10 +1,10 @@
 import base64
-import datetime
 import json
 import os
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, time as dt_time, timedelta
 from mimetypes import guess_type
 from secrets import compare_digest
 from urllib.parse import urljoin
@@ -16,7 +16,8 @@ from tornado.web import HTTPError, RequestHandler, authenticated
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.init_helpers import check_installed, locale_dir
-from sickchill.oldbeard import config, db, helpers, network_timezones, ui
+from sickchill.oldbeard import config, db, helpers, ui
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.show.ComingEpisodes import ComingEpisodes
 from sickchill.views.api.webapi import function_mapper
 from sickchill.views.common import PageTemplate
@@ -125,9 +126,7 @@ class BaseHandler(RequestHandler):
             if auth_header and auth_header.startswith("Basic "):
                 auth_decoded = base64.decodebytes(auth_header[6:].encode()).decode()
                 username, password = auth_decoded.split(":", 2)
-                if compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD):
-                    return True
-                return False
+                return bool(compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD))
         else:
             # Local network
             # strip <scope id> / <zone id> (%value/if_name) from remote_ip IPv6 scoped literal IP Addresses (RFC 4007) until phihag/ipaddress is updated tracking cpython 3.9.
@@ -160,9 +159,8 @@ class WebHandler(BaseHandler):
             from inspect import signature
 
             sig = signature(method)
-            if settings.DEVELOPER:
-                if len(sig.parameters):
-                    logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
+            if settings.DEVELOPER and len(sig.parameters):
+                logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
             results = await self.async_call(method, len(sig.parameters))
             try:
@@ -336,10 +334,10 @@ class WebRoot(WebHandler):
 
     def schedule(self):
         layout = self.get_query_argument("layout", settings.COMING_EPS_LAYOUT)
-        next_week = datetime.date.today() + datetime.timedelta(days=7)
-        next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sc_timezone))
+        next_week = sc_today() + timedelta(days=7)
+        next_week1 = datetime.combine(next_week, dt_time.min, tzinfo=sc_timezone)
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, settings.COMING_EPS_SORT, False)
-        today = datetime.datetime.now().replace(tzinfo=network_timezones.sc_timezone)
+        today = sc_now()
 
         # Allow local overriding of layout parameter
         if layout not in ("poster", "banner", "list", "calendar"):

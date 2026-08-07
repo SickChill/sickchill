@@ -1,12 +1,13 @@
 from datetime import date, timedelta
 from operator import itemgetter
+from typing import ClassVar
 
 from sickchill import settings
 from sickchill.helper.common import dateFormat, timeFormat
 from sickchill.helper.quality import get_quality_string
 from sickchill.oldbeard.common import UNAIRED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
-from sickchill.oldbeard.network_timezones import parse_date_time
+from sickchill.oldbeard.network_timezones import parse_date_time, sc_today
 from sickchill.oldbeard.scdatetime import scdatetime
 
 SNATCHED = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST  # type = list
@@ -21,8 +22,8 @@ class ComingEpisodes(object):
     Later:    later than next week
     """
 
-    categories = ["snatched", "missed", "today", "soon", "later"]
-    sorts = {
+    categories: ClassVar[list] = ["snatched", "missed", "today", "soon", "later"]
+    sorts: ClassVar[dict] = {
         "date": itemgetter("snatchedsort", "localtime", "episode"),
         "network": itemgetter("network", "localtime", "episode"),
         "show": itemgetter("show_name", "localtime", "episode"),
@@ -44,9 +45,9 @@ class ComingEpisodes(object):
         categories = ComingEpisodes._get_categories(categories)
         sort = ComingEpisodes._get_sort(sort)
 
-        today = date.today().toordinal()
-        recently = (date.today() - timedelta(days=settings.COMING_EPS_MISSED_RANGE)).toordinal()
-        next_week = (date.today() + timedelta(days=7)).toordinal()
+        today = sc_today().toordinal()
+        recently = (sc_today() - timedelta(days=settings.COMING_EPS_MISSED_RANGE)).toordinal()
+        next_week = (sc_today() + timedelta(days=7)).toordinal()
 
         db = DBConnection(row_type="dict")
         fields_to_select = ", ".join(
@@ -99,9 +100,9 @@ class ComingEpisodes(object):
 
         for index, item in enumerate(results):
             results[index]["localtime"] = scdatetime.convert_to_setting(parse_date_time(item["airdate"], item["airs"], item["network"]))
-            results[index]["snatchedsort"] = int(results[index]["epstatus"] not in SNATCHED)
-            if results[index]["custom_name"]:
-                results[index]["show_name"] = results[index]["custom_name"]
+            results[index]["snatchedsort"] = int(item["epstatus"] not in SNATCHED)
+            if item["custom_name"]:
+                results[index]["show_name"] = item["custom_name"]
 
         results.sort(key=ComingEpisodes.sorts[sort])
 

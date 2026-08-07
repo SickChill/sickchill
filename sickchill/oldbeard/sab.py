@@ -4,6 +4,7 @@ from urllib.parse import urljoin
 
 from sickchill import logger, settings
 from sickchill.oldbeard import helpers
+from sickchill.oldbeard.network_timezones import sc_today
 
 session = helpers.make_session()
 
@@ -24,7 +25,7 @@ def send_nzb(result: "SearchResult"):
 
     # if it aired more than 7 days ago, override with the backlog category IDs
     for curEp in result.episodes:
-        if datetime.date.today() - curEp.airdate > datetime.timedelta(days=7):
+        if sc_today() - curEp.airdate > datetime.timedelta(days=7):
             category = settings.SAB_CATEGORY_ANIME_BACKLOG if result.show.is_anime else settings.SAB_CATEGORY_BACKLOG
 
     # set up a dict with the URL params in it

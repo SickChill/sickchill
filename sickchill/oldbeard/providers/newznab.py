@@ -332,7 +332,7 @@ class NewznabProvider(NZBProvider, tvcache.RSSTorrentMixin):
                             result = self.parse_feed_item(item, self.url)
                             if result:
                                 items.append(result)
-                        except Exception:
+                        except Exception:  # noqa: S112
                             continue
 
                 # Since we aren't using the search string,

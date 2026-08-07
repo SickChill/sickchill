@@ -37,7 +37,7 @@ class TestOpenSubtitlesComProvider(unittest.TestCase):
         saved_creation = subtitle_module.SubtitleProviderPool._creation
 
         settings.OPENSUBTITLESCOM_USER = "testuser"
-        settings.OPENSUBTITLESCOM_PASS = "testpass"  # noqa: S105
+        settings.OPENSUBTITLESCOM_PASS = "testpass"
         settings.SUBTITLES_SERVICES_LIST = ["opensubtitlescom"]
         settings.SUBTITLES_SERVICES_ENABLED = [1]
         subtitle_module.SubtitleProviderPool._instance = None
@@ -48,7 +48,7 @@ class TestOpenSubtitlesComProvider(unittest.TestCase):
             provider_configs = subtitle_module.SubtitleProviderPool._instance.provider_configs
             self.assertIn("opensubtitlescom", provider_configs)
             self.assertEqual(provider_configs["opensubtitlescom"]["username"], "testuser")
-            self.assertEqual(provider_configs["opensubtitlescom"]["password"], "testpass")  # noqa: S105
+            self.assertEqual(provider_configs["opensubtitlescom"]["password"], "testpass")
         finally:
             settings.OPENSUBTITLESCOM_USER = saved_user
             settings.OPENSUBTITLESCOM_PASS = saved_pass

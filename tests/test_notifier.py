@@ -3,6 +3,7 @@ Test notifiers
 """
 
 import unittest
+from typing import ClassVar
 
 from sickchill.oldbeard import db
 from sickchill.oldbeard.notifiers.emailnotify import Notifier as EmailNotifier
@@ -18,8 +19,8 @@ class NotifierTests(conftest.SickChillTestDBCase):
     Test notifiers
     """
 
-    shows = []
-    legacy_shows = []
+    shows: ClassVar[list] = []
+    legacy_shows: ClassVar[list] = []
 
     @classmethod
     def setUpClass(cls):
@@ -39,7 +40,7 @@ class NotifierTests(conftest.SickChillTestDBCase):
             show = TVShow(1, show_counter)
             show.name = f"Show {show_counter}"
             show.episodes = []
-            for episode_counter in range(0, num_episodes_per_show):
+            for episode_counter in range(num_episodes_per_show):
                 episode = TVEpisode(show, conftest.SEASON, episode_counter)
                 episode.name = f"Episode {episode_counter + 1}"
                 episode.quality = "SDTV"
@@ -51,7 +52,7 @@ class NotifierTests(conftest.SickChillTestDBCase):
             show = TVShow(1, show_counter)
             show.name = f"Show {show_counter}"
             show.episodes = []
-            for episode_counter in range(0, num_episodes_per_show):
+            for episode_counter in range(num_episodes_per_show):
                 episode = TVEpisode(show, conftest.SEASON, episode_counter)
                 episode.name = f"Episode {episode_counter + 1}"
                 episode.quality = "SDTV"
@@ -70,7 +71,6 @@ class NotifierTests(conftest.SickChillTestDBCase):
         """
         Test boxcar notifications
         """
-        pass
 
     @unittest.skip("Cannot call directly without a request")
     def test_email(self):
@@ -112,63 +112,54 @@ class NotifierTests(conftest.SickChillTestDBCase):
         """
         Test emby notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_freemobile(self):
         """
         Test freemobile notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_growl(self):
         """
         Test growl notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_kodi(self):
         """
         Test kodi notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_libnotify(self):
         """
         Test libnotify notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_nma(self):
         """
         Test nma notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_nmj(self):
         """
         Test nmj notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_nmjv2(self):
         """
         Test nmjv2 notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_plex(self):
         """
         Test plex notifications
         """
-        pass
 
     @unittest.skip("Cannot call directly without a request")
     def test_prowl(self):
@@ -203,63 +194,54 @@ class NotifierTests(conftest.SickChillTestDBCase):
         """
         Test pushalot notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_pushbullet(self):
         """
         Test pushbullet notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_pushover(self):
         """
         Test pushover notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_pytivo(self):
         """
         Test pytivo notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_synoindex(self):
         """
         Test synoindex notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_synologynotifier(self):
         """
         Test synologynotifier notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_trakt(self):
         """
         Test trakt notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_tweet(self):
         """
         Test tweet notifications
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_twilio(self):
         """
         Test twilio notifications
         """
-        pass
 
     @staticmethod
     def _debug_spew(text):

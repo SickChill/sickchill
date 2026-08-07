@@ -52,7 +52,7 @@ class Provider(TorrentProvider):
         self.get_url(self.urls["base_url"], returns="text")
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning(_("Unable to connect to provider}"))
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if (

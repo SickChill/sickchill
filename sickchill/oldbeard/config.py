@@ -386,9 +386,7 @@ def change_showupdate_hour(freq):
     """
     settings.SHOWUPDATE_HOUR = try_int(freq, settings.DEFAULT_SHOWUPDATE_HOUR)
 
-    if settings.SHOWUPDATE_HOUR > 23:
-        settings.SHOWUPDATE_HOUR = 0
-    elif settings.SHOWUPDATE_HOUR < 0:
+    if settings.SHOWUPDATE_HOUR > 23 or settings.SHOWUPDATE_HOUR < 0:
         settings.SHOWUPDATE_HOUR = 0
 
     settings.showUpdateScheduler.start_time = datetime.time(hour=settings.SHOWUPDATE_HOUR)

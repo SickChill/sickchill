@@ -7,6 +7,7 @@ import time
 from sickchill import logger, settings
 from sickchill.helper.exceptions import UpdaterException
 from sickchill.oldbeard import db, helpers, ui
+from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.update_manager.pip import PipUpdateManager
 
 
@@ -28,19 +29,17 @@ class UpdateManager(object):
     def run(self, force=False):
         self.amActive = True
 
-        if self.updater:
-            if self.check_for_new_version(force):
-                if settings.AUTO_UPDATE:
-                    logger.info("New update found for SickChill, starting auto-updater ...")
-                    ui.notifications.message(_("New update found for SickChill, starting auto-updater"))
-                    if self.run_backup_if_safe():
-                        if settings.versionCheckScheduler.action.update():
-                            logger.info("Update was successful!")
-                            ui.notifications.message(_("Update was successful"))
-                            settings.events.put(settings.events.SystemEvent.RESTART)
-                        else:
-                            logger.info("Update failed!")
-                            ui.notifications.message(_("Update failed!"))
+        if self.updater and self.check_for_new_version(force) and settings.AUTO_UPDATE:
+            logger.info("New update found for SickChill, starting auto-updater ...")
+            ui.notifications.message(_("New update found for SickChill, starting auto-updater"))
+            if self.run_backup_if_safe():
+                if settings.versionCheckScheduler.action.update():
+                    logger.info("Update was successful!")
+                    ui.notifications.message(_("Update was successful"))
+                    settings.events.put(settings.events.SystemEvent.RESTART)
+                else:
+                    logger.info("Update failed!")
+                    ui.notifications.message(_("Update failed!"))
 
         self.check_for_new_news()
 
@@ -243,19 +242,19 @@ class UpdateManager(object):
             return ""
 
         try:
-            last_read = datetime.datetime.strptime(settings.NEWS_LAST_READ, "%Y-%m-%d")
+            last_read = datetime.datetime.strptime(settings.NEWS_LAST_READ, "%Y-%m-%d").replace(tzinfo=sc_timezone)
         except Exception:
             last_read = 0
 
         settings.NEWS_UNREAD = 0
         found_news = False
-        for match in re.finditer(r"^####\s*(\d{4}-\d{2}-\d{2})\s*####", news, re.M):
+        for match in re.finditer(r"^####\s*(\d{4}-\d{2}-\d{2})\s*####", news, re.MULTILINE):
             if not found_news:
                 found_news = True
                 settings.NEWS_LATEST = match.group(1)
 
             try:
-                if datetime.datetime.strptime(match.group(1), "%Y-%m-%d") > last_read:
+                if datetime.datetime.strptime(match.group(1), "%Y-%m-%d").replace(tzinfo=sc_timezone) > last_read:
                     settings.NEWS_UNREAD += 1
             except Exception:
                 pass

@@ -7,6 +7,7 @@ import stat
 import threading
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from pathlib import Path
 from sqlite3 import OperationalError
 from typing import Union
@@ -57,10 +58,11 @@ from sickchill.oldbeard.common import (
     statusStrings,
 )
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.show.Show import Show
 
 try:
-    from send2trash import send2trash  # noqa
+    from send2trash import send2trash
 except ModuleNotFoundError:
 
     def send2trash(path):
@@ -249,7 +251,7 @@ class TVShow(object):
 
     @location.setter
     def location(self, new_location):
-        logger.debug(f"Setter sets location to {new_location}")
+        logger.debug(f"Setter sets Show location to {new_location}")
         # Don't validate dir if user wants to add shows without creating a dir
         if settings.ADD_SHOWS_WO_DIR or os.path.isdir(new_location):
             if self._location != new_location:
@@ -361,17 +363,16 @@ class TVShow(object):
                 continue
 
             cur_ep.related_episodes = []
-            if cur_ep.location:
+            if cur_ep.location and cur_result["share_location"] > 0:
                 # if there is a location, check if it's a multi-episode and put them in related_episodes
-                if cur_result["share_location"] > 0:
-                    related_eps_result = main_db_con.select(
-                        "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode",
-                        [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode],
-                    )
-                    for cur_related_ep in related_eps_result:
-                        related_ep = self.get_episode(cur_related_ep["season"], cur_related_ep["episode"])
-                        if related_ep and related_ep not in cur_ep.related_episodes:
-                            cur_ep.related_episodes.append(related_ep)
+                related_eps_result = main_db_con.select(
+                    "SELECT season, episode FROM tv_episodes WHERE showid = ? AND season = ? AND location = ? AND episode != ? ORDER BY episode",
+                    [self.indexerid, cur_ep.season, cur_ep.location, cur_ep.episode],
+                )
+                for cur_related_ep in related_eps_result:
+                    related_ep = self.get_episode(cur_related_ep["season"], cur_related_ep["episode"])
+                    if related_ep and related_ep not in cur_ep.related_episodes:
+                        cur_ep.related_episodes.append(related_ep)
             ep_list.append(cur_ep)
 
         return ep_list
@@ -419,17 +420,19 @@ class TVShow(object):
 
         return self.episodes[season][episode]
 
-    def should_update(self, update_date=datetime.date.today()):
+    def should_update(self, update_date=None):
         """
         Check current show last and next episode air date
         Decide if we should update Ended status
         """
+        if update_date is None:
+            update_date = sc_today()
 
         # if show is not 'Ended' always update (status 'Continuing')
         if self.status == "Continuing":
             return True
 
-        graceperiod = datetime.timedelta(days=30)
+        grace_period = datetime.timedelta(days=30)
 
         last_airdate = datetime.date.min
 
@@ -441,7 +444,7 @@ class TVShow(object):
 
         if sql_result and sql_result[0]["last_aired"] != 0:
             last_airdate = datetime.date.fromordinal(sql_result[0]["last_aired"])
-            if (update_date - graceperiod) <= last_airdate <= (update_date + graceperiod):
+            if (update_date - grace_period) <= last_airdate <= (update_date + grace_period):
                 return True
 
         # get next unaired episode and compare against grace period
@@ -451,16 +454,13 @@ class TVShow(object):
 
         if sql_result and sql_result[0]["airing_next"] != 0:
             next_airdate = datetime.date.fromordinal(sql_result[0]["airing_next"])
-            if next_airdate <= (update_date + graceperiod):
+            if next_airdate <= (update_date + grace_period):
                 return True
 
         last_update_indexer = datetime.date.fromordinal(self.last_update_indexer)
 
         # Check between 30 and 450 days
-        if (update_date - last_airdate) < datetime.timedelta(days=450) and (update_date - last_update_indexer) > datetime.timedelta(days=30):
-            return True
-
-        return False
+        return bool(update_date - last_airdate < datetime.timedelta(days=450) and update_date - last_update_indexer > datetime.timedelta(days=30))
 
     def write_show_nfo(self):
         result = False
@@ -656,7 +656,7 @@ class TVShow(object):
             scanned_episodes[indexer_episode["airedSeason"]][indexer_episode["airedEpisodeNumber"]] = True
 
         # Done updating save last update date
-        self.last_update_indexer = datetime.datetime.now().toordinal()
+        self.last_update_indexer = sc_now().toordinal()
 
         self.save_to_db()
 
@@ -902,7 +902,7 @@ class TVShow(object):
         logger.debug(f"{self.indexerid}: Loading show info from {self.indexer_name}")
 
         indexer_show = sickchill.indexer.series(self)
-        if not indexer_show or not getattr(indexer_show, "seriesName"):
+        if not indexer_show or not indexer_show.seriesName:
             raise AttributeError(f"Found {self.indexerid}, but attribute 'seriesName' was empty.")
 
         self.name = indexer_show.seriesName.strip()
@@ -979,9 +979,13 @@ class TVShow(object):
             return
 
         logger.debug(f"{self.indexerid}: Refreshing IMDb info")
+
+        executor = ThreadPoolExecutor(max_workers=1)
+        future = None
+
         try:
-            facade = ImdbFacade()
-            title = facade.get_title(self.imdb_id)
+            future = executor.submit(self._fetch_imdb_title, self.imdb_id)
+            title = future.result(timeout=25)  # raises FuturesTimeoutError on timeout
 
             if title:
                 new_title = getattr(title, "title", self.name)
@@ -1001,7 +1005,7 @@ class TVShow(object):
                         "certificates": getattr(title, "certification", "") or "",
                         "rating": str(getattr(title, "rating", 0.0)),
                         "votes": str(getattr(title, "rating_count", 0)),
-                        "last_update": datetime.date.today().toordinal(),
+                        "last_update": sc_today().toordinal(),
                     }
                 )
                 self.dirty = True
@@ -1009,18 +1013,30 @@ class TVShow(object):
 
                 logger.debug(f"{self.indexerid}: IMDb info refreshed → {new_title} ({new_imdb_id})")
             else:
-                logger.warning(f"No live IMDb data for {self.imdb_id}")
+                logger.warning(f"{self.indexerid}: No live IMDb data for {self.imdb_id}")
 
+        except FuturesTimeoutError:
+            if future is not None:
+                future.cancel()  # attempt to cancel
+            logger.warning(f"{self.indexerid}: IMDb refresh timed out after 25s (imdb_id={self.imdb_id})")
         except Exception as e:
-            logger.info(f"IMDb refresh failed: {e}")
+            logger.info(f"{self.indexerid}: IMDb refresh failed: {e}")
+        finally:
+            # Critical: do NOT wait for the (possibly hung) worker
+            executor.shutdown(wait=False, cancel_futures=True)
+
+    def _fetch_imdb_title(self, imdb_id):
+        """Isolated so it can be run in a thread with a timeout"""
+        facade = ImdbFacade()
+        return facade.get_title(imdb_id)
 
     def next_episode(self):
-        current_date = datetime.date.today().toordinal()
-        if not self.next_airdate or self.next_airdate and current_date > try_int(self.next_airdate):
+        current_date = sc_today().toordinal()
+        if not self.next_airdate or current_date > try_int(self.next_airdate):
             main_db_con = db.DBConnection()
             sql_results = main_db_con.select(
                 "SELECT airdate, season, episode FROM tv_episodes WHERE showid = ? AND airdate >= ? AND status IN (?,?) ORDER BY airdate LIMIT 1",
-                [self.indexerid, datetime.date.today().toordinal(), UNAIRED, WANTED],
+                [self.indexerid, sc_today().toordinal(), UNAIRED, WANTED],
             )
 
             self.next_airdate = sql_results[0]["airdate"] if sql_results else ""
@@ -1197,7 +1213,7 @@ class TVShow(object):
                             episode_object.status = new_status
                             episode_object.subtitles = []
                             episode_object.subtitles_searchcount = 0
-                            episode_object.subtitles_lastsearch = str(datetime.datetime.min)
+                            episode_object.subtitles_lastsearch = str(datetime.datetime.min.replace(tzinfo=sc_timezone))
                         episode_object.location = ""
                         episode_object.has_nfo = False
                         episode_object.has_tbn = False
@@ -1288,7 +1304,7 @@ class TVShow(object):
                 "certificates": self.imdb_info.get("certificates") or self.imdb_info.get("certification") or "",
                 "rating": str(self.imdb_info.get("rating") or 0.0),
                 "votes": str(self.imdb_info.get("votes") or 0),
-                "last_update": self.imdb_info.get("last_update") or datetime.date.today().toordinal(),
+                "last_update": self.imdb_info.get("last_update") or sc_today().toordinal(),
             }
 
             main_db_con = db.DBConnection()
@@ -1468,7 +1484,7 @@ class TVEpisode(object):
     description = DirtySetter("")
     subtitles = DirtySetter(list())
     subtitles_searchcount = DirtySetter(0)
-    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min))
+    subtitles_lastsearch = DirtySetter(str(datetime.datetime.min.replace(tzinfo=sc_timezone)))
     airdate = DirtySetter(datetime.date.min)
     has_nfo = DirtySetter(False)
     has_tbn = DirtySetter(False)
@@ -1516,7 +1532,7 @@ class TVEpisode(object):
 
     @location.setter
     def location(self, new_location):
-        logger.debug(f"Setter sets location to {new_location}")
+        logger.debug(f"Setter sets Episode location to {new_location}")
 
         # self._location = newLocation
         if self._location != new_location:
@@ -1590,8 +1606,8 @@ class TVEpisode(object):
 
         self.subtitles, new_subtitles = subtitles.download_subtitles(self, force_lang)
 
-        self.subtitles_searchcount += 1 if self.subtitles_searchcount else 1
-        self.subtitles_lastsearch = datetime.datetime.now().strftime(dateTimeFormat)
+        self.subtitles_searchcount += 1
+        self.subtitles_lastsearch = sc_now().strftime(dateTimeFormat)
         self.save_to_db()
 
         if new_subtitles:
@@ -1641,24 +1657,23 @@ class TVEpisode(object):
     def specify_episode(self, season, episode):
         sql_results = self.load_from_db(season, episode)
 
-        if not sql_results:
+        if not sql_results and os.path.isfile(self.location):
             # only load from NFO if we didn't load from DB
-            if os.path.isfile(self.location):
+            try:
+                self.load_from_nfo(self.location)
+            except NoNFOException:
+                logger.error(f"{self.show.indexerid}: There was an error loading the NFO for episode {episode_num(season, episode)}")
+
+            # if we tried loading it from NFO and didn't find the NFO, try the Indexers
+            if not self.has_nfo:
                 try:
-                    self.load_from_nfo(self.location)
-                except NoNFOException:
-                    logger.error(f"{self.show.indexerid}: There was an error loading the NFO for episode {episode_num(season, episode)}")
+                    result = self.load_from_indexer(season, episode)
+                except EpisodeDeletedException:
+                    result = None
 
-                # if we tried loading it from NFO and didn't find the NFO, try the Indexers
-                if not self.has_nfo:
-                    try:
-                        result = self.load_from_indexer(season, episode)
-                    except EpisodeDeletedException:
-                        result = None
-
-                    # if we failed SQL *and* NFO, Indexers then fail
-                    if not result:
-                        raise EpisodeNotFoundException("Couldn't find episode {ep}".format(ep=episode_num(season, episode)))
+                # if we failed SQL *and* NFO, Indexers then fail
+                if not result:
+                    raise EpisodeNotFoundException("Couldn't find episode {ep}".format(ep=episode_num(season, episode)))
 
     def load_from_db(self, season, episode):
         main_db_con = db.DBConnection()
@@ -1678,7 +1693,7 @@ class TVEpisode(object):
             self.description = ""
             self.subtitles = []
             self.subtitles_searchcount = 0
-            self.subtitles_lastsearch = str(datetime.datetime.min)
+            self.subtitles_lastsearch = str(datetime.datetime.min.replace(tzinfo=sc_timezone))
             existing_location = self._location
             self.location = ""
             self.file_size = 0
@@ -1840,7 +1855,7 @@ class TVEpisode(object):
             )
 
         if not os.path.isfile(self.location):
-            if self.airdate >= datetime.date.today() or self.airdate <= datetime.date.min:
+            if self.airdate >= sc_today() or self.airdate <= datetime.date.min:
                 logger.debug(f"{self.show.indexerid}: Episode airs in the future or has no airdate, marking it {statusStrings[UNAIRED]}")
                 self.status = UNAIRED
             elif self.status in [UNAIRED, UNKNOWN]:
@@ -1851,7 +1866,7 @@ class TVEpisode(object):
                     if settings.SHOW_SKIP_OLDER > 0 and not force_all:
                         # Only do UNAIRED/UNKNOWN, it could already be snatched/ignored/skipped, or downloaded/archived to disconnected media
                         # auto-skip specials and check date in delta period too.
-                        if self.airdate < datetime.date.today() - datetime.timedelta(days=settings.SHOW_SKIP_OLDER):
+                        if self.airdate < sc_today() - datetime.timedelta(days=settings.SHOW_SKIP_OLDER):
                             self.status = SKIPPED
                             logger.debug(f"Episode air date is older than settings, marking: {statusStrings[self.status]}")
                         else:
@@ -2035,10 +2050,12 @@ class TVEpisode(object):
                 # Multi or added subtitle or removed subtitles
                 if settings.SUBTITLES_MULTI or not rows[0]["subtitles"] or not self.subtitles:
                     return [
-                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
-                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                        (
+                            "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
+                            "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                            "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                            "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?"
+                        ),
                         [
                             self.indexerid,
                             self.indexer,
@@ -2067,10 +2084,12 @@ class TVEpisode(object):
 
                 # Don't update the subtitle language when the srt file doesn't contain the alpha2 code, keep value from subliminal
                 return [
-                    "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
-                    "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
-                    "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                    "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?",
+                    (
+                        "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
+                        "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
+                        "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
+                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?"
+                    ),
                     [
                         self.indexerid,
                         self.indexer,
@@ -2098,11 +2117,13 @@ class TVEpisode(object):
             else:
                 # use a custom insert method to get the data into the DB.
                 return [
-                    "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
-                    "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
-                    "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
-                    "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
-                    ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+                    (
+                        "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
+                        "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
+                        "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
+                        "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
+                        ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
+                    ),
                     [
                         self.show.indexerid,
                         self.season,
@@ -2373,9 +2394,9 @@ class TVEpisode(object):
             "%Y": str(self.airdate.year) if self.airdate else "",
             "%M": str(self.airdate.month) if self.airdate else "",
             "%D": str(self.airdate.day) if self.airdate else "",
-            "%CY": str(datetime.date.today().year) if self.airdate else "",
-            "%CM": str(datetime.date.today().month) if self.airdate else "",
-            "%CD": str(datetime.date.today().day) if self.airdate else "",
+            "%CY": str(sc_today().year) if self.airdate else "",
+            "%CM": str(sc_today().month) if self.airdate else "",
+            "%CD": str(sc_today().day) if self.airdate else "",
             "%0M": f"{int(self.airdate.month):02d}" if self.airdate else "",
             "%0D": f"{int(self.airdate.day):02d}" if self.airdate else "",
             "%RT": "PROPER" if self.is_proper else "",
@@ -2418,10 +2439,9 @@ class TVEpisode(object):
         result_name = pattern
 
         # if there's no release group in the db, let the user know we replaced it
-        if replace_map["%RG"] and replace_map["%RG"] != "SICKCHILL":
-            if not self._release_group:
-                logger.debug(f"Episode has no release group, replacing it with '{replace_map['%RG']}'")
-                self._release_group = replace_map["%RG"]  # if release_group is not in the db, put it there
+        if replace_map["%RG"] and replace_map["%RG"] != "SICKCHILL" and not self._release_group:
+            logger.debug(f"Episode has no release group, replacing it with '{replace_map['%RG']}'")
+            self._release_group = replace_map["%RG"]  # if release_group is not in the db, put it there
 
         # if there's no release name then replace it with a reasonable facsimile
         if not replace_map["%RN"]:
@@ -2457,8 +2477,8 @@ class TVEpisode(object):
             ep_only_regex = r"(E?%0?E(?![._]?N))"
 
             # try the normal way
-            season_ep_match = re.search(season_ep_regex, cur_name_group, re.I | re.X)
-            ep_only_match = re.search(ep_only_regex, cur_name_group, re.I | re.X)
+            season_ep_match = re.search(season_ep_regex, cur_name_group, re.IGNORECASE | re.VERBOSE)
+            ep_only_match = re.search(ep_only_regex, cur_name_group, re.IGNORECASE | re.VERBOSE)
 
             # if we have a season and episode then collect the necessary data
             if season_ep_match:
@@ -2723,7 +2743,7 @@ class TVEpisode(object):
             if settings.FILE_TIMESTAMP_TIMEZONE == "local":
                 airdatetime = airdatetime.astimezone(network_timezones.sc_timezone)
 
-            file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location)).replace(tzinfo=airdatetime.tzinfo)
+            file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(self.location), tz=airdatetime.tzinfo)
 
             if file_mtime != airdatetime:
                 # Get airdatetime, remove tm_isdst and set to -1 unknown for autofill by mktime

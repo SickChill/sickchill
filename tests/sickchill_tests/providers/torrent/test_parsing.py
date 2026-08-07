@@ -8,7 +8,6 @@ import unittest
 from functools import wraps
 
 import pytest
-import validators
 
 import sickchill.oldbeard.providers
 from sickchill import movies, settings
@@ -169,12 +168,10 @@ class BaseParser(type):
         @pytest.mark.skip("Not yet implemented")
         def test_season_search_strings_format(self):
             """Check format of the provider's season search strings"""
-            pass
 
         @pytest.mark.skip("Not yet implemented")
         def test_episode_search_strings_format(self):
             """Check format of the provider's season search strings"""
-            pass
 
 
 def generate_test_cases():
