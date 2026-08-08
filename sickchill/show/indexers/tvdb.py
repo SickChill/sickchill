@@ -134,7 +134,7 @@ class TVDB(Indexer):
         seen_ids = set()
 
         # 1. Try TheTVDB first
-        for attempt in {n for n in names if n.strip()}:
+        for attempt in dict.fromkeys(n for n in names if n.strip()):
             try:
                 tvdb_results = self._search(attempt, language=language) or []
                 for item in tvdb_results:
@@ -158,7 +158,7 @@ class TVDB(Indexer):
             try:
                 from . import tvmaze
 
-                for attempt in {n for n in names if n.strip()}:
+                for attempt in dict.fromkeys(n for n in names if n.strip()):
                     for show in tvmaze.search(attempt):
                         tvdb_id = show.get("externals", {}).get("thetvdb")
                         if not tvdb_id or tvdb_id in seen_ids:

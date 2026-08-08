@@ -29,7 +29,12 @@ def search(name: str) -> list[dict]:
         return []
 
     results = []
-    for item in data or []:
+    if not isinstance(data, list):
+        return results
+
+    for item in data:
+        if not isinstance(item, dict):
+            continue
         show = item.get("show") or {}
         externals = show.get("externals") or {}
         if externals.get("thetvdb"):
