@@ -116,32 +116,67 @@ class TVDB(Indexer):
                     series = self._series(name, language=language)
                     if series:
                         result = [series.info(language)]
-            except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
+            except Exception:
                 logger.debug(traceback.format_exc())
-        else:
-            # Name as provided (usually from nfo)
-            names = [name]
-            if not exact:
-                # Name without year and separator
-                test = re.match(r"^(.+?)[. _-]+\(\d{4}\)?$", name)
-                if test:
-                    names.append(test.group(1).strip())
-                # Name with spaces
-                if re.search(r"[. _-]", name):
-                    names.append(re.sub(r"[. _-]", " ", name).strip())
-                    if test:
-                        # Name with spaces and without year
-                        names.append(re.sub(r"[. _-]", " ", test.group(1)).strip())
+            return result or []
 
-            for attempt in {n for n in names if n.strip()}:
-                try:
-                    result = self._search(attempt, language=language)
+        # ----- name search path -----
+        names = [name]
+        if not exact:
+            test = re.match(r"^(.+?)[. _-]+\(\d{4}\)?$", name)
+            if test:
+                names.append(test.group(1).strip())
+            if re.search(r"[. _-]", name):
+                names.append(re.sub(r"[. _-]", " ", name).strip())
+                if test:
+                    names.append(re.sub(r"[. _-]", " ", test.group(1)).strip())
+
+        seen_ids = set()
+
+        # 1. Try TheTVDB first
+        for attempt in {n for n in names if n.strip()}:
+            try:
+                tvdb_results = self._search(attempt, language=language) or []
+                for item in tvdb_results:
+                    sid = item.get("id") if isinstance(item, dict) else getattr(item, "id", None)
+                    if sid and sid not in seen_ids:
+                        result.append(item)
+                        seen_ids.add(sid)
+                if result:
+                    break
+            except requests.exceptions.HTTPError as e:
+                # Expected when TVDB has no exact name match – we fall back to TVmaze
+                if getattr(e, "response", None) is not None and e.response.status_code == 404:
+                    logger.debug(f"theTVDB name search 404 for '{attempt}' (trying TVmaze)")
+                else:
+                    logger.debug(traceback.format_exc())
+            except Exception:
+                logger.debug(traceback.format_exc())
+
+        # 2. Supplement with TVmaze only when theTVDB gave nothing
+        if not result:
+            try:
+                from . import tvmaze
+
+                for attempt in {n for n in names if n.strip()}:
+                    for show in tvmaze.search(attempt):
+                        tvdb_id = show.get("externals", {}).get("thetvdb")
+                        if not tvdb_id or tvdb_id in seen_ids:
+                            continue
+                        try:
+                            series = self._series(tvdb_id, language=language)
+                            if series:
+                                info = series.info(language)
+                                result.append(info)
+                                seen_ids.add(tvdb_id)
+                        except Exception:
+                            logger.debug(traceback.format_exc())
                     if result:
                         break
-                except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
-                    logger.debug(traceback.format_exc())
+            except Exception:
+                logger.debug(traceback.format_exc())
 
-        return result
+        return result or []
 
     @property
     def languages(self):
