@@ -107,7 +107,7 @@ sickchill = "SickChill:main"
 
 [dependency-groups]
 dev = [
-    "Babel>=2.9.0",
+    "Babel>=2.18.0",
     "coveralls>=4.0,<5.0",
     "flask-sqlalchemy>=3.1.1,<4.0.0",
     "Flask>=2.2.2,<4.0.0",
