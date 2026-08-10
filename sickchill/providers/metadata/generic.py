@@ -11,8 +11,7 @@ import sickchill
 from sickchill import logger, settings
 from sickchill.helper.common import remove_extension, replace_extension, try_int
 from sickchill.oldbeard import helpers
-
-from . import helpers as metadata_helpers
+from sickchill.providers.metadata import helpers as metadata_helpers
 
 
 class GenericMetadata(object):
@@ -737,9 +736,9 @@ class GenericMetadata(object):
 
         def fix_xml():
             logger.info(
-                _(
-                    "There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file " "manually"
-                ).format(metadata_path)
+                _("There was an error loading {0}, trying to repair it by fixing & symbols. If it still has problems, please check the file manually").format(
+                    metadata_path
+                )
             )
             with open(metadata_path) as __xml_file:
                 output = __xml_file.read()

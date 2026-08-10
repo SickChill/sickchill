@@ -5,7 +5,6 @@ import subprocess
 import threading
 import traceback
 from collections import namedtuple
-from typing import Union
 
 import subliminal
 from babelfish import Language, language_converters
@@ -14,11 +13,11 @@ from guessit import guessit
 import sickchill.oldbeard.helpers
 from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file
+from sickchill.oldbeard import db
+from sickchill.oldbeard.common import Quality
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.show.History import History
 from sickchill.show.Show import Show
-
-from . import db
-from .common import Quality
 
 # https://github.com/Diaoul/subliminal/issues/536
 # provider_manager.register('napiprojekt = subliminal.providers.napiprojekt:NapiProjektProvider')
@@ -33,6 +32,8 @@ if "subtitulamos" not in subliminal.provider_manager.names():
     subliminal.provider_manager.register("subtitulamos = sickchill.providers.subtitle.subtitulamos:SubtitulamosProvider")
 if "bsplayer" not in subliminal.provider_manager.names():
     subliminal.provider_manager.register("bsplayer = sickchill.providers.subtitle.bsplayer:BSPlayerProvider")
+if "opensubtitlescom" not in subliminal.provider_manager.names():
+    subliminal.provider_manager.register("opensubtitlescom = subliminal.providers.opensubtitlescom:OpenSubtitlesComProvider")
 
 subliminal.region.configure("dogpile.cache.memory")
 
@@ -41,7 +42,8 @@ PROVIDER_URLS = {
     "bsplayer": "http://bsplayer-subtitles.com",
     "itasa": "http://www.italiansubs.net/",
     "napiprojekt": "http://www.napiprojekt.pl",
-    "opensubtitles": "https://www.opensubtitles.com",
+    "opensubtitles": "https://www.opensubtitles.org",
+    "opensubtitlescom": "https://www.opensubtitles.com",
     "podnapisi": "http://www.podnapisi.net",
     "subtitulamos": "https://www.subtitulamos.tv",
     "wizdom": "http://wizdom.xyz",
@@ -53,13 +55,15 @@ max_score = {}
 Scores = namedtuple("Scores", "res percent min min_percent")
 
 
-def log_scores(subtitle: Union[subliminal.Episode, subliminal.Movie], video: subliminal.Video, user_score: int = None) -> Scores:
+def log_scores(subtitle: subliminal.subtitle.Subtitle, video: subliminal.Video, user_score: int | None = None) -> Scores:
     if not max_score:
         max_score[subliminal.Episode] = sum(subliminal.score.episode_scores.values())
         max_score[subliminal.Movie] = sum(subliminal.score.movie_scores.values())
 
-    score = subliminal.score.compute_score(subtitle, video, hearing_impaired=settings.SUBTITLES_HEARING_IMPAIRED)
-    return Scores(score, round(score / max_score[type(video)] * 100), user_score, round(user_score / max_score[type(video)] * 100))
+    score = subliminal.score.compute_score(subtitle, video)
+    max_s = max_score[type(video)]
+    min_percent = round(user_score / max_s * 100) if user_score is not None else 0
+    return Scores(score, round(score / max_s * 100), user_score, min_percent)
 
 
 class SubtitleProviderPool(object):
@@ -75,6 +79,7 @@ class SubtitleProviderPool(object):
                 "addic7ed": {"username": settings.ADDIC7ED_USER, "password": settings.ADDIC7ED_PASS},
                 "itasa": {"username": settings.ITASA_USER, "password": settings.ITASA_PASS},
                 "opensubtitles": {"username": settings.OPENSUBTITLES_USER, "password": settings.OPENSUBTITLES_PASS},
+                "opensubtitlescom": {"username": settings.OPENSUBTITLESCOM_USER, "password": settings.OPENSUBTITLESCOM_PASS},
                 "subscenter": {"username": settings.SUBSCENTER_USER, "password": settings.SUBSCENTER_PASS},
             }
 
@@ -82,12 +87,12 @@ class SubtitleProviderPool(object):
 
     def __init__(self):
         if SubtitleProviderPool._creation is None:
-            SubtitleProviderPool._creation = datetime.datetime.now()
+            SubtitleProviderPool._creation = sc_now()
             self.__init_instance()
         else:
             delta = datetime.timedelta(minutes=15)
-            if SubtitleProviderPool._creation + delta < datetime.datetime.now():
-                SubtitleProviderPool._creation = datetime.datetime.now()
+            if SubtitleProviderPool._creation + delta < sc_now():
+                SubtitleProviderPool._creation = sc_now()
                 self.__init_instance()
 
     @staticmethod
@@ -103,8 +108,7 @@ def sorted_service_list():
     new_list = []
     lmgtfy = "https://blog.lmgtfy.com/?q=%s"
 
-    current_index = 0
-    for current_service in settings.SUBTITLES_SERVICES_LIST:
+    for current_index, current_service in enumerate(settings.SUBTITLES_SERVICES_LIST):
         if current_service in subliminal.provider_manager.names():
             new_list.append(
                 {
@@ -114,7 +118,6 @@ def sorted_service_list():
                     "enabled": settings.SUBTITLES_SERVICES_ENABLED[current_index] == 1,
                 }
             )
-        current_index += 1
 
     for current_service in subliminal.provider_manager.names():
         if current_service not in [service["name"] for service in new_list]:
@@ -200,15 +203,14 @@ def download_subtitles(episode, force_lang=None):
     subtitles_path = get_subtitles_path(episode.location)
     video_path = episode.location
 
-    # Perfect match = hash score - hearing impaired score - resolution score
-    # (subtitle for 720p is the same as for 1080p)
-    # Perfect match = 215 - 1 - 1 = 213
+    # Compute score thresholds dynamically from subliminal's current scoring tables.
+    # Perfect match = hash - resolution - video_codec (subtitle for 720p is the same as for 1080p)
     # Non-perfect match = series + year + season + episode
-    # Non-perfect match = 108 + 54 + 18 + 18 = 198
-    # From latest subliminal code:
-    # episode_scores = {'hash': 215, 'series': 108, 'year': 54, 'season': 18, 'episode': 18, 'release_group': 9,
-    #                   'source': 4, 'audio_codec': 2, 'resolution': 1, 'hearing_impaired': 1, 'video_codec': 1}
-    user_score = 213 if settings.SUBTITLES_PERFECT_MATCH else 198
+    scores = subliminal.score.episode_scores
+    if settings.SUBTITLES_PERFECT_MATCH:
+        user_score = scores["hash"] - scores.get("resolution", 0) - scores.get("video_codec", 0)
+    else:
+        user_score = scores.get("series", 0) + scores.get("year", 0) + scores.get("season", 0) + scores.get("episode", 0)
 
     video = get_video(video_path, subtitles_path=subtitles_path, episode=episode)
     if not video:
@@ -240,6 +242,7 @@ def download_subtitles(episode, force_lang=None):
             video,
             languages=languages,
             hearing_impaired=settings.SUBTITLES_HEARING_IMPAIRED,
+            foreign_only=settings.SUBTITLES_FOREIGN_ONLY,
             min_score=user_score,
             only_one=not settings.SUBTITLES_MULTI,
         )
@@ -257,7 +260,7 @@ def download_subtitles(episode, force_lang=None):
         return existing_subtitles, None
 
     for subtitle in found_subtitles:
-        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if not settings.SUBTITLES_MULTI else subtitle.language)
+        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, "" if not settings.SUBTITLES_MULTI else f".{subtitle.language.alpha2}")
         if subtitles_path is not None:
             subtitle_path = os.path.join(subtitles_path, os.path.split(subtitle_path)[1])
 
@@ -304,7 +307,7 @@ def get_video(video_path, subtitles_path=None, subtitles=True, embedded_subtitle
 
         # external subtitles
         if subtitles:
-            video.subtitle_languages |= set(subliminal.core.search_external_subtitles(video_path, directory=subtitles_path).values())
+            video.subtitles.extend(subliminal.core.search_external_subtitles(video_path, directory=subtitles_path).values())
 
         if embedded_subtitles is None:
             embedded_subtitles = bool(not settings.EMBEDDED_SUBTITLES_ALL and video_path.endswith(".mkv"))
@@ -366,7 +369,7 @@ class SubtitlesFinder(object):
             return
 
         if not enabled_service_list():
-            logger.warning("Not enough services selected. At least 1 service is required to " "search subtitles in the background")
+            logger.warning("Not enough services selected. At least 1 service is required to search subtitles in the background")
             return
 
         self.amActive = True
@@ -392,7 +395,7 @@ class SubtitlesFinder(object):
             "WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ? "
             + ("AND e.season != 0 ", "")[settings.SUBTITLES_INCLUDE_SPECIALS]
             + "AND e.location != '' AND e.status IN ({}) ORDER BY age ASC".format(",".join(["?"] * len(Quality.DOWNLOADED))),
-            [datetime.datetime.now().toordinal(), wanted_languages(True)] + Quality.DOWNLOADED,
+            [sc_now().toordinal(), wanted_languages(True), *Quality.DOWNLOADED],
         )
 
         if not sql_results:
@@ -416,13 +419,13 @@ class SubtitlesFinder(object):
                 continue
 
             try:
-                lastsearched = datetime.datetime.strptime(ep_to_sub["lastsearch"], dateTimeFormat)
+                lastsearched = datetime.datetime.strptime(ep_to_sub["lastsearch"], dateTimeFormat).replace(tzinfo=sc_timezone)
             except ValueError:
-                lastsearched = datetime.datetime.min
+                lastsearched = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc).astimezone(sc_timezone)
 
             try:
                 if not force:
-                    now = datetime.datetime.now()
+                    now = sc_now()
                     days = int(ep_to_sub["age"])
                     delay_time = datetime.timedelta(hours=8 if days < 10 else 7 * 24 if days < 30 else 30 * 24)
 
@@ -469,7 +472,7 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
         script_cmd[0] = os.path.abspath(script_cmd[0])
         logger.debug(f"Absolute path to script: {script_cmd[0]}")
 
-        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, None if single else subtitle.language)
+        subtitle_path = subliminal.subtitle.get_subtitle_path(video.name, "" if single else f".{subtitle.language.alpha2}")
 
         inner_cmd = script_cmd + [
             video.name,
@@ -500,14 +503,19 @@ def run_subs_extra_scripts(episode, subtitle, video, single=False):
 def refine_video(video, episode):
     # try to enrich video object using information in original filename
     if episode.release_name:
-        guess_ep = subliminal.Episode.fromguess(episode.release_name, guessit(episode.release_name))
-        for name in vars(guess_ep):
-            if getattr(guess_ep, name) and not getattr(video, name):
-                setattr(video, name, getattr(guess_ep, name))
+        try:
+            guess_ep = subliminal.Episode.fromguess(episode.release_name, guessit(episode.release_name))
+        except ValueError as error:
+            logger.debug(f"Unable to guess episode from release name {episode.release_name!r}: {error}")
+            guess_ep = None
+
+        if guess_ep:
+            for name in vars(guess_ep):
+                if getattr(guess_ep, name) and not getattr(video, name):
+                    setattr(video, name, getattr(guess_ep, name))
 
     # Use oldbeard metadata
     metadata_mapping = {
-        "episode": "episode",
         "release_group": "release_group",
         "season": "season",
         "series": "show.name",
@@ -531,12 +539,23 @@ def refine_video(video, episode):
 
     for name in metadata_mapping:
         try:
-            if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
-                setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
-            elif episode.show.subtitles_sc_metadata and get_attr_value(episode, metadata_mapping[name]):
+            if (
+                not getattr(video, name)
+                and get_attr_value(episode, metadata_mapping[name])
+                or episode.show.subtitles_sc_metadata
+                and get_attr_value(episode, metadata_mapping[name])
+            ):
                 setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
         except AttributeError:
             logger.debug("Unable to set {}.{} from episode.{} attribute".format(type(video), name, metadata_mapping[name]))
+
+    # Set episode separately — video.episode is a read-only property in subliminal 2.x,
+    # so we must set video.episodes (a list) instead.
+    try:
+        if episode.episode and (not video.episodes or episode.show.subtitles_sc_metadata):
+            video.episodes = [episode.episode]
+    except AttributeError:
+        logger.debug("Unable to set {}.episodes from episode.episode attribute".format(type(video)))
 
     # Set quality from metadata
     status, quality = Quality.splitCompositeStatus(episode.status)

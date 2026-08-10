@@ -44,7 +44,7 @@ class Provider(TorrentProvider):
 
                 if self.custom_url:
                     if self.invalid_url(self.custom_url):
-                        logger.warning("Invalid custom url set, please check your settings")
+                        logger.warning(_("Invalid custom url set, please check your settings"))
                         return results
                     search_url = self.custom_url
                 else:
@@ -52,7 +52,7 @@ class Provider(TorrentProvider):
 
                 torrents = self.get_url(search_url, params=search_params, returns="json")
                 if not (torrents and "total_found" in torrents and int(torrents["total_found"]) > 0):
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 
                 del torrents["total_found"]
@@ -64,7 +64,7 @@ class Provider(TorrentProvider):
                     leechers = try_int(torrents[i]["leechs"], 0)
                     if seeders < self.minseed or leechers < self.minleech:
                         if mode != "RSS":
-                            logger.debug("Torrent doesn't meet minimum seeds & leechers not selecting : {0}".format(title))
+                            logger.debug(_("Torrent doesn't meet minimum seeds & leechers not selecting : {0}").format(title))
                         continue
 
                     t_hash = torrents[i]["torrent_hash"]
@@ -80,7 +80,7 @@ class Provider(TorrentProvider):
                     item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": t_hash}
 
                     if mode != "RSS":
-                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                        logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                     items.append(item)
 

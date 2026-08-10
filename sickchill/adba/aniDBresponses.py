@@ -1,4 +1,4 @@
-from .aniDBmapper import AniDBMapper
+from sickchill.adba.aniDBmapper import AniDBMapper
 
 
 class ResponseResolver:

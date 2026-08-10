@@ -1,5 +1,6 @@
 <%inherit file="/layouts/main.mako" />
 <%!
+    import datetime
     from sickchill import settings
     from sickchill.oldbeard import common
     from sickchill.oldbeard.common import SKIPPED, WANTED, IGNORED
@@ -80,8 +81,8 @@
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="hidden" name="show" id="showID" value="${show.indexerid}" />
                                         <input type="text" name="location" id="location" value="${show.get_location}"
-                                               class="form-control input-sm input350"
-                                               autocapitalize="off" title="Location" />
+                                            class="form-control input-sm input350"
+                                            autocapitalize="off" title="Location" />
                                     </div>
                                 </div>
 
@@ -125,9 +126,9 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <select name="indexerLang" id="indexerLangSelect"
-                                                        class="form-control input-sm input150 bfh-languages"
-                                                        data-language="${show.lang}"
-                                                        data-available="${','.join(show_indexer.languages())}" title="indexerLang">
+                                                    class="form-control input-sm input150 bfh-languages"
+                                                    data-language="${show.lang}"
+                                                    data-available="${','.join(show_indexer.languages())}" title="indexerLang">
                                                 </select>
                                             </div>
                                         </div>
@@ -209,7 +210,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="checkbox" id="anime"
-                                                       name="anime" ${checked(show.is_anime)}>
+                                                    name="anime" ${checked(show.is_anime)}>
                                                 <label for="anime">${_('check if the show is Anime and episodes are released as Show.265 rather than Show.S02E03')}</label>
                                             </div>
                                         </div>
@@ -303,8 +304,8 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_ignore_words"
-                                                       name="rls_ignore_words" value="${show.rls_ignore_words}"
-                                                       class="form-control input-sm input350" autocapitalize="off" />
+                                                    name="rls_ignore_words" value="${show.rls_ignore_words}"
+                                                    class="form-control input-sm input350" autocapitalize="off" />
                                             </div>
                                         </div>
                                         <div class="row">
@@ -314,8 +315,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with one or more words from this list will be ignored.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option adds to the globally ignored words!')}</label>
+                                                <label>${_('search results with one or more words from this list will be ignored.')}<br>
+                                                    <b>${_('note')}:</b> ${_('this option adds to the globally ignored words!')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -329,8 +330,8 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_prefer_words" name="rls_prefer_words"
-                                                       value="${show.rls_prefer_words}" autocapitalize="off"
-                                                       class="form-control input-sm input350" />
+                                                    value="${show.rls_prefer_words}" autocapitalize="off"
+                                                    class="form-control input-sm input350" />
                                                 <br/>
                                             </div>
                                         </div>
@@ -341,8 +342,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with these words will be preferred in this order.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option overrides the globally preferred words!')}</label>
+                                                <label>${_('search results with these words will be preferred in this order.')}<br>
+                                                    <b>${_('note')}:</b> ${_('this option overrides the globally preferred words!')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -357,20 +358,21 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <input type="text" id="rls_require_words" name="rls_require_words"
-                                                       value="${show.rls_require_words}" autocapitalize="off"
-                                                       class="form-control input-sm input350" />
+                                                    value="${show.rls_require_words}" autocapitalize="off"
+                                                    class="form-control input-sm input350" />
                                                 <br/>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="rls_require_words">${_('comma-separated <i>e.g. "word1,word2,word3</i>"')}</label>
+                                                <label for="rls_require_words">${_('comma-separated <i>e.g. "word1,+word2,word3</i>"')}</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('search results with no words from this list will be ignored.')}</label>
-                                                <label><b>${_('note')}:</b> ${_('this option overrides the globally required words, and globally ignored words!')}</label>
+                                                <label>${_('search results with no words from this list will be ignored.')}<br>
+                                                    ${_('words starting with a plus sign must all be present.')}<br>
+                                                    <b>${_('note')}:</b> ${_('this option overrides the globally required words!')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -407,7 +409,7 @@
                                                         <optgroup data-season="${season}" label="${_('Show') if season == -1 else _('Season ') + str(season)}">
                                                             %if season in scene_exceptions:
                                                                 %for exception in scene_exceptions[season]:
-                                                                    <option ${disabled(exception["custom"] == False)} value="${exception["show_name"]}">
+                                                                    <option ${disabled(exception["custom"])} value="${exception["show_name"]}">
                                                                         ${exception["show_name"]}
                                                                     </option>
                                                                 %endfor
@@ -434,7 +436,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label>${_('disabled entries come from a central file on github,<br/> if you think something is wrong please make an issue <a href="//github.com/sickchill/sickchill.github.io/issues">here</a>.')}</label>
+                                                <label>${_('disabled entries come from a central file on github,')}<br>
+                                                    ${_('if you think something is wrong please go to <a href="https://discord.com/channels/502612977271439372/502612977803984898">Discord Chat</a>.')}</label>
                                             </div>
                                         </div>
                                     </div>
@@ -460,15 +463,15 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <input type="text" name="custom_name" id="custom_name" placeholder="${show.show_name}" value="${show.custom_name}"
-                                               list="scene_exceptions"
-                                               class="form-control input-sm input350"
-                                               autocapitalize="off" title="Name" />
+                                            list="scene_exceptions"
+                                            class="form-control input-sm input350"
+                                            autocapitalize="off" title="Name" />
                                     </div>
 
                                     %if -1 in scene_exceptions:
                                     <datalist id="scene_exceptions">
-                                       %for exception in scene_exceptions[-1]:
-                                        <option>${exception["show_name"]}</option>
+                                        %for exception in scene_exceptions[-1]:
+                                            <option>${exception["show_name"]}</option>
                                         %endfor
                                     </datalist>
                                     %endif
@@ -484,9 +487,9 @@
                                             <div class="col-md-12">
                                                 <div class="poster-container">
                                                     <input type="hidden" name="poster" />
-                                                    <img src="${static_url(show.show_image_url('poster'))}"
-                                                         data-image-type="poster"
-                                                         class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
+                                                    <img src="${static_url(show.show_image_url('poster'))}?t=${int(datetime.datetime.now().timestamp())}"
+                                                        data-image-type="poster"
+                                                        class="custom-image tvshowImg" alt="${_('Poster for')} ${show.name}"
                                                     />
                                                 </div>
                                             </div>
@@ -504,7 +507,7 @@
                                             <div class="col-md-12">
                                                 <div class="banner-container">
                                                     <input type="hidden" name="banner" />
-                                                    <img src="${static_url(show.show_image_url('banner'))}"
+                                                    <img src="${static_url(show.show_image_url('banner'))}?t=${int(datetime.datetime.now().timestamp())}"
                                                          data-image-type="banner"
                                                          class="custom-image banner" alt="${_('Banner for')} ${show.name}"
                                                     />
@@ -524,9 +527,9 @@
                                             <div class="col-md-12">
                                                 <div class="fanart-container">
                                                     <input type="hidden" name="fanart" />
-                                                    <img src="${static_url(show.show_image_url('fanart'))}"
-                                                         data-image-type="fanart"
-                                                         class="custom-image tvshowImg" alt="${_('Fanart for')} ${show.name}"
+                                                    <img src="${static_url(show.show_image_url('fanart'))}?t=${int(datetime.datetime.now().timestamp())}"
+                                                        data-image-type="fanart"
+                                                        class="custom-image tvshowImg" alt="${_('Fanart for')} ${show.name}"
                                                     />
                                                 </div>
                                             </div>

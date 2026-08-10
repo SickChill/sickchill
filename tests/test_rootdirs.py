@@ -1,7 +1,7 @@
 import logging
 import tempfile
 from pathlib import Path
-from unittest import skip, TestCase
+from unittest import TestCase, skip
 from unittest.mock import patch
 
 from sickchill.helper.rootdirs import RootDirectories
@@ -155,9 +155,7 @@ class TestRootDirectories(TestCase):
         self.assertTrue(self.path_two in self.object)
 
     def test_iter(self):
-        object_list = []
-        for item in self.object:
-            object_list.append(item)
+        object_list = list(self.object)
 
         self.assertEqual(object_list, self.object.root_directories)
 

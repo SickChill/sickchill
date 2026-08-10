@@ -101,7 +101,7 @@ normal_regexes = [
         # Show Name - 2010-11-23 - Ep Name
         r"""
      ^((?P<series_name>.+?)[. _-]+)?             # Show_Name and separator
-     (?P<air_date>(\d+[. _-]\d+[. _-]\d+)|(\d+\w+[. _-]\w+[. _-]\d+))
+     (?P<air_date>(\d{4}[. _-]\d{1,2}[. _-]\d{1,2}))  # digits 4, 1 or 2, 1 or 2
      [. _-]*((?P<extra_info>.+?)                 # Source_Quality_Etc-
      ((?<![. _-])(?<!WEB)                        # Make sure this is really the release group
      -(?P<release_group>[^ -]+([. _-]\[.*\])?))?)?$              # Group
@@ -217,10 +217,10 @@ normal_regexes = [
 
 anime_regexes = [
     (
-        "anime_horriblesubs",
-        # [HorribleSubs] Maria the Virgin Witch - 01 [720p].mkv
+        "anime_anidb",
+        # [Group] Anime name - 01v2 [CCRCCRCC].ext from wiki.anidb.net
         r"""
-     ^(?:\[(?P<release_group>HorribleSubs)\][\s\.])
+     ^(?:\[(?P<release_group>.+)\][\s\.])
      (?:(?P<series_name>.+?)[\s\.]-[\s\.])
      (?P<ep_ab_num>((?!(1080|720|480)[pi]))\d{1,4})
      (-(?P<extra_ab_ep_num>((?!(1080|720|480)[pi])|(?![hx].?26[45]))\d{1,4}))?

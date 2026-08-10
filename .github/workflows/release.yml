@@ -2,18 +2,20 @@ name: Build wheel
 
 on:
   workflow_run:
-    workflows: [ Python Packaging ]
-    types: [ completed, requested ]
+    workflows: [Python Packaging]
+    types: [completed, requested]
 
 jobs:
   version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 1
           persist-credentials: false
+
       - name: Get new version string
         uses: miigotu/actions-calver@workflows
         id: next-version
@@ -24,32 +26,55 @@ jobs:
           date_format: "%Y.%m.%-d"
           patch_separator: "-"
           version_regexp: '^20[^\-]*$'
-          release_branch: ${{ github.branch }}
+          release_branch: ${{ github.event.workflow_run.head_branch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20.x'
+          node-version: '22.x'
           cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
       - name: Install yarn
         run: npm install -g yarn
-      - name: Setup Poetry
-        uses: 5yutan5/setup-poetry-env@v1.1.0
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Setup Python + Poetry
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-          python-cache-dependency-path: pyproject.toml
-      - run: |
+          cache: 'poetry'
+          cache-dependency-path: pyproject.toml
+      # Cache Poetry venv
+      - name: Cache Poetry virtual environment
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: venv-release-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            venv-release-
+
+
+      - name: Build artifacts
+        run: |
           poetry version ${{ steps.next-version.outputs.release }}
           yarn version --no-version-git-tag --no-commit-hooks --new-version ${{ steps.next-version.outputs.release }}
           poetry build
         env:
           YARN_VERSION_GIT_TAG: ""
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: Result
           path: |
             dist/*.whl
             dist/*.tar.gz
-      - run: |
+
+      - name: Show changelog
+        run: |
           echo "${{ steps.next-version.outputs.changelog }}"

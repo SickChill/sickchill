@@ -132,7 +132,7 @@ broken_providers = [
 ]
 
 
-def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, NZBProvider, GenericProvider]]:
+def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, GenericProvider]]:
     provider_types = List[Union[GenericProvider, TorrentProvider, NZBProvider, TorrentRssProvider]]
     initial_list: provider_types = settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list
 
@@ -209,7 +209,7 @@ def check_enabled_providers():
         if not (daily_enabled and backlog_enabled):
             searches = ((_("daily searches and backlog searches"), _("daily searches"))[backlog_enabled], _("backlog searches"))[daily_enabled]
             formatted_msg = _(
-                "No NZB/Torrent providers found or enabled for {searches}.<br/>" 'Please <a href="{web_root}/config/providers/">check your settings</a>.'
+                'No NZB/Torrent providers found or enabled for {searches}.<br/>Please <a href="{web_root}/config/providers/">check your settings</a>.'
             )
             sickchill.oldbeard.helpers.add_site_message(
                 formatted_msg.format(searches=searches, web_root=settings.WEB_ROOT), tag="no_providers_enabled", level="danger"

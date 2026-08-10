@@ -51,14 +51,14 @@ class Provider(TorrentProvider):
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
-                    logger.debug("Search string: {0}".format(search_string))
+                    logger.debug(_("Search string: {0}").format(search_string))
 
                     search_params["latest"] = "false"
                     search_params["search"] = search_string
 
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")
                 if not data:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 result = json.loads(data)
@@ -83,7 +83,7 @@ class Provider(TorrentProvider):
                         size = torrent["size"]
                         size = convert_size(size) or -1
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
-                        logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                        logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
                         items.append(item)
 
                 if "error" in result:

@@ -7,8 +7,7 @@ from requests.exceptions import RequestException
 from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings
-
-from .exceptions import traktException
+from sickchill.oldbeard.trakt_api.exceptions import traktException
 
 
 class TraktAPI:
@@ -50,9 +49,7 @@ class TraktAPI:
     def validateAccount(self):
         resp = self.traktRequest("users/settings")
 
-        if "account" in resp:
-            return True
-        return False
+        return "account" in resp
 
     def traktRequest(self, path, data=None, headers=None, url=None, method="GET", count=0):
         if url is None:

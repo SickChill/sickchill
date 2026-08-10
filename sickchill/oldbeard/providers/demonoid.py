@@ -45,18 +45,18 @@ class Provider(TorrentProvider):
             items = []
             logger.debug(_("Search Mode: {mode}").format(mode=mode))
             if mode == "RSS":
-                logger.info("Demonoid RSS search is not working through this provider yet, only string searches will work. Continuing")
+                logger.info(_("Demonoid RSS search is not working through this provider yet, only string searches will work. Continuing"))
                 continue
 
             for search_string in {*search_strings[mode]}:
                 search_params["query"] = search_string
-                logger.debug("Search string: {0}".format(search_string))
+                logger.debug(_("Search string: {0}").format(search_string))
 
                 time.sleep(cpu_presets[settings.CPU_PRESET])
 
                 data = self.get_url(self.urls["search"], params=search_params)
                 if not data:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 with BS4Parser(data) as html:
@@ -78,7 +78,7 @@ class Provider(TorrentProvider):
 
                             if not (title and details_url):
                                 if mode != "RSS":
-                                    logger.debug("Discarding torrent because We could not parse the title and details")
+                                    logger.debug(_("Discarding torrent because We could not parse the title and details"))
                                 continue
 
                             size = convert_size(e_file_size.get_text(strip=True)) or -1
@@ -110,7 +110,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
 
@@ -129,7 +129,7 @@ class Provider(TorrentProvider):
         torrent_hash = None
         details_data = self.get_url(urljoin(self.url, details_url))
         if not details_data:
-            logger.debug("No data returned from details page for result")
+            logger.debug(_("No data returned from details page for result"))
             return torrent_hash
 
         with BS4Parser(details_data, "html5lib") as html:

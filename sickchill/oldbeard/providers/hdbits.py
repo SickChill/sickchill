@@ -1,11 +1,13 @@
 import datetime
 import json
-from typing import Dict, Iterable, List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, Iterable, List, Union
 from urllib.parse import urlencode, urljoin
 
 from sickchill import logger
 from sickchill.helper.exceptions import AuthException
-from sickchill.oldbeard import classes, tvcache
+from sickchill.oldbeard import tvcache
+from sickchill.oldbeard.network_timezones import sc_timezone
+from sickchill.providers import result_classes
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 if TYPE_CHECKING:
@@ -35,7 +37,7 @@ class Provider(TorrentProvider):
         """Check that we are authenticated."""
 
         if "status" in parsed_json and "message" in parsed_json and parsed_json.get("status") == 5:
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
 
         return True
 
@@ -68,11 +70,10 @@ class Provider(TorrentProvider):
             if parsed_json and "data" in parsed_json:
                 items = parsed_json["data"]
             else:
-                logger.exception("Resulting JSON from provider isn't correct, not parsing it")
+                logger.exception(_("Resulting JSON from provider isn't correct, not parsing it"))
                 items = []
 
-            for item in items:
-                results.append(item)
+            results = list(items)
         # FIXME SORTING
         return results
 
@@ -85,13 +86,13 @@ class Provider(TorrentProvider):
             for item in self.search(self.make_post_data_json(search_term=term)):
                 if item["utadded"]:
                     try:
-                        result_date = datetime.datetime.fromtimestamp(int(item["utadded"]))
+                        result_date = datetime.datetime.fromtimestamp(int(item["utadded"]), tz=sc_timezone)
                     except Exception:
                         result_date = None
 
                     if result_date and (not search_date or result_date > search_date):
                         title, url = self._get_title_and_url(item)
-                        results.append(classes.Proper(title, url, result_date, self.show))
+                        results.append(result_classes.Proper(title, url, result_date, self.show))
 
         return results
 

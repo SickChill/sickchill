@@ -29,17 +29,17 @@ import ifaddr
 import requests
 import urllib3.exceptions
 from cachecontrol import CacheControl
+from cryptography.hazmat.primitives import serialization
 from tornado._locale_data import LOCALE_NAMES
 from unidecode import unidecode
 from urllib3 import disable_warnings
 
 import sickchill
 from sickchill import adba, logger, settings
-from sickchill.helper import episode_num, pretty_file_size, SUBTITLE_EXTENSIONS
-from sickchill.helper.common import is_media_file, replace_extension, USER_AGENT
+from sickchill.helper import SUBTITLE_EXTENSIONS, episode_num, pretty_file_size
+from sickchill.helper.common import USER_AGENT, is_media_file, replace_extension
+from sickchill.oldbeard import db
 from sickchill.show.Show import Show
-
-from . import db
 
 # Add some missing languages
 LOCALE_NAMES.update(
@@ -96,7 +96,7 @@ def indentXML(elem, level=0):
             elem.text = i + "  "
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
-        for elem in elem:
+        for elem in elem:  # noqa: B020, PLR1704
             indentXML(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
@@ -246,7 +246,7 @@ def list_media_files(path):
         full_entry = os.path.join(path, entry)
 
         # if it's a folder do it recursively
-        if os.path.isdir(full_entry) and not entry.startswith(".") and not entry == "Extras":
+        if os.path.isdir(full_entry) and not entry.startswith(".") and entry != "Extras":
             files += list_media_files(full_entry)
 
         elif is_media_file(entry):
@@ -672,8 +672,7 @@ def sanitizeSceneName(name, anime=False):
     name = re.sub(r"[-/…\s]+", ".", name)
     name = re.sub(r"[.]+", ".", name)
 
-    if name.endswith("."):
-        name = name[:-1]
+    name = name.removesuffix(".")
 
     return name
 
@@ -690,9 +689,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     """
 
     try:
-        from OpenSSL import crypto
-
-        from sickchill.certgen import createCertificate, createCertRequest, createKeyPair, TYPE_RSA
+        from sickchill.certgen import TYPE_RSA, createCertificate, createCertRequest, createKeyPair
     except ModuleNotFoundError:
         logger.info(traceback.format_exc())
         logger.warning(_("pyopenssl module missing, please install for https access"))
@@ -720,8 +717,14 @@ def create_https_certificates(ssl_cert, ssl_key):
     # noinspection PyBroadException
     try:
         # Module has no member
-        Path(ssl_key).write_bytes(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
-        Path(ssl_cert).write_bytes(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        Path(ssl_key).write_bytes(
+            pkey.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+        )
+        Path(ssl_cert).write_bytes(cert.public_bytes(serialization.Encoding.PEM))
     except Exception as error:
         logger.info(traceback.format_exc())
         logger.warning(_("There was a problem creating the SSL key and certificate. Error: {error}").format(error=error))
@@ -792,7 +795,7 @@ def check_url(url):
     We only check the URL header.
     """
     try:
-        requests.head(url, verify=False).raise_for_status()
+        requests.head(url, verify=False, timeout=10).raise_for_status()
     except Exception as error:
         # noinspection PyTypeChecker
         handle_requests_exception(error)
@@ -944,10 +947,7 @@ def is_hidden_folder(folder):
             result = False
         return result
 
-    if os.path.isdir(folder) and is_hidden(folder):
-        return True
-
-    return False
+    return bool(os.path.isdir(folder) and is_hidden(folder))
 
 
 def set_up_anidb_connection():
@@ -1072,6 +1072,8 @@ def restore_config_zip(archive, targetDir):
     """
 
     try:
+        from sickchill.oldbeard.network_timezones import sc_now
+
         if not os.path.exists(targetDir):
             os.mkdir(targetDir)
         else:
@@ -1081,7 +1083,7 @@ def restore_config_zip(archive, targetDir):
                 return tail or os.path.basename(head)
 
             base_backup_name = path_leaf(targetDir)
-            date_time_string = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            date_time_string = sc_now().strftime("%Y%m%d_%H%M%S")
             backup_filename = f"{base_backup_name}-{date_time_string}"
             shutil.move(targetDir, os.path.join(os.path.dirname(targetDir), backup_filename))
 
@@ -1273,7 +1275,6 @@ def handle_requests_exception(
         Exception,
         TypeError,
         ValueError,
-        "requests.exceptions.BaseHTTPError",
         "requests.exceptions.ChunkedEncodingError",
         "requests.exceptions.ConnectTimeout",
         "requests.exceptions.ConnectionError",
@@ -1327,17 +1328,15 @@ def handle_requests_exception(
         "urllib3.exceptions.RequestError",
         "urllib3.exceptions.ResponseError",
         "urllib3.exceptions.ResponseNotChunked",
-        "urllib3.exceptions.SNIMissingWarning",
         "urllib3.exceptions.SSLError",
         "urllib3.exceptions.SecurityWarning",
-        "urllib3.exceptions.SubjectAltNameWarning",
         "urllib3.exceptions.SystemTimeWarning",
         "urllib3.exceptions.TimeoutError",
         "urllib3.exceptions.TimeoutStateError",
         "urllib3.exceptions.URLSchemeUnknown",
         "urllib3.exceptions.UnrewindableBodyError",
         # "urllib3.exceptions.httplib_IncompleteRead",
-    ]
+    ],
 ):
     def get_level(exception):
         return (logger.ERROR, logger.WARNING)[exception and "s,t,o,p,b,r,e,a,k,i,n,g,f" in str(exception)]
@@ -1650,7 +1649,7 @@ def imdb_from_tvdbid_on_tvmaze(indexer_id: Union[str, int]) -> str:
         try:
             imdb_id = data["externals"]["imdb"]
         except (SyntaxError, IndexError, ValueError):
-            logger.debug(f"attempt to use tvmaze to get imdbid failed")
+            logger.debug("attempt to use tvmaze to get imdbid failed")
 
     return imdb_id
 
@@ -1697,13 +1696,13 @@ def remove_site_message(key=None, tag=None):
             del settings.SITE_MESSAGES[int(key)]
         elif tag is not None:
             found = [idx for idx, msg in settings.SITE_MESSAGES.items() if msg.get("tag") == tag]
-            for key in found:
+            for key in found:  # noqa: PLR1704
                 del settings.SITE_MESSAGES[key]
 
 
 def sortable_name(name):
     if not settings.SORT_ARTICLE:
-        name = re.sub(r"(?:The|A|An)\s", "", name, flags=re.I)
+        name = re.sub(r"(?:The|A|An)\s", "", name, flags=re.IGNORECASE)
     return unidecode(name.lower())
 
 
@@ -1721,20 +1720,19 @@ def manage_torrents_url(reset=False):
         settings.CLIENT_WEB_URLS["torrent"] = ""
         return settings.CLIENT_WEB_URLS.get("torrent")
 
-    torrent_ui_url = re.sub("localhost|127.0.0.1", settings.LOCALHOST_IP or get_lan_ip(), settings.TORRENT_HOST or "", re.I)
+    torrent_ui_url = re.sub("localhost|127.0.0.1", settings.LOCALHOST_IP or get_lan_ip(), settings.TORRENT_HOST or "", re.IGNORECASE)
 
     def test_exists(url):
         try:
-            h = requests.head(url)
+            h = requests.head(url, timeout=10)
             return h.status_code != 404
         except requests.exceptions.RequestException:
             return False
 
     if settings.TORRENT_METHOD == "utorrent":
         torrent_ui_url = "/".join(s.strip("/") for s in (torrent_ui_url, "gui/"))
-    elif settings.TORRENT_METHOD == "download_station":
-        if test_exists(urljoin(torrent_ui_url, "download/")):
-            torrent_ui_url = urljoin(torrent_ui_url, "download/")
+    elif settings.TORRENT_METHOD == "download_station" and test_exists(urljoin(torrent_ui_url, "download/")):
+        torrent_ui_url = urljoin(torrent_ui_url, "download/")
 
     settings.CLIENT_WEB_URLS["torrent"] = ("", torrent_ui_url)[test_exists(torrent_ui_url)]
 
@@ -1763,4 +1761,4 @@ def get_exception_class_type_hint_string() -> None:
             except Exception as error:
                 print(f"the error was by {item_string} with {error}")
     output = output.union({"TypeError", "ValueError", "Exception"})
-    return print(f"Union{sorted(list(output))}".replace("'", "").replace(" ", "\n    ").replace("[", "[\n    ").replace("]", "\n]"))
+    return print(f"Union{sorted(output)}".replace("'", "").replace(" ", "\n    ").replace("[", "[\n    ").replace("]", "\n]"))

@@ -3,17 +3,26 @@ import re
 
 from dateutil import tz
 
+from sickchill import logger
 from sickchill.helper.common import try_int
-
-from .. import logger
-from . import db, helpers
+from sickchill.oldbeard import db, helpers
 
 # regex to parse time (12/24-hour format)
-time_regex = re.compile(r"(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b", re.I)
+time_regex = re.compile(r"(?P<hour>\d{1,2})(?:[:.](?P<minute>\d{2})?)? ?(?P<meridiem>[PA]\.? ?M?)?\b", re.IGNORECASE)
 
 network_dict = {}
 
 sc_timezone = tz.tzlocal()
+
+
+def sc_now():
+    """Return current datetime in SickChill local timezone (aware)."""
+    return datetime.datetime.now(tz=sc_timezone)
+
+
+def sc_today():
+    """Return current date in SickChill local timezone."""
+    return sc_now().date()
 
 
 class NetworkTimezoneLoadException(Exception):

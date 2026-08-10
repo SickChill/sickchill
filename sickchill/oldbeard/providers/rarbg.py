@@ -1,12 +1,13 @@
 import datetime
 import re
 import time
-from typing import Dict, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List
 
 from sickchill import logger, settings
 from sickchill.helper.common import convert_size, try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.common import cpu_presets
+from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 if TYPE_CHECKING:
@@ -35,18 +36,18 @@ class Provider(TorrentProvider):
         self.cache = tvcache.TVCache(self, min_time=10)  # only poll RARBG every 10 minutes max
 
     def login(self):
-        if self.token and self.token_expires and datetime.datetime.now() < self.token_expires:
+        if self.token and self.token_expires and sc_now() < self.token_expires:
             return True
 
         login_params = {"get_token": "get_token", "format": "json", "app_id": "sickchill"}
 
         response = self.get_url(self.urls["api"], params=login_params, returns="json")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         self.token = response.get("token")
-        self.token_expires = datetime.datetime.now() + datetime.timedelta(minutes=14) if self.token else None
+        self.token_expires = sc_now() + datetime.timedelta(minutes=14) if self.token else None
         return self.token is not None
 
     def search(self, search_strings):
@@ -102,7 +103,7 @@ class Provider(TorrentProvider):
                 time.sleep(cpu_presets[settings.CPU_PRESET] + 2)
                 data = self.get_url(self.urls["api"], params=search_params, returns="json")
                 if not isinstance(data, dict):
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 error = data.get("error")
@@ -116,7 +117,7 @@ class Provider(TorrentProvider):
 
                 torrent_results = data.get("torrent_results")
                 if not torrent_results:
-                    logger.debug("Data returned from provider does not contain any torrents")
+                    logger.debug(_("Data returned from provider does not contain any torrents"))
                     continue
 
                 for item in torrent_results:
@@ -131,8 +132,9 @@ class Provider(TorrentProvider):
                         if seeders < self.minseed or leechers < self.minleech:
                             if mode != "RSS":
                                 logger.debug(
-                                    "Discarding torrent because it doesn't meet the"
-                                    " minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                    "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                        title, seeders, leechers
+                                    )
                                 )
                             continue
 
@@ -141,7 +143,7 @@ class Provider(TorrentProvider):
                         torrent_hash = self.hash_from_magnet(download_url)
 
                         if mode != "RSS":
-                            logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                         items.append(result)

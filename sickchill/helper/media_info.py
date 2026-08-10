@@ -1,6 +1,9 @@
 import binascii
+import warnings
 
-from enzyme import MKV
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    from enzyme import MKV
 
 from sickchill.helper.common import is_media_file
 

@@ -6,10 +6,11 @@ import stat
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, ClassVar, List, Union
 
 if TYPE_CHECKING:
     from processTV import ParseResult
+
     from sickchill.tv import TVShow
 
 from guessit import guessit
@@ -17,14 +18,13 @@ from guessit import guessit
 import sickchill.helper.common
 import sickchill.oldbeard.subtitles
 from sickchill import adba, logger, settings
-from sickchill.helper.common import episode_num, get_extension, is_rar_file, remove_extension, replace_extension, SUBTITLE_EXTENSIONS
+from sickchill.helper.common import SUBTITLE_EXTENSIONS, episode_num, get_extension, is_rar_file, remove_extension, replace_extension
 from sickchill.helper.exceptions import EpisodeNotFoundException, EpisodePostProcessingFailedException, ShowDirectoryNotFoundException
+from sickchill.oldbeard import common, db, helpers, notifiers, show_name_helpers
+from sickchill.oldbeard.helpers import verify_freespace
+from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 from sickchill.show.History import History
 from sickchill.show.Show import Show
-
-from . import common, db, helpers, notifiers, show_name_helpers
-from .helpers import verify_freespace
-from .name_parser.parser import InvalidNameException, InvalidShowException, NameParser
 
 METHOD_COPY = "copy"
 METHOD_MOVE = "move"
@@ -45,7 +45,7 @@ class PostProcessor(object):
     EXISTS_SMALLER = 3
     DOESNT_EXIST = 4
 
-    IGNORED_FILESTRINGS = [".AppleDouble", ".DS_Store"]
+    IGNORED_FILESTRINGS: ClassVar[list] = [".AppleDouble", ".DS_Store"]
 
     def __init__(self, directory, release_name=None, process_method=None, is_priority=None):
         """
@@ -308,7 +308,7 @@ class PostProcessor(object):
                 # Check that this is a valid subtitle language for this subtitle, and if so prepend the extension with it so it is retained
                 cur_lang_name = sickchill.oldbeard.subtitles.from_code(cur_lang).name
                 if new_base_name and cur_lang == "pt-BR" or cur_lang_name != "Undetermined":
-                    cur_extension = ".".join((cur_lang, cur_extension))
+                    cur_extension = f"{cur_lang}.{cur_extension}"
 
             # replace .nfo with .nfo-orig to avoid conflicts
             if cur_extension == "nfo" and settings.NFO_RENAME is True:
@@ -316,7 +316,7 @@ class PostProcessor(object):
 
             # If new base name then convert name
             if new_base_name:
-                new_filename = ".".join((new_base_name, cur_extension))
+                new_filename = f"{new_base_name}.{cur_extension}"
             # if we're not renaming we still want to change extensions sometimes
             else:
                 new_filename = os.path.basename(replace_extension(cur_file_path, cur_extension))
@@ -549,7 +549,7 @@ class PostProcessor(object):
 
         # remember whether it's a proper
         if parse_result.extra_info:
-            self.is_proper = re.search(r"\b(proper|repack|real)\b", parse_result.extra_info, re.I) is not None
+            self.is_proper = re.search(r"\b(proper|repack|real)\b", parse_result.extra_info, re.IGNORECASE) is not None
 
         # if the result is complete then remember that for later
         # if the result is complete then set release name
@@ -948,9 +948,10 @@ class PostProcessor(object):
         # retrieve/create the corresponding TVEpisode objects
         episode_object = self._get_ep_obj(show, season, episodes)
         old_ep_status_, old_ep_quality = common.Quality.splitCompositeStatus(episode_object.status)
+        self._log(_("Processing as - {pretty_name}").format(pretty_name=episode_object.pretty_name))
 
         # get the quality of the episode we're processing
-        if quality and not common.Quality.qualityStrings[quality] == "Unknown":
+        if quality and common.Quality.qualityStrings[quality] != "Unknown":
             self._log(_("Snatch history had a quality in it, using that: ") + common.Quality.qualityStrings[quality], logger.DEBUG)
             new_ep_quality = quality
         else:
@@ -1206,6 +1207,9 @@ class PostProcessor(object):
             # do the library update for EMBY
             notifiers.emby_notifier.update_library(episode_object.show)
 
+            # do the library update for JELLYFIN
+            notifiers.jellyfin_notifier.update_library(episode_object.show)
+
             # do the library update for NMJ
             # nmj_notifier kicks off its library update when the notify_download is issued (inside notifiers)
 
@@ -1233,9 +1237,14 @@ class PostProcessor(object):
 
 
 def guessit_findit(name: str) -> Union["ParseResult", None]:
-    logger.debug(f"Trying a new way to verify if we can parse this file")
+    logger.debug(f"Trying a new way to verify if we can parse this file; {name}")
     title = guessit(name, {"type": "episode"}).get("title")
+
     if title:
+        # if the title is a list instead of a string, then join it with spaces.
+        if isinstance(title, list):
+            title = " ".join(title)
+
         show: "TVShow" = helpers.get_show(title)
         if show:
             try:

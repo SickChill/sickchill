@@ -25,7 +25,7 @@ class SceneTests(conftest.SickChillTestDBCase):
         show = Show(1, indexerid)
         show.name = name
 
-        result = show_name_helpers.allPossibleShowNames(show)
+        result = show_name_helpers.all_possible_show_names(show)
         assert len(set(expected).intersection(set(result))) == len(expected)
 
     def test_all_possible_show_names(self):
@@ -75,11 +75,11 @@ class SceneExceptionTestCase(conftest.SickChillTestDBCase):
         """
         assert scene_exceptions.get_scene_exceptions(0) == []
 
-    def test_scene_ex_babylon_5(self):
-        """
-        Test scene exceptions for Babylon 5
-        """
-        assert sorted(scene_exceptions.get_scene_exceptions(70726)) == ["Babylon 5", "Babylon5"]
+        def test_scene_ex_babylon_5(self):
+            """
+            Test scene exceptions for Babylon 5
+            """
+            assert sorted(scene_exceptions.get_scene_exceptions(70726)) == ["Babylon 5", "Babylon5"]
 
     def test_scene_ex_by_name(self):
         """

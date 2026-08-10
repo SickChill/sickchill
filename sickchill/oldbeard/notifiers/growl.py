@@ -57,7 +57,7 @@ class Notifier(object):
             notice.add_header("Notification-Text", message)
 
         response = self._send(options["host"], options["port"], notice.encode(), options["debug"])
-        return True if isinstance(response, gntp.core.GNTPOK) else False
+        return bool(isinstance(response, gntp.core.GNTPOK))
 
     @staticmethod
     def _send(host, port, data, debug=False):

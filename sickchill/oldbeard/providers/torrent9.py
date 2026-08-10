@@ -34,7 +34,7 @@ class Provider(FrenchTorrentProvider):
                         try:
                             link = result.select_one("a")
                             title = link.get_text(strip=False).replace("HDTV", "HDTV x264-Torrent9")
-                            title = re.sub(r" Saison", " Season", title, flags=re.I)
+                            title = re.sub(r" Saison", " Season", title, flags=re.IGNORECASE)
                             download_url = self._retrieve_dllink_from_url(link.get("href"))
                             if not all([title, download_url]):
                                 logger.debug(_("Could not find title and download url for result"))

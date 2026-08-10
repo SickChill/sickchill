@@ -9,6 +9,7 @@ import re
 import struct
 import zlib
 from time import sleep
+from typing import ClassVar
 from xml.etree import ElementTree
 from xmlrpc.client import ServerProxy
 
@@ -17,7 +18,7 @@ from babelfish import Language, language_converters
 from requests.structures import CaseInsensitiveDict
 from subliminal import __short_version__
 from subliminal.providers import Provider, TimeoutSafeTransport
-from subliminal.subtitle import fix_line_ending, Subtitle
+from subliminal.subtitle import Subtitle, fix_line_ending
 
 from sickchill import settings
 from sickchill.oldbeard.helpers import make_context
@@ -108,7 +109,7 @@ class BSPlayerSubtitle(Subtitle):
 class BSPlayerProvider(Provider):
     """BSPlayer Provider."""
 
-    languages = {Language.fromalpha3b(l) for l in language_converters["alpha3b"].codes}
+    languages: ClassVar[set[Language]] = {Language.fromalpha3b(lang) for lang in language_converters["alpha3b"].codes}
     server_url = "https://api.bsplayer.org/xml-rpc"
     user_agent = "subliminal v%s" % __short_version__
 
@@ -151,7 +152,7 @@ class BSPlayerProvider(Provider):
         logger.error("[BSPlayer] ERROR: Too many tries (%d)..." % tries)
 
     def initialize(self):
-        root = self._api_request(func_name="logIn", params=("<username></username>" "<password></password>" "<AppID>BSPlayer v2.67</AppID>"))
+        root = self._api_request(func_name="logIn", params=("<username></username><password></password><AppID>BSPlayer v2.67</AppID>"))
         res = root.find(".//return")
         if res.find("status").text == "OK":
             self.token = res.find("data").text
@@ -173,7 +174,7 @@ class BSPlayerProvider(Provider):
                 "<movieSize>{movie_size}</movieSize>"
                 "<languageId>{language_ids}</languageId>"
                 "<imdbId>*</imdbId>"
-            ).format(token=self.token, movie_hash=name_hash, movie_size=size, language_ids=",".join([l.alpha3 for l in languages])),
+            ).format(token=self.token, movie_hash=name_hash, movie_size=size, language_ids=",".join([lang.alpha3 for lang in languages])),
         )
         res = root.find(".//return/result")
         if res.find("status").text != "OK":

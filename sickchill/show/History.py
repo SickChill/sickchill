@@ -7,16 +7,17 @@ import subliminal
 
 from sickchill import logger, settings
 from sickchill.helper.metaclasses import Singleton
-from sickchill.oldbeard.classes import SearchResult
+from sickchill.oldbeard.network_timezones import sc_now
+from sickchill.providers.result_classes import SearchResult
 
 if TYPE_CHECKING:
-    from sickchill.tv import TVEpisode, TVShow
     from sickchill.oldbeard.subtitles import Scores
     from sickchill.providers.GenericProvider import GenericProvider
+    from sickchill.tv import TVEpisode, TVShow
 
 from sickchill.helper.common import remove_extension, try_int
 from sickchill.helper.exceptions import EpisodeNotFoundException
-from sickchill.oldbeard.common import FAILED, Quality, SNATCHED, SUBTITLED, WANTED
+from sickchill.oldbeard.common import FAILED, SNATCHED, SUBTITLED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
 
 
@@ -53,7 +54,7 @@ class History(object, metaclass=Singleton):
         # noinspection SqlWithoutWhere
         self.db.action("DELETE FROM history")
 
-    def get(self, limit: int = 100, action: str = None):
+    def get(self, limit: int = 100, action: str | None = None):
         """
         :param limit: The maximum number of elements to return
         :param action: The type of action to filter in the history. Either 'downloaded' or 'snatched'. Anything else or
@@ -115,7 +116,7 @@ class History(object, metaclass=Singleton):
         """
         Remove all elements older than 30 days from the history
         """
-        back_thirty_days = (datetime.today() - timedelta(days=30)).strftime(self.date_format)
+        back_thirty_days = (sc_now() - timedelta(days=30)).strftime(self.date_format)
         self.db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
         if settings.USE_FAILED_DOWNLOADS:
             self.failed_db.action("DELETE FROM history WHERE date < ?", [back_thirty_days])
@@ -136,7 +137,7 @@ class History(object, metaclass=Singleton):
         # DataSource: sickchill.db
         return self.db.action(
             "INSERT INTO history (action, date, showid, season, episode, quality, resource, provider, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [action, datetime.today().strftime(self.date_format), showid, season, episode, quality, resource, provider, version],
+            [action, sc_now().strftime(self.date_format), showid, season, episode, quality, resource, provider, version],
         )
 
     def log_snatch(self, result: SearchResult):
@@ -167,7 +168,7 @@ class History(object, metaclass=Singleton):
                 self.failed_db.action(
                     'INSERT INTO history (date, size, "release", provider, showid, season, episode, old_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                     [
-                        datetime.today().strftime(self.date_format),
+                        sc_now().strftime(self.date_format),
                         result.size,
                         self.prepare_failed_name(result.name),
                         provider,
@@ -178,7 +179,7 @@ class History(object, metaclass=Singleton):
                     ],
                 )
 
-    def log_download(self, episode: "TVEpisode", filename: str, quality: int, group: str = None, version: int = -1):
+    def log_download(self, episode: "TVEpisode", filename: str, quality: int, group: str | None = None, version: int = -1):
         """
         Log history of download
 
@@ -237,8 +238,8 @@ class History(object, metaclass=Singleton):
             logger.warning("Release not found in snatch history.")
         elif len(sql_results) > 1:
             logger.warning("Multiple logged snatches found for release")
-            num_sizes = len(set(x["size"] for x in sql_results))
-            providers = len(set(x["provider"] for x in sql_results))
+            num_sizes = len({x["size"] for x in sql_results})
+            providers = len({x["provider"] for x in sql_results})
             if num_sizes == 1:
                 logger.warning("However, they're all the same size. Continuing with found size.")
                 size = sql_results[0]["size"]

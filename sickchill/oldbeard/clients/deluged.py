@@ -5,9 +5,8 @@ from urllib.parse import urlparse
 from deluge_client import DelugeRPCClient, FailedToReconnectException
 
 from sickchill import logger, settings
+from sickchill.oldbeard.clients.__deluge_base import DelugeBase
 from sickchill.oldbeard.clients.generic import GenericClient
-
-from .__deluge_base import DelugeBase
 
 
 class Client(GenericClient, DelugeBase):
@@ -33,7 +32,7 @@ class Client(GenericClient, DelugeBase):
         self.setup()
         if not self.client.connected:
             try:
-                for attempt in range(0, 5):
+                for attempt in range(5):
                     try:
                         self.client.connect()
                         break

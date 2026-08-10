@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
+from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.helpers import make_context
-
-from .common import Quality
+from sickchill.oldbeard.network_timezones import sc_today
 
 if TYPE_CHECKING:
-    from .classes import SearchResult
+    from sickchill.providers.result_classes import SearchResult
 
 
 def get_proxy(https: bool, host: str, username: str, password: str, verify: bool) -> xmlrpc.client.ServerProxy:
@@ -50,7 +50,7 @@ def send_nzb(result: "SearchResult", proper=False) -> bool:
             logger.exception(f"Protocol Error: {error}")
         return False
 
-    newest_episode_age = datetime.date.today() - max({episode.airdate for episode in result.episodes if episode.airdate})
+    newest_episode_age = sc_today() - max({episode.airdate for episode in result.episodes if episode.airdate})
     if newest_episode_age <= datetime.timedelta(days=7):
         add_to_top = True
         nzbget_priority = settings.NZBGET_PRIORITY

@@ -4,9 +4,9 @@ import threading
 import sickchill.oldbeard.search_queue
 from sickchill import logger, settings
 from sickchill.helper.exceptions import MultipleShowObjectsException
+from sickchill.oldbeard import common, db, network_timezones
+from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.show.Show import Show
-
-from . import common, db, network_timezones
 
 
 class DailySearcher(object):
@@ -30,9 +30,9 @@ class DailySearcher(object):
             network_timezones.update_network_dict()
 
         if network_timezones.network_dict:
-            curDate = (datetime.date.today() + datetime.timedelta(days=1)).toordinal()
+            curDate = (sc_today() + datetime.timedelta(days=1)).toordinal()
         else:
-            curDate = (datetime.date.today() + datetime.timedelta(days=2)).toordinal()
+            curDate = (sc_today() + datetime.timedelta(days=2)).toordinal()
 
         curTime = datetime.datetime.now(network_timezones.sc_timezone)
 

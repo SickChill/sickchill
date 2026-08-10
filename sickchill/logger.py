@@ -8,7 +8,7 @@ from urllib.parse import quote
 
 from sickchill import settings
 from sickchill.helper.common import dateTimeFormat
-from sickchill.oldbeard import classes, notifiers
+from sickchill.logging.weblog import WebErrorViewer
 
 # log levels
 ERROR = logging.ERROR
@@ -52,13 +52,16 @@ class DispatchFormatter(logging.Formatter, object):
         # sort the list in order of descending length so that entire item is censored
         # e.g. password and password_1 both get censored instead of getting ********_1
         censored.sort(key=len, reverse=True)
+        # remove sickchill from the list of censored items
+        censored = [item for item in censored if item and item.lower() != "sickchill"]
 
         if not isinstance(msg, (str, bytes)):
             msg = repr(msg)
 
         for item in censored:
             try:
-                # passwords that include ++ for example will error. Cannot escape or it wont match at all.
+                # passwords that include ++ for example will error. Cannot escape or it won't match at all.
+                # Always use 8 *'s, so people cant guess censored item length for things like passwords.
                 msg = re.sub(rf"\b({item})\b", "*" * 8, msg)
             except re.error:
                 msg = msg.replace(item, "*" * 8)
@@ -66,14 +69,12 @@ class DispatchFormatter(logging.Formatter, object):
                 print(msg)
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, re.I)
+        msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, flags=re.IGNORECASE)
 
-        if record.levelno == ERROR:
-            classes.ErrorViewer.add(classes.UIError(msg))
-            notifiers.notify_logged_error(classes.UIError(msg))
+        # Set the new message into the record!
+        record.msg = msg
 
-        elif record.levelno == WARNING:
-            classes.WarningViewer.add(classes.UIError(msg))
+        WebErrorViewer.add(record)
 
         return super().format(record)
 
@@ -271,7 +272,7 @@ def log_data(min_level, log_filter, log_search, max_lines):
     data = []
     for _log_file in log_files:
         if len(data) < max_lines:
-            with open(_log_file, "r") as f:
+            with open(_log_file) as f:
                 data += [line.strip() + "\n" for line in reversed(f.readlines()) if line.strip()]
         else:
             break
@@ -293,10 +294,9 @@ def log_data(min_level, log_filter, log_search, max_lines):
             if level not in LOGGING_LEVELS:
                 final_data.append("AA " + x)
                 found_lines += 1
-            elif log_search and log_search.lower() in x.lower():
-                final_data.append(x)
-                found_lines += 1
-            elif not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == "<NONE>" or log_name.startswith(log_filter)):
+            elif (log_search and log_search.lower() in x.lower()) or (
+                not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == "<NONE>" or log_name.startswith(log_filter))
+            ):
                 final_data.append(x)
                 found_lines += 1
         else:

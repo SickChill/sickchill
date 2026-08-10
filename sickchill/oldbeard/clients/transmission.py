@@ -6,11 +6,11 @@ from sickchill import settings
 from sickchill.oldbeard.clients.generic import GenericClient
 
 if TYPE_CHECKING:  # pragma: no cover
-    from sickchill.oldbeard.classes import TorrentSearchResult
+    from sickchill.providers.result_classes import TorrentSearchResult
 
 
 class Client(GenericClient):
-    def __init__(self, host: str = None, username: str = None, password: str = None):
+    def __init__(self, host: str | None = None, username: str | None = None, password: str | None = None):
         super().__init__("Transmission", host, username, password)
         self.url = "/".join((self.host.rstrip("/"), settings.TORRENT_RPCURL.strip("/"), "rpc"))
 

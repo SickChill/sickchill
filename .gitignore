@@ -25,6 +25,7 @@ server.key
 /tests/cache.db*
 /tests/failed.db
 /tests/data/
+/tests/base.*
 
 #  Compiled source   #
 ######################
@@ -45,6 +46,7 @@ Session.vim
 .ropeproject/*
 *.iml
 .idea
+.vscode
 *.ipr
 .settings/*
 

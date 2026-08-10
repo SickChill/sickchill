@@ -7,6 +7,7 @@ class InitialSchema(db.SchemaUpgrade):
         return self.has_table("db_version")
 
     def execute(self):
+        # ruff: disable [ISC004]
         queries = (
             ("CREATE TABLE lastUpdate (provider TEXT, time NUMERIC);",),
             ("CREATE TABLE lastSearch (provider TEXT, time NUMERIC);",),
@@ -28,6 +29,7 @@ class InitialSchema(db.SchemaUpgrade):
             ("CREATE INDEX IF NOT EXISTS provider ON results (provider);",),
             ("CREATE INDEX IF NOT EXISTS seeders ON results (seeders);",),
         )
+        # ruff: enable [ISC004]
         for query in queries:
             self.connection.action(query[0])
 
@@ -64,3 +66,13 @@ class ResultsTable(InitialSchema):
                     [provider_id],
                 )
                 self.connection.action("DROP TABLE {}".format(provider_id))
+
+
+class AddCacheIndexes(ResultsTable):
+    def test(self):
+        return self.get_db_version() >= 2
+
+    def execute(self):
+        self.connection.action("CREATE INDEX IF NOT EXISTS idx_scene_exceptions_lookup ON scene_exceptions (indexer_id, show_name, season);")
+        self.connection.action("CREATE INDEX IF NOT EXISTS idx_results_name ON results (name);")
+        self.increment_db_version()

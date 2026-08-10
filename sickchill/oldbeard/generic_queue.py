@@ -1,7 +1,8 @@
 import datetime
 import threading
 
-from .. import logger
+from sickchill import logger
+from sickchill.oldbeard.network_timezones import sc_now
 
 
 class QueuePriorities(object):
@@ -48,7 +49,7 @@ class GenericQueue(object):
         :return: item
         """
         with self.lock:
-            item.added = datetime.datetime.now()
+            item.added = sc_now()
             self.queue.append(item)
 
             return item

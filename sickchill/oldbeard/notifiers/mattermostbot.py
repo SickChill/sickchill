@@ -46,7 +46,7 @@ class Notifier(object):
         mattermostbot_post_url = settings.MATTERMOSTBOT_URL + self.MATTERMOSTBOT_POST_URI
         mattermostbot_author = settings.MATTERMOSTBOT_AUTHOR
         mattermostbot_post_url.replace("//api", "/api")
-        mattermostbot_icon_emoji = settings.MATTERMOSTBOT_ICON_EMOJI
+        # mattermostbot_icon_emoji = settings.MATTERMOSTBOT_ICON_EMOJI
         logger.info("Sending mattermost bot message: " + message + " towards " + mattermostbot_post_url)
         logger.info("Sending mattermost bot action: " + action)
 

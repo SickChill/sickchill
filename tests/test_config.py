@@ -46,9 +46,7 @@ class ConfigTestBasic(unittest.TestCase):
         """
         Test clean_hosts
         """
-        dirty_hosts = (
-            "http://127.0.0.1:8080,https://mail.google.com/mail," "http://localhost:8081/home/displayShow?show=80379#season-10," "www.google.com/search,"
-        )
+        dirty_hosts = "http://127.0.0.1:8080,https://mail.google.com/mail,http://localhost:8081/home/displayShow?show=80379#season-10,www.google.com/search,"
         clean_result = "127.0.0.1:8080,mail.google.com:5050,localhost:8081,www.google.com:5050"
         assert config.clean_hosts(dirty_hosts, "5050") == clean_result
 

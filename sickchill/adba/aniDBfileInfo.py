@@ -32,8 +32,8 @@ def get_file_hash(filePath: Path):
         hashes = [md4_hash(data).digest() for data in a]
         if len(hashes) == 1:
             return hashes[0].hex()
-        else:
-            return md4_hash(reduce(lambda b, c: b + c, hashes, b"")).hexdigest()
+
+        return md4_hash(reduce(lambda b, c: b + c, hashes, b"")).hexdigest()
 
 
 def download_file(url, filename: Path):
@@ -70,9 +70,8 @@ def read_anidb_xml(cache_dir: Path):
             return
     else:
         mtime = os.path.getmtime(file_path)
-        if time.time() > mtime + 24 * 60 * 60:
-            if not get_anime_titles_xml(file_path):
-                return
+        if time.time() > mtime + 24 * 60 * 60 and not get_anime_titles_xml(file_path):
+            return
 
     return read_xml_into_etree(file_path)
 
@@ -84,9 +83,8 @@ def read_tvdb_map_xml(cache_dir: Path):
             return
     else:
         mtime = os.path.getmtime(file_path)
-        if time.time() > mtime + 24 * 60 * 60:
-            if not get_anime_list_xml(file_path):
-                return
+        if time.time() > mtime + 24 * 60 * 60 and not get_anime_list_xml(file_path):
+            return
 
     return read_xml_into_etree(file_path)
 

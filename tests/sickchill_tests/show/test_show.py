@@ -124,7 +124,6 @@ class TestTVShow(TVShow):
         """
         Override TVShow.loadFromDB to avoid DB access during testing
         """
-        pass
 
 
 if __name__ == "__main__":

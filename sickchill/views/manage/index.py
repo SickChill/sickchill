@@ -5,9 +5,8 @@ import posixpath
 
 from sickchill import logger, settings
 from sickchill.helper import episode_num, try_int
-from sickchill.helper.exceptions import CantRefreshShowException, CantUpdateShowException
 from sickchill.oldbeard import db, subtitles as subtitle_module, ui
-from sickchill.oldbeard.common import Overview, Quality, SNATCHED
+from sickchill.oldbeard.common import SNATCHED, Overview, Quality
 from sickchill.show.Show import Show
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home, WebRoot
@@ -16,7 +15,27 @@ from sickchill.views.routes import Route
 
 @Route("/manage(/?.*)", name="manage:main")
 class Manage(Home, WebRoot):
+    """
+    Handle manage-section pages and actions.
+
+    This controller renders the mass update, episode status, missing subtitle,
+    backlog, mass edit, and failed downloads management views. It also handles
+    form submissions that queue show updates, refreshes, renames, subtitle
+    downloads, metadata actions, deletions, and bulk episode status changes.
+    """
+
+    def __init__(self, backend, back2=None):
+        """
+        Initialize the manage controller.
+        """
+        super().__init__(backend, back2)
+        self.to_change_show = None
+        self.to_change_eps = None
+
     def index(self):
+        """
+        Render the mass update landing page.
+        """
         t = PageTemplate(rh=self, filename="manage.mako")
         return t.render(
             title=_("Mass Update"),
@@ -28,6 +47,13 @@ class Manage(Home, WebRoot):
 
     @staticmethod
     def showEpisodeStatuses(indexer_id, whichStatus):
+        """
+        Retrieve episode statuses for a given show and status filter.
+
+        :param indexer_id: The indexer ID of the show.
+        :param whichStatus: The status filter for episodes.
+        :return: JSON-formatted episode status data.
+        """
         status_list = [int(whichStatus)]
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
@@ -51,6 +77,13 @@ class Manage(Home, WebRoot):
         return json.dumps(result)
 
     def episodeStatuses(self):
+        """
+        Render the episode status overview page.
+
+        When a status is selected, this builds per-show episode counts for all
+        matching episodes. Without a selected status, it renders the selection
+        form only.
+        """
         which_status = self.get_query_argument("whichStatus", None)
         if which_status:
             status_list = [int(which_status)]
@@ -110,6 +143,18 @@ class Manage(Home, WebRoot):
 
     # noinspection PyUnusedLocal
     def changeEpisodeStatuses(self, oldStatus, newStatus, *args, **kwargs):
+        """
+        Change selected episodes from one status to another.
+
+        Selected episodes are collected from submitted checkbox arguments. A
+        submitted `all` marker expands to all matching episodes for that show.
+
+        :param oldStatus: Current status to change from.
+        :param newStatus: New status to apply.
+        :param args: Unused positional route arguments.
+        :param kwargs: Submitted checkbox values keyed by show and episode.
+        :return: Redirect to the episode status overview.
+        """
         status_list = [int(oldStatus)]
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
@@ -151,6 +196,16 @@ class Manage(Home, WebRoot):
 
     @staticmethod
     def showSubtitleMissed(indexer_id, whichSubs):
+        """
+        Return missing-subtitle episode rows for a show.
+
+        Used by the missing subtitles management page to lazily expand a show
+        and fetch episodes that still need the requested subtitle language.
+
+        :param indexer_id: Show identifier.
+        :param whichSubs: Subtitle language code, or `all` for all wanted languages.
+        :return: JSON mapping seasons and episodes to episode names and subtitles.
+        """
         main_db_con = db.DBConnection()
         cur_show_results = main_db_con.select(
             "SELECT season, episode, name, subtitles FROM tv_episodes WHERE showid = ? {0} AND (status LIKE '%4' OR status LIKE '%6') and "
@@ -181,7 +236,13 @@ class Manage(Home, WebRoot):
         return json.dumps(result)
 
     def subtitleMissed(self):
-        which_subs = self.get_body_argument("whichSubs", None)
+        """
+        Render the missing subtitles management page.
+        When a subtitle language is selected, this builds per-show counts for
+        episodes missing that language. Without a selected language, it renders
+        the selection form only.
+        """
+        which_subs = self.get_query_argument("whichSubs", None)
         t = PageTemplate(rh=self, filename="manage_subtitleMissed.mako")
 
         if not which_subs:
@@ -239,6 +300,13 @@ class Manage(Home, WebRoot):
 
     # noinspection PyUnusedLocal
     def downloadSubtitleMissed(self, *args, **kwargs):
+        """
+        Queue subtitle downloads for selected missing-subtitle episodes.
+
+        :param args: Unused positional arguments.
+        :param kwargs: Keyword arguments mapping show identifiers to subtitle languages.
+        :return: None
+        """
         to_download = {}
 
         # make a list of all shows and their associated args
@@ -275,6 +343,13 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/subtitleMissed/")
 
     def backlogShow(self):
+        """
+        Queue a show for backlog processing.
+        The target show is read from the `indexer_id` query argument.
+        :param args: Unused positional arguments.
+        :param kwargs: Keyword arguments mapping show identifiers to subtitle languages.
+        :return: None
+        """
         show = self.get_query_argument("indexer_id")
         show_object = Show.find(settings.show_list, show)
 
@@ -284,6 +359,10 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/backlogOverview/")
 
     def backlogOverview(self):
+        """
+        Render the backlog overview page.
+        """
+
         t = PageTemplate(rh=self, filename="manage_backlogOverview.mako")
 
         show_counts = {}
@@ -361,6 +440,11 @@ class Manage(Home, WebRoot):
 
     @staticmethod
     def __gooey_path(name, method):
+        """
+        Wrapper around os.path and ntpath methods to handle both Windows and Unix paths.
+        The active OS path module is tried first, followed by Windows and POSIX
+        path handling. This helps handle paths created on different platforms.
+        """
         result = getattr(os.path, method)(name)
         if result == name or not result:
             result = getattr(ntpath, method)(name)
@@ -371,6 +455,11 @@ class Manage(Home, WebRoot):
 
     # noinspection PyProtectedMember
     def massEdit(self):
+        """
+        Render the mass edit page for shows.
+        Determines shared field values across selected shows so the form can
+        display common settings or leave mixed settings unset.
+        """
         t = PageTemplate(rh=self, filename="manage_massEdit.mako")
 
         edit = self.get_body_arguments("edit")
@@ -512,6 +601,10 @@ class Manage(Home, WebRoot):
 
     # noinspection PyProtectedMember, PyUnusedLocal
     def massEditSubmit(self):
+        """
+        Process mass edit form submission for shows.
+        Handles updating show settings based on form inputs and selected shows.
+        """
         paused = self.get_body_argument("paused", None)
         default_ep_status = self.get_body_argument("default_ep_status", None)
         anime = self.get_body_argument("anime", None)
@@ -553,14 +646,15 @@ class Manage(Home, WebRoot):
             else:
                 new_show_dir = show_object.get_location
 
-            new_paused = ("off", "on")[(paused == "enable", show_object.paused)[paused == "keep"]]
-            new_default_ep_status = (default_ep_status, show_object.default_ep_status)[default_ep_status == "keep"]
-            new_anime = ("off", "on")[(anime == "enable", show_object.anime)[anime == "keep"]]
-            new_sports = ("off", "on")[(sports == "enable", show_object.sports)[sports == "keep"]]
-            new_scene = ("off", "on")[(scene == "enable", show_object.scene)[scene == "keep"]]
-            new_air_by_date = ("off", "on")[(air_by_date == "enable", show_object.air_by_date)[air_by_date == "keep"]]
-            new_season_folders = ("off", "on")[(season_folders == "enable", show_object.season_folders)[season_folders == "keep"]]
-            new_subtitles = ("off", "on")[(subtitles == "enable", show_object.subtitles)[subtitles == "keep"]]
+            # Explicitly handle "enable", "disable", and "keep" states
+            new_paused = 1 if paused == "enable" else (0 if paused == "disable" else show_object.paused)
+            new_anime = 1 if anime == "enable" else (0 if anime == "disable" else show_object.anime)
+            new_sports = 1 if sports == "enable" else (0 if sports == "disable" else show_object.sports)
+            new_scene = 1 if scene == "enable" else (0 if scene == "disable" else show_object.scene)
+            new_air_by_date = 1 if air_by_date == "enable" else (0 if air_by_date == "disable" else show_object.air_by_date)
+            new_season_folders = 1 if season_folders == "enable" else (0 if season_folders == "disable" else show_object.season_folders)
+            new_subtitles = 1 if subtitles == "enable" else (0 if subtitles == "disable" else show_object.subtitles)
+            new_default_ep_status = show_object.default_ep_status if default_ep_status == "keep" else default_ep_status
 
             # new mass words update section
             if ignore_words == "new":
@@ -591,25 +685,24 @@ class Manage(Home, WebRoot):
 
             exceptions_list = []
 
-            current_show_errors += self.editShow(
-                current_show,
-                new_show_dir,
-                any_qualities,
-                best_qualities,
-                exceptions_list,
-                defaultEpStatus=new_default_ep_status,
-                season_folders=new_season_folders,
-                paused=new_paused,
-                sports=new_sports,
-                subtitles=new_subtitles,
-                rls_ignore_words=new_ignore_words,
-                rls_prefer_words=new_prefer_words,
-                rls_require_words=new_require_words,
-                anime=new_anime,
-                scene=new_scene,
-                air_by_date=new_air_by_date,
-                directCall=True,
-            )
+            self.current_show = current_show
+            self.new_show_dir = new_show_dir
+            self.any_qualities = any_qualities
+            self.best_qualities = best_qualities
+            self.exceptions_list = exceptions_list
+            self.new_default_ep_status = new_default_ep_status
+            self.new_season_folders = new_season_folders
+            self.new_paused = new_paused
+            self.new_sports = new_sports
+            self.new_subtitles = new_subtitles
+            self.new_ignore_words = new_ignore_words
+            self.new_prefer_words = new_prefer_words
+            self.new_require_words = new_require_words
+            self.new_anime = new_anime
+            self.new_scene = new_scene
+            self.new_air_by_date = new_air_by_date
+
+            current_show_errors += self.editShow(direct_call=True)
 
             if current_show_errors:
                 logger.exception(f"Errors: {current_show_errors}")
@@ -623,6 +716,10 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def massUpdate(self):
+        """
+        Process mass update actions for shows.
+        Handles refreshing, updating, renaming, subtitle management, deletion, removal, and metadata updates for selected shows.
+        """
         update = self.get_body_arguments("update")
         refresh = self.get_body_arguments("refresh")
         rename = self.get_body_arguments("rename")
@@ -647,29 +744,33 @@ class Manage(Home, WebRoot):
                 continue
 
             if curShowID in delete:
-                Show.delete(show_object, True)
+                error, show = show_object.delete(remove_files=True)
+                if error:
+                    errors.append(_("Unable to delete show {show_name}: {error}").format(show_name=show_object.name, error=error))
                 # don't do anything else if it's being deleted
                 continue
 
             if curShowID in remove:
-                Show.delete(show_object)
+                error, show = show_object.delete(remove_files=False)
+                if error:
+                    errors.append(_("Unable to remove show {show_name}: {error}").format(show_name=show_object.name, error=error))
                 # don't do anything else if it's being removed
                 continue
 
             if curShowID in update:
-                try:
-                    Show.update(show_object, True)
+                error, show = show_object.update(force=True)
+                if error:
+                    errors.append(_("Unable to update show {show_name}: {error}").format(show_name=show_object.name, error=error))
+                else:
                     updates.append(show_object.name)
-                except CantUpdateShowException as error:
-                    errors.append(_("Unable to update show: {exception_format}").format(exception_format=error))
 
             # don't bother refreshing shows that were updated anyway
             if curShowID in refresh and curShowID not in update:
-                try:
-                    Show.refresh(show_object, force=True)
-                    refreshes.append(show_object.name)
-                except CantRefreshShowException as error:
+                error, show = show_object.refresh(force=True)
+                if error:
                     errors.append(_("Unable to refresh show {show_name}: {exception_format}").format(show_name=show_object.name, exception_format=error))
+                else:
+                    refreshes.append(show_object.name)
 
             if curShowID in rename:
                 settings.showQueueScheduler.action.rename_show_episodes(show_object)
@@ -713,6 +814,10 @@ class Manage(Home, WebRoot):
         return self.redirect("/manage/")
 
     def failedDownloads(self):
+        """
+        Handle failed downloads management.
+        Processes removal of failed downloads and redirects to the failed downloads page.
+        """
         remove = self.get_body_arguments("remove[]")
         limit = self.get_argument("limit", "100")
         failed_db_con = db.DBConnection("failed.db")

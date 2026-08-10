@@ -1,15 +1,15 @@
 <%inherit file="/layouts/main.mako" />
 <%!
-    from sickchill.oldbeard import classes
-    import sickchill
+    from sickchill.logging.weblog import WebErrorViewer
+    import logging
 %>
 <%block name="content">
     <%
-        if logLevel == sickchill.logger.WARNING:
-            errors = classes.WarningViewer.errors
+        if logLevel == logging.WARNING:
+            errors = WebErrorViewer.warnings
             title = _('WARNING logs')
         else:
-            errors = classes.ErrorViewer.errors
+            errors = WebErrorViewer.errors
             title = _('ERROR logs')
     %>
     <div class="row">

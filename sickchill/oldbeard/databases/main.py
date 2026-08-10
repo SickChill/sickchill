@@ -4,6 +4,7 @@ from pathlib import Path
 from sickchill import logger, settings
 from sickchill.helper.common import episode_num
 from sickchill.oldbeard import common, db, helpers
+from sickchill.oldbeard.network_timezones import sc_today
 
 MIN_DB_VERSION = 44
 MAX_DB_VERSION = 44
@@ -153,7 +154,7 @@ class MainSanityCheck(db.DBSanityCheck):
 
     def fix_unaired_episodes(self):
         assert False, "This fix is disabled!"
-        current_date = datetime.date.today()
+        current_date = sc_today()
         sql_results = self.connection.select(
             "SELECT episode_id FROM tv_episodes WHERE (airdate > ? or airdate = 1) AND status in (?,?) AND season > 0",
             [current_date.toordinal(), common.SKIPPED, common.WANTED],
@@ -299,7 +300,7 @@ class AddPreferWords(InitialSchema):
 
 
 class AddCustomNameToShow(AddPreferWords):
-    """Adding column rls_prefer_words to tv_shows"""
+    """Adding column custom_name to tv_shows"""
 
     def test(self):
         return self.has_column("tv_shows", "custom_name")

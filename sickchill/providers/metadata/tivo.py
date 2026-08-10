@@ -5,10 +5,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode, TVShow
 
+from sickchill import logger
 from sickchill.oldbeard import helpers
-
-from ... import logger
-from . import generic
+from sickchill.providers.metadata import generic
 
 
 class TIVOMetadata(generic.GenericMetadata):
@@ -206,7 +205,7 @@ class TIVOMetadata(generic.GenericMetadata):
             # Replace double curly quotes
             sanitizedDescription = sanitizedDescription.replace("\u201c", '"').replace("\u201d", '"')
             # Replace single curly quotes
-            sanitizedDescription = sanitizedDescription.replace("\u2018", "'").replace("\u2019", "'").replace("\u02BC", "'")
+            sanitizedDescription = sanitizedDescription.replace("\u2018", "'").replace("\u2019", "'").replace("\u02bc", "'")
 
             data.append(f"description : {sanitizedDescription}")
 

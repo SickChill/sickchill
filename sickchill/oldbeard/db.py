@@ -6,7 +6,6 @@ import time
 import traceback
 import warnings
 from sqlite3 import OperationalError
-from typing import List
 
 from sickchill import logger, settings
 
@@ -45,7 +44,7 @@ class DBConnection(object):
             if self.filename not in db_cons or not db_cons[self.filename]:
                 db_locks[self.filename] = threading.Lock()
 
-                self.connection = sqlite3.connect(self.full_path, 20, check_same_thread=False)
+                self.connection = sqlite3.connect(self.full_path, timeout=20, check_same_thread=False)
                 db_cons[self.filename] = self.connection
             else:
                 self.connection = db_cons[self.filename]

@@ -96,10 +96,10 @@
                                 <td>
                                 % try:
                                     % if int(cur_result['airdate']) > 1:
-                                    <% air_date = datetime.datetime.fromordinal(cur_result['airdate']) %>
-                                    % if air_date > datetime.datetime.utcfromtimestamp(0) and cur_show.network:
-                                        <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_result['airdate'], cur_show.airs, cur_show.network)) %>
-                                    % endif
+                                        <% air_date = datetime.datetime.fromordinal(cur_result['airdate']) %>
+                                        % if air_date > datetime.datetime.utcfromtimestamp(0) and cur_show.network:
+                                            <% air_date = scdatetime.scdatetime.convert_to_setting(network_timezones.parse_date_time(cur_result['airdate'], cur_show.airs, cur_show.network)) %>
+                                        % endif
                                         <time datetime="${air_date.isoformat('T')}" class="date">${scdatetime.scdatetime.scfdatetime(air_date)}</time>
                                     % else:
                                         Never

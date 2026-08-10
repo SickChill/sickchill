@@ -526,7 +526,16 @@
                                     <label for="emby_apikey" class="component-title">${_('Emby API Key')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <input type="text" name="emby_apikey" id="emby_apikey" value="${settings.EMBY_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="emby_apikey" id="emby_apikey" value="${settings.EMBY_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="emby_apikey">${_('Generated from Emby > Settings > Advanced > API keys')}</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -546,6 +555,69 @@
                 </div>
             </div>
 
+            <div class="config-group-divider"></div>
+
+            <!-- /jellyfin component-group //-->
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <span class="icon-notifiers-jellyfin" title="${_('Jellyfin')}"></span>
+                        <h3><a href="${anon_url('http://jellyfin.org/')}" rel="noreferrer" target="_blank">Jellyfin</a></h3>
+                        <p>${_('Jellyfin is a volunteer-built media solution that puts you in control of your media. Stream to any device from your own server, with no strings attached. Your media, your server, your way.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Enable')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <input type="checkbox" class="enabler" name="use_jellyfin" id="use_jellyfin" ${checked(settings.USE_JELLYFIN)} />
+                                <label for="use_jellyfin">${_('send update commands to Jellyfin?')}</label>
+                            </div>
+                        </div>
+                        <div id="content_use_jellyfin" ${hidden(settings.USE_JELLYFIN)}>
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label class="component-title">${_('Jellyfin Address:')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" name="jellyfin_host" id="jellyfin_host" value="${settings.JELLYFIN_HOST}" class="form-control input-sm input250" autocapitalize="off" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="jellyfin_host">${_('Host running Jellyfin (eg. https://jellyfin.example.com/ or http://192.168.1.100:8096)')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <label for="jellyfin_apikey" class="component-title">${_('Jellyfin API Key')}</label>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="text" name="jellyfin_apikey" id="jellyfin_apikey" value="${settings.JELLYFIN_APIKEY}" class="form-control input-sm input250" autocapitalize="off" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="testNotification" id="testJELLYFIN-result">${_('Click below to test.')}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input class="btn" type="button" value="Test Jellyfin" id="testJELLYFIN" />
+                                    <input type="submit" class="config_submitter btn" value="${_('Save Changes')}" />
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
             <div class="config-group-divider"></div>
 
             <!-- /nmj component-group //-->

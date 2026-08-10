@@ -2,9 +2,8 @@ import re
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
+from sickchill.show.indexers.tvdb import TVDB
 from sickchill.tv import Show, TVEpisode
-
-from .tvdb import TVDB
 
 
 class ShowIndexer(object):
@@ -42,11 +41,10 @@ class ShowIndexer(object):
             def indexer_attribute(indexer=None):
                 # A value was passed, probably a string. Check keys and then try to convert it to int and check again
                 if indexer is not None and not isinstance(indexer, int):
-                    if indexer not in self.indexers:
-                        if len(indexer) == 1:
-                            check = try_int(indexer, indexer)
-                            if check in self.indexers:
-                                indexer = check
+                    if indexer not in self.indexers and len(indexer) == 1:
+                        check = try_int(indexer, indexer)
+                        if check in self.indexers:
+                            indexer = check
 
                     # Loop and find the right index
                     if indexer not in self.indexers:
@@ -101,30 +99,28 @@ class ShowIndexer(object):
 
         assert bool(indexerid) or bool(name), "Must provide either a name or an indexer id to search indexers with"
 
-        for n in name or "X":
-            n = [re.sub("[. -]", " ", n)]
-            for i in indexer:
-                search = (name, indexerid)[bool(indexerid)]
+        for name_query in name or "X":
+            name_query = re.sub("[. -]", " ", name_query)
+            for indexer_num in indexer:
+                search = (name_query, indexerid)[bool(indexerid)]
                 # noinspection PyUnresolvedReferences
-                logger.debug("Trying to find {} on {}".format(search, self.name(i)))
+                logger.debug("Trying to find {} on {}".format(search, self.name(indexer_num)))
                 if indexerid:
-                    result = self.indexers[i].get_series_by_id(indexerid, language)
+                    result = self.indexers[indexer_num].get_series_by_id(indexerid, language)
                 else:
-                    result = self.indexers[i].get_series_by_name(n, indexerid, language)
+                    result = self.indexers[indexer_num].get_series_by_name(name_query, indexerid, language)
 
                 try:
                     # noinspection PyUnusedLocal
-                    garbage = result.seriesName, result.id
+                    garbage = result.seriesName, result.id  # noqa: F841
                 except AttributeError:
                     # noinspection PyUnresolvedReferences
-                    logger.debug("Failed to find {} on {}".format(search, self.name(i)))
+                    logger.debug("Failed to find {} on {}".format(search, self.name(indexer_num)))
                     continue
 
                 show = Show.find(settings.show_list, result.id)
-                if indexerid and show and show.indexerid == result.id:
-                    return i, result
-                elif indexerid and indexerid == result.id:
-                    return i, result
+                if indexerid and show and show.indexerid == result.id or indexerid and indexerid == result.id:
+                    return indexer_num, result
 
         return None, None
 
@@ -158,7 +154,7 @@ class ShowIndexer(object):
             return ""
 
         class __TVShow(object):
-            def __init__(self, __indexerid, __language, __indexer):
+            def __init__(self, __indexerid, __language, __indexer, /):
                 self.indexerid = __indexerid
                 self.indexer = __indexer or settings.INDEXER_DEFAULT
                 self.lang = __language or settings.INDEXER_DEFAULT_LANGUAGE

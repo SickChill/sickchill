@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import List, Union
 
 import sickchill.start
+from sickchill.oldbeard.network_timezones import sc_now
 
 try:
     from frontend.app import FlaskServer
@@ -47,9 +48,6 @@ from sickchill.oldbeard.event_queue import Events
 from sickchill.tv import TVShow
 from sickchill.update_manager import PipUpdateManager, UpdateManager
 from sickchill.views.server_settings import SCWebServer
-
-# http://bugs.python.org/issue7980#msg221094
-THROWAWAY = datetime.datetime.strptime("20110101", "%Y%m%d")
 
 signal.signal(signal.SIGINT, sickchill.start.sig_handler)
 signal.signal(signal.SIGTERM, sickchill.start.sig_handler)
@@ -190,7 +188,7 @@ class SickChill:
 
                     sys.exit(int(not result))  # Ok -> 0 , Error -> 1
                 else:
-                    self.log(f"Cannot process this upgrade directory, you have files that don't belong in it. Continuing with startup", 1)
+                    self.log(f"Cannot process this upgrade directory, you have files that don't belong in {upgrade_dir}. Continuing with startup", 1)
                     sys.exit(1)  # Ok -> 0 , Error -> 1
 
         # Load the config and publish it to the oldbeard package
@@ -314,7 +312,7 @@ class SickChill:
             for filename in files_list:
                 src_file = os.path.join(src_dir, filename)
                 dst_file = os.path.join(dst_dir, filename)
-                bak_file = os.path.join(dst_dir, "{}.bak-{}".format(filename, datetime.datetime.now().strftime("%Y%m%d_%H%M%S")))
+                bak_file = os.path.join(dst_dir, "{}.bak-{}".format(filename, sc_now().strftime("%Y%m%d_%H%M%S")))
                 sickchill_db = os.path.join(dst_dir, "sickchill.db")
                 sickbeard_db = os.path.join(src_dir, "sickbeard.db")
                 if os.path.isfile(src_file):
@@ -375,7 +373,7 @@ class SickChill:
 
         # Make sure the logger has stopped, just in case
         logger.shutdown()
-        os._exit(0)  # noqa
+        os._exit(0)
 
     def force_update(self):
         """
@@ -430,7 +428,7 @@ class SickChill:
 
         updater = UpdateManager()
         if not updater.updater:
-            self.log(f"Unable to install files, the updater is disabled", 1)
+            self.log("Unable to install files, the updater is disabled", 1)
             return False
 
         self.log(f"Creating a backup of your database and config before installing {file.name}")

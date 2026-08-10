@@ -1,15 +1,15 @@
 import os.path
 from mimetypes import guess_type
+from typing import ClassVar
 
 import imagesize
 
 import sickchill
 from sickchill import logger, settings
 from sickchill.helper.exceptions import ShowDirectoryNotFoundException
+from sickchill.oldbeard import helpers
 from sickchill.providers.metadata.generic import GenericMetadata
 from sickchill.providers.metadata.helpers import getShowImage
-
-from . import helpers
 
 
 class ImageCache(object):
@@ -87,7 +87,7 @@ class ImageCache(object):
         Returns true if a cached poster exists for the given Indexer ID
         """
         poster_path = self.poster_path(indexer_id)
-        logger.debug(f"Checking if file poster_path exists")
+        logger.debug(f"Checking if file poster_path exists; {poster_path}")
         return os.path.isfile(poster_path)
 
     def has_banner(self, indexer_id):
@@ -95,7 +95,7 @@ class ImageCache(object):
         Returns true if a cached banner exists for the given Indexer ID
         """
         banner_path = self.banner_path(indexer_id)
-        logger.debug(f"Checking if file banner_path exists")
+        logger.debug("Checking if file banner_path exists")
         return os.path.isfile(banner_path)
 
     def has_fanart(self, indexer_id):
@@ -103,7 +103,7 @@ class ImageCache(object):
         Returns true if a cached fanart exists for the given Indexer ID
         """
         fanart_path = self.fanart_path(indexer_id)
-        logger.debug(f"Checking if file fanart_path exists")
+        logger.debug("Checking if file fanart_path exists")
         return os.path.isfile(fanart_path)
 
     def has_poster_thumb(self, indexer_id):
@@ -111,7 +111,7 @@ class ImageCache(object):
         Returns true if a cached poster thumbnail exists for the given Indexer ID
         """
         poster_thumb_path = self.poster_thumb_path(indexer_id)
-        logger.debug(f"Checking if file poster_thumb_path exists")
+        logger.debug("Checking if file poster_thumb_path exists")
         return os.path.isfile(poster_thumb_path)
 
     def has_banner_thumb(self, indexer_id):
@@ -119,7 +119,7 @@ class ImageCache(object):
         Returns true if a cached banner exists for the given Indexer ID
         """
         banner_thumb_path = self.banner_thumb_path(indexer_id)
-        logger.debug(f"Checking if file banner_thumb_path exists")
+        logger.debug("Checking if file banner_thumb_path exists")
         return os.path.isfile(banner_thumb_path)
 
     def image_url(self, indexer_id, which):
@@ -137,7 +137,7 @@ class ImageCache(object):
     POSTER_THUMB = 4
     FANART = 5
 
-    image_str = {BANNER: "banner", BANNER_THUMB: "banner thumbnail", POSTER: "poster", POSTER_THUMB: "poster thumbnail", FANART: "fanart"}
+    image_str: ClassVar[dict] = {BANNER: "banner", BANNER_THUMB: "banner thumbnail", POSTER: "poster", POSTER_THUMB: "poster thumbnail", FANART: "fanart"}
 
     def which_type(self, path):
         """
@@ -331,7 +331,7 @@ class ImageCache(object):
                                 )
                             )
 
-                            if cur_file_type in need_images and need_images[cur_file_type]:
+                            if need_images.get(cur_file_type):
                                 logger.debug(
                                     "[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
                                         show_obj.indexerid, self.image_str[cur_file_type]
@@ -346,7 +346,7 @@ class ImageCache(object):
         # download from indexer for missing ones
         for cur_image_type in need_images:
             logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
-            if cur_image_type in need_images and need_images[cur_image_type]:
+            if need_images.get(cur_image_type):
                 self._cache_image_from_indexer(show_obj, cur_image_type)
 
         logger.info("Done cache check")

@@ -2,11 +2,11 @@ import re
 import string
 from pathlib import Path
 
-from . import aniDBfileInfo as fileInfo
-from .aniDBerrors import AniDBIncorrectParameterError
-from .aniDBfileInfo import read_anidb_xml
-from .aniDBmapper import AniDBMapper
-from .aniDBtvDBmaper import TvDBMap
+from sickchill.adba import aniDBfileInfo as fileInfo
+from sickchill.adba.aniDBerrors import AniDBIncorrectParameterError
+from sickchill.adba.aniDBfileInfo import read_anidb_xml
+from sickchill.adba.aniDBmapper import AniDBMapper
+from sickchill.adba.aniDBtvDBmaper import TvDBMap
 
 
 class AniDBabstractObject(object):
@@ -101,7 +101,7 @@ class AniDBabstractObject(object):
 class Anime(AniDBabstractObject):
     def __init__(self, aniDB, cache_dir: Path, name=None, aid=None, tvdbid=None, paramsA=None, autoCorrectName=False, load=False):
         if not cache_dir.is_dir():
-            raise
+            raise  # noqa: PLE0704
         self.cache_dir = cache_dir / "anime"
         self.cache_dir = self.cache_dir.absolute()
 
@@ -213,7 +213,9 @@ class Anime(AniDBabstractObject):
 
 
 class Episode(AniDBabstractObject):
-    def __init__(self, aniDB, number=None, epid=None, file_path: Path = None, fid=None, epno=None, paramsA=None, paramsF=None, load=False, calculate=False):
+    def __init__(
+        self, aniDB, number=None, epid=None, file_path: Path | None = None, fid=None, epno=None, paramsA=None, paramsF=None, load=False, calculate=False
+    ):
         self.mapper = AniDBMapper()
         self.epid = epid
         self.file_path = file_path

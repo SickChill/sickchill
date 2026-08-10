@@ -1,12 +1,13 @@
+from typing import ClassVar
+
 from sickchill import logger, settings
 from sickchill.adba.aniDBerrors import AniDBCommandTimeoutError
-
-from . import db, helpers
+from sickchill.oldbeard import db, helpers
 
 
 class BlackAndWhiteList(object):
-    blacklist = []
-    whitelist = []
+    blacklist: ClassVar[list] = []
+    whitelist: ClassVar[list] = []
 
     def __init__(self, show_id):
         if not show_id:
@@ -97,9 +98,7 @@ class BlackAndWhiteList(object):
                 logger.debug("Failed to detect release group, invalid result")
                 return False
 
-            if result.release_group.lower() in [x.lower() for x in self.whitelist]:
-                white_result = True
-            elif not self.whitelist:
+            if result.release_group.lower() in [x.lower() for x in self.whitelist] or not self.whitelist:
                 white_result = True
             else:
                 white_result = False
@@ -111,10 +110,7 @@ class BlackAndWhiteList(object):
 
             logger.debug("Whitelist check passed: {white}. Blacklist check passed: {black}".format(white=white_result, black=black_result))
 
-            if white_result and black_result:
-                return True
-            else:
-                return False
+            return bool(white_result and black_result)
         else:
             logger.debug("No Whitelist and Blacklist defined, check passed.")
             return True
@@ -129,9 +125,10 @@ def short_group_names(groups):
     Find AniDB short group names for release groups
 
     :param groups: list of groups to find short group names for
+        remove any leading and trailing commas
     :return: list of shortened group names
     """
-    groups = groups.split(",")
+    groups = [group.strip() for group in groups.strip(" ,").split(",") if group.strip()]
     short_group_list = []
     if helpers.set_up_anidb_connection():
         for groupName in groups:

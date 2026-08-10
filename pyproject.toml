@@ -1,123 +1,148 @@
-[tool.poetry]
+[project]
 name = "sickchill"
 version = "2024.3.1"
-description = 'Automatic Video Library Manager for TV Shows'
+description = "Automatic Video Library Manager for TV Shows"
+readme = "README.md"
+
 license = "GPL-3.0-or-later"
+license-files = [
+    "LICENSE.md",
+    "COPYING.txt",
+]
 
 authors = [
-    "Dustyn Gibson <miigotu@gmail.com>",
-    "BKSteve <stephen.rieger@gmail.com>"
+    { name = "Dustyn Gibson", email = "miigotu@gmail.com" },
+    { name = "BKSteve", email = "stephen.rieger@gmail.com" },
 ]
 
 maintainers = [
-    "Dustyn Gibson <miigotu@gmail.com>"
+    { name = "Dustyn Gibson", email = "miigotu@gmail.com" },
 ]
 
-readme = "README.md"
-
-repository = "https://github.com/sickchill/sickchill"
-homepage = "https://sickchill.github.io"
+requires-python = ">=3.10,<4.0"
 
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: System Administrators",
     "Operating System :: OS Independent",
     "Topic :: Multimedia :: Video",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10"
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 
+dependencies = [
+    "appdirs>=1.4.4",
+    "babelfish>=0.6.1",
+    "beautifulsoup4>=4.15.0",
+    "beekeeper-alt>=2022.9.3",
+    "bencode.py (>=4.0.0,<5.0.0)",
+    "cachecontrol>=0.13.1,<0.15.0",
+    "configobj>=5.0.9",
+    "deluge-client>=1.9.0",
+    "enzyme>=0.5.2,<0.6.0",
+    "gntp>=1.0.3",
+    "greenlet>=2.0.2",
+    "guessit>=3.3.1",
+    "html5lib>=1.1",
+    "ifaddr>=0.2.0,<0.3.0",
+    "imagesize (>=1.2.0,<2.0.0)",
+    "imdbpie>=5.7.1",
+    "Js2Py>=0.74,<0.75",
+    "jsonrpclib-pelix>=1.1.0,<1.2.0",
+    "kodipydent-alt>=2022.9.3",
+    "lxml>=6.1.1,<7.0.0",
+    "Mako >=1.4.1",
+    "markdown2>=2.4.0",
+    "new-rtorrent-python>=1.0.1-alpha.0",
+    "packaging>=26.3,<27.0",
+    "profilehooks>=1.13.0",
+    "putio.py (>=8.7.0,<9.0.0)",
+    "pymediainfo>=7.0.1,<8.0.0",
+    "PyNMA >=1.0",
+    "pyOpenSSL>=20.0.1,<26.4.0",
+    "python-dateutil>=2.8.1",
+    "python-slugify>=8.0.4,<9.0.0",
+    "python-twitter>=3.5",
+    "python3-fanart>=2.0.0",
+    "qbittorrent-api>=2026.8.0,<2027.0.0",
+    "rarfile>=4.5",
+    "requests>=2.34.2",
+    "Send2Trash>=2.1.0",
+    "SQLAlchemy (>=2.0.51,<3.0.0)",
+    "stevedore>=5.1.0",
+    "subliminal>=2.3.2,<2.7.0",
+    "timeago>=1.0.15",
+    "tmdbsimple>=2.9.6",
+    "tornado>=6.4",
+    "tus.py (>=1.3.4,<2.0.0)",
+    "tvdbsimple>=1.0.6",
+    "Unidecode>=1.4.0",
+    "validators>=0.30.0,<0.36.0",
+    "virtualenv>=21.7.1",
+    "win-inet-pton>=1.1.0",
+]
+
+[tool.poetry]
 packages = [
     { include = "sickchill" },
     { include = "SickChill.py" },
     { include = "frontend" }
 ]
 
-[tool.poetry.urls]
-"Changelog" = "https://github.com/SickChill/SickChill/blob/master/CHANGES.md"
-"Bug Tracker" = "https://github.com/sickchill/sickchill/issues"
-"News" = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/news.md"
-"Discord" = "https://discord.com/invite/U8WPBdf"
-"Donate"= "https://github.com/SickChill/SickChill/wiki/Donations"
+[project.urls]
+Homepage = "https://sickchill.github.io"
+Repository = "https://github.com/sickchill/sickchill"
+Changelog = "https://github.com/SickChill/SickChill/blob/master/CHANGES.md"
+News = "https://raw.githubusercontent.com/SickChill/sickchill.github.io/master/sickchill-news/news.md"
+Issues = "https://discord.com/channels/502612977271439372/1048317980343283733"
+Discord = "https://discord.com/invite/U8WPBdf"
+Donate = "https://github.com/SickChill/SickChill/wiki/Donations"
 
-[tool.poetry.scripts]
+[project.scripts]
 SickChill = "SickChill:main"
 sickchill = "SickChill:main"
 
-[tool.poetry.group.dev]
-optional = true
-
-[tool.poetry.group.dev.dependencies]
-black = ">=22.8,<25.0"
-coveralls = "^3.3.1"
-mock = ">=4.0.3,<6.0.0"
-Babel = "^2.9.0"
-pytest-cov = ">=3,<5"
-pytest-isort = "^3.0.0"
-flake8-pytest-style = "^1.5.1"
-flake8-commas = "^2.0.0"
-flake8-quotes = "^3.3.0"
-flake8-docstrings = "^1.6.0"
-flake9 = "^3.8.3"
-codecov = "^2.1.12"
-pytest = ">=7.0.1,<9.0.0"
-isort = "^5.10.1"
-poethepoet = ">=0.16,<0.26"
-po2json = "^0.2.2"
-pre-commit = ">=2.20,<4.0"
-
-[tool.poetry.group.speedups]
-optional = true
-
-[tool.poetry.group.speedups.dependencies]
-html5lib = "^1.1"
-lxml = ">=4.9.1,<6.0.0"
-Js2Py = ">=0.71,<0.75"
-pymediainfo = ">=5.0.3,<7.0.0"
-
-[tool.poetry.group.types]
-optional = true
-
-[tool.poetry.group.types.dependencies]
-types-attrs = "^19.1.0"
-types-pyOpenSSL = ">=22.0.10,<25.0.0"
-types-python-dateutil = "^2.8.19"
-types-python-slugify = ">=6.1,<9.0"
-types-requests = "^2.28.11"
-types-chardet = "^5.0.4"
-types-pytz = ">=2022.2.1,<2025.0.0"
-types-setuptools = ">=65.3,<70.0"
-types-six = "^1.16.20"
-
-[tool.poetry.group.experimental]
-optional = true
-
-[tool.poetry.group.experimental.dependencies]
-pyaes = "^1.6.1"
-
-[tool.poetry.group.frontend]
-optional = true
-
-[tool.poetry.group.frontend.dependencies]
-Flask = ">=2.2.2,<4.0.0"
-urllib3 = "<3.0.0"
-flask-sqlalchemy = "^3.0.3"
-
-[tool.poetry.extras]
-experimental = ["experimental"]
-speedups = ["speedups"]
-types = ["types"]
-frontend = ["frontend"]
+[dependency-groups]
+dev = [
+    "Babel>=2.18.0",
+    "coveralls>=4.1.0,<5.0",
+    "flask-sqlalchemy>=3.1.1,<4.0.0",
+    "Flask>=2.2.2,<4.0.0",
+    "mock>=5.2.0,<6.0.0",
+    "po2json>=0.2.2",
+    "poethepoet>=0.48.0,<0.49",
+    "pre-commit>=4.6.1,<5.0",
+    "pytest-cov>=3,<8",
+    "pytest-timeout>=2.4.0,<3.0",
+    "pytest>=9.1.1,<10.0.0",
+    "ruff>=0.16.1,<1.0",
+    "urllib3<3.0.0",
+]
+types = [
+    "pyaes>=1.6.1",
+    "types-attrs>=19.1.0",
+    "types-chardet>=5.0.4.6",
+    "types-pyOpenSSL>=24.1.0.20240722,<26.3.0",
+    "types-python-dateutil>=2.9.0.20260807",
+    "types-python-slugify>=8.0.2.20240310,<9.0",
+    "types-pytz>=2022.2.1,<2027.0.0",
+    "types-requests>=2.33.0.20260712",
+    "types-setuptools>=83.0.0.20260724",
+    "types-six>=1.16.20",
+]
 
 [build-system]
-requires = ["poetry-core>=1.2.0"]
+requires = ["poetry-core>=2.2,<3.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.flake8]
+[tool.ruff]
+line-length = 160
+indent-width = 4
+builtins = ["_"]
+target-version = "py310"
 exclude = [
     ".eggs",
     ".git",
@@ -125,173 +150,157 @@ exclude = [
     "docs/source/conf.py",
     "build",
     "dist",
+    ".venv",
+    ".vscode",
 ]
-inline-quotes = "double"
-docstring-convention = "numpy"
+
+[tool.ruff.lint]
 ignore = [
-    "C812",
-    "D4",
-    "D400",
-    "D401",
-    "D403",
-    "D406",
-    "D407",
-    "D200",
-    "D202",
-    "D205",
+    "B005",
+    "B023",
+    "B018",
+    "BLE001",
+    "C400",
+    "C408",
     "D100",
     "D101",
     "D102",
     "D103",
     "D104",
     "D106",
-    "S101",
+    "D200",
+    "D205",
+    "D400",
+    "D401",
+    "D403",
+    "D406",
+    "D407",
+    "E402",
+    "F401",
+    "F601",
+    "FLY002",
+    "INT002",
+    "N999",
+    "PIE804",
+    "PLC0206",
+    "PLC0414",
+    "PLR0133",
+    "PLR1730",
     "PT009",
-    "PT017"
+    "PT017",
+    "RUF015",
+    "RUF059",
+    "S101",
+    "S110",
+    "SIM115",
+    "SIM117",
+    "TRY",
+    "UP",
 ]
+extend-select = ["F821", "I"]
 
-max_line_length = 160
-show_source = "True"
-builtins = ["_"]
-#select = 'C103'
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["sickchill"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F401"]
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sickchill", "SickChill.py"]
-addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail"
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-line_length = 160
-combine_as_imports = true
-order_by_type = false
-remove_imports = [ "from __future__ import absolute_import", "from __future__ import print_function", "from __future__ import unicode_literals" ]
-known_first_party = "sickchill"
-extra_standard_library = [ "posixpath", "ntpath" ]
-use_parentheses = true
-src_paths = [ "sickchill", "tests", "SickChill.py", "setup.py" ]
-
-[tool.black]
-line-length = 160
-target_version = ['py310']
-include = '\.pyi?$'
-exclude = 'contrib/scmaintools|\.venv|venv|\.git|\.hg|\.mypy_cache|\.tox|_build|buck-out|build|dist|node_modules|bower_components'
+addopts = "--cov=sickchill --cov-report xml --no-cov-on-fail -v --timeout=120"
+filterwarnings = ['ignore:.*telnetlib.*is deprecated:DeprecationWarning']
 
 [tool.poe.tasks]
-pytest = "pytest"
+# --- Quality ---
+format = { cmd = "ruff format .", help = "Format code with Ruff" }
+format-check = { cmd = "ruff format --check .", help = "Check formatting without writing" }
+isort = { cmd = "ruff check --select I --fix .", help = "Sort imports with Ruff" }
+isort-check = { cmd = "ruff check --select I .", help = "Check import order without writing" }
+lint-ruff = { cmd = "ruff check sickchill tests SickChill.py", help = "Run Ruff linter" }
+lint-undef = { cmd = "ruff check --select F821 sickchill tests SickChill.py", help = "Check for undefined names" }
+
+lint = [
+    { ref = "format-check" },
+    { ref = "isort-check" },
+    { ref = "lint-ruff" },
+]
+
+# --- Tests ---
+pytest = { cmd = "pytest", help = "Run Python tests" }
+test-providers = { cmd = "pytest tests/sickchill_tests/providers/torrent/test_parsing.py", help = "Run provider parsing tests" }
+yarn-test = { cmd = "yarn test", help = "Run frontend tests" }
+
+# Wipe leftover test DBs so scene-exception / cache tests stay deterministic
+_clean-test-dbs = { shell = "rm -f tests/cache.db tests/sickchill.db tests/failed.db", help = "Remove test SQLite DBs" }
+
+test = [
+    { ref = "lint" },
+    { ref = "_clean-test-dbs" },
+    { ref = "yarn-test" },
+    { ref = "pytest" },
+]
+
+# --- Frontend ---
 yarn = "yarn"
 xo = "xo"
 ava = "ava"
 
-_black = {cmd = "black . --check --diff", help = "Check code style using black"}
-_isort = {cmd = "isort . --check-only --diff", help = "Check import order"}
-flake8 = {cmd = "flake8 --select C103 sickchill tests SickChill.py", help = "Check for undefined variables"}
+# --- Dependencies ---
+update-dependencies = { shell = "poetry update && yarn upgrade && git add pyproject.toml yarn.lock", help = "Update Poetry + Yarn deps and stage lockfiles" }
 
-isort = {cmd = "isort .", help = "Fix import order"}
-black = {cmd = "black .", help = "Reformat code using black"}
+# --- Translations ---
+crowdin-upload = { cmd = "crowdin-cli-py upload sources -c .github/crowdin.yml", help = "Upload sources to Crowdin" }
+crowdin-download = { cmd = "crowdin-cli-py download -c .github/crowdin.yml", help = "Download translations from Crowdin" }
+po2json = { cmd = "po2json --format jed", help = "Convert PO files to JSON" }
 
-test_providers = {cmd = "pytest tests/sickchill_tests/providers/torrent/test_parsing.py", help = "Run provider tests"}
-crowdin_upload = "crowdin-cli-py upload sources -c .github/crowdin.yml"
-crowdin_download = "crowdin-cli-py download -c .github/crowdin.yml"
-po2json = "po2json --format jed "
-codecov = "codecov"
-
-lint = ["_black", "_isort", "flake8"]
-format = ["black", "isort", "flake8"]
-
-_poetry_update = {shell = "poetry update", help = "update python dependancies"}
-_yarn_upgrade = {cmd = "yarn upgrade", help = "update yarn dependancies"}
-_add_locks = {shell = "git add pyproject.toml yarn.lock", help = "Add yarn and poetry lock files"}
-depup = ["_poetry_update", "_yarn_upgrade", "_add_locks"]
-
-update_translations = ["babel_extract", "babel_update", "crowdin_upload", "crowdin_download", "babel_compile", "po2json"]
-update_dependencies = {shell = "poetry update && yarn upgrade && git add pyproject.toml yarn.lock"}
-
-test = [
-    { ref = "lint" },
-    { cmd = "yarn test" },
-    { cmd = "pytest" }
-]
-
-babel_extract = """
+babel-extract = { cmd = """
 pybabel extract
---project=sickchill
---mapping-file=.github/babel-mapping.cfg
---width=80
---charset=utf-8
---output-file=sickchill/locale/messages.pot
---input-dirs=sickchill
---keywords=_n:1,2
---copyright-holder=SickChill
---msgid-bugs-address=miigotu@gmail.com
---add-comments="TRANSLATORS:"
---sort-output
-"""
+  --project=sickchill
+  --mapping-file=.github/babel-mapping.cfg
+  --width=80
+  --charset=utf-8
+  --output-file=sickchill/locale/messages.pot
+  --input-dirs=sickchill
+  --keywords=_n:1,2
+  --copyright-holder=SickChill
+  --msgid-bugs-address=miigotu@gmail.com
+  --add-comments=TRANSLATORS:
+  --sort-output
+""", help = "Extract messages to messages.pot" }
 
-babel_compile = """
+babel-compile = { cmd = """
 pybabel compile
---mapping-file=.github/babel-mapping.cfg
---directory=sickchill/locale
-"""
+  --mapping-file=.github/babel-mapping.cfg
+  --directory=sickchill/locale
+""", help = "Compile translation catalogs" }
 
-babel_init = """
+babel-init = { cmd = """
 pybabel init
---mapping_file=.github/babel-mapping.cfg
---output-dir=sickchill/locale
---input-file=sickchill/locale/messages.pot
-"""
+  --mapping-file=.github/babel-mapping.cfg
+  --output-dir=sickchill/locale
+  --input-file=sickchill/locale/messages.pot
+""", help = "Init a new locale (pass -l LANG)" }
 
-babel_update = """
+babel-update = { cmd = """
 pybabel update
---output-dir=sickchill/locale
---input-file=sickchill/locale/messages.pot
---ignore-obsolete
---previous
-"""
+  --output-dir=sickchill/locale
+  --input-file=sickchill/locale/messages.pot
+  --ignore-obsolete
+  --previous
+""", help = "Update existing locale catalogs" }
 
-[tool.poetry.dependencies]
-python = ">=3.8,<4"
-"bencode.py" = "^4.0.0"
-configobj = "^5.0.6"
-greenlet = {version = ">=2.0.0", allow-prereleases = true}
-ipaddress = "^1.0.23"
-jsonrpclib-pelix = "^0.4.2"
-Mako = "^1.1.4"
-markdown2 = "^2.4.0"
-pyOpenSSL = ">=20.0.1,<25.0.0"
-python-dateutil = "^2.8.1"
-python-twitter = "^3.5"
-rarfile = "^4.0"
-subliminal = "^2.1.0"
-tmdbsimple = "^2.8.0"
-tornado = "^6.3.2"
-tvdbsimple = "^1.0.6"
-Unidecode = "^1.2.0"
-validators = ">=0.18.2,<0.23.0"
-enzyme = "^0.4.1"
-python3-fanart = "^2.0.0"
-gntp = "^1.0.3"
-"tus.py" = "^1.3.4"
-win-inet-pton = "^1.1.0"
-PyNMA = "^1.0"
-"putio.py" = "^8.7.0"
-profilehooks = "^1.12.0"
-imagesize = "^1.2.0"
-Send2Trash = ">=1.5.0"
-deluge-client = "^1.9.0"
-ifaddr = ">=0.1.7,<0.3.0"
-new-rtorrent-python = "^1.0.1-alpha.0"
-qbittorrent-api = ">=2021.3.18,<2025.0.0"
-packaging = ">=20.9,<24.0"
-timeago = "^1.0.15"
-SQLAlchemy = ">=2.0.0,<3.0.0"
-python-slugify = ">=4.0.1,<9.0.0"
-guessit = "^3.3.1"
-requests = "^2.25.1"
-babelfish = ">=0.6.0"
-kodipydent-alt = ">=2022.9.3"
-beekeeper-alt = ">=2022.9.3"
-
-stevedore = "^5.1.0"
-cachecontrol = ">=0.13.1,<0.15.0"
-cinemagoer = {version = "^2023.5.1", allow-prereleases = true}
+update-translations = [
+    { ref = "babel-extract" },
+    { ref = "babel-update" },
+    { ref = "crowdin-upload" },
+    { ref = "crowdin-download" },
+    { ref = "babel-compile" },
+    { ref = "po2json" },
+]

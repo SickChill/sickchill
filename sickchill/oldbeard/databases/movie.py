@@ -4,11 +4,12 @@ from typing import List
 
 import guessit
 from slugify import slugify
-from sqlalchemy import ForeignKey, JSON
+from sqlalchemy import JSON, ForeignKey
 from sqlalchemy.event import listen
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
+# ruff: noqa
+# from sqlalchemy.ext.declarative import declarative_base
 logger = logging.getLogger("sickchill.movie")
 
 
@@ -160,7 +161,7 @@ class Result(Base):
             return
 
         if not self.session.query(Movie).filter(Movie.name.like(f"{guess['title']}%")).count():
-            logging.debug(f"This result does not match any of our movies")
+            logging.debug("This result does not match any of our movies")
             return
 
         self.info_hash = result["hash"]

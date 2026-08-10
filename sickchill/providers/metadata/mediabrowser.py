@@ -7,8 +7,8 @@ import sickchill
 from sickchill import logger, settings
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.oldbeard import helpers
-
-from . import generic
+from sickchill.oldbeard.network_timezones import sc_timezone, sc_today
+from sickchill.providers.metadata import generic
 
 
 class MediaBrowserMetadata(generic.GenericMetadata):
@@ -132,7 +132,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 season_dir = cur_dir
                 break
 
-            match = re.match(season_dir_regex, cur_dir, re.I)
+            match = re.match(season_dir_regex, cur_dir, re.IGNORECASE)
             if not match:
                 continue
 
@@ -172,7 +172,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                 season_dir = cur_dir
                 break
 
-            match = re.match(season_dir_regex, cur_dir, re.I)
+            match = re.match(season_dir_regex, cur_dir, re.IGNORECASE)
             if not match:
                 continue
 
@@ -251,7 +251,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
             premier_date_element = ElementTree.SubElement(tv_node, "PremiereDate")
             premier_date_element.text = data
             try:
-                year_text = str(datetime.datetime.strptime(data, dateFormat).year)
+                year_text = str(datetime.datetime.strptime(data, dateFormat).replace(tzinfo=sc_timezone).year)  # satisfy the naive-datetime lint rule
                 if year_text:
                     production_year_element = ElementTree.SubElement(tv_node, "ProductionYear")
                     production_year_element.text = year_text
@@ -354,7 +354,7 @@ class MediaBrowserMetadata(generic.GenericMetadata):
                     if episode_object.show and episode_object.show.startyear:
                         indexer_episode["firstAired"] = str(datetime.date.min.replace(year=episode_object.show.startyear))
                     else:
-                        indexer_episode["firstAired"] = str(datetime.date.today())
+                        indexer_episode["firstAired"] = str(sc_today())
 
                 if not (indexer_episode.get("episodeName") and indexer_episode.get("firstAired")):
                     return None

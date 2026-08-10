@@ -29,10 +29,9 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         if self.show and not self.show.is_anime:
             return results
 
-        if self.custom_url:
-            if self.invalid_url(self.custom_url):
-                logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
-                return results
+        if self.custom_url and self.invalid_url(self.custom_url):
+            logger.warning(_("Invalid custom url: {0}").format(self.custom_url))
+            return results
 
         for mode in search_strings:
             items = []
@@ -54,7 +53,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
                 results = []
                 data = self.get_url(self.custom_url or self.url, params=search_params)
                 if not data:
-                    logger.debug("No data was returned from the provider")
+                    logger.debug(_("No data was returned from the provider"))
                     continue
 
                 with BS4Parser(data, language="xml") as html:

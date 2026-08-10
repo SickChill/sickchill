@@ -5,24 +5,24 @@ from datetime import datetime
 from itertools import chain
 from os.path import join
 from random import shuffle
-from typing import Callable, Dict, Iterable, List, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Callable, ClassVar, Dict, Iterable, List, Union
 from urllib.parse import urljoin
 
-import validators
 from requests.structures import CaseInsensitiveDict
 from requests.utils import add_dict_to_cookiejar
 
 import sickchill.oldbeard
 from sickchill import logger
-from sickchill.helper.common import sanitize_filename
+from sickchill.helper.common import sanitize_filename, valid_url
 from sickchill.oldbeard import filters
-from sickchill.oldbeard.classes import Proper, SearchResult
-from sickchill.oldbeard.common import MULTI_EP_RESULT, Quality, SEASON_RESULT
+from sickchill.oldbeard.common import MULTI_EP_RESULT, SEASON_RESULT, Quality
 from sickchill.oldbeard.db import DBConnection
 from sickchill.oldbeard.helpers import download_file, getURL, make_session, remove_file_failed
 from sickchill.oldbeard.name_parser.parser import InvalidNameException, InvalidShowException, NameParser
-from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
+from sickchill.oldbeard.network_timezones import sc_timezone
+from sickchill.oldbeard.show_name_helpers import all_possible_show_names
 from sickchill.oldbeard.tvcache import TVCache
+from sickchill.providers.result_classes import Proper, SearchResult
 
 if TYPE_CHECKING:
     from sickchill.tv import TVEpisode
@@ -38,7 +38,7 @@ class GenericProvider(object):
     PROVIDER_BACKLOG = 2
     PROVIDER_OK = 3
 
-    ProviderStatus = {
+    ProviderStatus: ClassVar[dict] = {
         PROVIDER_BROKEN: _("Not working"),
         PROVIDER_DAILY: _("Daily/RSS only"),
         PROVIDER_BACKLOG: _("Backlog/Manual Search only"),
@@ -133,7 +133,7 @@ class GenericProvider(object):
     def find_propers(self, search_date=None):
         results = self.cache.list_propers(search_date)
 
-        return [Proper(x["name"], x["url"], datetime.fromtimestamp(x["time"]), self.show) for x in results]
+        return [Proper(x["name"], x["url"], datetime.fromtimestamp(x["time"], tz=sc_timezone), self.show) for x in results]
 
     def find_search_results(self, show, episodes, search_mode, manual_search=False, download_current_quality=False):
         self._check_auth()
@@ -418,7 +418,7 @@ class GenericProvider(object):
 
         search_string = {"Episode": set()}
 
-        for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
+        for show_name in all_possible_show_names(episode.show, season=episode.scene_season):
             episode_string = show_name + " "
             episode_string_fallback = None
 
@@ -451,7 +451,7 @@ class GenericProvider(object):
     def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
         search_string = {"Season": set()}
 
-        for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
+        for show_name in all_possible_show_names(episode.show, season=episode.scene_season):
             season_string = show_name + " "
 
             if episode.show.air_by_date or episode.show.sports:
@@ -597,18 +597,9 @@ class GenericProvider(object):
 
             return setattr(self, option, cast(value))
 
-    @staticmethod
-    def valid_url(url):
-        try:
-            valid = validators.url(url)
-        except validators.utils.ValidationError:
-            valid = False
-
-        return valid is True
-
     @classmethod
     def invalid_url(cls, url):
-        return not cls.valid_url(url)
+        return not valid_url(url)
 
     def __store_original_urls(self):
         if not self.__original_url:
@@ -631,7 +622,7 @@ class GenericProvider(object):
         custom_url_valid = True
         if hasattr(self, "custom_url") and hasattr(self, "url") and hasattr(self, "urls"):
             has_custom_url = bool(self.custom_url)
-            custom_url_valid = self.valid_url(self.custom_url)
+            custom_url_valid = valid_url(self.custom_url)
             if has_custom_url and custom_url_valid:
                 self.__store_original_urls()
 

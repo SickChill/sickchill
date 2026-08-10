@@ -1,11 +1,8 @@
 import threading
 
-from sickchill import settings
-from sickchill.oldbeard import helpers, scene_exceptions
+from sickchill import logger, settings
+from sickchill.oldbeard import db, helpers, scene_exceptions
 from sickchill.show.Show import Show
-
-from .. import logger
-from . import db
 
 name_cache = {}
 name_cache_lock = threading.Lock()
@@ -67,15 +64,15 @@ def save_all_cached_names():
         cache_db_con.action("INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name])
 
 
-def build_name_cache(show=None):
+def build_name_cache(show_name=None):
     """Build internal name cache
 
-    :param show: Specify show to build name cache for, if None, just do all shows
+    :param show_name: Specify show to build name cache for, if None, just do all shows
     """
     with name_cache_lock:
         scene_exceptions.retrieve_exceptions()
 
-    if not show:
+    if not show_name:
         # logger.info("Building internal name cache for all shows")
         for show in settings.show_list:
             if settings.stopping or settings.restarting:
@@ -83,16 +80,20 @@ def build_name_cache(show=None):
 
             build_name_cache(show)
     else:
-        logger.debug("Building internal name cache for " + show.name)
-        clear_cache(show.indexerid)
-        for season in scene_exceptions.get_all_scene_exceptions(show.indexerid).values():
+        logger.debug("Building internal name cache for " + show_name.name)
+        clear_cache(show_name.indexerid)
+        for season in scene_exceptions.get_all_scene_exceptions(show_name.indexerid).values():
             for exception in season:
-                name_cache[helpers.full_sanitizeSceneName(exception["show_name"])] = int(show.indexerid)
+                name_cache[helpers.full_sanitizeSceneName(exception["show_name"])] = int(show_name.indexerid)
 
-        name_cache[helpers.full_sanitizeSceneName(show.show_name)] = int(show.indexerid)
-        if show.custom_name:
-            name_cache[helpers.full_sanitizeSceneName(show.custom_name)] = int(show.indexerid)
+        name_cache[helpers.full_sanitizeSceneName(show_name.show_name)] = int(show_name.indexerid)
+        if show_name.custom_name:
+            name_cache[helpers.full_sanitizeSceneName(show_name.custom_name)] = int(show_name.indexerid)
 
         logger.debug(
-            "Internal name cache for " + show.name + " set to: [ " + ", ".join([key for key, value in name_cache.items() if value == show.indexerid]) + " ]"
+            "Internal name cache for "
+            + show_name.name
+            + " set to: [ "
+            + ", ".join([key for key, value in name_cache.items() if value == show_name.indexerid])
+            + " ]"
         )

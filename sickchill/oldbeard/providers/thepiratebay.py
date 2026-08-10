@@ -4,14 +4,10 @@ import time
 import traceback
 from urllib.parse import urlencode, urljoin
 
-try:
-    import js2py
-except (KeyError, ModuleNotFoundError, RuntimeError):  # KeyError on python 3.12
-    js2py = None
-
 from sickchill import logger
 from sickchill.helper.common import try_int
 from sickchill.oldbeard import db, tvcache
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
@@ -31,7 +27,7 @@ class Provider(TorrentProvider):
         # URLs
         self.url = "https://thepiratebay.org"
         self.api = "https://apibay.org"
-        self.queries = {"top": ["top100:208", "top100:205"]}
+        self.queries = {"top": ["top100:212", "top100:208", "top100:205"]}
         self.script_url = "https://torrindex.net/static/main.js"
 
         # "https://apibay.org/precompiled/data_top100_48h_205.json"
@@ -42,7 +38,11 @@ class Provider(TorrentProvider):
 
         self.urls = {
             "search": urljoin(self.api, "q.php"),
-            "rss": [urljoin(self.api, "precompiled/data_top100_48h_208.json"), urljoin(self.api, "precompiled/data_top100_48h_205.json")],
+            "rss": [
+                urljoin(self.api, "precompiled/data_top100_48h_212.json"),
+                urljoin(self.api, "precompiled/data_top100_48h_208.json"),
+                urljoin(self.api, "precompiled/data_top100_48h_205.json"),
+            ],
         }
 
         # Cache
@@ -55,6 +55,13 @@ class Provider(TorrentProvider):
     def get_tracker_list(self):
         try:
             data = self.get_url(self.script_url)
+
+            # Lazy import - only when we actually need js2py
+            try:
+                import js2py
+            except (KeyError, ImportError, ModuleNotFoundError, RuntimeError):
+                js2py = None
+
             if js2py:
                 context = js2py.EvalJs()
                 context.execute(
@@ -89,13 +96,13 @@ class Provider(TorrentProvider):
         search_params = {"cat": "208,205", "q": None}
 
         if not (self.tracker_cache.get_trackers() or self._custom_trackers):
-            logger.info("Set some custom trackers in config/search on the torrents tab. Re-enable this provider after fixing this issue.")
+            logger.info(_("Set some custom trackers in config/search on the torrents tab. Re-enable this provider after fixing this issue."))
             self.enabled = False
             return results
 
         for mode in search_strings:
             items = []
-            logger.debug("Search Mode: {0}".format(mode))
+            logger.debug(_("Search Mode: {0}").format(mode))
 
             all_search_strings = search_strings[mode]
             if mode != "RSS" and self.show and self.show.imdb_id:
@@ -109,14 +116,14 @@ class Provider(TorrentProvider):
                 for search_url in search_urls:
                     if mode != "RSS":
                         search_params["q"] = search_string
-                        logger.debug("Search string: {}".format(search_string))
+                        logger.debug(_("Search string: {0}").format(search_string))
 
                         data = self.get_url(search_url, params=search_params, returns="json")
                     else:
                         data = self.get_url(search_url, returns="json")
 
                     if not (data and isinstance(data, list)):
-                        logger.debug("URL did not return data")
+                        logger.debug(_("URL did not return data"))
                         continue
 
                     for result in data:
@@ -144,9 +151,9 @@ class Provider(TorrentProvider):
                                 continue
 
                             # Accept Torrent only from Good People for every Episode Search
-                            if self.confirmed and not result["status"] in ("trusted", "vip"):
+                            if self.confirmed and result["status"] not in ("trusted", "vip"):
                                 if mode != "RSS":
-                                    logger.debug("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it".format(title))
+                                    logger.debug(_("Found result: {0} but that doesn't seem like a trusted result so I'm ignoring it").format(title))
                                 continue
 
                             torrent_size = try_int(result["size"])
@@ -160,11 +167,11 @@ class Provider(TorrentProvider):
                                 "hash": info_hash,
                             }
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
                         except Exception as error:
-                            logger.debug(f"Unable to process torrent on {self.name}: {error}")
+                            logger.debug(_("Unable to process torrent on {0}: {1}".format(self.name, error)))
                             logger.debug(traceback.format_exc())
                             continue
 
@@ -187,19 +194,23 @@ class TrackerCacheDBConnection(db.DBConnection):
 
     def get_trackers(self):
         sql_result = self.select_one("SELECT * FROM trackers WHERE provider = ?", [self.provider_id])
-        if sql_result:
-            last_time = datetime.datetime.fromtimestamp(sql_result["time"])
-            if last_time > datetime.datetime.now():
-                last_time = datetime.datetime.min
-        else:
-            last_time = datetime.datetime.min
 
-        if datetime.datetime.now() - last_time > self.update_frequency:
+        # Timezone-aware minimum sentinel (far in the past)
+        min_aware = datetime.datetime.min  # noqa: DTZ901
+
+        if sql_result:
+            last_time = datetime.datetime.fromtimestamp(sql_result["time"], tz=sc_timezone)
+            if last_time > sc_now():
+                last_time = min_aware
+        else:
+            last_time = min_aware
+
+        if sc_now() - last_time > self.update_frequency:
             trackers = self.provider.get_tracker_list()
 
             self.upsert(
                 "trackers",
-                {"time": int(time.mktime(datetime.datetime.now().timetuple())), "trackers": trackers},
+                {"time": int(sc_now().timestamp()), "trackers": trackers},
                 {"provider": self.provider_id},
             )
             result = trackers

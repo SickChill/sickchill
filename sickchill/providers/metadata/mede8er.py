@@ -3,11 +3,11 @@ import os
 from xml.etree import ElementTree
 
 import sickchill
+from sickchill import logger
 from sickchill.helper.common import dateFormat, replace_extension
 from sickchill.oldbeard import helpers
-
-from ... import logger
-from . import mediabrowser
+from sickchill.oldbeard.network_timezones import sc_timezone
+from sickchill.providers.metadata import mediabrowser
 
 
 class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
@@ -114,7 +114,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
         if getattr(indexer_show, "firstAired", None):
             try:
-                year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).year)
+                year_text = str(
+                    datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year
+                )  # satisfy the naive-datetime lint rule
                 if year_text:
                     year_element = ElementTree.SubElement(tv_node, "year")
                     year_element.text = year_text
@@ -195,8 +197,7 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
             indexer_episode = current_episode.idxr.episode(current_episode)
             if not indexer_episode:
                 logger.info(
-                    "Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}..."
-                    "has it been removed? Should I delete from db?".format(
+                    "Metadata writer is unable to find episode {0:d}x{1:d} of {2} on {3}...has it been removed? Should I delete from db?".format(
                         current_episode.season, current_episode.episode, current_episode.show.name, episode_object.idxr.name
                     )
                 )
@@ -225,7 +226,9 @@ class Mede8erMetadata(mediabrowser.MediaBrowserMetadata):
 
                 if getattr(indexer_show, "firstAired", None):
                     try:
-                        year_text = str(datetime.datetime.strptime(indexer_show.firstAired, dateFormat).year)
+                        year_text = str(
+                            datetime.datetime.strptime(indexer_show.firstAired, dateFormat).replace(tzinfo=sc_timezone).year
+                        )  # satisfy the naive-datetime lint rule
                         if year_text:
                             year_element = ElementTree.SubElement(episode, "year")
                             year_element.text = year_text

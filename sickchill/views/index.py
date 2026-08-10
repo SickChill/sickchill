@@ -1,28 +1,27 @@
 import base64
-import datetime
 import json
 import os
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, time as dt_time, timedelta
 from mimetypes import guess_type
 from secrets import compare_digest
-from typing import Any
 from urllib.parse import urljoin
 
 from mako.exceptions import RichTraceback
 from tornado.concurrent import run_on_executor
-from tornado.web import authenticated, HTTPError, RequestHandler
+from tornado.web import HTTPError, RequestHandler, authenticated
 
 import sickchill.start
 from sickchill import logger, settings
 from sickchill.init_helpers import check_installed, locale_dir
+from sickchill.oldbeard import config, db, helpers, ui
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.show.ComingEpisodes import ComingEpisodes
+from sickchill.views.api.webapi import function_mapper
+from sickchill.views.common import PageTemplate
 from sickchill.views.routes import Route
-
-from ..oldbeard import config, db, helpers, network_timezones, ui
-from .api.webapi import function_mapper
-from .common import PageTemplate
 
 try:
     import jwt
@@ -54,8 +53,8 @@ class BaseHandler(RequestHandler):
             if url[:3] != "api":
                 t = PageTemplate(rh=self, filename="404.mako")
                 return t.render(title="404", header=_("Oops: 404 Not Found"))
-            else:
-                return self.finish(_("Wrong API key used"))
+
+            return self.finish(_("Wrong API key used"))
 
         elif self.settings.get("debug") and "exc_info" in kwargs:
             exc_info = kwargs["exc_info"]
@@ -66,19 +65,17 @@ class BaseHandler(RequestHandler):
             self.set_header("Content-Type", "text/html")
             return self.finish(
                 """<html>
-                                 <title>{0}</title>
-                                 <body>
-                                    <h2>Error</h2>
-                                    <p>{1}</p>
-                                    <h2>Traceback</h2>
-                                    <p>{2}</p>
-                                    <h2>Request Info</h2>
-                                    <p>{3}</p>
-                                    <button onclick="window.location='{4}/errorlogs/';">View Log(Errors)</button>
-                                 </body>
-                               </html>""".format(
-                    error, error, trace_info, request_info, settings.WEB_ROOT
-                )
+                    <title>{0}</title>
+                    <body>
+                        <h2>Error</h2>
+                        <p>{1}</p>
+                        <h2>Traceback</h2>
+                        <p>{2}</p>
+                        <h2>Request Info</h2>
+                        <p>{3}</p>
+                        <button onclick="window.location='{4}/errorlogs/';">View Log(Errors)</button>
+                    </body>
+                    </html>""".format(error, error, trace_info, request_info, settings.WEB_ROOT)
             )
 
     def redirect(self, url, permanent=False, status=None):
@@ -129,9 +126,7 @@ class BaseHandler(RequestHandler):
             if auth_header and auth_header.startswith("Basic "):
                 auth_decoded = base64.decodebytes(auth_header[6:].encode()).decode()
                 username, password = auth_decoded.split(":", 2)
-                if compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD):
-                    return True
-                return False
+                return bool(compare_digest(username, settings.WEB_USERNAME) and compare_digest(password, settings.WEB_PASSWORD))
         else:
             # Local network
             # strip <scope id> / <zone id> (%value/if_name) from remote_ip IPv6 scoped literal IP Addresses (RFC 4007) until phihag/ipaddress is updated tracking cpython 3.9.
@@ -164,15 +159,14 @@ class WebHandler(BaseHandler):
             from inspect import signature
 
             sig = signature(method)
-            if settings.DEVELOPER:
-                if len(sig.parameters):
-                    logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
+            if settings.DEVELOPER and len(sig.parameters):
+                logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
             results = await self.async_call(method, len(sig.parameters))
             try:
                 await self.finish(results)
             except Exception as e:
-                if 0:
+                if settings.DEVELOPER:
                     logger.debug(f"self.finish exception {e}, result {results}")
                 else:
                     logger.debug(f"self.finish exception {e}")
@@ -243,7 +237,7 @@ class WebRoot(WebHandler):
 
         episodes = {}
 
-        results = main_db_con.select("SELECT episode, season, showid " "FROM tv_episodes " "ORDER BY season, episode")
+        results = main_db_con.select("SELECT episode, season, showid FROM tv_episodes ORDER BY season, episode")
 
         for result in results:
             if result["showid"] not in episodes:
@@ -340,10 +334,10 @@ class WebRoot(WebHandler):
 
     def schedule(self):
         layout = self.get_query_argument("layout", settings.COMING_EPS_LAYOUT)
-        next_week = datetime.date.today() + datetime.timedelta(days=7)
-        next_week1 = datetime.datetime.combine(next_week, datetime.time(tzinfo=network_timezones.sc_timezone))
+        next_week = sc_today() + timedelta(days=7)
+        next_week1 = datetime.combine(next_week, dt_time.min, tzinfo=sc_timezone)
         results = ComingEpisodes.get_coming_episodes(ComingEpisodes.categories, settings.COMING_EPS_SORT, False)
-        today = datetime.datetime.now().replace(tzinfo=network_timezones.sc_timezone)
+        today = sc_now()
 
         # Allow local overriding of layout parameter
         if layout not in ("poster", "banner", "list", "calendar"):

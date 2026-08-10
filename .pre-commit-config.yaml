@@ -19,9 +19,11 @@ repos:
     repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
   - hooks:
-      - id: black
-    repo: https://github.com/psf/black
-    rev: 22.10.0
+      - id: ruff-format
+      - id: ruff
+        args: [--select, "I,F821", --fix]
+    repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.0
 #  - hooks:
 #      - id: commitizen
 #      - id: commitizen-branch

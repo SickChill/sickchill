@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List
 from urllib.parse import urljoin
 
 from requests.utils import dict_from_cookiejar
@@ -9,7 +9,7 @@ from sickchill.helper.common import convert_size, try_int
 from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
-from sickchill.oldbeard.show_name_helpers import allPossibleShowNames
+from sickchill.oldbeard.show_name_helpers import all_possible_show_names
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 if TYPE_CHECKING:
@@ -64,11 +64,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("Your username or password was incorrect.", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -97,15 +97,15 @@ class Provider(TorrentProvider):
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
-                searchedSeason = "0"
+                searched_season = "0"
                 if mode == "Season":
-                    searchedSeason = re.match(r".*\s(Season\s\d+|S\d+)", search_string).group(1)
+                    searched_season = re.match(r".*\s(Season\s\d+|S\d+)", search_string).group(1)
 
                 search_params["searchstr"] = search_string
                 data = self.get_url(self.urls["search"], params=search_params, returns="text")
 
                 if not data:
-                    logger.debug("No data returned from provider")
+                    logger.debug(_("No data returned from provider"))
                     continue
 
                 with BS4Parser(data) as html:
@@ -114,7 +114,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     labels = [process_column_header(label) for label in torrent_rows[0]("td")]
@@ -131,7 +131,7 @@ class Provider(TorrentProvider):
                             if mode == "Season":
                                 # Skip if torrent isn't the right season, we can't search
                                 # for an exact season on MTV, it returns all of them
-                                if searchedSeason not in title:
+                                if searched_season not in title:
                                     continue
 
                                 # If torrent is grouped, we need a folder name for title
@@ -142,10 +142,10 @@ class Provider(TorrentProvider):
                                     group_params = {"torrentid": torrentid}
 
                                     # Obtain folder name to use as title
-                                    torrentInfo = self.get_url(self.urls["search"], params=group_params, returns="text").replace("\n", "")
+                                    torrent_info = self.get_url(self.urls["search"], params=group_params, returns="text").replace("\n", "")
 
                                     releaseregex = '.*files_{0}.*?;">/(.+?(?=/))'.format(re.escape(torrentid))
-                                    releasename = re.search(releaseregex, torrentInfo).group(1)
+                                    releasename = re.search(releaseregex, torrent_info).group(1)
                                     title = releasename
 
                             download_url = urljoin(self.url, result.find("span", title="Download").parent["href"])
@@ -160,8 +160,9 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the"
-                                        " minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                            title, seeders, leechers
+                                        )
                                     )
                                 continue
 
@@ -170,10 +171,10 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
-                        except Exception:
+                        except Exception:  # noqa: S112
                             continue
 
             # For each search mode sort all the items by seeders if available
@@ -185,7 +186,7 @@ class Provider(TorrentProvider):
     def get_season_search_strings(self, episode: "TVEpisode") -> List[Dict]:
         search_string = {"Season": set()}
 
-        for show_name in allPossibleShowNames(episode.show, season=episode.scene_season):
+        for show_name in all_possible_show_names(episode.show, season=episode.scene_season):
             season_string = show_name + " "
 
             if episode.show.air_by_date or episode.show.sports:

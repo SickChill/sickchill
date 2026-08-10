@@ -1,15 +1,14 @@
 <%inherit file="/layouts/main.mako" />
 <%!
-    import timeago
-    from datetime import datetime
-
     from sickchill.oldbeard.helpers import anon_url
     from sickchill import settings
 %>
+
 <%block name="metas">
     <meta data-var="settings.SORT_ARTICLE" data-content="${settings.SORT_ARTICLE}">
     <meta data-var="settings.GRAMMAR_ARTICLES" data-content="${settings.GRAMMAR_ARTICLES}">
 </%block>
+
 <%block name="content">
     <div class="col-md-12">
         <div class="row">
@@ -17,19 +16,16 @@
                 <div class="pull-right">
                     <label>
                         <span>${_('Sort By')}:</span>
-                        <select id="showsort" class="form-control form-control-inline input-sm" title="Show Sort">
+                        <select id="showsort" class="form-control form-control-inline input-sm">
                             <option value="name">${_('Name')}</option>
-                            <option value="original">${_('Original')}</option>
                             <option value="rank" selected>${_('Rank')}</option>
-                            <option value="votes">${_('Votes')}</option>
-                            <option value="rating">% ${_('Rating')}</option>
-                            <option value="rating_votes">% ${_('Rating > Votes')}</option>
+                            <option value="year">${_('Year')}</option>
                         </select>
-                        &nbsp;
                     </label>
+                    &nbsp;
                     <label>
                         <span>${_('Sort Order')}:</span>
-                        <select id="showsortdirection" class="form-control form-control-inline input-sm" title="Show Sort Direction">
+                        <select id="showsortdirection" class="form-control form-control-inline input-sm">
                             <option value="asc" selected>${_('Asc')}</option>
                             <option value="desc">${_('Desc')}</option>
                         </select>
@@ -37,47 +33,53 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-5 col-sm-5 col-xs-12">
-                % if not header is UNDEFINED:
-                    <h1 class="header">${header}</h1>
-                % else:
-                    <h1 class="title">${title}</h1>
-                % endif
+                <h1 class="header">${header}</h1>
             </div>
         </div>
+
         <div class="row">
             <div id="popularShows">
                 <div id="container">
                     % if not popular_shows:
-                        <div class="trakt_show" style="width:100%; margin-top:20px">
+                        <div class="col-md-12">
                             <p class="red-text">${_('Fetching of IMDB Data failed. Are you online?')}</p>
-                            <strong>${_('Exception')}:</strong>
-                            <p>${imdb_exception}</p>
                         </div>
                     % else:
                         % for current_result in popular_shows:
-                            <div class="trakt_show" data-name="${current_result['title']}" data-rating="${current_result['rating']}"
-                                 data-votes="${str(current_result['votes']).replace(',', '')}" data-rank="${current_result['popular tv 100 rank']}">
-                                <div class="traktContainer">
-                                    <div class="trakt-image">
-                                        <a class="trakt-image" href="${anon_url(imdb_url(current_result))}" target="_blank">
-                                            <img alt="" class="trakt-image" src="${current_result.get_fullsizeURL() or static_url('images/poster.png')}"
-                                                 height="273px" width="186px" onerror="this.src='${static_url('images/poster.png')}'" />
+                            <div class="traktContainer"
+                                 data-name="${current_result.get('name', '')|h}"
+                                 data-rank="${current_result.get('currentRank') or loop.index}"
+                                 data-year="${current_result.get('year') or 0}">
+                                <div class="trakt-image">
+                                    <a href="${anon_url(imdb_url(current_result))}" target="_blank">
+                                        <img src="${current_result.get('image') or static_url('images/poster.png')}"
+                                             class="trakt-image"
+                                             alt="${current_result.get('name', '')}"
+                                             onerror="this.src='${static_url('images/poster.png')}'" />
+                                    </a>
+                                </div>
+
+                                <div class="show-title">
+                                    ${current_result.get('name', 'Unknown')}
+                                    % if current_result.get('year'):
+                                        <br><small>(${current_result['year']})</small>
+                                    % endif
+                                </div>
+
+                                <!-- Rank display -->
+                                <div class="clearfix">
+                                    <span class="rank">#${current_result.get('currentRank') or 'N/A'}</span>
+                                </div>
+
+                                <div class="traktShowTitleIcons">
+                                    % if current_result.get('current_imdb_id'):
+                                        <span class="btn btn-xs btn-default disabled">Already Added</span>
+                                    % else:
+                                        <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_result['imdb_id']}&amp;show_name=${current_result.get('name')}&amp;indexer=IMDB"
+                                           class="btn btn-xs btn-success">
+                                            ${_('Add Show')}
                                         </a>
-                                    </div>
-
-                                    <div class="show-title">
-                                        ${current_result.get('title','<span>&nbsp;</span>')} - (${current_result.get('year', 'TBD')})
-                                    </div>
-
-                                    <div class="clearfix">
-                                        <p>${int(float(current_result['rating'])*10)}%&nbsp;<span class="displayshow-icon-heart"></span> <i>#${current_result['popular tv 100 rank']}</i></p>
-                                        <i>${current_result['votes']}</i>
-
-                                        <div class="traktShowTitleIcons">
-                                            <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_imdb_id}&amp;show_name=${current_result['title'] | u}&amp;indexer=IMDB"
-                                               class="btn btn-xs">${_('Add Show')}</a>
-                                        </div>
-                                    </div>
+                                    % endif
                                 </div>
                             </div>
                         % endfor

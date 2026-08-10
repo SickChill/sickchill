@@ -6,10 +6,9 @@ from typing import List
 
 from sickchill.helper import video_screen_size
 from sickchill.init_helpers import setup_gettext
+from sickchill.oldbeard.numdict import NumDict
 from sickchill.recompiled import tags
 from sickchill.tagger.episode import EpisodeTags
-
-from .numdict import NumDict
 
 setup_gettext()
 
@@ -319,9 +318,7 @@ class Quality(object):
                 elif ep.tv == "hd" or ep.hevc or ep.trueHD:
                     result = (Quality.HDTV, Quality.FULLHDTV)[full_res]  # 1080 HDTV h264
                 # MPEG2 encoded
-                elif all([full_res, ep.tv == "hd", ep.mpeg]):
-                    result = Quality.RAWHDTV
-                elif all([not full_res, ep.tv == "hd", ep.mpeg]):
+                elif all([full_res, ep.tv == "hd", ep.mpeg]) or all([not full_res, ep.tv == "hd", ep.mpeg]):
                     result = Quality.RAWHDTV
             elif (ep.res == "1080i") and ep.tv == "hd" and (ep.mpeg or (ep.raw and ep.avc_non_free)):
                 result = Quality.RAWHDTV
@@ -364,8 +361,8 @@ class Quality(object):
             return Quality.UNKNOWN
 
         base_filename = path.basename(filename)
-        bluray = re.search(r"blue?-?ray|hddvd|b[rd](rip|mux)", base_filename, re.I) is not None
-        webdl = re.search(r"web.?dl|web(rip|mux|hd)", base_filename, re.I) is not None
+        bluray = re.search(r"blue?-?ray|hddvd|b[rd](rip|mux)", base_filename, re.IGNORECASE) is not None
+        webdl = re.search(r"web.?dl|web(rip|mux|hd)", base_filename, re.IGNORECASE) is not None
 
         ret = Quality.UNKNOWN
         if 3240 < height:
@@ -377,7 +374,7 @@ class Quality(object):
         elif 680 < height <= 800:
             ret = ((Quality.HDTV, Quality.HDBLURAY)[bluray], Quality.HDWEBDL)[webdl]
         elif height <= 680:
-            ret = (Quality.SDTV, Quality.SDDVD)[re.search(r"dvd|b[rd]rip|blue?-?ray", base_filename, re.I) is not None]
+            ret = (Quality.SDTV, Quality.SDDVD)[re.search(r"dvd|b[rd]rip|blue?-?ray", base_filename, re.IGNORECASE) is not None]
 
         return ret
 

@@ -1,6 +1,10 @@
+from typing import TYPE_CHECKING
+
 from sickchill import logger, settings
 from sickchill.oldbeard import common
-from sickchill.oldbeard.classes import UIError
+
+if TYPE_CHECKING:
+    from sickchill.logging.weblog import UIError
 
 
 class Notifier(object):
@@ -28,14 +32,14 @@ class Notifier(object):
             title = common.notifyStrings[common.NOTIFY_LOGIN]
             self._notify_discord(title + " - " + update_text.format(ipaddress))
 
-    def notify_logged_error(self, ui_error: UIError):
+    def notify_logged_error(self, ui_error: "UIError"):
         if settings.USE_DISCORD:
             update_text = ui_error.message
             title = ui_error.title
 
             self._notify_discord(f"{title} - {update_text}")
 
-    def test_notify(self, webhook: str = None, name: str = None, avatar: str = None, tts=None):
+    def test_notify(self, webhook: str | None = None, name: str | None = None, avatar: str | None = None, tts=None):
         from sickchill.oldbeard.notifications_queue import DiscordTask
 
         task = DiscordTask("This is a test notification from SickChill")

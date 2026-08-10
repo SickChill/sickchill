@@ -7,6 +7,7 @@ class InitialSchema(db.SchemaUpgrade):
         return self.has_table("db_version")
 
     def execute(self):
+        # ruff: disable [ISC004]
         queries = [
             ('CREATE TABLE failed ("release" TEXT, size NUMERIC, provider TEXT);',),
             (
@@ -16,6 +17,7 @@ class InitialSchema(db.SchemaUpgrade):
             ("CREATE TABLE db_version (db_version INTEGER);",),
             ("INSERT INTO db_version (db_version) VALUES (1);",),
         ]
+        # ruff: enable [ISC004]
         for query in queries:
             if len(query) == 1:
                 self.connection.action(query[0])

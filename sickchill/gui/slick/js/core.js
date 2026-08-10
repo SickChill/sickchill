@@ -398,7 +398,9 @@ const SICKCHILL = {
             });
 
             $('#backupDirectory').fileBrowser({title: _('Select backup folder to save to'), key: 'backupPath'});
-            $('#backupFile').fileBrowser({title: _('Select backup files to restore'), key: 'backupFile', includeFiles: 1});
+            $('#backupFile').fileBrowser({
+                title: _('Select backup files to restore'), key: 'backupFile', includeFiles: 1, fileTypes: ['zip'],
+            });
             $('#config-components').tabs();
         },
         notifications() {
@@ -552,6 +554,39 @@ const SICKCHILL = {
                 }).done(data => {
                     $('#testEMBY-result').html(data);
                     $('#testEMBY').prop('disabled', false);
+                });
+            });
+
+            $('#testJELLYFIN').on('click', function () {
+                const jellyfin = {};
+                jellyfin.host = $('#jellyfin_host').val();
+                jellyfin.apikey = $('#jellyfin_apikey').val();
+                if (!jellyfin.host || !jellyfin.apikey) {
+                    $('#testJELLYFIN-result').html(_('Please fill out the necessary fields above.'));
+                    if (jellyfin.host) {
+                        $('#jellyfin_host').removeClass('warning');
+                    } else {
+                        $('#jellyfin_host').addClass('warning');
+                    }
+
+                    if (jellyfin.apikey) {
+                        $('#jellyfin_apikey').removeClass('warning');
+                    } else {
+                        $('#jellyfin_apikey').addClass('warning');
+                    }
+
+                    return;
+                }
+
+                $('#jellyfin_host,#jellyfin_apikey').removeClass('warning');
+                $(this).prop('disabled', true);
+                $('#testJELLYFIN-result').html(loading);
+                $.get(scRoot + '/home/testJELLYFIN', {
+                    host: jellyfin.host,
+                    jellyfin_apikey: jellyfin.apikey, // eslint-disable-line camelcase
+                }).done(data => {
+                    $('#testJELLYFIN-result').html(data);
+                    $('#testJELLYFIN').prop('disabled', false);
                 });
             });
 
@@ -780,7 +815,7 @@ const SICKCHILL = {
                 $('#testNMJv2-result').html(loading);
                 nmjv2.host = $('#nmjv2_host').val();
                 nmjv2.dbloc = '';
-                const radios = document.getElementsByName('nmjv2_dbloc');
+                const radios = document.querySelectorAll('nmjv2_dbloc');
                 for (const element of radios) {
                     if (element.checked) {
                         nmjv2.dbloc = element.value;
@@ -1982,8 +2017,7 @@ const SICKCHILL = {
                         $('#torrent_paused_option').hide();
                         $('#torrent_host_option').hide();
                         $('#host_desc_torrent').text(_('URL to your putio client (e.g. http://localhost:8080)'));
-                        $('label[for="torrent_password"]').html(
-                            '<a href="' + anonURL + 'https://app.put.io/oauth/apps/new" target="_blank">'
+                        $('label[for="torrent_password"]').html('<a href="' + anonURL + 'https://app.put.io/oauth/apps/new" target="_blank">'
                             + _('Create a new OAuth app for put.io') + '</a>');
                         $('#username_title.component-title').text(_('Put.io Parent Folder'));
                         $('#password_title.component-title').text(_('Put.io OAuth Token'));
@@ -2421,7 +2455,7 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
                             return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
@@ -2560,7 +2594,7 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
                             return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
@@ -2593,7 +2627,7 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
                             return latinize((metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase().normalize('NFC'));
                         },
                         network: '[data-network]',
@@ -2970,8 +3004,7 @@ const SICKCHILL = {
                     indexer,
                     forAbsolute,
                     sceneAbsolute: sceneAbsolute === '' ? null : sceneAbsolute,
-                },
-                data => {
+                }, data => {
                     // Set the values we get back
                     if (data.sceneAbsolute === null) {
                         $('#sceneAbsolute_' + showId + '_' + forAbsolute).val('');
@@ -3358,6 +3391,7 @@ const SICKCHILL = {
                     columnSelector_columns: { // eslint-disable-line camelcase
                         12: false,
                     },
+                    stickyHeaders_offset: 50, // eslint-disable-line camelcase
                     filter_cssFilter: 'text-center text-capitalize', // eslint-disable-line camelcase
                     filter_hideFilters: false, // eslint-disable-line camelcase
                     filter_ignoreCase: true, // eslint-disable-line camelcase
@@ -3947,7 +3981,7 @@ const SICKCHILL = {
                     getSortData: {
                         name(itemElement) {
                             const name = $(itemElement).attr('data-name') || '';
-                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + ')\\s)', 'i');
+                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
                             return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase();
                         },
                         rating: '[data-rating] parseInt',
@@ -4108,47 +4142,47 @@ const SICKCHILL = {
             const buildTable = function (shows) {
                 let table
                     = '<div class="row">'
-                    + '<div class="col-lg-6 col-md-12">'
-                    + '<table class="sickchillTable new-show-table tablesorter">'
-                    + '<thead>'
-                    + '<tr>'
-                    + '<th></th>'
-                    + '<th>Show Name</th>'
-                    + '<th>Premiere</th>'
-                    + '<th>Indexer</th>'
-                    + '</tr>'
-                    + '</thead>'
-                    + '<tbody>';
+                        + '<div class="col-lg-6 col-md-12">'
+                        + '<table class="sickchillTable new-show-table tablesorter">'
+                        + '<thead>'
+                        + '<tr>'
+                        + '<th></th>'
+                        + '<th>Show Name</th>'
+                        + '<th>Premiere</th>'
+                        + '<th>Indexer</th>'
+                        + '</tr>'
+                        + '</thead>'
+                        + '<tbody>';
 
                 const selectedIndex = shows.indexOf(show => !show.inShowList);
 
                 for (const [index, show] of shows.entries()) {
                     table
                         += '<tr class="' + (show.inShowList ? 'in-list' : '') + '">'
-                        + '<td>'
-                        + '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj + '" '
-                        + (selectedIndex === index ? 'checked ' : '') + (show.inShowList ? 'disabled' : '') + '/>'
-                        + '</td>'
-                        + '<td>'
-                        + (function () {
-                            let string = '<a href=';
-                            string += show.inShowList ? '"/home/displayShow?show=' + show.id + '"' : '"' + show.url + '" target="_blank"';
+                            + '<td>'
+                            + '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj + '" '
+                            + (selectedIndex === index ? 'checked ' : '') + (show.inShowList ? 'disabled' : '') + '/>'
+                            + '</td>'
+                            + '<td>'
+                            + (function () {
+                                let string = '<a href=';
+                                string += show.inShowList ? '"/home/displayShow?show=' + show.id + '"' : '"' + show.url + '" target="_blank"';
 
-                            string += '>' + show.title + '</a>';
+                                string += '>' + show.title + '</a>';
 
-                            return string;
-                        })()
-                        + '</td>'
-                        + '<td>' + show.debut + '</td>'
-                        + '<td>' + show.indexer + '</td>'
-                        + '</tr>';
+                                return string;
+                            })()
+                            + '</td>'
+                            + '<td>' + show.debut + '</td>'
+                            + '<td>' + show.indexer + '</td>'
+                            + '</tr>';
                 }
 
                 table
                     += '</tbody>'
-                    + '</table>'
-                    + '</div>'
-                    + '</div>';
+                        + '</table>'
+                        + '</div>'
+                        + '</div>';
 
                 return table;
             };
@@ -4164,10 +4198,8 @@ const SICKCHILL = {
                 }
 
                 const searchingFor = _($('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
-                $('#searchResults').empty().html(
-                    '<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" /> '
-                    + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor),
-                );
+                $('#searchResults').empty().html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" /> '
+                    + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor));
 
                 searchRequestXhr = $.post({
                     url: scRoot + '/addShows/searchIndexersForShowName',
@@ -4219,11 +4251,10 @@ const SICKCHILL = {
 
                         $('#searchResults').html(resultString);
                         updateSampleText();
-                        $('.new-show-table').tablesorter(
-                            {
-                                widgets: ['stickyHeaders', 'zebra', 'saveSort'],
-                                headers: {0: {sorter: false}},
-                            });
+                        $('.new-show-table').tablesorter({
+                            widgets: ['stickyHeaders', 'zebra', 'saveSort'],
+                            headers: {0: {sorter: false}},
+                        });
                     },
                 });
             };
@@ -4534,9 +4565,9 @@ const UTIL = {
         }
     },
     init() {
-        const body = document.body;
-        const controller = body.dataset.controller;
-        const action = body.dataset.action;
+        const {body} = document;
+        const {controller} = body.dataset;
+        const {action} = body.dataset;
 
         UTIL.exec('common');
         UTIL.exec(controller);

@@ -6,7 +6,7 @@ from collections import OrderedDict
 from datetime import date
 from operator import attrgetter
 from threading import Lock
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from dateutil.parser import parse
 
@@ -27,7 +27,7 @@ class NameParser(object):
     NORMAL_REGEX = 1
     ANIME_REGEX = 2
 
-    def __init__(self, filename: bool = True, show_object=None, try_indexers: bool = False, naming_pattern: bool = False, parse_method: str = None):
+    def __init__(self, filename: bool = True, show_object=None, try_indexers: bool = False, naming_pattern: bool = False, parse_method: str | None = None):
         self.filename: bool = filename
         self.show_object: TVShow = show_object
         self.try_indexers: bool = try_indexers
@@ -75,7 +75,7 @@ class NameParser(object):
         for regexItem in uncompiled_regex:
             for cur_pattern_num, (cur_pattern_name, cur_pattern) in enumerate(regexItem):
                 try:
-                    cur_regex = re.compile(cur_pattern, re.VERBOSE | re.I)
+                    cur_regex = re.compile(cur_pattern, re.VERBOSE | re.IGNORECASE)
                 except re.error as error_message:
                     logger.info(f"WARNING: Invalid episode_pattern using {dbg_str} regexes, {error_message}. {cur_pattern}")
                 else:
@@ -168,7 +168,7 @@ class NameParser(object):
                 tmp_extra_info = match.group("extra_info")
 
                 # Show.S04.Special or Show.S05.Part.2.Extras is almost certainly not every episode in the season
-                if tmp_extra_info and cur_regex_name == "season_only" and re.search(r"([. _-]|^)(special|extra)s?\w*([. _-]|$)", tmp_extra_info, re.I):
+                if tmp_extra_info and cur_regex_name == "season_only" and re.search(r"([. _-]|^)(special|extra)s?\w*([. _-]|$)", tmp_extra_info, re.IGNORECASE):
                     continue
                 result.extra_info = tmp_extra_info
                 result.score += 1

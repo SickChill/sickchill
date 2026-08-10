@@ -1,11 +1,11 @@
 # Author: Marvin Pinto <me@marvinp.ca>
 # Author: Dennis Lutter <lad1337@gmail.com>
 import time
+from typing import TYPE_CHECKING
 
 import requests
 
 from sickchill import logger, settings
-from sickchill.oldbeard.classes import UIError
 from sickchill.oldbeard.common import (
     NOTIFY_DOWNLOAD,
     NOTIFY_LOGIN,
@@ -17,6 +17,10 @@ from sickchill.oldbeard.common import (
     notifyStrings,
 )
 from sickchill.oldbeard.helpers import make_session
+
+if TYPE_CHECKING:
+    from sickchill.logging.weblog import UIError
+
 
 API_URL = "https://api.pushover.net/1/messages.json"
 
@@ -128,7 +132,7 @@ class Notifier(object):
             title = notifyStrings[NOTIFY_LOGIN]
             self._notify_pushover(title, update_text.format(ipaddress))
 
-    def notify_logged_error(self, ui_error: UIError):
+    def notify_logged_error(self, ui_error: "UIError"):
         if settings.USE_PUSHOVER:
             self._notify_pushover(title=ui_error.title, message=ui_error.message)
 

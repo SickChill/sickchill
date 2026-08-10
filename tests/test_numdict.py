@@ -115,15 +115,15 @@ class NumDictTest(unittest.TestCase):
         # alternate constructors
         dict_8 = {1: "Echo", 2: "Echo"}
 
-        assert NumDict.fromkeys("1 2".split()) == dict_from_num_dict_6
-        assert NumDict().fromkeys("1 2".split()) == dict_from_num_dict_6
-        assert NumDict.fromkeys("1 2".split(), "Echo") == dict_8
-        assert NumDict().fromkeys("1 2".split(), "Echo") == dict_8
-        assert num_dict_1.fromkeys("1 2".split()) is not num_dict_1
-        self.assertIsInstance(num_dict_1.fromkeys("1 2".split()), NumDict)
-        self.assertIsInstance(num_dict_2.fromkeys("1 2".split()), NumDict)
-        self.assertIsInstance(num_dict_3.fromkeys("1 2".split()), NumDict)
-        self.assertIsInstance(num_dict_4.fromkeys("1 2".split()), NumDict)
+        assert NumDict.fromkeys(["1", "2"]) == dict_from_num_dict_6
+        assert NumDict().fromkeys(["1", "2"]) == dict_from_num_dict_6
+        assert NumDict.fromkeys(["1", "2"], "Echo") == dict_8
+        assert NumDict().fromkeys(["1", "2"], "Echo") == dict_8
+        assert num_dict_1.fromkeys(["1", "2"]) is not num_dict_1
+        self.assertIsInstance(num_dict_1.fromkeys(["1", "2"]), NumDict)
+        self.assertIsInstance(num_dict_2.fromkeys(["1", "2"]), NumDict)
+        self.assertIsInstance(num_dict_3.fromkeys(["1", "2"]), NumDict)
+        self.assertIsInstance(num_dict_4.fromkeys(["1", "2"]), NumDict)
 
     def test_repr(self):
         """
@@ -366,7 +366,7 @@ class NumDictTest(unittest.TestCase):
             assert num_dict_2.get(i) == dict_2.get(i), i
 
         with pytest.raises(AssertionError):
-            assert num_dict_2.get("1") == dict_2.get("1"), 1  # dict_2 expects string key which does not exist
+            assert num_dict_2.get("1") == dict_2.get("1"), 1  # noqa: RUF040# dict_2 expects string key which does not exist
 
         # Test "in" iteration.
         num_dict_2b = num_dict_2
@@ -375,9 +375,7 @@ class NumDictTest(unittest.TestCase):
             num_dict_2b[str(i)] = str(i)
         assert num_dict_2 == num_dict_2b
 
-        ikeys = []
-        for k in num_dict_2:
-            ikeys.append(k)
+        ikeys = list(num_dict_2)
         assert set(ikeys) == set(num_dict_2)
 
         # Test setdefault
@@ -471,8 +469,6 @@ class NumDictTest(unittest.TestCase):
             """
             subclass doesn't define __missing__ at a all
             """
-
-            pass
 
         num_dict_g = NumDictG()
         try:

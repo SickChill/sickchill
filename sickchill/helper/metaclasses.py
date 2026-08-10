@@ -1,5 +1,8 @@
+from typing import ClassVar
+
+
 class Singleton(type):
-    _instances = {}
+    _instances: ClassVar[dict] = {}
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:

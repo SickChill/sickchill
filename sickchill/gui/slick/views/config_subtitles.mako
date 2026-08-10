@@ -231,6 +231,17 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                    <span class="component-title">${_('Forced/Foreign Subtitles')}</span>
+                                </div>
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                    <input type="checkbox" name="subtitles_foreign_only"
+                                           id="subtitles_foreign_only" ${checked(settings.SUBTITLES_FOREIGN_ONLY)}/>
+                                    <label for="subtitles_foreign_only">${_('prefer forced subtitles for foreign language dialogue?')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field-pair row">
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                     <span class="component-title">${_('Extra Scripts')}</span>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -329,6 +340,7 @@
                                 'addic7ed': {'user': settings.ADDIC7ED_USER, 'pass': settings.ADDIC7ED_PASS},
                                 'itasa': {'user': settings.ITASA_USER, 'pass': settings.ITASA_PASS},
                                 'opensubtitles': {'user': settings.OPENSUBTITLES_USER, 'pass': settings.OPENSUBTITLES_PASS},
+                                'opensubtitlescom': {'user': settings.OPENSUBTITLESCOM_USER, 'pass': settings.OPENSUBTITLESCOM_PASS},
                                 'subscenter': {'user': settings.SUBSCENTER_USER, 'pass': settings.SUBSCENTER_PASS}
                             }
                         %>
@@ -376,6 +388,5 @@
                 </div>
             </div>
         </div>
-
     </form>
 </%block>

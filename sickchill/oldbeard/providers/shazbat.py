@@ -34,7 +34,7 @@ class Provider(TorrentProvider):
         if not self.passkey:
             self._check_auth()
         elif data.get("bozo") == 1 and not (data["entries"] and data["feed"]):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
 
         return True
 

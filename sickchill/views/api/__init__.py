@@ -1,5 +1,5 @@
-from .authentication import KeyHandler
-from .webapi import (
+from sickchill.views.api.authentication import KeyHandler
+from sickchill.views.api.webapi import (
     ApiCall,
     ApiError,
     ApiHandler,
@@ -57,6 +57,6 @@ from .webapi import (
     CMDSickChillShutdown,
     CMDSickChillUpdate,
     CMDSubtitleSearch,
-    function_mapper,
     TVDBShorthandWrapper,
+    function_mapper,
 )

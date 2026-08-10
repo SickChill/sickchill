@@ -11,14 +11,8 @@ from tornado.locale import load_gettext_translations
 
 import sickchill
 from sickchill import logger, settings, show_updater, update_manager
-from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
-from sickchill.oldbeard.config import check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str, ConfigMigrator
-from sickchill.oldbeard.databases import failed, main
-from sickchill.oldbeard.providers.newznab import NewznabProvider
-from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
-
-from .init_helpers import locale_dir, setup_gettext
-from .oldbeard import (
+from sickchill.init_helpers import locale_dir, setup_gettext
+from sickchill.oldbeard import (
     clients,
     config,
     dailysearcher,
@@ -37,9 +31,14 @@ from .oldbeard import (
     subtitles,
     traktChecker,
 )
-from .oldbeard.databases import cache
-from .providers import metadata
-from .system.Shutdown import Shutdown
+from sickchill.oldbeard.common import ARCHIVED, IGNORED, MULTI_EP_STRINGS, SD, SKIPPED, WANTED
+from sickchill.oldbeard.config import ConfigMigrator, check_section, check_setting_bool, check_setting_float, check_setting_int, check_setting_str
+from sickchill.oldbeard.databases import cache, failed, main
+from sickchill.oldbeard.network_timezones import sc_now
+from sickchill.oldbeard.providers.newznab import NewznabProvider
+from sickchill.oldbeard.providers.rsstorrent import TorrentRssProvider
+from sickchill.providers import metadata
+from sickchill.system.Shutdown import Shutdown
 
 
 def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool = False, disable_file_logging: bool = False) -> bool:
@@ -55,6 +54,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         check_section(settings.CFG, "KODI")
         check_section(settings.CFG, "PLEX")
         check_section(settings.CFG, "Emby")
+        check_section(settings.CFG, "Jellyfin")
         check_section(settings.CFG, "Growl")
         check_section(settings.CFG, "Prowl")
         check_section(settings.CFG, "Twitter")
@@ -125,7 +125,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
                     try:
                         if os.path.isdir(destination):
-                            backup_name = "{0}-{1}".format(path_leaf(destination), datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d_%H%M%S"))
+                            backup_name = "{0}-{1}".format(path_leaf(destination), datetime.datetime.strftime(sc_now(), "%Y%m%d_%H%M%S"))
                             shutil.move(destination, os.path.join(os.path.dirname(destination), backup_name))
 
                         shutil.move(source, destination)
@@ -459,6 +459,10 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.EMBY_HOST = check_setting_str(settings.CFG, "Emby", "emby_host")
         settings.EMBY_APIKEY = check_setting_str(settings.CFG, "Emby", "emby_apikey")
 
+        settings.USE_JELLYFIN = check_setting_bool(settings.CFG, "Jellyfin", "use_jellyfin")
+        settings.JELLYFIN_HOST = check_setting_str(settings.CFG, "Jellyfin", "jellyfin_host")
+        settings.JELLYFIN_APIKEY = check_setting_str(settings.CFG, "Jellyfin", "jellyfin_apikey")
+
         settings.USE_GROWL = check_setting_bool(settings.CFG, "Growl", "use_growl")
         settings.GROWL_NOTIFY_ONSNATCH = check_setting_bool(settings.CFG, "Growl", "growl_notify_onsnatch")
         settings.GROWL_NOTIFY_ONDOWNLOAD = check_setting_bool(settings.CFG, "Growl", "growl_notify_ondownload")
@@ -683,6 +687,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.SUBTITLES_PERFECT_MATCH = check_setting_bool(settings.CFG, "Subtitles", "subtitles_perfect_match", True)
         settings.EMBEDDED_SUBTITLES_ALL = check_setting_bool(settings.CFG, "Subtitles", "embedded_subtitles_all")
         settings.SUBTITLES_HEARING_IMPAIRED = check_setting_bool(settings.CFG, "Subtitles", "subtitles_hearing_impaired")
+        settings.SUBTITLES_FOREIGN_ONLY = check_setting_bool(settings.CFG, "Subtitles", "subtitles_foreign_only")
         settings.SUBTITLES_FINDER_FREQUENCY = check_setting_int(settings.CFG, "Subtitles", "subtitles_finder_frequency", 1, min_val=1)
         settings.SUBTITLES_MULTI = check_setting_bool(settings.CFG, "Subtitles", "subtitles_multi", True)
         settings.SUBTITLES_KEEP_ONLY_WANTED = check_setting_bool(settings.CFG, "Subtitles", "subtitles_keep_only_wanted")
@@ -696,6 +701,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.OPENSUBTITLES_USER = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_username", censor_log=True)
         settings.OPENSUBTITLES_PASS = check_setting_str(settings.CFG, "Subtitles", "opensubtitles_password", censor_log=True)
+        settings.OPENSUBTITLESCOM_USER = check_setting_str(settings.CFG, "Subtitles", "opensubtitlescom_username", censor_log=True)
+        settings.OPENSUBTITLESCOM_PASS = check_setting_str(settings.CFG, "Subtitles", "opensubtitlescom_password", censor_log=True)
 
         settings.SUBSCENTER_USER = check_setting_str(settings.CFG, "Subtitles", "subscenter_username", censor_log=True)
         settings.SUBSCENTER_PASS = check_setting_str(settings.CFG, "Subtitles", "subscenter_password", censor_log=True)
@@ -1064,7 +1071,7 @@ def halt():
 
 
 def sig_handler(signum=None, *args, **kwargs):
-    if not isinstance(signum, type(None)):
+    if not (signum is None):
         logger.info(f"Signal {signum} caught, saving and exiting...")
         Shutdown.stop(settings.PID)
 
@@ -1363,6 +1370,11 @@ def save_config():
                 "emby_host": settings.EMBY_HOST,
                 "emby_apikey": settings.EMBY_APIKEY,
             },
+            "Jellyfin": {
+                "use_jellyfin": int(settings.USE_JELLYFIN),
+                "jellyfin_host": settings.JELLYFIN_HOST,
+                "jellyfin_apikey": settings.JELLYFIN_APIKEY,
+            },
             "Growl": {
                 "use_growl": int(settings.USE_GROWL),
                 "growl_notify_onsnatch": int(settings.GROWL_NOTIFY_ONSNATCH),
@@ -1640,6 +1652,7 @@ def save_config():
                 "subtitles_perfect_match": int(settings.SUBTITLES_PERFECT_MATCH),
                 "embedded_subtitles_all": int(settings.EMBEDDED_SUBTITLES_ALL),
                 "subtitles_hearing_impaired": int(settings.SUBTITLES_HEARING_IMPAIRED),
+                "subtitles_foreign_only": int(settings.SUBTITLES_FOREIGN_ONLY),
                 "subtitles_finder_frequency": int(settings.SUBTITLES_FINDER_FREQUENCY),
                 "subtitles_multi": int(settings.SUBTITLES_MULTI),
                 "subtitles_extra_scripts": "|".join(settings.SUBTITLES_EXTRA_SCRIPTS),
@@ -1650,6 +1663,8 @@ def save_config():
                 "itasa_password": helpers.encrypt(settings.ITASA_PASS, settings.ENCRYPTION_VERSION),
                 "opensubtitles_username": settings.OPENSUBTITLES_USER,
                 "opensubtitles_password": helpers.encrypt(settings.OPENSUBTITLES_PASS, settings.ENCRYPTION_VERSION),
+                "opensubtitlescom_username": settings.OPENSUBTITLESCOM_USER,
+                "opensubtitlescom_password": helpers.encrypt(settings.OPENSUBTITLESCOM_PASS, settings.ENCRYPTION_VERSION),
                 "subscenter_username": settings.SUBSCENTER_USER,
                 "subscenter_password": helpers.encrypt(settings.SUBSCENTER_PASS, settings.ENCRYPTION_VERSION),
             },

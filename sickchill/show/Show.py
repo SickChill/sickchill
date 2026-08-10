@@ -2,8 +2,8 @@ from datetime import date
 from typing import TYPE_CHECKING, Union
 
 from sickchill import settings
-from sickchill.helper.exceptions import CantRefreshShowException, CantRemoveShowException, CantUpdateShowException, MultipleShowObjectsException
-from sickchill.oldbeard.common import Quality, SKIPPED, WANTED
+from sickchill.helper.exceptions import MultipleShowObjectsException
+from sickchill.oldbeard.common import SKIPPED, WANTED, Quality
 from sickchill.oldbeard.db import DBConnection
 
 if TYPE_CHECKING:
@@ -78,9 +78,11 @@ class Show(object):
 
     @staticmethod
     def overall_stats() -> dict:
+        from sickchill.oldbeard.network_timezones import sc_today
+
         db = DBConnection()
         shows = settings.show_list
-        today = date.today().toordinal()
+        today = sc_today().toordinal()
 
         downloaded_status = Quality.DOWNLOADED + Quality.ARCHIVED
         snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
@@ -113,7 +115,7 @@ class Show(object):
         return stats
 
     @staticmethod
-    def validate_indexer_id(show_or_id: Union["TVShow", str, int], show_list: list = None) -> (Union[str, None], Union["TVShow", None]):
+    def validate_indexer_id(show_or_id: Union["TVShow", str, int], show_list: list | None = None) -> (Union[str, None], Union["TVShow", None]):
         """
         Check that the provided indexer_id is valid and corresponds with a known show
         :param show_or_id: The indexer id or object to check
@@ -140,6 +142,9 @@ class Show(object):
         except MultipleShowObjectsException:
             return "Unable to find the specified show", None
 
+        if show is None:
+            return "Unable to find the specified show", None
+
         return None, show
 
     @staticmethod
@@ -157,36 +162,22 @@ class Show(object):
         if error is not None:
             return error, show
 
-        if pause is None:
-            show.paused = not show.paused
-        else:
-            show.paused = pause
-
-        show.save_to_db()
-
-        return None, show
+        return show.pause(pause=pause)
 
     @staticmethod
     def refresh(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
         """
-        Try to refresh a show
-        :param force: Force refresh
-        :param show_or_id: The unique id or object of the show to refresh
-        :return: A tuple containing:
-         - an error message if the show could not be refreshed, ``None`` otherwise
-         - the show object that was refreshed, if it exists, ``None`` otherwise
+        Refresh a show moved to tv.py
+        :param show_or_id: The unique id or object of the show to refresh. force: Force refresh
+        :param force: to purposely refresh the show
         """
 
         error, show = Show.validate_indexer_id(show_or_id)
         if error is not None:
             return error, show
 
-        try:
-            settings.showQueueScheduler.action.refresh_show(show, force)
-        except CantRefreshShowException as exception:
-            return str(exception), show
-
-        return None, show
+        # Delegate to the instance method
+        return show.refresh(force=force)
 
     @staticmethod
     def update(show_or_id: Union[int, str, "TVShow"], force: bool = False) -> (Union[str, None], Union["TVShow", None]):
@@ -202,12 +193,7 @@ class Show(object):
         if error is not None:
             return error, show
 
-        try:
-            settings.showQueueScheduler.action.update_show(show, bool(force))
-        except CantUpdateShowException as exception:
-            return str(exception), show
-
-        return None, show
+        return show.update(force=force)
 
     @staticmethod
     def delete(show_or_id: Union[int, str, "TVShow"], remove_files: bool = False) -> (Union[str, None], Union["TVShow", None]):
@@ -223,9 +209,4 @@ class Show(object):
         if error is not None:
             return error, show
 
-        try:
-            settings.showQueueScheduler.action.remove_show(show, bool(remove_files))
-        except CantRemoveShowException as exception:
-            return str(exception), show
-
-        return None, show
+        return show.delete(remove_files=remove_files)

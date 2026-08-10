@@ -88,10 +88,10 @@ class Provider(TorrentProvider):
         """
 
         file_quality = (torrent_rows("td"))[1].find("a")["href"].replace("_", " ")
-        logger.debug("Episode quality: {0}".format(file_quality))
+        logger.debug(_("Episode quality: {0}").format(file_quality))
 
         def checkName(options, func):
-            return func([re.search(option, file_quality, re.I) for option in options])
+            return func([re.search(option, file_quality, re.IGNORECASE) for option in options])
 
         dvdOptions = checkName(["dvd", "dvdrip", "dvdmux", "DVD9", "DVD5"], any)
         bluRayOptions = checkName(["BD", "BDmux", "BDrip", "BRrip", "Bluray"], any)
@@ -125,18 +125,18 @@ class Provider(TorrentProvider):
 
         subFound = italian = False
         for sub in self.sub_string:
-            if re.search(sub, name, re.I):
+            if re.search(sub, name, re.IGNORECASE):
                 subFound = True
             else:
                 continue
 
-            if re.search("ita", name.split(sub)[0], re.I):
-                logger.debug("Found Italian release: " + name)
+            if re.search("ita", name.split(sub)[0], re.IGNORECASE):
+                logger.debug(_("Found Italian release: {name}").format(name=name))
                 italian = True
                 break
 
-        if not subFound and re.search("ita", name, re.I):
-            logger.debug("Found Italian release: " + name)
+        if not subFound and re.search("ita", name, re.IGNORECASE):
+            logger.debug(_("Found Italian release: {name}").format(name=name))
             italian = True
 
         return italian
@@ -147,8 +147,8 @@ class Provider(TorrentProvider):
             return False
 
         english = False
-        if re.search("eng", name, re.I):
-            logger.debug("Found English release: " + name)
+        if re.search("eng", name, re.IGNORECASE):
+            logger.debug(_("Found English release: {name}").format(name=name))
             english = True
 
         return english
@@ -187,11 +187,11 @@ class Provider(TorrentProvider):
                 logger.debug(_("Search String: {search_string}").format(search_string=search_string))
 
                 last_page = False
-                for page in range(0, self.max_pages):
+                for page in range(self.max_pages):
                     if last_page:
                         break
 
-                    logger.debug("Processing page {0} of results".format(page))
+                    logger.debug(_("Processing page {0} of results").format(page))
                     search_url = self.urls["search"].format(search_string, page)
 
                     data = self.get_url(search_url, returns="text")
@@ -204,14 +204,14 @@ class Provider(TorrentProvider):
                             table_header = html.find("tr", class_="bordo")
                             torrent_table = table_header.find_parent("table") if table_header else None
                             if not torrent_table:
-                                logger.exception("Could not find table of torrents")
+                                logger.exception(_("Could not find table of torrents"))
                                 continue
 
                             torrent_rows = torrent_table("tr")
 
                             # Continue only if one Release is found
                             if len(torrent_rows) < 6 or len(torrent_rows[2]("td")) == 1:
-                                logger.debug("Data returned from provider does not contain any torrents")
+                                logger.debug(_("Data returned from provider does not contain any torrents"))
                                 last_page = True
                                 continue
 
@@ -246,11 +246,11 @@ class Provider(TorrentProvider):
                                     title += filename_qt
 
                                 if not self._is_italian(title) and not self.subtitle:
-                                    logger.debug("Torrent is subtitled, skipping: {0}".format(title))
+                                    logger.debug(_("Torrent is subtitled, skipping: {0}").format(title))
                                     continue
 
                                 if self.engrelease and not self._is_english(title):
-                                    logger.debug("Torrent isn't english audio/subtitled, skipping: {0}".format(title))
+                                    logger.debug(_("Torrent isn't english audio/subtitled, skipping: {0}").format(title))
                                     continue
 
                                 search_show = re.split(r"([Ss][\d{1,2}]+)", search_string)[0]

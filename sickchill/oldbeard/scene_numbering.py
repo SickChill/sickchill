@@ -9,10 +9,10 @@ import traceback
 
 import sickchill
 from sickchill import logger, settings
+from sickchill.oldbeard import db
+from sickchill.oldbeard.network_timezones import sc_now
+from sickchill.oldbeard.scene_exceptions import get_xem_session
 from sickchill.show.Show import Show
-
-from . import db
-from .scene_exceptions import xem_session
 
 
 def get_scene_numbering(indexer_id, indexer, season, episode, fallback_to_xem=True):
@@ -474,10 +474,12 @@ def xem_refresh(indexer_id, indexer, force=False):
     MAX_REFRESH_AGE_SECS = 86400  # 1 day
 
     main_db_con = db.DBConnection()
+    now_epoch = int(sc_now().timestamp())
+
     rows = main_db_con.select("SELECT last_refreshed FROM xem_refresh WHERE indexer = ? and indexer_id = ?", [indexer, indexer_id])
     if rows:
-        lastRefresh = int(rows[0]["last_refreshed"])
-        refresh = int(time.mktime(datetime.datetime.today().timetuple())) > lastRefresh + MAX_REFRESH_AGE_SECS
+        last_refresh = int(rows[0]["last_refreshed"])
+        refresh = now_epoch > last_refresh + MAX_REFRESH_AGE_SECS
     else:
         refresh = True
 
@@ -485,14 +487,14 @@ def xem_refresh(indexer_id, indexer, force=False):
         logger.debug(f"Looking up XEM scene mapping for show {indexer_id} on {sickchill.indexer.name(indexer)}")
 
         # mark refreshed
-        main_db_con.upsert(
-            "xem_refresh", {"indexer": indexer, "last_refreshed": int(time.mktime(datetime.datetime.today().timetuple()))}, {"indexer_id": indexer_id}
-        )
+        main_db_con.upsert("xem_refresh", {"indexer": indexer, "last_refreshed": now_epoch}, {"indexer_id": indexer_id})
 
         try:
+            xem_session = get_xem_session()
             # XEM MAP URL
             url = f"https://thexem.info/map/havemap?origin={sickchill.indexer.slug(indexer)}"
             parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
+
             if (
                 not parsed_json
                 or "result" not in parsed_json
@@ -506,6 +508,7 @@ def xem_refresh(indexer_id, indexer, force=False):
             url = f"https://thexem.info/map/all?id={indexer_id}&origin={sickchill.indexer.slug(indexer)}&destination=scene"
 
             parsed_json = sickchill.oldbeard.helpers.getURL(url, session=xem_session, returns="json")
+
             if not parsed_json or "result" not in parsed_json or "success" not in parsed_json["result"]:
                 logger.info(f'No XEM data for show "{indexer_id} on {sickchill.indexer.name(indexer)}"')
                 return

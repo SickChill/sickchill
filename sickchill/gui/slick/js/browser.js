@@ -36,7 +36,17 @@
             let list = null;
             let link = null;
 
-            const innerData = $.grep(data, (value, index) => index !== 0);
+            // Separate folders and files
+            const folders = data.filter(item => item.isFile === false);
+            const files = data.filter(item => item.isFile === true);
+
+            // Sort folders and files alphabetically
+            folders.sort((a, b) => a.name.localeCompare(b.name));
+            files.sort((a, b) => a.name.localeCompare(b.name));
+
+            // Concatenate sorted folders and files
+            const innerData = [data[1], ...folders, ...files];
+
             const inputContainer = $('<div class="fileBrowserFieldContainer"></div>');
 
             $('<input type="text" class="form-control input-sm">').val(currentBrowserPath).on('keypress', event => {
@@ -59,8 +69,19 @@
                  * @param entry.isAllowed
                  */
                 // noinspection OverlyComplexBooleanExpressionJS
-                if (entry.isFile && fileTypes) {
-                    const isAllowed = (entry.isAllowed || (fileTypes.includes('images') && entry.isImage));
+                if (entry.isFile && fileTypes && fileTypes.length > 0) {
+                    const ext = entry.name.split('.').pop().toLowerCase();
+
+                    const isZipRequested
+                        = fileTypes.includes('zip')
+                            || fileTypes.includes('archives');
+
+                    const isAllowed
+                        = entry.isAllowed
+                            || (fileTypes.includes('images') && entry.isImage)
+                            || (ext === 'zip' && isZipRequested)
+                            || fileTypes.includes(ext);
+
                     if (!isAllowed) {
                         return true;
                     }
@@ -128,7 +149,7 @@
             class: 'btn',
             click() {
                 // Store the browsed path to the associated text field
-                callback(newOptions.includeFiles ? $(this).find('.fileBrowserField').val() : currentBrowserPath, newOptions);
+                callback(newOptions.includeFiles ? currentBrowserPath : $(this).find('.fileBrowserField').val(), newOptions);
                 $(this).dialog('close');
             },
         }, {
@@ -212,14 +233,12 @@
         newOptions.field.addClass('fileBrowserField');
         if (newOptions.showBrowseButton) {
             // Append the browse button and give it a click behaviour
-            newOptions.field.after(
-                $('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser">').on('click', function () {
-                    const optionsWithInitialDirectory = $.extend({}, newOptions, {initialDirectory: newOptions.field.val() || (newOptions.key && path) || ''});
-                    $(this).nFileBrowser(callback, optionsWithInitialDirectory);
+            newOptions.field.after($('<input type="button" value="Browse&hellip;" class="btn btn-inline fileBrowser">').on('click', function () {
+                const optionsWithInitialDirectory = $.extend({}, newOptions, {initialDirectory: newOptions.field.val() || (newOptions.key && path) || ''});
+                $(this).nFileBrowser(callback, optionsWithInitialDirectory);
 
-                    return false;
-                }),
-            );
+                return false;
+            }));
         }
 
         return newOptions.field;

@@ -1,3 +1,4 @@
+import os
 import platform
 import re
 import uuid
@@ -8,6 +9,7 @@ from typing import Union
 
 import appdirs
 import rarfile
+import validators
 
 from sickchill import settings
 from sickchill.init_helpers import get_current_version
@@ -142,7 +144,9 @@ def http_code_description(http_code):
     return description
 
 
-def get_extension(path: Union[Path, PathLike, str] = None, lower: bool = False) -> str:
+def get_extension(path: Union[Path, PathLike, str] | None = None, lower: bool = False) -> str:
+    if path is None:
+        return ""
     path = Path(path)
     result = path.suffix.lstrip(".")
     if lower:
@@ -151,12 +155,14 @@ def get_extension(path: Union[Path, PathLike, str] = None, lower: bool = False) 
     return result
 
 
-def is_sync_file(filename: Union[Path, PathLike, str] = None) -> bool:
+def is_sync_file(filename: Union[Path, PathLike, str] | None = None) -> bool:
     """
     Check if the provided ``filename`` is a sync file, based on its name.
     :param filename: The filename to check
     :return: ``True`` if the ``filename`` is a sync file, ``False`` otherwise
     """
+    if filename is None:
+        return False
     sync_extensions = settings.SYNC_FILES.split(",")
     return (
         filename.startswith(".syncthing")
@@ -165,12 +171,14 @@ def is_sync_file(filename: Union[Path, PathLike, str] = None) -> bool:
     )
 
 
-def is_torrent_or_nzb_file(filename: Union[Path, PathLike, str] = None) -> bool:
+def is_torrent_or_nzb_file(filename: Union[Path, PathLike, str] | None = None) -> bool:
     """
     Check if the provided ``filename`` is a NZB file or a torrent file, based on its extension.
     :param filename: The filename to check
     :return: ``True`` if the ``filename`` is a NZB file or a torrent file, ``False`` otherwise
     """
+    if filename is None:
+        return False
     return get_extension(filename, lower=True) in ("nzb", "torrent")
 
 
@@ -188,11 +196,11 @@ def is_media_file(filename):
     is_rar = is_rar_file(filename)
 
     path = Path(filename)
-    if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", path.name, re.I):
+    if re.search(r"(^|[\W_])(?<!shomin.)(sample\d*)[\W_]", path.name, re.IGNORECASE):
         return False
 
     # ignore RARBG release intro
-    if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", path.name, re.I):
+    if re.search(r"^RARBG\.(\w+\.)?(mp4|avi|txt)$", path.name, re.IGNORECASE):
         return False
 
     # ignore Kodi tvshow trailers
@@ -203,7 +211,7 @@ def is_media_file(filename):
     if path.name.startswith("._"):
         return False
 
-    if re.search("extras?$", path.name, re.I):
+    if re.search("extras?$", path.name, re.IGNORECASE):
         return False
 
     return (get_extension(path, lower=True) in MEDIA_EXTENSIONS) or (is_rar and settings.UNPACK == settings.UNPACK_PROCESS_INTACT)
@@ -288,7 +296,7 @@ def convert_size(size, default=None, use_decimal=False, **kwargs):
             scalar, units = size_tuple[0], size_tuple[1:]
             units = units[0].upper() if units else default_units
         else:
-            regex_scalar = re.search(r"([\d. ]+)", size, re.I)
+            regex_scalar = re.search(r"([\d. ]+)", size, re.IGNORECASE)
             scalar = regex_scalar.group() if regex_scalar else -1
             units = size.strip(scalar) if scalar != -1 else "B"
 
@@ -344,9 +352,9 @@ def replace_extension(filename: Union[Path, PathLike, str], new_extension: str) 
         return filename
     if not path.suffix:
         return filename
-    else:
-        if new_extension and not new_extension.startswith("."):
-            new_extension = f".{new_extension}"
+
+    if new_extension and not new_extension.startswith("."):
+        new_extension = f".{new_extension}"
 
     return type(filename)(path.with_suffix(new_extension))
 
@@ -372,7 +380,19 @@ def sanitize_filename(filename):
     return ""
 
 
-def try_int(candidate, default_value=0):
+def valid_url(url):
+    try:
+        valid = validators.url(url)
+    except validators.utils.ValidationError:
+        valid = False  # ValidationError isn't an exception so doesn't actually get here
+
+    if not valid:
+        valid = False  # if ValidationError in response set to False
+
+    return valid
+
+
+def try_int(candidate, default_value=0) -> int:
     """
     Try to convert ``candidate`` to int, or return the ``default_value``.
     :param candidate: The value to convert to int
@@ -386,7 +406,7 @@ def try_int(candidate, default_value=0):
         return default_value
 
 
-def try_float(candidate, default_value=0):
+def try_float(candidate, default_value=0) -> float:
     """
     Try to convert ``candidate`` to int, or return the ``default_value``.
     :param candidate: The value to convert to int
@@ -416,9 +436,8 @@ def episode_num(season=None, episode=None, **kwargs):
         if numbering == "standard":
             if season is not None and episode is not None:
                 return f"S{season:02}E{episode:02}"
-        elif numbering == "absolute":
-            if episode is None:
-                return f"{season:03}"
+        elif numbering == "absolute" and episode is None:
+            return f"{season:03}"
 
 
 def choose_data_dir(program_dir) -> Path:
@@ -427,6 +446,6 @@ def choose_data_dir(program_dir) -> Path:
     proper_data_dir = Path(appdirs.user_config_dir(appname="sickchill"))
     for location in [old_data_dir, old_profile_path, proper_data_dir]:
         for check in ["sickbeard.db", "sickchill.db", "config.ini"]:
-            if location.joinpath(check).exists():
+            if os.access(location.joinpath(check), os.R_OK):
                 return location.resolve()
     return proper_data_dir.resolve()

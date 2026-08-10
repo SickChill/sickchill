@@ -42,24 +42,24 @@ class Provider(TorrentProvider):
 
                     data = self.get_url(search_url, returns="text")
                     if not data:
-                        logger.debug("No data returned from provider")
+                        logger.debug(_("No data returned from provider"))
                         continue
 
                     if not data.startswith("<?xml"):
-                        logger.info("Expected xml but got something else, is your mirror failing?")
+                        logger.info(_("Expected xml but got something else, is your mirror failing?"))
                         continue
 
                     with BS4Parser(data) as parser:
                         elements = parser("item")
                         if not elements:
-                            logger.info("Returned xml contained no results")
+                            logger.info(_("Returned xml contained no results"))
                             continue
 
                         for item in elements:
                             try:
                                 title = item.title.text
                                 download_url = item.enclosure["url"]
-                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.I).group(2)
+                                torrent_hash = re.match(r"(.*)([A-F0-9]{40})(.*)", download_url, re.IGNORECASE).group(2)
 
                                 if settings.TORRENT_METHOD != "blackhole" and "magnet:?" not in download_url:
                                     download_url = "magnet:?xt=urn:btih:" + torrent_hash + "&dn=" + title + self._custom_trackers
@@ -98,12 +98,12 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":
-                                logger.debug("Found result: {0} with {1} seeders and {2} leechers".format(title, seeders, leechers))
+                                logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
 
                 except (AttributeError, TypeError, KeyError, ValueError):
-                    logger.exception("Failed parsing provider. Traceback: {0!r}".format(traceback.format_exc()))
+                    logger.exception(_("Failed parsing provider. Traceback: {0!r}").format(traceback.format_exc()))
 
             # For each search mode sort all the items by seeders if available
             items.sort(key=lambda d: try_int(d.get("seeders", 0)), reverse=True)

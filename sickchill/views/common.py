@@ -8,7 +8,8 @@ from mako.template import Template
 from tornado.escape import linkify
 
 from sickchill import logger, settings
-from sickchill.oldbeard import classes, helpers
+from sickchill.logging.weblog import WebErrorViewer
+from sickchill.oldbeard import helpers
 
 mako_lookup = {}
 
@@ -43,8 +44,8 @@ class PageTemplate(Template):
         self.context["reverse_url"] = rh.reverse_url
         self.context["linkify"] = linkify
 
-        self.context["error_count"] = len(classes.ErrorViewer.errors)
-        self.context["warning_count"] = len(classes.WarningViewer.errors)
+        self.context["error_count"] = WebErrorViewer.num_errors()
+        self.context["warning_count"] = WebErrorViewer.num_warnings()
         self.context["process_id"] = str(settings.PID)
 
         self.context["title"] = "FixME"

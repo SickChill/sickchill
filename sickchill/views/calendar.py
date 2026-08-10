@@ -4,9 +4,9 @@ from tornado.web import authenticated
 
 from sickchill import logger, settings
 from sickchill.helper import try_int
-
-from ..oldbeard import db, network_timezones
-from .index import BaseHandler
+from sickchill.oldbeard import db, network_timezones
+from sickchill.oldbeard.network_timezones import sc_today
+from sickchill.views.index import BaseHandler
 
 
 class CalendarHandler(BaseHandler):
@@ -40,8 +40,8 @@ class CalendarHandler(BaseHandler):
         past_weeks = try_int(self.get_argument("past", "52"), 52)
 
         # Limit dates
-        past_date = (datetime.date.today() + datetime.timedelta(weeks=-past_weeks)).toordinal()
-        future_date = (datetime.date.today() + datetime.timedelta(weeks=future_weeks)).toordinal()
+        past_date = (sc_today() + datetime.timedelta(weeks=-past_weeks)).toordinal()
+        future_date = (sc_today() + datetime.timedelta(weeks=future_weeks)).toordinal()
 
         # Get all the shows that are not paused and are currently on air (from kjoconnor Fork)
         main_db_con = db.DBConnection()
@@ -63,16 +63,16 @@ class CalendarHandler(BaseHandler):
 
                 # Create event for episode
                 ical += "BEGIN:VEVENT\r\n"
-                ical += f'DTSTART:{air_date_time.strftime("%Y%m%d")}T{air_date_time.strftime("%H%M%S")}Z\r\n'
-                ical += f'DTEND:{air_date_time_end.strftime("%Y%m%d")}T{air_date_time_end.strftime("%H%M%S")}Z\r\n'
+                ical += f"DTSTART:{air_date_time.strftime('%Y%m%d')}T{air_date_time.strftime('%H%M%S')}Z\r\n"
+                ical += f"DTEND:{air_date_time_end.strftime('%Y%m%d')}T{air_date_time_end.strftime('%H%M%S')}Z\r\n"
                 if settings.CALENDAR_ICONS:
                     ical += "X-GOOGLE-CALENDAR-CONTENT-ICON:https://sickchill.github.io/images/ico/favicon-16.png\r\n"
                     ical += "X-GOOGLE-CALENDAR-CONTENT-DISPLAY:CHIP\r\n"
-                ical += f'SUMMARY: {show["show_name"]} - {episode["season"]}x{episode["episode"]} - {episode["name"]}\r\n'
-                ical += f'UID:SickChill-{datetime.date.today().isoformat()}-{show["show_name"].replace(" ", "-")}-S{episode["season"]}E{episode["episode"]}\r\n'
-                ical += f'DESCRIPTION:{show["airs"] or "(Unknown airs)"} on {show["network"] or "Unknown network"}'
+                ical += f"SUMMARY: {show['show_name']} - {episode['season']}x{episode['episode']} - {episode['name']}\r\n"
+                ical += f"UID:SickChill-{sc_today().isoformat()}-{show['show_name'].replace(' ', '-')}-S{episode['season']}E{episode['episode']}\r\n"
+                ical += f"DESCRIPTION:{show['airs'] or '(Unknown airs)'} on {show['network'] or 'Unknown network'}"
                 if episode["description"]:
-                    ical += f' \\n\\n {episode["description"].splitlines()[0]}'
+                    ical += f" \\n\\n {episode['description'].splitlines()[0]}"
                 ical += "\r\nEND:VEVENT\r\n"
 
         # Ending the iCal

@@ -3,7 +3,8 @@ import threading
 import time
 import traceback
 
-from .. import logger
+from sickchill import logger
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 
 
 class Scheduler(threading.Thread):
@@ -20,11 +21,13 @@ class Scheduler(threading.Thread):
 
         self.run_delay = run_delay
         if start_time is None:
-            self.lastRun = datetime.datetime.now() + self.run_delay - cycleTime
+            self.lastRun = sc_now() + self.run_delay - cycleTime
         else:
             # Set last run to the last full hour
-            temp_now = datetime.datetime.now()
-            self.lastRun = datetime.datetime(temp_now.year, temp_now.month, temp_now.day, temp_now.hour, 0, 0, 0) + self.run_delay - cycleTime
+            temp_now = sc_now()
+            self.lastRun = (
+                datetime.datetime(temp_now.year, temp_now.month, temp_now.day, temp_now.hour, 0, 0, 0, tzinfo=sc_timezone) + self.run_delay - cycleTime
+            )
         self.action = action
         self.cycleTime = cycleTime
         self.start_time = start_time
@@ -40,20 +43,20 @@ class Scheduler(threading.Thread):
         Check how long we have until we run again
         :return: timedelta
         """
-        if self.is_alive():
-            if self.start_time is None:
-                delta = datetime.datetime.now() - self.lastRun
-                return (self.cycleTime - delta, self.cycleTime)[delta > self.cycleTime]
-            else:
-                time_now = datetime.datetime.now()
-                start_time_today = datetime.datetime.combine(time_now.date(), self.start_time)
-                start_time_tomorrow = start_time_today + datetime.timedelta(days=1)
-                if time_now.hour >= self.start_time.hour:
-                    return start_time_tomorrow - time_now
-                elif time_now.hour < self.start_time.hour:
-                    return start_time_today - time_now
-        else:
+        if not self.is_alive():
             return datetime.timedelta(seconds=0)
+
+        if self.start_time is None:
+            delta = sc_now() - self.lastRun
+            return (self.cycleTime - delta, self.cycleTime)[delta > self.cycleTime]
+
+        time_now = sc_now()
+        start_time_today = datetime.datetime.combine(time_now.date(), self.start_time, tzinfo=sc_timezone)
+        start_time_tomorrow = start_time_today + datetime.timedelta(days=1)
+        if time_now.hour >= self.start_time.hour:
+            return start_time_tomorrow - time_now
+        else:
+            return start_time_today - time_now
 
     def forceRun(self):
         if not self.action.amActive:
@@ -68,7 +71,7 @@ class Scheduler(threading.Thread):
         try:
             while not self.stop.is_set():
                 if self.enable:
-                    current_time = datetime.datetime.now()
+                    current_time = sc_now()
                     should_run = False
                     # Is self.force enable
                     if self.force:

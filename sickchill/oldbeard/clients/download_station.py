@@ -11,7 +11,7 @@ from sickchill import logger, settings
 from sickchill.oldbeard.clients.generic import GenericClient
 
 if TYPE_CHECKING:
-    from sickchill.oldbeard.classes import SearchResult
+    from sickchill.providers.result_classes import SearchResult
 
 
 class Client(GenericClient):
@@ -201,7 +201,7 @@ class Client(GenericClient):
         data = self._task_post_data
 
         result_type = result.result_type.replace("data", "")
-        files = {result_type: (".".join([result.name, result_type]), result.content)}
+        files = {result_type: (f"{result.name}.{result_type}", result.content)}
 
         data["type"] = '"file"'
         data["file"] = f'["{result_type}"]'

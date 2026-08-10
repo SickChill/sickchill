@@ -38,11 +38,11 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning("Unable to connect to provider")
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("Error: Username or password incorrect!", response):
-            logger.warning("Invalid username or password. Check your settings")
+            logger.warning(_("Invalid username or password. Check your settings"))
             return False
 
         return True
@@ -78,7 +78,7 @@ class Provider(TorrentProvider):
 
                     # Continue only if at least one Release is found
                     if len(torrent_rows) < 2:
-                        logger.debug("Data returned from provider does not contain any torrents")
+                        logger.debug(_("Data returned from provider does not contain any torrents"))
                         continue
 
                     labels = [label.img["title"] if label.img else label.get_text(strip=True) for label in torrent_rows[0]("td")]
@@ -99,8 +99,9 @@ class Provider(TorrentProvider):
                             if seeders < self.minseed or leechers < self.minleech:
                                 if mode != "RSS":
                                     logger.debug(
-                                        "Discarding torrent because it doesn't meet the"
-                                        " minimum seeders or leechers: {0} (S:{1} L:{2})".format(title, seeders, leechers)
+                                        "Discarding torrent because it doesn't meet the minimum seeders or leechers: {0} (S:{1} L:{2})".format(
+                                            title, seeders, leechers
+                                        )
                                     )
                                 continue
 
@@ -132,7 +133,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title + ".hdtv.x264", "link": download_url, "size": size, "seeders": seeders, "leechers": leechers}
                             items.append(item)
-                        except Exception:
+                        except Exception:  # noqa: S112
                             continue
 
             # For each search mode sort all the items by seeders if available

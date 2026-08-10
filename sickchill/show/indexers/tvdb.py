@@ -6,13 +6,11 @@ import traceback
 import requests
 import tvdbsimple
 
-# from sickchill import logger
 import sickchill.start
 from sickchill import logger, settings
+from sickchill.show.indexers.base import Indexer
+from sickchill.show.indexers.wrappers import ExceptionDecorator
 from sickchill.tv import TVEpisode
-
-from .base import Indexer
-from .wrappers import ExceptionDecorator
 
 
 class TVDB(Indexer):
@@ -113,37 +111,72 @@ class TVDB(Indexer):
         if re.match(r"^t?t?\d{7,8}$", name) or re.match(r"^\d{6}$", name):
             try:
                 if re.match(r"^t?t?\d{7,8}$", name):
-                    result = self._search(imdbId=f'tt{name.strip("t")}', language=language)
+                    result = self._search(imdbId=f"tt{name.strip('t')}", language=language)
                 elif re.match(r"^\d{6}$", name):
                     series = self._series(name, language=language)
                     if series:
                         result = [series.info(language)]
-            except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
+            except Exception:
                 logger.debug(traceback.format_exc())
-        else:
-            # Name as provided (usually from nfo)
-            names = [name]
-            if not exact:
-                # Name without year and separator
-                test = re.match(r"^(.+?)[. -]+\(\d{4}\)?$", name)
-                if test:
-                    names.append(test.group(1).strip())
-                # Name with spaces
-                if re.match(r"[. -_]", name):
-                    names.append(re.sub(r"[. -_]", " ", name).strip())
-                    if test:
-                        # Name with spaces and without year
-                        names.append(re.sub(r"[. -_]", " ", test.group(1)).strip())
+            return result or []
 
-            for attempt in set(n for n in names if n.strip()):
-                try:
-                    result = self._search(attempt, language=language)
+        # ----- name search path -----
+        names = [name]
+        if not exact:
+            test = re.match(r"^(.+?)[. _-]+\(\d{4}\)?$", name)
+            if test:
+                names.append(test.group(1).strip())
+            if re.search(r"[. _-]", name):
+                names.append(re.sub(r"[. _-]", " ", name).strip())
+                if test:
+                    names.append(re.sub(r"[. _-]", " ", test.group(1)).strip())
+
+        seen_ids = set()
+
+        # 1. Try TheTVDB first
+        for attempt in dict.fromkeys(n for n in names if n.strip()):
+            try:
+                tvdb_results = self._search(attempt, language=language) or []
+                for item in tvdb_results:
+                    sid = item.get("id") if isinstance(item, dict) else getattr(item, "id", None)
+                    if sid and sid not in seen_ids:
+                        result.append(item)
+                        seen_ids.add(sid)
+                if result:
+                    break
+            except requests.exceptions.HTTPError as e:
+                # Expected when TVDB has no exact name match – we fall back to TVmaze
+                if getattr(e, "response", None) is not None and e.response.status_code == 404:
+                    logger.debug(f"theTVDB name search 404 for '{attempt}' (trying TVmaze)")
+                else:
+                    logger.debug(traceback.format_exc())
+            except Exception:
+                logger.debug(traceback.format_exc())
+
+        # 2. Supplement with TVmaze only when theTVDB gave nothing
+        if not result:
+            try:
+                from . import tvmaze
+
+                for attempt in dict.fromkeys(n for n in names if n.strip()):
+                    for show in tvmaze.search(attempt):
+                        tvdb_id = show.get("externals", {}).get("thetvdb")
+                        if not tvdb_id or tvdb_id in seen_ids:
+                            continue
+                        try:
+                            series = self._series(tvdb_id, language=language)
+                            if series:
+                                info = series.info(language)
+                                result.append(info)
+                                seen_ids.add(tvdb_id)
+                        except Exception:
+                            logger.debug(traceback.format_exc())
                     if result:
                         break
-                except (requests.exceptions.RequestException, requests.exceptions.HTTPError, Exception):
-                    logger.debug(traceback.format_exc())
+            except Exception:
+                logger.debug(traceback.format_exc())
 
-        return result
+        return result or []
 
     @property
     def languages(self):
@@ -182,14 +215,14 @@ class TVDB(Indexer):
         location = location.strip()
         if not location:
             return location
-        return f'https://artworks.thetvdb.com/banners/{re.sub(r"^_cache/", "", location)}'
+        return f"https://artworks.thetvdb.com/banners/{re.sub(r'^_cache/', '', location)}"
 
     @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, requests.exceptions.HTTPError, KeyError, Exception), image_api=True)
     def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None, multiple=False):
         api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
         try:
             images = getattr(api_results, keyType)(lang or show.lang)
-        except:
+        except Exception:
             return [] if multiple else ""
 
         images = sorted(images, key=lambda img: img["ratingsInfo"]["average"], reverse=True)
