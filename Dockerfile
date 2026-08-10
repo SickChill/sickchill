@@ -1,11 +1,11 @@
-# syntax=docker/dockerfile:experimental
+# syntax=docker/dockerfile:1
 
 # Universal NAS-friendly Dockerfile for SickChill
 # - Pre-builds venv in image
 # - Copies venv to persistent /data/.venv at runtime
 # - Reliable revision detection using OCI labels for develop + release branches
 
-FROM --platform=$TARGETPLATFORM python:3.13-slim-bookworm AS base
+FROM python:3.13-slim-bookworm AS base
 
 LABEL org.opencontainers.image.source="https://github.com/sickchill/sickchill"
 LABEL maintainer="miigotu@gmail.com"
@@ -16,6 +16,13 @@ ENV PYTHONUNBUFFERED=1
 
 ARG SOURCE
 ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
+
+# Fixed venv path for pre-built environment
+ENV VENV_IMAGE_PATH=/opt/sickchill/.venv
+ENV HOME="/root/"
+ENV CARGO_HOME="/root/.cargo"
+ENV PATH="$CARGO_HOME/bin:$PATH"
+ENV SHELL="/bin/sh"
 
 # Runtime deps (including gosu)
 RUN mkdir -m 777 -p /sickchill
@@ -32,26 +39,19 @@ RUN apt-get update -qq && apt-get upgrade -yqq && \
     apt-get clean -yqq && \
     rm -rf /var/lib/apt/lists/*
 
-# Fixed venv path for pre-built environment
-ENV VENV_IMAGE_PATH=/opt/sickchill/.venv
-ENV HOME="/root/"
-ENV CARGO_HOME="/root/.cargo"
-ENV PATH="$CARGO_HOME/bin:$PATH"
-ENV SHELL="/bin/sh"
-
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN mkdir -m 755 -p "$HOME"
 
-ENV RUSTUP_HOME "$HOME/.rustup"
-ENV RUSTUP_PERMIT_COPY_RENAME "yes"
-ENV RUSTUP_IO_THREADS 1
-ENV CARGO_TERM_VERBOSE "true"
-ENV CARGO "$CARGO_HOME/bin/cargo"
+ENV RUSTUP_HOME="$HOME/.rustup"
+ENV RUSTUP_PERMIT_COPY_RENAME="yes"
+ENV RUSTUP_IO_THREADS=1
+ENV CARGO_TERM_VERBOSE="true"
+ENV CARGO="$CARGO_HOME/bin/cargo"
 
-RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
+RUN curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
 
-ENV PATH "$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
+ENV PATH="$RUSTUP_HOME/bin:$CARGO_HOME/bin:$PATH"
 
 RUN python3 -m venv "$VENV_IMAGE_PATH" --upgrade --upgrade-deps
 ENV PATH="$VENV_IMAGE_PATH/bin:$PATH"
@@ -64,10 +64,10 @@ WORKDIR /sickchill
 COPY . /sickchill/
 
 RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
-      pip install --upgrade "sickchill[speedups]"; \
+      pip install --upgrade "sickchill"; \
     else \
       pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
-      poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)[speedups]"; \
+      poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)"; \
     fi
 
 RUN pip install --upgrade "subliminal>=2.5.0,<3.0"
