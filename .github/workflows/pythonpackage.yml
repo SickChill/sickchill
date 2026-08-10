@@ -151,7 +151,7 @@ jobs:
       - name: Test Python
         run: poetry run poe pytest
 
-      - if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+      - if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'
         name: Coverage
         uses: codecov/codecov-action@v7
         with:

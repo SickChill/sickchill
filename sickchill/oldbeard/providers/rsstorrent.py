@@ -68,7 +68,7 @@ class TorrentRssProvider(TorrentProvider):
         for cur_attempt in attempt_list:
             try:
                 url = cur_attempt()
-            except Exception:
+            except Exception:  # noqa: S112
                 continue
 
             if title and url:

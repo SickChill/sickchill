@@ -1,6 +1,8 @@
 import datetime
+from typing import ClassVar
 
 from sickchill import settings
+from sickchill.oldbeard.network_timezones import sc_now
 
 MESSAGE = "notice"
 ERROR = "error"
@@ -63,7 +65,7 @@ class Notification(object):
         self.title = title
         self.message = message
 
-        self._when = datetime.datetime.now()
+        self._when = sc_now()
         self._seen = []
 
         if type:
@@ -86,7 +88,7 @@ class Notification(object):
         """
         Returns True if the notification is older than the specified timeout value.
         """
-        return datetime.datetime.now() - self._when > self._timeout
+        return sc_now() - self._when > self._timeout
 
     def see(self, remote_ip="127.0.0.1"):
         """
@@ -103,7 +105,7 @@ class ProgressIndicator(object):
 
 
 class ProgressIndicators(object):
-    _pi = {"massUpdate": [], "massAdd": [], "dailyUpdate": []}
+    _pi: ClassVar[dict] = {"massUpdate": [], "massAdd": [], "dailyUpdate": []}
 
     @staticmethod
     def getIndicator(name):

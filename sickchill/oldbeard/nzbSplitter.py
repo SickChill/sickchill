@@ -35,7 +35,7 @@ def get_season_nzbs(name, url_data, season):
 
     nzb_element = show_xml.getroot()
 
-    scene_name_match = re.search(regex_string["scene_name"] % season, name, re.I)
+    scene_name_match = re.search(regex_string["scene_name"] % season, name, re.IGNORECASE)
     if scene_name_match:
         show_name = scene_name_match.groups()[0]
     else:  # Make sure we aren't missing valid results after changing name_parser and the quality detection
@@ -55,7 +55,7 @@ def get_season_nzbs(name, url_data, season):
             continue
         else:
             xmlns = xmlns_match.group(1)
-        match = re.search(regex, cur_file.get("subject"), re.I)
+        match = re.search(regex, cur_file.get("subject"), re.IGNORECASE)
         if not match:
             # regex couldn't match cur_file.get("subject")
             continue

@@ -103,7 +103,7 @@ def get_network_shares():
     return network_shares
 
 
-def folders_at_path(path: Path, include_parent: bool = False, include_files: bool = False, file_types: List[str] = None) -> List[dict]:
+def folders_at_path(path: Path, include_parent: bool = False, include_files: bool = False, file_types: List[str] | None = None) -> List[dict]:
     """
     Returns a list of dictionaries with the folders contained at the given path.
 

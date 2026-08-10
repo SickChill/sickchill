@@ -69,7 +69,7 @@ class DispatchFormatter(logging.Formatter, object):
                 print(msg)
 
         # Needed because Newznab apikey isn't stored as key=value in a section.
-        msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, flags=re.I)
+        msg = re.sub(r"([&?]r|[&?]apikey|[&?]jackett_apikey|[&?]api_key)(?:=|%3D)[^&]*([&\w]?)", r"\1=**********\2", msg, flags=re.IGNORECASE)
 
         # Set the new message into the record!
         record.msg = msg
@@ -294,10 +294,9 @@ def log_data(min_level, log_filter, log_search, max_lines):
             if level not in LOGGING_LEVELS:
                 final_data.append("AA " + x)
                 found_lines += 1
-            elif log_search and log_search.lower() in x.lower():
-                final_data.append(x)
-                found_lines += 1
-            elif not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == "<NONE>" or log_name.startswith(log_filter)):
+            elif (log_search and log_search.lower() in x.lower()) or (
+                not log_search and LOGGING_LEVELS[level] >= int(min_level) and (log_filter == "<NONE>" or log_name.startswith(log_filter))
+            ):
                 final_data.append(x)
                 found_lines += 1
         else:

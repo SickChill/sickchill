@@ -12,6 +12,7 @@ from sickchill.helper.exceptions import AuthException
 from sickchill.oldbeard import scene_exceptions, tvcache
 from sickchill.oldbeard.common import cpu_presets
 from sickchill.oldbeard.helpers import sanitizeSceneName
+from sickchill.oldbeard.network_timezones import sc_timezone
 from sickchill.providers import result_classes
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
@@ -81,7 +82,7 @@ class Provider(TorrentProvider):
             results_per_page = 1000
 
             if "results" in data and int(data["results"]) >= results_per_page:
-                pages_needed = int(math.ceil(int(data["results"]) / results_per_page))
+                pages_needed = math.ceil(int(data["results"]) / results_per_page)
                 if pages_needed > max_pages:
                     pages_needed = max_pages
 
@@ -93,7 +94,7 @@ class Provider(TorrentProvider):
                     if "torrents" in data:
                         found.update(data["torrents"])
 
-            for keys, torrent_info in found.items():
+            for torrent_info in found.values():
                 (title, url) = self._get_title_and_url(torrent_info)
 
                 if title and url:
@@ -227,7 +228,7 @@ class Provider(TorrentProvider):
             for item in self.search({"release": term}):
                 if item["Time"]:
                     try:
-                        result_date = datetime.fromtimestamp(float(item["Time"]))
+                        result_date = datetime.fromtimestamp(float(item["Time"]), tz=sc_timezone)
                     except TypeError:
                         result_date = None
 

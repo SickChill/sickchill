@@ -97,7 +97,7 @@ class Provider(TorrentProvider):
                             )
 
                         items.append(item)
-                    except Exception:
+                    except Exception:  # noqa: S112
                         continue
 
             # For each search mode sort all the items by seeders if available

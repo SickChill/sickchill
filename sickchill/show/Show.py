@@ -78,9 +78,11 @@ class Show(object):
 
     @staticmethod
     def overall_stats() -> dict:
+        from sickchill.oldbeard.network_timezones import sc_today
+
         db = DBConnection()
         shows = settings.show_list
-        today = date.today().toordinal()
+        today = sc_today().toordinal()
 
         downloaded_status = Quality.DOWNLOADED + Quality.ARCHIVED
         snatched_status = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
@@ -113,7 +115,7 @@ class Show(object):
         return stats
 
     @staticmethod
-    def validate_indexer_id(show_or_id: Union["TVShow", str, int], show_list: list = None) -> (Union[str, None], Union["TVShow", None]):
+    def validate_indexer_id(show_or_id: Union["TVShow", str, int], show_list: list | None = None) -> (Union[str, None], Union["TVShow", None]):
         """
         Check that the provided indexer_id is valid and corresponds with a known show
         :param show_or_id: The indexer id or object to check

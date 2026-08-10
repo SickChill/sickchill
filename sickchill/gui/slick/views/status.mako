@@ -5,6 +5,8 @@
 
     from sickchill import settings
     from sickchill.oldbeard import helpers
+    from sickchill.oldbeard.scdatetime import sctimeago
+    from sickchill.oldbeard.network_timezones import sc_now
     from sickchill.oldbeard.show_queue import ShowQueueActions
 %>
 <%block name="content">
@@ -209,11 +211,11 @@
         <% cycleTime = (service.cycleTime.microseconds + (service.cycleTime.seconds + service.cycleTime.days * 24 * 3600) * 10**6) / 10**6 %>
         <td data-seconds="${cycleTime}">${helpers.pretty_time_delta(cycleTime)}</td>
         % if service.enable:
-            <td>${timeago.format(datetime.now() + service.timeLeft())}</td>
+            <td>${sctimeago(sc_now() + service.timeLeft())}</td>
         % else:
             <td></td>
         % endif
-        <td>${timeago.format(service.lastRun)}</td>
+        <td>${sctimeago(service.lastRun)}</td>
         <td class="${("false", "true")[service.silent]}">${service.silent}</td>
     </tr>
 

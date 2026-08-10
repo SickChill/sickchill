@@ -67,9 +67,7 @@ class SearchQueue(generic_queue.GenericQueue):
 
     def is_manualsearch_in_progress(self):
         # Only referenced in webserve.py, only current running manualsearch or failedsearch is needed!!
-        if isinstance(self.currentItem, (ManualSearchQueueItem, FailedQueueItem)):
-            return True
-        return False
+        return bool(isinstance(self.currentItem, (ManualSearchQueueItem, FailedQueueItem)))
 
     def is_backlog_in_progress(self):
         for cur_item in self.queue + [self.currentItem]:
@@ -243,15 +241,16 @@ class MovieQueueItem(generic_queue.QueueItem):
             try:
                 logger.info(f"Beginning backlog search for: [{self.movie.name}]")
                 settings.movie_list.search_providers(self.movie)
-                for result in self.movie.results:
-                    # just use the first result for now
-                    logger.info(f"Downloading {result.name} from {result.provider}")
-                    settings.movie_list.snatch_movie(result)
-
-                    # give the CPU a break
-                    time.sleep(common.cpu_presets[settings.CPU_PRESET])
-                else:
+                if not self.movie.results:
                     logger.info(_("No needed movie results found during backlog search for: [{name}]".format(name=self.movie.name)))
+                else:
+                    for result in self.movie.results:
+                        # just use the first result for now
+                        logger.info(f"Downloading {result.name} from {result.provider}")
+                        settings.movie_list.snatch_movie(result)
+
+                        # give the CPU a break
+                        time.sleep(common.cpu_presets[settings.CPU_PRESET])
             except Exception:
                 logger.debug(traceback.format_exc())
 

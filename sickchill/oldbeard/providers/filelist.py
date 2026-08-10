@@ -44,7 +44,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning(_("Unable to connect to provider}"))
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("Invalid Username/password", response) or re.search("<title> FileList :: Login </title>", response) or re.search("Login esuat!", response):
@@ -138,7 +138,7 @@ class Provider(TorrentProvider):
                                 logger.debug(_("Found result: {0} with {1} seeders and {2} leechers").format(title, seeders, leechers))
 
                             items.append(item)
-                        except Exception:
+                        except Exception:  # noqa: S112
                             continue
 
             # For each search mode sort all the items by seeders if available

@@ -187,7 +187,7 @@ class EpisodeTags(object):
         :returns: an empty string if not found
         """
         if self.avc:
-            return "" if not (self.avc[-1] == "5") else self.avc
+            return "" if (self.avc[-1] != "5") else self.avc
 
         attr = "hevc"
         match = self._get_match_obj(attr)
@@ -261,7 +261,7 @@ class EpisodeTags(object):
         attr = "hrws"
         match = None
         if self.avc and self.tv == "pd":
-            regex = re.compile(r"(hr.ws.pdtv).{0}".format(self.avc), re.I)
+            regex = re.compile(r"(hr.ws.pdtv).{0}".format(self.avc), re.IGNORECASE)
             match = self._get_match_obj(attr, regex)
         return "" if not match else match.group()
 
@@ -275,10 +275,10 @@ class EpisodeTags(object):
         attr = "raw"
         match = None
         if self.res and self.tv == "hd":
-            regex = re.compile(r"({0}.hdtv)".format(self.res), re.I)
+            regex = re.compile(r"({0}.hdtv)".format(self.res), re.IGNORECASE)
             match = self._get_match_obj(attr, regex)
         if not match:
-            regex = re.compile(r"(RawHD)", re.I)
+            regex = re.compile(r"(RawHD)", re.IGNORECASE)
             match = self._get_match_obj(attr, regex)
         return "" if not match else match.group()
 

@@ -39,7 +39,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning(_("Unable to connect to provider}"))
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("images/warning.png", response):
@@ -110,7 +110,7 @@ class Provider(TorrentProvider):
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         items.append(result)
 
-                    except Exception:
+                    except Exception:  # noqa: S112
                         continue
 
             # For each search mode sort all the items by seeders

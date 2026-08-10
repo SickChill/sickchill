@@ -9,6 +9,7 @@ import sickchill.oldbeard.name_cache
 import sickchill.oldbeard.providers
 from sickchill import logger, settings
 from sickchill.helper.exceptions import AuthException
+from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.show.History import History
 
@@ -77,10 +78,10 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
     if settings.ALLOW_HIGH_PRIORITY:
         # if it aired recently make it high priority
         for episode in result.episodes:
-            if datetime.date.today() - episode.airdate <= datetime.timedelta(days=7):
+            if sc_today() - episode.airdate <= datetime.timedelta(days=7):
                 result.priority = 1
 
-    end_status = SNATCHED_PROPER if re.search(r"\b(proper|repack|real)\b", result.name, re.I) else end_status
+    end_status = SNATCHED_PROPER if re.search(r"\b(proper|repack|real)\b", result.name, re.IGNORECASE) else end_status
 
     # Torrents can be sent to clients or saved to disk
     if result.is_torrent:
@@ -88,9 +89,8 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
         if settings.TORRENT_METHOD == "blackhole":
             snatched_result = _download_result(result)
         else:
-            if not result.content and not result.url.startswith("magnet"):
-                if result.provider.login():
-                    result.content = result.provider.get_url(result.url, returns="content")
+            if not result.content and not result.url.startswith("magnet") and result.provider.login():
+                result.content = result.provider.get_url(result.url, returns="content")
 
             if result.content or result.url.startswith("magnet"):
                 client = clients.getClientInstance(settings.TORRENT_METHOD)()
@@ -108,7 +108,7 @@ def snatch_episode(result: "SearchResult", end_status=SNATCHED):
         elif settings.NZB_METHOD == "sabnzbd":
             snatched_result = sab.send_nzb(result)
         elif settings.NZB_METHOD == "nzbget":
-            is_proper = True if end_status == SNATCHED_PROPER else False
+            is_proper = end_status == SNATCHED_PROPER
             snatched_result = nzbget.send_nzb(result, is_proper)
         elif settings.NZB_METHOD == "download_station":
             client = clients.getClientInstance(settings.NZB_METHOD)(settings.SYNOLOGY_DSM_HOST, settings.SYNOLOGY_DSM_USERNAME, settings.SYNOLOGY_DSM_PASSWORD)
@@ -186,9 +186,8 @@ def pick_best_result(results, show):
             continue
 
         # build the black And white list
-        if show.is_anime:
-            if not show.release_groups.is_valid(result):
-                continue
+        if show.is_anime and not show.release_groups.is_valid(result):
+            continue
 
         logger.info(f"Quality of {result.name} is {Quality.qualityStrings[result.quality]}")
 
@@ -201,11 +200,11 @@ def pick_best_result(results, show):
         if not show_name_helpers.filter_bad_releases(result.name, parse=False, show=show):
             continue
 
-        if hasattr(result, "size"):
-            if settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name, result.size, result.provider.name):
-                logger.info(f"{result.name} has previously failed, rejecting it")
-                continue
+        if hasattr(result, "size") and settings.USE_FAILED_DOWNLOADS and History().has_failed(result.name, result.size, result.provider.name):
+            logger.info(f"{result.name} has previously failed, rejecting it")
+            continue
 
+        # ruff: disable [SIM114]
         if not picked_result:
             picked_result = result
         elif result.quality in preferred_qualities and (picked_result.quality < result.quality or picked_result.quality not in preferred_qualities):
@@ -222,6 +221,7 @@ def pick_best_result(results, show):
             elif "xvid" in picked_result.name.lower() and "x264" in result.name.lower():
                 logger.info(f"Preferring {result.name} (x264 over xvid)")
                 picked_result = result
+        # ruff: enable [SIM114]
 
     if picked_result:
         logger.debug(f"Picked {picked_result.name} as the best")
@@ -245,6 +245,7 @@ def is_final_result(result: "SearchResult"):
 
     any_qualities, best_qualities = Quality.splitQuality(show_obj.quality)
 
+    # ruff: disable [SIM103, SIM114] show the long style ifs
     # if there is a re-download that's higher than this then we definitely need to keep looking
     if best_qualities and result.quality < max(best_qualities):
         return False
@@ -263,6 +264,7 @@ def is_final_result(result: "SearchResult"):
     # if we got here than it's either not on the lists, they're empty, or it's lower than the highest required
     else:
         return False
+    # ruff: enable [SIM103, SIM114]
 
 
 def is_first_best_match(result: "SearchResult"):

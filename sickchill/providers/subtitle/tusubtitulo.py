@@ -217,11 +217,10 @@ class TuSubtituloProvider(Provider):
             title = sanitize(html_episode.get_text())
 
             # attempt series with year
-            if sanitize("{} {} {}x{:02d}".format(series_sanitized, year, season, episode)) in title:
-                episode_url = "https://" + html_episode["href"][2:]
-                logger.debug("Subtitle found for %s, season: %d, episode: %d. URL: %s", series, season, episode, episode_url)
-                break
-            elif sanitize("{} {}x{:02d}".format(series_sanitized, season, episode)) in title:
+            if (
+                sanitize("{} {} {}x{:02d}".format(series_sanitized, year, season, episode)) in title
+                or sanitize("{} {}x{:02d}".format(series_sanitized, season, episode)) in title
+            ):
                 episode_url = "https://" + html_episode["href"][2:]
                 logger.debug("Subtitle found for %s, season: %d, episode: %d. URL: %s", series, season, episode, episode_url)
                 break

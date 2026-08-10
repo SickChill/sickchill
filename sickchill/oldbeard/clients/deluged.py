@@ -32,7 +32,7 @@ class Client(GenericClient, DelugeBase):
         self.setup()
         if not self.client.connected:
             try:
-                for attempt in range(0, 5):
+                for attempt in range(5):
                     try:
                         self.client.connect()
                         break

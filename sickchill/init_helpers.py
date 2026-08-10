@@ -8,7 +8,7 @@ from importlib.metadata import Distribution, PackageNotFoundError
 from pathlib import Path
 from typing import Union
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 
@@ -22,7 +22,7 @@ pyproject_file = sickchill_dir.parent / "pyproject.toml"
 git_folder = sickchill_dir.parent / ".git"
 
 
-def setup_gettext(language: str = None) -> None:
+def setup_gettext(language: str | None = None) -> None:
     languages = [language] if language else None
     if not [key for key in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG") if os.environ.get(key)]:
         os.environ["LC_MESSAGES"] = "en_US.UTF-8"
@@ -63,7 +63,7 @@ def maybe_daemonize():
     try:
         pid = os.fork()  # @UndefinedVariable - only available in UNIX
         if pid != 0:
-            os._exit(0)  # noqa
+            os._exit(0)
     except OSError as error:
         raise SystemExit(f"fork #1 failed: {error}\n")
 
@@ -80,7 +80,7 @@ def maybe_daemonize():
     try:
         pid = os.fork()
         if pid != 0:
-            os._exit(0)  # noqa
+            os._exit(0)
     except OSError as error:
         raise SystemExit(f"fork #2 failed: {error}\n")
 

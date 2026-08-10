@@ -17,7 +17,7 @@ class ImageSelector(Home):
         super().initialize()
         self.indexer_session = make_indexer_session()
 
-    def index(self, show=None, imageType="", provider: int = None):
+    def index(self, show=None, imageType="", provider: int | None = None):
         if not show:
             return self._genericMessage(_("Error"), _("You must specify a show"))
 

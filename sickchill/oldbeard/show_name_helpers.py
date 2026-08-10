@@ -29,7 +29,7 @@ def contains_at_least_one_word(name, words):
     if not any(words):
         return True
 
-    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.I) for word in words}.items():
+    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.IGNORECASE) for word in words}.items():
         if regexp.search(name):
             return word
     return False
@@ -51,7 +51,7 @@ def contains_all_words(name, words):
     if not any(words):
         return True
 
-    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.I) for word in words}.items():
+    for word, regexp in {word: re.compile(r"(^|[\W_]){0}($|[\W_])".format(re.escape(word)), re.IGNORECASE) for word in words}.items():
         if not regexp.search(name):
             return word
     return True
@@ -83,7 +83,7 @@ def filter_bad_releases(name, parse=True, show=None):
         return {x.strip() for x in set((words or "").lower().split(",")) if x.strip()}
 
     def remove_plus_sign(words):
-        return {s[1:] if s.startswith("+") else s for s in words}
+        return {s.removeprefix("+") for s in words}
 
     # if any of the bad strings are in the name then say no
     ignore_words = resultFilters
@@ -161,7 +161,19 @@ def all_possible_show_names(show, season=-1):
 
         show_names += new_show_names
 
-    return set(show_names)
+    seen = {}
+    for name in show_names:
+        if not name:
+            continue
+        key = name.lower().strip()
+        # Prefer the original show.name when present
+        if key not in seen or name == show.name:
+            seen[key] = name
+
+    show_names_clean = set(seen.values())
+    logger.debug(f"all_possible_show_names: {show_names_clean}")
+
+    return show_names_clean
 
 
 def determine_release_name(directory=None, release_name=None):

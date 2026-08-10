@@ -5,7 +5,7 @@ from collections import OrderedDict
 from urllib.parse import urljoin
 
 from sickchill import logger
-from sickchill.helper.common import convert_size, try_int
+from sickchill.helper.common import try_int
 from sickchill.oldbeard import tvcache
 from sickchill.oldbeard.bs4_parser import BS4Parser
 from sickchill.providers.torrent.TorrentProvider import TorrentProvider
@@ -84,7 +84,6 @@ class Provider(TorrentProvider):
                     return self.search(search_strings)
 
                 with BS4Parser(data) as html:
-                    labels = [cell.get_text() for cell in html.find(class_="firstr")("th")]
                     logger.info(_("Found {} results").format(len(html("tr", **self.rows_selector))))
                     for result in html("tr", **self.rows_selector):
                         try:
@@ -114,9 +113,8 @@ class Provider(TorrentProvider):
                                     )
                                 continue
 
-                            if self.confirmed and not result.find(class_="ka-green"):
-                                if mode != "RSS":
-                                    logger.debug(_("Found result {title} but that doesn't seem like a verified result so I'm ignoring it").format(title=title))
+                            if self.confirmed and not result.find(class_="ka-green") and mode != "RSS":
+                                logger.debug(_("Found result {title} but that doesn't seem like a verified result so I'm ignoring it").format(title=title))
 
                             item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": torrent_hash}
                             if mode != "RSS":

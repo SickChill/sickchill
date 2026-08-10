@@ -8,6 +8,7 @@ from sqlalchemy import JSON, ForeignKey
 from sqlalchemy.event import listen
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
+# ruff: noqa
 # from sqlalchemy.ext.declarative import declarative_base
 logger = logging.getLogger("sickchill.movie")
 

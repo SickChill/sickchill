@@ -49,13 +49,12 @@ class AniDBLink(threading.Thread):
         for port in portlist:
             try:
                 self.sock.bind(("", port))
-            except Exception:
+            except Exception:  # noqa: S112
                 continue
             else:
                 self.myport = port
                 return True
-        else:
-            return False
+        return False
 
     def disconnectSocket(self):
         if self.sock:
@@ -139,7 +138,7 @@ class AniDBLink(threading.Thread):
                 except Exception:
                     pass
 
-                for tag, cmd in self.cmd_queue.items():
+                for cmd in self.cmd_queue.values():
                     try:
                         cmd.waiter.release()
                     except Exception:

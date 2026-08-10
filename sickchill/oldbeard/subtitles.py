@@ -15,6 +15,7 @@ from sickchill import logger, settings
 from sickchill.helper.common import dateTimeFormat, episode_num, is_media_file
 from sickchill.oldbeard import db
 from sickchill.oldbeard.common import Quality
+from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
 from sickchill.show.History import History
 from sickchill.show.Show import Show
 
@@ -86,12 +87,12 @@ class SubtitleProviderPool(object):
 
     def __init__(self):
         if SubtitleProviderPool._creation is None:
-            SubtitleProviderPool._creation = datetime.datetime.now()
+            SubtitleProviderPool._creation = sc_now()
             self.__init_instance()
         else:
             delta = datetime.timedelta(minutes=15)
-            if SubtitleProviderPool._creation + delta < datetime.datetime.now():
-                SubtitleProviderPool._creation = datetime.datetime.now()
+            if SubtitleProviderPool._creation + delta < sc_now():
+                SubtitleProviderPool._creation = sc_now()
                 self.__init_instance()
 
     @staticmethod
@@ -107,8 +108,7 @@ def sorted_service_list():
     new_list = []
     lmgtfy = "https://blog.lmgtfy.com/?q=%s"
 
-    current_index = 0
-    for current_service in settings.SUBTITLES_SERVICES_LIST:
+    for current_index, current_service in enumerate(settings.SUBTITLES_SERVICES_LIST):
         if current_service in subliminal.provider_manager.names():
             new_list.append(
                 {
@@ -118,7 +118,6 @@ def sorted_service_list():
                     "enabled": settings.SUBTITLES_SERVICES_ENABLED[current_index] == 1,
                 }
             )
-        current_index += 1
 
     for current_service in subliminal.provider_manager.names():
         if current_service not in [service["name"] for service in new_list]:
@@ -396,7 +395,7 @@ class SubtitlesFinder(object):
             "WHERE s.subtitles = 1 AND e.subtitles NOT LIKE ? "
             + ("AND e.season != 0 ", "")[settings.SUBTITLES_INCLUDE_SPECIALS]
             + "AND e.location != '' AND e.status IN ({}) ORDER BY age ASC".format(",".join(["?"] * len(Quality.DOWNLOADED))),
-            [datetime.datetime.now().toordinal(), wanted_languages(True)] + Quality.DOWNLOADED,
+            [sc_now().toordinal(), wanted_languages(True), *Quality.DOWNLOADED],
         )
 
         if not sql_results:
@@ -420,13 +419,13 @@ class SubtitlesFinder(object):
                 continue
 
             try:
-                lastsearched = datetime.datetime.strptime(ep_to_sub["lastsearch"], dateTimeFormat)
+                lastsearched = datetime.datetime.strptime(ep_to_sub["lastsearch"], dateTimeFormat).replace(tzinfo=sc_timezone)
             except ValueError:
-                lastsearched = datetime.datetime.min
+                lastsearched = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc).astimezone(sc_timezone)
 
             try:
                 if not force:
-                    now = datetime.datetime.now()
+                    now = sc_now()
                     days = int(ep_to_sub["age"])
                     delay_time = datetime.timedelta(hours=8 if days < 10 else 7 * 24 if days < 30 else 30 * 24)
 
@@ -540,9 +539,12 @@ def refine_video(video, episode):
 
     for name in metadata_mapping:
         try:
-            if not getattr(video, name) and get_attr_value(episode, metadata_mapping[name]):
-                setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
-            elif episode.show.subtitles_sc_metadata and get_attr_value(episode, metadata_mapping[name]):
+            if (
+                not getattr(video, name)
+                and get_attr_value(episode, metadata_mapping[name])
+                or episode.show.subtitles_sc_metadata
+                and get_attr_value(episode, metadata_mapping[name])
+            ):
                 setattr(video, name, get_attr_value(episode, metadata_mapping[name]))
         except AttributeError:
             logger.debug("Unable to set {}.{} from episode.{} attribute".format(type(video), name, metadata_mapping[name]))

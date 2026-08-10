@@ -24,11 +24,10 @@ class ExceptionDecorator(object):
             try:
                 result = target(*args, **kwargs)
             except self.catch as error:
-                if self.image_api and not kwargs.get("lang"):
-                    if args[1].lang != "en":
-                        logger.debug("Could not find the image on the indexer, re-trying to find it in english")
-                        kwargs["lang"] = "en"
-                        return wrapper(*args, **kwargs)
+                if self.image_api and not kwargs.get("lang") and args[1].lang != "en":
+                    logger.debug("Could not find the image on the indexer, re-trying to find it in english")
+                    kwargs["lang"] = "en"
+                    return wrapper(*args, **kwargs)
 
                 logger.debug(f"Could not find item on the indexer: (Indexer probably does not have this item) [{error}]")
                 logger.debug(traceback.format_exc())

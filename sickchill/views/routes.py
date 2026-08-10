@@ -1,8 +1,10 @@
+from typing import ClassVar
+
 import tornado.web
 
 
 class Route(object):
-    routes = []
+    routes: ClassVar[list] = []
 
     def __init__(self, uri, name=None):
         self._uri = uri

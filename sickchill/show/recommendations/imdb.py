@@ -12,8 +12,8 @@ class imdbPopular(object):
     def __init__(self):
         """Gets a list of most popular TV series from IMDb via imdb-pie"""
         self.session = helpers.make_session()
-        self.client = Imdb()  # Low-level client
-        self.imdb = ImdbFacade(client=self.client)  # Higher-level facade (recommended)
+        self.client = Imdb()
+        self.imdb = ImdbFacade(client=self.client)
 
     def fetch_popular_shows(self):
         """Get popular show information from IMDB"""
@@ -41,7 +41,7 @@ class imdbPopular(object):
         try:
             return self.imdb.get_title(imdb_id=imdb_id)
         except ImdbAPIError as e:
-            print(f"Failed to get title {imdb_id}: {e}")
+            logger.warning(f"Failed to get title {imdb_id}: {e}")
             return None
 
     def imdb_url(self, result):

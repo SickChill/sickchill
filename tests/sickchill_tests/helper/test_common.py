@@ -179,15 +179,15 @@ class CommonTests(unittest.TestCase):
 
         # Test all valid media extensions
         temp_name = "Show.Name.S01E01.HDTV.x264-SICKCHILL"
-        extension_tests = {".".join((temp_name, ext)): True for ext in MEDIA_EXTENSIONS}
+        extension_tests = {f"{temp_name}.{ext}": True for ext in MEDIA_EXTENSIONS}
         # ...and some invalid ones
         other_extensions = ["txt", "sfv", "srr", "rar", "nfo", "zip"]
-        extension_tests.update({".".join((temp_name, ext)): False for ext in other_extensions + SUBTITLE_EXTENSIONS})
+        extension_tests.update({f"{temp_name}.{ext}": False for ext in other_extensions + SUBTITLE_EXTENSIONS})
 
         # Test using Path
         path_name = "Show.Name.S01E02.HDTV.x264-SICKCHILL"
-        path_tests = {Path(".".join((path_name, ext))): True for ext in MEDIA_EXTENSIONS}
-        path_tests.update({Path(".".join((path_name, ext))): False for ext in other_extensions + SUBTITLE_EXTENSIONS})
+        path_tests = {Path(f"{path_name}.{ext}"): True for ext in MEDIA_EXTENSIONS}
+        path_tests.update({Path(f"{path_name}.{ext}"): False for ext in other_extensions + SUBTITLE_EXTENSIONS})
 
         # Samples should be ignored
         sample_tests = {  # Samples should be ignored, valid samples will return False

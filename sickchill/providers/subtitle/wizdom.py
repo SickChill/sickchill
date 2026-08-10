@@ -3,6 +3,7 @@ import io
 import logging
 import os
 import zipfile
+from typing import ClassVar
 
 from babelfish import Language
 from guessit import guessit
@@ -76,7 +77,7 @@ class WizdomSubtitle(Subtitle):
 class WizdomProvider(Provider):
     """Wizdom Provider."""
 
-    languages = {Language.fromalpha2(lang) for lang in ["he"]}
+    languages: ClassVar[set[Language]] = {Language.fromalpha2(lang) for lang in ["he"]}
     server_url = "wizdom.xyz"
 
     def __init__(self):

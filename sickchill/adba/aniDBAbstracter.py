@@ -101,7 +101,7 @@ class AniDBabstractObject(object):
 class Anime(AniDBabstractObject):
     def __init__(self, aniDB, cache_dir: Path, name=None, aid=None, tvdbid=None, paramsA=None, autoCorrectName=False, load=False):
         if not cache_dir.is_dir():
-            raise
+            raise  # noqa: PLE0704
         self.cache_dir = cache_dir / "anime"
         self.cache_dir = self.cache_dir.absolute()
 
@@ -213,7 +213,9 @@ class Anime(AniDBabstractObject):
 
 
 class Episode(AniDBabstractObject):
-    def __init__(self, aniDB, number=None, epid=None, file_path: Path = None, fid=None, epno=None, paramsA=None, paramsF=None, load=False, calculate=False):
+    def __init__(
+        self, aniDB, number=None, epid=None, file_path: Path | None = None, fid=None, epno=None, paramsA=None, paramsF=None, load=False, calculate=False
+    ):
         self.mapper = AniDBMapper()
         self.epid = epid
         self.file_path = file_path

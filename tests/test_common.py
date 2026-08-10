@@ -1,6 +1,6 @@
 # TODO: Implement skipped tests
-
 import unittest
+from typing import ClassVar
 
 import pytest
 
@@ -13,7 +13,7 @@ class QualityStringTests(unittest.TestCase):
     Test Case for strings in common.Quality
     """
 
-    test_cases = {
+    test_cases: ClassVar[dict] = {
         "sd_tv": [
             "Test.Show.S01E02.PDTV.XViD-GROUP",
             "Test.Show.S01E02.PDTV.x264-GROUP",
@@ -321,77 +321,66 @@ class QualityTests(unittest.TestCase):
         """
         Test _getStatusStrings
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_combine_qualities(self):
         """
         Test combineQualities
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_split_quality(self):
         """
         Test splitQuality
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_name_quality(self):
         """
         Test nameQuality
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_scene_quality(self):
         """
         Test scene_quality
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_quality_from_file_meta(self):
         """
         Test qualityFromFileMeta
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_composite_status(self):
         """
         Test compositeStatus
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_quality_downloaded(self):
         """
         Test qualityDownloaded
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_split_composite_status(self):
         """
         Test splitCompositeStatus
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_scene_quality_from_name(self):
         """
         Test sceneQualityFromName
         """
-        pass
 
     @unittest.skip("Not yet implemented")
     def test_status_from_name(self):
         """
         Test statusFromName
         """
-        pass
 
 
 class StatusStringsTests(unittest.TestCase):

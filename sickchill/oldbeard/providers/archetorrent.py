@@ -48,7 +48,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning(_("Unable to connect to provider}"))
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         search = self.get_url(self.urls["search"])
@@ -150,7 +150,7 @@ class Provider(TorrentProvider):
                                 )
 
                             items.append(item)
-                        except Exception:
+                        except Exception:  # noqa: S112
                             continue
 
             # For each search mode sort all the items by seeders if available

@@ -61,7 +61,7 @@ class Provider(TorrentProvider):
 
             response = self.get_url(login_url, post_data=login_params, returns="response")
             if not response or response.status_code != 200:
-                logger.warning(_("Unable to connect to provider}"))
+                logger.warning(_("Unable to connect to provider"))
                 return False
 
             if re.search("You tried too often", response.text):

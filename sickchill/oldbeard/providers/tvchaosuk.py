@@ -38,7 +38,7 @@ class Provider(TorrentProvider):
 
         response = self.get_url(self.urls["login"], post_data=login_params, returns="text")
         if not response:
-            logger.warning(_("Unable to connect to provider}"))
+            logger.warning(_("Unable to connect to provider"))
             return False
 
         if re.search("Error: Username or password incorrect!", response):
@@ -133,7 +133,7 @@ class Provider(TorrentProvider):
 
                             item = {"title": title + ".hdtv.x264", "link": download_url, "size": size, "seeders": seeders, "leechers": leechers}
                             items.append(item)
-                        except Exception:
+                        except Exception:  # noqa: S112
                             continue
 
             # For each search mode sort all the items by seeders if available

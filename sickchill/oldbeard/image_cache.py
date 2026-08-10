@@ -1,5 +1,6 @@
 import os.path
 from mimetypes import guess_type
+from typing import ClassVar
 
 import imagesize
 
@@ -136,7 +137,7 @@ class ImageCache(object):
     POSTER_THUMB = 4
     FANART = 5
 
-    image_str = {BANNER: "banner", BANNER_THUMB: "banner thumbnail", POSTER: "poster", POSTER_THUMB: "poster thumbnail", FANART: "fanart"}
+    image_str: ClassVar[dict] = {BANNER: "banner", BANNER_THUMB: "banner thumbnail", POSTER: "poster", POSTER_THUMB: "poster thumbnail", FANART: "fanart"}
 
     def which_type(self, path):
         """
@@ -330,7 +331,7 @@ class ImageCache(object):
                                 )
                             )
 
-                            if cur_file_type in need_images and need_images[cur_file_type]:
+                            if need_images.get(cur_file_type):
                                 logger.debug(
                                     "[{}] Found a {} in the show dir that doesn't exist in the cache, caching it".format(
                                         show_obj.indexerid, self.image_str[cur_file_type]
@@ -345,7 +346,7 @@ class ImageCache(object):
         # download from indexer for missing ones
         for cur_image_type in need_images:
             logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
-            if cur_image_type in need_images and need_images[cur_image_type]:
+            if need_images.get(cur_image_type):
                 self._cache_image_from_indexer(show_obj, cur_image_type)
 
         logger.info("Done cache check")

@@ -163,13 +163,7 @@ class SubtitulamosProvider(Provider):
             title = sanitize(result["name"])
 
             # attempt series with year
-            if sanitize("{} ({})".format(series, year)) in title:
-                for episode_data in result["episodes"]:
-                    if season == episode_data["season"] and episode == episode_data["number"]:
-                        episode_url = self.server_url + "episodes/{}".format(episode_data["id"])
-                        return episode_url
-            # attempt series without year
-            elif sanitize(series) in title:
+            if sanitize("{} ({})".format(series, year)) in title or sanitize(series) in title:
                 for episode_data in result["episodes"]:
                     if season == episode_data["season"] and episode == episode_data["number"]:
                         episode_url = self.server_url + "episodes/{}".format(episode_data["id"])

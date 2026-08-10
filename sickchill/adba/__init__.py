@@ -115,7 +115,7 @@ class Connection(threading.Thread):
 
     def handle_response(self, response):
         if response.rescode in ("501", "506") and response.req.command != "AUTH":
-            self.log("seams like the last command got a not authed error back tring to reconnect now")
+            self.log("seems like the last command got a not authed error back tring to reconnect now")
             if self._reauthenticate():
                 response.req.resp = None
                 self.handle(response.req, response.req.callback)
@@ -231,7 +231,7 @@ class Connection(threading.Thread):
                     self.start()
                     self._iamALIVE = True
                 else:
-                    self.log("not starting thread seams like it is already running. this must be a _reAuthenticate")
+                    self.log("not starting thread seems like it is already running. this must be a _reAuthenticate")
 
         self.lastAuth = time()
         return self.handle(AuthCommand(username, password, 3, self.client_name, self.client_version, nat, 1, "utf8", mtu), callback)

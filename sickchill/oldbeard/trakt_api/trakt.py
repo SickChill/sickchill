@@ -49,9 +49,7 @@ class TraktAPI:
     def validateAccount(self):
         resp = self.traktRequest("users/settings")
 
-        if "account" in resp:
-            return True
-        return False
+        return "account" in resp
 
     def traktRequest(self, path, data=None, headers=None, url=None, method="GET", count=0):
         if url is None:
