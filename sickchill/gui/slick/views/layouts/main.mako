@@ -1,15 +1,16 @@
 <%!
-    import re
     import datetime
+    import re
+    from time import time
     from urllib.parse import urljoin
+
+    from sickchill import logger, settings
+    from sickchill.helper.common import pretty_file_size
+    from sickchill.init_helpers import get_current_version
+    from sickchill.logging.weblog import WebErrorViewer
     from sickchill.oldbeard.filters import hide
     from sickchill.oldbeard.helpers import anon_url
-    from sickchill.helper.common import pretty_file_size
-
-    from sickchill.init_helpers import get_current_version
     from sickchill.show.Show import Show
-    from sickchill import settings, logger
-    from time import time
 
     # resource module is unix only
     try:
@@ -120,10 +121,8 @@
         <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <%
-                    if 'error_count' not in locals():
-                        error_count = 0
-                    if 'warning_count' not in locals():
-                        warning_count = 0
+                    error_count = WebErrorViewer.num_errors()
+                    warning_count = WebErrorViewer.num_warnings()
 
                     total_warning_error_count = error_count + warning_count + settings.NEWS_UNREAD
                     if total_warning_error_count:
