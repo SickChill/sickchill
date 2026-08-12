@@ -58,12 +58,16 @@ class __WebErrorViewer(object):
     def clear_warnings(self):
         self.__warnings = []
 
-    def clear(self, level: str) -> str:
-        level = logging.getLevelName(level.upper())
-        if level == logging.ERROR:
+    def clear(self, level) -> str:
+        if isinstance(level, int):
+            level_name = logging.getLevelName(level)
+        else:
+            level_name = logging.getLevelName(str(level).upper())
+
+        if level_name == "ERROR" or level == logging.ERROR:
             message = "Error logs cleared"
             self.clear_errors()
-        elif level == logging.WARNING:
+        elif level_name == "WARNING" or level == logging.WARNING:
             message = "Warning logs cleared"
             self.clear_warnings()
         else:
