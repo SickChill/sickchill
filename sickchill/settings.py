@@ -507,6 +507,9 @@ TRIM_ZERO = False
 TV_DOWNLOAD_DIR = None
 TVDB_USER = None
 TVDB_USER_KEY = None
+# TheTVDB API v4 project key (user-supported shared project key). Override in config.ini.
+TVDB_V4_APIKEY = "b304113c-3d1f-477e-ab6d-fdea3e363d50"
+TVDB_V4_PIN = None
 TWILIO_ACCOUNT_SID = ""
 TWILIO_AUTH_TOKEN = ""
 TWILIO_NOTIFY_ONDOWNLOAD = False

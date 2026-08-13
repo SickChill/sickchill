@@ -1,16 +1,184 @@
-import html
-import json
 import re
 import traceback
 
 import requests
-import tvdbsimple
 
-import sickchill.start
 from sickchill import logger, settings
-from sickchill.show.indexers.base import Indexer
-from sickchill.show.indexers.wrappers import ExceptionDecorator
 from sickchill.tv import TVEpisode
+
+from .base import Indexer
+from .tvdb_v4_client import (
+    ARTWORK_TYPE_BACKGROUND,
+    ARTWORK_TYPE_BANNER,
+    ARTWORK_TYPE_POSTER,
+    ARTWORK_TYPE_SEASON_BANNER,
+    ARTWORK_TYPE_SEASON_POSTER,
+    TVDBv4Client,
+    TVDBv4Error,
+)
+from .wrappers import ExceptionDecorator
+
+# v4 remoteIds type for IMDb (confirmed empirically / used by wokka1 fork).
+REMOTE_ID_TYPE_IMDB = 2
+
+WEEKDAY_NAMES = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+
+# Project API key for user-supported non-commercial use (shared by install base).
+# Overridable via config.ini [General] tvdb_v4_apikey.
+DEFAULT_TVDB_V4_APIKEY = "b304113c-3d1f-477e-ab6d-fdea3e363d50"
+
+
+class _SeriesResult:
+    """
+    Attribute-access adapter over a v4 /series/{id}/extended response.
+
+    Matches what tv.py / handler.py expect from the old tvdbsimple Series object
+    (attribute access, optional .info(language) no-op).
+    """
+
+    def __init__(self, raw: dict, language: str | None = None):
+        self._raw = raw or {}
+        self.id = self._raw.get("id")
+        self.seriesName = (self._raw.get("name") or "").strip()
+        self.overview = self._raw.get("overview") or ""
+        self.language = language
+
+        status = self._raw.get("status") or {}
+        if isinstance(status, dict):
+            self.status = status.get("name") or "Unknown"
+        else:
+            self.status = str(status) if status else "Unknown"
+
+        self.firstAired = self._raw.get("firstAired") or ""
+        self.runtime = self._raw.get("averageRuntime") or self._raw.get("runtime") or ""
+        self.genre = [g["name"] for g in (self._raw.get("genres") or []) if isinstance(g, dict) and g.get("name")]
+        self.classification = "Scripted"
+
+        self.network = ""
+        for company in self._raw.get("companies") or []:
+            if not isinstance(company, dict):
+                continue
+            company_type = company.get("companyType") or {}
+            type_name = company_type.get("companyTypeName") if isinstance(company_type, dict) else None
+            if type_name == "Network":
+                self.network = company.get("name") or ""
+                break
+        if not self.network:
+            original = self._raw.get("originalNetwork") or {}
+            if isinstance(original, dict):
+                self.network = original.get("name") or ""
+
+        self.imdbId = ""
+        for remote in self._raw.get("remoteIds") or []:
+            if not isinstance(remote, dict):
+                continue
+            if remote.get("type") == REMOTE_ID_TYPE_IMDB:
+                self.imdbId = remote.get("id") or ""
+                break
+            # Some payloads use sourceName instead of numeric type
+            source = (remote.get("sourceName") or remote.get("typeName") or "").lower()
+            if source == "imdb":
+                self.imdbId = remote.get("id") or ""
+                break
+
+        self.airsDayOfWeek = ""
+        airs_days = self._raw.get("airsDays") or {}
+        if isinstance(airs_days, dict):
+            for day in WEEKDAY_NAMES:
+                if airs_days.get(day):
+                    self.airsDayOfWeek = day.capitalize()
+                    break
+        self.airsTime = self._raw.get("airsTime") or ""
+
+        self.artworks = self._raw.get("artworks") or []
+        self.lastUpdated = self._raw.get("lastUpdated")
+
+    def info(self, language=None):
+        """No-op kept for call-site compatibility with tvdbsimple's lazy info()."""
+        if language:
+            self.language = language
+        return self
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+def _episode_dict(raw: dict) -> dict:
+    """Map a v4 episode object onto keys expected by TVEpisode.load_from_indexer."""
+    return {
+        "id": raw.get("id"),
+        "airedSeason": raw.get("seasonNumber"),
+        "airedEpisodeNumber": raw.get("number"),
+        "episodeName": raw.get("name") or "",
+        "absoluteNumber": raw.get("absoluteNumber"),
+        "overview": raw.get("overview") or "",
+        "firstAired": raw.get("aired") or "",
+        "filename": raw.get("image") or "",
+        "lastUpdated": raw.get("lastUpdated"),
+    }
+
+
+class _UpdatesResult:
+    """
+    Compatibility shim for show_updater.ShowUpdater which expects:
+
+        data = indexer.updates(fromTime=..., toTime=...)
+        data.series()
+        for d in data.series: d['id']
+    """
+
+    def __init__(self, client: TVDBv4Client, from_time: int, to_time: int | str = "", language: str = ""):
+        self._client = client
+        self._from_time = int(from_time or 0)
+        self._to_time = int(to_time) if to_time not in ("", None) else None
+        self.language = language
+        # Do not set self.series here — it would shadow the series() method
+        # (tvdbsimple only assigns the attribute after series() is called).
+
+    def series(self):
+        try:
+            records = self._client.all_updates_since(self._from_time, entity_type="series")
+        except TVDBv4Error as error:
+            logger.debug(f"TVDB v4 updates failed: {error}")
+            result = []
+            self.series = result
+            return result
+
+        ids = set()
+        result = []
+        for item in records:
+            if not isinstance(item, dict):
+                continue
+            # Defensive: V4 update shapes vary (recordType, entityType, seriesId, id)
+            record_type = item.get("recordType") or item.get("entityType") or item.get("method") or "series"
+            if isinstance(record_type, str) and record_type.lower() not in ("series", "show", ""):
+                # Skip non-series unless it carries a series id we can use
+                series_id = item.get("seriesId") or item.get("series_id")
+                if not series_id:
+                    continue
+            else:
+                series_id = item.get("seriesId") or item.get("series_id") or item.get("recordId") or item.get("id")
+
+            try:
+                series_id = int(series_id)
+            except (TypeError, ValueError):
+                continue
+
+            if self._to_time:
+                # Optional upper bound if present on record
+                ts = item.get("timeStamp") or item.get("timestamp") or item.get("time")
+                try:
+                    if ts is not None and int(ts) > self._to_time:
+                        continue
+                except (TypeError, ValueError):
+                    pass
+
+            if series_id not in ids:
+                ids.add(series_id)
+                result.append({"id": series_id})
+
+        self.series = result  # attribute used by ShowUpdater after series() returns
+        return result
 
 
 class TVDB(Indexer):
@@ -18,37 +186,54 @@ class TVDB(Indexer):
         super(TVDB, self).__init__()
         self.name = "theTVDB"
         self.slug = "tvdb"
-        self.api_key = "6aa6e4ecae5b56e9644f6a303c0739b6"
         self.show_url = "https://thetvdb.com/?tab=series&id="
-        self.base_url = "https://thetvdb.com/api/%(apikey)s/series/"
+        self.base_url = "https://api4.thetvdb.com/v4/series/"
         self.icon = "images/indexers/thetvdb16.png"
-        tvdbsimple.keys.API_KEY = self.api_key
-        self._search = tvdbsimple.search.Search().series
-        self._series = tvdbsimple.Series
-        self.series_episodes = tvdbsimple.Series_Episodes
-        self.series_images = tvdbsimple.Series_Images
-        self.updates = tvdbsimple.Updates
+        self._client: TVDBv4Client | None = None
+
+    @property
+    def api_key(self):
+        return getattr(settings, "TVDB_V4_APIKEY", None) or DEFAULT_TVDB_V4_APIKEY
+
+    @property
+    def client(self) -> TVDBv4Client:
+        pin = getattr(settings, "TVDB_V4_PIN", None) or ""
+        timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+        if self._client is None or self._client.apikey != self.api_key or (self._client.pin or "") != (pin or "") or self._client.timeout != timeout:
+            self._client = TVDBv4Client(self.api_key, pin=pin, timeout=timeout)
+        return self._client
+
+    def updates(self, fromTime=0, toTime="", language=""):
+        """V4-backed replacement for tvdbsimple.Updates used by ShowUpdater."""
+        return _UpdatesResult(self.client, fromTime, toTime, language)
 
     @ExceptionDecorator()
     def series(self, *args, **kwargs):
-        result = self._series(*args, **kwargs)
-        if result:
-            result.info(language=kwargs.get("language"))
-        return result
+        # Call sites: series(show), series(id), series(id=..., language=...)
+        language = kwargs.get("language")
+        indexerid = kwargs.get("id")
+        if indexerid is None and args:
+            first = args[0]
+            if hasattr(first, "indexerid"):
+                indexerid = first.indexerid
+                language = language or getattr(first, "lang", None)
+            else:
+                indexerid = first
+        if indexerid is None:
+            indexerid = kwargs.get("indexerid")
+
+        raw = self.client.series_extended(indexerid)
+        if not raw:
+            return None
+        return _SeriesResult(raw, language)
 
     @ExceptionDecorator()
     def get_series_by_id(self, indexerid, language=None):
-        result = self._series(indexerid, language)
-        if result:
-            result.info(language=language)
-        return result
+        return self.series(indexerid, language=language)
 
     @ExceptionDecorator()
     def series_from_show(self, show):
-        result = self._series(show.indexerid, show.lang)
-        if result:
-            result.info(language=show.lang)
-        return result
+        return self.series(show)
 
     def series_from_episode(self, episode):
         return self.series_from_show(episode.show)
@@ -57,22 +242,21 @@ class TVDB(Indexer):
         if indexerid:
             return self.get_series_by_id(indexerid, language)
 
-        # Just return the first result for now
         try:
-            result = self._series(self.search(name, language)[0]["id"])
-            if result:
-                result.info(language=language)
-            return result
+            results = self.search(name, language)
+            if results:
+                return self.get_series_by_id(results[0]["id"], language)
         except Exception:
-            pass
+            logger.debug(traceback.format_exc())
+        return None
 
     @ExceptionDecorator()
     def episodes(self, show, season=None):
-        if show.dvdorder:
-            result = self.series_episodes(show.indexerid, dvdSeason=season, language=show.lang).all()
-        else:
-            result = self.series_episodes(show.indexerid, airedSeason=season, language=show.lang).all()
-
+        season_type = "dvd" if getattr(show, "dvdorder", False) else "default"
+        all_eps = self.client.all_episodes(show.indexerid, season_type)
+        result = [_episode_dict(e) for e in all_eps if isinstance(e, dict)]
+        if season is not None:
+            result = [e for e in result if e.get("airedSeason") == season]
         return result
 
     @ExceptionDecorator()
@@ -84,23 +268,20 @@ class TVDB(Indexer):
         else:
             show = item
 
-        if show.dvdorder:
-            result = self.series_episodes(show.indexerid, dvdSeason=season, dvdEpisode=episode, language=show.lang, **kwargs).all()[0]
-        else:
-            result = self.series_episodes(show.indexerid, airedSeason=season, airedEpisode=episode, language=show.lang, **kwargs).all()[0]
-
-        return result
+        for ep in self.episodes(show, season):
+            if ep.get("airedEpisodeNumber") == episode:
+                return ep
+        raise TVDBv4Error(f"Episode S{season}E{episode} not found")
 
     @ExceptionDecorator(default_return=list())
     def search(self, name, language=None, exact=False, indexer_id=False):
         """
         :param name: Show name to search for
-        :param language: Language of the show info we want
+        :param language: Preferred language (applied on full series fetch; search is global)
         :param exact: Exact when adding existing, processed when adding new shows
-        :param indexer_id: Exact indexer id to get, either imdb or tvdb id.
-        :return: list of series objects
+        :param indexer_id: Unused legacy flag
+        :return: list of dicts with id / seriesName / firstAired (add_shows UI)
         """
-        language = language or self.language
         result = []
         if isinstance(name, bytes):
             name = name.decode()
@@ -108,19 +289,34 @@ class TVDB(Indexer):
         if not name:
             return result
 
-        if re.match(r"^t?t?\d{7,8}$", name) or re.match(r"^\d{6}$", name):
+        # IMDb id
+        if re.match(r"^t?t?\d{7,8}$", name):
             try:
-                if re.match(r"^t?t?\d{7,8}$", name):
-                    result = self._search(imdbId=f"tt{name.strip('t')}", language=language)
-                elif re.match(r"^\d{6}$", name):
-                    series = self._series(name, language=language)
-                    if series:
-                        result = [series.info(language)]
+                imdb = f"tt{name.strip('t')}"
+                raw_results = self.client.search_by_remote_id(imdb)
+            except TVDBv4Error:
+                logger.debug(traceback.format_exc())
+                raw_results = []
+            return self._map_search_results(raw_results)
+
+        # Bare TVDB series id (6+ digits common for modern ids; also accept classic 5–7)
+        if re.match(r"^\d{5,8}$", name.strip()):
+            try:
+                series = self.get_series_by_id(int(name.strip()), language)
+                if series and series.id:
+                    return [
+                        {
+                            "id": series.id,
+                            "seriesName": series.seriesName,
+                            "firstAired": series.firstAired,
+                            "overview": series.overview,
+                            "network": series.network,
+                        }
+                    ]
             except Exception:
                 logger.debug(traceback.format_exc())
-            return result or []
+            return []
 
-        # ----- name search path -----
         names = [name]
         if not exact:
             test = re.match(r"^(.+?)[. _-]+\(\d{4}\)?$", name)
@@ -131,43 +327,43 @@ class TVDB(Indexer):
                 if test:
                     names.append(re.sub(r"[. _-]", " ", test.group(1)).strip())
 
-        seen_ids = set()
-
-        # 1. Try TheTVDB first
-        for attempt in dict.fromkeys(n for n in names if n.strip()):
+        raw_results = []
+        for attempt in dict.fromkeys(n for n in names if n and n.strip()):
             try:
-                tvdb_results = self._search(attempt, language=language) or []
-                for item in tvdb_results:
-                    sid = item.get("id") if isinstance(item, dict) else getattr(item, "id", None)
-                    if sid and sid not in seen_ids:
-                        result.append(item)
-                        seen_ids.add(sid)
-                if result:
+                raw_results = self.client.search(attempt)
+                if raw_results:
                     break
-            except requests.exceptions.HTTPError as e:
-                # Expected when TVDB has no exact name match – we fall back to TVmaze
-                if getattr(e, "response", None) is not None and e.response.status_code == 404:
-                    logger.debug(f"theTVDB name search 404 for '{attempt}' (trying TVmaze)")
-                else:
-                    logger.debug(traceback.format_exc())
+            except TVDBv4Error as error:
+                # 404 / empty is normal for no match
+                logger.debug(f"theTVDB v4 name search failed for '{attempt}': {error}")
             except Exception:
                 logger.debug(traceback.format_exc())
 
-        # 2. Supplement with TVmaze only when theTVDB gave nothing
+        result = self._map_search_results(raw_results)
+
+        # TVmaze fallback only when TVDB found nothing (same behaviour as before)
         if not result:
             try:
                 from . import tvmaze
 
-                for attempt in dict.fromkeys(n for n in names if n.strip()):
+                seen_ids = set()
+                for attempt in dict.fromkeys(n for n in names if n and n.strip()):
                     for show in tvmaze.search(attempt):
-                        tvdb_id = show.get("externals", {}).get("thetvdb")
+                        tvdb_id = (show.get("externals") or {}).get("thetvdb")
                         if not tvdb_id or tvdb_id in seen_ids:
                             continue
                         try:
-                            series = self._series(tvdb_id, language=language)
-                            if series:
-                                info = series.info(language)
-                                result.append(info)
+                            series = self.get_series_by_id(int(tvdb_id), language)
+                            if series and series.id:
+                                result.append(
+                                    {
+                                        "id": series.id,
+                                        "seriesName": series.seriesName,
+                                        "firstAired": series.firstAired,
+                                        "overview": series.overview,
+                                        "network": series.network,
+                                    }
+                                )
                                 seen_ids.add(tvdb_id)
                         except Exception:
                             logger.debug(traceback.format_exc())
@@ -178,12 +374,45 @@ class TVDB(Indexer):
 
         return result or []
 
+    @staticmethod
+    def _map_search_results(raw_results) -> list:
+        mapped = []
+        seen = set()
+        for item in raw_results or []:
+            if not isinstance(item, dict):
+                continue
+            tvdb_id = item.get("tvdb_id") or item.get("id") or ""
+            if isinstance(tvdb_id, str):
+                tvdb_id = tvdb_id.replace("series-", "")
+            try:
+                tvdb_id = int(tvdb_id)
+            except (TypeError, ValueError):
+                continue
+            if tvdb_id in seen:
+                continue
+            seen.add(tvdb_id)
+            mapped.append(
+                {
+                    "id": tvdb_id,
+                    "seriesName": item.get("name") or item.get("seriesName") or "",
+                    "firstAired": item.get("first_air_time") or item.get("firstAired") or item.get("year") or "",
+                    "overview": item.get("overview") or "",
+                    "network": item.get("network") or "",
+                    "image_url": item.get("image_url") or item.get("thumbnail") or "",
+                    "score": item.get("score"),
+                    "status": item.get("status") or "",
+                    "year": item.get("year") or "",
+                }
+            )
+        return mapped
+
     @property
     def languages(self):
         return ["cs", "da", "de", "el", "en", "es", "fi", "fr", "he", "hr", "hu", "it", "ja", "ko", "nl", "no", "pl", "pt", "ru", "sl", "sv", "tr", "zh"]
 
     @property
     def lang_dict(self):
+        # Legacy numeric language ids (UI still references these in places)
         return {
             "el": 20,
             "en": 7,
@@ -212,76 +441,69 @@ class TVDB(Indexer):
 
     @staticmethod
     def complete_image_url(location):
-        location = location.strip()
+        """Return absolute artwork URL. V4 often already returns full https URLs."""
         if not location:
+            return ""
+        location = str(location).strip()
+        if not location:
+            return ""
+        if location.startswith(("http://", "https://")):
             return location
+        # Legacy relative banner path fallback
         return f"https://artworks.thetvdb.com/banners/{re.sub(r'^_cache/', '', location)}"
 
-    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, requests.exceptions.HTTPError, KeyError, Exception), image_api=True)
-    def __call_images_api(self, show, thumb, keyType, subKey=None, lang=None, multiple=False):
-        api_results = self.series_images(show.indexerid, lang or show.lang, keyType=keyType, subKey=subKey)
-        try:
-            images = getattr(api_results, keyType)(lang or show.lang)
-        except Exception:
+    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError, IndexError, TypeError, Exception), image_api=True)
+    def __call_images_api(self, show, artwork_type, multiple=False):
+        series = self.series(show)
+        if not series:
             return [] if multiple else ""
 
-        images = sorted(images, key=lambda img: img["ratingsInfo"]["average"], reverse=True)
-        return [self.complete_image_url(image["fileName"]) for image in images] if multiple else self.complete_image_url(images[0]["fileName"])
+        images = [a for a in (series.artworks or []) if isinstance(a, dict) and a.get("type") == artwork_type]
+        images.sort(key=lambda a: a.get("score") or 0, reverse=True)
+        if not images:
+            return [] if multiple else ""
+
+        urls = [self.complete_image_url(img.get("image") or img.get("thumbnail") or "") for img in images]
+        urls = [u for u in urls if u]
+        if not urls:
+            return [] if multiple else ""
+        return urls if multiple else urls[0]
 
     @staticmethod
     @ExceptionDecorator()
     def actors(series):
-        if hasattr(series, "actors") and callable(series.actors):
-            series.actors(series.language)
-        return series.actors
+        # Not consumed meaningfully for V4 yet; return empty list for metadata writers.
+        return []
 
     def series_poster_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, "poster", multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_POSTER, multiple=multiple)
 
     def series_banner_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, "series", multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_BANNER, multiple=multiple)
 
     def series_fanart_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, "fanart", multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_BACKGROUND, multiple=multiple)
 
     def season_poster_url(self, show, season, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, "season", season, multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_SEASON_POSTER, multiple=multiple)
 
     def season_banner_url(self, show, season, thumb=False, multiple=False):
-        return self.__call_images_api(show, thumb, "seasonwide", season, multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_SEASON_BANNER, multiple=multiple)
 
-    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError, TypeError))
+    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError, TypeError, TVDBv4Error))
     def episode_image_url(self, episode):
-        return self.complete_image_url(self.episode(episode)["filename"])
+        filename = self.episode(episode).get("filename", "")
+        return self.complete_image_url(filename)
 
     def episode_guide_url(self, show):
-        # https://forum.kodi.tv/showthread.php?tid=323588
-        data = html.escape(json.dumps({"apikey": self.api_key, "id": show.indexerid})).replace(" ", "")
-        return tvdbsimple.base.TVDB(key=self.api_key)._get_complete_url("login") + "?" + data + "|Content-Type=application/json"
+        return self.show_url + str(show.indexerid)
 
     def get_favorites(self):
-        results = []
-        if not (settings.TVDB_USER and settings.TVDB_USER_KEY):
-            return results
-
-        user = tvdbsimple.User(settings.TVDB_USER, settings.TVDB_USER_KEY)
-        for tvdbid in user.favorites():
-            results.append(self.get_series_by_id(tvdbid))
-
-        return results
+        """V4 user favorites not implemented (plan: do not implement)."""
+        return []
 
     @staticmethod
     def test_user_key(user, key):
-        user_object = tvdbsimple.User(user, key)
-        try:
-            user_object.info()
-        except Exception:
-            logger.exception(traceback.format_exc())
-            return False
-
-        settings.TVDB_USER = user
-        settings.TVDB_USER_KEY = key
-
-        sickchill.start.save_config()
-
-        return True
+        """V4 user favorites not implemented (plan: do not implement)."""
+        logger.info("TVDB user favorites are not supported with the v4 API.")
+        return False
