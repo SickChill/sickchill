@@ -217,8 +217,16 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.TVDB_USER = check_setting_str(settings.CFG, "General", "tvdb_user")
         settings.TVDB_USER_KEY = check_setting_str(settings.CFG, "General", "tvdb_user_key", censor_log=True)
-        settings.TVDB_V4_APIKEY = check_setting_str(settings.CFG, "General", "tvdb_v4_apikey", settings.TVDB_V4_APIKEY, censor_log=True)
-        settings.TVDB_V4_PIN = check_setting_str(settings.CFG, "General", "tvdb_v4_pin", censor_log=True)
+        # Same pattern as the old fixed V3 key, but overridable and seeded into config.ini:
+        # env > config.ini > settings.TVDB_V4_APIKEY default (check_setting_str writes def_val into CFG when missing).
+        settings.TVDB_V4_APIKEY = os.environ.get("TVDB_V4_APIKEY") or check_setting_str(
+            settings.CFG,
+            "General",
+            "tvdb_v4_apikey",
+            settings.TVDB_V4_APIKEY,
+            censor_log=True,
+        )
+        settings.TVDB_V4_PIN = os.environ.get("TVDB_V4_PIN") or check_setting_str(settings.CFG, "General", "tvdb_v4_pin", "", censor_log=True)
 
         settings.TRASH_REMOVE_SHOW = check_setting_bool(settings.CFG, "General", "trash_remove_show")
         settings.TRASH_ROTATE_LOGS = check_setting_bool(settings.CFG, "General", "trash_rotate_logs")

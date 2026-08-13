@@ -1532,7 +1532,8 @@ class TVEpisode(object):
 
     @location.setter
     def location(self, new_location):
-        logger.debug(f"Setter sets Episode location to {new_location}")
+        if new_location != "":
+            logger.debug(f"Setter sets Episode location to {new_location}")
 
         # self._location = newLocation
         if self._location != new_location:

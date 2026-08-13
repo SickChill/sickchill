@@ -77,9 +77,10 @@ class TVDBv4Client:
         with self._lock:
             if not self._token or (time.time() - self._token_time) > TOKEN_LIFETIME_SECONDS:
                 self._login()
+            token = self._token
 
         headers = {
-            "Authorization": f"Bearer {self._token}",
+            "Authorization": f"Bearer {token}",
             "Accept": "application/json",
         }
         if if_modified_since:
@@ -150,7 +151,8 @@ class TVDBv4Client:
         except TVDBv4Error as error:
             logger.debug(f"TVDB v4 remoteid path failed for {remote_id}: {error}")
 
-        result = self._get("/search", params={"remote_id": remote_id})
+        # Some deployments accept remote_id only with an accompanying query=
+        result = self._get("/search", params={"remote_id": remote_id, "query": remote_id})
         return result or []
 
     def series(self, series_id, if_modified_since: str | None = None) -> dict | None:
@@ -160,6 +162,12 @@ class TVDBv4Client:
         params = {"short": "true"} if short else None
         return self._get(f"/series/{series_id}/extended", params=params, if_modified_since=if_modified_since)
 
+    def series_translation(self, series_id, language: str) -> dict | None:
+        """GET /series/{id}/translations/{lang} — name/overview in that language when available."""
+        if not language:
+            return None
+        return self._get(f"/series/{series_id}/translations/{language}")
+
     def series_episodes(self, series_id, season_type: str = "default", page: int = 0, if_modified_since: str | None = None) -> dict | None:
         return self._get(
             f"/series/{series_id}/episodes/{season_type}",
@@ -167,11 +175,11 @@ class TVDBv4Client:
             if_modified_since=if_modified_since,
         )
 
-    def all_episodes(self, series_id, season_type: str = "default") -> list:
-        """Page through full episode list (v4 typically ~500 per page)."""
+    def all_episodes(self, series_id, season_type: str = "default", max_pages: int = 50) -> list:
+        """Page through full episode list (v4 typically ~500 per page), capped by max_pages."""
         episodes: list = []
         page = 0
-        while True:
+        while page < max_pages:
             result = self.series_episodes(series_id, season_type, page)
             if not result:
                 break

@@ -242,7 +242,7 @@ def list_media_files(path):
         return []
 
     files = []
-    for entry in os.listdir(path):
+    for entry in sorted(os.listdir(path), key=str.lower):
         full_entry = os.path.join(path, entry)
 
         # if it's a folder do it recursively

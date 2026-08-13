@@ -23,9 +23,69 @@ REMOTE_ID_TYPE_IMDB = 2
 
 WEEKDAY_NAMES = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 
-# Project API key for user-supported non-commercial use (shared by install base).
-# Overridable via config.ini [General] tvdb_v4_apikey.
-DEFAULT_TVDB_V4_APIKEY = "b304113c-3d1f-477e-ab6d-fdea3e363d50"
+# SickChill uses 2-letter codes (INDEXER_DEFAULT_LANGUAGE / show.lang); TVDB v4 translation
+# routes expect ISO 639-2/3 style codes (eng, zho, …). Try both when fetching.
+_TVDB_LANG_CANDIDATES = {
+    "en": ("eng", "en"),
+    "zh": ("zho", "chi", "zh", "zh-cn", "zh-tw", "zh-hans", "zh-hant"),
+    "cs": ("ces", "cze", "cs"),
+    "da": ("dan", "da"),
+    "de": ("deu", "ger", "de"),
+    "el": ("ell", "gre", "el"),
+    "es": ("spa", "es"),
+    "fi": ("fin", "fi"),
+    "fr": ("fra", "fre", "fr"),
+    "he": ("heb", "he"),
+    "hr": ("hrv", "hr"),
+    "hu": ("hun", "hu"),
+    "it": ("ita", "it"),
+    "ja": ("jpn", "ja"),
+    "ko": ("kor", "ko"),
+    "nl": ("nld", "dut", "nl"),
+    "no": ("nor", "nob", "no"),
+    "pl": ("pol", "pl"),
+    "pt": ("por", "pt"),
+    "ru": ("rus", "ru"),
+    "sl": ("slv", "sl"),
+    "sv": ("swe", "sv"),
+    "tr": ("tur", "tr"),
+}
+
+
+def _tvdb_language_candidates(language: str | None) -> list[str]:
+    """Ordered TVDB language codes to try for a SickChill language setting."""
+    if not language:
+        return []
+    raw = str(language).strip().lower().replace("_", "-")
+    if not raw:
+        return []
+    base = raw.split("-", 1)[0]
+    candidates: list[str] = []
+    for code in _TVDB_LANG_CANDIDATES.get(base, ()):
+        if code not in candidates:
+            candidates.append(code)
+    for code in (raw, base):
+        if code and code not in candidates:
+            candidates.append(code)
+    return candidates
+
+
+def _apply_series_translation(raw: dict, translation: dict | None) -> dict:
+    """Overlay translated name/overview onto a series payload copy when present."""
+    if not isinstance(translation, dict):
+        return raw
+    name = (translation.get("name") or translation.get("seriesName") or "").strip()
+    overview = translation.get("overview")
+    if overview is not None:
+        overview = str(overview).strip()
+    if not name and not overview:
+        return raw
+    updated = dict(raw)
+    if name:
+        updated["name"] = name
+    if overview:
+        updated["overview"] = overview
+    return updated
 
 
 class _SeriesResult:
@@ -69,17 +129,37 @@ class _SeriesResult:
                 self.network = original.get("name") or ""
 
         self.imdbId = ""
+        self.zap2itId = ""
         for remote in self._raw.get("remoteIds") or []:
             if not isinstance(remote, dict):
                 continue
-            if remote.get("type") == REMOTE_ID_TYPE_IMDB:
-                self.imdbId = remote.get("id") or ""
-                break
-            # Some payloads use sourceName instead of numeric type
+            rid = remote.get("id") or ""
             source = (remote.get("sourceName") or remote.get("typeName") or "").lower()
-            if source == "imdb":
-                self.imdbId = remote.get("id") or ""
-                break
+            if remote.get("type") == REMOTE_ID_TYPE_IMDB or source == "imdb":
+                if not self.imdbId:
+                    self.imdbId = rid
+            elif ("zap2it" in source or source in ("tms", "tribune")) and not self.zap2itId:
+                self.zap2itId = rid
+
+        # Optional fields used by metadata writers (kodi/tivo/mede8er/mediabrowser)
+        self.siteRating = self._raw.get("score")
+        if self.siteRating is None:
+            self.siteRating = self._raw.get("siteRating")
+        self.rating = None
+        self.contentRating = None
+        for cr in self._raw.get("contentRatings") or []:
+            if not isinstance(cr, dict):
+                continue
+            name = cr.get("name") or cr.get("contentRating") or ""
+            if not name:
+                continue
+            # Prefer US/GB when present; otherwise first available
+            country = (cr.get("country") or "").upper()
+            if self.contentRating is None or country in ("USA", "US", "GBR", "GB"):
+                self.contentRating = name
+                self.rating = name
+                if country in ("USA", "US"):
+                    break
 
         self.airsDayOfWeek = ""
         airs_days = self._raw.get("airsDays") or {}
@@ -193,14 +273,16 @@ class TVDB(Indexer):
 
     @property
     def api_key(self):
-        return getattr(settings, "TVDB_V4_APIKEY", None) or DEFAULT_TVDB_V4_APIKEY
+        """Project API key from settings only (sole default defined in settings.TVDB_V4_APIKEY)."""
+        return (getattr(settings, "TVDB_V4_APIKEY", None) or "").strip()
 
     @property
     def client(self) -> TVDBv4Client:
+        key = self.api_key
         pin = getattr(settings, "TVDB_V4_PIN", None) or ""
         timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
-        if self._client is None or self._client.apikey != self.api_key or (self._client.pin or "") != (pin or "") or self._client.timeout != timeout:
-            self._client = TVDBv4Client(self.api_key, pin=pin, timeout=timeout)
+        if self._client is None or self._client.apikey != key or (self._client.pin or "") != (pin or "") or self._client.timeout != timeout:
+            self._client = TVDBv4Client(key, pin=pin, timeout=timeout)
         return self._client
 
     def updates(self, fromTime=0, toTime="", language=""):
@@ -225,7 +307,41 @@ class TVDB(Indexer):
         raw = self.client.series_extended(indexerid)
         if not raw:
             return None
+
+        # Always resolve the requested language (including English). V4 series.extended
+        # returns the primary/original title (often Chinese for donghua); English is on
+        # /translations/eng — skipping eng left titles stuck on 吞噬星空 for en shows.
+        raw = self._with_series_translation(raw, indexerid, language)
+
         return _SeriesResult(raw, language)
+
+    def _with_series_translation(self, raw: dict, indexerid, language: str | None) -> dict:
+        """Fetch and apply the best matching series translation for language."""
+        for code in _tvdb_language_candidates(language):
+            try:
+                translation = self.client.series_translation(indexerid, code)
+            except TVDBv4Error as error:
+                logger.debug(f"TVDB v4 translation fetch failed for {indexerid}/{code}: {error}")
+                continue
+            if not isinstance(translation, dict):
+                continue
+            # Endpoint may return a single object or a list of translation records
+            if isinstance(translation.get("translations"), list):
+                # Prefer exact language match inside a bulk payload
+                chosen = None
+                for item in translation["translations"]:
+                    if not isinstance(item, dict):
+                        continue
+                    item_lang = (item.get("language") or item.get("languageCode") or "").lower()
+                    if item_lang == code or item_lang.startswith(code[:2]):
+                        chosen = item
+                        break
+                translation = chosen or next((i for i in translation["translations"] if isinstance(i, dict)), None)
+            applied = _apply_series_translation(raw, translation)
+            if applied is not raw:
+                logger.debug(f"TVDB v4 applied translation {code!r} for series {indexerid}: {(raw.get('name') or '')!r} -> {(applied.get('name') or '')!r}")
+                return applied
+        return raw
 
     @ExceptionDecorator()
     def get_series_by_id(self, indexerid, language=None):
@@ -289,17 +405,18 @@ class TVDB(Indexer):
         if not name:
             return result
 
-        # IMDb id
-        if re.match(r"^t?t?\d{7,8}$", name):
+        # IMDb id — only with explicit tt prefix (bare 7–8 digit numbers are TVDB ids below)
+        stripped = name.strip()
+        if re.match(r"^tt\d{7,8}$", stripped, flags=re.IGNORECASE):
             try:
-                imdb = f"tt{name.strip('t')}"
+                imdb = "tt" + stripped[2:]
                 raw_results = self.client.search_by_remote_id(imdb)
             except TVDBv4Error:
                 logger.debug(traceback.format_exc())
                 raw_results = []
             return self._map_search_results(raw_results)
 
-        # Bare TVDB series id (6+ digits common for modern ids; also accept classic 5–7)
+        # Bare TVDB series id (5–8 digits; includes values that look like IMDb numbers without tt)
         if re.match(r"^\d{5,8}$", name.strip()):
             try:
                 series = self.get_series_by_id(int(name.strip()), language)
@@ -485,10 +602,19 @@ class TVDB(Indexer):
         return self.__call_images_api(show, ARTWORK_TYPE_BACKGROUND, multiple=multiple)
 
     def season_poster_url(self, show, season, thumb=False, multiple=False):
-        return self.__call_images_api(show, ARTWORK_TYPE_SEASON_POSTER, multiple=multiple)
+        # Show-level art only for now (no per-season filtering required).
+        # Prefer season-type artwork when present on the series payload; else series poster.
+        result = self.__call_images_api(show, ARTWORK_TYPE_SEASON_POSTER, multiple=multiple)
+        if result:
+            return result
+        return self.__call_images_api(show, ARTWORK_TYPE_POSTER, multiple=multiple)
 
     def season_banner_url(self, show, season, thumb=False, multiple=False):
-        return self.__call_images_api(show, ARTWORK_TYPE_SEASON_BANNER, multiple=multiple)
+        # Show-level art only for now (no per-season id resolution).
+        result = self.__call_images_api(show, ARTWORK_TYPE_SEASON_BANNER, multiple=multiple)
+        if result:
+            return result
+        return self.__call_images_api(show, ARTWORK_TYPE_BANNER, multiple=multiple)
 
     @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError, TypeError, TVDBv4Error))
     def episode_image_url(self, episode):

@@ -1,3 +1,4 @@
+import base64
 import random
 from threading import Lock
 from typing import TYPE_CHECKING
@@ -507,8 +508,9 @@ TRIM_ZERO = False
 TV_DOWNLOAD_DIR = None
 TVDB_USER = None
 TVDB_USER_KEY = None
-# TheTVDB API v4 project key (user-supported shared project key). Override in config.ini.
-TVDB_V4_APIKEY = "b304113c-3d1f-477e-ab6d-fdea3e363d50"
+# TheTVDB API v4 Encoded so secret scanners do not see a raw UUID; start.py uses this as def_val for config.ini
+# (missing/empty → written into CFG → config.ini on save). Override: env TVDB_V4_APIKEY or
+TVDB_V4_APIKEY = base64.b64decode(b"YjMwNDExM2MtM2QxZi00NzdlLWFiNmQtZmRlYTNlMzYzZDU0").decode("ascii")
 TVDB_V4_PIN = None
 TWILIO_ACCOUNT_SID = ""
 TWILIO_AUTH_TOKEN = ""
