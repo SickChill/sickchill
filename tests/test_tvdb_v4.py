@@ -511,10 +511,13 @@ class EpisodeCacheTests(unittest.TestCase):
             show.indexerid = show_id
             show.dvdorder = False
             tvdb.episodes(show)
-        # At most max_shows unique list keys remain after prune
-        unique_shows = {key[0] for key in tvdb._episode_list_cache}
-        self.assertLessEqual(len(unique_shows), 2)
-        self.assertNotIn(101, unique_shows)  # oldest dropped
+        # List and index caches both stay within the unique-show bound; oldest (101) is evicted
+        unique_list_shows = {key[0] for key in tvdb._episode_list_cache}
+        unique_index_shows = {key[0] for key in tvdb._episode_index_cache}
+        self.assertLessEqual(len(unique_list_shows), tvdb._episode_cache_max_shows)
+        self.assertLessEqual(len(unique_index_shows), tvdb._episode_cache_max_shows)
+        self.assertNotIn(101, unique_list_shows)
+        self.assertNotIn(101, unique_index_shows)
 
 
 class UpdatesFeedOkTests(unittest.TestCase):
@@ -533,6 +536,36 @@ class UpdatesFeedOkTests(unittest.TestCase):
         result = updates.series()
         self.assertEqual(result, [])
         self.assertTrue(updates.feed_ok)
+
+    def test_feed_ok_false_on_partial_entity_failure(self):
+        """Partial feed (one entity type fails) must not report success or advance lastUpdate."""
+        client = MagicMock()
+
+        def all_updates_since(since, entity_type="series", max_pages=50):
+            if entity_type == "series":
+                return []  # empty success
+            raise TVDBv4Error("episodes feed down")
+
+        client.all_updates_since.side_effect = all_updates_since
+        updates = _UpdatesResult(client, from_time=1000)
+        result = updates.series()
+        self.assertEqual(result, [])
+        self.assertFalse(updates.feed_ok)
+
+    def test_feed_ok_false_when_series_fails_episodes_ok(self):
+        """Either entity-type failure keeps feed_ok False (symmetric to episodes failing)."""
+        client = MagicMock()
+
+        def all_updates_since(since, entity_type="series", max_pages=50):
+            if entity_type == "series":
+                raise TVDBv4Error("series feed down")
+            return [{"recordType": "episode", "seriesId": 42, "id": 1}]
+
+        client.all_updates_since.side_effect = all_updates_since
+        updates = _UpdatesResult(client, from_time=1000)
+        result = updates.series()
+        self.assertEqual(result, [])
+        self.assertFalse(updates.feed_ok)
 
 
 class EpisodeSkipApplyTests(unittest.TestCase):

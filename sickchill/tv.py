@@ -664,9 +664,10 @@ class TVShow(object):
                         if result is False:
                             continue
                         if episode.dirty:
+                            # get_sql() returns a list of (statement, parameters) rows — flatten into sql_l
                             sql = episode.get_sql()
                             if sql:
-                                sql_l.append(sql)
+                                sql_l.extend(sql)
                             applied += 1
                         else:
                             skipped_unchanged += 1

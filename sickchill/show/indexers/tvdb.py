@@ -212,8 +212,8 @@ class _UpdatesResult:
         self._from_time = int(from_time or 0)
         self._to_time = int(to_time) if to_time not in ("", None) else None
         self.language = language
-        # True if at least one entity-type feed call succeeded (even if empty).
-        # False if every feed request failed — distinct from a successful empty feed.
+        # True only when both required entity feeds (series + episodes) succeed (even if empty).
+        # False on any TVDBv4Error so ShowUpdater does not advance lastUpdate for a partial feed.
         self.feed_ok = False
         # Do not set self.series here — it would shadow the series() method
         # (tvdbsimple only assigns the attribute after series() is called).
@@ -221,19 +221,20 @@ class _UpdatesResult:
     def series(self):
         """Collect series IDs from V4 series + episode update streams since from_time."""
         records: list = []
-        any_success = False
+        failed_types: list[str] = []
         for entity_type in ("series", "episodes"):
             try:
                 records.extend(self._client.all_updates_since(self._from_time, entity_type=entity_type))
-                any_success = True
             except TVDBv4Error as error:
+                failed_types.append(entity_type)
                 logger.debug(f"TVDB v4 updates failed ({entity_type}): {error}")
 
-        self.feed_ok = any_success
-        if not any_success:
-            # Distinguish total feed failure from a successful empty change list
+        # Both entity types must succeed; partial success is treated as feed failure
+        self.feed_ok = not failed_types
+        if failed_types:
+            # Distinguish feed failure (partial or total) from a successful empty change list
             self.series = []
-            logger.warning(f"TVDB v4 update feed failed for all entity types since {self._from_time}")
+            logger.warning(f"TVDB v4 update feed failed for entity type(s) {', '.join(failed_types)} since {self._from_time}")
             return self.series
 
         ids = set()
