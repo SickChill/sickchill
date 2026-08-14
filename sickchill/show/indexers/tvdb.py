@@ -212,17 +212,29 @@ class _UpdatesResult:
         self._from_time = int(from_time or 0)
         self._to_time = int(to_time) if to_time not in ("", None) else None
         self.language = language
+        # True if at least one entity-type feed call succeeded (even if empty).
+        # False if every feed request failed — distinct from a successful empty feed.
+        self.feed_ok = False
         # Do not set self.series here — it would shadow the series() method
         # (tvdbsimple only assigns the attribute after series() is called).
 
     def series(self):
         """Collect series IDs from V4 series + episode update streams since from_time."""
         records: list = []
+        any_success = False
         for entity_type in ("series", "episodes"):
             try:
                 records.extend(self._client.all_updates_since(self._from_time, entity_type=entity_type))
+                any_success = True
             except TVDBv4Error as error:
                 logger.debug(f"TVDB v4 updates failed ({entity_type}): {error}")
+
+        self.feed_ok = any_success
+        if not any_success:
+            # Distinguish total feed failure from a successful empty change list
+            self.series = []
+            logger.warning(f"TVDB v4 update feed failed for all entity types since {self._from_time}")
+            return self.series
 
         ids = set()
         result = []
@@ -271,10 +283,12 @@ class TVDB(Indexer):
         self.base_url = "https://api4.thetvdb.com/v4/series/"
         self.icon = "images/indexers/thetvdb16.png"
         self._client: TVDBv4Client | None = None
-        # In-memory episode list cache for a load cycle: (showid, season_type) -> list[dict]
-        self._episode_list_cache: dict[tuple, list] = {}
+        # In-memory episode list cache for a load cycle: (showid, season_type) -> (monotonic_ts, list[dict])
+        self._episode_list_cache: dict[tuple, tuple[float, list]] = {}
         # (showid, season_type, season, episode) -> dict
         self._episode_index_cache: dict[tuple, dict] = {}
+        self._episode_cache_ttl = 300.0  # seconds; reuse within a load, refresh afterward
+        self._episode_cache_max_shows = 32  # bound process lifetime growth
 
     @property
     def api_key(self):
@@ -307,6 +321,32 @@ class TVDB(Indexer):
         for key in list(self._episode_index_cache):
             if key[0] == show_id:
                 del self._episode_index_cache[key]
+
+    def _prune_episode_cache(self):
+        """Drop expired entries and bound unique show count."""
+        import time as _time
+
+        now = _time.monotonic()
+        ttl = self._episode_cache_ttl
+        for key, (ts, _data) in list(self._episode_list_cache.items()):
+            if now - ts > ttl:
+                del self._episode_list_cache[key]
+                show_id, season_type = key
+                for ikey in list(self._episode_index_cache):
+                    if ikey[0] == show_id and ikey[1] == season_type:
+                        del self._episode_index_cache[ikey]
+
+        # Bound by unique show ids (oldest first)
+        show_ids = []
+        seen = set()
+        for key, (ts, _data) in sorted(self._episode_list_cache.items(), key=lambda item: item[1][0]):
+            sid = key[0]
+            if sid not in seen:
+                seen.add(sid)
+                show_ids.append(sid)
+        while len(show_ids) > self._episode_cache_max_shows:
+            drop_id = show_ids.pop(0)
+            self.clear_episode_cache(drop_id)
 
     @ExceptionDecorator()
     def series(self, *args, **kwargs):
@@ -387,19 +427,32 @@ class TVDB(Indexer):
 
     @ExceptionDecorator()
     def episodes(self, show, season=None):
+        import time as _time
+
+        self._prune_episode_cache()
         season_type = "dvd" if getattr(show, "dvdorder", False) else "default"
         cache_key = (int(show.indexerid), season_type)
-        if cache_key not in self._episode_list_cache:
+        cached = self._episode_list_cache.get(cache_key)
+        now = _time.monotonic()
+        if cached is None or (now - cached[0]) > self._episode_cache_ttl:
             all_eps = self.client.all_episodes(show.indexerid, season_type)
             mapped = [_episode_dict(e) for e in all_eps if isinstance(e, dict)]
-            self._episode_list_cache[cache_key] = mapped
+            # Drop any prior index rows for this show+type before re-index
+            for ikey in list(self._episode_index_cache):
+                if ikey[0] == int(show.indexerid) and ikey[1] == season_type:
+                    del self._episode_index_cache[ikey]
+            self._episode_list_cache[cache_key] = (now, mapped)
             for ep in mapped:
                 s, e = ep.get("airedSeason"), ep.get("airedEpisodeNumber")
                 if s is None or e is None:
                     continue
                 self._episode_index_cache[(int(show.indexerid), season_type, int(s), int(e))] = ep
+            # Bound after insert so a newly cached show cannot leave the map oversized
+            self._prune_episode_cache()
             logger.debug(f"TVDB v4 cached {len(mapped)} episode(s) for show {show.indexerid} ({season_type})")
-        result = self._episode_list_cache[cache_key]
+            result = mapped
+        else:
+            result = cached[1]
         if season is not None:
             result = [e for e in result if e.get("airedSeason") == season]
         return result

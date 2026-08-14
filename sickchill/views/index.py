@@ -199,7 +199,9 @@ class WebHandler(BaseHandler):
             results = await self.async_call(method, len(sig.parameters))
 
             # Client often disconnects during long work (refresh, search abort, leave page).
+            # Disable Tornado's automatic finish so it does not call finish() after we return.
             if self._client_disconnected():
+                self._auto_finish = False
                 if settings.DEVELOPER:
                     logger.debug(f"Skipping finish for '{route}': client already disconnected; result {self._summarize_finish_result(results)}")
                 return

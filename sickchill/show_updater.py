@@ -31,6 +31,8 @@ class ShowUpdater(object):
                 update_timestamp = int(time.time())
                 updated_shows = []
                 http_calls_note = ""
+                # When True, safe to advance cache lastUpdate (successful feed or first full run)
+                advance_last_update = True
 
                 if last_update:
                     logger.info("Last update: {}".format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(last_update))))
@@ -38,13 +40,24 @@ class ShowUpdater(object):
                         # V4: single since= window with pagination (no 7-day chunking required)
                         TvdbData = sickchill.indexer[1].updates(fromTime=last_update, toTime=update_timestamp)
                         TvdbData.series()
-                        updated_shows = [d["id"] for d in TvdbData.series]
-                        http_calls_note = f"; update feed reported {len(updated_shows)} series id(s)"
-                        logger.info(f"TVDB v4 update feed: {len(updated_shows)} series need refresh{http_calls_note}")
+                        if not getattr(TvdbData, "feed_ok", True):
+                            # Total feed failure — not the same as a successful empty change list
+                            advance_last_update = False
+                            updated_shows = []
+                            http_calls_note = "; update feed failed (will retry same window next cycle)"
+                            logger.warning("TVDB v4 update feed failed for all entity types; not advancing lastUpdate, scheduling disk refreshes only")
+                        else:
+                            updated_shows = [d["id"] for d in TvdbData.series]
+                            http_calls_note = f"; update feed reported {len(updated_shows)} series id(s)"
+                            logger.info(f"TVDB v4 update feed: {len(updated_shows)} series need refresh{http_calls_note}")
                     except Exception as error:
-                        logger.info(f"TVDB v4 updates failed, falling back to full show list: {error}")
-                        last_update = 0  # force full pass below
+                        advance_last_update = False
                         updated_shows = []
+                        http_calls_note = "; update feed error (will retry same window next cycle)"
+                        logger.warning(
+                            f"TVDB v4 updates failed ({error}); not advancing lastUpdate, "
+                            f"scheduling disk refreshes only (not a forced full re-pull of all shows)"
+                        )
                 else:
                     logger.info(_("No last update time from the cache, so we do a full update for all shows"))
 
@@ -70,8 +83,8 @@ class ShowUpdater(object):
                                 skip_update = True
 
                         # Full indexer update when no last_update cache or show is in the v4 updated list
-                        if not last_update or (cur_show.indexerid in updated_shows and not skip_update):
-                            # Drop in-memory episode cache so this pass fetches fresh lists
+                        # (and feed was usable). On feed failure last_update stays set → refresh only.
+                        if not last_update or (advance_last_update and cur_show.indexerid in updated_shows and not skip_update):
                             try:
                                 cur_show.idxr.clear_episode_cache(cur_show.indexerid)
                             except Exception:
@@ -92,10 +105,15 @@ class ShowUpdater(object):
 
                 ui.ProgressIndicators.setIndicator("dailyUpdate", ui.QueueProgressIndicator("Daily Update", pi_list))
 
-                if database_result:
-                    cache_db_con.action("UPDATE lastUpdate SET `time` = ? WHERE provider = ?", [str(update_timestamp), provider.name])
+                # Only advance lastUpdate when the feed succeeded (or first full run with no prior stamp).
+                # Failed feeds keep the previous timestamp so the next cycle retries the missed window.
+                if advance_last_update:
+                    if database_result:
+                        cache_db_con.action("UPDATE lastUpdate SET `time` = ? WHERE provider = ?", [str(update_timestamp), provider.name])
+                    else:
+                        cache_db_con.action("INSERT INTO lastUpdate (time, provider) VALUES (?, ?)", [str(update_timestamp), provider.name])
                 else:
-                    cache_db_con.action("INSERT INTO lastUpdate (time, provider) VALUES (?, ?)", [str(update_timestamp), provider.name])
+                    logger.info(f"Preserving lastUpdate for {provider.name} after feed failure")
         except Exception as error:
             logger.exception(error)
 

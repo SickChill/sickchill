@@ -98,7 +98,7 @@ class SeriesResultMappingTests(unittest.TestCase):
 
 class SeriesLanguageTests(unittest.TestCase):
     def _mock_client_for(self, tvdb: TVDB) -> MagicMock:
-        """Attach a MagicMock client that matches api_key so client property does not replace it."""
+        """Attach a MagicMock client that matches client property expectations (apikey/pin/timeout)."""
         from sickchill import settings
 
         client = MagicMock()
@@ -437,17 +437,24 @@ class UpdatesCompatTests(unittest.TestCase):
 
 
 class EpisodeCacheTests(unittest.TestCase):
+    def _attach_mock_client(self, tvdb: TVDB) -> MagicMock:
+        from sickchill import settings
+
+        client = MagicMock()
+        # Match TVDB.client property re-init checks so the mock is retained
+        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
+        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
+        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+        tvdb._client = client
+        return client
+
     def test_episodes_cache_avoids_second_http(self):
         tvdb = TVDB()
-        client = MagicMock()
-        client.apikey = tvdb.api_key
-        client.pin = ""
-        client.timeout = 20
+        client = self._attach_mock_client(tvdb)
         client.all_episodes.return_value = [
             {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
             {"id": 2, "seasonNumber": 1, "number": 2, "name": "Two", "lastUpdated": 200},
         ]
-        tvdb._client = client
         show = MagicMock()
         show.indexerid = 55
         show.dvdorder = False
@@ -461,6 +468,71 @@ class EpisodeCacheTests(unittest.TestCase):
         ep = tvdb.episode(show, 1, 2)
         self.assertEqual(ep["episodeName"], "Two")
         client.all_episodes.assert_called_once()
+
+    def test_clear_episode_cache_forces_refetch(self):
+        tvdb = TVDB()
+        client = self._attach_mock_client(tvdb)
+        client.all_episodes.return_value = [
+            {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
+        ]
+        show = MagicMock()
+        show.indexerid = 77
+        show.dvdorder = False
+        tvdb.episodes(show)
+        tvdb.clear_episode_cache(77)
+        tvdb.episodes(show)
+        self.assertEqual(client.all_episodes.call_count, 2)
+
+    def test_episode_cache_ttl_forces_refetch(self):
+        """Expired TTL entries are dropped so subsequent loads refresh without clear_episode_cache."""
+        tvdb = TVDB()
+        client = self._attach_mock_client(tvdb)
+        client.all_episodes.return_value = [
+            {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
+        ]
+        show = MagicMock()
+        show.indexerid = 88
+        show.dvdorder = False
+        tvdb._episode_cache_ttl = 0.0  # expire immediately
+        tvdb.episodes(show)
+        tvdb.episodes(show)
+        self.assertEqual(client.all_episodes.call_count, 2)
+
+    def test_episode_cache_max_shows_bound(self):
+        """Cache cannot grow unbounded across many shows for process lifetime."""
+        tvdb = TVDB()
+        client = self._attach_mock_client(tvdb)
+        client.all_episodes.return_value = [
+            {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
+        ]
+        tvdb._episode_cache_max_shows = 2
+        for show_id in (101, 102, 103):
+            show = MagicMock()
+            show.indexerid = show_id
+            show.dvdorder = False
+            tvdb.episodes(show)
+        # At most max_shows unique list keys remain after prune
+        unique_shows = {key[0] for key in tvdb._episode_list_cache}
+        self.assertLessEqual(len(unique_shows), 2)
+        self.assertNotIn(101, unique_shows)  # oldest dropped
+
+
+class UpdatesFeedOkTests(unittest.TestCase):
+    def test_feed_ok_false_when_all_entity_types_fail(self):
+        client = MagicMock()
+        client.all_updates_since.side_effect = TVDBv4Error("down")
+        updates = _UpdatesResult(client, from_time=1000)
+        result = updates.series()
+        self.assertEqual(result, [])
+        self.assertFalse(updates.feed_ok)
+
+    def test_feed_ok_true_on_empty_success(self):
+        client = MagicMock()
+        client.all_updates_since.return_value = []
+        updates = _UpdatesResult(client, from_time=1000)
+        result = updates.series()
+        self.assertEqual(result, [])
+        self.assertTrue(updates.feed_ok)
 
 
 class EpisodeSkipApplyTests(unittest.TestCase):
@@ -507,6 +579,42 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         result = TVEpisode.load_from_indexer(e, 1, 1, force_all=False, indexer_episode=packet)
         self.assertTrue(result)
         self.assertEqual(e.name, "Old")  # not applied
+
+
+class WebHandlerDisconnectTests(unittest.IsolatedAsyncioTestCase):
+    """Regression: aborted/disconnected clients must not auto-finish via Tornado."""
+
+    async def test_client_disconnected_disables_auto_finish(self):
+        from unittest.mock import AsyncMock
+
+        from sickchill import settings
+        from sickchill.views.index import WebHandler
+
+        handler = object.__new__(WebHandler)
+        handler._auto_finish = True
+        handler._finished = False
+        handler.request = MagicMock()
+        handler.request.connection = MagicMock()
+        handler.request.connection.stream = MagicMock()
+        handler.request.connection.stream.closed.return_value = True
+
+        # Bypass @authenticated — invoke the wrapped coroutine body via __wrapped__ if present
+        get_method = WebHandler.get
+        if hasattr(get_method, "__wrapped__"):
+            get_method = get_method.__wrapped__
+
+        with (
+            patch.object(WebHandler, "async_call", new_callable=AsyncMock) as mock_call,
+            patch.object(settings, "DEVELOPER", False),
+        ):
+            mock_call.return_value = "<html>page</html>"
+            # Provide a dummy route method so getattr(self, route) succeeds
+            handler.index = MagicMock()
+            result = await get_method(handler, "index")
+
+        self.assertIsNone(result)
+        # Tornado must not auto-call finish() after we return from a disconnected request
+        self.assertFalse(handler._auto_finish)
 
 
 class TVDBSearchMappingTests(unittest.TestCase):

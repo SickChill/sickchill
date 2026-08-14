@@ -625,9 +625,16 @@ class TVShow(object):
     def load_episodes_from_indexer(self, force_all: bool = False):
         logger.debug(_("{show_id}: Loading all episodes from {indexer_name}...").format(show_id=self.indexerid, indexer_name=self.indexer_name))
 
+        # Always refresh this show's episode cache for a new load cycle
+        try:
+            self.idxr.clear_episode_cache(self.indexerid)
+        except Exception:
+            pass
+
         scanned_episodes = {}
         applied = 0
         skipped_unchanged = 0
+        sql_l = []
 
         for indexer_episode in self.idxr.episodes(self):
             if indexer_episode["airedSeason"] not in scanned_episodes:
@@ -657,7 +664,9 @@ class TVShow(object):
                         if result is False:
                             continue
                         if episode.dirty:
-                            episode.save_to_db()
+                            sql = episode.get_sql()
+                            if sql:
+                                sql_l.append(sql)
                             applied += 1
                         else:
                             skipped_unchanged += 1
@@ -666,6 +675,10 @@ class TVShow(object):
                     continue
 
             scanned_episodes[indexer_episode["airedSeason"]][indexer_episode["airedEpisodeNumber"]] = True
+
+        if sql_l:
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
 
         # Done updating save last update date (show-level ordinal for ended-show interval)
         self.last_update_indexer = sc_now().toordinal()
