@@ -458,12 +458,15 @@ class EpisodeCacheTests(unittest.TestCase):
         show = MagicMock()
         show.indexerid = 55
         show.dvdorder = False
+        show.lang = "en"
 
         first = tvdb.episodes(show)
         second = tvdb.episodes(show, season=1)
         self.assertEqual(len(first), 2)
         self.assertEqual(len(second), 2)
         client.all_episodes.assert_called_once()
+        # Metadata language en → TVDB eng on translated episode endpoint
+        self.assertEqual(client.all_episodes.call_args.kwargs.get("language") or client.all_episodes.call_args[1].get("language"), "eng")
 
         ep = tvdb.episode(show, 1, 2)
         self.assertEqual(ep["episodeName"], "Two")
@@ -478,6 +481,7 @@ class EpisodeCacheTests(unittest.TestCase):
         show = MagicMock()
         show.indexerid = 77
         show.dvdorder = False
+        show.lang = "en"
         tvdb.episodes(show)
         tvdb.clear_episode_cache(77)
         tvdb.episodes(show)
@@ -493,6 +497,7 @@ class EpisodeCacheTests(unittest.TestCase):
         show = MagicMock()
         show.indexerid = 88
         show.dvdorder = False
+        show.lang = "en"
         tvdb._episode_cache_ttl = 0.0  # expire immediately
         tvdb.episodes(show)
         tvdb.episodes(show)
@@ -510,6 +515,7 @@ class EpisodeCacheTests(unittest.TestCase):
             show = MagicMock()
             show.indexerid = show_id
             show.dvdorder = False
+            show.lang = "en"
             tvdb.episodes(show)
         # List and index caches both stay within the unique-show bound; oldest (101) is evicted
         unique_list_shows = {key[0] for key in tvdb._episode_list_cache}
@@ -518,6 +524,45 @@ class EpisodeCacheTests(unittest.TestCase):
         self.assertLessEqual(len(unique_index_shows), tvdb._episode_cache_max_shows)
         self.assertNotIn(101, unique_list_shows)
         self.assertNotIn(101, unique_index_shows)
+
+    def test_episodes_uses_show_lang_and_separates_cache(self):
+        """Japanese primary titles must not stick when show.lang is English (Dungeon Meshi case)."""
+        tvdb = TVDB()
+        client = self._attach_mock_client(tvdb)
+
+        def all_episodes(show_id, season_type="default", max_pages=50, language=None):
+            if language == "eng":
+                return [{"id": 1, "seasonNumber": 1, "number": 1, "name": "Hot Pot", "lastUpdated": 100}]
+            if language == "jpn":
+                return [{"id": 1, "seasonNumber": 1, "number": 1, "name": "水炊き", "lastUpdated": 100}]
+            return [{"id": 1, "seasonNumber": 1, "number": 1, "name": "水炊き", "lastUpdated": 100}]
+
+        client.all_episodes.side_effect = all_episodes
+        show = MagicMock()
+        show.indexerid = 423257
+        show.dvdorder = False
+
+        show.lang = "en"
+        en_eps = tvdb.episodes(show)
+        self.assertEqual(en_eps[0]["episodeName"], "Hot Pot")
+
+        show.lang = "ja"
+        ja_eps = tvdb.episodes(show)
+        self.assertEqual(ja_eps[0]["episodeName"], "水炊き")
+        # Separate cache entries per language (second call is not a cache hit of English)
+        self.assertGreaterEqual(client.all_episodes.call_count, 2)
+
+    def test_client_series_episodes_translated_path(self):
+        client = TVDBv4Client("test-key")
+        with patch.object(client, "_get", return_value={"episodes": []}) as mock_get:
+            client.series_episodes(423257, "default", page=0, language="eng")
+            path = mock_get.call_args[0][0]
+            self.assertEqual(path, "/series/423257/episodes/default/eng")
+
+        with patch.object(client, "_get", return_value={"episodes": []}) as mock_get:
+            client.series_episodes(423257, "default", page=0, language=None)
+            path = mock_get.call_args[0][0]
+            self.assertEqual(path, "/series/423257/episodes/default")
 
 
 class UpdatesFeedOkTests(unittest.TestCase):
@@ -614,6 +659,51 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         self.assertEqual(e.name, "Old")  # not applied
 
 
+class MassActionSqlCollectionTests(unittest.TestCase):
+    """Regression: get_sql() shape must be appended, not extended, into mass_action lists."""
+
+    def test_get_sql_unit_is_statement_plus_params(self):
+        """TVEpisode.get_sql returns [statement, params] — one mass_action unit."""
+        # Simulated get_sql return (matches tv.py UPDATE branch structure)
+        sql_unit = [
+            ("UPDATE tv_episodes SET name = ? WHERE episode_id = ?"),
+            [ "エリスのゴブリン討伐", 2868 ],
+        ]
+        self.assertEqual(len(sql_unit), 2)
+        self.assertIsInstance(sql_unit[0], (str, tuple))
+        # After the parenthesized string-only group, element 0 is the SQL text
+        statement = sql_unit[0][0] if isinstance(sql_unit[0], tuple) else sql_unit[0]
+        self.assertTrue(str(statement).lstrip().upper().startswith("UPDATE"))
+        self.assertIsInstance(sql_unit[1], list)
+
+    def test_append_keeps_mass_action_units_intact(self):
+        """Appending units yields [[stmt, params], ...]; extend would flatten and break mass_action."""
+        unit_a = ["UPDATE tv_episodes SET name = ? WHERE episode_id = ?", ["無職転生", 1]]
+        unit_b = ["UPDATE tv_episodes SET name = ? WHERE episode_id = ?", ["師匠", 2]]
+
+        sql_l = []
+        for unit in (unit_a, unit_b):
+            if unit:
+                sql_l.append(unit)
+
+        self.assertEqual(len(sql_l), 2)
+        for qu in sql_l:
+            # mass_action expects each qu to be [query, args] with len 2
+            self.assertEqual(len(qu), 2)
+            self.assertIsInstance(qu[0], str)
+            self.assertTrue(qu[0].lstrip().upper().startswith("UPDATE"))
+            self.assertIsInstance(qu[1], list)
+
+        # Document the broken extend path that caused: near "U": syntax error
+        broken = []
+        for unit in (unit_a, unit_b):
+            broken.extend(unit)
+        self.assertEqual(len(broken), 4)  # flat: stmt, params, stmt, params
+        self.assertIsInstance(broken[0], str)
+        # mass_action would take qu[0] of the string → first character "U"
+        self.assertEqual(broken[0][0], "U")
+
+
 class WebHandlerDisconnectTests(unittest.IsolatedAsyncioTestCase):
     """Regression: aborted/disconnected clients must not auto-finish via Tornado."""
 
@@ -661,6 +751,53 @@ class TVDBSearchMappingTests(unittest.TestCase):
         self.assertEqual(mapped[0]["id"], 78804)
         self.assertEqual(mapped[0]["seriesName"], "Doctor Who")
         self.assertEqual(mapped[0]["firstAired"], "2005-03-26")
+
+    def test_map_search_results_uses_metadata_language_translation(self):
+        """addShows list should show eng/ita/etc. title, not original primary (e.g. ダンジョン飯)."""
+        raw = [
+            {
+                "tvdb_id": "series-423257",
+                "name": "ダンジョン飯",
+                "primary_language": "jpn",
+                "first_air_time": "2024-01-04",
+                "overview": "Japanese overview",
+                "translations": {
+                    "eng": "Delicious in Dungeon",
+                    "jpn": "ダンジョン飯",
+                    "ita": "Delicious in Dungeon",
+                },
+                "overviews": {
+                    "eng": "English overview of the dungeon adventure.",
+                    "jpn": "Japanese overview",
+                },
+            }
+        ]
+        mapped_en = TVDB._map_search_results(raw, language="en")
+        self.assertEqual(mapped_en[0]["id"], 423257)
+        self.assertEqual(mapped_en[0]["seriesName"], "Delicious in Dungeon")
+        self.assertEqual(mapped_en[0]["overview"], "English overview of the dungeon adventure.")
+
+        mapped_ja = TVDB._map_search_results(raw, language="ja")
+        self.assertEqual(mapped_ja[0]["seriesName"], "ダンジョン飯")
+
+        # Without language, keep primary/original title
+        mapped_default = TVDB._map_search_results(raw)
+        self.assertEqual(mapped_default[0]["seriesName"], "ダンジョン飯")
+
+    def test_client_search_does_not_filter_by_primary_language(self):
+        """/search?language= restricts primary language — must not be sent for UI metadata lang."""
+        from sickchill.show.indexers.tvdb_v4_client import TVDBv4Client
+
+        client = TVDBv4Client("test-key")
+        with patch.object(client, "_get", return_value=[]) as mock_get:
+            client.search("delicious in dungeon", language="en")
+            mock_get.assert_called_once()
+            _path, = mock_get.call_args[0][:1] if mock_get.call_args[0] else (None,)
+            params = mock_get.call_args[0][1] if len(mock_get.call_args[0]) > 1 else mock_get.call_args[1].get("params")
+            if params is None:
+                params = mock_get.call_args.kwargs.get("params") or {}
+            self.assertNotIn("language", params)
+            self.assertEqual(params.get("query"), "delicious in dungeon")
 
     def test_complete_image_url_passthrough_and_relative(self):
         self.assertEqual(TVDB.complete_image_url("https://cdn.example/a.jpg"), "https://cdn.example/a.jpg")

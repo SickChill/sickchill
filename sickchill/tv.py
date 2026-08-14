@@ -664,10 +664,13 @@ class TVShow(object):
                         if result is False:
                             continue
                         if episode.dirty:
-                            # get_sql() returns a list of (statement, parameters) rows — flatten into sql_l
+                            # get_sql() returns one mass_action unit: [statement, parameters].
+                            # Append the unit as a whole — do not extend, which would flatten
+                            # statement and params into alternating items and break mass_action
+                            # (sqlite "near 'U': syntax error" when the first char of UPDATE is executed).
                             sql = episode.get_sql()
                             if sql:
-                                sql_l.extend(sql)
+                                sql_l.append(sql)
                             applied += 1
                         else:
                             skipped_unchanged += 1

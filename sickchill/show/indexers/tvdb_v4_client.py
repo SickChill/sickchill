@@ -216,8 +216,20 @@ class TVDBv4Client:
     def _get_envelope(self, path: str, params: dict | None = None, if_modified_since: str | None = None) -> tuple[Any, dict]:
         return self._request_envelope("GET", path, params=params, if_modified_since=if_modified_since)
 
-    def search(self, query: str, search_type: str = "series") -> list:
-        result = self._get("/search", params={"query": query, "type": search_type})
+    def search(self, query: str, search_type: str = "series", language: str | None = None) -> list:
+        """
+        GET /search — series/movies/people/companies.
+
+        ``language`` is accepted for call-site clarity (addShows metadata language) but is
+        intentionally **not** sent as the API ``language`` query parameter. That param
+        restricts results to a matching *primary* language and would hide foreign-primary
+        shows (e.g. Japanese anime when the UI language is English). Callers apply
+        ``SearchResult.translations`` / ``overviews`` for display names instead.
+        """
+        params: dict[str, Any] = {"query": query, "type": search_type}
+        # language deliberately omitted from params — see docstring
+        _ = language
+        result = self._get("/search", params=params)
         return result or []
 
     def search_by_remote_id(self, remote_id: str) -> list:
@@ -247,21 +259,41 @@ class TVDBv4Client:
             return None
         return self._get(f"/series/{series_id}/translations/{language}")
 
-    def series_episodes(self, series_id, season_type: str = "default", page: int = 0, if_modified_since: str | None = None) -> dict | None:
-        return self._get(
-            f"/series/{series_id}/episodes/{season_type}",
-            params={"page": page},
-            if_modified_since=if_modified_since,
-        )
+    def series_episodes(
+        self,
+        series_id,
+        season_type: str = "default",
+        page: int = 0,
+        language: str | None = None,
+        if_modified_since: str | None = None,
+    ) -> dict | None:
+        """
+        GET /series/{id}/episodes/{season-type}[/{lang}]
 
-    def all_episodes(self, series_id, season_type: str = "default", max_pages: int = 50) -> list:
-        """Page through full episode list (v4 typically ~500 per page), capped by max_pages."""
+        When ``language`` is a TVDB code (e.g. eng, jpn, ita), use the translated
+        endpoint so episode name/overview are in that language rather than the
+        series primary/original language.
+        """
+        season_type = season_type or "default"
+        if language:
+            path = f"/series/{series_id}/episodes/{season_type}/{language}"
+        else:
+            path = f"/series/{series_id}/episodes/{season_type}"
+        return self._get(path, params={"page": page}, if_modified_since=if_modified_since)
+
+    def all_episodes(self, series_id, season_type: str = "default", max_pages: int = 50, language: str | None = None) -> list:
+        """Page through full episode list (v4 typically ~500 per page), capped by max_pages.
+
+        ``language`` should be a TVDB 3-letter code (eng, jpn, …) when translated
+        titles are required; omit for primary/original language names.
+        """
         episodes: list = []
         page = 0
         while page < max_pages:
-            result = self.series_episodes(series_id, season_type, page)
+            result = self.series_episodes(series_id, season_type, page, language=language)
             if not result:
                 break
+            # Translated and default payloads both expose episodes on the data object
             batch = result.get("episodes") or []
             episodes.extend(batch)
             links = result.get("links") or {}

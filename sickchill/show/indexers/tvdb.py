@@ -88,6 +88,61 @@ def _apply_series_translation(raw: dict, translation: dict | None) -> dict:
     return updated
 
 
+def _pick_translation_map_value(mapping, language: str | None) -> str:
+    """Pick a non-empty string from a TVDB TranslationSimple map for language candidates."""
+    if not isinstance(mapping, dict) or not language:
+        return ""
+    for code in _tvdb_language_candidates(language):
+        val = mapping.get(code)
+        if val is not None and str(val).strip():
+            return str(val).strip()
+    return ""
+
+
+def _search_result_display_name(item: dict, language: str | None) -> str:
+    """
+    Preferred series title for addShows search list.
+
+    V4 /search returns the original/primary title in ``name`` (e.g. ダンジョン飯) and
+    language titles in ``translations`` (TranslationSimple: eng, jpn, ita, …). Prefer
+    the metadata language selected on the addShows page.
+    """
+    if not isinstance(item, dict):
+        return ""
+    primary = (item.get("name") or item.get("seriesName") or item.get("title") or "").strip()
+    if not language:
+        return primary
+
+    translated = _pick_translation_map_value(item.get("translations"), language)
+    if translated:
+        return translated
+
+    # Primary language already matches the requested metadata language
+    primary_lang = (item.get("primary_language") or "").strip().lower()
+    if primary_lang and primary_lang in set(_tvdb_language_candidates(language)):
+        return primary
+
+    name_translated = item.get("name_translated")
+    if isinstance(name_translated, dict):
+        from_map = _pick_translation_map_value(name_translated, language)
+        if from_map:
+            return from_map
+    elif isinstance(name_translated, str) and name_translated.strip():
+        return name_translated.strip()
+
+    return primary
+
+
+def _search_result_overview(item: dict, language: str | None) -> str:
+    """Preferred overview for search hits using overviews TranslationSimple when present."""
+    if not isinstance(item, dict):
+        return ""
+    translated = _pick_translation_map_value(item.get("overviews"), language)
+    if translated:
+        return translated
+    return (item.get("overview") or "").strip()
+
+
 class _SeriesResult:
     """
     Attribute-access adapter over a v4 /series/{id}/extended response.
@@ -332,10 +387,16 @@ class TVDB(Indexer):
         for key, (ts, _data) in list(self._episode_list_cache.items()):
             if now - ts > ttl:
                 del self._episode_list_cache[key]
-                show_id, season_type = key
+                # key: (show_id, season_type, lang)
+                show_id, season_type = key[0], key[1]
+                lang = key[2] if len(key) > 2 else None
                 for ikey in list(self._episode_index_cache):
-                    if ikey[0] == show_id and ikey[1] == season_type:
-                        del self._episode_index_cache[ikey]
+                    # ikey: (show_id, season_type, lang, season, episode)
+                    if ikey[0] != show_id or ikey[1] != season_type:
+                        continue
+                    if lang is not None and len(ikey) > 2 and ikey[2] != lang:
+                        continue
+                    del self._episode_index_cache[ikey]
 
         # Bound by unique show ids (oldest first)
         show_ids = []
@@ -348,6 +409,32 @@ class TVDB(Indexer):
         while len(show_ids) > self._episode_cache_max_shows:
             drop_id = show_ids.pop(0)
             self.clear_episode_cache(drop_id)
+
+    def _all_episodes_for_language(self, show_id, season_type: str, language: str | None) -> list:
+        """
+        Fetch episode list preferring translated titles for show metadata language.
+
+        Tries TVDB language candidates (en→eng, …). Falls back to the untranslated
+        endpoint if every translated request fails.
+        """
+        candidates = _tvdb_language_candidates(language)
+        errors: list[str] = []
+        for code in candidates:
+            try:
+                eps = self.client.all_episodes(show_id, season_type, language=code)
+                logger.debug(f"TVDB v4 episodes for {show_id} using language={code!r} ({len(eps)} ep(s))")
+                return eps
+            except TVDBv4Error as error:
+                errors.append(f"{code}:{error}")
+                logger.debug(f"TVDB v4 translated episodes failed for {show_id}/{code}: {error}")
+
+        # No language requested, or all translated paths failed — primary/original names
+        if candidates:
+            logger.debug(
+                f"TVDB v4 falling back to untranslated episodes for {show_id} "
+                f"(tried {', '.join(candidates)}; errors: {'; '.join(errors) or 'none'})"
+            )
+        return self.client.all_episodes(show_id, season_type, language=None)
 
     @ExceptionDecorator()
     def series(self, *args, **kwargs):
@@ -432,25 +519,31 @@ class TVDB(Indexer):
 
         self._prune_episode_cache()
         season_type = "dvd" if getattr(show, "dvdorder", False) else "default"
-        cache_key = (int(show.indexerid), season_type)
+        # Metadata language from the show (addShows / edit show); drives translated episode titles
+        raw_lang = getattr(show, "lang", None)
+        show_lang = raw_lang.strip().lower() if isinstance(raw_lang, str) else ""
+        cache_key = (int(show.indexerid), season_type, show_lang)
         cached = self._episode_list_cache.get(cache_key)
         now = _time.monotonic()
         if cached is None or (now - cached[0]) > self._episode_cache_ttl:
-            all_eps = self.client.all_episodes(show.indexerid, season_type)
+            all_eps = self._all_episodes_for_language(show.indexerid, season_type, show_lang or None)
             mapped = [_episode_dict(e) for e in all_eps if isinstance(e, dict)]
-            # Drop any prior index rows for this show+type before re-index
+            # Drop any prior index rows for this show+type+lang before re-index
             for ikey in list(self._episode_index_cache):
-                if ikey[0] == int(show.indexerid) and ikey[1] == season_type:
+                if ikey[0] == int(show.indexerid) and ikey[1] == season_type and (len(ikey) < 3 or ikey[2] == show_lang):
                     del self._episode_index_cache[ikey]
             self._episode_list_cache[cache_key] = (now, mapped)
             for ep in mapped:
                 s, e = ep.get("airedSeason"), ep.get("airedEpisodeNumber")
                 if s is None or e is None:
                     continue
-                self._episode_index_cache[(int(show.indexerid), season_type, int(s), int(e))] = ep
+                self._episode_index_cache[(int(show.indexerid), season_type, show_lang, int(s), int(e))] = ep
             # Bound after insert so a newly cached show cannot leave the map oversized
             self._prune_episode_cache()
-            logger.debug(f"TVDB v4 cached {len(mapped)} episode(s) for show {show.indexerid} ({season_type})")
+            logger.debug(
+                f"TVDB v4 cached {len(mapped)} episode(s) for show {show.indexerid} "
+                f"({season_type}, lang={show_lang or 'primary'})"
+            )
             result = mapped
         else:
             result = cached[1]
@@ -468,7 +561,9 @@ class TVDB(Indexer):
             show = item
 
         season_type = "dvd" if getattr(show, "dvdorder", False) else "default"
-        index_key = (int(show.indexerid), season_type, int(season), int(episode))
+        raw_lang = getattr(show, "lang", None)
+        show_lang = raw_lang.strip().lower() if isinstance(raw_lang, str) else ""
+        index_key = (int(show.indexerid), season_type, show_lang, int(season), int(episode))
         cached = self._episode_index_cache.get(index_key)
         if cached is not None:
             return cached
@@ -505,7 +600,7 @@ class TVDB(Indexer):
             except TVDBv4Error:
                 logger.debug(traceback.format_exc())
                 raw_results = []
-            return self._map_search_results(raw_results)
+            return self._map_search_results(raw_results, language=language)
 
         # Bare TVDB series id (5–8 digits; includes values that look like IMDb numbers without tt)
         if re.match(r"^\d{5,8}$", name.strip()):
@@ -538,7 +633,10 @@ class TVDB(Indexer):
         raw_results = []
         for attempt in dict.fromkeys(n for n in names if n and n.strip()):
             try:
-                raw_results = self.client.search(attempt)
+                # Pass language only for client-side translation selection on results —
+                # not as /search?language= filter (that restricts primary language and
+                # would hide anime like Delicious in Dungeon when metadata lang is eng).
+                raw_results = self.client.search(attempt, language=language)
                 if raw_results:
                     break
             except TVDBv4Error as error:
@@ -547,7 +645,7 @@ class TVDB(Indexer):
             except Exception:
                 logger.debug(traceback.format_exc())
 
-        result = self._map_search_results(raw_results)
+        result = self._map_search_results(raw_results, language=language)
 
         # TVmaze fallback only when TVDB found nothing (same behaviour as before)
         if not result:
@@ -583,7 +681,8 @@ class TVDB(Indexer):
         return result or []
 
     @staticmethod
-    def _map_search_results(raw_results) -> list:
+    def _map_search_results(raw_results, language: str | None = None) -> list:
+        """Map V4 SearchResult payloads; seriesName/overview prefer metadata language."""
         mapped = []
         seen = set()
         for item in raw_results or []:
@@ -602,9 +701,9 @@ class TVDB(Indexer):
             mapped.append(
                 {
                     "id": tvdb_id,
-                    "seriesName": item.get("name") or item.get("seriesName") or "",
+                    "seriesName": _search_result_display_name(item, language),
                     "firstAired": item.get("first_air_time") or item.get("firstAired") or item.get("year") or "",
-                    "overview": item.get("overview") or "",
+                    "overview": _search_result_overview(item, language),
                     "network": item.get("network") or "",
                     "image_url": item.get("image_url") or item.get("thumbnail") or "",
                     "score": item.get("score"),
