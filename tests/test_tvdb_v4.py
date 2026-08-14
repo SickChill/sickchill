@@ -286,6 +286,29 @@ class TVDBv4ClientTests(unittest.TestCase):
                 self.assertEqual(request.call_count, 2)
                 sleep.assert_called_with(1.0)
 
+    def test_retry_after_http_date(self):
+        from datetime import datetime, timedelta, timezone
+        from email.utils import format_datetime
+
+        future = datetime.now(timezone.utc) + timedelta(seconds=3)
+        response = MagicMock()
+        response.headers = {"Retry-After": format_datetime(future, usegmt=True)}
+        delay = TVDBv4Client._retry_delay_seconds(response, attempt=0)
+        # Should be ~3s (allow small timing skew); clamped >= 0
+        self.assertGreaterEqual(delay, 0.0)
+        self.assertLessEqual(delay, 4.0)
+        self.assertGreaterEqual(delay, 1.5)
+
+    def test_retry_after_past_http_date_clamps_to_zero(self):
+        from datetime import datetime, timedelta, timezone
+        from email.utils import format_datetime
+
+        past = datetime.now(timezone.utc) - timedelta(seconds=30)
+        response = MagicMock()
+        response.headers = {"Retry-After": format_datetime(past, usegmt=True)}
+        delay = TVDBv4Client._retry_delay_seconds(response, attempt=0)
+        self.assertEqual(delay, 0.0)
+
     @patch.object(TVDBv4Client, "_headers", return_value={"Authorization": "Bearer t"})
     def test_all_updates_since_follows_links_next(self, _headers):
         page0 = MagicMock()
@@ -313,6 +336,69 @@ class TVDBv4ClientTests(unittest.TestCase):
             second_params = request.call_args_list[1].kwargs.get("params") or {}
             self.assertEqual(int(second_params.get("page")), 1)
 
+    @patch.object(TVDBv4Client, "_headers", return_value={"Authorization": "Bearer t"})
+    def test_updates_since_links_are_per_response_not_shared(self, _headers):
+        """Concurrent interleaved /updates calls must not share pagination links."""
+        import threading
+
+        # Response A page0 → next 10; Response B page0 → next 99
+        def make_resp(data_id, next_page):
+            r = MagicMock()
+            r.status_code = 200
+            r.headers = {}
+            r.content = b"{}"
+            r.json.return_value = {
+                "status": "success",
+                "data": [{"id": data_id, "recordType": "series"}],
+                "links": {"next": next_page} if next_page is not None else {},
+            }
+            return r
+
+        barrier = threading.Barrier(2)
+        results = {}
+
+        # Controlled order: both first pages, then follow-ups if any
+        responses = {
+            ("series", 0): make_resp(1, 10),
+            ("episodes", 0): make_resp(2, 99),
+        }
+
+        def request_side_effect(method, url, headers=None, params=None, timeout=None):
+            params = params or {}
+            entity = params.get("type", "series")
+            page = int(params.get("page") or 0)
+            key = (entity, page)
+            if page == 0:
+                barrier.wait(timeout=2)
+            if key in responses:
+                return responses[key]
+            # follow-up pages: no further next
+            return make_resp(100 + page, None)
+
+        with patch.object(self.client._session, "request", side_effect=request_side_effect):
+
+            def worker(entity_type, out_key):
+                batch, links = self.client.updates_since(1000, entity_type=entity_type, page=0)
+                results[out_key] = (batch, links)
+
+            t1 = threading.Thread(target=worker, args=("series", "a"))
+            t2 = threading.Thread(target=worker, args=("episodes", "b"))
+            t1.start()
+            t2.start()
+            t1.join(timeout=5)
+            t2.join(timeout=5)
+
+        self.assertIn("a", results)
+        self.assertIn("b", results)
+        batch_a, links_a = results["a"]
+        batch_b, links_b = results["b"]
+        self.assertEqual(batch_a[0]["id"], 1)
+        self.assertEqual(batch_b[0]["id"], 2)
+        self.assertEqual(links_a.get("next"), 10)
+        self.assertEqual(links_b.get("next"), 99)
+        # No shared client field for links
+        self.assertFalse(hasattr(self.client, "_last_links") and self.client._last_links not in (None, {}))
+
 
 class ImageApiReturnTypeTests(unittest.TestCase):
     def test_call_images_api_failure_respects_multiple(self):
@@ -331,16 +417,96 @@ class ImageApiReturnTypeTests(unittest.TestCase):
 class UpdatesCompatTests(unittest.TestCase):
     def test_updates_collects_series_ids(self):
         client = MagicMock()
-        client.all_updates_since.return_value = [
-            {"recordType": "series", "recordId": 11},
-            {"entityType": "series", "id": 22},
-            {"recordType": "episode", "seriesId": 33},
-            {"recordType": "series", "recordId": 11},  # dupe
-        ]
+
+        def all_updates_since(since, entity_type="series", max_pages=50):
+            if entity_type == "series":
+                return [
+                    {"recordType": "series", "recordId": 11},
+                    {"entityType": "series", "id": 22},
+                    {"recordType": "series", "recordId": 11},  # dupe
+                ]
+            if entity_type == "episodes":
+                return [{"recordType": "episode", "seriesId": 33, "id": 999}]
+            return []
+
+        client.all_updates_since.side_effect = all_updates_since
         updates = _UpdatesResult(client, from_time=1000)
         series = updates.series()
         ids = sorted(item["id"] for item in series)
         self.assertEqual(ids, [11, 22, 33])
+
+
+class EpisodeCacheTests(unittest.TestCase):
+    def test_episodes_cache_avoids_second_http(self):
+        tvdb = TVDB()
+        client = MagicMock()
+        client.apikey = tvdb.api_key
+        client.pin = ""
+        client.timeout = 20
+        client.all_episodes.return_value = [
+            {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
+            {"id": 2, "seasonNumber": 1, "number": 2, "name": "Two", "lastUpdated": 200},
+        ]
+        tvdb._client = client
+        show = MagicMock()
+        show.indexerid = 55
+        show.dvdorder = False
+
+        first = tvdb.episodes(show)
+        second = tvdb.episodes(show, season=1)
+        self.assertEqual(len(first), 2)
+        self.assertEqual(len(second), 2)
+        client.all_episodes.assert_called_once()
+
+        ep = tvdb.episode(show, 1, 2)
+        self.assertEqual(ep["episodeName"], "Two")
+        client.all_episodes.assert_called_once()
+
+
+class EpisodeSkipApplyTests(unittest.TestCase):
+    def test_load_from_indexer_skips_when_last_updated_not_newer(self):
+        from sickchill.tv import TVEpisode
+
+        ep = MagicMock(spec=TVEpisode)
+        # Bind real method
+        ep.last_update_indexer = 500
+        ep.name = "Old"
+        ep.show = MagicMock()
+        ep.show.indexerid = 1
+        ep.show.name = "Show"
+        ep.season = 1
+        ep.episode = 1
+        ep.indexer_name = "theTVDB"
+        ep.idxr = MagicMock()
+
+        packet = {
+            "episodeName": "New Title",
+            "lastUpdated": 400,  # older than stored
+            "absoluteNumber": 1,
+            "overview": "x",
+            "firstAired": "2020-01-01",
+            "id": 99,
+        }
+
+        # Call unbound method with a simple object that has required attrs
+        class E:
+            pass
+
+        e = E()
+        e.last_update_indexer = 500
+        e.name = "Old"
+        e.show = MagicMock()
+        e.show.indexerid = 1
+        e.show.name = "Show"
+        e.season = 1
+        e.episode = 1
+        e.indexer_name = "theTVDB"
+        e.idxr = MagicMock()
+        e.dirty = False
+
+        result = TVEpisode.load_from_indexer(e, 1, 1, force_all=False, indexer_episode=packet)
+        self.assertTrue(result)
+        self.assertEqual(e.name, "Old")  # not applied
 
 
 class TVDBSearchMappingTests(unittest.TestCase):

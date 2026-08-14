@@ -216,13 +216,13 @@ class _UpdatesResult:
         # (tvdbsimple only assigns the attribute after series() is called).
 
     def series(self):
-        try:
-            records = self._client.all_updates_since(self._from_time, entity_type="series")
-        except TVDBv4Error as error:
-            logger.debug(f"TVDB v4 updates failed: {error}")
-            result = []
-            self.series = result
-            return result
+        """Collect series IDs from V4 series + episode update streams since from_time."""
+        records: list = []
+        for entity_type in ("series", "episodes"):
+            try:
+                records.extend(self._client.all_updates_since(self._from_time, entity_type=entity_type))
+            except TVDBv4Error as error:
+                logger.debug(f"TVDB v4 updates failed ({entity_type}): {error}")
 
         ids = set()
         result = []
@@ -231,13 +231,14 @@ class _UpdatesResult:
                 continue
             # Defensive: V4 update shapes vary (recordType, entityType, seriesId, id)
             record_type = item.get("recordType") or item.get("entityType") or item.get("method") or "series"
-            if isinstance(record_type, str) and record_type.lower() not in ("series", "show", ""):
-                # Skip non-series unless it carries a series id we can use
+            record_type_l = record_type.lower() if isinstance(record_type, str) else "series"
+            if record_type_l in ("series", "show", ""):
+                series_id = item.get("seriesId") or item.get("series_id") or item.get("recordId") or item.get("id")
+            else:
+                # Episode (or other) updates: require parent series id when present
                 series_id = item.get("seriesId") or item.get("series_id")
                 if not series_id:
                     continue
-            else:
-                series_id = item.get("seriesId") or item.get("series_id") or item.get("recordId") or item.get("id")
 
             try:
                 series_id = int(series_id)
@@ -245,7 +246,6 @@ class _UpdatesResult:
                 continue
 
             if self._to_time:
-                # Optional upper bound if present on record
                 ts = item.get("timeStamp") or item.get("timestamp") or item.get("time")
                 try:
                     if ts is not None and int(ts) > self._to_time:
@@ -258,6 +258,7 @@ class _UpdatesResult:
                 result.append({"id": series_id})
 
         self.series = result  # attribute used by ShowUpdater after series() returns
+        logger.debug(f"TVDB v4 updates since {self._from_time}: {len(result)} series id(s) changed")
         return result
 
 
@@ -270,6 +271,10 @@ class TVDB(Indexer):
         self.base_url = "https://api4.thetvdb.com/v4/series/"
         self.icon = "images/indexers/thetvdb16.png"
         self._client: TVDBv4Client | None = None
+        # In-memory episode list cache for a load cycle: (showid, season_type) -> list[dict]
+        self._episode_list_cache: dict[tuple, list] = {}
+        # (showid, season_type, season, episode) -> dict
+        self._episode_index_cache: dict[tuple, dict] = {}
 
     @property
     def api_key(self):
@@ -288,6 +293,20 @@ class TVDB(Indexer):
     def updates(self, fromTime=0, toTime="", language=""):
         """V4-backed replacement for tvdbsimple.Updates used by ShowUpdater."""
         return _UpdatesResult(self.client, fromTime, toTime, language)
+
+    def clear_episode_cache(self, show_id=None):
+        """Drop in-memory episode caches (optionally for one show)."""
+        if show_id is None:
+            self._episode_list_cache.clear()
+            self._episode_index_cache.clear()
+            return
+        show_id = int(show_id)
+        for key in list(self._episode_list_cache):
+            if key[0] == show_id:
+                del self._episode_list_cache[key]
+        for key in list(self._episode_index_cache):
+            if key[0] == show_id:
+                del self._episode_index_cache[key]
 
     @ExceptionDecorator()
     def series(self, *args, **kwargs):
@@ -369,8 +388,18 @@ class TVDB(Indexer):
     @ExceptionDecorator()
     def episodes(self, show, season=None):
         season_type = "dvd" if getattr(show, "dvdorder", False) else "default"
-        all_eps = self.client.all_episodes(show.indexerid, season_type)
-        result = [_episode_dict(e) for e in all_eps if isinstance(e, dict)]
+        cache_key = (int(show.indexerid), season_type)
+        if cache_key not in self._episode_list_cache:
+            all_eps = self.client.all_episodes(show.indexerid, season_type)
+            mapped = [_episode_dict(e) for e in all_eps if isinstance(e, dict)]
+            self._episode_list_cache[cache_key] = mapped
+            for ep in mapped:
+                s, e = ep.get("airedSeason"), ep.get("airedEpisodeNumber")
+                if s is None or e is None:
+                    continue
+                self._episode_index_cache[(int(show.indexerid), season_type, int(s), int(e))] = ep
+            logger.debug(f"TVDB v4 cached {len(mapped)} episode(s) for show {show.indexerid} ({season_type})")
+        result = self._episode_list_cache[cache_key]
         if season is not None:
             result = [e for e in result if e.get("airedSeason") == season]
         return result
@@ -384,9 +413,17 @@ class TVDB(Indexer):
         else:
             show = item
 
-        for ep in self.episodes(show, season):
-            if ep.get("airedEpisodeNumber") == episode:
-                return ep
+        season_type = "dvd" if getattr(show, "dvdorder", False) else "default"
+        index_key = (int(show.indexerid), season_type, int(season), int(episode))
+        cached = self._episode_index_cache.get(index_key)
+        if cached is not None:
+            return cached
+
+        # Populate cache via bulk list (one HTTP for the show), then index lookup
+        self.episodes(show)
+        cached = self._episode_index_cache.get(index_key)
+        if cached is not None:
+            return cached
         raise TVDBv4Error(f"Episode S{season}E{episode} not found")
 
     @ExceptionDecorator(default_return=list())

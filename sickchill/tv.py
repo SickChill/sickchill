@@ -626,6 +626,8 @@ class TVShow(object):
         logger.debug(_("{show_id}: Loading all episodes from {indexer_name}...").format(show_id=self.indexerid, indexer_name=self.indexer_name))
 
         scanned_episodes = {}
+        applied = 0
+        skipped_unchanged = 0
 
         for indexer_episode in self.idxr.episodes(self):
             if indexer_episode["airedSeason"] not in scanned_episodes:
@@ -646,19 +648,35 @@ class TVShow(object):
             else:
                 try:
                     with episode.lock:
-                        episode.load_from_indexer(indexer_episode["airedSeason"], indexer_episode["airedEpisodeNumber"], force_all=force_all)
-                        episode.save_to_db()
-                        # sql_l.append(episode.get_sql())
+                        result = episode.load_from_indexer(
+                            indexer_episode["airedSeason"],
+                            indexer_episode["airedEpisodeNumber"],
+                            force_all=force_all,
+                            indexer_episode=indexer_episode,
+                        )
+                        if result is False:
+                            continue
+                        if episode.dirty:
+                            episode.save_to_db()
+                            applied += 1
+                        else:
+                            skipped_unchanged += 1
                 except EpisodeDeletedException:
                     logger.info("The episode was deleted, skipping the rest of the load")
                     continue
 
             scanned_episodes[indexer_episode["airedSeason"]][indexer_episode["airedEpisodeNumber"]] = True
 
-        # Done updating save last update date
+        # Done updating save last update date (show-level ordinal for ended-show interval)
         self.last_update_indexer = sc_now().toordinal()
 
         self.save_to_db()
+
+        logger.debug(
+            "{id}: Indexer episode load finished — applied {applied}, unchanged/skipped {skipped}".format(
+                id=self.indexerid, applied=applied, skipped=skipped_unchanged
+            )
+        )
 
         return scanned_episodes
 
@@ -1497,6 +1515,8 @@ class TVEpisode(object):
     release_group = DirtySetter("")
     indexer = DirtySetter(1)
     startyear = DirtySetter("")
+    # TVDB episode lastUpdated (unix); used to skip no-op indexer rewrites (Phase 2)
+    last_update_indexer = DirtySetter(0)
 
     def __init__(self, show: TVShow, season, episode, ep_file=""):
         self.season: int = season
@@ -1756,11 +1776,23 @@ class TVEpisode(object):
             if sql_results[0]["release_group"] is not None:
                 self.release_group = sql_results[0]["release_group"]
 
+            try:
+                self.last_update_indexer = try_int(sql_results[0]["last_update_indexer"], 0)
+            except (KeyError, IndexError, TypeError):
+                self.last_update_indexer = 0
+
             self.dirty = False
             return True
 
-    def load_from_indexer(self, season=None, episode=None, force_all: bool = False):
-        indexer_episode = self.idxr.episode(self.show, season or self.season, episode or self.episode)
+    def load_from_indexer(self, season=None, episode=None, force_all: bool = False, indexer_episode=None):
+        """
+        Load episode metadata from the indexer.
+
+        :param indexer_episode: Optional pre-fetched episode dict (avoids a second HTTP call during bulk load).
+        :return: True if applied (or skipped as unchanged), False on hard failure.
+        """
+        if indexer_episode is None:
+            indexer_episode = self.idxr.episode(self.show, season or self.season, episode or self.episode)
         if not indexer_episode:
             if self.name:
                 logger.debug("{} timed out, but we have enough info from other sources, allowing the error".format(self.indexer_name))
@@ -1768,6 +1800,19 @@ class TVEpisode(object):
 
             logger.error("{} timed out, unable to create the episode".format(self.indexer_name))
             return False
+
+        # Skip no-op rewrites when TVDB lastUpdated has not advanced (Phase 2 call reduction)
+        remote_last_updated = try_int(indexer_episode.get("lastUpdated"), 0)
+        if not force_all and remote_last_updated and self.last_update_indexer and remote_last_updated <= int(self.last_update_indexer or 0):
+            logger.debug(
+                "{id}: Skipping indexer apply for {ep}; lastUpdated {remote} <= stored {local}".format(
+                    id=self.show.indexerid,
+                    ep=episode_num(season or self.season, episode or self.episode),
+                    remote=remote_last_updated,
+                    local=self.last_update_indexer,
+                )
+            )
+            return True
 
         if not indexer_episode.get("episodeName"):
             if self.name:
@@ -1843,6 +1888,12 @@ class TVEpisode(object):
             if self.indexerid != -1:
                 self.delete_episode()
             return False
+
+        if remote_last_updated:
+            self.last_update_indexer = remote_last_updated
+        elif not self.last_update_indexer:
+            # No TVDB timestamp; stamp local apply time so future empty lastUpdated does not thrash
+            self.last_update_indexer = int(time.time())
 
         if not os.path.isdir(self.show.get_location) and not settings.CREATE_MISSING_SHOW_DIRS and not settings.ADD_SHOWS_WO_DIR:
             logger.info(f"The show dir {self.show.get_location} is missing, not bothering to change the episode statuses since it'd probably be invalid")
@@ -2055,7 +2106,7 @@ class TVEpisode(object):
                             "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
                             "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
                             "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                            "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?"
+                            "absolute_number = ?, version = ?, release_group = ?, last_update_indexer = ? WHERE episode_id = ?"
                         ),
                         [
                             self.indexerid,
@@ -2079,6 +2130,7 @@ class TVEpisode(object):
                             self.absolute_number,
                             self.version,
                             self.release_group,
+                            int(self.last_update_indexer or 0),
                             ep_id,
                         ],
                     ]
@@ -2089,7 +2141,7 @@ class TVEpisode(object):
                         "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
                         "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
                         "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?"
+                        "absolute_number = ?, version = ?, release_group = ?, last_update_indexer = ? WHERE episode_id = ?"
                     ),
                     [
                         self.indexerid,
@@ -2112,6 +2164,7 @@ class TVEpisode(object):
                         self.absolute_number,
                         self.version,
                         self.release_group,
+                        int(self.last_update_indexer or 0),
                         ep_id,
                     ],
                 ]
@@ -2121,9 +2174,9 @@ class TVEpisode(object):
                     (
                         "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
                         "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
-                        "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
+                        "release_name, is_proper, showid, season, episode, absolute_number, version, release_group, last_update_indexer) VALUES "
                         "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
-                        ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
+                        ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
                     ),
                     [
                         self.show.indexerid,
@@ -2150,6 +2203,7 @@ class TVEpisode(object):
                         self.absolute_number,
                         self.version,
                         self.release_group,
+                        int(self.last_update_indexer or 0),
                     ],
                 ]
         except OperationalError as error:
@@ -2185,6 +2239,7 @@ class TVEpisode(object):
             "absolute_number": self.absolute_number,
             "version": self.version,
             "release_group": self.release_group,
+            "last_update_indexer": int(self.last_update_indexer or 0),
         }
 
         control_value_dict = {"showid": self.show.indexerid, "season": self.season, "episode": self.episode}

@@ -21,7 +21,7 @@ class ShowUpdater(object):
 
         self.amActive = True
         try:
-            logger.info("ShowUpdater for tvdb Api V3 starting")
+            logger.info("ShowUpdater for TVDB API V4 starting")
 
             cache_db_con = db.DBConnection("cache.db")
             for index, provider in sickchill.indexer:
@@ -30,24 +30,29 @@ class ShowUpdater(object):
                 network_timezones.update_network_dict()
                 update_timestamp = int(time.time())
                 updated_shows = []
+                http_calls_note = ""
 
                 if last_update:
                     logger.info("Last update: {}".format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(last_update))))
-
-                    current_check = update_timestamp
-                    while current_check >= last_update:
-                        try:
-                            TvdbData = sickchill.indexer[1].updates(fromTime=current_check - self.seven_days, toTime=current_check)
-                            TvdbData.series()
-                            updated_shows.extend([d["id"] for d in TvdbData.series])
-                        except Exception as error:
-                            logger.info(error)
-
-                        current_check -= self.seven_days - 1
+                    try:
+                        # V4: single since= window with pagination (no 7-day chunking required)
+                        TvdbData = sickchill.indexer[1].updates(fromTime=last_update, toTime=update_timestamp)
+                        TvdbData.series()
+                        updated_shows = [d["id"] for d in TvdbData.series]
+                        http_calls_note = f"; update feed reported {len(updated_shows)} series id(s)"
+                        logger.info(f"TVDB v4 update feed: {len(updated_shows)} series need refresh{http_calls_note}")
+                    except Exception as error:
+                        logger.info(f"TVDB v4 updates failed, falling back to full show list: {error}")
+                        last_update = 0  # force full pass below
+                        updated_shows = []
                 else:
                     logger.info(_("No last update time from the cache, so we do a full update for all shows"))
 
                 pi_list = []
+                full_updates = 0
+                refreshes = 0
+                skipped = 0
+
                 for cur_show in settings.show_list:
                     if settings.stopping or settings.restarting:
                         break
@@ -64,15 +69,26 @@ class ShowUpdater(object):
                             ).days < settings.ENDED_SHOWS_UPDATE_INTERVAL:
                                 skip_update = True
 
-                        # When last_update is not set from the cache or the show was in the tvdb updated list we update the show
+                        # Full indexer update when no last_update cache or show is in the v4 updated list
                         if not last_update or (cur_show.indexerid in updated_shows and not skip_update):
+                            # Drop in-memory episode cache so this pass fetches fresh lists
+                            try:
+                                cur_show.idxr.clear_episode_cache(cur_show.indexerid)
+                            except Exception:
+                                pass
                             pi_list.append(cur_show.update(force))
+                            full_updates += 1
                         elif not skip_update:
-                            # Temporarily use the same duration for paused as ended
+                            # Disk refresh only — no indexer episode re-pull
                             pi_list.append(cur_show.refresh(force))
+                            refreshes += 1
+                        else:
+                            skipped += 1
 
                     except Exception as error:
                         logger.info(_("Automatic update failed: {error}").format(error=error))
+
+                logger.info(f"ShowUpdater scheduled full updates={full_updates}, refreshes={refreshes}, skipped={skipped}{http_calls_note}")
 
                 ui.ProgressIndicators.setIndicator("dailyUpdate", ui.QueueProgressIndicator("Daily Update", pi_list))
 
