@@ -219,6 +219,10 @@ class TVDBv4ClientTests(unittest.TestCase):
                 self.assertEqual(result["id"], 1)
                 self.assertEqual(request.call_count, 2)
                 login.assert_called()
+                first_headers = request.call_args_list[0].kwargs.get("headers") or {}
+                second_headers = request.call_args_list[1].kwargs.get("headers") or {}
+                self.assertEqual(first_headers.get("Authorization"), "Bearer stale")
+                self.assertEqual(second_headers.get("Authorization"), "Bearer fresh")
 
     def test_login_requires_apikey(self):
         client = TVDBv4Client("")
@@ -235,8 +239,8 @@ class TVDBv4ClientTests(unittest.TestCase):
             "status": "success",
             "data": {
                 "episodes": [{"id": 1, "number": 1, "seasonNumber": 1, "name": "One"}],
-                "links": {"next": 1},
             },
+            "links": {"next": 1},
         }
 
         page1 = MagicMock()
@@ -247,8 +251,8 @@ class TVDBv4ClientTests(unittest.TestCase):
             "status": "success",
             "data": {
                 "episodes": [{"id": 2, "number": 2, "seasonNumber": 1, "name": "Two"}],
-                "links": {},
             },
+            "links": {},
         }
 
         with patch.object(self.client._session, "request", side_effect=[page0, page1]) as request:
@@ -259,7 +263,69 @@ class TVDBv4ClientTests(unittest.TestCase):
             self.assertEqual(request.call_count, 2)
             # Second request must use page from page0 links.next (value 1)
             second_params = request.call_args_list[1].kwargs.get("params") or {}
-            self.assertEqual(int(second_params.get("page")), int(page0.json.return_value["data"]["links"]["next"]))
+            self.assertEqual(int(second_params.get("page")), 1)
+
+    @patch.object(TVDBv4Client, "_headers", return_value={"Authorization": "Bearer t"})
+    def test_429_retries_then_succeeds(self, _headers):
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+        rate_limited.content = b"{}"
+        rate_limited.headers = {"Retry-After": "1"}
+        rate_limited.json.return_value = {"status": "failure", "message": "rate limit"}
+
+        ok = MagicMock()
+        ok.status_code = 200
+        ok.content = b"{}"
+        ok.headers = {}
+        ok.json.return_value = {"status": "success", "data": {"id": 7}}
+
+        with patch.object(self.client._session, "request", side_effect=[rate_limited, ok]) as request:
+            with patch("sickchill.show.indexers.tvdb_v4_client.time.sleep") as sleep:
+                result = self.client.series(7)
+                self.assertEqual(result["id"], 7)
+                self.assertEqual(request.call_count, 2)
+                sleep.assert_called_with(1.0)
+
+    @patch.object(TVDBv4Client, "_headers", return_value={"Authorization": "Bearer t"})
+    def test_all_updates_since_follows_links_next(self, _headers):
+        page0 = MagicMock()
+        page0.status_code = 200
+        page0.headers = {}
+        page0.content = b"{}"
+        page0.json.return_value = {
+            "status": "success",
+            "data": [{"id": 1, "recordType": "series"}],
+            "links": {"next": 1},
+        }
+        page1 = MagicMock()
+        page1.status_code = 200
+        page1.headers = {}
+        page1.content = b"{}"
+        page1.json.return_value = {
+            "status": "success",
+            "data": [{"id": 2, "recordType": "series"}],
+            "links": {},
+        }
+        with patch.object(self.client._session, "request", side_effect=[page0, page1]) as request:
+            updates = self.client.all_updates_since(1000)
+            self.assertEqual([u["id"] for u in updates], [1, 2])
+            self.assertEqual(request.call_count, 2)
+            second_params = request.call_args_list[1].kwargs.get("params") or {}
+            self.assertEqual(int(second_params.get("page")), 1)
+
+
+class ImageApiReturnTypeTests(unittest.TestCase):
+    def test_call_images_api_failure_respects_multiple(self):
+        tvdb = TVDB()
+        show = MagicMock()
+        with patch.object(tvdb, "series", side_effect=RuntimeError("boom")):
+            self.assertEqual(tvdb.series_poster_url(show, multiple=False), "")
+            self.assertEqual(tvdb.series_poster_url(show, multiple=True), [])
+
+    def test_episode_image_url_failure_returns_empty_string(self):
+        tvdb = TVDB()
+        with patch.object(tvdb, "episode", side_effect=RuntimeError("boom")):
+            self.assertEqual(tvdb.episode_image_url(MagicMock()), "")
 
 
 class UpdatesCompatTests(unittest.TestCase):

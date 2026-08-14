@@ -227,6 +227,11 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             censor_log=True,
         )
         settings.TVDB_V4_PIN = os.environ.get("TVDB_V4_PIN") or check_setting_str(settings.CFG, "General", "tvdb_v4_pin", "", censor_log=True)
+        # Env values skip check_setting_str's censor_log path — always register final credentials.
+        if settings.TVDB_V4_APIKEY:
+            logger.censored_items[("General", "tvdb_v4_apikey")] = settings.TVDB_V4_APIKEY
+        if settings.TVDB_V4_PIN:
+            logger.censored_items[("General", "tvdb_v4_pin")] = settings.TVDB_V4_PIN
 
         settings.TRASH_REMOVE_SHOW = check_setting_bool(settings.CFG, "General", "trash_remove_show")
         settings.TRASH_ROTATE_LOGS = check_setting_bool(settings.CFG, "General", "trash_rotate_logs")

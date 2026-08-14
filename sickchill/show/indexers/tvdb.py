@@ -569,22 +569,38 @@ class TVDB(Indexer):
         # Legacy relative banner path fallback
         return f"https://artworks.thetvdb.com/banners/{re.sub(r'^_cache/', '', location)}"
 
-    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError, IndexError, TypeError, Exception), image_api=True)
-    def __call_images_api(self, show, artwork_type, multiple=False):
-        series = self.series(show)
-        if not series:
-            return [] if multiple else ""
+    def __call_images_api(self, show, artwork_type, multiple=False, thumb=False):
+        """
+        Return artwork URL(s). On failure return [] when multiple=True else "" —
+        do not use ExceptionDecorator(default_return="") which becomes [] via `or []`.
+        """
+        empty = [] if multiple else ""
+        try:
+            series = self.series(show)
+            if not series:
+                return empty
 
-        images = [a for a in (series.artworks or []) if isinstance(a, dict) and a.get("type") == artwork_type]
-        images.sort(key=lambda a: a.get("score") or 0, reverse=True)
-        if not images:
-            return [] if multiple else ""
+            images = [a for a in (series.artworks or []) if isinstance(a, dict) and a.get("type") == artwork_type]
+            images.sort(key=lambda a: a.get("score") or 0, reverse=True)
+            if not images:
+                return empty
 
-        urls = [self.complete_image_url(img.get("image") or img.get("thumbnail") or "") for img in images]
-        urls = [u for u in urls if u]
-        if not urls:
-            return [] if multiple else ""
-        return urls if multiple else urls[0]
+            urls = []
+            for img in images:
+                if thumb:
+                    location = img.get("thumbnail") or img.get("image") or ""
+                else:
+                    location = img.get("image") or img.get("thumbnail") or ""
+                url = self.complete_image_url(location)
+                if url:
+                    urls.append(url)
+            if not urls:
+                return empty
+            return urls if multiple else urls[0]
+        except Exception as error:
+            logger.debug(f"Could not load artwork type {artwork_type} for show: {error}")
+            logger.debug(traceback.format_exc())
+            return empty
 
     @staticmethod
     @ExceptionDecorator()
@@ -593,33 +609,38 @@ class TVDB(Indexer):
         return []
 
     def series_poster_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, ARTWORK_TYPE_POSTER, multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_POSTER, multiple=multiple, thumb=thumb)
 
     def series_banner_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, ARTWORK_TYPE_BANNER, multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_BANNER, multiple=multiple, thumb=thumb)
 
     def series_fanart_url(self, show, thumb=False, multiple=False):
-        return self.__call_images_api(show, ARTWORK_TYPE_BACKGROUND, multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_BACKGROUND, multiple=multiple, thumb=thumb)
 
     def season_poster_url(self, show, season, thumb=False, multiple=False):
         # Show-level art only for now (no per-season filtering required).
         # Prefer season-type artwork when present on the series payload; else series poster.
-        result = self.__call_images_api(show, ARTWORK_TYPE_SEASON_POSTER, multiple=multiple)
+        result = self.__call_images_api(show, ARTWORK_TYPE_SEASON_POSTER, multiple=multiple, thumb=thumb)
         if result:
             return result
-        return self.__call_images_api(show, ARTWORK_TYPE_POSTER, multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_POSTER, multiple=multiple, thumb=thumb)
 
     def season_banner_url(self, show, season, thumb=False, multiple=False):
         # Show-level art only for now (no per-season id resolution).
-        result = self.__call_images_api(show, ARTWORK_TYPE_SEASON_BANNER, multiple=multiple)
+        result = self.__call_images_api(show, ARTWORK_TYPE_SEASON_BANNER, multiple=multiple, thumb=thumb)
         if result:
             return result
-        return self.__call_images_api(show, ARTWORK_TYPE_BANNER, multiple=multiple)
+        return self.__call_images_api(show, ARTWORK_TYPE_BANNER, multiple=multiple, thumb=thumb)
 
-    @ExceptionDecorator(default_return="", catch=(requests.exceptions.RequestException, KeyError, TypeError, TVDBv4Error))
     def episode_image_url(self, episode):
-        filename = self.episode(episode).get("filename", "")
-        return self.complete_image_url(filename)
+        """Return episode image URL, or "" on failure (never a list)."""
+        try:
+            filename = self.episode(episode).get("filename", "")
+            return self.complete_image_url(filename)
+        except Exception as error:
+            logger.debug(f"Could not load episode image: {error}")
+            logger.debug(traceback.format_exc())
+            return ""
 
     def episode_guide_url(self, show):
         return self.show_url + str(show.indexerid)

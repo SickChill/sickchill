@@ -7,6 +7,7 @@ Purpose-built for sickchill.show.indexers.tvdb — not a full SDK.
 
 from __future__ import annotations
 
+import re
 import threading
 import time
 from typing import Any
@@ -52,6 +53,7 @@ class TVDBv4Client:
         self._token_time = 0.0
         self._lock = threading.Lock()
         self._session = requests.Session()
+        self._last_links: dict = {}
 
     def _login(self) -> None:
         if not self.apikey:
@@ -87,13 +89,28 @@ class TVDBv4Client:
             headers["If-Modified-Since"] = if_modified_since
         return headers
 
+    @staticmethod
+    def _retry_delay_seconds(response: requests.Response, attempt: int) -> float:
+        """Honor Retry-After when present; otherwise exponential backoff (capped)."""
+        retry_after = response.headers.get("Retry-After")
+        if retry_after:
+            try:
+                return max(0.0, float(retry_after))
+            except (TypeError, ValueError):
+                # HTTP-date form is rare for APIs; ignore and fall through
+                pass
+        # attempt 0 → 1s, 1 → 2s, 2 → 4s (cap 10s)
+        return min(10.0, float(2**attempt))
+
     def _request(
         self,
         method: str,
         path: str,
         params: dict | None = None,
         if_modified_since: str | None = None,
-        _retried: bool = False,
+        _auth_retried: bool = False,
+        _transient_attempt: int = 0,
+        max_transient_retries: int = 3,
     ) -> Any:
         url = f"{BASE_URL}{path}"
         try:
@@ -107,16 +124,45 @@ class TVDBv4Client:
         except requests.exceptions.RequestException as error:
             raise TVDBv4Error(str(error)) from error
 
-        if response.status_code == 401 and not _retried:
+        if response.status_code == 401 and not _auth_retried:
             with self._lock:
                 self._token = None
-            return self._request(method, path, params=params, if_modified_since=if_modified_since, _retried=True)
+            return self._request(
+                method,
+                path,
+                params=params,
+                if_modified_since=if_modified_since,
+                _auth_retried=True,
+                _transient_attempt=_transient_attempt,
+                max_transient_retries=max_transient_retries,
+            )
 
         if response.status_code == 304:
             raise TVDBv4NotModified()
 
         if response.status_code == 404:
             return None
+
+        # Retry rate limits and server errors a bounded number of times
+        if response.status_code == 429 or 500 <= response.status_code < 600:
+            if _transient_attempt < max_transient_retries:
+                delay = self._retry_delay_seconds(response, _transient_attempt)
+                logger.debug(f"TVDB v4 {response.status_code} for {path}; retry {_transient_attempt + 1}/{max_transient_retries} after {delay:.1f}s")
+                if delay > 0:
+                    time.sleep(delay)
+                return self._request(
+                    method,
+                    path,
+                    params=params,
+                    if_modified_since=if_modified_since,
+                    _auth_retried=_auth_retried,
+                    _transient_attempt=_transient_attempt + 1,
+                    max_transient_retries=max_transient_retries,
+                )
+            raise TVDBv4Error(
+                f"request to {path} failed after retries (HTTP {response.status_code})",
+                response=response,
+            )
 
         data = response.json() if response.content else {}
         if response.status_code != 200 or data.get("status") != "success":
@@ -125,13 +171,17 @@ class TVDBv4Client:
                 response=response,
             )
 
-        # Attach last-modified for callers that want to cache IMS (phase 2).
+        # Attach last-modified / pagination links for callers (links are often top-level on V4).
         result = data.get("data")
+        links = data.get("links") or {}
+        last_modified = response.headers.get("Last-Modified")
         if isinstance(result, dict):
-            last_modified = response.headers.get("Last-Modified")
+            result = dict(result)
             if last_modified:
-                result = dict(result)
                 result["_http_last_modified"] = last_modified
+            if links and "links" not in result:
+                result["links"] = links
+        self._last_links = links if isinstance(links, dict) else {}
         return result
 
     def _get(self, path: str, params: dict | None = None, if_modified_since: str | None = None) -> Any:
@@ -191,11 +241,44 @@ class TVDBv4Client:
             page += 1
         return episodes
 
-    def updates_since(self, since: int, entity_type: str | None = "series", page: int = 0) -> list:
+    @staticmethod
+    def _extract_update_records(result) -> list:
+        if result is None:
+            return []
+        if isinstance(result, list):
+            return result
+        if isinstance(result, dict):
+            for key in ("updates", "series", "episodes"):
+                if isinstance(result.get(key), list):
+                    return result[key]
+        return []
+
+    @staticmethod
+    def _next_page_value(links: dict | None, current_page: int):
+        """Return next page index/token from links.next, or None if finished."""
+        if not links:
+            return None
+        nxt = links.get("next")
+        if nxt in (None, "", False):
+            return None
+        if isinstance(nxt, int):
+            return nxt
+        if isinstance(nxt, str):
+            if nxt.isdigit():
+                return int(nxt)
+            # URL with page= query
+            match = re.search(r"[?&]page=(\d+)", nxt)
+            if match:
+                return int(match.group(1))
+            # Non-numeric next token — advance by one from current
+            return current_page + 1
+        return current_page + 1
+
+    def updates_since(self, since: int, entity_type: str | None = "series", page: int = 0) -> tuple[list, dict]:
         """
         GET /updates?since={unix}[&type=series][&page=n]
 
-        Returns list of update records (shape varies; callers should be defensive).
+        Returns (update_records, links) so callers can follow links.next for pagination.
         """
         params: dict[str, Any] = {"since": int(since)}
         if entity_type:
@@ -204,28 +287,27 @@ class TVDBv4Client:
             params["page"] = page
 
         result = self._get("/updates", params=params)
-        if result is None:
-            return []
-        if isinstance(result, list):
-            return result
-        # Some responses nest under a key
-        if isinstance(result, dict):
-            for key in ("updates", "series", "episodes"):
-                if isinstance(result.get(key), list):
-                    return result[key]
-        return []
+        records = self._extract_update_records(result)
+        links = {}
+        if isinstance(result, dict) and isinstance(result.get("links"), dict):
+            links = result["links"]
+        elif getattr(self, "_last_links", None):
+            links = dict(self._last_links)
+        return records, links
 
     def all_updates_since(self, since: int, entity_type: str | None = "series", max_pages: int = 50) -> list:
-        """Collect updates across pages until empty or max_pages."""
+        """Collect updates across pages while links.next is present (capped by max_pages)."""
         collected: list = []
         page = 0
-        while page < max_pages:
-            batch = self.updates_since(since, entity_type=entity_type, page=page)
+        pages_fetched = 0
+        while pages_fetched < max_pages:
+            batch, links = self.updates_since(since, entity_type=entity_type, page=page)
+            pages_fetched += 1
             if not batch:
                 break
             collected.extend(batch)
-            if len(batch) < 100:
-                # Heuristic: short page usually means last page
+            next_page = self._next_page_value(links, page)
+            if next_page is None:
                 break
-            page += 1
+            page = next_page
         return collected

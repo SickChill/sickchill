@@ -242,7 +242,8 @@ def list_media_files(path):
         return []
 
     files = []
-    for entry in sorted(os.listdir(path), key=str.lower):
+    # Case-insensitive primary order, then case-sensitive for deterministic ties (A/a).
+    for entry in sorted(os.listdir(path), key=lambda name: (name.lower(), name)):
         full_entry = os.path.join(path, entry)
 
         # if it's a folder do it recursively
