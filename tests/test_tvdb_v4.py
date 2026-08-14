@@ -667,7 +667,7 @@ class MassActionSqlCollectionTests(unittest.TestCase):
         # Simulated get_sql return (matches tv.py UPDATE branch structure)
         sql_unit = [
             ("UPDATE tv_episodes SET name = ? WHERE episode_id = ?"),
-            [ "エリスのゴブリン討伐", 2868 ],
+            ["エリスのゴブリン討伐", 2868],
         ]
         self.assertEqual(len(sql_unit), 2)
         self.assertIsInstance(sql_unit[0], (str, tuple))
@@ -792,7 +792,7 @@ class TVDBSearchMappingTests(unittest.TestCase):
         with patch.object(client, "_get", return_value=[]) as mock_get:
             client.search("delicious in dungeon", language="en")
             mock_get.assert_called_once()
-            _path, = mock_get.call_args[0][:1] if mock_get.call_args[0] else (None,)
+            (_path,) = mock_get.call_args[0][:1] if mock_get.call_args[0] else (None,)
             params = mock_get.call_args[0][1] if len(mock_get.call_args[0]) > 1 else mock_get.call_args[1].get("params")
             if params is None:
                 params = mock_get.call_args.kwargs.get("params") or {}

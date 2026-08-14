@@ -430,10 +430,7 @@ class TVDB(Indexer):
 
         # No language requested, or all translated paths failed — primary/original names
         if candidates:
-            logger.debug(
-                f"TVDB v4 falling back to untranslated episodes for {show_id} "
-                f"(tried {', '.join(candidates)}; errors: {'; '.join(errors) or 'none'})"
-            )
+            logger.debug(f"TVDB v4 falling back to untranslated episodes for {show_id} (tried {', '.join(candidates)}; errors: {'; '.join(errors) or 'none'})")
         return self.client.all_episodes(show_id, season_type, language=None)
 
     @ExceptionDecorator()
@@ -540,10 +537,7 @@ class TVDB(Indexer):
                 self._episode_index_cache[(int(show.indexerid), season_type, show_lang, int(s), int(e))] = ep
             # Bound after insert so a newly cached show cannot leave the map oversized
             self._prune_episode_cache()
-            logger.debug(
-                f"TVDB v4 cached {len(mapped)} episode(s) for show {show.indexerid} "
-                f"({season_type}, lang={show_lang or 'primary'})"
-            )
+            logger.debug(f"TVDB v4 cached {len(mapped)} episode(s) for show {show.indexerid} ({season_type}, lang={show_lang or 'primary'})")
             result = mapped
         else:
             result = cached[1]
