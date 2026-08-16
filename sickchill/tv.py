@@ -112,6 +112,8 @@ class TVShow(object):
     subtitles = DirtySetter(int(settings.SUBTITLES_DEFAULT))
     subtitles_sc_metadata = DirtySetter(0)
     dvdorder = DirtySetter(0)
+    # V4 episode list path segment: default, dvd, absolute, or platform type slug from TVDB
+    seasons_order = DirtySetter("default")
     lang = DirtySetter("en")
     last_update_indexer = DirtySetter(1)
     rls_ignore_words = DirtySetter("")
@@ -225,6 +227,30 @@ class TVShow(object):
     @property
     def sort_name(self):
         return helpers.sortable_name(self.name)
+
+    @property
+    def resolved_seasons_order(self) -> str:
+        """V4 episode-list season type slug for this show."""
+        order = (self.seasons_order or "").strip().lower()
+        if order:
+            return order
+        return "dvd" if self.dvdorder else "default"
+
+    def apply_seasons_order(self, order: str | None) -> bool:
+        """
+        Set seasons_order and keep dvdorder in sync for legacy paths.
+        Returns True if the value changed.
+        """
+        new_order = (order or "default").strip().lower() or "default"
+        # TVDB "official" is aired order; store as default (path slug used for episodes)
+        if new_order == "official":
+            new_order = "default"
+        previous = self.resolved_seasons_order
+        if previous == "official":
+            previous = "default"
+        self.seasons_order = new_order
+        self.dvdorder = 1 if new_order == "dvd" else 0
+        return previous != new_order
 
     @property
     def idxr(self):
@@ -893,6 +919,15 @@ class TVShow(object):
             self.scene = int(sql_results[0]["scene"] or 0)
             self.subtitles = int(sql_results[0]["subtitles"] or 0)
             self.dvdorder = int(sql_results[0]["dvdorder"] or 0)
+            # seasons_order: prefer column; fall back from legacy dvdorder for pre-migration rows
+            try:
+                raw_order = sql_results[0]["seasons_order"]
+            except (KeyError, IndexError, TypeError):
+                raw_order = None
+            if raw_order is None or (isinstance(raw_order, str) and not raw_order.strip()):
+                self.seasons_order = "dvd" if self.dvdorder else "default"
+            else:
+                self.seasons_order = str(raw_order).strip().lower() or "default"
             self.quality = int(sql_results[0]["quality"] or UNKNOWN)
             self.season_folders = int(not int(sql_results[0]["flatten_folders"] or 0))
             self.paused = int(sql_results[0]["paused"] or 0)
@@ -1310,6 +1345,7 @@ class TVShow(object):
             "sports": self.sports,
             "subtitles": self.subtitles,
             "dvdorder": self.dvdorder,
+            "seasons_order": (self.seasons_order or "default").strip().lower() or "default",
             "startyear": self.startyear,
             "lang": self.lang,
             "imdb_id": self.imdb_id,

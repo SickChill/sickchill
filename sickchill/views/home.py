@@ -1055,6 +1055,22 @@ class Home(WebRoot):
             },
         )
 
+        # Season order label: same series-specific TVDB names as editShow (Aired Order, platform titles, …)
+        seasons_order_slug = getattr(show_obj, "resolved_seasons_order", None) or getattr(show_obj, "seasons_order", None)
+        if not seasons_order_slug:
+            seasons_order_slug = "dvd" if show_obj.dvdorder else "default"
+        if seasons_order_slug == "official":
+            seasons_order_slug = "default"
+        seasons_order_label = seasons_order_slug
+        try:
+            seasons_order_label = show_obj.idxr.seasons_order_label(show_obj.indexerid, seasons_order_slug)
+        except Exception as error:
+            logger.debug(f"Could not resolve seasons_order label for {show_obj.indexerid}: {error}")
+            try:
+                seasons_order_label = show_obj.idxr._season_type_display_name(seasons_order_slug)
+            except Exception:
+                pass
+
         return t.render(
             submenu=submenu,
             show_location=show_location,
@@ -1071,6 +1087,8 @@ class Home(WebRoot):
             xem_numbering=get_xem_numbering_for_show(indexerid, indexer),
             scene_absolute_numbering=get_scene_absolute_numbering_for_show(indexerid, indexer),
             xem_absolute_numbering=get_xem_absolute_numbering_for_show(indexerid, indexer),
+            seasons_order_slug=seasons_order_slug,
+            seasons_order_label=seasons_order_label,
             title=show_obj.name,
             controller="home",
             action="displayShow",
@@ -1108,6 +1126,8 @@ class Home(WebRoot):
         banner = None
         fanart = None
         poster = None
+        seasons_order = None
+        dvdorder = False
 
         if not direct_call:
             # Original + safe image handling
@@ -1123,6 +1143,7 @@ class Home(WebRoot):
                 whitelist = self.get_body_argument("whitelist", default=None)
                 default_ep_status = self.get_body_argument("defaultEpStatus", default=None)
                 dvdorder = config.checkbox_to_value(self.get_body_argument("dvdorder", default="False"))
+                seasons_order = self.get_body_argument("seasons_order", default=None)
                 exceptions_list = self.get_body_argument("exceptions_list", default=None)
                 rls_ignore_words = self.get_body_argument("rls_ignore_words", default=None)
                 rls_prefer_words = self.get_body_argument("rls_prefer_words", default=None)
@@ -1203,6 +1224,18 @@ class Home(WebRoot):
                         ui.notifications.error(_("Unable to retrieve Fansub Groups from AniDB."))
                         logger.debug(f"Unable to retrieve Fansub Groups from AniDB. Error is {error}")
 
+            # Available TVDB season order types for this series (1-day cache in cache.db)
+            season_order_types = []
+            try:
+                season_order_types = show_obj.idxr.series_season_types(show_obj.indexerid)
+            except Exception as error:
+                logger.debug(f"Could not load season order types for {show_obj.indexerid}: {error}")
+            if not season_order_types:
+                season_order_types = [
+                    {"slug": "default", "name": "Aired Order"},
+                    {"slug": "dvd", "name": "DVD Order"},
+                ]
+
             if show_obj.is_anime:
                 return t.render(
                     show=show_obj,
@@ -1211,6 +1244,7 @@ class Home(WebRoot):
                     groups=groups,
                     whitelist=whitelist,
                     blacklist=blacklist,
+                    season_order_types=season_order_types,
                     title=_("Edit Show"),
                     header=_("Edit Show"),
                     controller="home",
@@ -1221,6 +1255,7 @@ class Home(WebRoot):
                 show=show_obj,
                 scene_exceptions=show_obj.exceptions,
                 seasonResults=seasonResults,
+                season_order_types=season_order_types,
                 title=_("Edit Show"),
                 header=_("Edit Show"),
                 controller="home",
@@ -1241,9 +1276,18 @@ class Home(WebRoot):
         if not indexer_lang or indexer_lang not in show_obj.idxr.languages:
             indexer_lang = show_obj.lang
 
-        # if we changed the language then kick off an update
+        # if we changed the language or season order then kick off a full update
         do_update = indexer_lang != show_obj.lang
         do_update_scene_numbering = scene != show_obj.scene or anime != show_obj.anime
+        seasons_order_changed = False
+        if not direct_call:
+            # Prefer seasons_order select; fall back to legacy dvdorder checkbox if present
+            if seasons_order is not None and str(seasons_order).strip():
+                seasons_order_changed = show_obj.apply_seasons_order(seasons_order)
+            elif "dvdorder" in self.request.arguments:
+                seasons_order_changed = show_obj.apply_seasons_order("dvd" if dvdorder else "default")
+            if seasons_order_changed:
+                do_update = True
 
         if not any_qualities:
             any_qualities = []
@@ -1389,7 +1433,7 @@ class Home(WebRoot):
 
             if not direct_call:
                 show_obj.lang = indexer_lang
-                show_obj.dvdorder = dvdorder
+                # seasons_order / dvdorder already applied above when present
                 location = self.get_body_argument("location", show_obj.get_location)
 
             location = os.path.normpath(location)
@@ -1422,6 +1466,10 @@ class Home(WebRoot):
 
         # force the update
         if do_update:
+            try:
+                show_obj.idxr.clear_episode_cache(show_obj.indexerid)
+            except Exception:
+                pass
             error, show = show_obj.update(force=True)
             if error:
                 errors.append(_("Unable to update show: {error}").format(error=error))
@@ -1450,6 +1498,15 @@ class Home(WebRoot):
             ui.notifications.error(
                 _("{num_errors:d} error{plural} while saving changes:").format(num_errors=len(errors), plural="" if len(errors) == 1 else "s"),
                 "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
+            )
+        elif seasons_order_changed:
+            try:
+                order_label = show_obj.idxr.seasons_order_label(show_obj.indexerid, show_obj.resolved_seasons_order)
+            except Exception:
+                order_label = show_obj.resolved_seasons_order
+            ui.notifications.message(
+                _("Season order updated"),
+                _("Episodes reloaded using {order}.").format(order=order_label),
             )
 
         return self.redirect("/home/displayShow?show=" + show_id + "&from_edit=1")

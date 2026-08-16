@@ -344,7 +344,12 @@
                                     <div class="col-md-12">
                                         <select id="gui_language" name="gui_language" class="form-control input-sm input250">
                                             <option value="" ${selected(settings.GUI_LANG == "")}>${_('System Language')}</option>
-                                            % for lang in [language for language in os.listdir(sickchill.init_helpers.locale_dir) if '_' in language]:
+                                            <%
+                                                _gui_langs = [language for language in os.listdir(sickchill.init_helpers.locale_dir) if '_' in language]
+                                                # Alphabetical by display name (not filesystem / locale-code order)
+                                                _gui_langs.sort(key=lambda code: (lang_name(code) or code).casefold())
+                                            %>
+                                            % for lang in _gui_langs:
                                                 <option value="${lang}" ${selected(settings.GUI_LANG == lang)}>${lang_name(lang)}</option>
                                             % endfor
                                         </select>

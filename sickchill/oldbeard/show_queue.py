@@ -439,6 +439,8 @@ class QueueItemAdd(ShowQueueItem):
             self.show.anime = self.anime if self.anime is not None else settings.ANIME_DEFAULT
             self.show.scene = self.scene if self.scene is not None else settings.SCENE_DEFAULT
             self.show.paused = self.paused if self.paused is not None else False
+            # New shows always start with aired/default season order (editShow to change)
+            self.show.apply_seasons_order("default")
 
             # set up default new/missing episode status
             logger.info(_("Setting all episodes to the specified default status: {default_status}").format(default_status=self.default_status))

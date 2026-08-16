@@ -143,6 +143,53 @@ def _search_result_overview(item: dict, language: str | None) -> str:
     return (item.get("overview") or "").strip()
 
 
+def _raw_search_score(item: dict) -> float:
+    """
+    Extract a numeric score from a V4 search hit.
+
+    Search payloads may include popularity ``score``, Algolia-style ``_score``,
+    or omit both (rely on result order). Returns 0.0 when nothing usable is present.
+    """
+    if not isinstance(item, dict):
+        return 0.0
+    for key in ("score", "_score", "relevance", "weight"):
+        val = item.get(key)
+        if val is None or val == "":
+            continue
+        try:
+            return float(val)
+        except (TypeError, ValueError):
+            continue
+    return 0.0
+
+
+def _normalize_search_scores(mapped: list) -> list:
+    """
+    Turn raw scores into 0–100 integers for UI sort/display.
+
+    - If any raw score > 0: scale each as percent of the max in this result set.
+    - If all raw scores are 0: use reverse list position (API already ranks best first).
+    """
+    if not mapped:
+        return mapped
+    raw_scores = []
+    for item in mapped:
+        try:
+            raw_scores.append(float(item.get("score") or 0))
+        except (TypeError, ValueError):
+            raw_scores.append(0.0)
+    max_raw = max(raw_scores) if raw_scores else 0.0
+    n = len(mapped)
+    for i, item in enumerate(mapped):
+        if max_raw > 0:
+            pct = round(100.0 * raw_scores[i] / max_raw)
+        else:
+            # Preserve API ranking: first hit ≈ 100, later hits lower
+            pct = round(100.0 * (n - i) / n) if n else 0
+        item["score"] = max(0, min(100, pct))
+    return mapped
+
+
 class _SeriesResult:
     """
     Attribute-access adapter over a v4 /series/{id}/extended response.
@@ -510,12 +557,181 @@ class TVDB(Indexer):
             logger.debug(traceback.format_exc())
         return None
 
+    @staticmethod
+    def resolve_season_type(show) -> str:
+        """V4 path segment for episode lists: seasons_order, else legacy dvdorder."""
+        if hasattr(show, "resolved_seasons_order"):
+            return show.resolved_seasons_order
+        raw = getattr(show, "seasons_order", None)
+        if isinstance(raw, str) and raw.strip():
+            return raw.strip().lower()
+        return "dvd" if getattr(show, "dvdorder", False) else "default"
+
+    # Cache payload format version (bump when label/dedupe rules change so stale rows refetch)
+    _SEASON_TYPES_CACHE_VERSION = 3
+
+    # V4 path slugs that both mean aired order on the site; store/API path uses "default"
+    _SEASON_TYPE_AIRED_SLUGS = frozenset({"default", "official"})
+
+    def seasons_order_label(self, series_id, slug: str | None = None) -> str:
+        """
+        TVDB display name for a stored seasons_order slug (editShow / displayShow).
+
+        Labels are series-specific: e.g. slug ``alternate`` may show as BBC iPlayer
+        on one show and a different platform name on another — never hard-map alternate.
+        """
+        slug = (slug or "default").strip().lower() or "default"
+        if slug == "official":
+            slug = "default"
+        for item in self.series_season_types(series_id) or []:
+            if item.get("slug") == slug:
+                return item.get("name") or self._season_type_display_name(slug)
+        return self._season_type_display_name(slug)
+
+    def series_season_types(self, series_id, use_cache: bool = True) -> list[dict]:
+        """
+        Available season order types for a series (editShow picker).
+
+        Returns list of {slug, name}:
+          - slug: V4 path / DB value (default, dvd, absolute, alternate, …)
+          - name: TVDB display string for *this* series (Aired Order, Absolute Order,
+            or a platform title such as BBC iPlayer / Netflix when that is the named order)
+        Uses cache.db for 1 day when use_cache=True.
+        """
+        import json
+        import time as _time
+
+        from sickchill.oldbeard import db as sc_db
+
+        series_id = int(series_id)
+        cache_ttl = 24 * 60 * 60
+        cache_db = sc_db.DBConnection("cache.db")
+        try:
+            cache_db.action("CREATE TABLE IF NOT EXISTS tvdb_season_types (indexer_id INTEGER PRIMARY KEY, payload TEXT, last_refreshed INTEGER)")
+        except Exception:
+            pass
+
+        if use_cache:
+            try:
+                rows = cache_db.select(
+                    "SELECT payload, last_refreshed FROM tvdb_season_types WHERE indexer_id = ?",
+                    [series_id],
+                )
+                if rows:
+                    last = int(rows[0]["last_refreshed"] or 0)
+                    if _time.time() - last < cache_ttl:
+                        envelope = json.loads(rows[0]["payload"] or "{}")
+                        if isinstance(envelope, dict) and envelope.get("v") == self._SEASON_TYPES_CACHE_VERSION:
+                            data = envelope.get("types") or []
+                            if isinstance(data, list) and data:
+                                return data
+            except Exception as error:
+                logger.debug(f"TVDB season types cache read failed for {series_id}: {error}")
+
+        types = self._fetch_series_season_types(series_id)
+        try:
+            payload = json.dumps({"v": self._SEASON_TYPES_CACHE_VERSION, "types": types})
+            cache_db.action(
+                "INSERT OR REPLACE INTO tvdb_season_types (indexer_id, payload, last_refreshed) VALUES (?, ?, ?)",
+                [series_id, payload, int(_time.time())],
+            )
+        except Exception as error:
+            logger.debug(f"TVDB season types cache write failed for {series_id}: {error}")
+        return types
+
+    @staticmethod
+    def _season_type_display_name(slug: str, api_name: str | None = None) -> str:
+        """UI label: prefer TVDB name/alternateName as returned; generic fallback by slug only."""
+        label = (api_name or "").strip()
+        if label:
+            return label
+        slug_l = (slug or "").strip().lower()
+        # Only when API omitted a name — never invent platform titles (those vary per series)
+        fallback = {
+            "default": "Aired Order",
+            "official": "Aired Order",
+            "dvd": "DVD Order",
+            "absolute": "Absolute Order",
+            "alternate": "Alternate Order",
+            "regional": "Regional Order",
+        }
+        return fallback.get(slug_l, slug_l or "Aired Order")
+
+    def _fetch_series_season_types(self, series_id: int) -> list[dict]:
+        """
+        Build unique {slug, name} list from series.extended seasonTypes.
+
+        - slug: V4 path segment stored in tv_shows.seasons_order (default, dvd, absolute,
+          alternate, regional, or any other type string TVDB returns for the series)
+        - name: TVDB display for this series — prefer alternateName then name
+          (platform-named orders use alternateName, e.g. one show's alternate → "BBC iPlayer",
+          another's alternate → a different service; other slugs may be platform-specific too)
+
+        Only collapse official + default → default (both are aired). Do not merge distinct
+        path slugs: each TVDB type is a separate selectable order.
+        """
+        # slug -> display name from TVDB for this series only
+        by_slug: dict[str, str] = {}
+
+        try:
+            raw = self.client.series_extended(series_id) or {}
+        except TVDBv4Error as error:
+            logger.debug(f"TVDB series_extended for season types failed ({series_id}): {error}")
+            raw = {}
+
+        def _add(slug, api_name=None):
+            if not slug:
+                return
+            slug = str(slug).strip().lower()
+            if not slug:
+                return
+            # Collapse official → default (both aired); keep best display name
+            if slug in self._SEASON_TYPE_AIRED_SLUGS:
+                slug = "default"
+            label = self._season_type_display_name(slug, api_name)
+            if slug not in by_slug:
+                by_slug[slug] = label
+            else:
+                # Prefer a more specific TVDB label over generic fallback / slug
+                existing = by_slug[slug]
+                if api_name and (existing.lower() in (slug, "aired order", "alternate order") or len(str(api_name)) > len(existing)):
+                    by_slug[slug] = str(api_name).strip()
+
+        # Primary: seasonTypes on series.extended (one row per distinct type slug)
+        for item in raw.get("seasonTypes") or []:
+            if not isinstance(item, dict):
+                continue
+            slug = item.get("type")
+            if not slug or not isinstance(slug, str):
+                continue
+            # Prefer alternateName (often the platform/show-specific title), else name
+            label_src = item.get("alternateName") or item.get("name")
+            _add(slug, label_src)
+
+        # Secondary: seasons may reference types not listed on seasonTypes
+        for season in raw.get("seasons") or []:
+            if not isinstance(season, dict):
+                continue
+            st = season.get("type") or season.get("seasonType") or {}
+            if isinstance(st, dict):
+                slug = st.get("type")
+                if slug and isinstance(slug, str):
+                    _add(slug, st.get("alternateName") or st.get("name"))
+
+        if "default" not in by_slug:
+            _add("default", "Aired Order")
+
+        # Well-known types first; any other TVDB type slugs (platform-specific, etc.) after
+        priority = {"default": 0, "dvd": 1, "absolute": 2, "alternate": 3, "regional": 4}
+        ordered = sorted(by_slug.items(), key=lambda kv: (priority.get(kv[0], 50), kv[1].lower(), kv[0]))
+        return [{"slug": slug, "name": name} for slug, name in ordered]
+
     @ExceptionDecorator()
     def episodes(self, show, season=None):
         import time as _time
 
         self._prune_episode_cache()
-        season_type = "dvd" if getattr(show, "dvdorder", False) else "default"
+        season_type = self.resolve_season_type(show)
         # Metadata language from the show (addShows / edit show); drives translated episode titles
         raw_lang = getattr(show, "lang", None)
         show_lang = raw_lang.strip().lower() if isinstance(raw_lang, str) else ""
@@ -554,7 +770,7 @@ class TVDB(Indexer):
         else:
             show = item
 
-        season_type = "dvd" if getattr(show, "dvdorder", False) else "default"
+        season_type = self.resolve_season_type(show)
         raw_lang = getattr(show, "lang", None)
         show_lang = raw_lang.strip().lower() if isinstance(raw_lang, str) else ""
         index_key = (int(show.indexerid), season_type, show_lang, int(season), int(episode))
@@ -608,6 +824,8 @@ class TVDB(Indexer):
                             "firstAired": series.firstAired,
                             "overview": series.overview,
                             "network": series.network,
+                            "score": 100,  # exact id match (0–100 display scale)
+                            "source": "tvdb",
                         }
                     ]
             except Exception:
@@ -662,6 +880,8 @@ class TVDB(Indexer):
                                         "firstAired": series.firstAired,
                                         "overview": series.overview,
                                         "network": series.network,
+                                        "score": 0.0,
+                                        "source": "tvmaze",
                                     }
                                 )
                                 seen_ids.add(tvdb_id)
@@ -699,13 +919,15 @@ class TVDB(Indexer):
                     "firstAired": item.get("first_air_time") or item.get("firstAired") or item.get("year") or "",
                     "overview": _search_result_overview(item, language),
                     "network": item.get("network") or "",
-                    "image_url": item.get("image_url") or item.get("thumbnail") or "",
-                    "score": item.get("score"),
+                    "image_url": item.get("image_url") or item.get("thumbnail") or item.get("poster") or "",
+                    # Raw popularity/relevance; normalized to 0–100 int after mapping
+                    "score": _raw_search_score(item),
                     "status": item.get("status") or "",
                     "year": item.get("year") or "",
+                    "source": item.get("source") or "tvdb",
                 }
             )
-        return mapped
+        return _normalize_search_scores(mapped)
 
     @property
     def languages(self):

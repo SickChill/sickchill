@@ -4142,39 +4142,46 @@ const SICKCHILL = {
             const buildTable = function (shows) {
                 let table
                     = '<div class="row">'
-                        + '<div class="col-lg-6 col-md-12">'
+                        + '<div class="col-lg-10 col-md-12">'
                         + '<table class="sickchillTable new-show-table tablesorter">'
                         + '<thead>'
                         + '<tr>'
                         + '<th></th>'
                         + '<th>Show Name</th>'
+                        + '<th>Network</th>'
                         + '<th>Premiere</th>'
+                        + '<th>Score</th>'
                         + '<th>Indexer</th>'
                         + '</tr>'
                         + '</thead>'
                         + '<tbody>';
 
-                const selectedIndex = shows.indexOf(show => !show.inShowList);
-
+                // Do not pre-select a show; user must choose explicitly
                 for (const [index, show] of shows.entries()) {
+                    const sourceTag = show.source === 'tvmaze'
+                        ? ' <span class="label label-info" title="Resolved via TVmaze fallback">TVmaze</span>'
+                        : '';
+                    const titleEsc = $('<div>').text(show.title || '').html();
+                    const networkEsc = $('<div>').text(show.network || '').html();
+                    const scoreInt = Number.isFinite(Number(show.score)) ? Math.round(Number(show.score)) : 0;
                     table
                         += '<tr class="' + (show.inShowList ? 'in-list' : '') + '">'
                             + '<td>'
                             + '<input type="radio" class="whichSeries" name="whichSeries" value="' + show.obj + '" '
-                            + (selectedIndex === index ? 'checked ' : '') + (show.inShowList ? 'disabled' : '') + '/>'
+                            + (show.inShowList ? 'disabled' : '') + '/>'
                             + '</td>'
                             + '<td>'
                             + (function () {
                                 let string = '<a href=';
                                 string += show.inShowList ? '"/home/displayShow?show=' + show.id + '"' : '"' + show.url + '" target="_blank"';
-
-                                string += '>' + show.title + '</a>';
-
+                                string += '>' + titleEsc + '</a>' + sourceTag;
                                 return string;
                             })()
                             + '</td>'
-                            + '<td>' + show.debut + '</td>'
-                            + '<td>' + show.indexer + '</td>'
+                            + '<td>' + networkEsc + '</td>'
+                            + '<td>' + $('<div>').text(show.debut || '').html() + '</td>'
+                            + '<td data-text="' + scoreInt + '">' + scoreInt + '</td>'
+                            + '<td>' + $('<div>').text(show.indexer || '').html() + '</td>'
                             + '</tr>';
                 }
 
@@ -4224,18 +4231,45 @@ const SICKCHILL = {
                             const shows = [];
 
                             $.each(data.results, (index, object) => {
-                                // Future: Results should be returned as json, and use attribute names rather than indexes and joining.
-                                const whichSeries = object.join('|').replaceAll('"', '');
-
-                                const show = {
-                                    obj: whichSeries,
-                                    indexer: object[0],
-                                    id: object[3],
-                                    title: object[4],
-                                    debut: object[5],
-                                    inShowList: object[6],
-                                    url: anonURL + object[2] + object[3],
-                                };
+                                let show;
+                                // Prefer object results (Phase 3); keep array/tuple fallback for safety
+                                if (object && !Array.isArray(object) && typeof object === 'object') {
+                                    const whichSeries = (object.whichSeries || [
+                                        object.indexer,
+                                        object.indexer_id,
+                                        object.show_url,
+                                        object.id,
+                                        object.seriesName,
+                                        object.firstAired,
+                                        object.inShowList ? '1' : '0',
+                                    ].join('|')).replaceAll('"', '');
+                                    show = {
+                                        obj: whichSeries,
+                                        indexer: object.indexer,
+                                        id: object.id,
+                                        title: object.seriesName,
+                                        debut: object.firstAired,
+                                        inShowList: Boolean(object.inShowList),
+                                        url: anonURL + (object.show_url || '') + object.id,
+                                        score: object.score != null ? object.score : 0,
+                                        network: object.network || '',
+                                        source: object.source || 'tvdb',
+                                    };
+                                } else {
+                                    const whichSeries = object.join('|').replaceAll('"', '');
+                                    show = {
+                                        obj: whichSeries,
+                                        indexer: object[0],
+                                        id: object[3],
+                                        title: object[4],
+                                        debut: object[5],
+                                        inShowList: object[6],
+                                        url: anonURL + object[2] + object[3],
+                                        score: 0,
+                                        network: '',
+                                        source: 'tvdb',
+                                    };
+                                }
 
                                 if (data.langid) {
                                     show.url += '&lid=' + data.langid;
@@ -4251,9 +4285,15 @@ const SICKCHILL = {
 
                         $('#searchResults').html(resultString);
                         updateSampleText();
+                        // Default sort: Score descending. Omit saveSort so a prior column choice
+                        // does not override score as the default order on each search.
                         $('.new-show-table').tablesorter({
-                            widgets: ['stickyHeaders', 'zebra', 'saveSort'],
-                            headers: {0: {sorter: false}},
+                            widgets: ['stickyHeaders', 'zebra'],
+                            headers: {
+                                0: {sorter: false},
+                                4: {sorter: 'digit'}, // Score (0–100)
+                            },
+                            sortList: [[4, 1]], // Score column, descending
                         });
                     },
                 });

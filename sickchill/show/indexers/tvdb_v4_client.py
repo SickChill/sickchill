@@ -253,6 +253,11 @@ class TVDBv4Client:
         params = {"short": "true"} if short else None
         return self._get(f"/series/{series_id}/extended", params=params, if_modified_since=if_modified_since)
 
+    def season_types_catalog(self) -> list:
+        """GET /seasons/types — global catalog of season type records."""
+        result = self._get("/seasons/types")
+        return result if isinstance(result, list) else []
+
     def series_translation(self, series_id, language: str) -> dict | None:
         """GET /series/{id}/translations/{lang} — name/overview in that language when available."""
         if not language:

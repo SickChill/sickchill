@@ -265,18 +265,30 @@
 
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                        <span class="component-title">${_('DVD Order')}</span>
+                                        <span class="component-title">${_('Season Order')}</span>
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <input type="checkbox" id="dvdorder" name="dvdorder" ${checked(show.dvdorder)} />
-                                                <label>${_('use the DVD order instead of the air order')}</label>
+                                                <%
+                                                    current_order = getattr(show, 'resolved_seasons_order', None) or getattr(show, 'seasons_order', None) or ('dvd' if show.dvdorder else 'default')
+                                                    if current_order == 'official':
+                                                        current_order = 'default'
+                                                    type_options = season_order_types if season_order_types else [{'slug': 'default', 'name': 'Aired Order'}, {'slug': 'dvd', 'name': 'DVD Order'}]
+                                                %>
+                                                <select name="seasons_order" id="seasons_order" class="form-control input-sm" style="max-width: 22em;">
+                                                    % for opt in type_options:
+                                                        <option value="${opt['slug']}" ${('selected="selected"' if opt['slug'] == current_order else '')}>${opt['name']}</option>
+                                                    % endfor
+                                                    % if current_order not in [o['slug'] for o in type_options]:
+                                                        <option value="${current_order}" selected="selected">${current_order}</option>
+                                                    % endif
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label for="dvdorder">${_('a "Force Full Update" is necessary, and if you have existing episodes you need to sort them manually.')}</label>
+                                                <label for="seasons_order">${_('Episode numbering from TheTVDB for this series. Labels are TVDB names for this show (e.g. Aired Order, Absolute Order, or a platform name when TVDB provides one). The stored value is the type slug (default, absolute, alternate, …). Changing this runs a full update and reloads the show page.')}</label>
                                             </div>
                                         </div>
                                     </div>

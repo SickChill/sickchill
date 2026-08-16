@@ -832,6 +832,160 @@ class TVDBSearchMappingTests(unittest.TestCase):
         source = Path(inspect.getfile(settings_mod)).read_text(encoding="utf-8")
         self.assertNotIn(settings_mod.TVDB_V4_APIKEY, source)
 
+    def test_map_search_results_normalizes_score(self):
+        raw = [
+            {"tvdb_id": "1", "name": "Best", "score": 200},
+            {"tvdb_id": "2", "name": "Mid", "score": 100},
+            {"tvdb_id": "3", "name": "Low", "score": 50},
+        ]
+        mapped = TVDB._map_search_results(raw)
+        self.assertEqual(mapped[0]["score"], 100)  # 200/200 * 100
+        self.assertEqual(mapped[1]["score"], 50)  # 100/200 * 100
+        self.assertEqual(mapped[2]["score"], 25)  # 50/200 * 100
+        self.assertTrue(all(isinstance(m["score"], int) for m in mapped))
+        self.assertEqual(mapped[0]["source"], "tvdb")
+
+    def test_map_search_results_score_from_api_order_when_missing(self):
+        raw = [
+            {"tvdb_id": "1", "name": "First"},
+            {"tvdb_id": "2", "name": "Second"},
+        ]
+        mapped = TVDB._map_search_results(raw)
+        # No raw scores → first hit highest (100), second lower
+        self.assertEqual(mapped[0]["score"], 100)
+        self.assertEqual(mapped[1]["score"], 50)
+        self.assertTrue(all(isinstance(m["score"], int) for m in mapped))
+
+
+class SeasonsOrderTests(unittest.TestCase):
+    def test_resolve_season_type_from_seasons_order(self):
+        show = MagicMock()
+        show.resolved_seasons_order = "absolute"
+        self.assertEqual(TVDB.resolve_season_type(show), "absolute")
+
+    def test_resolve_season_type_legacy_dvdorder(self):
+        class S:
+            dvdorder = 1
+
+        self.assertEqual(TVDB.resolve_season_type(S()), "dvd")
+
+        class S2:
+            dvdorder = 0
+            seasons_order = "official"
+
+        self.assertEqual(TVDB.resolve_season_type(S2()), "official")
+
+    def test_fetch_series_season_types_from_extended(self):
+        from sickchill import settings
+
+        tvdb = TVDB()
+        client = MagicMock()
+        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
+        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
+        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+        client.series_extended.return_value = {
+            "seasonTypes": [
+                {"type": "default", "name": "Aired Order"},
+                {"type": "dvd", "name": "DVD Order", "alternateName": "DVD"},
+                {"type": "absolute", "name": "Absolute Order"},
+            ],
+            "seasons": [],
+        }
+        client.season_types_catalog.return_value = []
+        tvdb._client = client
+        types = tvdb._fetch_series_season_types(99)
+        by_slug = {t["slug"]: t["name"] for t in types}
+        self.assertEqual(by_slug["default"], "Aired Order")
+        self.assertEqual(by_slug["dvd"], "DVD")  # alternateName preferred
+        self.assertEqual(by_slug["absolute"], "Absolute Order")
+
+    def test_fetch_series_season_types_collapses_official_and_default(self):
+        """TVDB may return both default and official as aired — only one option; platform names stay series-specific."""
+        from sickchill import settings
+
+        tvdb = TVDB()
+        client = MagicMock()
+        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
+        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
+        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+        client.series_extended.return_value = {
+            "seasonTypes": [
+                {"type": "official", "name": "Aired Order", "alternateName": "Aired"},
+                {"type": "default", "name": "Aired Order"},
+                {"type": "dvd", "name": "DVD Order"},
+                {"type": "absolute", "name": "Absolute Order"},
+                # slug "alternate" is generic; display name is whatever TVDB gives this series
+                {"type": "alternate", "name": "Alternate Order", "alternateName": "BBC iPlayer"},
+                # Distinct path slugs are never merged (another platform order on the same show)
+                {"type": "altdvd", "name": "Alternate DVD", "alternateName": "Netflix"},
+            ],
+            "seasons": [],
+        }
+        tvdb._client = client
+        types = tvdb._fetch_series_season_types(78804)
+        slugs = [t["slug"] for t in types]
+        by_slug = {t["slug"]: t["name"] for t in types}
+        self.assertEqual(slugs.count("default"), 1)
+        self.assertNotIn("official", slugs)
+        self.assertEqual(by_slug["default"], "Aired Order")
+        self.assertEqual(by_slug["absolute"], "Absolute Order")
+        self.assertEqual(by_slug["alternate"], "BBC iPlayer")
+        self.assertEqual(by_slug["altdvd"], "Netflix")
+        self.assertEqual(len(types), len(set(slugs)))
+
+    def test_seasons_order_label_is_series_specific(self):
+        """Same slug can show different labels on different series (platform-named orders)."""
+        tvdb = TVDB()
+        with patch.object(
+            tvdb,
+            "series_season_types",
+            return_value=[
+                {"slug": "default", "name": "Aired Order"},
+                {"slug": "alternate", "name": "BBC iPlayer"},
+            ],
+        ):
+            self.assertEqual(tvdb.seasons_order_label(1, "default"), "Aired Order")
+            self.assertEqual(tvdb.seasons_order_label(1, "alternate"), "BBC iPlayer")
+            self.assertEqual(tvdb.seasons_order_label(1, "official"), "Aired Order")
+
+        with patch.object(
+            tvdb,
+            "series_season_types",
+            return_value=[
+                {"slug": "default", "name": "Aired Order"},
+                {"slug": "alternate", "name": "Some Other Platform"},
+            ],
+        ):
+            self.assertEqual(tvdb.seasons_order_label(2, "alternate"), "Some Other Platform")
+
+    def test_episodes_uses_seasons_order(self):
+        tvdb = TVDB()
+        client = MagicMock()
+        from sickchill import settings
+
+        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
+        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
+        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+        client.all_episodes.return_value = [
+            {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 1},
+        ]
+        tvdb._client = client
+
+        class Show:
+            indexerid = 42
+            dvdorder = 0
+            seasons_order = "absolute"
+            lang = "en"
+
+            @property
+            def resolved_seasons_order(self):
+                return self.seasons_order
+
+        tvdb.episodes(Show())
+        args, kwargs = client.all_episodes.call_args
+        # all_episodes(show_id, season_type, language=code)
+        self.assertEqual(args[1] if len(args) > 1 else kwargs.get("season_type"), "absolute")
+
 
 if __name__ == "__main__":
     unittest.main()
