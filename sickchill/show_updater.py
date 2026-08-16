@@ -65,6 +65,7 @@ class ShowUpdater(object):
                 full_updates = 0
                 refreshes = 0
                 skipped = 0
+                full_update_names = []
 
                 for cur_show in settings.show_list:
                     if settings.stopping or settings.restarting:
@@ -83,7 +84,6 @@ class ShowUpdater(object):
                                 skip_update = True
 
                         # Full indexer update when no last_update cache or show is in the v4 updated list
-                        # (and feed was usable). On feed failure last_update stays set → refresh only.
                         if not last_update or (advance_last_update and cur_show.indexerid in updated_shows and not skip_update):
                             try:
                                 cur_show.idxr.clear_episode_cache(cur_show.indexerid)
@@ -91,6 +91,7 @@ class ShowUpdater(object):
                                 pass
                             pi_list.append(cur_show.update(force))
                             full_updates += 1
+                            full_update_names.append(getattr(cur_show, "name", None) or str(cur_show.indexerid))
                         elif not skip_update:
                             # Disk refresh only — no indexer episode re-pull
                             pi_list.append(cur_show.refresh(force))
@@ -102,6 +103,10 @@ class ShowUpdater(object):
                         logger.info(_("Automatic update failed: {error}").format(error=error))
 
                 logger.info(f"ShowUpdater scheduled full updates={full_updates}, refreshes={refreshes}, skipped={skipped}{http_calls_note}")
+                if full_update_names:
+                    logger.debug(f"ShowUpdater full update shows: {', '.join(full_update_names)}")
+                else:
+                    logger.debug("ShowUpdater full update shows: (none)")
 
                 ui.ProgressIndicators.setIndicator("dailyUpdate", ui.QueueProgressIndicator("Daily Update", pi_list))
 

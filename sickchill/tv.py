@@ -601,7 +601,7 @@ class TVShow(object):
             show_name = str(result["show_name"])
 
             if season not in scanned_episodes:
-                logger.debug(f"{showid}: season not in scanned_episodes")
+                logger.debug(f"{showid}: Starting {show_name} load of season: {season}")
                 scanned_episodes[season] = {}
 
             logger.debug(f"{showid}: Loading {show_name} {episode_num(season, episode)} from the DB")

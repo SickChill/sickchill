@@ -552,7 +552,7 @@ class QueueItemAdd(ShowQueueItem):
 
 
 class QueueItemRefresh(ShowQueueItem):
-    def __init__(self, show: "TVShow" = None, force=False):
+    def __init__(self, show: "TVShow" = None, force=False, silent=False):
         super(QueueItemRefresh, self).__init__(ShowQueueActions.REFRESH, show)
 
         # do refreshes first because they're quick
@@ -560,11 +560,14 @@ class QueueItemRefresh(ShowQueueItem):
 
         # force refresh certain items
         self.force = force
+        # When True, skip the "Performing refresh" info log (e.g. nested after an update)
+        self.silent = silent
 
     def run(self):
         super(QueueItemRefresh, self).run()
 
-        logger.info(f"Performing refresh on {self.show.name}")
+        if not self.silent:
+            logger.info(f"Performing refresh on {self.show.name}")
 
         self.show.refresh_dir()
         self.show.write_metadata()
@@ -641,8 +644,7 @@ class QueueItemUpdate(ShowQueueItem):
     def run(self):
         super(QueueItemUpdate, self).run()
 
-        logger.debug(f"Beginning update of {self.show.name}")
-
+        logger.info(f"Performing update on {self.show.name}")
         logger.debug(f"Retrieving show info from {self.show.idxr.name}")
         try:
             self.show.load_from_indexer()
@@ -699,8 +701,9 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.debug(f"Finished update of {self.show.name}")
 
+        # Disk/metadata refresh after indexer update (silent: avoid "Performing refresh" under UPDATE)
         # oldbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
-        QueueItemRefresh(self.show, self.force).run()
+        QueueItemRefresh(self.show, self.force, silent=True).run()
         super(QueueItemUpdate, self).finish()
         self.finish()
 
