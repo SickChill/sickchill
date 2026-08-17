@@ -997,6 +997,14 @@ class Home(WebRoot):
                         }
                     )
 
+            submenu.append(
+                {
+                    "title": _("Update TBA Names"),
+                    "path": f"home/updateTBANames?show={show_obj.indexerid}",
+                    "icon": "fa fa-pencil-square-o",
+                }
+            )
+
             submenu.append({"title": _("Preview Rename"), "path": f"home/testRename?show={show_obj.indexerid}", "icon": "fa fa-tag"})
 
             if settings.USE_SUBTITLES and show_obj.subtitles and not settings.showQueueScheduler.action.is_being_subtitled(show_obj):
@@ -1583,6 +1591,38 @@ class Home(WebRoot):
         time.sleep(cpu_presets[settings.CPU_PRESET])
 
         return self.redirect(f"/home/displayShow?show={show.indexerid}")
+
+    def updateTBANames(self):
+        """Refresh exact 'TBA' episode titles via V4 episode list (not a full show queue update)."""
+        show = self.get_query_argument("show")
+        show_obj = Show.find(settings.show_list, int(show))
+
+        if not show_obj:
+            return self._genericMessage(_("Error"), _("Unable to find the specified show"))
+
+        try:
+            updated_count = show_obj.update_tba_names()
+        except Exception as error:
+            logger.exception(f"TBA name update failed for {show_obj.name}: {error}")
+            ui.notifications.error(
+                _("Error"),
+                _("Failed to update TBA episode names for {show}").format(show=show_obj.name),
+            )
+            return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
+
+        if updated_count:
+            ui.notifications.message(
+                _("Updated"),
+                _("Updated {count} TBA episode name(s) for {show}").format(count=updated_count, show=show_obj.name),
+            )
+        else:
+            ui.notifications.message(
+                _("No updates"),
+                _("No TBA episode names were updated for {show}").format(show=show_obj.name),
+            )
+
+        time.sleep(cpu_presets[settings.CPU_PRESET])
+        return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
     def subtitleShow(self):
         show = self.get_query_argument("show")

@@ -658,6 +658,47 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(e.name, "Old")  # not applied
 
+    def test_apply_tba_indexer_packet_sets_name_and_last_update(self):
+        from sickchill.tv import TVEpisode
+
+        class E:
+            pass
+
+        e = E()
+        e.name = "TBA"
+        e.description = ""
+        e.airdate = __import__("datetime").date(1, 1, 1)
+        e.absolute_number = 0
+        e.indexerid = 0
+        e.last_update_indexer = 0
+        e.season = 1
+        e.episode = 2
+        e.show = MagicMock()
+        e.show.name = "Show"
+
+        packet = {
+            "episodeName": "Real Title",
+            "overview": "Plot",
+            "firstAired": "2024-01-15",
+            "absoluteNumber": 12,
+            "id": 999,
+            "lastUpdated": 1700000000,
+        }
+        changed = TVEpisode.apply_tba_indexer_packet(e, packet)
+        self.assertIn("name", changed)
+        self.assertEqual(e.name, "Real Title")
+        self.assertEqual(e.description, "Plot")
+        self.assertEqual(e.last_update_indexer, 1700000000)
+        self.assertEqual(e.indexerid, 999)
+
+    def test_apply_tba_skips_when_still_tba(self):
+        from sickchill.tv import TVEpisode
+
+        class E:
+            name = "TBA"
+
+        self.assertEqual(TVEpisode.apply_tba_indexer_packet(E(), {"episodeName": "TBA"}), [])
+
 
 class MassActionSqlCollectionTests(unittest.TestCase):
     """Regression: get_sql() shape must be appended, not extended, into mass_action lists."""

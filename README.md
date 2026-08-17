@@ -27,7 +27,7 @@ Issue/Bug tracking, feature requests, support, and developer communication is mo
  - Can notify Kodi, XBMC, Growl, Trakt, Twitter, and more when new episodes are available
  - Searches [TheTVDB](https://thetvdb.com), [AniDB.net](https://anidb.net), [iMDB](https://imdb.com), [FanArt.tv](https://fanart.tv), and more for shows, seasons, episodes, and metadata
  - Episode status management allows for mass failing seasons/episodes to force retrying
- - DVD Order numbering for returning the results in DVD order instead of Air-By-Date order
+ - Season order from theTVDB: aired/default, DVD, absolute, platform/alternate orders
  - Allows you to choose which indexer to have SickChill search its show info from when importing
  - Automatic XEM Scene Numbering/Naming for seasons/episodes
  - Available for any platform, uses a simple HTTP interface
@@ -52,12 +52,17 @@ Issue/Bug tracking, feature requests, support, and developer communication is mo
 
 ### Dependencies
 
-To run SickChill you will need Python 3.8+, preferably 3.11 or newer. PyPy (python 3.7-3.9) 7.8.x+ is also supported.
+To run SickChill you will need Python 3.10+, preferably 3.13 or newer.
 
 ### Important notes on switching from other forks
 
 Before using this with your existing database (`sickbeard.db`) please make a backup copy of it and delete any other database files such as cache.db and failed.db if present.
 We HIGHLY recommend starting out with no database files at all to make this a fresh start but the choice is at your own risk.
 
-### Huge thanks to [JetBrains](https://jb.gg/OpenSourceSupport) for providing "All Products Pack" licenses free of charge for SickChill developers as part of their support of OSS.
-<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="60" height="60"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg" width="60" height="60"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm_icon.svg" width="60" height="60"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_icon.svg" width="60" height="60"></a>
+### Thanks to [TheTVDB](https://jheTVDB.com) for API access.
+<a href="https://thetvdb.com/subscribe"><img src="https://thetvdb.com/images/attribution/logo1.png" height="80">
+Metadata provided by TheTVDB. Please consider adding missing information or subscribing.
+</a>
+
+### Thanks to [JetBrains](https://jb.gg/OpenSourceSupport) for previous "All Products Pack" licenses free of charge for SickChill developers as part of their support of OSS.
+<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm_icon.svg" height="45"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA_icon.svg" height="45"></a>

@@ -313,6 +313,111 @@ class TVShow(object):
         except Exception as error:
             return str(error), self
 
+    def update_tba_names(self) -> int:
+        """
+        Replace exact episode name "TBA" using the same V4 episode pull as a normal update.
+
+        Finds library episodes named TBA with airdate on or before today+7 days, then
+        re-fetches the show's episode list via the V4 indexer (translated titles +
+        ``seasons_order`` season type) and applies non-TBA titles / related packet fields
+        only for those rows. Does not change status, delete episodes, or use the show queue.
+
+        :return: Number of episodes updated
+        """
+        horizon = sc_today() + datetime.timedelta(days=7)
+        horizon_ordinal = horizon.toordinal()
+
+        main_db_con = db.DBConnection()
+        tba_rows = main_db_con.select(
+            "SELECT season, episode FROM tv_episodes WHERE showid = ? AND name = ? AND airdate IS NOT NULL AND airdate > 1 AND airdate <= ?",
+            [self.indexerid, "TBA", horizon_ordinal],
+        )
+
+        if not tba_rows:
+            logger.info(f"No TBA episode names in airdate window for {self.name}")
+            return 0
+
+        tba_set = {(int(row["season"]), int(row["episode"])) for row in tba_rows}
+        logger.debug(
+            f"TBA refresh for {self.name}: {len(tba_set)} candidate(s) with airdate on or before {horizon} "
+            f"(V4 list, seasons_order={getattr(self, 'resolved_seasons_order', None) or 'default'})"
+        )
+
+        # One bulk V4 episode list (language + seasons_order), same path as force update
+        try:
+            self.idxr.clear_episode_cache(self.indexerid)
+        except Exception:
+            pass
+
+        try:
+            indexer_eps = self.idxr.episodes(self) or []
+        except Exception as error:
+            logger.warning(f"TVDB v4 episode list failed during TBA refresh for {self.name}: {error}")
+            return 0
+
+        tvdb_by_ep = {}
+        for ep in indexer_eps:
+            if not isinstance(ep, dict):
+                continue
+            try:
+                s = int(ep.get("airedSeason"))
+                e = int(ep.get("airedEpisodeNumber"))
+            except (TypeError, ValueError):
+                continue
+            name = (ep.get("episodeName") or "").strip()
+            if e is not None and name and name != "TBA":
+                tvdb_by_ep[(s, e)] = ep
+
+        updated_count = 0
+        skipped_still_tba = 0
+        sql_l = []
+
+        for s, e in sorted(tba_set):
+            packet = tvdb_by_ep.get((s, e))
+            if not packet:
+                skipped_still_tba += 1
+                logger.debug(f"Still TBA / missing on TVDB: {self.name} {episode_num(s, e)}")
+                continue
+
+            try:
+                ep_obj = self.get_episode(s, e)
+            except Exception as error:
+                logger.debug(f"Failed to load episode {self.name} {episode_num(s, e)}: {error}")
+                continue
+
+            if not ep_obj or ep_obj.name != "TBA":
+                continue
+
+            try:
+                with ep_obj.lock:
+                    if ep_obj.name != "TBA":
+                        continue
+                    old_name = ep_obj.name
+                    changed_fields = ep_obj.apply_tba_indexer_packet(packet)
+                    if not changed_fields:
+                        continue
+                    sql = ep_obj.get_sql()
+                    if sql:
+                        sql_l.append(sql)
+                    else:
+                        ep_obj.save_to_db()
+                    updated_count += 1
+                    extra = [f for f in changed_fields if f != "name"]
+                    if extra:
+                        logger.debug(
+                            f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r}; also set {', '.join(extra)} (TVDB v4)"
+                        )
+                    else:
+                        logger.debug(f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r} (TVDB v4)")
+            except Exception as error:
+                logger.debug(f"Failed to update TBA data for {self.name} {episode_num(s, e)}: {error}")
+
+        if sql_l:
+            main_db_con.mass_action(sql_l)
+
+        logger.info(f"Updated {updated_count} TBA episode(s) for {self.name} (still TBA on TVDB: {skipped_still_tba})")
+        return updated_count
+
     def update(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
         """
         Update this show from indexer.
@@ -1836,6 +1941,72 @@ class TVEpisode(object):
 
             self.dirty = False
             return True
+
+    def apply_tba_indexer_packet(self, packet: dict) -> list:
+        """
+        Apply metadata from a V4-mapped TVDB episode dict after a TBA name upgrade.
+
+        Sets name and related fields present on the same packet (description, airdate,
+        absolute_number, indexerid, last_update_indexer). Does not change status or delete.
+
+        :param packet: Mapped episode dict (episodeName / firstAired / lastUpdated keys)
+        :return: List of field names that changed
+        """
+        if not isinstance(packet, dict):
+            return []
+
+        new_name = (packet.get("episodeName") or "").strip()
+        if not new_name or new_name == "TBA":
+            return []
+
+        if self.name != "TBA":
+            return []
+
+        changed = []
+        old_name = self.name
+        self.name = new_name
+        if self.name != old_name:
+            changed.append("name")
+
+        overview = packet.get("overview")
+        if overview is not None:
+            overview = str(overview).strip()
+            if overview and overview != self.description:
+                self.description = overview
+                changed.append("description")
+
+        first_aired = packet.get("firstAired")
+        if first_aired and first_aired != "0000-00-00":
+            try:
+                raw_airdate = [int(x) for x in str(first_aired).split("-")]
+                new_airdate = datetime.date(raw_airdate[0], raw_airdate[1], raw_airdate[2])
+                if new_airdate != self.airdate:
+                    self.airdate = new_airdate
+                    changed.append("airdate")
+            except (ValueError, IndexError, TypeError):
+                logger.debug(f"Ignoring unparseable firstAired {first_aired!r} for {self.show.name} {episode_num(self.season, self.episode)} during TBA update")
+
+        if packet.get("absoluteNumber") not in (None, ""):
+            new_absolute = try_int(packet.get("absoluteNumber"), None)
+            if new_absolute is not None and new_absolute != self.absolute_number:
+                self.absolute_number = new_absolute
+                changed.append("absolute_number")
+
+        if packet.get("id"):
+            try:
+                new_indexerid = int(packet.get("id"))
+            except (TypeError, ValueError):
+                new_indexerid = 0
+            if new_indexerid and new_indexerid != self.indexerid:
+                self.indexerid = new_indexerid
+                changed.append("indexerid")
+
+        remote_lu = try_int(packet.get("lastUpdated"), 0)
+        if remote_lu and remote_lu != int(self.last_update_indexer or 0):
+            self.last_update_indexer = remote_lu
+            changed.append("last_update_indexer")
+
+        return changed
 
     def load_from_indexer(self, season=None, episode=None, force_all: bool = False, indexer_episode=None):
         """
