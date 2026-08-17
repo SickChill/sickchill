@@ -4157,7 +4157,7 @@ const SICKCHILL = {
                         + '<tbody>';
 
                 // Do not pre-select a show; user must choose explicitly
-                for (const [index, show] of shows.entries()) {
+                for (const show of shows) {
                     const sourceTag = show.source === 'tvmaze'
                         ? ' <span class="label label-info" title="Resolved via TVmaze fallback">TVmaze</span>'
                         : '';
@@ -4251,7 +4251,7 @@ const SICKCHILL = {
                                         debut: object.firstAired,
                                         inShowList: Boolean(object.inShowList),
                                         url: anonURL + (object.show_url || '') + object.id,
-                                        score: object.score != null ? object.score : 0,
+                                        score: object.score ?? 0,
                                         network: object.network || '',
                                         source: object.source || 'tvdb',
                                     };
