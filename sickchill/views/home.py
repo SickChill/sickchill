@@ -1074,10 +1074,7 @@ class Home(WebRoot):
             seasons_order_label = show_obj.idxr.seasons_order_label(show_obj.indexerid, seasons_order_slug)
         except Exception as error:
             logger.debug(f"Could not resolve seasons_order label for {show_obj.indexerid}: {error}")
-            try:
-                seasons_order_label = show_obj.idxr._season_type_display_name(seasons_order_slug)
-            except Exception:
-                pass
+            # Keep slug as display fallback (do not call private helpers)
 
         return t.render(
             submenu=submenu,
@@ -1476,8 +1473,8 @@ class Home(WebRoot):
         if do_update:
             try:
                 show_obj.idxr.clear_episode_cache(show_obj.indexerid)
-            except Exception:
-                pass
+            except Exception as error:
+                logger.debug(f"clear_episode_cache failed for {show_obj.indexerid}: {error}")
             error, show = show_obj.update(force=True)
             if error:
                 errors.append(_("Unable to update show: {error}").format(error=error))

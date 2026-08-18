@@ -469,13 +469,16 @@ class TVDB(Indexer):
         for code in candidates:
             try:
                 eps = self.client.all_episodes(show_id, season_type, language=code)
-                logger.debug(f"TVDB v4 episodes for {show_id} using language={code!r} ({len(eps)} ep(s))")
-                return eps
+                # Empty list is a miss (no titles in that language) — try next candidate
+                if eps:
+                    logger.debug(f"TVDB v4 episodes for {show_id} using language={code!r} ({len(eps)} ep(s))")
+                    return eps
+                logger.debug(f"TVDB v4 translated episodes empty for {show_id}/{code}; trying next language")
             except TVDBv4Error as error:
                 errors.append(f"{code}:{error}")
                 logger.debug(f"TVDB v4 translated episodes failed for {show_id}/{code}: {error}")
 
-        # No language requested, or all translated paths failed — primary/original names
+        # No language requested, or all translated paths failed/empty — primary/original names
         if candidates:
             logger.debug(f"TVDB v4 falling back to untranslated episodes for {show_id} (tried {', '.join(candidates)}; errors: {'; '.join(errors) or 'none'})")
         return self.client.all_episodes(show_id, season_type, language=None)
@@ -608,8 +611,8 @@ class TVDB(Indexer):
         cache_db = sc_db.DBConnection("cache.db")
         try:
             cache_db.action("CREATE TABLE IF NOT EXISTS tvdb_season_types (indexer_id INTEGER PRIMARY KEY, payload TEXT, last_refreshed INTEGER)")
-        except Exception:
-            pass
+        except Exception as error:
+            logger.debug(f"TVDB season types cache table create failed: {error}")
 
         if use_cache:
             try:

@@ -66,9 +66,11 @@ class ShowUpdater(object):
                 refreshes = 0
                 skipped = 0
                 full_update_names = []
+                loop_completed = True
 
                 for cur_show in settings.show_list:
                     if settings.stopping or settings.restarting:
+                        loop_completed = False
                         break
                     try:
                         cur_show.next_episode()
@@ -83,12 +85,13 @@ class ShowUpdater(object):
                             ).days < settings.ENDED_SHOWS_UPDATE_INTERVAL:
                                 skip_update = True
 
-                        # Full indexer update when no last_update cache or show is in the v4 updated list
-                        if not last_update or (advance_last_update and cur_show.indexerid in updated_shows and not skip_update):
+                        # Full indexer update when no last_update cache or show is in the v4 updated list.
+                        # skip_update always wins (e.g. ENDED_SHOWS_UPDATE_INTERVAL == -1).
+                        if (not last_update or (advance_last_update and cur_show.indexerid in updated_shows)) and not skip_update:
                             try:
                                 cur_show.idxr.clear_episode_cache(cur_show.indexerid)
-                            except Exception:
-                                pass
+                            except Exception as error:
+                                logger.debug(f"clear_episode_cache failed for {cur_show.indexerid}: {error}")
                             pi_list.append(cur_show.update(force))
                             full_updates += 1
                             full_update_names.append(getattr(cur_show, "name", None) or str(cur_show.indexerid))
@@ -110,13 +113,15 @@ class ShowUpdater(object):
 
                 ui.ProgressIndicators.setIndicator("dailyUpdate", ui.QueueProgressIndicator("Daily Update", pi_list))
 
-                # Only advance lastUpdate when the feed succeeded (or first full run with no prior stamp).
-                # Failed feeds keep the previous timestamp so the next cycle retries the missed window.
-                if advance_last_update:
+                # Only advance lastUpdate when the feed succeeded (or first full run) AND the
+                # show loop finished (not interrupted by stop/restart).
+                if advance_last_update and loop_completed:
                     if database_result:
                         cache_db_con.action("UPDATE lastUpdate SET `time` = ? WHERE provider = ?", [str(update_timestamp), provider.name])
                     else:
                         cache_db_con.action("INSERT INTO lastUpdate (time, provider) VALUES (?, ?)", [str(update_timestamp), provider.name])
+                elif not loop_completed:
+                    logger.info(f"Preserving lastUpdate for {provider.name}: show loop interrupted")
                 else:
                     logger.info(f"Preserving lastUpdate for {provider.name} after feed failure")
         except Exception as error:

@@ -4,6 +4,7 @@ Unit tests for TheTVDB API v4 client and indexer adapters (mocked HTTP).
 
 from __future__ import annotations
 
+import datetime
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -16,6 +17,18 @@ from sickchill.show.indexers.tvdb import (
     _UpdatesResult,
 )
 from sickchill.show.indexers.tvdb_v4_client import TVDBv4Client, TVDBv4Error, TVDBv4NotModified
+
+
+def attach_mock_client(tvdb: TVDB) -> MagicMock:
+    """Attach a MagicMock client that matches TVDB.client property re-init checks."""
+    from sickchill import settings
+
+    client = MagicMock()
+    client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
+    client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
+    client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+    tvdb._client = client
+    return client
 
 
 class EpisodeDictMappingTests(unittest.TestCase):
@@ -97,21 +110,10 @@ class SeriesResultMappingTests(unittest.TestCase):
 
 
 class SeriesLanguageTests(unittest.TestCase):
-    def _mock_client_for(self, tvdb: TVDB) -> MagicMock:
-        """Attach a MagicMock client that matches client property expectations (apikey/pin/timeout)."""
-        from sickchill import settings
-
-        client = MagicMock()
-        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
-        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
-        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
-        tvdb._client = client
-        return client
-
     def test_english_translation_applied_for_chinese_primary_title(self):
         """Regression: show.lang=en must not keep primary Chinese title when eng translation exists."""
         tvdb = TVDB()
-        client = self._mock_client_for(tvdb)
+        client = attach_mock_client(tvdb)
         client.series_extended.return_value = {
             "id": 392226,
             "name": "吞噬星空",
@@ -133,7 +135,7 @@ class SeriesLanguageTests(unittest.TestCase):
 
     def test_chinese_translation_when_lang_zh(self):
         tvdb = TVDB()
-        client = self._mock_client_for(tvdb)
+        client = attach_mock_client(tvdb)
         client.series_extended.return_value = {
             "id": 392226,
             "name": "Swallowed Star",
@@ -437,20 +439,9 @@ class UpdatesCompatTests(unittest.TestCase):
 
 
 class EpisodeCacheTests(unittest.TestCase):
-    def _attach_mock_client(self, tvdb: TVDB) -> MagicMock:
-        from sickchill import settings
-
-        client = MagicMock()
-        # Match TVDB.client property re-init checks so the mock is retained
-        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
-        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
-        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
-        tvdb._client = client
-        return client
-
     def test_episodes_cache_avoids_second_http(self):
         tvdb = TVDB()
-        client = self._attach_mock_client(tvdb)
+        client = attach_mock_client(tvdb)
         client.all_episodes.return_value = [
             {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
             {"id": 2, "seasonNumber": 1, "number": 2, "name": "Two", "lastUpdated": 200},
@@ -474,7 +465,7 @@ class EpisodeCacheTests(unittest.TestCase):
 
     def test_clear_episode_cache_forces_refetch(self):
         tvdb = TVDB()
-        client = self._attach_mock_client(tvdb)
+        client = attach_mock_client(tvdb)
         client.all_episodes.return_value = [
             {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
         ]
@@ -490,7 +481,7 @@ class EpisodeCacheTests(unittest.TestCase):
     def test_episode_cache_ttl_forces_refetch(self):
         """Expired TTL entries are dropped so subsequent loads refresh without clear_episode_cache."""
         tvdb = TVDB()
-        client = self._attach_mock_client(tvdb)
+        client = attach_mock_client(tvdb)
         client.all_episodes.return_value = [
             {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
         ]
@@ -498,7 +489,7 @@ class EpisodeCacheTests(unittest.TestCase):
         show.indexerid = 88
         show.dvdorder = False
         show.lang = "en"
-        tvdb._episode_cache_ttl = 0.0  # expire immediately
+        tvdb._episode_cache_ttl = -1.0  # always expired vs monotonic age
         tvdb.episodes(show)
         tvdb.episodes(show)
         self.assertEqual(client.all_episodes.call_count, 2)
@@ -506,7 +497,7 @@ class EpisodeCacheTests(unittest.TestCase):
     def test_episode_cache_max_shows_bound(self):
         """Cache cannot grow unbounded across many shows for process lifetime."""
         tvdb = TVDB()
-        client = self._attach_mock_client(tvdb)
+        client = attach_mock_client(tvdb)
         client.all_episodes.return_value = [
             {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 100},
         ]
@@ -528,7 +519,7 @@ class EpisodeCacheTests(unittest.TestCase):
     def test_episodes_uses_show_lang_and_separates_cache(self):
         """Japanese primary titles must not stick when show.lang is English (Dungeon Meshi case)."""
         tvdb = TVDB()
-        client = self._attach_mock_client(tvdb)
+        client = attach_mock_client(tvdb)
 
         def all_episodes(show_id, season_type="default", max_pages=50, language=None):
             if language == "eng":
@@ -667,7 +658,7 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         e = E()
         e.name = "TBA"
         e.description = ""
-        e.airdate = __import__("datetime").date(1, 1, 1)
+        e.airdate = datetime.date(1, 1, 1)
         e.absolute_number = 0
         e.indexerid = 0
         e.last_update_indexer = 0
@@ -686,8 +677,12 @@ class EpisodeSkipApplyTests(unittest.TestCase):
         }
         changed = TVEpisode.apply_tba_indexer_packet(e, packet)
         self.assertIn("name", changed)
+        self.assertIn("airdate", changed)
+        self.assertIn("absolute_number", changed)
         self.assertEqual(e.name, "Real Title")
         self.assertEqual(e.description, "Plot")
+        self.assertEqual(e.airdate, datetime.date(2024, 1, 15))
+        self.assertEqual(e.absolute_number, 12)
         self.assertEqual(e.last_update_indexer, 1700000000)
         self.assertEqual(e.indexerid, 999)
 
@@ -703,45 +698,48 @@ class EpisodeSkipApplyTests(unittest.TestCase):
 class MassActionSqlCollectionTests(unittest.TestCase):
     """Regression: get_sql() shape must be appended, not extended, into mass_action lists."""
 
-    def test_get_sql_unit_is_statement_plus_params(self):
-        """TVEpisode.get_sql returns [statement, params] — one mass_action unit."""
-        # Simulated get_sql return (matches tv.py UPDATE branch structure)
-        sql_unit = [
-            ("UPDATE tv_episodes SET name = ? WHERE episode_id = ?"),
-            ["エリスのゴブリン討伐", 2868],
+    @staticmethod
+    def _fake_get_sql(name: str, ep_id: int):
+        """Shape matches TVEpisode.get_sql(): [statement:str, params:list]."""
+        return [
+            "UPDATE tv_episodes SET name = ? WHERE episode_id = ?",
+            [name, ep_id],
         ]
+
+    def test_get_sql_unit_is_statement_plus_params(self):
+        """get_sql returns a two-element [query, params] mass_action unit."""
+        sql_unit = self._fake_get_sql("エリスのゴブリン討伐", 2868)
         self.assertEqual(len(sql_unit), 2)
-        self.assertIsInstance(sql_unit[0], (str, tuple))
-        # After the parenthesized string-only group, element 0 is the SQL text
-        statement = sql_unit[0][0] if isinstance(sql_unit[0], tuple) else sql_unit[0]
-        self.assertTrue(str(statement).lstrip().upper().startswith("UPDATE"))
+        self.assertIsInstance(sql_unit[0], str)
+        self.assertTrue(sql_unit[0].lstrip().upper().startswith("UPDATE"))
         self.assertIsInstance(sql_unit[1], list)
+        self.assertEqual(len(sql_unit[1]), 2)
 
     def test_append_keeps_mass_action_units_intact(self):
-        """Appending units yields [[stmt, params], ...]; extend would flatten and break mass_action."""
-        unit_a = ["UPDATE tv_episodes SET name = ? WHERE episode_id = ?", ["無職転生", 1]]
-        unit_b = ["UPDATE tv_episodes SET name = ? WHERE episode_id = ?", ["師匠", 2]]
-
+        """Appending get_sql units yields [[stmt, params], ...]; extend flattens and breaks mass_action."""
         sql_l = []
-        for unit in (unit_a, unit_b):
-            if unit:
-                sql_l.append(unit)
+        for name, ep_id in (("無職転生", 1), ("師匠", 2)):
+            sql = self._fake_get_sql(name, ep_id)
+            if sql:
+                sql_l.append(sql)
 
         self.assertEqual(len(sql_l), 2)
         for qu in sql_l:
-            # mass_action expects each qu to be [query, args] with len 2
             self.assertEqual(len(qu), 2)
             self.assertIsInstance(qu[0], str)
             self.assertTrue(qu[0].lstrip().upper().startswith("UPDATE"))
             self.assertIsInstance(qu[1], list)
 
+        # mass_action path receives intact units
+        db_mock = MagicMock()
+        db_mock.mass_action(sql_l)
+        db_mock.mass_action.assert_called_once_with(sql_l)
+
         # Document the broken extend path that caused: near "U": syntax error
         broken = []
-        for unit in (unit_a, unit_b):
+        for unit in sql_l:
             broken.extend(unit)
-        self.assertEqual(len(broken), 4)  # flat: stmt, params, stmt, params
-        self.assertIsInstance(broken[0], str)
-        # mass_action would take qu[0] of the string → first character "U"
+        self.assertEqual(len(broken), 4)
         self.assertEqual(broken[0][0], "U")
 
 
@@ -833,12 +831,12 @@ class TVDBSearchMappingTests(unittest.TestCase):
         with patch.object(client, "_get", return_value=[]) as mock_get:
             client.search("delicious in dungeon", language="en")
             mock_get.assert_called_once()
-            (_path,) = mock_get.call_args[0][:1] if mock_get.call_args[0] else (None,)
-            params = mock_get.call_args[0][1] if len(mock_get.call_args[0]) > 1 else mock_get.call_args[1].get("params")
-            if params is None:
-                params = mock_get.call_args.kwargs.get("params") or {}
+            path = mock_get.call_args.args[0]
+            params = mock_get.call_args.kwargs.get("params") or {}
+            self.assertEqual(path, "/search")
             self.assertNotIn("language", params)
             self.assertEqual(params.get("query"), "delicious in dungeon")
+            self.assertEqual(params.get("type"), "series")
 
     def test_complete_image_url_passthrough_and_relative(self):
         self.assertEqual(TVDB.complete_image_url("https://cdn.example/a.jpg"), "https://cdn.example/a.jpg")
@@ -917,13 +915,8 @@ class SeasonsOrderTests(unittest.TestCase):
         self.assertEqual(TVDB.resolve_season_type(S2()), "official")
 
     def test_fetch_series_season_types_from_extended(self):
-        from sickchill import settings
-
         tvdb = TVDB()
-        client = MagicMock()
-        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
-        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
-        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+        client = attach_mock_client(tvdb)
         client.series_extended.return_value = {
             "seasonTypes": [
                 {"type": "default", "name": "Aired Order"},
@@ -933,7 +926,6 @@ class SeasonsOrderTests(unittest.TestCase):
             "seasons": [],
         }
         client.season_types_catalog.return_value = []
-        tvdb._client = client
         types = tvdb._fetch_series_season_types(99)
         by_slug = {t["slug"]: t["name"] for t in types}
         self.assertEqual(by_slug["default"], "Aired Order")
@@ -942,13 +934,8 @@ class SeasonsOrderTests(unittest.TestCase):
 
     def test_fetch_series_season_types_collapses_official_and_default(self):
         """TVDB may return both default and official as aired — only one option; platform names stay series-specific."""
-        from sickchill import settings
-
         tvdb = TVDB()
-        client = MagicMock()
-        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
-        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
-        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+        client = attach_mock_client(tvdb)
         client.series_extended.return_value = {
             "seasonTypes": [
                 {"type": "official", "name": "Aired Order", "alternateName": "Aired"},
@@ -962,7 +949,6 @@ class SeasonsOrderTests(unittest.TestCase):
             ],
             "seasons": [],
         }
-        tvdb._client = client
         types = tvdb._fetch_series_season_types(78804)
         slugs = [t["slug"] for t in types]
         by_slug = {t["slug"]: t["name"] for t in types}
@@ -1001,16 +987,10 @@ class SeasonsOrderTests(unittest.TestCase):
 
     def test_episodes_uses_seasons_order(self):
         tvdb = TVDB()
-        client = MagicMock()
-        from sickchill import settings
-
-        client.apikey = tvdb.api_key or settings.TVDB_V4_APIKEY
-        client.pin = getattr(settings, "TVDB_V4_PIN", None) or ""
-        client.timeout = getattr(settings, "INDEXER_TIMEOUT", None) or 20
+        client = attach_mock_client(tvdb)
         client.all_episodes.return_value = [
             {"id": 1, "seasonNumber": 1, "number": 1, "name": "One", "lastUpdated": 1},
         ]
-        tvdb._client = client
 
         class Show:
             indexerid = 42

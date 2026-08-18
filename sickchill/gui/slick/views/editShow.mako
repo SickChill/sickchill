@@ -278,10 +278,10 @@
                                                 %>
                                                 <select name="seasons_order" id="seasons_order" class="form-control input-sm" style="max-width: 22em;">
                                                     % for opt in type_options:
-                                                        <option value="${opt['slug']}" ${('selected="selected"' if opt['slug'] == current_order else '')}>${opt['name']}</option>
+                                                        <option value="${opt['slug']}" ${selected(opt['slug'] == current_order)}>${opt['name']}</option>
                                                     % endfor
                                                     % if current_order not in [o['slug'] for o in type_options]:
-                                                        <option value="${current_order}" selected="selected">${current_order}</option>
+                                                        <option value="${current_order}" ${selected(True)}>${current_order}</option>
                                                     % endif
                                                 </select>
                                             </div>

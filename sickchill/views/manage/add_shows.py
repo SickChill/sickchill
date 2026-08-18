@@ -139,8 +139,8 @@ class AddShows(Home):
 
         if exact in [True, "1"]:
             logger.debug(_("Filtering results because exact match was checked"))
-            term_l = search_term.lower()
-            final_results = [item for item in final_results if term_l in (item.get("seriesName") or "").lower()]
+            term_l = (search_term or "").strip().lower()
+            final_results = [item for item in final_results if (item.get("seriesName") or "").strip().lower() == term_l]
 
         # Always sort by score (highest first); exact checkbox is filter-only
         final_results.sort(key=lambda x: int(x.get("score") or 0), reverse=True)

@@ -346,8 +346,8 @@
                                             <option value="" ${selected(settings.GUI_LANG == "")}>${_('System Language')}</option>
                                             <%
                                                 _gui_langs = [language for language in os.listdir(sickchill.init_helpers.locale_dir) if '_' in language]
-                                                # Alphabetical by display name (not filesystem / locale-code order)
-                                                _gui_langs.sort(key=lambda code: (lang_name(code) or code).casefold())
+                                                # Alphabetical by display name, then locale code for stable ties
+                                                _gui_langs.sort(key=lambda code: ((lang_name(code) or code).casefold(), code))
                                             %>
                                             % for lang in _gui_langs:
                                                 <option value="${lang}" ${selected(settings.GUI_LANG == lang)}>${lang_name(lang)}</option>

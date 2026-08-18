@@ -346,8 +346,8 @@ class TVShow(object):
         # One bulk V4 episode list (language + seasons_order), same path as force update
         try:
             self.idxr.clear_episode_cache(self.indexerid)
-        except Exception:
-            pass
+        except Exception as error:
+            logger.debug(f"clear_episode_cache failed for {self.indexerid} during TBA refresh: {error}")
 
         try:
             indexer_eps = self.idxr.episodes(self) or []
@@ -759,8 +759,8 @@ class TVShow(object):
         # Always refresh this show's episode cache for a new load cycle
         try:
             self.idxr.clear_episode_cache(self.indexerid)
-        except Exception:
-            pass
+        except Exception as error:
+            logger.debug(f"clear_episode_cache failed for {self.indexerid}: {error}")
 
         scanned_episodes = {}
         applied = 0
