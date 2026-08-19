@@ -87,11 +87,14 @@ def get_id_from_name(name):
 
 
 def drop_indexer(indexer_id):
-    """Remove one indexer_id from both in-memory maps (no DB write)."""
+    """Remove one indexer_id from both in-memory maps and persisted scene_names rows."""
+    indexer_id = int(indexer_id)
     with name_cache_lock:
+        cache_db_con = db.DBConnection("cache.db")
+        cache_db_con.action("DELETE FROM scene_names WHERE indexer_id = ?", [indexer_id])
         removed = _drop_indexer(indexer_id)
         if removed:
-            logger.debug("Internal name cache removed for indexer_id " + str(int(indexer_id)) + ": [ " + ", ".join(sorted(removed)) + " ]")
+            logger.debug("Internal name cache removed for indexer_id " + str(indexer_id) + ": [ " + ", ".join(sorted(removed)) + " ]")
 
 
 def clear_cache(indexerid=0):

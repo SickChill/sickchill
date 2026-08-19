@@ -80,7 +80,7 @@ class AddCacheIndexes(ResultsTable):
 
 class AddSceneNamesNameIndex(AddCacheIndexes):
     def test(self):
-        return self.has_index("idx_scene_names_name")
+        return self.has_index("idx_scene_names_name") and self.get_db_version() >= 3
 
     def execute(self):
         self.connection.action("CREATE INDEX IF NOT EXISTS idx_scene_names_name ON scene_names (name);")
