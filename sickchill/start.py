@@ -217,6 +217,21 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.TVDB_USER = check_setting_str(settings.CFG, "General", "tvdb_user")
         settings.TVDB_USER_KEY = check_setting_str(settings.CFG, "General", "tvdb_user_key", censor_log=True)
+        # Same pattern as the old fixed V3 key, but overridable and seeded into config.ini:
+        # env > config.ini > settings.TVDB_V4_APIKEY default (check_setting_str writes def_val into CFG when missing).
+        settings.TVDB_V4_APIKEY = os.environ.get("TVDB_V4_APIKEY") or check_setting_str(
+            settings.CFG,
+            "General",
+            "tvdb_v4_apikey",
+            settings.TVDB_V4_APIKEY,
+            censor_log=True,
+        )
+        settings.TVDB_V4_PIN = os.environ.get("TVDB_V4_PIN") or check_setting_str(settings.CFG, "General", "tvdb_v4_pin", "", censor_log=True)
+        # Env values skip check_setting_str's censor_log path — always register final credentials.
+        if settings.TVDB_V4_APIKEY:
+            logger.censored_items[("General", "tvdb_v4_apikey")] = settings.TVDB_V4_APIKEY
+        if settings.TVDB_V4_PIN:
+            logger.censored_items[("General", "tvdb_v4_pin")] = settings.TVDB_V4_PIN
 
         settings.TRASH_REMOVE_SHOW = check_setting_bool(settings.CFG, "General", "trash_remove_show")
         settings.TRASH_ROTATE_LOGS = check_setting_bool(settings.CFG, "General", "trash_rotate_logs")
@@ -1082,6 +1097,11 @@ def save_all():
     for show in settings.show_list:
         show.save_to_db()
 
+    # persist in-memory name cache (scene_names) in one write
+    from sickchill.oldbeard import name_cache
+
+    name_cache.save_all_cached_names()
+
     # save config
     logger.info("Saving config file to disk")
     save_config()
@@ -1172,6 +1192,8 @@ def save_config():
                 "anon_redirect": settings.ANON_REDIRECT or "disabled",
                 "tvdb_user": settings.TVDB_USER,
                 "tvdb_user_key": settings.TVDB_USER_KEY,
+                "tvdb_v4_apikey": settings.TVDB_V4_APIKEY,
+                "tvdb_v4_pin": settings.TVDB_V4_PIN,
                 "api_key": settings.API_KEY,
                 "debug": int(settings.DEBUG),
                 "dbdebug": int(settings.DBDEBUG),

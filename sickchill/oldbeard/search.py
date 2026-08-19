@@ -5,7 +5,6 @@ import threading
 import traceback
 from typing import TYPE_CHECKING
 
-import sickchill.oldbeard.name_cache
 import sickchill.oldbeard.providers
 from sickchill import logger, settings
 from sickchill.helper.exceptions import AuthException
@@ -342,7 +341,6 @@ def search_for_needed_episodes():
 
     for curShow in show_list:
         if not curShow.paused:
-            sickchill.oldbeard.name_cache.build_name_cache(curShow)
             episodes.extend(wanted_episodes(curShow, from_date))
 
     if not episodes:
@@ -417,8 +415,8 @@ def search_providers(show, episodes, manual=False, downCurQuality=False):
 
     did_search = False
 
-    # build name cache for show
-    sickchill.oldbeard.name_cache.build_name_cache(show)
+    # Name cache is process-global (built at startup / exception refresh / show add).
+    # Daily and backlog search use dict lookups only — do not rebuild from SQLite here.
 
     # noinspection DuplicatedCode
     original_thread_name = threading.current_thread().name

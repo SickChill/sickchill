@@ -3,7 +3,6 @@ import json
 import os
 import re
 import traceback
-from operator import itemgetter
 
 import dateutil.parser
 from tornado.web import HTTPError
@@ -87,28 +86,64 @@ class AddShows(Home):
                 results.setdefault(index, []).extend(indexer_results)
 
         for index, shows in results.items():
-            # noinspection PyUnresolvedReferences
-            final_results.extend(
-                {
-                    (
-                        sickchill.indexer[index].name,
-                        index,
-                        sickchill.indexer[index].show_url,
-                        show["id"],
-                        show["seriesName"],
-                        show["firstAired"],
-                        sickchill.tv.Show.find(settings.show_list, show["id"]) is not None,
-                    )
-                    for show in shows
-                }
-            )
+            for show in shows:
+                show_id = show["id"]
+                series_name = show.get("seriesName") or ""
+                first_aired = show.get("firstAired") or ""
+                in_list = sickchill.tv.Show.find(settings.show_list, show_id) is not None
+                # Legacy pipe fields for whichSeries form value (indexes 0–6)
+                which_series = "|".join(
+                    [
+                        str(sickchill.indexer[index].name),
+                        str(index),
+                        str(sickchill.indexer[index].show_url),
+                        str(show_id),
+                        str(series_name).replace("|", " "),
+                        str(first_aired).replace("|", " "),
+                        "1" if in_list else "0",
+                    ]
+                )
+                try:
+                    # Already 0–100 from TVDB mapping; keep integer for UI
+                    score = round(float(show.get("score") or 0))
+                except (TypeError, ValueError):
+                    score = 0
+                final_results.append(
+                    {
+                        "whichSeries": which_series,
+                        "indexer": sickchill.indexer[index].name,
+                        "indexer_id": index,
+                        "show_url": sickchill.indexer[index].show_url,
+                        "id": show_id,
+                        "seriesName": series_name,
+                        "firstAired": first_aired,
+                        "inShowList": in_list,
+                        "score": score,
+                        "image_url": show.get("image_url") or "",
+                        "network": show.get("network") or "",
+                        "overview": show.get("overview") or "",
+                        "status": show.get("status") or "",
+                        "year": show.get("year") or "",
+                        "source": show.get("source") or "tvdb",
+                    }
+                )
+
+        # Dedupe by indexer id (multi-term searches can repeat hits)
+        deduped = {}
+        for item in final_results:
+            key = (item["indexer_id"], item["id"])
+            prev = deduped.get(key)
+            if prev is None or float(item.get("score") or 0) > float(prev.get("score") or 0):
+                deduped[key] = item
+        final_results = list(deduped.values())
 
         if exact in [True, "1"]:
-            logger.debug(_("Filtering and sorting out excess results because exact match was checked"))
-            final_results = [item for item in final_results if search_term.lower() in item[4].lower()]
-            final_results.sort(key=itemgetter(4))
-            final_results.sort(key=lambda x: x[4].lower().index(search_term.lower()))
-            final_results.sort(key=lambda x: x[4].lower() == search_term.lower(), reverse=True)
+            logger.debug(_("Filtering results because exact match was checked"))
+            term_l = (search_term or "").strip().lower()
+            final_results = [item for item in final_results if (item.get("seriesName") or "").strip().lower() == term_l]
+
+        # Always sort by score (highest first); exact checkbox is filter-only
+        final_results.sort(key=lambda x: int(x.get("score") or 0), reverse=True)
 
         lang_id = sickchill.indexer[indexer or sickchill.indexer.TVDB].lang_dict[lang]
         return json.dumps({"results": final_results, "langid": lang_id, "success": len(final_results) > 0})
