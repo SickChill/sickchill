@@ -113,15 +113,18 @@ def clear_cache(indexerid=0):
 
 
 def save_all_cached_names():
-    """Commit cache to database file in one mass_action write."""
+    """Commit cache to database file in one mass_action write.
+
+    Holds name_cache_lock through the write so a concurrent drop_indexer cannot
+    leave a stale snapshot that recreates deleted scene_names rows.
+    """
     with name_cache_lock:
         items = list(name_cache.items())
+        if not items:
+            return
 
-    if not items:
-        return
-
-    cache_db_con = db.DBConnection("cache.db")
-    cache_db_con.mass_action([["INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name]] for name, indexer_id in items])
+        cache_db_con = db.DBConnection("cache.db")
+        cache_db_con.mass_action([["INSERT OR REPLACE INTO scene_names (indexer_id, name) VALUES (?, ?)", [indexer_id, name]] for name, indexer_id in items])
 
 
 def build_name_cache(show=None):
@@ -142,7 +145,7 @@ def build_name_cache(show=None):
                     break
                 _build_show_name_cache_locked(cur_show)
 
-            # Learned provider names from scene_names (persist across rebuilds)
+            # Remaining scene_names rows (after per-show stale purge) e.g. indexer_id 0
             _load_persisted_names()
             for cur_show in settings.show_list:
                 if settings.stopping or settings.restarting:
@@ -155,13 +158,40 @@ def build_name_cache(show=None):
 
 
 def _build_show_name_cache_locked(show):
-    """Refresh in-memory mappings for one show. Caller must hold name_cache_lock. No scene_names rewrite."""
-    _drop_indexer(show.indexerid)
+    """Refresh in-memory mappings for one show. Caller must hold name_cache_lock.
 
-    for season in scene_exceptions.get_all_scene_exceptions(show.indexerid).values():
+    Purges persisted scene_names aliases for this indexer that are no longer in the
+    active set (scene exceptions + show_name + custom_name) so deleted aliases cannot
+    return via _load_persisted_names or after restart.
+    """
+    indexer_id = int(show.indexerid)
+    active = set()
+
+    for season in scene_exceptions.get_all_scene_exceptions(indexer_id).values():
         for exception in season:
-            _add_mapping(exception["show_name"], show.indexerid)
+            name = helpers.full_sanitizeSceneName(exception["show_name"])
+            if name:
+                active.add(name)
 
-    _add_mapping(show.show_name, show.indexerid)
-    if show.custom_name:
-        _add_mapping(show.custom_name, show.indexerid)
+    for candidate in (show.show_name, show.custom_name):
+        if not candidate:
+            continue
+        name = helpers.full_sanitizeSceneName(candidate)
+        if name:
+            active.add(name)
+
+    # Drop memory first, then purge stale DB aliases, then re-add active mappings
+    _drop_indexer(indexer_id)
+
+    cache_db_con = db.DBConnection("cache.db")
+    if active:
+        placeholders = ",".join("?" * len(active))
+        cache_db_con.action(
+            f"DELETE FROM scene_names WHERE indexer_id = ? AND name NOT IN ({placeholders})",
+            [indexer_id, *active],
+        )
+    else:
+        cache_db_con.action("DELETE FROM scene_names WHERE indexer_id = ?", [indexer_id])
+
+    for name in active:
+        _add_mapping(name, indexer_id)
