@@ -750,8 +750,17 @@ home_addShows.mako
     padding: 10px;
 }
 
+/* Keep every hub tile the same width regardless of icon/text content */
+#addShowPortal a.btn-large {
+    display: table;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+}
+
 div.button {
     display: table-cell;
+    width: 72px;
     padding-left: 10px;
     vertical-align: middle;
 }
@@ -761,6 +770,7 @@ div.buttontext {
     padding-left: 20px;
     text-align: left;
     white-space: normal;
+    width: 100%;
 }
 
 div.buttontext h3 {
@@ -787,6 +797,36 @@ div.buttontext p {
 
 .add-list-icon-addtrakt {
     background-position: -38px 0;
+}
+
+/* TMDB + TVMaze stacked logos (replaces Trakt sprite on Add Shows hub) */
+.add-list-icon-tmdb-tvmaze {
+    position: relative;
+    top: 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 64px;
+    height: 72px;
+    float: left;
+    background: none;
+}
+
+.add-list-icon-tmdb-tvmaze .add-list-logo {
+    display: block;
+    width: 56px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.add-list-icon-tmdb-tvmaze .add-list-logo-tmdb {
+    height: 32px;
+}
+
+.add-list-icon-tmdb-tvmaze .add-list-logo-tvmaze {
+    height: 32px;
 }
 
 .add-list-icon-addimdb {

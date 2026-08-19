@@ -24,11 +24,16 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-            <a href="${static_url('addShows/trendingShows/?traktList=anticipated', include_version=False)}" id="btnNewShow" class="btn btn-large">
-                <div class="button"><div class="add-list-icon-addtrakt"></div></div>
+            <a href="${static_url('addShows/trendingShows/?tmdbList=trending', include_version=False)}" id="btnNewShow" class="btn btn-large">
+                <div class="button">
+                    <div class="add-list-icon-tmdb-tvmaze" title="TMDB / TVMaze">
+                        <img src="${static_url('images/tmdb_logo.svg')}" alt="TMDB" class="add-list-logo add-list-logo-tmdb" />
+                        <img src="${static_url('images/tvmaze_icon.png')}" alt="TVMaze" class="add-list-logo add-list-logo-tvmaze" />
+                    </div>
+                </div>
                 <div class="buttontext">
-                    <h3>${_('Add From Trakt Lists')}</h3>
-                    <p>${_('For shows that you haven\'t downloaded yet, this option lets you choose from a show from one of the Trakt lists to add to SickChill.')}</p>
+                    <h3>${_('Add From TMDB Lists')}</h3>
+                    <p>${_('TMDB trending, popular, top rated, and on-the-air shows, or')}<br/>${_('TVMaze upcoming series premieres, then add them via TheTVDB when an id is known.')}</p>
                 </div>
             </a>
         </div>

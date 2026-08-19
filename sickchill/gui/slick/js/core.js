@@ -4302,8 +4302,10 @@ const SICKCHILL = {
             $('#search-button').on('click', searchIndexers);
 
             $('#addShowButton').on('click', () => {
-                // If they haven't picked a show don't let them submit
-                if (!$('input:radio[name="whichSeries"]:checked').val()) {
+                // Radio pick from search, or hidden id from addShowByID / provided metadata
+                const whichSeries = $('input:radio[name="whichSeries"]:checked').val()
+                    || $('input:hidden[name="whichSeries"]').val();
+                if (!whichSeries) {
                     notifyModal('You must choose a show to continue');
                     return false;
                 }
@@ -4432,19 +4434,22 @@ const SICKCHILL = {
             );
         },
         trendingShows() {
+            const listParameter = () => ($('#tmdbList').val() || $('#traktList').val() || 'trending');
             $('#trendingShows').loadRemoteShows(
-                '/addShows/getTrendingShows/?traktList=' + $('#traktList').val(),
-                'Loading trending shows...',
-                'Trakt timed out, refresh page to try again',
+                '/addShows/getTrendingShows/?tmdbList=' + listParameter(),
+                'Loading discovery shows...',
+                'List request timed out, refresh page to try again',
             );
 
             $('#traktlistselection').on('change', event => {
-                const traktList = event.target.value;
-                window.history.replaceState({}, document.title, '?traktList=' + traktList);
+                const listKey = event.target.value;
+                $('#traktList').val(listKey);
+                $('#tmdbList').val(listKey);
+                window.history.replaceState({}, document.title, '?tmdbList=' + listKey);
                 $('#trendingShows').loadRemoteShows(
-                    '/addShows/getTrendingShows/?traktList=' + traktList,
-                    'Loading trending shows...',
-                    'Trakt timed out, refresh page to try again',
+                    '/addShows/getTrendingShows/?tmdbList=' + listKey,
+                    'Loading discovery shows...',
+                    'List request timed out, refresh page to try again',
                 );
             });
         },

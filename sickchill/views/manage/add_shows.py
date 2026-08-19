@@ -3,6 +3,7 @@ import json
 import os
 import re
 import traceback
+from urllib.parse import quote_plus
 
 import dateutil.parser
 from tornado.web import HTTPError
@@ -10,12 +11,11 @@ from tornado.web import HTTPError
 import sickchill
 from sickchill import logger, settings
 from sickchill.helper import sanitize_filename, try_int
-from sickchill.oldbeard import config, db, filters, helpers, ui
+from sickchill.helper.list_status import build_list_status
+from sickchill.oldbeard import config, db, filters, helpers, tmdbLists, tvmazePremieres, ui
 from sickchill.oldbeard.blackandwhitelist import short_group_names
 from sickchill.oldbeard.common import Quality
-from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.oldbeard.trakt_api import TraktAPI
-from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
@@ -23,6 +23,31 @@ from sickchill.tv import TVShow
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
+
+# Discovery list keys (TMDB + TVMaze). Old traktList= query values are aliased below.
+_DISCOVERY_LIST_KEYS = ("trending", "popular", "top_rated", "on_the_air", "premieres")
+
+_DISCOVERY_LIST_ALIASES = {
+    "anticipated": "trending",
+    "newshow": "premieres",
+    "newseason": "premieres",
+    "collected": "popular",
+    "watched": "popular",
+    "played": "popular",
+    "recommended": "top_rated",
+    "tvmaze": "premieres",
+    "upcoming": "premieres",
+}
+
+
+def _discovery_list_options():
+    return {
+        "trending": _("Trending (TMDB)"),
+        "popular": _("Popular (TMDB)"),
+        "top_rated": _("Top Rated (TMDB)"),
+        "on_the_air": _("On The Air (TMDB)"),
+        "premieres": _("Upcoming Premieres (TVMaze)"),
+    }
 
 
 @Route("/addShows(/?.*)", name="addShows")
@@ -203,14 +228,24 @@ class AddShows(Home):
                     cur_dir["added_already"] = True
         return t.render(dirList=dir_list)
 
-    def newShow(self, show_to_add=None, other_shows=None, search_string=None):
+    def newShow(self, show_to_add=None, other_shows=None, search_string=None, exact=None):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
+
+        ``exact`` must be in the signature: the web router passes query args as kwargs, and an
+        unexpected ``exact`` caused TypeError → empty ``newShow()`` (search box not populated).
         """
-        show_to_add = self.get_body_argument("show_to_add", show_to_add)
-        other_shows = other_shows if other_shows is not None else self.get_body_arguments("other_shows")
-        search_string = self.get_body_argument("search_string", search_string)
+        # Prefer router/query kwargs; fall back to explicit get_* for POST body / in-process calls
+        if show_to_add is None:
+            show_to_add = self.get_body_argument("show_to_add", default=None)
+        if other_shows is None:
+            other_shows = self.get_body_arguments("other_shows") or None
+        if search_string is None:
+            search_string = self.get_query_argument("search_string", default="") or self.get_body_argument("search_string", default="")
+        if exact is None:
+            exact = self.get_query_argument("exact", default="") or self.get_body_argument("exact", default="")
+        exact_match = str(exact or "").strip().lower() in ("1", "true", "yes", "on")
 
         t = PageTemplate(rh=self, filename="addShows_newShow.mako")
 
@@ -245,6 +280,7 @@ class AddShows(Home):
             enable_anime_options=True,
             use_provided_info=use_provided_info,
             default_show_name=default_show_name,
+            exact_match=exact_match,
             other_shows=other_shows,
             provided_show_dir=show_dir,
             provided_indexer_id=provided_indexer_id,
@@ -260,84 +296,125 @@ class AddShows(Home):
             action="newShow",
         )
 
+    @staticmethod
+    def _resolve_discovery_list_key(raw: str) -> str:
+        key = (raw or "trending").strip().lower()
+        key = _DISCOVERY_LIST_ALIASES.get(key, key)
+        if key not in _DISCOVERY_LIST_KEYS:
+            return "trending"
+        return key
+
+    @staticmethod
+    def _mark_already_added(cards: list) -> None:
+        """Soft-mark cards already in the library (tvdb id or title+year)."""
+        by_tvdb = {int(show.indexerid): show for show in settings.show_list if getattr(show, "indexerid", None)}
+        by_title_year = {}
+        for show in settings.show_list:
+            name = (getattr(show, "name", None) or getattr(show, "show_name", None) or "").strip().lower()
+            year = None
+            try:
+                year = int(str(getattr(show, "startyear", "") or "")[:4])
+            except (TypeError, ValueError):
+                year = None
+            if name:
+                by_title_year[(name, year)] = show
+
+        for card in cards:
+            tvdb_id = card.get("tvdb_id")
+            if tvdb_id and int(tvdb_id) in by_tvdb:
+                card["already_added"] = True
+                continue
+            title = (card.get("title") or "").strip().lower()
+            year = card.get("year")
+            card["already_added"] = bool(title and (title, year) in by_title_year)
+
     def trendingShows(self):
-        """
-        Display the new show page which collects a tvdb id, folder, and extra options and
-        posts them to addNewShow
-        """
-
-        trakt_list = self.get_query_argument("traktList", default="anticipated").lower()
-
-        # noinspection SpellCheckingInspection
-        trakt_options = {
-            "anticipated": _("Most Anticipated Shows"),
-            "newshow": _("New Shows"),
-            "newseason": _("Season Premieres"),
-            "trending": _("Trending Shows"),
-            "popular": _("Popular Shows"),
-            "watched": _("Most Watched Shows"),
-            "played": _("Most Played Shows"),
-            "collected": _("Most Collected Shows"),
-        }
-        if settings.TRAKT_ACCESS_TOKEN:
-            trakt_options["recommended"] = _("Recommended Shows")
+        """Shell page for TMDB / TVMaze discovery lists (AJAX loads getTrendingShows)."""
+        raw = self.get_query_argument("tmdbList", default="") or self.get_query_argument("traktList", default="trending")
+        list_key = self._resolve_discovery_list_key(raw)
+        list_options = _discovery_list_options()
 
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
         return t.render(
-            title=trakt_options[trakt_list],
-            header=trakt_options[trakt_list],
-            traktList=trakt_list,
-            trakt_options=trakt_options,
+            title=list_options[list_key],
+            header=list_options[list_key],
+            list_key=list_key,
+            list_options=list_options,
+            # Compat for older JS reading #traktList
+            traktList=list_key,
+            trakt_options=list_options,
             controller="addShows",
             action="trendingShows",
         )
 
     def getTrendingShows(self):
-        """
-        Display the new show page which collects a tvdb id, folder, and extra options and posts them to addNewShow
-        """
+        """AJAX fragment: TMDB or TVMaze discovery cards."""
         t = PageTemplate(rh=self, filename="trendingShows.mako")
 
-        trakt_list = self.get_query_argument("traktList", "").lower()
-
-        # noinspection SpellCheckingInspection
-        if trakt_list == "trending":
-            page_url = "shows/trending"
-        elif trakt_list == "popular":
-            page_url = "shows/popular"
-        elif trakt_list == "anticipated":
-            page_url = "shows/anticipated"
-        elif trakt_list == "collected":
-            page_url = "shows/collected"
-        elif trakt_list == "watched":
-            page_url = "shows/watched"
-        elif trakt_list == "played":
-            page_url = "shows/played"
-        elif trakt_list == "recommended":
-            page_url = "recommendations/shows"
-        elif trakt_list == "newshow":
-            page_url = "calendars/all/shows/new/{0}/30".format(sc_today().strftime("%Y-%m-%d"))
-        elif trakt_list == "newseason":
-            page_url = "calendars/all/shows/premieres/{0}/30".format(sc_today().strftime("%Y-%m-%d"))
-        else:
-            page_url = "shows/anticipated"
+        raw = self.get_query_argument("tmdbList", default="") or self.get_query_argument("traktList", default="")
+        list_key = self._resolve_discovery_list_key(raw)
 
         trending_shows = []
-        black_list = False
-        try:
-            trending_shows, black_list = trakt_trending.fetch_trending_shows(trakt_list, page_url)
-        except Exception as error:
-            logger.warning(f"Could not get trending shows: {error}")
+        status_code = None
+        settings_url = f"{settings.WEB_ROOT}/config/general/"
 
-        return t.render(black_list=black_list, trending_shows=trending_shows)
+        try:
+            if list_key == "premieres":
+                trending_shows = tvmazePremieres.fetch_premieres()
+            else:
+                trending_shows = tmdbLists.fetch_list(list_key)
+            if not trending_shows:
+                status_code = "empty"
+            else:
+                self._mark_already_added(trending_shows)
+        except tmdbLists.TMDBMissingKeyError as error:
+            status_code = "missing_key"
+            logger.warning(f"TMDB discovery list unavailable: {error}")
+        except (tmdbLists.TMDBListsError, tvmazePremieres.TVMazePremieresError) as error:
+            status_code = "fetch_failed"
+            logger.warning(f"Could not get discovery shows ({list_key}): {error}")
+        except Exception as error:
+            status_code = "fetch_failed"
+            logger.warning(f"Could not get discovery shows ({list_key}): {error}")
+
+        list_status = build_list_status(status_code, settings_url=settings_url)
+        return t.render(
+            black_list=False,
+            trending_shows=trending_shows,
+            list_status=list_status,
+            list_key=list_key,
+        )
 
     def getTrendingShowImage(self):
-        indexer_id = self.get_body_argument("indexerId")
-        image_url = sickchill.indexer.series_poster_url_by_id(indexer_id)
-        if image_url:
-            image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexer_id))
-            trakt_trending.cache_image(image_url, image_path)
-            return indexer_id
+        """Legacy Trakt poster cache endpoint — unused for TMDB/TVMaze CDN posters."""
+        return ""
+
+    def addShowFromTMDB(self):
+        """Lazy-resolve TMDB → TVDB id, then addShowByID or name search."""
+        tmdb_id = try_int(self.get_query_argument("tmdb_id", default="0"), 0)
+        show_name = self.get_query_argument("show_name", default="") or ""
+        # year reserved for future soft-match; accepted for API compatibility
+        _year = self.get_query_argument("year", default="")
+
+        if tmdb_id <= 0:
+            ui.notifications.error(_("Unable to add show"), _("Missing TMDB id"))
+            return self.redirect("/addShows/")
+
+        try:
+            tvdb_id = tmdbLists.resolve_tvdb_id(tmdb_id)
+        except tmdbLists.TMDBMissingKeyError:
+            ui.notifications.error(_("Unable to add show"), _("TMDB API key is not configured"))
+            return self.redirect("/addShows/trendingShows/")
+        except Exception as error:
+            logger.warning(f"TMDB external_ids failed for {tmdb_id}: {error}")
+            tvdb_id = None
+
+        if tvdb_id:
+            return self.redirect(f"/addShows/addShowByID?indexer_id={tvdb_id}&show_name={quote_plus(show_name)}")
+
+        # No TVDB mapping — name search with exact-match (do not guess TVDB from title)
+        search = show_name.strip() or str(tmdb_id)
+        return self.redirect(f"/addShows/newShow/?search_string={quote_plus(search)}&exact=1")
 
     def popularShows(self):
         """
@@ -496,7 +573,11 @@ class AddShows(Home):
         if try_int(indexer_id) <= 0 or existing:
             return add_error(existing)
 
-        return self.newShow("|".join([str(1), "", indexer_id, ""]), [], search_string=show_name)
+        # Trakt-style: always show pick-a-show (#2) as user confirmation, even for one hit.
+        # Do not use use_provided_info — that skips confirmation and treats the add like
+        # "existing metadata" (wrong when there is no show folder yet).
+        search = (show_name or "").strip() or str(indexer_id)
+        return self.redirect(f"/addShows/newShow/?search_string={quote_plus(search)}&exact=1")
 
     def addNewShow(self):
         """
