@@ -155,8 +155,8 @@ def get_all_scene_exceptions(indexer_id: int) -> dict:
         for season in list(all_exceptions_dict.keys()):
             all_exceptions_dict[season] = sorted(all_exceptions_dict[season], key=lambda x: (x["custom"], x["show_name"].lower()))
 
-    logger.debug(f"get_all_scene_exceptions: {all_exceptions_dict}")
-    logger.debug(f"exceptions_cache for {indexer_id}: {exceptions_cache.get(indexer_id)}")
+    # logger.debug(f"get_all_scene_exceptions: {all_exceptions_dict}")
+    # logger.debug(f"exceptions_cache for {indexer_id}: {exceptions_cache.get(indexer_id)}")
     return all_exceptions_dict
 
 
@@ -168,25 +168,51 @@ def get_scene_exception_by_name_multiple(show_name) -> list:
     """
     Given a show name, return the indexerid of the exception, None if no exception
     is present.
-    """
 
-    # try the obvious case first
+    Never SELECT the whole scene_exceptions table. Prefer name_cache / exceptions_cache,
+    then a targeted equality query; sanitize/dot-space fallback walks exceptions_cache only.
+    """
+    if not show_name:
+        return [(None, None)]
+
+    from sickchill.oldbeard import name_cache
+
+    name_lower = show_name.lower()
+    sanitized = helpers.full_sanitizeSceneName(show_name)
+
+    # 1) Sanitized name in name_cache → seasons from exceptions_cache if present
+    indexer_id = name_cache.get_id_from_name(show_name)
+    if indexer_id is not None:
+        out = []
+        for season, names in (exceptions_cache.get(int(indexer_id)) or {}).items():
+            for cur_name in names:
+                if name_lower == cur_name.lower() or sanitized == helpers.full_sanitizeSceneName(cur_name):
+                    out.append((int(indexer_id), int(season)))
+                    break
+        if out:
+            return out
+        return [(int(indexer_id), -1)]
+
+    # 2) Targeted equality query — never SELECT *
     cache_db_con = db.DBConnection("cache.db")
-    exception_result = cache_db_con.select("SELECT indexer_id, season FROM scene_exceptions WHERE LOWER(show_name) = ? ORDER BY season", [show_name.lower()])
+    exception_result = cache_db_con.select(
+        "SELECT indexer_id, season FROM scene_exceptions WHERE LOWER(show_name) = ? ORDER BY season",
+        [name_lower],
+    )
     if exception_result:
         return [(int(x["indexer_id"]), int(x["season"])) for x in exception_result]
 
+    # 3) Sanitize / dot-space fallback walks exceptions_cache, not the table
     out = []
-    all_exception_results = cache_db_con.select("SELECT show_name, indexer_id, season FROM scene_exceptions")
-
-    for cur_exception in all_exception_results:
-        cur_exception_name = cur_exception["show_name"]
-        cur_indexer_id = int(cur_exception["indexer_id"])
-
-        if show_name.lower() in (cur_exception_name.lower(), sickchill.oldbeard.helpers.sanitizeSceneName(cur_exception_name).lower().replace(".", " ")):
-            logger.debug(f"Scene exception lookup got indexer id {cur_indexer_id}, using that")
-
-            out.append((cur_indexer_id, int(cur_exception["season"])))
+    for cur_indexer_id, seasons in exceptions_cache.items():
+        for season, names in seasons.items():
+            for cur_exception_name in names:
+                if name_lower in (
+                    cur_exception_name.lower(),
+                    helpers.sanitizeSceneName(cur_exception_name).lower().replace(".", " "),
+                ):
+                    out.append((int(cur_indexer_id), int(season)))
+                    break
 
     if out:
         return out
@@ -219,6 +245,13 @@ def update_custom_scene_exceptions(indexer_id, scene_exceptions: dict) -> None:
                 )
     cache_db_con.mass_action(sql_actions)
     rebuild_exception_cache(indexer_id)
+
+    # Keep process-global name cache in sync for this show (no daily-search rebuild path)
+    show = Show.find(settings.show_list, indexer_id)
+    if show:
+        from sickchill.oldbeard import name_cache
+
+        name_cache.build_name_cache(show)
 
 
 def retrieve_exceptions() -> None:

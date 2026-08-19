@@ -1097,6 +1097,11 @@ def save_all():
     for show in settings.show_list:
         show.save_to_db()
 
+    # persist in-memory name cache (scene_names) in one write
+    from sickchill.oldbeard import name_cache
+
+    name_cache.save_all_cached_names()
+
     # save config
     logger.info("Saving config file to disk")
     save_config()

@@ -71,7 +71,10 @@ def _tvdb_language_candidates(language: str | None) -> list[str]:
 
 
 def _apply_series_translation(raw: dict, translation: dict | None) -> dict:
-    """Overlay translated name/overview onto a series payload copy when present."""
+    """Overlay translated name/overview onto a series payload copy when present.
+
+    Returns the original ``raw`` object when nothing would change (avoids copy + noisy logs).
+    """
     if not isinstance(translation, dict):
         return raw
     name = (translation.get("name") or translation.get("seriesName") or "").strip()
@@ -80,6 +83,14 @@ def _apply_series_translation(raw: dict, translation: dict | None) -> dict:
         overview = str(overview).strip()
     if not name and not overview:
         return raw
+
+    cur_name = (raw.get("name") or "").strip()
+    cur_overview = str(raw.get("overview") or "").strip()
+    will_change_name = bool(name) and name != cur_name
+    will_change_overview = bool(overview) and overview != cur_overview
+    if not will_change_name and not will_change_overview:
+        return raw
+
     updated = dict(raw)
     if name:
         updated["name"] = name
@@ -392,6 +403,15 @@ class TVDB(Indexer):
         self._episode_index_cache: dict[tuple, dict] = {}
         self._episode_cache_ttl = 300.0  # seconds; reuse within a load, refresh afterward
         self._episode_cache_max_shows = 32  # bound process lifetime growth
+        # Short-lived series caches (same TTL idea as episodes) — artwork/NFO/add re-hit series() often
+        self._series_extended_cache: dict[int, tuple[float, dict]] = {}
+        # (series_id, lang_key) -> translated/applied extended payload
+        self._series_translated_cache: dict[tuple, tuple[float, dict]] = {}
+        # (series_id, tvdb_lang_code) -> translation endpoint payload (or None miss)
+        self._series_translation_payload_cache: dict[tuple, tuple[float, dict | None]] = {}
+        # series_id -> season types list (RAM front for SQLite day cache)
+        self._season_types_mem_cache: dict[int, tuple[float, list]] = {}
+        self._series_cache_ttl = 300.0
 
     @property
     def api_key(self):
@@ -412,10 +432,14 @@ class TVDB(Indexer):
         return _UpdatesResult(self.client, fromTime, toTime, language)
 
     def clear_episode_cache(self, show_id=None):
-        """Drop in-memory episode caches (optionally for one show)."""
+        """Drop in-memory episode and series caches (optionally for one show)."""
         if show_id is None:
             self._episode_list_cache.clear()
             self._episode_index_cache.clear()
+            self._series_extended_cache.clear()
+            self._series_translated_cache.clear()
+            self._series_translation_payload_cache.clear()
+            self._season_types_mem_cache.clear()
             return
         show_id = int(show_id)
         for key in list(self._episode_list_cache):
@@ -424,6 +448,14 @@ class TVDB(Indexer):
         for key in list(self._episode_index_cache):
             if key[0] == show_id:
                 del self._episode_index_cache[key]
+        self._series_extended_cache.pop(show_id, None)
+        self._season_types_mem_cache.pop(show_id, None)
+        for key in list(self._series_translated_cache):
+            if key[0] == show_id:
+                del self._series_translated_cache[key]
+        for key in list(self._series_translation_payload_cache):
+            if key[0] == show_id:
+                del self._series_translation_payload_cache[key]
 
     def _prune_episode_cache(self):
         """Drop expired entries and bound unique show count."""
@@ -457,6 +489,92 @@ class TVDB(Indexer):
             drop_id = show_ids.pop(0)
             self.clear_episode_cache(drop_id)
 
+    @staticmethod
+    def _series_lang_key(language: str | None) -> str:
+        """Normalize language for series translated-cache keys."""
+        if not language:
+            return ""
+        return str(language).strip().lower().replace("_", "-")
+
+    def _prune_series_cache(self):
+        """Drop expired series/translation/season-type RAM entries and bound size."""
+        import time as _time
+
+        now = _time.monotonic()
+        ttl = self._series_cache_ttl
+
+        for key, (ts, _data) in list(self._series_extended_cache.items()):
+            if now - ts > ttl:
+                del self._series_extended_cache[key]
+        for key, (ts, _data) in list(self._series_translated_cache.items()):
+            if now - ts > ttl:
+                del self._series_translated_cache[key]
+        for key, (ts, _data) in list(self._series_translation_payload_cache.items()):
+            if now - ts > ttl:
+                del self._series_translation_payload_cache[key]
+        for key, (ts, _data) in list(self._season_types_mem_cache.items()):
+            if now - ts > ttl:
+                del self._season_types_mem_cache[key]
+
+        # Bound unique series ids across extended cache (oldest first)
+        show_ids = []
+        seen = set()
+        for sid, (ts, _data) in sorted(self._series_extended_cache.items(), key=lambda item: item[1][0]):
+            if sid not in seen:
+                seen.add(sid)
+                show_ids.append(sid)
+        while len(show_ids) > self._episode_cache_max_shows:
+            drop_id = show_ids.pop(0)
+            self._series_extended_cache.pop(drop_id, None)
+            self._season_types_mem_cache.pop(drop_id, None)
+            for key in list(self._series_translated_cache):
+                if key[0] == drop_id:
+                    del self._series_translated_cache[key]
+            for key in list(self._series_translation_payload_cache):
+                if key[0] == drop_id:
+                    del self._series_translation_payload_cache[key]
+
+    def _get_series_extended(self, series_id) -> dict | None:
+        """Return series.extended payload, preferring short-lived RAM cache."""
+        import time as _time
+
+        series_id = int(series_id)
+        now = _time.monotonic()
+        cached = self._series_extended_cache.get(series_id)
+        if cached is not None and (now - cached[0]) <= self._series_cache_ttl:
+            return cached[1]
+
+        raw = self.client.series_extended(series_id)
+        if not raw:
+            return None
+        self._series_extended_cache[series_id] = (now, raw)
+        self._prune_series_cache()
+        return raw
+
+    def _get_series_translation_payload(self, series_id, code: str) -> dict | None:
+        """GET /translations/{code} with short-lived RAM cache (including negative misses)."""
+        import time as _time
+
+        series_id = int(series_id)
+        code = (code or "").strip().lower()
+        if not code:
+            return None
+        now = _time.monotonic()
+        key = (series_id, code)
+        cached = self._series_translation_payload_cache.get(key)
+        if cached is not None and (now - cached[0]) <= self._series_cache_ttl:
+            return cached[1]
+
+        try:
+            translation = self.client.series_translation(series_id, code)
+        except TVDBv4Error as error:
+            logger.debug(f"TVDB v4 translation fetch failed for {series_id}/{code}: {error}")
+            translation = None
+        if translation is not None and not isinstance(translation, dict):
+            translation = None
+        self._series_translation_payload_cache[key] = (now, translation)
+        return translation
+
     def _all_episodes_for_language(self, show_id, season_type: str, language: str | None) -> list:
         """
         Fetch episode list preferring translated titles for show metadata language.
@@ -486,6 +604,8 @@ class TVDB(Indexer):
     @ExceptionDecorator()
     def series(self, *args, **kwargs):
         # Call sites: series(show), series(id), series(id=..., language=...)
+        import time as _time
+
         language = kwargs.get("language")
         indexerid = kwargs.get("id")
         if indexerid is None and args:
@@ -498,7 +618,15 @@ class TVDB(Indexer):
         if indexerid is None:
             indexerid = kwargs.get("indexerid")
 
-        raw = self.client.series_extended(indexerid)
+        indexerid = int(indexerid)
+        lang_key = self._series_lang_key(language)
+        cache_key = (indexerid, lang_key)
+        now = _time.monotonic()
+        cached = self._series_translated_cache.get(cache_key)
+        if cached is not None and (now - cached[0]) <= self._series_cache_ttl:
+            return _SeriesResult(cached[1], language)
+
+        raw = self._get_series_extended(indexerid)
         if not raw:
             return None
 
@@ -506,17 +634,14 @@ class TVDB(Indexer):
         # returns the primary/original title (often Chinese for donghua); English is on
         # /translations/eng — skipping eng left titles stuck on 吞噬星空 for en shows.
         raw = self._with_series_translation(raw, indexerid, language)
-
+        self._series_translated_cache[cache_key] = (now, raw)
+        self._prune_series_cache()
         return _SeriesResult(raw, language)
 
     def _with_series_translation(self, raw: dict, indexerid, language: str | None) -> dict:
         """Fetch and apply the best matching series translation for language."""
         for code in _tvdb_language_candidates(language):
-            try:
-                translation = self.client.series_translation(indexerid, code)
-            except TVDBv4Error as error:
-                logger.debug(f"TVDB v4 translation fetch failed for {indexerid}/{code}: {error}")
-                continue
+            translation = self._get_series_translation_payload(indexerid, code)
             if not isinstance(translation, dict):
                 continue
             # Endpoint may return a single object or a list of translation records
@@ -535,6 +660,14 @@ class TVDB(Indexer):
             if applied is not raw:
                 logger.debug(f"TVDB v4 applied translation {code!r} for series {indexerid}: {(raw.get('name') or '')!r} -> {(applied.get('name') or '')!r}")
                 return applied
+            # Translation payload existed for this code but text matched primary — stop
+            # (do not also try en after eng, etc.)
+            t_name = (translation.get("name") or translation.get("seriesName") or "").strip()
+            t_overview = translation.get("overview")
+            if t_overview is not None:
+                t_overview = str(t_overview).strip()
+            if t_name or t_overview:
+                return raw
         return raw
 
     @ExceptionDecorator()
@@ -599,7 +732,7 @@ class TVDB(Indexer):
           - slug: V4 path / DB value (default, dvd, absolute, alternate, …)
           - name: TVDB display string for *this* series (Aired Order, Absolute Order,
             or a platform title such as BBC iPlayer / Netflix when that is the named order)
-        Uses cache.db for 1 day when use_cache=True.
+        Uses process RAM (series TTL) then cache.db for 1 day when use_cache=True.
         """
         import json
         import time as _time
@@ -607,12 +740,17 @@ class TVDB(Indexer):
         from sickchill.oldbeard import db as sc_db
 
         series_id = int(series_id)
+        now_mono = _time.monotonic()
+        if use_cache:
+            mem = self._season_types_mem_cache.get(series_id)
+            if mem is not None and (now_mono - mem[0]) <= self._series_cache_ttl:
+                return mem[1]
+
         cache_ttl = 24 * 60 * 60
         cache_db = sc_db.DBConnection("cache.db")
-        try:
+
+        def _ensure_table():
             cache_db.action("CREATE TABLE IF NOT EXISTS tvdb_season_types (indexer_id INTEGER PRIMARY KEY, payload TEXT, last_refreshed INTEGER)")
-        except Exception as error:
-            logger.debug(f"TVDB season types cache table create failed: {error}")
 
         if use_cache:
             try:
@@ -627,12 +765,20 @@ class TVDB(Indexer):
                         if isinstance(envelope, dict) and envelope.get("v") == self._SEASON_TYPES_CACHE_VERSION:
                             data = envelope.get("types") or []
                             if isinstance(data, list) and data:
+                                self._season_types_mem_cache[series_id] = (now_mono, data)
                                 return data
             except Exception as error:
+                # Table may not exist yet — create once then continue to fetch
                 logger.debug(f"TVDB season types cache read failed for {series_id}: {error}")
+                try:
+                    _ensure_table()
+                except Exception as create_error:
+                    logger.debug(f"TVDB season types cache table create failed: {create_error}")
 
         types = self._fetch_series_season_types(series_id)
+        self._season_types_mem_cache[series_id] = (now_mono, types)
         try:
+            _ensure_table()
             payload = json.dumps({"v": self._SEASON_TYPES_CACHE_VERSION, "types": types})
             cache_db.action(
                 "INSERT OR REPLACE INTO tvdb_season_types (indexer_id, payload, last_refreshed) VALUES (?, ?, ?)",
@@ -677,7 +823,8 @@ class TVDB(Indexer):
         by_slug: dict[str, str] = {}
 
         try:
-            raw = self.client.series_extended(series_id) or {}
+            # Share short-lived series.extended RAM cache with series() / artwork
+            raw = self._get_series_extended(series_id) or {}
         except TVDBv4Error as error:
             logger.debug(f"TVDB series_extended for season types failed ({series_id}): {error}")
             raw = {}
@@ -978,34 +1125,40 @@ class TVDB(Indexer):
         # Legacy relative banner path fallback
         return f"https://artworks.thetvdb.com/banners/{re.sub(r'^_cache/', '', location)}"
 
+    def _urls_from_series_artworks(self, series, artwork_type, multiple=False, thumb=False):
+        """Filter artworks already on a series result — no extra HTTP."""
+        empty = [] if multiple else ""
+        if not series:
+            return empty
+        images = [a for a in (series.artworks or []) if isinstance(a, dict) and a.get("type") == artwork_type]
+        images.sort(key=lambda a: a.get("score") or 0, reverse=True)
+        if not images:
+            return empty
+
+        urls = []
+        for img in images:
+            if thumb:
+                location = img.get("thumbnail") or img.get("image") or ""
+            else:
+                location = img.get("image") or img.get("thumbnail") or ""
+            url = self.complete_image_url(location)
+            if url:
+                urls.append(url)
+        if not urls:
+            return empty
+        return urls if multiple else urls[0]
+
     def __call_images_api(self, show, artwork_type, multiple=False, thumb=False):
         """
         Return artwork URL(s). On failure return [] when multiple=True else "" —
         do not use ExceptionDecorator(default_return="") which becomes [] via `or []`.
+
+        Uses series() (short-lived RAM cache) so poster/banner/fanart share one extended fetch.
         """
         empty = [] if multiple else ""
         try:
             series = self.series(show)
-            if not series:
-                return empty
-
-            images = [a for a in (series.artworks or []) if isinstance(a, dict) and a.get("type") == artwork_type]
-            images.sort(key=lambda a: a.get("score") or 0, reverse=True)
-            if not images:
-                return empty
-
-            urls = []
-            for img in images:
-                if thumb:
-                    location = img.get("thumbnail") or img.get("image") or ""
-                else:
-                    location = img.get("image") or img.get("thumbnail") or ""
-                url = self.complete_image_url(location)
-                if url:
-                    urls.append(url)
-            if not urls:
-                return empty
-            return urls if multiple else urls[0]
+            return self._urls_from_series_artworks(series, artwork_type, multiple=multiple, thumb=thumb)
         except Exception as error:
             logger.debug(f"Could not load artwork type {artwork_type} for show: {error}")
             logger.debug(traceback.format_exc())
@@ -1029,17 +1182,32 @@ class TVDB(Indexer):
     def season_poster_url(self, show, season, thumb=False, multiple=False):
         # Show-level art only for now (no per-season filtering required).
         # Prefer season-type artwork when present on the series payload; else series poster.
-        result = self.__call_images_api(show, ARTWORK_TYPE_SEASON_POSTER, multiple=multiple, thumb=thumb)
-        if result:
-            return result
-        return self.__call_images_api(show, ARTWORK_TYPE_POSTER, multiple=multiple, thumb=thumb)
+        # One series() for both attempts (cached / shared with other artwork calls).
+        empty = [] if multiple else ""
+        try:
+            series = self.series(show)
+            result = self._urls_from_series_artworks(series, ARTWORK_TYPE_SEASON_POSTER, multiple=multiple, thumb=thumb)
+            if result:
+                return result
+            return self._urls_from_series_artworks(series, ARTWORK_TYPE_POSTER, multiple=multiple, thumb=thumb)
+        except Exception as error:
+            logger.debug(f"Could not load season poster for show: {error}")
+            logger.debug(traceback.format_exc())
+            return empty
 
     def season_banner_url(self, show, season, thumb=False, multiple=False):
         # Show-level art only for now (no per-season id resolution).
-        result = self.__call_images_api(show, ARTWORK_TYPE_SEASON_BANNER, multiple=multiple, thumb=thumb)
-        if result:
-            return result
-        return self.__call_images_api(show, ARTWORK_TYPE_BANNER, multiple=multiple, thumb=thumb)
+        empty = [] if multiple else ""
+        try:
+            series = self.series(show)
+            result = self._urls_from_series_artworks(series, ARTWORK_TYPE_SEASON_BANNER, multiple=multiple, thumb=thumb)
+            if result:
+                return result
+            return self._urls_from_series_artworks(series, ARTWORK_TYPE_BANNER, multiple=multiple, thumb=thumb)
+        except Exception as error:
+            logger.debug(f"Could not load season banner for show: {error}")
+            logger.debug(traceback.format_exc())
+            return empty
 
     def episode_image_url(self, episode):
         """Return episode image URL, or "" on failure (never a list)."""

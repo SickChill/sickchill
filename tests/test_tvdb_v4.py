@@ -108,6 +108,11 @@ class SeriesResultMappingTests(unittest.TestCase):
         # original dict not mutated
         self.assertEqual(raw["name"], "吞噬星空")
 
+    def test_apply_series_translation_noop_same_text(self):
+        raw = {"id": 1, "name": "Dutton Ranch", "overview": "A show"}
+        applied = _apply_series_translation(raw, {"name": "Dutton Ranch", "overview": "A show"})
+        self.assertIs(applied, raw)
+
 
 class SeriesLanguageTests(unittest.TestCase):
     def test_english_translation_applied_for_chinese_primary_title(self):
@@ -151,6 +156,61 @@ class SeriesLanguageTests(unittest.TestCase):
         result = tvdb.series(392226, language="zh")
         self.assertNotIsInstance(result, list)
         self.assertEqual(result.seriesName, "吞噬星空")
+
+    def test_series_cache_reuses_extended_and_translation(self):
+        """Repeated series() / artwork calls must not re-hit V4 within TTL."""
+        from sickchill.show.indexers.tvdb_v4_client import (
+            ARTWORK_TYPE_BACKGROUND,
+            ARTWORK_TYPE_BANNER,
+            ARTWORK_TYPE_POSTER,
+        )
+
+        tvdb = TVDB()
+        client = attach_mock_client(tvdb)
+        client.series_extended.return_value = {
+            "id": 463308,
+            "name": "Dutton Ranch",
+            "overview": "About ranching",
+            "status": {"name": "Continuing"},
+            "genres": [],
+            "companies": [],
+            "remoteIds": [],
+            "artworks": [
+                {"type": ARTWORK_TYPE_POSTER, "image": "https://example.com/p.jpg", "score": 10},
+                {"type": ARTWORK_TYPE_BANNER, "image": "https://example.com/b.jpg", "score": 10},
+                {"type": ARTWORK_TYPE_BACKGROUND, "image": "https://example.com/f.jpg", "score": 10},
+            ],
+            "seasonTypes": [{"type": "default", "name": "Aired Order"}],
+            "seasons": [],
+        }
+        client.series_translation.return_value = {"name": "Dutton Ranch", "overview": "About ranching"}
+
+        show = MagicMock()
+        show.indexerid = 463308
+        show.lang = "en"
+
+        first = tvdb.series(show)
+        second = tvdb.series(show)
+        self.assertEqual(first.seriesName, "Dutton Ranch")
+        self.assertEqual(second.seriesName, "Dutton Ranch")
+        self.assertEqual(client.series_extended.call_count, 1)
+        self.assertEqual(client.series_translation.call_count, 1)
+
+        # Artwork types share the same cached series payload
+        self.assertTrue(tvdb.series_poster_url(show))
+        self.assertTrue(tvdb.series_banner_url(show))
+        self.assertTrue(tvdb.series_fanart_url(show))
+        self.assertEqual(client.series_extended.call_count, 1)
+        self.assertEqual(client.series_translation.call_count, 1)
+
+        # Season types reuse extended cache (no second HTTP)
+        types = tvdb._fetch_series_season_types(463308)
+        self.assertEqual(types[0]["slug"], "default")
+        self.assertEqual(client.series_extended.call_count, 1)
+
+        tvdb.clear_episode_cache(463308)
+        tvdb.series(show)
+        self.assertEqual(client.series_extended.call_count, 2)
 
 
 class TVDBv4ClientTests(unittest.TestCase):

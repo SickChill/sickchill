@@ -277,10 +277,10 @@ class TVShow(object):
 
     @location.setter
     def location(self, new_location):
-        logger.debug(f"Setter sets Show location to {new_location}")
         # Don't validate dir if user wants to add shows without creating a dir
         if settings.ADD_SHOWS_WO_DIR or os.path.isdir(new_location):
             if self._location != new_location:
+                logger.debug(f"Setter sets Show location to {new_location}")
                 self.dirty = True
             self._location = new_location
         else:
@@ -606,12 +606,15 @@ class TVShow(object):
 
         return result
 
-    def write_metadata(self, show_only=False):
+    def write_metadata(self, show_only=False, fetch_images=True):
         if not os.path.isdir(self._location):
             logger.info(f"{self.indexerid}: Show dir doesn't exist, skipping NFO generation")
             return
 
-        self.get_images()
+        # Artwork from indexer is loaded on add (or when the user picks images).
+        # Refresh/update should not re-pull posters/banners/fanart from TVDB.
+        if fetch_images:
+            self.get_images()
 
         self.write_show_nfo()
 
@@ -1246,6 +1249,11 @@ class TVShow(object):
 
         cache_db_con.mass_action(sql_l)
 
+        # Drop process-global name cache entries for this show (DB rows already deleted)
+        from sickchill.oldbeard import name_cache
+
+        name_cache.drop_indexer(self.indexerid)
+
         for provider in sickchill.oldbeard.providers.__all__:
             if cache_db_con.has_table(provider) and cache_db_con.has_column(provider, "indexerid"):
                 cache_db_con.action("delete from {} WHERE indexerid = ?".format(provider), [self.indexerid])
@@ -1331,9 +1339,9 @@ class TVShow(object):
             logger.debug(f"Removing show: indexerid {self.indexerid}, Title {self.name} from Watchlist")
             notifiers.trakt_notifier.update_watchlist(self, update="remove")
 
-    def populate_cache(self):
+    def populate_cache(self, from_indexer=True):
         logger.debug(f"Checking & filling cache for show {self.name}")
-        settings.IMAGE_CACHE.fill_cache(self)
+        settings.IMAGE_CACHE.fill_cache(self, from_indexer=from_indexer)
 
     def refresh_dir(self):
         if not os.path.isdir(self._location) and not settings.CREATE_MISSING_SHOW_DIRS:
@@ -1710,11 +1718,10 @@ class TVEpisode(object):
 
     @location.setter
     def location(self, new_location):
-        if new_location != "":
-            logger.debug(f"Setter sets Episode location to {new_location}")
-
-        # self._location = newLocation
+        # Only log when the path actually changes — load_from_db during daily search
         if self._location != new_location:
+            if new_location != "":
+                logger.debug(f"Setter sets Episode location to {new_location}")
             self.dirty = True
 
         self._location = new_location

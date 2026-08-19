@@ -515,9 +515,10 @@ class QueueItemAdd(ShowQueueItem):
             logger.info("Launching backlog for this show since its episodes are WANTED")
             settings.backlogSearchScheduler.action.searchBacklog([self.show])
 
-        self.show.write_metadata()
+        # Initial artwork from indexer + metadata providers (once). Later refreshes skip TVDB art.
+        self.show.write_metadata(fetch_images=True)
         self.show.update_metadata()
-        self.show.populate_cache()
+        self.show.populate_cache(from_indexer=True)
 
         self.show.flush_episodes()
 
@@ -572,10 +573,12 @@ class QueueItemRefresh(ShowQueueItem):
             logger.info(f"Performing refresh on {self.show.name}")
 
         self.show.refresh_dir()
-        self.show.write_metadata()
+        # Do not re-fetch artwork from TVDB on refresh/update — loaded once on add;
+        # user changes art via edit show. Still write NFOs and sync cache from local files.
+        self.show.write_metadata(fetch_images=False)
         if self.force:
             self.show.update_metadata()
-        self.show.populate_cache()
+        self.show.populate_cache(from_indexer=False)
 
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
