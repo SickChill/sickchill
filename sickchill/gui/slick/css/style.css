@@ -1167,6 +1167,51 @@ span.snatched b {
     text-align: center;
 }
 
+/* addShows newShow search results: keep Network/Score/etc. compact */
+.new-show-table {
+    table-layout: auto;
+}
+
+.new-show-table th,
+.new-show-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 1 radio | 2 name | 3 network | 4 premiere | 5 score | 6 indexer */
+.new-show-table th:nth-child(1),
+.new-show-table td:nth-child(1) {
+    width: 2.5em;
+}
+
+.new-show-table th:nth-child(2),
+.new-show-table td:nth-child(2) {
+    width: auto;
+    text-align: left;
+    white-space: normal; /* allow long show titles to wrap */
+}
+
+.new-show-table th:nth-child(3),
+.new-show-table td:nth-child(3) {
+    width: 16em; /* Network */
+}
+
+.new-show-table th:nth-child(4),
+.new-show-table td:nth-child(4) {
+    width: 8em; /* Premiere */
+}
+
+.new-show-table th:nth-child(5),
+.new-show-table td:nth-child(5) {
+    width: 6em; /* Score */
+}
+
+.new-show-table th:nth-child(6),
+.new-show-table td:nth-child(6) {
+    width: 8em; /* Indexer */
+}
+
 .sickchillTable.display_show {
     clear: both;
 }

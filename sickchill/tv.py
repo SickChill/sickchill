@@ -112,6 +112,8 @@ class TVShow(object):
     subtitles = DirtySetter(int(settings.SUBTITLES_DEFAULT))
     subtitles_sc_metadata = DirtySetter(0)
     dvdorder = DirtySetter(0)
+    # V4 episode list path segment: default, dvd, absolute, or platform type slug from TVDB
+    seasons_order = DirtySetter("default")
     lang = DirtySetter("en")
     last_update_indexer = DirtySetter(1)
     rls_ignore_words = DirtySetter("")
@@ -227,6 +229,30 @@ class TVShow(object):
         return helpers.sortable_name(self.name)
 
     @property
+    def resolved_seasons_order(self) -> str:
+        """V4 episode-list season type slug for this show."""
+        order = (self.seasons_order or "").strip().lower()
+        if order:
+            return order
+        return "dvd" if self.dvdorder else "default"
+
+    def apply_seasons_order(self, order: str | None) -> bool:
+        """
+        Set seasons_order and keep dvdorder in sync for legacy paths.
+        Returns True if the value changed.
+        """
+        new_order = (order or "default").strip().lower() or "default"
+        # TVDB "official" is aired order; store as default (path slug used for episodes)
+        if new_order == "official":
+            new_order = "default"
+        previous = self.resolved_seasons_order
+        if previous == "official":
+            previous = "default"
+        self.seasons_order = new_order
+        self.dvdorder = 1 if new_order == "dvd" else 0
+        return previous != new_order
+
+    @property
     def idxr(self):
         return sickchill.indexer[self.indexer]
 
@@ -251,10 +277,10 @@ class TVShow(object):
 
     @location.setter
     def location(self, new_location):
-        logger.debug(f"Setter sets Show location to {new_location}")
         # Don't validate dir if user wants to add shows without creating a dir
         if settings.ADD_SHOWS_WO_DIR or os.path.isdir(new_location):
             if self._location != new_location:
+                logger.debug(f"Setter sets Show location to {new_location}")
                 self.dirty = True
             self._location = new_location
         else:
@@ -286,6 +312,111 @@ class TVShow(object):
 
         except Exception as error:
             return str(error), self
+
+    def update_tba_names(self) -> int:
+        """
+        Replace exact episode name "TBA" using the same V4 episode pull as a normal update.
+
+        Finds library episodes named TBA with airdate on or before today+7 days, then
+        re-fetches the show's episode list via the V4 indexer (translated titles +
+        ``seasons_order`` season type) and applies non-TBA titles / related packet fields
+        only for those rows. Does not change status, delete episodes, or use the show queue.
+
+        :return: Number of episodes updated
+        """
+        horizon = sc_today() + datetime.timedelta(days=7)
+        horizon_ordinal = horizon.toordinal()
+
+        main_db_con = db.DBConnection()
+        tba_rows = main_db_con.select(
+            "SELECT season, episode FROM tv_episodes WHERE showid = ? AND name = ? AND airdate IS NOT NULL AND airdate > 1 AND airdate <= ?",
+            [self.indexerid, "TBA", horizon_ordinal],
+        )
+
+        if not tba_rows:
+            logger.info(f"No TBA episode names in airdate window for {self.name}")
+            return 0
+
+        tba_set = {(int(row["season"]), int(row["episode"])) for row in tba_rows}
+        logger.debug(
+            f"TBA refresh for {self.name}: {len(tba_set)} candidate(s) with airdate on or before {horizon} "
+            f"(V4 list, seasons_order={getattr(self, 'resolved_seasons_order', None) or 'default'})"
+        )
+
+        # One bulk V4 episode list (language + seasons_order), same path as force update
+        try:
+            self.idxr.clear_episode_cache(self.indexerid)
+        except Exception as error:
+            logger.debug(f"clear_episode_cache failed for {self.indexerid} during TBA refresh: {error}")
+
+        try:
+            indexer_eps = self.idxr.episodes(self) or []
+        except Exception as error:
+            logger.warning(f"TVDB v4 episode list failed during TBA refresh for {self.name}: {error}")
+            return 0
+
+        tvdb_by_ep = {}
+        for ep in indexer_eps:
+            if not isinstance(ep, dict):
+                continue
+            try:
+                s = int(ep.get("airedSeason"))
+                e = int(ep.get("airedEpisodeNumber"))
+            except (TypeError, ValueError):
+                continue
+            name = (ep.get("episodeName") or "").strip()
+            if e is not None and name and name != "TBA":
+                tvdb_by_ep[(s, e)] = ep
+
+        updated_count = 0
+        skipped_still_tba = 0
+        sql_l = []
+
+        for s, e in sorted(tba_set):
+            packet = tvdb_by_ep.get((s, e))
+            if not packet:
+                skipped_still_tba += 1
+                logger.debug(f"Still TBA / missing on TVDB: {self.name} {episode_num(s, e)}")
+                continue
+
+            try:
+                ep_obj = self.get_episode(s, e)
+            except Exception as error:
+                logger.debug(f"Failed to load episode {self.name} {episode_num(s, e)}: {error}")
+                continue
+
+            if not ep_obj or ep_obj.name != "TBA":
+                continue
+
+            try:
+                with ep_obj.lock:
+                    if ep_obj.name != "TBA":
+                        continue
+                    old_name = ep_obj.name
+                    changed_fields = ep_obj.apply_tba_indexer_packet(packet)
+                    if not changed_fields:
+                        continue
+                    sql = ep_obj.get_sql()
+                    if sql:
+                        sql_l.append(sql)
+                    else:
+                        ep_obj.save_to_db()
+                    updated_count += 1
+                    extra = [f for f in changed_fields if f != "name"]
+                    if extra:
+                        logger.debug(
+                            f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r}; also set {', '.join(extra)} (TVDB v4)"
+                        )
+                    else:
+                        logger.debug(f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r} (TVDB v4)")
+            except Exception as error:
+                logger.debug(f"Failed to update TBA data for {self.name} {episode_num(s, e)}: {error}")
+
+        if sql_l:
+            main_db_con.mass_action(sql_l)
+
+        logger.info(f"Updated {updated_count} TBA episode(s) for {self.name} (still TBA on TVDB: {skipped_still_tba})")
+        return updated_count
 
     def update(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
         """
@@ -475,12 +606,15 @@ class TVShow(object):
 
         return result
 
-    def write_metadata(self, show_only=False):
+    def write_metadata(self, show_only=False, fetch_images=True):
         if not os.path.isdir(self._location):
             logger.info(f"{self.indexerid}: Show dir doesn't exist, skipping NFO generation")
             return
 
-        self.get_images()
+        # Artwork from indexer is loaded on add (or when the user picks images).
+        # Refresh/update should not re-pull posters/banners/fanart from TVDB.
+        if fetch_images:
+            self.get_images()
 
         self.write_show_nfo()
 
@@ -601,7 +735,7 @@ class TVShow(object):
             show_name = str(result["show_name"])
 
             if season not in scanned_episodes:
-                logger.debug(f"{showid}: season not in scanned_episodes")
+                logger.debug(f"{showid}: Starting {show_name} load of season: {season}")
                 scanned_episodes[season] = {}
 
             logger.debug(f"{showid}: Loading {show_name} {episode_num(season, episode)} from the DB")
@@ -625,7 +759,16 @@ class TVShow(object):
     def load_episodes_from_indexer(self, force_all: bool = False):
         logger.debug(_("{show_id}: Loading all episodes from {indexer_name}...").format(show_id=self.indexerid, indexer_name=self.indexer_name))
 
+        # Always refresh this show's episode cache for a new load cycle
+        try:
+            self.idxr.clear_episode_cache(self.indexerid)
+        except Exception as error:
+            logger.debug(f"clear_episode_cache failed for {self.indexerid}: {error}")
+
         scanned_episodes = {}
+        applied = 0
+        skipped_unchanged = 0
+        sql_l = []
 
         for indexer_episode in self.idxr.episodes(self):
             if indexer_episode["airedSeason"] not in scanned_episodes:
@@ -646,19 +789,45 @@ class TVShow(object):
             else:
                 try:
                     with episode.lock:
-                        episode.load_from_indexer(indexer_episode["airedSeason"], indexer_episode["airedEpisodeNumber"], force_all=force_all)
-                        episode.save_to_db()
-                        # sql_l.append(episode.get_sql())
+                        result = episode.load_from_indexer(
+                            indexer_episode["airedSeason"],
+                            indexer_episode["airedEpisodeNumber"],
+                            force_all=force_all,
+                            indexer_episode=indexer_episode,
+                        )
+                        if result is False:
+                            continue
+                        if episode.dirty:
+                            # get_sql() returns one mass_action unit: [statement, parameters].
+                            # Append the unit as a whole — do not extend, which would flatten
+                            # statement and params into alternating items and break mass_action
+                            # (sqlite "near 'U': syntax error" when the first char of UPDATE is executed).
+                            sql = episode.get_sql()
+                            if sql:
+                                sql_l.append(sql)
+                            applied += 1
+                        else:
+                            skipped_unchanged += 1
                 except EpisodeDeletedException:
                     logger.info("The episode was deleted, skipping the rest of the load")
                     continue
 
             scanned_episodes[indexer_episode["airedSeason"]][indexer_episode["airedEpisodeNumber"]] = True
 
-        # Done updating save last update date
+        if sql_l:
+            main_db_con = db.DBConnection()
+            main_db_con.mass_action(sql_l)
+
+        # Done updating save last update date (show-level ordinal for ended-show interval)
         self.last_update_indexer = sc_now().toordinal()
 
         self.save_to_db()
+
+        logger.debug(
+            "{id}: Indexer episode load finished — applied {applied}, unchanged/skipped {skipped}".format(
+                id=self.indexerid, applied=applied, skipped=skipped_unchanged
+            )
+        )
 
         return scanned_episodes
 
@@ -858,6 +1027,15 @@ class TVShow(object):
             self.scene = int(sql_results[0]["scene"] or 0)
             self.subtitles = int(sql_results[0]["subtitles"] or 0)
             self.dvdorder = int(sql_results[0]["dvdorder"] or 0)
+            # seasons_order: prefer column; fall back from legacy dvdorder for pre-migration rows
+            try:
+                raw_order = sql_results[0]["seasons_order"]
+            except (KeyError, IndexError, TypeError):
+                raw_order = None
+            if raw_order is None or (isinstance(raw_order, str) and not raw_order.strip()):
+                self.seasons_order = "dvd" if self.dvdorder else "default"
+            else:
+                self.seasons_order = str(raw_order).strip().lower() or "default"
             self.quality = int(sql_results[0]["quality"] or UNKNOWN)
             self.season_folders = int(not int(sql_results[0]["flatten_folders"] or 0))
             self.paused = int(sql_results[0]["paused"] or 0)
@@ -1071,6 +1249,11 @@ class TVShow(object):
 
         cache_db_con.mass_action(sql_l)
 
+        # Drop process-global name cache entries for this show (DB rows already deleted)
+        from sickchill.oldbeard import name_cache
+
+        name_cache.drop_indexer(self.indexerid)
+
         for provider in sickchill.oldbeard.providers.__all__:
             if cache_db_con.has_table(provider) and cache_db_con.has_column(provider, "indexerid"):
                 cache_db_con.action("delete from {} WHERE indexerid = ?".format(provider), [self.indexerid])
@@ -1156,9 +1339,9 @@ class TVShow(object):
             logger.debug(f"Removing show: indexerid {self.indexerid}, Title {self.name} from Watchlist")
             notifiers.trakt_notifier.update_watchlist(self, update="remove")
 
-    def populate_cache(self):
+    def populate_cache(self, from_indexer=True):
         logger.debug(f"Checking & filling cache for show {self.name}")
-        settings.IMAGE_CACHE.fill_cache(self)
+        settings.IMAGE_CACHE.fill_cache(self, from_indexer=from_indexer)
 
     def refresh_dir(self):
         if not os.path.isdir(self._location) and not settings.CREATE_MISSING_SHOW_DIRS:
@@ -1275,6 +1458,7 @@ class TVShow(object):
             "sports": self.sports,
             "subtitles": self.subtitles,
             "dvdorder": self.dvdorder,
+            "seasons_order": (self.seasons_order or "default").strip().lower() or "default",
             "startyear": self.startyear,
             "lang": self.lang,
             "imdb_id": self.imdb_id,
@@ -1497,6 +1681,8 @@ class TVEpisode(object):
     release_group = DirtySetter("")
     indexer = DirtySetter(1)
     startyear = DirtySetter("")
+    # TVDB episode lastUpdated (unix); used to skip no-op indexer rewrites (Phase 2)
+    last_update_indexer = DirtySetter(0)
 
     def __init__(self, show: TVShow, season, episode, ep_file=""):
         self.season: int = season
@@ -1532,10 +1718,10 @@ class TVEpisode(object):
 
     @location.setter
     def location(self, new_location):
-        logger.debug(f"Setter sets Episode location to {new_location}")
-
-        # self._location = newLocation
+        # Only log when the path actually changes — load_from_db during daily search
         if self._location != new_location:
+            if new_location != "":
+                logger.debug(f"Setter sets Episode location to {new_location}")
             self.dirty = True
 
         self._location = new_location
@@ -1755,11 +1941,89 @@ class TVEpisode(object):
             if sql_results[0]["release_group"] is not None:
                 self.release_group = sql_results[0]["release_group"]
 
+            try:
+                self.last_update_indexer = try_int(sql_results[0]["last_update_indexer"], 0)
+            except (KeyError, IndexError, TypeError):
+                self.last_update_indexer = 0
+
             self.dirty = False
             return True
 
-    def load_from_indexer(self, season=None, episode=None, force_all: bool = False):
-        indexer_episode = self.idxr.episode(self.show, season or self.season, episode or self.episode)
+    def apply_tba_indexer_packet(self, packet: dict) -> list:
+        """
+        Apply metadata from a V4-mapped TVDB episode dict after a TBA name upgrade.
+
+        Sets name and related fields present on the same packet (description, airdate,
+        absolute_number, indexerid, last_update_indexer). Does not change status or delete.
+
+        :param packet: Mapped episode dict (episodeName / firstAired / lastUpdated keys)
+        :return: List of field names that changed
+        """
+        if not isinstance(packet, dict):
+            return []
+
+        new_name = (packet.get("episodeName") or "").strip()
+        if not new_name or new_name == "TBA":
+            return []
+
+        if self.name != "TBA":
+            return []
+
+        changed = []
+        old_name = self.name
+        self.name = new_name
+        if self.name != old_name:
+            changed.append("name")
+
+        overview = packet.get("overview")
+        if overview is not None:
+            overview = str(overview).strip()
+            if overview and overview != self.description:
+                self.description = overview
+                changed.append("description")
+
+        first_aired = packet.get("firstAired")
+        if first_aired and first_aired != "0000-00-00":
+            try:
+                raw_airdate = [int(x) for x in str(first_aired).split("-")]
+                new_airdate = datetime.date(raw_airdate[0], raw_airdate[1], raw_airdate[2])
+                if new_airdate != self.airdate:
+                    self.airdate = new_airdate
+                    changed.append("airdate")
+            except (ValueError, IndexError, TypeError):
+                logger.debug(f"Ignoring unparseable firstAired {first_aired!r} for {self.show.name} {episode_num(self.season, self.episode)} during TBA update")
+
+        if packet.get("absoluteNumber") not in (None, ""):
+            new_absolute = try_int(packet.get("absoluteNumber"), None)
+            if new_absolute is not None and new_absolute != self.absolute_number:
+                self.absolute_number = new_absolute
+                changed.append("absolute_number")
+
+        if packet.get("id"):
+            try:
+                new_indexerid = int(packet.get("id"))
+            except (TypeError, ValueError):
+                new_indexerid = 0
+            if new_indexerid and new_indexerid != self.indexerid:
+                self.indexerid = new_indexerid
+                changed.append("indexerid")
+
+        remote_lu = try_int(packet.get("lastUpdated"), 0)
+        if remote_lu and remote_lu != int(self.last_update_indexer or 0):
+            self.last_update_indexer = remote_lu
+            changed.append("last_update_indexer")
+
+        return changed
+
+    def load_from_indexer(self, season=None, episode=None, force_all: bool = False, indexer_episode=None):
+        """
+        Load episode metadata from the indexer.
+
+        :param indexer_episode: Optional pre-fetched episode dict (avoids a second HTTP call during bulk load).
+        :return: True if applied (or skipped as unchanged), False on hard failure.
+        """
+        if indexer_episode is None:
+            indexer_episode = self.idxr.episode(self.show, season or self.season, episode or self.episode)
         if not indexer_episode:
             if self.name:
                 logger.debug("{} timed out, but we have enough info from other sources, allowing the error".format(self.indexer_name))
@@ -1767,6 +2031,19 @@ class TVEpisode(object):
 
             logger.error("{} timed out, unable to create the episode".format(self.indexer_name))
             return False
+
+        # Skip no-op rewrites when TVDB lastUpdated has not advanced (Phase 2 call reduction)
+        remote_last_updated = try_int(indexer_episode.get("lastUpdated"), 0)
+        if not force_all and remote_last_updated and self.last_update_indexer and remote_last_updated <= int(self.last_update_indexer or 0):
+            logger.debug(
+                "{id}: Skipping indexer apply for {ep}; lastUpdated {remote} <= stored {local}".format(
+                    id=self.show.indexerid,
+                    ep=episode_num(season or self.season, episode or self.episode),
+                    remote=remote_last_updated,
+                    local=self.last_update_indexer,
+                )
+            )
+            return True
 
         if not indexer_episode.get("episodeName"):
             if self.name:
@@ -1842,6 +2119,12 @@ class TVEpisode(object):
             if self.indexerid != -1:
                 self.delete_episode()
             return False
+
+        if remote_last_updated:
+            self.last_update_indexer = remote_last_updated
+        elif not self.last_update_indexer:
+            # No TVDB timestamp; stamp local apply time so future empty lastUpdated does not thrash
+            self.last_update_indexer = int(time.time())
 
         if not os.path.isdir(self.show.get_location) and not settings.CREATE_MISSING_SHOW_DIRS and not settings.ADD_SHOWS_WO_DIR:
             logger.info(f"The show dir {self.show.get_location} is missing, not bothering to change the episode statuses since it'd probably be invalid")
@@ -2054,7 +2337,7 @@ class TVEpisode(object):
                             "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, subtitles = ?, "
                             "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
                             "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                            "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?"
+                            "absolute_number = ?, version = ?, release_group = ?, last_update_indexer = ? WHERE episode_id = ?"
                         ),
                         [
                             self.indexerid,
@@ -2078,6 +2361,7 @@ class TVEpisode(object):
                             self.absolute_number,
                             self.version,
                             self.release_group,
+                            int(self.last_update_indexer or 0),
                             ep_id,
                         ],
                     ]
@@ -2088,7 +2372,7 @@ class TVEpisode(object):
                         "UPDATE tv_episodes SET indexerid = ?, indexer = ?, name = ?, description = ?, "
                         "subtitles_searchcount = ?, subtitles_lastsearch = ?, airdate = ?, hasnfo = ?, hastbn = ?, status = ?, "
                         "location = ?, file_size = ?, release_name = ?, is_proper = ?, showid = ?, season = ?, episode = ?, "
-                        "absolute_number = ?, version = ?, release_group = ? WHERE episode_id = ?"
+                        "absolute_number = ?, version = ?, release_group = ?, last_update_indexer = ? WHERE episode_id = ?"
                     ),
                     [
                         self.indexerid,
@@ -2111,6 +2395,7 @@ class TVEpisode(object):
                         self.absolute_number,
                         self.version,
                         self.release_group,
+                        int(self.last_update_indexer or 0),
                         ep_id,
                     ],
                 ]
@@ -2120,9 +2405,9 @@ class TVEpisode(object):
                     (
                         "INSERT OR IGNORE INTO tv_episodes (episode_id, indexerid, indexer, name, description, subtitles, "
                         "subtitles_searchcount, subtitles_lastsearch, airdate, hasnfo, hastbn, status, location, file_size, "
-                        "release_name, is_proper, showid, season, episode, absolute_number, version, release_group) VALUES "
+                        "release_name, is_proper, showid, season, episode, absolute_number, version, release_group, last_update_indexer) VALUES "
                         "((SELECT episode_id FROM tv_episodes WHERE showid = ? AND season = ? AND episode = ?)"
-                        ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
+                        ",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"
                     ),
                     [
                         self.show.indexerid,
@@ -2149,6 +2434,7 @@ class TVEpisode(object):
                         self.absolute_number,
                         self.version,
                         self.release_group,
+                        int(self.last_update_indexer or 0),
                     ],
                 ]
         except OperationalError as error:
@@ -2184,6 +2470,7 @@ class TVEpisode(object):
             "absolute_number": self.absolute_number,
             "version": self.version,
             "release_group": self.release_group,
+            "last_update_indexer": int(self.last_update_indexer or 0),
         }
 
         control_value_dict = {"showid": self.show.indexerid, "season": self.season, "episode": self.episode}

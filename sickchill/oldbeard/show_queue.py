@@ -439,6 +439,8 @@ class QueueItemAdd(ShowQueueItem):
             self.show.anime = self.anime if self.anime is not None else settings.ANIME_DEFAULT
             self.show.scene = self.scene if self.scene is not None else settings.SCENE_DEFAULT
             self.show.paused = self.paused if self.paused is not None else False
+            # New shows always start with aired/default season order (editShow to change)
+            self.show.apply_seasons_order("default")
 
             # set up default new/missing episode status
             logger.info(_("Setting all episodes to the specified default status: {default_status}").format(default_status=self.default_status))
@@ -513,9 +515,10 @@ class QueueItemAdd(ShowQueueItem):
             logger.info("Launching backlog for this show since its episodes are WANTED")
             settings.backlogSearchScheduler.action.searchBacklog([self.show])
 
-        self.show.write_metadata()
+        # Initial artwork from indexer + metadata providers (once). Later refreshes skip TVDB art.
+        self.show.write_metadata(fetch_images=True)
         self.show.update_metadata()
-        self.show.populate_cache()
+        self.show.populate_cache(from_indexer=True)
 
         self.show.flush_episodes()
 
@@ -552,7 +555,7 @@ class QueueItemAdd(ShowQueueItem):
 
 
 class QueueItemRefresh(ShowQueueItem):
-    def __init__(self, show: "TVShow" = None, force=False):
+    def __init__(self, show: "TVShow" = None, force=False, silent=False):
         super(QueueItemRefresh, self).__init__(ShowQueueActions.REFRESH, show)
 
         # do refreshes first because they're quick
@@ -560,17 +563,22 @@ class QueueItemRefresh(ShowQueueItem):
 
         # force refresh certain items
         self.force = force
+        # When True, skip the "Performing refresh" info log (e.g. nested after an update)
+        self.silent = silent
 
     def run(self):
         super(QueueItemRefresh, self).run()
 
-        logger.info(f"Performing refresh on {self.show.name}")
+        if not self.silent:
+            logger.info(f"Performing refresh on {self.show.name}")
 
         self.show.refresh_dir()
-        self.show.write_metadata()
+        # Do not re-fetch artwork from TVDB on refresh/update — loaded once on add;
+        # user changes art via edit show. Still write NFOs and sync cache from local files.
+        self.show.write_metadata(fetch_images=False)
         if self.force:
             self.show.update_metadata()
-        self.show.populate_cache()
+        self.show.populate_cache(from_indexer=False)
 
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
@@ -641,8 +649,7 @@ class QueueItemUpdate(ShowQueueItem):
     def run(self):
         super(QueueItemUpdate, self).run()
 
-        logger.debug(f"Beginning update of {self.show.name}")
-
+        logger.info(f"Performing update on {self.show.name}")
         logger.debug(f"Retrieving show info from {self.show.idxr.name}")
         try:
             self.show.load_from_indexer()
@@ -699,8 +706,9 @@ class QueueItemUpdate(ShowQueueItem):
 
         logger.debug(f"Finished update of {self.show.name}")
 
+        # Disk/metadata refresh after indexer update (silent: avoid "Performing refresh" under UPDATE)
         # oldbeard.showQueueScheduler.action.refresh_show(self.show, self.force)
-        QueueItemRefresh(self.show, self.force).run()
+        QueueItemRefresh(self.show, self.force, silent=True).run()
         super(QueueItemUpdate, self).finish()
         self.finish()
 

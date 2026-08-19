@@ -76,3 +76,13 @@ class AddCacheIndexes(ResultsTable):
         self.connection.action("CREATE INDEX IF NOT EXISTS idx_scene_exceptions_lookup ON scene_exceptions (indexer_id, show_name, season);")
         self.connection.action("CREATE INDEX IF NOT EXISTS idx_results_name ON results (name);")
         self.increment_db_version()
+
+
+class AddSceneNamesNameIndex(AddCacheIndexes):
+    def test(self):
+        return self.has_index("idx_scene_names_name") and self.get_db_version() >= 3
+
+    def execute(self):
+        self.connection.action("CREATE INDEX IF NOT EXISTS idx_scene_names_name ON scene_names (name);")
+        if self.get_db_version() < 3:
+            self.increment_db_version()

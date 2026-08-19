@@ -38,7 +38,7 @@ class ProperFinder(object):
 
         self._set_last_proper_search(sc_now().toordinal())
 
-        when = sctimeago(-settings.properFinderScheduler.timeLeft())
+        when = sctimeago(settings.properFinderScheduler.timeLeft())
         logger.info(_("Completed the search for new propers, next check approximately {when}").format(when=when))
 
         self.amActive = False

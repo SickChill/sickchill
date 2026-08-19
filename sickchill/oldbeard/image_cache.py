@@ -286,12 +286,14 @@ class ImageCache(object):
 
         return result
 
-    def fill_cache(self, show_obj):
+    def fill_cache(self, show_obj, from_indexer=True):
         """
         Caches all images for the given show. Copies them from the show dir if possible, or
         downloads them from indexer if they aren't in the show dir.
 
         :param show_obj: TVShow object to cache images for
+        :param from_indexer: When False, only copy from the show dir into the web cache —
+            do not download poster/banner/fanart from TVDB (used on refresh/update; add uses True).
         """
 
         logger.debug(f"Checking if we need any cache images for show {show_obj.indexerid}")
@@ -343,10 +345,16 @@ class ImageCache(object):
             except ShowDirectoryNotFoundException:
                 logger.debug("[{}] Unable to search for images in show dir because it doesn't exist".format(show_obj.indexerid))
 
-        # download from indexer for missing ones
-        for cur_image_type in need_images:
-            logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
-            if need_images.get(cur_image_type):
-                self._cache_image_from_indexer(show_obj, cur_image_type)
+        # download from indexer for missing ones (add-time / explicit only)
+        if from_indexer:
+            for cur_image_type in need_images:
+                logger.debug("[{}] Seeing if we still need a {}: {}".format(show_obj.indexerid, self.image_str[cur_image_type], need_images[cur_image_type]))
+                if need_images.get(cur_image_type):
+                    self._cache_image_from_indexer(show_obj, cur_image_type)
+        elif any(need_images.values()):
+            missing = [self.image_str[t] for t, needed in need_images.items() if needed]
+            logger.debug(
+                f"[{show_obj.indexerid}] Skipping indexer artwork download for missing cache image(s): {', '.join(missing)} (use edit show / add-time populate)"
+            )
 
         logger.info("Done cache check")
