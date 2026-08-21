@@ -230,7 +230,9 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         if not (settings.TVDB_V4_APIKEY or "").strip():
             settings.TVDB_V4_APIKEY = settings.TVDB_V4_APIKEY_BUILTIN
             settings.CFG.setdefault("General", {})["tvdb_v4_apikey"] = settings.TVDB_V4_APIKEY_BUILTIN
-        settings.TVDB_V4_PIN = os.environ.get("TVDB_V4_PIN") or check_setting_str(settings.CFG, "General", "tvdb_v4_pin", "", censor_log=True)
+        # PIN is not named "*password*", so decrypt explicitly (legacy plaintext migrates on save).
+        raw_tvdb_pin = os.environ.get("TVDB_V4_PIN") or check_setting_str(settings.CFG, "General", "tvdb_v4_pin", "", censor_log=True)
+        settings.TVDB_V4_PIN = helpers.decrypt_config_value(raw_tvdb_pin) or None
         if not (settings.TVDB_V4_PIN or "").strip():
             settings.TVDB_V4_PIN = None
         # Env values skip check_setting_str's censor_log path — always register final credentials.
@@ -630,7 +632,11 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.USE_TRAKT = check_setting_bool(settings.CFG, "Trakt", "use_trakt")
         settings.TRAKT_USERNAME = check_setting_str(settings.CFG, "Trakt", "trakt_username", censor_log=True)
         settings.TRAKT_API_KEY = check_setting_str(settings.CFG, "Trakt", "trakt_api_key", settings.TRAKT_API_KEY, censor_log=True)
-        settings.TRAKT_API_SECRET = check_setting_str(settings.CFG, "Trakt", "trakt_api_secret", settings.TRAKT_API_SECRET, censor_log=True)
+        # Secret is not named "*password*", so decrypt explicitly (legacy plaintext migrates on save).
+        raw_trakt_secret = check_setting_str(settings.CFG, "Trakt", "trakt_api_secret", settings.TRAKT_API_SECRET or "", censor_log=True)
+        settings.TRAKT_API_SECRET = helpers.decrypt_config_value(raw_trakt_secret)
+        if settings.TRAKT_API_SECRET:
+            logger.censored_items[("Trakt", "trakt_api_secret")] = settings.TRAKT_API_SECRET
         from sickchill.oldbeard.trakt_api.trakt import refresh_trakt_pin_url
 
         refresh_trakt_pin_url()
@@ -1202,7 +1208,7 @@ def save_config():
                 "cpu_preset": settings.CPU_PRESET,
                 "anon_redirect": settings.ANON_REDIRECT or "disabled",
                 "tvdb_v4_apikey": settings.TVDB_V4_APIKEY,
-                "tvdb_v4_pin": settings.TVDB_V4_PIN,
+                "tvdb_v4_pin": helpers.encrypt_config_value(settings.TVDB_V4_PIN or ""),
                 "api_key": settings.API_KEY,
                 "debug": int(settings.DEBUG),
                 "dbdebug": int(settings.DBDEBUG),
@@ -1570,7 +1576,7 @@ def save_config():
                 "use_trakt": int(settings.USE_TRAKT),
                 "trakt_username": settings.TRAKT_USERNAME,
                 "trakt_api_key": settings.TRAKT_API_KEY,
-                "trakt_api_secret": settings.TRAKT_API_SECRET,
+                "trakt_api_secret": helpers.encrypt_config_value(settings.TRAKT_API_SECRET or ""),
                 "trakt_access_token": settings.TRAKT_ACCESS_TOKEN,
                 "trakt_refresh_token": settings.TRAKT_REFRESH_TOKEN,
                 "trakt_remove_watchlist": int(settings.TRAKT_REMOVE_WATCHLIST),

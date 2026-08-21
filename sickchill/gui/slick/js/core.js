@@ -4235,8 +4235,18 @@ const SICKCHILL = {
                     ? (displayName + ' [TVDB ' + discoveryIndexerId + ']')
                     : searchTerm;
                 const searchingFor = _(searchingLabel + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
-                $('#searchResults').empty().html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" /> '
-                    + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor));
+                // Build status with text nodes so displayName / ids cannot be interpreted as HTML
+                const statusText = _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor);
+                $('#searchResults').empty().append(
+                    $('<img>', {
+                        id: 'searchingAnim',
+                        src: scRoot + '/images/loading32' + themeSpinner + '.gif',
+                        alt: 'loading',
+                        height: 32,
+                        width: 32,
+                    }),
+                    document.createTextNode(' ' + statusText),
+                );
 
                 searchRequestXhr = $.post({
                     url: scRoot + '/addShows/searchIndexersForShowName',
