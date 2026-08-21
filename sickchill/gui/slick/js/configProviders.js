@@ -79,7 +79,12 @@ $(document).ready(function () {
 
         if ($('#provider_order_list > #' + id).length === 0) {
             const providerOrderList = $('#provider_order_list');
-            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" checked> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + scRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
+            const providerItem = '<li class="ui-state-default" id="' + id + '">'
+                + ' <input type="checkbox" id="enable_' + id + '" class="provider_enabler" checked>'
+                + ' <a href="' + anonURL + url + '" class="imgLink" target="_new">'
+                + '<img src="' + scRoot + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16">'
+                + '</a> ' + name + '</li>';
+            providerOrderList.append(providerItem);
             providerOrderList.sortable('refresh');
         }
 
@@ -94,7 +99,12 @@ $(document).ready(function () {
 
         if ($('#provider_order_list > #' + id).length === 0) {
             const providerOrderList = $('#provider_order_list');
-            providerOrderList.append('<li class="ui-state-default" id="' + id + '"> <input type="checkbox" id="enable_' + id + '" class="provider_enabler" checked> <a href="' + anonURL + url + '" class="imgLink" target="_new"><img src="' + scRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> ' + name + '</li>');
+            const providerItem = '<li class="ui-state-default" id="' + id + '">'
+                + ' <input type="checkbox" id="enable_' + id + '" class="provider_enabler" checked>'
+                + ' <a href="' + anonURL + url + '" class="imgLink" target="_new">'
+                + '<img src="' + scRoot + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16">'
+                + '</a> ' + name + '</li>';
+            providerOrderList.append(providerItem);
             providerOrderList.sortable('refresh');
         }
 

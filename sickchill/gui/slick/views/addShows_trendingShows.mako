@@ -35,18 +35,19 @@
                     <option value="desc">${_('Desc')}</option>
                 </select>
                 <label for="traktlistselection">
-                    <span>${_('Select Trakt List')}:</span>
+                    <span>${_('Select List')}:</span>
                 </label>
 
-                <select id="traktlistselection" class="form-control form-control-inline input-sm" title="Trakt List Selection">
-                    % for trakt_option in trakt_options:
-                        <option value="${trakt_option}" ${selected(traktList == trakt_option)}>${trakt_option}</option>
+                <select id="traktlistselection" class="form-control form-control-inline input-sm" title="Discovery List Selection">
+                    % for option_key, option_label in list_options.items():
+                        <option value="${option_key}" ${selected(list_key == option_key)}>${option_label}</option>
                     % endfor
                 </select>
             </div>
             <div class="clearfix"></div>
             <div id="trendingShows"></div>
-            <input type="hidden" name="traktList" id="traktList" value="${traktList}" />
+            <input type="hidden" name="traktList" id="traktList" value="${list_key}" />
+            <input type="hidden" name="tmdbList" id="tmdbList" value="${list_key}" />
         </div>
     </div>
 </%block>

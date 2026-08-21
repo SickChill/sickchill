@@ -153,7 +153,9 @@ const SICKCHILL = {
 
             $('a.submiterrors').confirm({
                 title: 'Submit Errors',
-                text: 'Are you sure you want to submit these errors ?<br><br><span class="red-text">Make sure SickChill is updated and trigger<br> this error with debug enabled before submitting</span>',
+                text: 'Are you sure you want to submit these errors ?<br><br>'
+                    + '<span class="red-text">Make sure SickChill is updated and trigger<br>'
+                    + ' this error with debug enabled before submitting</span>',
             });
 
             $('#config-components').tabs({
@@ -304,6 +306,42 @@ const SICKCHILL = {
     config: {
         init() {
             $('#config-components').tabs();
+
+            // Trakt account PIN (Config → General → Indexer / Data)
+            $('#TraktGetPin').on('click', () => {
+                window.open($('#trakt_pin_url').val(), 'popUp', 'toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550');
+                $('#trakt_pin').removeClass('hide');
+            });
+
+            $('#trakt_pin').on('keyup change', () => {
+                if ($('#trakt_pin').val().length === 0) {
+                    $('#TraktGetPin').removeClass('hide');
+                    $('#authTrakt').addClass('hide');
+                } else {
+                    $('#TraktGetPin').addClass('hide');
+                    $('#authTrakt').removeClass('hide');
+                }
+            });
+
+            $('#authTrakt').on('click', () => {
+                const trakt = {};
+                trakt.pin = $('#trakt_pin').val();
+                if (trakt.pin.length > 0) {
+                    $.post(scRoot + '/home/getTraktToken', {
+                        trakt_pin: trakt.pin, // eslint-disable-line camelcase
+                    }).done(data => {
+                        if ($('#testTrakt-result').length > 0) {
+                            $('#testTrakt-result').html(data);
+                        } else {
+                            notifyModal(data);
+                        }
+
+                        $('#authTrakt').addClass('hide');
+                        $('#trakt_pin').addClass('hide');
+                        $('#TraktGetPin').addClass('hide');
+                    });
+                }
+            });
 
             $('.viewIf').on('click', function () {
                 if (this.checked) {
@@ -964,35 +1002,7 @@ const SICKCHILL = {
                 });
             });
 
-            $('#TraktGetPin').on('click', () => {
-                window.open($('#trakt_pin_url').val(), 'popUp', 'toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550');
-                $('#trakt_pin').removeClass('hide');
-            });
-
-            $('#trakt_pin').on('keyup change', () => {
-                if ($('#trakt_pin').val().length === 0) {
-                    $('#TraktGetPin').removeClass('hide');
-                    $('#authTrakt').addClass('hide');
-                } else {
-                    $('#TraktGetPin').addClass('hide');
-                    $('#authTrakt').removeClass('hide');
-                }
-            });
-
-            $('#authTrakt').on('click', () => {
-                const trakt = {};
-                trakt.pin = $('#trakt_pin').val();
-                if (trakt.pin.length > 0) {
-                    $.post(scRoot + '/home/getTraktToken', {
-                        trakt_pin: trakt.pin, // eslint-disable-line camelcase
-                    }).done(data => {
-                        $('#testTrakt-result').html(data);
-                        $('#authTrakt').addClass('hide');
-                        $('#trakt_pin').addClass('hide');
-                        $('#TraktGetPin').addClass('hide');
-                    });
-                }
-            });
+            // Trakt PIN authorize handlers live in config.init (Indexer / Data on General)
 
             $('#testTrakt').on('click', function () {
                 const trakt = {};
@@ -3279,9 +3289,12 @@ const SICKCHILL = {
     manage: {
         init() {
             $.makeEpisodeRow = function (indexerId, season, episode, name, checked) { // eslint-disable-line max-params
+                const epName = indexerId + '-' + season + 'x' + episode;
                 let row = '';
                 row += ' <tr class="' + $('#row_class').val() + ' show-' + indexerId + '">';
-                row += '  <td class="tableleft" align="center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
+                row += '  <td class="tableleft" align="center">'
+                    + '<input type="checkbox" class="' + indexerId + '-epcheck" name="' + epName + '"'
+                    + (checked ? ' checked' : '') + '></td>';
                 row += '  <td>' + season + 'x' + episode + '</td>';
                 row += '  <td class="tableright" style="width: 100%">' + name + '</td>';
                 row += ' </tr>';
@@ -3290,9 +3303,12 @@ const SICKCHILL = {
             };
 
             $.makeSubtitleRow = function (indexerId, season, episode, name, subtitles, checked) { // eslint-disable-line max-params
+                const epName = indexerId + '-' + season + 'x' + episode;
                 let row = '';
                 row += '<tr class="good show-' + indexerId + '">';
-                row += '<td class="text-center"><input type="checkbox" class="' + indexerId + '-epcheck" name="' + indexerId + '-' + season + 'x' + episode + '"' + (checked ? ' checked' : '') + '></td>';
+                row += '<td class="text-center">'
+                    + '<input type="checkbox" class="' + indexerId + '-epcheck" name="' + epName + '"'
+                    + (checked ? ' checked' : '') + '></td>';
                 row += '<td style="width: 2%;">' + season + 'x' + episode + '</td>';
                 if (subtitles.length > 0) {
                     row += '<td style="width: 8%;">';
@@ -4018,14 +4034,48 @@ const SICKCHILL = {
             };
 
             $.fn.loadRemoteShows = function (path, loadingTxt, errorTxt) {
-                $(this).html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" />&nbsp;' + loadingTxt);
-                $(this).load(scRoot + path + ' #container', function (response, status) {
-                    if (status === 'error') {
-                        $(this).empty().html(errorTxt);
-                    } else {
-                        $.initRemoteShowGrid();
-                        $.loadTraktImages();
+                // Abort prior in-flight load on this element and ignore stale callbacks so a
+                // newer list selection cannot be overwritten by an older response.
+                return this.each(function () {
+                    const $element = $(this);
+                    const previous = $element.data('remoteShowsXhr');
+                    if (previous && typeof previous.abort === 'function') {
+                        previous.abort();
                     }
+
+                    const requestId = ($element.data('remoteShowsRequestId') || 0) + 1;
+                    $element.data('remoteShowsRequestId', requestId);
+
+                    $element.html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" />&nbsp;' + loadingTxt);
+
+                    const xhr = $.ajax({
+                        url: scRoot + path,
+                        dataType: 'html',
+                        success(html) {
+                            if ($element.data('remoteShowsRequestId') !== requestId) {
+                                return;
+                            }
+
+                            // Same filter as former .load(url + ' #container')
+                            const $container = $('<div>').append($.parseHTML(html)).find('#container');
+                            $element.html($container.length > 0 ? $container : html);
+                            $.initRemoteShowGrid();
+                            $.loadTraktImages();
+                        },
+                        error(jqXHR, textStatus) {
+                            if ($element.data('remoteShowsRequestId') !== requestId || textStatus === 'abort') {
+                                return;
+                            }
+
+                            $element.empty().html(errorTxt);
+                        },
+                        complete() {
+                            if ($element.data('remoteShowsXhr') === xhr) {
+                                $element.removeData('remoteShowsXhr');
+                            }
+                        },
+                    });
+                    $element.data('remoteShowsXhr', xhr);
                 });
             };
 
@@ -4200,19 +4250,43 @@ const SICKCHILL = {
                     searchRequestXhr.abort();
                 }
 
-                if (!$('#show-name').val()) {
+                const displayName = ($('#show-name').val() || '').trim();
+                const discoveryIndexerId = ($('#discovery-indexer-id').val() || '').trim();
+                // Prefer verified TVDB id from discovery Add; keep title visible in the box
+                let searchTerm = displayName;
+                let exact = $('#exact-match').is(':checked') ? 1 : 0;
+                if (discoveryIndexerId) {
+                    searchTerm = discoveryIndexerId;
+                    exact = 0;
+                    $('#discovery-indexer-id').val('');
+                }
+
+                if (!searchTerm) {
                     return;
                 }
 
-                const searchingFor = _($('#show-name').val().trim() + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
-                $('#searchResults').empty().html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" /> '
-                    + _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor));
+                const searchingLabel = discoveryIndexerId && displayName
+                    ? (displayName + ' [TVDB ' + discoveryIndexerId + ']')
+                    : searchTerm;
+                const searchingFor = _(searchingLabel + ' on ' + $('#providedIndexer option:selected').text() + ' in ' + $('#indexerLangSelect option:selected').text());
+                // Build status with text nodes so displayName / ids cannot be interpreted as HTML
+                const statusText = _('searching {searchingFor}...').replace(/{searchingFor}/, searchingFor);
+                $('#searchResults').empty().append(
+                    $('<img>', {
+                        id: 'searchingAnim',
+                        src: scRoot + '/images/loading32' + themeSpinner + '.gif',
+                        alt: 'loading',
+                        height: 32,
+                        width: 32,
+                    }),
+                    document.createTextNode(' ' + statusText),
+                );
 
                 searchRequestXhr = $.post({
                     url: scRoot + '/addShows/searchIndexersForShowName',
                     data: {
-                        search_term: $('#show-name').val().trim(), // eslint-disable-line camelcase
-                        exact: $('#exact-match').is(':checked') ? 1 : 0,
+                        search_term: searchTerm, // eslint-disable-line camelcase
+                        exact,
                         lang: $('#indexerLangSelect').val(),
                         indexer: $('#providedIndexer').val(),
                     },
@@ -4302,8 +4376,10 @@ const SICKCHILL = {
             $('#search-button').on('click', searchIndexers);
 
             $('#addShowButton').on('click', () => {
-                // If they haven't picked a show don't let them submit
-                if (!$('input:radio[name="whichSeries"]:checked').val()) {
+                // Radio pick from search, or hidden id from addShowByID / provided metadata
+                const whichSeries = $('input:radio[name="whichSeries"]:checked').val()
+                    || $('input:hidden[name="whichSeries"]').val();
+                if (!whichSeries) {
                     notifyModal('You must choose a show to continue');
                     return false;
                 }
@@ -4413,7 +4489,11 @@ const SICKCHILL = {
 
                 $('#rootDirStaticList').html('');
                 $('#rootDirs option').each((i, w) => {
-                    $('#rootDirStaticList').append('<li class="ui-state-default ui-corner-all"><input type="checkbox" class="cb dir_check" id="' + $(w).val() + '" checked=checked> <label for="' + $(w).val() + '">' + $(w).val() + '</label></li>');
+                    const dir = $(w).val();
+                    const dirItem = '<li class="ui-state-default ui-corner-all">'
+                        + '<input type="checkbox" class="cb dir_check" id="' + dir + '" checked=checked>'
+                        + ' <label for="' + dir + '">' + dir + '</label></li>';
+                    $('#rootDirStaticList').append(dirItem);
                 });
                 loadContent();
             };
@@ -4432,19 +4512,22 @@ const SICKCHILL = {
             );
         },
         trendingShows() {
+            const listParameter = () => ($('#tmdbList').val() || $('#traktList').val() || 'trending');
             $('#trendingShows').loadRemoteShows(
-                '/addShows/getTrendingShows/?traktList=' + $('#traktList').val(),
-                'Loading trending shows...',
-                'Trakt timed out, refresh page to try again',
+                '/addShows/getTrendingShows/?tmdbList=' + listParameter(),
+                'Loading discovery shows...',
+                'List request timed out, refresh page to try again',
             );
 
             $('#traktlistselection').on('change', event => {
-                const traktList = event.target.value;
-                window.history.replaceState({}, document.title, '?traktList=' + traktList);
+                const listKey = event.target.value;
+                $('#traktList').val(listKey);
+                $('#tmdbList').val(listKey);
+                window.history.replaceState({}, document.title, '?tmdbList=' + listKey);
                 $('#trendingShows').loadRemoteShows(
-                    '/addShows/getTrendingShows/?traktList=' + traktList,
-                    'Loading trending shows...',
-                    'Trakt timed out, refresh page to try again',
+                    '/addShows/getTrendingShows/?tmdbList=' + listKey,
+                    'Loading discovery shows...',
+                    'List request timed out, refresh page to try again',
                 );
             });
         },
