@@ -4034,14 +4034,48 @@ const SICKCHILL = {
             };
 
             $.fn.loadRemoteShows = function (path, loadingTxt, errorTxt) {
-                $(this).html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" />&nbsp;' + loadingTxt);
-                $(this).load(scRoot + path + ' #container', function (response, status) {
-                    if (status === 'error') {
-                        $(this).empty().html(errorTxt);
-                    } else {
-                        $.initRemoteShowGrid();
-                        $.loadTraktImages();
+                // Abort prior in-flight load on this element and ignore stale callbacks so a
+                // newer list selection cannot be overwritten by an older response.
+                return this.each(function () {
+                    const $element = $(this);
+                    const previous = $element.data('remoteShowsXhr');
+                    if (previous && typeof previous.abort === 'function') {
+                        previous.abort();
                     }
+
+                    const requestId = ($element.data('remoteShowsRequestId') || 0) + 1;
+                    $element.data('remoteShowsRequestId', requestId);
+
+                    $element.html('<img id="searchingAnim" src="' + scRoot + '/images/loading32' + themeSpinner + '.gif" alt="loading" height="32" width="32" />&nbsp;' + loadingTxt);
+
+                    const xhr = $.ajax({
+                        url: scRoot + path,
+                        dataType: 'html',
+                        success(html) {
+                            if ($element.data('remoteShowsRequestId') !== requestId) {
+                                return;
+                            }
+
+                            // Same filter as former .load(url + ' #container')
+                            const $container = $('<div>').append($.parseHTML(html)).find('#container');
+                            $element.html($container.length > 0 ? $container : html);
+                            $.initRemoteShowGrid();
+                            $.loadTraktImages();
+                        },
+                        error(jqXHR, textStatus) {
+                            if ($element.data('remoteShowsRequestId') !== requestId || textStatus === 'abort') {
+                                return;
+                            }
+
+                            $element.empty().html(errorTxt);
+                        },
+                        complete() {
+                            if ($element.data('remoteShowsXhr') === xhr) {
+                                $element.removeData('remoteShowsXhr');
+                            }
+                        },
+                    });
+                    $element.data('remoteShowsXhr', xhr);
                 });
             };
 
