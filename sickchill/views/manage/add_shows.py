@@ -12,11 +12,10 @@ import sickchill
 from sickchill import logger, settings
 from sickchill.helper import sanitize_filename, try_int
 from sickchill.helper.list_status import build_list_status
-from sickchill.oldbeard import config, db, filters, helpers, tmdbLists, tvmazePremieres, ui
+from sickchill.oldbeard import config, db, helpers, tmdbLists, tvmazePremieres, ui
 from sickchill.oldbeard.blackandwhitelist import short_group_names
 from sickchill.oldbeard.common import Quality
 from sickchill.oldbeard.trakt_api import TraktAPI
-from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
 from sickchill.tv import TVShow
@@ -228,13 +227,13 @@ class AddShows(Home):
                     cur_dir["added_already"] = True
         return t.render(dirList=dir_list)
 
-    def newShow(self, show_to_add=None, other_shows=None, search_string=None, exact=None):
+    def newShow(self, show_to_add=None, other_shows=None, search_string=None, exact=None, indexer_id=None):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
 
-        ``exact`` must be in the signature: the web router passes query args as kwargs, and an
-        unexpected ``exact`` caused TypeError → empty ``newShow()`` (search box not populated).
+        Query kwargs ``exact`` and ``indexer_id`` must be in the signature: the web router
+        passes them as kwargs, and unexpected names caused TypeError → empty ``newShow()``.
         """
         # Prefer router/query kwargs; fall back to explicit get_* for POST body / in-process calls
         if show_to_add is None:
@@ -247,11 +246,16 @@ class AddShows(Home):
             exact = self.get_query_argument("exact", default="") or self.get_body_argument("exact", default="")
         exact_match = str(exact or "").strip().lower() in ("1", "true", "yes", "on")
 
+        # Discovery Add may pass a verified TVDB id while search_string holds the display title
+        discovery_indexer_id = try_int(indexer_id, 0) if indexer_id not in (None, "") else 0
+        if not discovery_indexer_id:
+            discovery_indexer_id = try_int(self.get_query_argument("indexer_id", default="0"), 0)
+
         t = PageTemplate(rh=self, filename="addShows_newShow.mako")
 
-        indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
+        indexer, show_dir, pipe_indexer_id, show_name = self.split_extra_show(show_to_add)
 
-        if indexer_id and indexer and show_name:
+        if pipe_indexer_id and indexer and show_name:
             use_provided_info = True
         else:
             use_provided_info = False
@@ -271,7 +275,7 @@ class AddShows(Home):
         elif not isinstance(other_shows, list):
             other_shows = [other_shows]
 
-        provided_indexer_id = int(indexer_id or 0)
+        provided_indexer_id = int(pipe_indexer_id or 0)
         provided_indexer_name = show_name
 
         provided_indexer = int(indexer or settings.INDEXER_DEFAULT)
@@ -281,6 +285,7 @@ class AddShows(Home):
             use_provided_info=use_provided_info,
             default_show_name=default_show_name,
             exact_match=exact_match,
+            discovery_indexer_id=discovery_indexer_id or "",
             other_shows=other_shows,
             provided_show_dir=show_dir,
             provided_indexer_id=provided_indexer_id,
@@ -492,37 +497,6 @@ class AddShows(Home):
                 action="popularShows",
             )
 
-    def favoriteShows(self):
-        """
-        Fetches data from IMDB to show a list of favorite shows.
-        Presently this is not possible due to IMDB
-        """
-        t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
-        error = None
-
-        if self.get_body_argument("submit", None):
-            tvdb_user = self.get_body_argument("tvdb_user")
-            tvdb_user_key = filters.unhide(settings.TVDB_USER_KEY, self.get_body_argument("tvdb_user_key"))
-            if tvdb_user and tvdb_user_key and (tvdb_user != settings.TVDB_USER or tvdb_user_key != settings.TVDB_USER_KEY):
-                favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
-
-        try:
-            favorite_shows = favorites.fetch_indexer_favorites()
-        except Exception as error:
-            logger.exception(traceback.format_exc())
-            logger.warning(_("Could not get favorite shows: {error}").format(error=error))
-            favorite_shows = None
-
-        return t.render(
-            title=_("Favorite Shows"),
-            header=_("Favorite Shows"),
-            favorite_shows=favorite_shows,
-            favorites_exception=error,
-            topmenu="home",
-            controller="addShows",
-            action="popularShows",
-        )
-
     def addShowToBlacklist(self):
         # URL parameters
 
@@ -573,11 +547,12 @@ class AddShows(Home):
         if try_int(indexer_id) <= 0 or existing:
             return add_error(existing)
 
-        # Trakt-style: always show pick-a-show (#2) as user confirmation, even for one hit.
-        # Do not use use_provided_info — that skips confirmation and treats the add like
-        # "existing metadata" (wrong when there is no show folder yet).
-        search = (show_name or "").strip() or str(indexer_id)
-        return self.redirect(f"/addShows/newShow/?search_string={quote_plus(search)}&exact=1")
+        # Trakt-style pick-a-show (#2) confirmation. Search by verified TVDB id (not exact
+        # title match); keep the human title in the search box via search_string.
+        title = (show_name or "").strip()
+        if title:
+            return self.redirect(f"/addShows/newShow/?search_string={quote_plus(title)}&indexer_id={quote_plus(str(indexer_id))}")
+        return self.redirect(f"/addShows/newShow/?search_string={quote_plus(str(indexer_id))}")
 
     def addNewShow(self):
         """

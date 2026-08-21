@@ -489,7 +489,8 @@ TRAKT_BLACKLIST_NAME = None
 TRAKT_DEFAULT_INDEXER = None
 TRAKT_METHOD_ADD = None
 TRAKT_OAUTH_URL = "https://trakt.tv/"
-TRAKT_PIN_URL = "https://trakt.tv/pin/4562"
+# Rebuilt on load/save from TRAKT_API_KEY (see refresh_trakt_pin_url)
+TRAKT_PIN_URL = f"https://trakt.tv/oauth/authorize?response_type=code&client_id={TRAKT_API_KEY}&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
 TRAKT_REFRESH_TOKEN = None
 TRAKT_REMOVE_SERIESLIST = False
 TRAKT_REMOVE_SHOW_FROM_SICKCHILL = False
@@ -506,11 +507,12 @@ TRASH_REMOVE_SHOW = False
 TRASH_ROTATE_LOGS = False
 TRIM_ZERO = False
 TV_DOWNLOAD_DIR = None
-TVDB_USER = None
-TVDB_USER_KEY = None
 # TheTVDB API v4 Encoded so secret scanners do not see a raw UUID; start.py uses this as def_val for config.ini
-# (missing/empty → written into CFG → config.ini on save). Override: env TVDB_V4_APIKEY or
-TVDB_V4_APIKEY = base64.b64decode(b"YjMwNDExM2MtM2QxZi00NzdlLWFiNmQtZmRlYTNlMzYzZDUw").decode("ascii")
+# (missing/empty → written into CFG → config.ini on save). Override: env TVDB_V4_APIKEY,
+# config [General] tvdb_v4_apikey, or Config → General → Indexer / Data (blank field = this built-in).
+# Legacy V3 tvdb_user / tvdb_user_key (favorites) are no longer used.
+TVDB_V4_APIKEY_BUILTIN = base64.b64decode(b"YjMwNDExM2MtM2QxZi00NzdlLWFiNmQtZmRlYTNlMzYzZDUw").decode("ascii")
+TVDB_V4_APIKEY = TVDB_V4_APIKEY_BUILTIN
 TVDB_V4_PIN = None
 TWILIO_ACCOUNT_SID = ""
 TWILIO_AUTH_TOKEN = ""

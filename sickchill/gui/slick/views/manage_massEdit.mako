@@ -280,7 +280,7 @@
 
                 <div class="field-pair row">
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                        <span class="component-title">${_('Prefered Words')}</span>
+                        <span class="component-title">${_('Preferred Words')}</span>
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                         <select id="edit_prefer_words" name="prefer_words" class="form-control form-control-inline input-sm">

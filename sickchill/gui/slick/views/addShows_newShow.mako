@@ -25,6 +25,8 @@
                     <div class="row stepDiv">
                         <div class="col-md-12">
                             <input type="hidden" id="indexer_timeout" value="${settings.INDEXER_TIMEOUT}" />
+                            ## Verified TVDB id from TMDB/TVMaze Add — first search uses this; box still shows the title
+                            <input type="hidden" id="discovery-indexer-id" value="${discovery_indexer_id}" />
 
                             % if use_provided_info:
                                 <label>${_('Show retrieved from existing metadata')}:

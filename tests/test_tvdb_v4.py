@@ -903,11 +903,6 @@ class TVDBSearchMappingTests(unittest.TestCase):
         self.assertTrue(TVDB.complete_image_url("posters/foo.jpg").startswith("https://artworks.thetvdb.com/"))
         self.assertEqual(TVDB.complete_image_url(""), "")
 
-    def test_favorites_noop(self):
-        tvdb = TVDB()
-        self.assertEqual(tvdb.get_favorites(), [])
-        self.assertFalse(TVDB.test_user_key("u", "k"))
-
     def test_api_key_uses_settings_only(self):
         from sickchill import settings
 
