@@ -153,9 +153,7 @@ class Provider(TorrentProvider):
                             # Accept Torrent only from Good People for every Episode Search
                             if self.confirmed and result["status"] not in ("trusted", "vip"):
                                 if mode != "RSS":
-                                    logger.debug(
-                                        _("Found result {title} but that doesn't seem like a verified result so I'm ignoring it").format(title=title)
-                                    )
+                                    logger.debug(_("Found result {title} but that doesn't seem like a verified result so I'm ignoring it").format(title=title))
                                 continue
 
                             torrent_size = try_int(result["size"])
@@ -169,7 +167,11 @@ class Provider(TorrentProvider):
                                 "hash": info_hash,
                             }
                             if mode != "RSS":
-                                logger.debug(_("Found result: {title} with {seeders} seeders and {leechers} leechers").format(title=title, seeders=seeders, leechers=leechers))
+                                logger.debug(
+                                    _("Found result: {title} with {seeders} seeders and {leechers} leechers").format(
+                                        title=title, seeders=seeders, leechers=leechers
+                                    )
+                                )
 
                             items.append(item)
                         except Exception as error:

@@ -89,7 +89,11 @@ class Provider(TorrentProvider):
 
                             item = {"title": title, "link": magnet + self._custom_trackers, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                             if mode != "RSS":
-                                logger.debug(_("Found result: {title} with {seeders} seeders and {leechers} leechers").format(title=title, seeders=seeders, leechers=leechers))
+                                logger.debug(
+                                    _("Found result: {title} with {seeders} seeders and {leechers} leechers").format(
+                                        title=title, seeders=seeders, leechers=leechers
+                                    )
+                                )
 
                             items.append(item)
                         except Exception as error:

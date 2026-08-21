@@ -137,7 +137,11 @@ class Provider(TorrentProvider):
 
                         item = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         if mode != "RSS":
-                            logger.debug(_("Found result: {title} with {seeders} seeders and {leechers} leechers").format(title=title, seeders=seeders, leechers=leechers))
+                            logger.debug(
+                                _("Found result: {title} with {seeders} seeders and {leechers} leechers").format(
+                                    title=title, seeders=seeders, leechers=leechers
+                                )
+                            )
 
                         items.append(item)
 

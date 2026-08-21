@@ -75,7 +75,9 @@ class Provider(TorrentProvider):
 
                     item = {"title": title, "link": link, "size": torrent_size, "seeders": seeders, "leechers": leechers, "hash": info_hash}
                     if mode != "RSS":
-                        logger.debug(_("Found result: {title} with {seeders} seeders and {leechers} leechers").format(title=title, seeders=seeders, leechers=leechers))
+                        logger.debug(
+                            _("Found result: {title} with {seeders} seeders and {leechers} leechers").format(title=title, seeders=seeders, leechers=leechers)
+                        )
 
                     items.append(item)
                 except Exception:  # noqa: S112
