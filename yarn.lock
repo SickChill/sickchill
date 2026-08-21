@@ -4606,7 +4606,7 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.6, graceful-fs@^4.2.0, 
 
 "grunt-bower-concat@git+https://github.com/miigotu/grunt-bower-concat.git":
   version "1.0.0"
-  resolved "git+ssh://git@github.com/miigotu/grunt-bower-concat.git#41a681e70b9cb2fddbd37ddc482d47670cb12850"
+  resolved "git+https://github.com/miigotu/grunt-bower-concat.git#41a681e70b9cb2fddbd37ddc482d47670cb12850"
   dependencies:
     async "~1.5.2"
     bower "~1.8.8"
@@ -4716,7 +4716,7 @@ grunt-legacy-util@~2.0.1:
 
 "grunt-po2json@git+https://github.com/rockykitamura/grunt-po2json.git":
   version "0.3.0"
-  resolved "git+ssh://git@github.com/rockykitamura/grunt-po2json.git#84ff43ab2405911d430c183f808ee63533789e70"
+  resolved "git+https://github.com/rockykitamura/grunt-po2json.git#84ff43ab2405911d430c183f808ee63533789e70"
   dependencies:
     po2json "*"
 
