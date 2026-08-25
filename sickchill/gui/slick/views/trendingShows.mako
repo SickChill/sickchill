@@ -53,10 +53,10 @@
                     # rating display: TMDB is 0–10; TVMaze average is 0–10
                     rating_pct = int(round(float(rating) * 10)) if rating else 0
                 %>
-                <div class="trakt_show" data-name="${title}"
-                     data-rating="${rating_pct}" data-votes="${votes}"
-                     data-airdate="${airdate}" data-tvdb-id="${tvdb_id or ''}"
-                     data-language="${language}" data-source="${source}">
+                <div class="trakt_show" data-name="${title | h}"
+                     data-rating="${rating_pct | h}" data-votes="${votes | h}"
+                     data-airdate="${airdate | h}" data-tvdb-id="${(tvdb_id or '') | h}"
+                     data-language="${language | h}" data-source="${source | h}">
                     <div class="traktContainer">
                         <div class="trakt-image">
                             <a class="trakt-image" href="${anon_url(detail)}" target="_blank" rel="noreferrer">

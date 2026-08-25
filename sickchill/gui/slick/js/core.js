@@ -4615,12 +4615,17 @@ const SICKCHILL = {
                 }
             };
 
-            syncPremiereFilters(listParameter());
-            $('#trendingShows').loadRemoteShows(
-                '/addShows/getTrendingShows/?tmdbList=' + listParameter(),
-                'Loading discovery shows...',
-                'List request timed out, refresh page to try again',
-            );
+            const loadDiscoveryShows = listKey => {
+                $('#trendingShows').loadRemoteShows(
+                    '/addShows/getTrendingShows/?tmdbList=' + listKey,
+                    'Loading discovery shows...',
+                    'List request timed out, refresh page to try again',
+                );
+            };
+
+            const initialListKey = listParameter();
+            syncPremiereFilters(initialListKey);
+            loadDiscoveryShows(initialListKey);
 
             $('#traktlistselection').on('change', event => {
                 const listKey = event.target.value;
@@ -4628,11 +4633,7 @@ const SICKCHILL = {
                 $('#tmdbList').val(listKey);
                 window.history.replaceState({}, document.title, '?tmdbList=' + listKey);
                 syncPremiereFilters(listKey);
-                $('#trendingShows').loadRemoteShows(
-                    '/addShows/getTrendingShows/?tmdbList=' + listKey,
-                    'Loading discovery shows...',
-                    'List request timed out, refresh page to try again',
-                );
+                loadDiscoveryShows(listKey);
             });
 
             $('#premiere-window, #premiere-language').on('change', () => {
