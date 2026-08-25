@@ -3923,12 +3923,91 @@ const SICKCHILL = {
                 selected: (metaToBool('settings.SORT_ARTICLE') ? -1 : 0),
             });
 
+            $.premiereShowPassesFilters = function (element) {
+                // Isotope 2 uses this=element; Isotope 3 passes itemElem — support both
+                const itemElement = (element && element.nodeType === 1) ? element : this;
+                const $item = $(itemElement);
+
+                const requireTvdb = $('#premiere-has-tvdb').is(':checked');
+                if (requireTvdb && !($item.attr('data-tvdb-id') || '').trim()) {
+                    return false;
+                }
+
+                const languageMode = $('#premiere-language').val() || 'all';
+                if (languageMode === 'english') {
+                    const language = ($item.attr('data-language') || '').trim().toLowerCase();
+                    // Missing language keeps the tile (avoid over-filtering incomplete data)
+                    if (language && language !== 'english') {
+                        return false;
+                    }
+                }
+
+                const windowDays = $('#premiere-window').val() || 'all';
+                if (windowDays !== 'all') {
+                    const airdate = ($item.attr('data-airdate') || '').trim();
+                    if (!airdate) {
+                        return false;
+                    }
+
+                    // Parse as local calendar date (avoid UTC off-by-one)
+                    const parts = airdate.split('-').map(part => Number.parseInt(part, 10));
+                    if (parts.length !== 3 || parts.some(part => Number.isNaN(part))) {
+                        return false;
+                    }
+
+                    const air = new Date(parts[0], parts[1] - 1, parts[2]);
+                    const start = new Date();
+                    start.setHours(0, 0, 0, 0);
+                    const end = new Date(start);
+                    end.setDate(end.getDate() + Number.parseInt(windowDays, 10));
+                    if (air < start || air > end) {
+                        return false;
+                    }
+                }
+
+                return true;
+            };
+
+            $.applyPremiereShowsFilter = function () {
+                const $container = $('#container');
+                if ($container.length === 0) {
+                    return;
+                }
+
+                const isPremieres = ($('#tmdbList').val() || '') === 'premieres';
+                const $items = $container.find('.trakt_show');
+                const hasIsotope = Boolean($container.data('isotope'));
+
+                // Mark + show/hide directly so filters work even if Isotope arrange fails
+                $items.each(function () {
+                    const passes = !isPremieres || $.premiereShowPassesFilters(this);
+                    $(this).toggleClass('premiere-hide', !passes);
+                    $(this).toggle(passes);
+                });
+
+                if (hasIsotope) {
+                    try {
+                        $container.isotope({
+                            filter: isPremieres ? ':not(.premiere-hide)' : '*',
+                        });
+                    } catch {
+                        // Direct .toggle() above already applied the filter
+                    }
+                }
+            };
+
             $.initRemoteShowGrid = function () {
+                const $container = $('#container');
+                if ($container.length === 0) {
+                    return;
+                }
+
                 // Set defaults on page load
                 $('#showsort').val('original');
                 $('#showsortdirection').val('asc');
 
-                $('#showsort').on('change', function () {
+                // Avoid stacking handlers across AJAX reloads of the discovery grid
+                $('#showsort').off('change.remoteShowGrid').on('change.remoteShowGrid', function () {
                     let sortCriteria;
                     switch (this.value) {
                         case 'original': {
@@ -3940,7 +4019,7 @@ const SICKCHILL = {
                             /* Randomise, else the rating_votes can already
                              * have sorted leaving this with nothing to do.
                              */
-                            $('#container').isotope({sortBy: 'random'});
+                            $container.isotope({sortBy: 'random'});
                             sortCriteria = 'rating';
                             break;
                         }
@@ -3966,7 +4045,7 @@ const SICKCHILL = {
                         }
                     }
 
-                    $('#container').isotope({
+                    $container.isotope({
                         layoutMode: 'masonry',
                         masonry: {
                             isFitWidth: true,
@@ -3976,8 +4055,8 @@ const SICKCHILL = {
                     });
                 });
 
-                $('#showsortdirection').on('change', function () {
-                    $('#container').isotope({
+                $('#showsortdirection').off('change.remoteShowGrid').on('change.remoteShowGrid', function () {
+                    $container.isotope({
                         layoutMode: 'masonry',
                         masonry: {
                             isFitWidth: true,
@@ -3987,24 +4066,39 @@ const SICKCHILL = {
                     });
                 });
 
-                $('#container').isotope({
-                    sortBy: 'original-order',
-                    layoutMode: 'masonry',
-                    masonry: {
-                        isFitWidth: true,
-                        horizontalOrder: true,
-                    },
-                    getSortData: {
-                        name(itemElement) {
-                            const name = $(itemElement).attr('data-name') || '';
-                            const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
-                            return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase();
+                // Apply premiere show/hide before layout so tiles are correct even if Isotope errors
+                $.applyPremiereShowsFilter();
+
+                // Replace any prior isotope instance on a freshly injected #container
+                if ($container.data('isotope')) {
+                    try {
+                        $container.isotope('destroy');
+                    } catch {
+                        // Ignore destroy errors on a replaced DOM node
+                    }
+                }
+
+                try {
+                    const isPremieres = ($('#tmdbList').val() || '') === 'premieres';
+                    $container.isotope({
+                        itemSelector: '.trakt_show',
+                        sortBy: 'original-order',
+                        layoutMode: 'fitRows',
+                        filter: isPremieres ? ':not(.premiere-hide)' : '*',
+                        getSortData: {
+                            name(itemElement) {
+                                const name = $(itemElement).attr('data-name') || '';
+                                const regex = new RegExp('^((?:' + getMeta('settings.GRAMMAR_ARTICLES') + String.raw`)\s)`, 'i');
+                                return (metaToBool('settings.SORT_ARTICLE') ? name : name.replace(regex, '')).toLowerCase();
+                            },
+                            rating: '[data-rating] parseInt',
+                            votes: '[data-votes] parseInt',
+                            rank: '[data-rank] parseInt',
                         },
-                        rating: '[data-rating] parseInt',
-                        votes: '[data-votes] parseInt',
-                        rank: '[data-rank] parseInt',
-                    },
-                });
+                    });
+                } catch {
+                    // Filters already applied via .toggle() in applyPremiereShowsFilter
+                }
             };
 
             $.loadTraktImages = function () {
@@ -4513,6 +4607,15 @@ const SICKCHILL = {
         },
         trendingShows() {
             const listParameter = () => ($('#tmdbList').val() || $('#traktList').val() || 'trending');
+            const syncPremiereFilters = listKey => {
+                if (listKey === 'premieres') {
+                    $('#premiereFilters').show();
+                } else {
+                    $('#premiereFilters').hide();
+                }
+            };
+
+            syncPremiereFilters(listParameter());
             $('#trendingShows').loadRemoteShows(
                 '/addShows/getTrendingShows/?tmdbList=' + listParameter(),
                 'Loading discovery shows...',
@@ -4524,11 +4627,19 @@ const SICKCHILL = {
                 $('#traktList').val(listKey);
                 $('#tmdbList').val(listKey);
                 window.history.replaceState({}, document.title, '?tmdbList=' + listKey);
+                syncPremiereFilters(listKey);
                 $('#trendingShows').loadRemoteShows(
                     '/addShows/getTrendingShows/?tmdbList=' + listKey,
                     'Loading discovery shows...',
                     'List request timed out, refresh page to try again',
                 );
+            });
+
+            $('#premiere-window, #premiere-language').on('change', () => {
+                $.applyPremiereShowsFilter();
+            });
+            $('#premiere-has-tvdb').on('change', () => {
+                $.applyPremiereShowsFilter();
             });
         },
         popularShows() {

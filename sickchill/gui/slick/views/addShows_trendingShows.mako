@@ -44,6 +44,30 @@
                     % endfor
                 </select>
             </div>
+            <div id="premiereFilters" class="col-md-12 text-center" style="margin-top: 0.75em;${'' if list_key == 'premieres' else ' display:none;'}">
+                <label for="premiere-window">
+                    <span>${_('Premiere window')}:</span>
+                </label>
+                <select id="premiere-window" class="form-control form-control-inline input-sm" title="${_('Premiere window')}">
+                    <option value="14" selected>${_('Next 14 days')}</option>
+                    <option value="30">${_('Next 30 days')}</option>
+                    <option value="all">${_('All')}</option>
+                </select>
+                <label class="checkbox-inline" style="margin-left: 0.75em;">
+                    <input type="checkbox" id="premiere-has-tvdb" checked />
+                    ${_('Has TVDB id')}
+                </label>
+                <label for="premiere-language" style="margin-left: 0.75em;">
+                    <span>${_('Language')}:</span>
+                </label>
+                <select id="premiere-language" class="form-control form-control-inline input-sm" title="${_('Language')}">
+                    <option value="english" selected>${_('English')}</option>
+                    <option value="all">${_('All')}</option>
+                </select>
+                <div class="help-block" style="margin-top: 0.5em;">
+                    ${_('TVMaze does not provide ratings for most upcoming premieres yet.')}
+                </div>
+            </div>
             <div class="clearfix"></div>
             <div id="trendingShows"></div>
             <input type="hidden" name="traktList" id="traktList" value="${list_key}" />

@@ -102,6 +102,8 @@ def fetch_premieres() -> list[dict]:
         except (TypeError, ValueError):
             rating = 0.0
 
+        language = (show.get("language") or "").strip()
+
         cards.append(
             {
                 "title": title,
@@ -114,6 +116,7 @@ def fetch_premieres() -> list[dict]:
                 "overview": _TAG_RE.sub("", show.get("summary") or "").strip(),
                 "year": year,
                 "airdate": airdate,
+                "language": language,
                 "source": "tvmaze",
                 "detail_url": show.get("url") or f"https://www.tvmaze.com/shows/{show_id}",
             }

@@ -90,6 +90,7 @@ class TVMazePremieresTests(unittest.TestCase):
                         "image": {"medium": "https://example.com/a.jpg"},
                         "externals": {"thetvdb": 999},
                         "rating": {"average": 7.5},
+                        "language": "English",
                         "url": "https://www.tvmaze.com/shows/10",
                     }
                 },
@@ -122,6 +123,8 @@ class TVMazePremieresTests(unittest.TestCase):
         self.assertEqual(cards[0]["tvdb_id"], 999)
         self.assertEqual(cards[0]["overview"], "Hello")
         self.assertEqual(cards[0]["airdate"], "2026-09-15")
+        self.assertEqual(cards[0]["language"], "English")
+        self.assertEqual(cards[0]["rating"], 7.5)
         self.assertEqual(cards[0]["source"], "tvmaze")
 
 
