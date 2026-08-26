@@ -2642,7 +2642,7 @@ class TVEpisode(object):
 
         # try to get the release encoder to comply with scene naming standards
         encoder = Quality.sceneQualityFromName(self.release_name.replace(release_grp[relgrp], ""), episode_quality)
-        if encoder:
+        if encoder and not getattr(self, "is_naming_sample", False):
             logger.debug(f"Found codec for '{show_name}: {ep_name}'.")
 
         return {
@@ -2854,7 +2854,8 @@ class TVEpisode(object):
 
         result_name = self.format_string(result_name, replace_map)
 
-        logger.debug(f"formatting pattern: {pattern} -> {result_name}")
+        if not getattr(self, "is_naming_sample", False):
+            logger.debug(f"formatting pattern: {pattern} -> {result_name}")
 
         return result_name
 

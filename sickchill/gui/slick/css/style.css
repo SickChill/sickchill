@@ -936,6 +936,15 @@ home_trendingShows.mako
     background-color: #DFDACF;
 }
 
+/* TVMaze premieres: distinguish tiles with/without a TVDB id */
+.traktContainer .show-title.has-tvdb {
+    color: #111111;
+}
+
+.traktContainer .show-title.no-tvdb {
+    color: #B35900;
+}
+
 .trakt-image, .trakt-image img {
     width: 186px;
     height: 273px;

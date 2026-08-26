@@ -12,21 +12,17 @@ const loading = '<img src="' + scRoot + '/images/loading16' + themeSpinner + '.g
 let scPID = getMeta('scPID');
 
 function configSuccess(reload = true) {
-    $('.config_submitter').each(function () {
-        $(this).removeAttr('disabled');
-        $(this).next().remove();
-        $(this).show();
-        if (reload === true) {
-            window.location.reload();
-        }
-    });
-    $('.config_submitter_refresh').each(function () {
+    // Restore all save buttons once — do not reload inside .each() (Search Settings has 3 submitters)
+    $('.config_submitter, .config_submitter_refresh').each(function () {
         $(this).removeAttr('disabled');
         $(this).next().remove();
         $(this).show();
     });
     $('#email_show').trigger('notify');
     $('#prowl_show').trigger('notify');
+    if (reload === true) {
+        window.location.reload();
+    }
 }
 
 function metaToBool(pythonVariable) {
@@ -379,7 +375,7 @@ const SICKCHILL = {
             // Bind 'configForm' and provide a simple callback function
             $('#configForm').ajaxForm({
                 beforeSubmit() {
-                    $('.config_submitter .config_submitter_refresh').each(function () {
+                    $('.config_submitter, .config_submitter_refresh').each(function () {
                         $(this).attr('disabled', 'disabled');
                         $(this).after('<span>' + loading + ' Saving...</span>');
                         $(this).hide();
@@ -1690,20 +1686,17 @@ const SICKCHILL = {
                 typewatch(fillAnimeExamples, 500);
             });
 
-            $('#naming_abd_pattern').on('focusout', fillExamples);
+            $('#naming_abd_pattern').on('focusout', fillAbdExamples);
             $('#naming_abd_pattern').on('keyup', () => {
                 typewatch(fillAbdExamples, 500);
             });
 
-            $('#naming_sports_pattern').on('focusout', fillExamples);
+            $('#naming_sports_pattern').on('focusout', fillSportsExamples);
             $('#naming_sports_pattern').on('keyup', () => {
                 typewatch(fillSportsExamples, 500);
             });
 
-            $('#naming_anime_pattern').on('focusout', fillExamples);
-            $('#naming_anime_pattern').on('keyup', () => {
-                typewatch(fillAnimeExamples, 500);
-            });
+            // Anime pattern already bound to fillAnimeExamples above — do not also call fillExamples
 
             $('#show_naming_key').on('click', () => {
                 $('#naming_key').toggle();

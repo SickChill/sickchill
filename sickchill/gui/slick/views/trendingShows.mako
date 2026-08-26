@@ -68,7 +68,7 @@
                             </a>
                         </div>
 
-                        <div class="show-title">
+                        <div class="show-title ${('has-tvdb' if tvdb_id else 'no-tvdb') if source == 'tvmaze' else ''}">
                             % if title:
                                 ${title}${' ({})'.format(year) if year else ''}
                             % else:

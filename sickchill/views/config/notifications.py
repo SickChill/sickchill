@@ -264,6 +264,7 @@ class ConfigNotifications(Config):
         settings.GOTIFY_HOST = self.get_body_argument("gotify_host", default=None)
         settings.GOTIFY_AUTHORIZATIONTOKEN = self.get_body_argument("gotify_authorizationtoken", default=None)
 
+        self.log_configuration_save("Notifications")
         sickchill.start.save_config()
 
         if results:

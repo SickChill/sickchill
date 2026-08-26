@@ -234,6 +234,15 @@ home_trendingShows.mako
     background-color: #333333;
 }
 
+/* TVMaze premieres: white title when TVDB id exists, orange when missing */
+.traktContainer .show-title.has-tvdb {
+    color: #FFFFFF;
+}
+
+.traktContainer .show-title.no-tvdb {
+    color: #FF8C00;
+}
+
 /* =======================================================================
 displayShow.mako
 ========================================================================== */

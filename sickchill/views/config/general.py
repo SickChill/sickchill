@@ -47,6 +47,7 @@ class ConfigGeneral(Config):
         settings.ANIME_DEFAULT = config.checkbox_to_value(self.get_body_argument("anime", settings.ANIME_DEFAULT))
         settings.SCENE_DEFAULT = config.checkbox_to_value(self.get_body_argument("scene", settings.SCENE_DEFAULT))
 
+        self.log_configuration_save("Add Show Defaults")
         sickchill.start.save_config()
 
         ui.notifications.message(_("Saved Defaults"), _('Your "add show" defaults have been set to your current selections.'))
@@ -138,7 +139,7 @@ class ConfigGeneral(Config):
         #   - non-blank field → that key (override)
         #   - blank / cleared → built-in project key (also persisted to config.ini on save)
         raw_tvdb_key = (self.get_body_argument("tvdb_v4_apikey", default="") or "").strip()
-        raw_tvdb_pin = filters.unhide(settings.TVDB_V4_PIN or "", self.get_body_argument("tvdb_v4_pin", default="") or "").strip()
+        raw_tvdb_pin = (filters.unhide(settings.TVDB_V4_PIN or "", self.get_body_argument("tvdb_v4_pin", default="") or "") or "").strip()
         builtin_key = settings.TVDB_V4_APIKEY_BUILTIN
         new_tvdb_key = raw_tvdb_key if raw_tvdb_key else builtin_key
         new_tvdb_pin = raw_tvdb_pin or None
@@ -163,7 +164,7 @@ class ConfigGeneral(Config):
 
         # Trakt account credentials (Indexer / Data) — notify toggles stay on Notifications
         new_api_key = (self.get_body_argument("trakt_api_key", default="") or "").strip()
-        new_api_secret = filters.unhide(settings.TRAKT_API_SECRET, self.get_body_argument("trakt_api_secret", default="") or "").strip()
+        new_api_secret = (filters.unhide(settings.TRAKT_API_SECRET or "", self.get_body_argument("trakt_api_secret", default="") or "") or "").strip()
         new_username = (self.get_body_argument("trakt_username", default="") or "").strip()
         key_changed = False
         if new_api_key and new_api_key != settings.TRAKT_API_KEY:
@@ -210,6 +211,7 @@ class ConfigGeneral(Config):
 
         settings.DEFAULT_PAGE = self.get_body_argument("default_page", default=None)
 
+        self.log_configuration_save("General")
         sickchill.start.save_config()
 
         if results:
