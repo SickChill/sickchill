@@ -928,6 +928,39 @@ home_trendingShows.mako
     white-space: nowrap;
 }
 
+/* Discovery list toolbars (Popular / Trending): title left, filters centered on same line */
+.discovery-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em 1em;
+    margin-bottom: 0.75em;
+}
+
+.discovery-toolbar .header,
+.discovery-toolbar .title {
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+.discovery-filters {
+    text-align: right;
+}
+
+.discovery-toolbar .discovery-filters {
+    flex: 1 1 auto;
+}
+
+.discovery-filters label {
+    margin-bottom: 0;
+    font-weight: normal;
+}
+
+/* Outer Isotope item: tile width (188px) + .traktContainer side margins (12px × 2) */
+.trakt_show {
+    width: 212px;
+}
+
 .traktContainer {
     width: 188px;
     border: 1px solid #111111;

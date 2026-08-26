@@ -3995,6 +3995,39 @@ const SICKCHILL = {
                     return;
                 }
 
+                // Shared mapping for init and change handlers (incl. rating_votes → [rating, votes])
+                const remoteShowSortCriteria = sortValue => {
+                    switch (sortValue) {
+                        case 'original': {
+                            return 'original-order';
+                        }
+
+                        case 'rating': {
+                            return 'rating';
+                        }
+
+                        case 'rating_votes': {
+                            return ['rating', 'votes'];
+                        }
+
+                        case 'votes': {
+                            return 'votes';
+                        }
+
+                        case 'rank': {
+                            return 'rank';
+                        }
+
+                        case 'year': {
+                            return 'year';
+                        }
+
+                        default: {
+                            return 'name';
+                        }
+                    }
+                };
+
                 // Preserve page default when "original" is not an option (e.g. IMDb popular uses rank)
                 const $showSort = $('#showsort');
                 if ($showSort.find('option[value="original"]').length > 0) {
@@ -4008,46 +4041,11 @@ const SICKCHILL = {
 
                 // Avoid stacking handlers across AJAX reloads of the discovery grid
                 $showSort.off('change.remoteShowGrid').on('change.remoteShowGrid', function () {
-                    let sortCriteria;
-                    switch (this.value) {
-                        case 'original': {
-                            sortCriteria = 'original-order';
-                            break;
-                        }
-
-                        case 'rating': {
-                            /* Randomise, else the rating_votes can already
-                             * have sorted leaving this with nothing to do.
-                             */
-                            $container.isotope({sortBy: 'random'});
-                            sortCriteria = 'rating';
-                            break;
-                        }
-
-                        case 'rating_votes': {
-                            sortCriteria = ['rating', 'votes'];
-                            break;
-                        }
-
-                        case 'votes': {
-                            sortCriteria = 'votes';
-                            break;
-                        }
-
-                        case 'rank': {
-                            sortCriteria = 'rank';
-                            break;
-                        }
-
-                        case 'year': {
-                            sortCriteria = 'year';
-                            break;
-                        }
-
-                        default: {
-                            sortCriteria = 'name';
-                            break;
-                        }
+                    /* Randomise first for rating, else rating_votes may already
+                     * have sorted leaving this with nothing to do.
+                     */
+                    if (this.value === 'rating') {
+                        $container.isotope({sortBy: 'random'});
                     }
 
                     $container.isotope({
@@ -4056,7 +4054,7 @@ const SICKCHILL = {
                             isFitWidth: true,
                             horizontalOrder: true,
                         },
-                        sortBy: sortCriteria,
+                        sortBy: remoteShowSortCriteria(this.value),
                     });
                 });
 
@@ -4085,10 +4083,11 @@ const SICKCHILL = {
 
                 try {
                     const isPremieres = ($('#tmdbList').val() || '') === 'premieres';
-                    const initialSort = $showSort.val() || 'original';
+                    const initialSortValue = $showSort.val() || 'original';
                     $container.isotope({
                         itemSelector: '.trakt_show',
-                        sortBy: initialSort === 'original' ? 'original-order' : initialSort,
+                        sortBy: remoteShowSortCriteria(initialSortValue),
+                        sortAscending: ($showSortDirection.val() || 'asc') === 'asc',
                         layoutMode: 'fitRows',
                         filter: isPremieres ? ':not(.premiere-hide)' : '*',
                         getSortData: {

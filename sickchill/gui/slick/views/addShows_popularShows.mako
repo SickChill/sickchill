@@ -11,29 +11,24 @@
 
 <%block name="content">
     <div class="col-md-12">
-        <div class="row">
-            <div class="col-lg-8 col-md-7 col-sm-7 col-xs-12 pull-right">
-                <div class="pull-right">
-                    <label>
-                        <span>${_('Sort By')}:</span>
-                        <select id="showsort" class="form-control form-control-inline input-sm">
-                            <option value="name">${_('Name')}</option>
-                            <option value="rank" selected>${_('Rank')}</option>
-                            <option value="year">${_('Year')}</option>
-                        </select>
-                    </label>
-                    &nbsp;
-                    <label>
-                        <span>${_('Sort Order')}:</span>
-                        <select id="showsortdirection" class="form-control form-control-inline input-sm">
-                            <option value="asc" selected>${_('Asc')}</option>
-                            <option value="desc">${_('Desc')}</option>
-                        </select>
-                    </label>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-5 col-sm-5 col-xs-12">
-                <h1 class="header">${header}</h1>
+        <div class="discovery-toolbar">
+            <h1 class="header">${header}</h1>
+            <div class="discovery-filters">
+                <label for="showsort">
+                    <span>${_('Sort By')}:</span>
+                </label>
+                <select id="showsort" class="form-control form-control-inline input-sm" title="${_('Show Sort')}">
+                    <option value="name">${_('Name')}</option>
+                    <option value="rank" selected>${_('Rank')}</option>
+                    <option value="year">${_('Year')}</option>
+                </select>
+                <label for="showsortdirection">
+                    <span>${_('Sort Order')}:</span>
+                </label>
+                <select id="showsortdirection" class="form-control form-control-inline input-sm" title="${_('Show Sort Direction')}">
+                    <option value="asc" selected>${_('Asc')}</option>
+                    <option value="desc">${_('Desc')}</option>
+                </select>
             </div>
         </div>
 
