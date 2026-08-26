@@ -957,7 +957,8 @@ home_trendingShows.mako
 }
 
 /* Outer Isotope item: tile width (188px) + .traktContainer side margins (12px × 2) */
-.trakt_show {
+#popularShows .trakt_show,
+#trendingShows .trakt_show {
     width: 212px;
 }
 

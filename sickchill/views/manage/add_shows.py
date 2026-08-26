@@ -341,8 +341,8 @@ class AddShows(Home):
 
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
         return t.render(
-            title=list_options[list_key],
-            header=list_options[list_key],
+            title=_("The Lists"),
+            header=_("The Lists"),
             list_key=list_key,
             list_options=list_options,
             # Compat for older JS reading #traktList
