@@ -3995,12 +3995,19 @@ const SICKCHILL = {
                     return;
                 }
 
-                // Set defaults on page load
-                $('#showsort').val('original');
-                $('#showsortdirection').val('asc');
+                // Preserve page default when "original" is not an option (e.g. IMDb popular uses rank)
+                const $showSort = $('#showsort');
+                if ($showSort.find('option[value="original"]').length > 0) {
+                    $showSort.val('original');
+                }
+
+                const $showSortDirection = $('#showsortdirection');
+                if ($showSortDirection.length > 0 && !$showSortDirection.val()) {
+                    $showSortDirection.val('asc');
+                }
 
                 // Avoid stacking handlers across AJAX reloads of the discovery grid
-                $('#showsort').off('change.remoteShowGrid').on('change.remoteShowGrid', function () {
+                $showSort.off('change.remoteShowGrid').on('change.remoteShowGrid', function () {
                     let sortCriteria;
                     switch (this.value) {
                         case 'original': {
@@ -4032,6 +4039,11 @@ const SICKCHILL = {
                             break;
                         }
 
+                        case 'year': {
+                            sortCriteria = 'year';
+                            break;
+                        }
+
                         default: {
                             sortCriteria = 'name';
                             break;
@@ -4048,7 +4060,7 @@ const SICKCHILL = {
                     });
                 });
 
-                $('#showsortdirection').off('change.remoteShowGrid').on('change.remoteShowGrid', function () {
+                $showSortDirection.off('change.remoteShowGrid').on('change.remoteShowGrid', function () {
                     $container.isotope({
                         layoutMode: 'masonry',
                         masonry: {
@@ -4073,9 +4085,10 @@ const SICKCHILL = {
 
                 try {
                     const isPremieres = ($('#tmdbList').val() || '') === 'premieres';
+                    const initialSort = $showSort.val() || 'original';
                     $container.isotope({
                         itemSelector: '.trakt_show',
-                        sortBy: 'original-order',
+                        sortBy: initialSort === 'original' ? 'original-order' : initialSort,
                         layoutMode: 'fitRows',
                         filter: isPremieres ? ':not(.premiere-hide)' : '*',
                         getSortData: {
@@ -4087,6 +4100,7 @@ const SICKCHILL = {
                             rating: '[data-rating] parseInt',
                             votes: '[data-votes] parseInt',
                             rank: '[data-rank] parseInt',
+                            year: '[data-year] parseInt',
                         },
                     });
                 } catch {

@@ -46,40 +46,40 @@
                         </div>
                     % else:
                         % for current_result in popular_shows:
-                            <div class="traktContainer"
+                            <div class="trakt_show"
                                  data-name="${current_result.get('name', '')|h}"
                                  data-rank="${current_result.get('currentRank') or loop.index}"
                                  data-year="${current_result.get('year') or 0}">
-                                <div class="trakt-image">
-                                    <a href="${anon_url(imdb_url(current_result))}" target="_blank">
-                                        <img src="${current_result.get('image') or static_url('images/poster.png')}"
-                                             class="trakt-image"
-                                             alt="${current_result.get('name', '')}"
-                                             onerror="this.src='${static_url('images/poster.png')}'" />
-                                    </a>
-                                </div>
-
-                                <div class="show-title">
-                                    ${current_result.get('name', 'Unknown')}
-                                    % if current_result.get('year'):
-                                        <br><small>(${current_result['year']})</small>
-                                    % endif
-                                </div>
-
-                                <!-- Rank display -->
-                                <div class="clearfix">
-                                    <span class="rank">#${current_result.get('currentRank') or 'N/A'}</span>
-                                </div>
-
-                                <div class="traktShowTitleIcons">
-                                    % if current_result.get('current_imdb_id'):
-                                        <span class="btn btn-xs btn-default disabled">Already Added</span>
-                                    % else:
-                                        <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_result['imdb_id']}&amp;show_name=${current_result.get('name')}&amp;indexer=IMDB"
-                                           class="btn btn-xs btn-success">
-                                            ${_('Add Show')}
+                                <div class="traktContainer">
+                                    <div class="trakt-image">
+                                        <a href="${anon_url(imdb_url(current_result))}" target="_blank">
+                                            <img src="${current_result.get('image') or static_url('images/poster.png')}"
+                                                 class="trakt-image"
+                                                 alt="${current_result.get('name', '')}"
+                                                 onerror="this.src='${static_url('images/poster.png')}'" />
                                         </a>
-                                    % endif
+                                    </div>
+
+                                    <div class="show-title">
+                                        ${current_result.get('name', 'Unknown')}
+                                        % if current_result.get('year'):
+                                            <br><small>(${current_result['year']})</small>
+                                        % endif
+                                    </div>
+
+                                    <div class="clearfix">
+                                        <span class="rank">#${current_result.get('currentRank') or 'N/A'}</span>
+                                        <div class="traktShowTitleIcons">
+                                            % if current_result.get('current_imdb_id'):
+                                                <span class="btn btn-xs disabled">${_('In Library')}</span>
+                                            % else:
+                                                <a href="${scRoot}/addShows/addShowByID?indexer_id=${current_result['imdb_id']}&amp;show_name=${current_result.get('name')}&amp;indexer=IMDB"
+                                                   class="btn btn-xs">
+                                                    ${_('Add Show')}
+                                                </a>
+                                            % endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         % endfor
