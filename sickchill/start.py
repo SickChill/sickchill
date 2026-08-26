@@ -215,18 +215,26 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         sickchill.indexer = sickchill.ShowIndexer()
 
-        settings.TVDB_USER = check_setting_str(settings.CFG, "General", "tvdb_user")
-        settings.TVDB_USER_KEY = check_setting_str(settings.CFG, "General", "tvdb_user_key", censor_log=True)
-        # Same pattern as the old fixed V3 key, but overridable and seeded into config.ini:
-        # env > config.ini > settings.TVDB_V4_APIKEY default (check_setting_str writes def_val into CFG when missing).
+        # TheTVDB v4 API key:
+        #   1) env TVDB_V4_APIKEY if set
+        #   2) else [General] tvdb_v4_apikey from config.ini if present and non-empty
+        #   3) else built-in project key (also written into CFG when missing/empty)
+        # UI blank + Save restores built-in and persists that UUID into config.ini.
         settings.TVDB_V4_APIKEY = os.environ.get("TVDB_V4_APIKEY") or check_setting_str(
             settings.CFG,
             "General",
             "tvdb_v4_apikey",
-            settings.TVDB_V4_APIKEY,
+            settings.TVDB_V4_APIKEY_BUILTIN,
             censor_log=True,
         )
-        settings.TVDB_V4_PIN = os.environ.get("TVDB_V4_PIN") or check_setting_str(settings.CFG, "General", "tvdb_v4_pin", "", censor_log=True)
+        if not (settings.TVDB_V4_APIKEY or "").strip():
+            settings.TVDB_V4_APIKEY = settings.TVDB_V4_APIKEY_BUILTIN
+            settings.CFG.setdefault("General", {})["tvdb_v4_apikey"] = settings.TVDB_V4_APIKEY_BUILTIN
+        # PIN is not named "*password*", so decrypt explicitly (legacy plaintext migrates on save).
+        raw_tvdb_pin = os.environ.get("TVDB_V4_PIN") or check_setting_str(settings.CFG, "General", "tvdb_v4_pin", "", censor_log=True)
+        settings.TVDB_V4_PIN = helpers.decrypt_config_value(raw_tvdb_pin) or None
+        if not (settings.TVDB_V4_PIN or "").strip():
+            settings.TVDB_V4_PIN = None
         # Env values skip check_setting_str's censor_log path — always register final credentials.
         if settings.TVDB_V4_APIKEY:
             logger.censored_items[("General", "tvdb_v4_apikey")] = settings.TVDB_V4_APIKEY
@@ -623,6 +631,15 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.USE_TRAKT = check_setting_bool(settings.CFG, "Trakt", "use_trakt")
         settings.TRAKT_USERNAME = check_setting_str(settings.CFG, "Trakt", "trakt_username", censor_log=True)
+        settings.TRAKT_API_KEY = check_setting_str(settings.CFG, "Trakt", "trakt_api_key", settings.TRAKT_API_KEY, censor_log=True)
+        # Secret is not named "*password*", so decrypt explicitly (legacy plaintext migrates on save).
+        raw_trakt_secret = check_setting_str(settings.CFG, "Trakt", "trakt_api_secret", settings.TRAKT_API_SECRET or "", censor_log=True)
+        settings.TRAKT_API_SECRET = helpers.decrypt_config_value(raw_trakt_secret)
+        if settings.TRAKT_API_SECRET:
+            logger.censored_items[("Trakt", "trakt_api_secret")] = settings.TRAKT_API_SECRET
+        from sickchill.oldbeard.trakt_api.trakt import refresh_trakt_pin_url
+
+        refresh_trakt_pin_url()
         settings.TRAKT_ACCESS_TOKEN = check_setting_str(settings.CFG, "Trakt", "trakt_access_token", censor_log=True)
         settings.TRAKT_REFRESH_TOKEN = check_setting_str(settings.CFG, "Trakt", "trakt_refresh_token", censor_log=True)
         settings.TRAKT_REMOVE_WATCHLIST = check_setting_bool(settings.CFG, "Trakt", "trakt_remove_watchlist")
@@ -1190,10 +1207,8 @@ def save_config():
                 "localhost_ip": settings.LOCALHOST_IP,
                 "cpu_preset": settings.CPU_PRESET,
                 "anon_redirect": settings.ANON_REDIRECT or "disabled",
-                "tvdb_user": settings.TVDB_USER,
-                "tvdb_user_key": settings.TVDB_USER_KEY,
                 "tvdb_v4_apikey": settings.TVDB_V4_APIKEY,
-                "tvdb_v4_pin": settings.TVDB_V4_PIN,
+                "tvdb_v4_pin": helpers.encrypt_config_value(settings.TVDB_V4_PIN or ""),
                 "api_key": settings.API_KEY,
                 "debug": int(settings.DEBUG),
                 "dbdebug": int(settings.DBDEBUG),
@@ -1560,6 +1575,8 @@ def save_config():
             "Trakt": {
                 "use_trakt": int(settings.USE_TRAKT),
                 "trakt_username": settings.TRAKT_USERNAME,
+                "trakt_api_key": settings.TRAKT_API_KEY,
+                "trakt_api_secret": helpers.encrypt_config_value(settings.TRAKT_API_SECRET or ""),
                 "trakt_access_token": settings.TRAKT_ACCESS_TOKEN,
                 "trakt_refresh_token": settings.TRAKT_REFRESH_TOKEN,
                 "trakt_remove_watchlist": int(settings.TRAKT_REMOVE_WATCHLIST),

@@ -1221,13 +1221,3 @@ class TVDB(Indexer):
 
     def episode_guide_url(self, show):
         return self.show_url + str(show.indexerid)
-
-    def get_favorites(self):
-        """V4 user favorites not implemented (plan: do not implement)."""
-        return []
-
-    @staticmethod
-    def test_user_key(user, key):
-        """V4 user favorites not implemented (plan: do not implement)."""
-        logger.info("TVDB user favorites are not supported with the v4 API.")
-        return False

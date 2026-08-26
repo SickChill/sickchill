@@ -55,7 +55,7 @@ class Provider(TorrentProvider):
 
         for mode in search_strings:
             items = []
-            logger.debug(_("Search Mode: {0}").format(mode))
+            logger.debug(_("Search Mode: {mode}").format(mode=mode))
 
             for search_string in {*search_strings[mode]}:
                 if mode != "RSS":
@@ -105,7 +105,11 @@ class Provider(TorrentProvider):
                         size = convert_size(torrent_size) or -1
 
                         if mode != "RSS":
-                            logger.debug(_("Found result: {0} with {1} seeders and {2} leechers with a file size {3}").format(title, seeders, leechers, size))
+                            logger.debug(
+                                _("Found result: {title} with {seeders} seeders and {leechers} leechers with a file size {size}").format(
+                                    title=title, seeders=seeders, leechers=leechers, size=size
+                                )
+                            )
 
                         result = {"title": title, "link": download_url, "size": size, "seeders": seeders, "leechers": leechers, "hash": ""}
                         items.append(result)

@@ -2,6 +2,7 @@ import os
 
 from tornado.web import addslash
 
+from sickchill import logger
 from sickchill.init_helpers import get_current_version
 from sickchill.views.common import PageTemplate
 from sickchill.views.index import WebRoot
@@ -24,6 +25,11 @@ class Config(WebRoot):
         ]
 
         return menu
+
+    @staticmethod
+    def log_configuration_save(page: str) -> None:
+        """Emit a single debug line identifying which config page is being saved."""
+        logger.debug(f"Saving configuration: {page}")
 
     @addslash
     def index(self):

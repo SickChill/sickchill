@@ -2726,51 +2726,20 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Username')}</label>
+                                    <label class="component-title">${_('Account')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="text" name="trakt_username" id="trakt_username" value="${settings.TRAKT_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="trakt_username">${_('username of your Trakt account.')}</label>
-                                        </div>
-                                    </div>
+                                    <p>
+                                        ${_('Configure Trakt Client ID, Secret, Username, and PIN under')}
+                                        <a href="${scRoot}/config/general/#indexer-data">${_('Config → General → Indexer / Data')}</a>.
+                                    </p>
+                                    % if settings.TRAKT_USERNAME:
+                                        <p><em>${_('Current username')}: ${settings.TRAKT_USERNAME}</em></p>
+                                    % endif
+                                    ## Keep id for Test Trakt JS (field lives on Indexer / Data)
+                                    <input type="hidden" id="trakt_username" value="${settings.TRAKT_USERNAME or ''}" />
                                 </div>
                             </div>
-
-                            <div class="field-pair row">
-                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Trakt PIN')}</label>
-                                </div>
-                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="hidden" id="trakt_pin_url" value="${settings.TRAKT_PIN_URL}">
-                                            <input type="button" class="btn ${('', 'hide')[bool(settings.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="text" name="trakt_pin" id="trakt_pin" value="" class="form-control input-sm input250" autocapitalize="off" />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label for="trakt_pin">${_('PIN code to authorize SickChill to access Trakt on your behalf.')}</label>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <input type="button" class="btn hide" value="Authorize SickChill" id="authTrakt" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -2924,7 +2893,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <label for="trakt_blacklist_name">${_('name (slug) of list on Trakt for blacklisting show on \'Add Trending Show\' & \'Add Recommended Shows\' pages')}</label>
+                                            <label for="trakt_blacklist_name">${_('name (slug) of list on Trakt for blacklisting shows (legacy Trakt list features)')}</label>
                                         </div>
                                     </div>
                                 </div>

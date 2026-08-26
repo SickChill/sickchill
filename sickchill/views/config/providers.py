@@ -126,7 +126,8 @@ class ConfigProviders(Config):
         torrent_rss_string = self.get_body_argument("torrent_rss_string", default="")
         provider_order = self.get_body_argument("provider_order", default="")
 
-        print(provider_order)
+        # print line for testing order of providers
+        # print(provider_order)
 
         for current_newznab_string in newznab_string.split("!!!"):
             if not current_newznab_string:
@@ -261,6 +262,7 @@ class ConfigProviders(Config):
         settings.NEWZNAB_DATA = "!!!".join([x.config_string() for x in settings.newznab_provider_list])
         settings.PROVIDER_ORDER = enabled_provider_list + disabled_provider_list
 
+        self.log_configuration_save("Search Providers")
         sickchill.start.save_config()
 
         # Add a site_message if no providers are enabled for daily and/or backlog

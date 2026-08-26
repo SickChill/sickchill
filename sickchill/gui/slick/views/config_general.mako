@@ -17,6 +17,7 @@
 
 <%block name="tabs">
     <li><a href="#misc">${_('Misc')}</a></li>
+    <li><a href="#indexer-data">${_('Indexer / Data')}</a></li>
     <li><a href="#interface">${_('Interface')}</a></li>
     <li><a href="#logging-settings">${_('Logging')}</a></li>
     <li><a href="#advanced-settings">${_('Advanced')}</a></li>
@@ -32,32 +33,14 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3>${_('Misc')}</h3>
-                        <p>${_('Startup and Indexer options.')}</p>
+                        <p>${_('Startup options.')}</p>
                         <p>${_('Show file locations.')}</p>
+                        <p>${_('Indexer and Trakt account settings are under the Indexer / Data tab.')}</p>
                         <p><b>${_('Some options may require a manual restart to take effect.')}</b></p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
                     <fieldset class="component-group-list">
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Default Indexer Language')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350
-                                        bfh-languages" data-language="${settings.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickchill.indexer.languages())}"></select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="indexerDefaultLang">${_('for adding shows and metadata providers')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
@@ -176,47 +159,6 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <span>${_('selected actions use trash (recycle bin) instead of the default permanent delete')}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Use initial indexer set to')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
-                                            <option value="0" ${selected(settings.INDEXER_DEFAULT == 0)}>${_('All Indexers')}</option>
-                                            % for indexer, instance in sickchill.indexer:
-                                                <option value="${indexer}" ${selected(settings.INDEXER_DEFAULT == indexer)}>${instance.name}</option>
-                                            % endfor
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="indexer_default">${_('as the default selection when adding new shows')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field-pair row">
-                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Timeout show indexer at')}</label>
-                            </div>
-                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <input type="number" min="10" step="1" name="indexer_timeout" id="indexer_timeout" value="${settings.INDEXER_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <label for="indexer_timeout">${_('seconds of inactivity when finding new shows (default:20)')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1189,6 +1131,235 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- /indexer-data //-->
+        <div id="indexer-data">
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <h3>${_('Indexer options')}</h3>
+                        <p>${_('Default language, indexer, and timeouts for show metadata.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Default Indexer Language')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <select name="indexerDefaultLang" id="indexerDefaultLang" class="form-control form-control-inline input-sm input350
+                                        bfh-languages" data-language="${settings.INDEXER_DEFAULT_LANGUAGE}" data-available="${','.join(sickchill.indexer.languages())}"></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="indexerDefaultLang">${_('for adding shows and metadata providers')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Use initial indexer set to')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <select id="indexer_default" name="indexer_default" class="form-control input-sm input150">
+                                            <option value="0" ${selected(settings.INDEXER_DEFAULT == 0)}>${_('All Indexers')}</option>
+                                            % for indexer, instance in sickchill.indexer:
+                                                <option value="${indexer}" ${selected(settings.INDEXER_DEFAULT == indexer)}>${instance.name}</option>
+                                            % endfor
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="indexer_default">${_('as the default selection when adding new shows')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Timeout show indexer at')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="number" min="10" step="1" name="indexer_timeout" id="indexer_timeout" value="${settings.INDEXER_TIMEOUT}" class="form-control input-sm input75" autocapitalize="off" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="indexer_timeout">${_('seconds of inactivity when finding new shows (default:20)')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="config-group-divider"></div>
+
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <h3><a href="${anon_url('https://thetvdb.com/dashboard/account/apikey')}" rel="noreferrer" target="_blank">TheTVDB</a></h3>
+                        <p>${_('Optional personal v4 API key and subscriber PIN. Leave the API key blank to use SickChill\'s built-in project key.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+                        <%
+                            _builtin = settings.TVDB_V4_APIKEY_BUILTIN
+                            _current = (settings.TVDB_V4_APIKEY or "").strip()
+                            _display_key = "" if (not _current or _current == _builtin) else _current
+                        %>
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('API key')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" name="tvdb_v4_apikey" id="tvdb_v4_apikey" value="${_display_key}" class="form-control input-sm input350" autocapitalize="off" autocomplete="off" placeholder="${_('Built-in project key')}" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="tvdb_v4_apikey">${_('Loaded from config.ini on startup when set; otherwise the built-in key is used. Enter a personal key to override. Clear the field and Save to restore the built-in key (written into config.ini). Env TVDB_V4_APIKEY still wins on restart if set.')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Subscriber PIN')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="password" name="tvdb_v4_pin" id="tvdb_v4_pin" value="${(settings.TVDB_V4_PIN or '')|hide}" class="form-control input-sm input200" autocapitalize="off" autocomplete="new-password" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="tvdb_v4_pin">${_('Optional. Required only if your TheTVDB key type needs a subscriber PIN.')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="config-group-divider"></div>
+
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <div class="component-group-desc">
+                        <h3><a href="${anon_url('https://trakt.tv/oauth/applications')}" rel="noreferrer" target="_blank">Trakt</a></h3>
+                        <p>${_('Client ID / Secret and account for Trakt notifications and sync. Create an app with Redirect URI urn:ietf:wg:oauth:2.0:oob.')}</p>
+                        <p>${_('Enable Trakt notifications and sync options under Config → Notifications.')}</p>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
+                    <fieldset class="component-group-list">
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Client ID')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" name="trakt_api_key" id="trakt_api_key" value="${settings.TRAKT_API_KEY}" class="form-control input-sm input350" autocapitalize="off" autocomplete="off" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="trakt_api_key">${_('Trakt application Client ID. Leave default until you create your own app at trakt.tv/oauth/applications.')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Client Secret')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="password" name="trakt_api_secret" id="trakt_api_secret" value="${settings.TRAKT_API_SECRET|hide}" class="form-control input-sm input350" autocapitalize="off" autocomplete="new-password" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Username')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" name="trakt_username" id="trakt_username" value="${settings.TRAKT_USERNAME}" class="form-control input-sm input250" autocapitalize="off" autocomplete="no" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="trakt_username">${_('username of your Trakt account.')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Trakt PIN')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="hidden" id="trakt_pin_url" value="${settings.TRAKT_PIN_URL}">
+                                        <input type="button" class="btn ${('', 'hide')[bool(settings.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" name="trakt_pin" id="trakt_pin" value="" class="form-control input-sm input250" autocapitalize="off" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="trakt_pin">${_('PIN code to authorize SickChill to access Trakt on your behalf.')}</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="button" class="btn hide" value="Authorize SickChill" id="authTrakt" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="submit" class="btn config_submitter" value="${_('Save Changes')}" />
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
         </div>
     </form>
 </%block>

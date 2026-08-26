@@ -206,7 +206,7 @@ class ConfigNotifications(Config):
         )
 
         config.change_use_trakt(self.get_body_argument("use_trakt", default=None))
-        settings.TRAKT_USERNAME = self.get_body_argument("trakt_username", default=None)
+        # Username / Client ID / Secret / PIN live under Config → General → Indexer / Data
         settings.TRAKT_REMOVE_WATCHLIST = config.checkbox_to_value(self.get_body_argument("trakt_remove_watchlist", default=None))
         settings.TRAKT_REMOVE_SERIESLIST = config.checkbox_to_value(self.get_body_argument("trakt_remove_serieslist", default=None))
         settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL = config.checkbox_to_value(self.get_body_argument("trakt_remove_show_from_sickchill", default=None))
@@ -264,6 +264,7 @@ class ConfigNotifications(Config):
         settings.GOTIFY_HOST = self.get_body_argument("gotify_host", default=None)
         settings.GOTIFY_AUTHORIZATIONTOKEN = self.get_body_argument("gotify_authorizationtoken", default=None)
 
+        self.log_configuration_save("Notifications")
         sickchill.start.save_config()
 
         if results:
