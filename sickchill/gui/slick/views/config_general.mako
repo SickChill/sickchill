@@ -832,6 +832,11 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <input type="checkbox" name="debug" id="debug" ${checked(settings.DEBUG)}/>
                                 <label for="debug">${_('enable debug logging')}</label>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="debug">${_('Save and refresh logger required')}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
