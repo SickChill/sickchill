@@ -834,7 +834,7 @@
                                 <label for="debug">${_('enable debug logging')}</label>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="debug">${_('Save and refresh logger required')}</label>
+                                        <label for="debug">${_('Save and refresh logger required when changed')}</label>
                                     </div>
                                 </div>
                             </div>
