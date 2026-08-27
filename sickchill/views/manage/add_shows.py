@@ -339,8 +339,7 @@ class AddShows(Home):
         list_key = self._resolve_discovery_list_key(raw)
         list_options = _discovery_list_options()
 
-        t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
-        
+        t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")        
         return t.render(
             title=_("The Lists"),
             header=_("The Lists"),
