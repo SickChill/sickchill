@@ -14,6 +14,7 @@ BACKLOG_SEARCH = 10
 DAILY_SEARCH = 20
 FAILED_SEARCH = 30
 MANUAL_SEARCH = 40
+EPISODE_SUBTITLE_SEARCH = 50
 
 MANUAL_SEARCH_HISTORY = []
 MANUAL_SEARCH_HISTORY_SIZE = 100
@@ -35,6 +36,29 @@ class SearchQueue(generic_queue.GenericQueue):
             if isinstance(cur_item, (ManualSearchQueueItem, FailedQueueItem)) and cur_item.segment == segment:
                 return True
         return False
+
+    def is_ep_subtitle_in_queue(self, segment):
+        for cur_item in self.queue + ([self.currentItem] if self.currentItem else []):
+            if isinstance(cur_item, SubtitleEpisodeQueueItem) and cur_item.segment == segment:
+                return True
+        return False
+
+    def queue_head_kind(self):
+        """Return a short name for whatever is currently running, or None."""
+        current = self.currentItem
+        if current is None:
+            return None
+        if isinstance(current, DailySearchQueueItem):
+            return "daily"
+        if isinstance(current, (BacklogQueueItem, MovieQueueItem)):
+            return "backlog"
+        if isinstance(current, FailedQueueItem):
+            return "failed"
+        if isinstance(current, ManualSearchQueueItem):
+            return "manual"
+        if isinstance(current, SubtitleEpisodeQueueItem):
+            return "subtitle"
+        return "other"
 
     def is_show_in_queue(self, show):
         for cur_item in self.queue:
@@ -82,7 +106,7 @@ class SearchQueue(generic_queue.GenericQueue):
         return False
 
     def queue_length(self):
-        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0}
+        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0, "subtitle": 0}
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, DailySearchQueueItem):
                 length["daily"] += 1
@@ -92,26 +116,31 @@ class SearchQueue(generic_queue.GenericQueue):
                 length["manual"] += 1
             elif isinstance(cur_item, FailedQueueItem):
                 length["failed"] += 1
+            elif isinstance(cur_item, SubtitleEpisodeQueueItem):
+                length["subtitle"] += 1
         return length
 
-    def add_item(self, item):
-        add_item = False
+    def add_item(self, item, front=False):
+        should_add = False
         if isinstance(item, DailySearchQueueItem):
             # daily searches
-            add_item = True
+            should_add = True
         elif isinstance(item, BacklogQueueItem):
             # backlog searches
-            add_item = not self.is_in_queue(item.show, item.segment)
+            should_add = not self.is_in_queue(item.show, item.segment)
         elif isinstance(item, (ManualSearchQueueItem, FailedQueueItem)):
             # manual and failed searches
-            add_item = not self.is_ep_in_queue(item.segment)
+            should_add = not self.is_ep_in_queue(item.segment)
+        elif isinstance(item, SubtitleEpisodeQueueItem):
+            should_add = not self.is_ep_subtitle_in_queue(item.segment)
         elif isinstance(item, MovieQueueItem):
-            add_item = not self.is_movie_in_queue(item.movie)
+            should_add = not self.is_movie_in_queue(item.movie)
         else:
             logger.debug("Not adding item, it's already in the queue")
 
-        if add_item:
-            super().add_item(item)
+        if should_add:
+            return super().add_item(item, front=front)
+        return None
 
 
 class DailySearchQueueItem(generic_queue.QueueItem):
@@ -298,6 +327,53 @@ class FailedQueueItem(generic_queue.QueueItem):
 
         # ## Keep a list with the 100 last executed searches
         fifo(MANUAL_SEARCH_HISTORY, self, MANUAL_SEARCH_HISTORY_SIZE)
+
+        if self.success is None:
+            self.success = False
+
+        super().finish()
+        self.finish()
+
+
+class SubtitleEpisodeQueueItem(generic_queue.QueueItem):
+    """Download subtitles for a single episode (SEARCHQUEUE, does not block SHOWQUEUE)."""
+
+    def __init__(self, show, segment, force_lang=None):
+        super().__init__("Episode Subtitle", EPISODE_SUBTITLE_SEARCH)
+        self.priority = generic_queue.QueuePriorities.HIGH
+        self.name = f"SUBTITLE-{show.indexerid}-{segment.season}x{segment.episode}"
+        self.show = show
+        self.segment = segment
+        self.force_lang = force_lang
+        self.success = None
+        self.started = None
+
+    def run(self):
+        super().run()
+        self.started = True
+        try:
+            logger.info(f"Beginning subtitle search for: [{self.segment.pretty_name}]")
+            if self.force_lang:
+                new_subtitles = self.segment.download_subtitles(force_lang=self.force_lang)
+            else:
+                new_subtitles = self.segment.download_subtitles()
+
+            if new_subtitles:
+                from sickchill.oldbeard import subtitles as subtitle_module
+
+                new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
+                status = _("New subtitles downloaded: {new_subtitle_languages}").format(new_subtitle_languages=", ".join(new_languages))
+                self.success = True
+            else:
+                status = _("No subtitles downloaded")
+                self.success = False
+
+            ui.notifications.message(self.show.name, status)
+        except Exception as error:
+            self.success = False
+            logger.warning(f"Subtitle search failed for [{self.segment.pretty_name}]: {error}")
+            logger.debug(traceback.format_exc())
+            ui.notifications.error(self.show.name, _("Subtitle download failed"))
 
         if self.success is None:
             self.success = False

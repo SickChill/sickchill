@@ -338,6 +338,7 @@ def search_for_needed_episodes():
     show_list = settings.show_list
     from_date = datetime.date.min
     episodes = []
+    logger.debug(f"Seeing if we need anything for: {','.join([f'[{ashow}]' for ashow in show_list])}")
 
     for curShow in show_list:
         if not curShow.paused:

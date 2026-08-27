@@ -92,11 +92,16 @@ function updateImages(data) {
                 htmlContent = '<span class="status pill-wanted">Searching...</span>'; // Optional nice pill
             } else if (ep.searchstatus.toLowerCase() === 'queued') {
                 icon.prop('class', queuedClass);
-                icon.prop('title', 'Queued');
-                icon.prop('alt', 'Queued');
+                let queuedTitle = 'Queued';
+                if (ep.blocked_by) {
+                    queuedTitle = 'Queued (' + ep.blocked_by + ' search running)';
+                }
+
+                icon.prop('title', queuedTitle);
+                icon.prop('alt', queuedTitle);
 
                 disableLink(link);
-                htmlContent = ep.searchstatus;
+                htmlContent = '<span class="status pill-wanted">' + queuedTitle + '</span>';
             } else if (ep.searchstatus.toLowerCase() === 'finished') {
                 icon.prop('class', searchClass);
                 if (ep.quality !== 'N/A') {
@@ -180,16 +185,16 @@ $(document).ready(checkManualSearches);
                 imageName = stupidOptions.noImage;
                 imageResult = _('Failed');
             } else {
-                imageName = stupidOptions.loadingClass;
-                imageResult = _('Success');
-                // Color the row
-                if (stupidOptions.colorRow) {
-                    parent.parent().removeClass('skipped wanted qual good unaired').addClass('snatched');
+                // Queued behind another search job — clock icon, keep polling
+                if (data.queued && data.blocked_by) {
+                    imageName = stupidOptions.queuedClass;
+                    imageResult = _('Queued') + ' (' + data.blocked_by + ' ' + _('search running') + ')';
+                } else {
+                    imageName = stupidOptions.loadingClass;
+                    imageResult = _('Searching');
                 }
 
-                // With search success update the status with the result
-                const htmlContent = buildStatusPill(data.result, data.quality);
-                parent.siblings('.col-status').html(htmlContent);
+                parent.siblings('.col-status').html('<span class="status pill-wanted">' + imageResult + '</span>');
                 // Only if the queuing was successful, disable the onClick event of the loading image
                 disableLink(link);
             }

@@ -244,6 +244,10 @@
             <td>${_('NORMAL')}</td>
         % elif item.priority == 30:
             <td>${_('HIGH')}</td>
+        % elif item.priority == 40:
+            <td>${_('USER')}</td>
+        % elif item.priority >= 900:
+            <td>${_('REMOVE')}</td>
         % else:
             <td>${item.priority}</td>
         % endif

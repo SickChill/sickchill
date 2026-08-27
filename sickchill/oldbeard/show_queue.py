@@ -59,6 +59,9 @@ class ShowQueue(generic_queue.GenericQueue):
     def is_in_subtitle_queue(self, show: "TVShow") -> bool:
         return self._is_in_queue(show, (ShowQueueActions.SUBTITLE,))
 
+    def is_in_tba_names_queue(self, show: "TVShow") -> bool:
+        return self._is_in_queue(show, (ShowQueueActions.TBA_NAMES,))
+
     def is_being_added(self, show: "TVShow") -> bool:
         return self._actions_in_queue(show, (ShowQueueActions.ADD,))
 
@@ -77,11 +80,44 @@ class ShowQueue(generic_queue.GenericQueue):
     def is_being_subtitled(self, show: "TVShow") -> bool:
         return self._actions_in_queue(show, (ShowQueueActions.SUBTITLE,))
 
+    def is_being_tba_names(self, show: "TVShow") -> bool:
+        return self._actions_in_queue(show, (ShowQueueActions.TBA_NAMES,))
+
+    def _find_queued_items(self, show: "TVShow", actions) -> list:
+        if not show:
+            return []
+        return [x for x in self.queue if x and x.show and x.show.indexerid == show.indexerid and x.action_id in actions]
+
+    def promote_show_in_queue(self, show: "TVShow", actions) -> Union["ShowQueueItem", None]:
+        """
+        If this show already has a matching queued item, promote it to run next (USER).
+
+        Prefer FORCEUPDATE over UPDATE over REFRESH when several match.
+        """
+        items = self._find_queued_items(show, actions)
+        if not items:
+            return None
+
+        rank = {
+            ShowQueueActions.FORCEUPDATE: 0,
+            ShowQueueActions.UPDATE: 1,
+            ShowQueueActions.REFRESH: 2,
+            ShowQueueActions.TBA_NAMES: 3,
+            ShowQueueActions.SUBTITLE: 4,
+        }
+        items.sort(key=lambda x: rank.get(x.action_id, 99))
+        item = items[0]
+        if self.promote_item(item) is None:
+            return None
+        action_name = ShowQueueActions.names.get(item.action_id, item.name)
+        logger.info(f"Promoted queued {action_name} for {show.name} to run next")
+        return item
+
     @property
     def loading_show_list(self) -> {"ShowQueueItem"}:
         return {x for x in self.queue + [self.currentItem] if x and x.is_loading}
 
-    def update_show(self, show: "TVShow", force: bool = False) -> "ShowQueueItem":
+    def update_show(self, show: "TVShow", force: bool = False, front: bool = False) -> "ShowQueueItem":
         if self.is_being_added(show):
             raise CantUpdateShowException(f"{show.name} is still being added, wait until it is finished before you update.")
 
@@ -89,23 +125,39 @@ class ShowQueue(generic_queue.GenericQueue):
             raise CantUpdateShowException(f"{show.name} is already being updated by Post-processor or manually started, can't update again until it's done.")
 
         if self.is_in_update_queue(show):
+            # Show already waiting: promote that update instead of stacking another USER job
+            if front:
+                promoted = self.promote_show_in_queue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
+                if promoted:
+                    return promoted
             raise CantUpdateShowException(
                 f"{show.name} is in process of being updated by Post-processor or manually started, can't update again until it's done."
             )
 
         queue_item_obj = QueueItemUpdate(show, force=force)
-        self.add_item(queue_item_obj)
+        self.add_item(queue_item_obj, front=front)
         return queue_item_obj
 
-    def refresh_show(self, show: "TVShow", force=False) -> Union["ShowQueueItem", None]:
+    def refresh_show(self, show: "TVShow", force=False, front: bool = False) -> Union["ShowQueueItem", None]:
         if self.is_being_refreshed(show) and not force:
             raise CantRefreshShowException("This show is already being refreshed, not refreshing again.")
 
-        if self.is_being_updated(show) or self.is_in_update_queue(show):
-            logger.debug(
-                "A refresh was attempted but there is already an update queued or in progress. Updates do a refresh at the end so I'm skipping this request."
-            )
+        if self.is_being_updated(show):
+            logger.debug("A refresh was attempted but an update is in progress. Updates do a refresh at the end so I'm skipping this request.")
             return
+
+        if self.is_in_update_queue(show):
+            # Update already queued (includes refresh at end) — promote it when UI-requested
+            if front:
+                return self.promote_show_in_queue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
+            logger.debug("A refresh was attempted but there is already an update queued. Updates do a refresh at the end so I'm skipping this request.")
+            return
+
+        if self.is_in_refresh_queue(show):
+            if front:
+                return self.promote_show_in_queue(show, (ShowQueueActions.REFRESH,))
+            if not force:
+                raise CantRefreshShowException("This show is already queued to be refreshed, not refreshing again.")
 
         if show.paused and not force:
             logger.debug(f"Skipping show [{show.name}] because it is paused.")
@@ -114,7 +166,7 @@ class ShowQueue(generic_queue.GenericQueue):
         logger.debug(f"Queueing show refresh for {show.name}")
 
         queue_item_obj = QueueItemRefresh(show, force=force)
-        self.add_item(queue_item_obj)
+        self.add_item(queue_item_obj, front=front)
         return queue_item_obj
 
     def rename_show_episodes(self, show: "TVShow") -> "ShowQueueItem":
@@ -123,8 +175,38 @@ class ShowQueue(generic_queue.GenericQueue):
         return queue_item_obj
 
     def download_subtitles(self, show: "TVShow") -> "ShowQueueItem":
+        if self.is_in_subtitle_queue(show) or self.is_being_subtitled(show):
+            promoted = self.promote_show_in_queue(show, (ShowQueueActions.SUBTITLE,))
+            if promoted:
+                return promoted
         queue_item_obj = QueueItemSubtitle(show)
-        self.add_item(queue_item_obj)
+        self.add_item(queue_item_obj, front=True)
+        return queue_item_obj
+
+    def download_tba_names(self, show: "TVShow") -> "ShowQueueItem":
+        if self.is_being_added(show) or self.is_being_removed(show):
+            raise CantUpdateShowException(f"{show.name} is being added or removed; cannot refresh TBA names now.")
+
+        if self.is_being_updated(show):
+            raise CantUpdateShowException(f"{show.name} is already updating (which refreshes episode titles); TBA name update not needed.")
+
+        # Prefer promoting an already-queued update/refresh for this show over a separate TBA job
+        if self.is_in_update_queue(show):
+            promoted = self.promote_show_in_queue(show, (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE))
+            if promoted:
+                return promoted
+
+        if self.is_being_tba_names(show):
+            raise CantUpdateShowException(f"{show.name} already has a TBA name update running.")
+
+        if self.is_in_tba_names_queue(show):
+            promoted = self.promote_show_in_queue(show, (ShowQueueActions.TBA_NAMES,))
+            if promoted:
+                return promoted
+            raise CantUpdateShowException(f"{show.name} already has a TBA name update queued.")
+
+        queue_item_obj = QueueItemTBANames(show)
+        self.add_item(queue_item_obj, front=True)
         return queue_item_obj
 
     def add_show(
@@ -206,6 +288,7 @@ class ShowQueueActions(object):
     RENAME = 5
     SUBTITLE = 6
     REMOVE = 7
+    TBA_NAMES = 8
 
     names: ClassVar[dict] = {
         REFRESH: _("Refresh"),
@@ -215,6 +298,7 @@ class ShowQueueActions(object):
         RENAME: _("Rename"),
         SUBTITLE: _("Subtitle"),
         REMOVE: _("Remove Show"),
+        TBA_NAMES: _("TBA Names"),
     }
 
 
@@ -627,6 +711,7 @@ class QueueItemRename(ShowQueueItem):
 class QueueItemSubtitle(ShowQueueItem):
     def __init__(self, show: "TVShow" = None):
         super(QueueItemSubtitle, self).__init__(ShowQueueActions.SUBTITLE, show)
+        self.priority = generic_queue.QueuePriorities.HIGH
 
     def run(self):
         super(QueueItemSubtitle, self).run()
@@ -636,6 +721,38 @@ class QueueItemSubtitle(ShowQueueItem):
         self.show.download_subtitles()
 
         super(QueueItemSubtitle, self).finish()
+        self.finish()
+
+
+class QueueItemTBANames(ShowQueueItem):
+    def __init__(self, show: "TVShow" = None):
+        super(QueueItemTBANames, self).__init__(ShowQueueActions.TBA_NAMES, show)
+        self.priority = generic_queue.QueuePriorities.HIGH
+
+    def run(self):
+        super(QueueItemTBANames, self).run()
+
+        logger.info(f"Refreshing TBA episode names for {self.show.name}")
+        try:
+            updated_count = self.show.update_tba_names()
+            if updated_count:
+                ui.notifications.message(
+                    _("Updated"),
+                    _("Updated {count} TBA episode name(s) for {show}").format(count=updated_count, show=self.show.name),
+                )
+            else:
+                ui.notifications.message(
+                    _("No updates"),
+                    _("No TBA episode names were updated for {show}").format(show=self.show.name),
+                )
+        except Exception as error:
+            logger.exception(f"TBA name update failed for {self.show.name}: {error}")
+            ui.notifications.error(
+                _("Error"),
+                _("Failed to update TBA episode names for {show}").format(show=self.show.name),
+            )
+
+        super(QueueItemTBANames, self).finish()
         self.finish()
 
 
@@ -660,6 +777,13 @@ class QueueItemUpdate(ShowQueueItem):
             return
 
         self.show.load_imdb_info()
+
+        # Warm season-order label cache for edit/display (network allowed here)
+        try:
+            if hasattr(self.show.idxr, "series_season_types"):
+                self.show.idxr.series_season_types(self.show.indexerid, use_cache=False, allow_fetch=True)
+        except Exception as error:
+            logger.debug(f"Season types warm-cache failed for {self.show.indexerid}: {error}")
 
         # have to save show before reading episodes from db
         try:
@@ -696,6 +820,15 @@ class QueueItemUpdate(ShowQueueItem):
                         self.show.get_episode(season, episode).delete_episode()
                     except EpisodeDeletedException:
                         pass
+
+        # Pending XEM refresh requested by editShow (scene/anime change) — run off the web thread
+        if getattr(self.show, "_pending_xem_refresh", False):
+            self.show._pending_xem_refresh = False
+            try:
+                logger.info(f"Refreshing XEM scene numbering for {self.show.name}")
+                scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
+            except Exception as error:
+                logger.warning(f"XEM refresh failed for {self.show.name}: {error}")
 
         #  save show again, in case episodes have changed
         try:

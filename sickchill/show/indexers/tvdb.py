@@ -709,22 +709,31 @@ class TVDB(Indexer):
     # V4 path slugs that both mean aired order on the site; store/API path uses "default"
     _SEASON_TYPE_AIRED_SLUGS = frozenset({"default", "official"})
 
-    def seasons_order_label(self, series_id, slug: str | None = None) -> str:
+    def seasons_order_label(self, series_id, slug: str | None = None, allow_fetch: bool = False) -> str:
         """
         TVDB display name for a stored seasons_order slug (editShow / displayShow).
 
         Labels are series-specific: e.g. slug ``alternate`` may show as BBC iPlayer
         on one show and a different platform name on another — never hard-map alternate.
+
+        UI GET paths pass allow_fetch=False (cache/slug only; never blocks on TVDB).
         """
         slug = (slug or "default").strip().lower() or "default"
         if slug == "official":
             slug = "default"
-        for item in self.series_season_types(series_id) or []:
+        for item in self.series_season_types(series_id, use_cache=True, allow_fetch=allow_fetch) or []:
             if item.get("slug") == slug:
                 return item.get("name") or self._season_type_display_name(slug)
         return self._season_type_display_name(slug)
 
-    def series_season_types(self, series_id, use_cache: bool = True) -> list[dict]:
+    @staticmethod
+    def _default_season_types() -> list[dict]:
+        return [
+            {"slug": "default", "name": "Aired Order"},
+            {"slug": "dvd", "name": "DVD Order"},
+        ]
+
+    def series_season_types(self, series_id, use_cache: bool = True, allow_fetch: bool = True) -> list[dict]:
         """
         Available season order types for a series (editShow picker).
 
@@ -733,6 +742,8 @@ class TVDB(Indexer):
           - name: TVDB display string for *this* series (Aired Order, Absolute Order,
             or a platform title such as BBC iPlayer / Netflix when that is the named order)
         Uses process RAM (series TTL) then cache.db for 1 day when use_cache=True.
+
+        When allow_fetch=False (UI GET), never contacts TVDB: RAM → cache.db → slug defaults.
         """
         import json
         import time as _time
@@ -774,6 +785,10 @@ class TVDB(Indexer):
                     _ensure_table()
                 except Exception as create_error:
                     logger.debug(f"TVDB season types cache table create failed: {create_error}")
+
+        if not allow_fetch:
+            # Cache miss on UI path: slug fallback, no network
+            return self._default_season_types()
 
         types = self._fetch_series_season_types(series_id)
         self._season_types_mem_cache[series_id] = (now_mono, types)

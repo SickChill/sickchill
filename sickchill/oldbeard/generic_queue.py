@@ -9,6 +9,7 @@ class QueuePriorities(object):
     LOW: int = 10
     NORMAL: int = 20
     HIGH: int = 30
+    USER: int = 40  # UI click: after currentItem, before scheduled HIGH
 
 
 class GenericQueue(object):
@@ -41,17 +42,44 @@ class GenericQueue(object):
         logger.info("Unpausing queue")
         self.min_priority = 0
 
-    def add_item(self, item):
+    def _apply_front(self, item):
+        """Raise priority to USER and date the item so it sorts next after currentItem."""
+        item.priority = max(item.priority, QueuePriorities.USER)
+        # Last promote/click first among USER items
+        waiting = [x.added for x in self.queue if x is not item and x.priority >= QueuePriorities.USER and x.added is not None]
+        if waiting:
+            item.added = min(waiting) - datetime.timedelta(microseconds=1)
+        elif item.added is None:
+            item.added = sc_now()
+
+    def add_item(self, item, front=False):
         """
         Adds an item to this queue
 
         :param item: Queue object to add
+        :param front: If True, bump to USER priority so it runs next after currentItem
+            (last USER click runs first among USER items). Cannot preempt currentItem
+            or outrank Remove (HIGH**2).
         :return: item
         """
         with self.lock:
             item.added = sc_now()
+            if front:
+                self._apply_front(item)
             self.queue.append(item)
 
+            return item
+
+    def promote_item(self, item):
+        """
+        Promote an already-queued item to run next after currentItem (USER priority).
+
+        :return: item if it was in the queue and promoted, else None
+        """
+        with self.lock:
+            if item not in self.queue:
+                return None
+            self._apply_front(item)
             return item
 
     def run(self, force=False):
