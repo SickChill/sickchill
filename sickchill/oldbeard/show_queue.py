@@ -175,10 +175,16 @@ class ShowQueue(generic_queue.GenericQueue):
         return queue_item_obj
 
     def download_subtitles(self, show: "TVShow") -> "ShowQueueItem":
-        if self.is_in_subtitle_queue(show) or self.is_being_subtitled(show):
+        # Already running — return the active item; do not enqueue a duplicate
+        if self.is_being_subtitled(show):
+            return self.currentItem
+
+        # Waiting in queue — promote to run next
+        if self.is_in_subtitle_queue(show):
             promoted = self.promote_show_in_queue(show, (ShowQueueActions.SUBTITLE,))
             if promoted:
                 return promoted
+
         queue_item_obj = QueueItemSubtitle(show)
         self.add_item(queue_item_obj, front=True)
         return queue_item_obj

@@ -37,11 +37,24 @@ class SearchQueue(generic_queue.GenericQueue):
                 return True
         return False
 
-    def is_ep_subtitle_in_queue(self, segment):
+    def find_ep_subtitle_item(self, segment, force_lang=None):
+        """
+        Find a subtitle queue/current item for this episode and language.
+
+        force_lang is part of identity so a retry for a different language is not
+        treated as a duplicate of an existing job.
+        """
         for cur_item in self.queue + ([self.currentItem] if self.currentItem else []):
-            if isinstance(cur_item, SubtitleEpisodeQueueItem) and cur_item.segment == segment:
-                return True
-        return False
+            if not isinstance(cur_item, SubtitleEpisodeQueueItem):
+                continue
+            if cur_item.segment != segment:
+                continue
+            if cur_item.force_lang == force_lang:
+                return cur_item
+        return None
+
+    def is_ep_subtitle_in_queue(self, segment, force_lang=None):
+        return self.find_ep_subtitle_item(segment, force_lang=force_lang) is not None
 
     def queue_head_kind(self):
         """Return a short name for whatever is currently running, or None."""
@@ -132,7 +145,14 @@ class SearchQueue(generic_queue.GenericQueue):
             # manual and failed searches
             should_add = not self.is_ep_in_queue(item.segment)
         elif isinstance(item, SubtitleEpisodeQueueItem):
-            should_add = not self.is_ep_subtitle_in_queue(item.segment)
+            existing = self.find_ep_subtitle_item(item.segment, force_lang=item.force_lang)
+            if existing is not None:
+                # Already running: return active item. Queued: promote to next.
+                if existing is self.currentItem:
+                    return existing
+                promoted = self.promote_item(existing)
+                return promoted or existing
+            should_add = True
         elif isinstance(item, MovieQueueItem):
             should_add = not self.is_movie_in_queue(item.movie)
         else:

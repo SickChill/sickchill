@@ -2129,20 +2129,20 @@ class Home(WebRoot):
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
         search_q = settings.searchQueueScheduler.action
-        if search_q.is_ep_subtitle_in_queue(episode_object):
-            return json.dumps({"result": "failure", "errorMessage": _("Subtitle search already queued")})
-
         item = search_queue.SubtitleEpisodeQueueItem(episode_object.show, episode_object)
         added = search_q.add_item(item, front=True)
         if added is None:
             return json.dumps({"result": "failure", "errorMessage": _("Subtitle search already queued")})
 
+        # added may be a new item, a promoted queued item, or the already-running currentItem
         current = search_q.currentItem
-        queued = current is not None and current is not item
+        queued = current is not None and current is not added
+        already_running = added is current
+        message = _("Subtitle search already in progress") if already_running else _("Subtitle search queued")
         return json.dumps(
             {
                 "result": "success",
-                "message": _("Subtitle search queued"),
+                "message": message,
                 "queued": queued,
                 "blocked_by": search_q.queue_head_kind() if queued else None,
                 "subtitles": ",".join(episode_object.subtitles or []),
@@ -2173,20 +2173,19 @@ class Home(WebRoot):
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
         search_q = settings.searchQueueScheduler.action
-        if search_q.is_ep_subtitle_in_queue(episode_object):
-            return json.dumps({"result": "failure", "errorMessage": _("Subtitle search already queued")})
-
         item = search_queue.SubtitleEpisodeQueueItem(episode_object.show, episode_object, force_lang=lang)
         added = search_q.add_item(item, front=True)
         if added is None:
             return json.dumps({"result": "failure", "errorMessage": _("Subtitle search already queued")})
 
         current = search_q.currentItem
-        queued = current is not None and current is not item
+        queued = current is not None and current is not added
+        already_running = added is current
+        message = _("Subtitle search already in progress") if already_running else _("Subtitle search queued")
         return json.dumps(
             {
                 "result": "success",
-                "message": _("Subtitle search queued"),
+                "message": message,
                 "queued": queued,
                 "blocked_by": search_q.queue_head_kind() if queued else None,
                 "subtitles": ",".join(episode_object.subtitles or []),
