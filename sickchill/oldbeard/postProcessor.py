@@ -1251,9 +1251,7 @@ def guessit_findit(name: str) -> Union["ParseResult", None]:
                 np = NameParser(show_object=show).parse(name, cache_result=False)
                 return np
             except (InvalidNameException, InvalidShowException) as error:
-                logger.debug(
-                    f"Sorry, guessit failed to parse {show.name}: {name} Error: {error} ... continuing with the old way"
-                )
+                logger.debug(f"Sorry, guessit failed to parse {show.name}: {name} Error: {error} ... continuing with the old way")
     try:
         np = NameParser().parse(name, cache_result=False)
         return np
