@@ -148,11 +148,13 @@ class SearchQueue(generic_queue.GenericQueue):
         elif isinstance(item, SubtitleEpisodeQueueItem):
             existing = self.find_ep_subtitle_item(item.segment, force_lang=item.force_lang)
             if existing is not None:
-                # Already running: return active item. Queued: promote to next.
+                # Already running: return active item unchanged.
                 if existing is self.currentItem:
                     return existing
-                promoted = self.promote_item(existing)
-                return promoted or existing
+                # Queued: only promote when front was requested; otherwise leave priority/position alone.
+                if front:
+                    return self.promote_item(existing) or existing
+                return existing
             should_add = True
         elif isinstance(item, MovieQueueItem):
             should_add = not self.is_movie_in_queue(item.movie)
