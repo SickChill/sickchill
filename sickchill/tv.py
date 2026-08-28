@@ -296,15 +296,16 @@ class TVShow(object):
 
         self.episodes.clear()
 
-    def refresh(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
+    def refresh(self, force: bool = False, front: bool = False) -> tuple[Union[str, None], "TVShow"]:
         """
         Refresh this show.
         :param force: Force update
+        :param front: Prefer USER priority so UI-triggered refreshes run next
         :return: A tuple: an error message if not refreshed, the show self object
         """
 
         try:
-            settings.showQueueScheduler.action.refresh_show(self, force)
+            settings.showQueueScheduler.action.refresh_show(self, force, front=front)
             return None, self
 
         except CantRefreshShowException as exception:
@@ -418,13 +419,14 @@ class TVShow(object):
         logger.info(f"Updated {updated_count} TBA episode(s) for {self.name} (still TBA on TVDB: {skipped_still_tba})")
         return updated_count
 
-    def update(self, force: bool = False) -> tuple[Union[str, None], "TVShow"]:
+    def update(self, force: bool = False, front: bool = False) -> tuple[Union[str, None], "TVShow"]:
         """
         Update this show from indexer.
         Returns (error_message or None, self) to maintain consistent API.
+        :param front: Prefer USER priority so UI-triggered updates run next
         """
         try:
-            settings.showQueueScheduler.action.update_show(self, force)
+            settings.showQueueScheduler.action.update_show(self, force, front=front)
             return None, self
 
         except CantUpdateShowException as exception:

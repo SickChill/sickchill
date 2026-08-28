@@ -2738,34 +2738,32 @@ const SICKCHILL = {
                     return false;
                 }
 
-                disableLink($(this));
+                const link = $(this);
+                disableLink(link);
 
-                const parent = $(this).parent();
-                const subtitlesTd = parent.siblings('.col-subtitles');
-
-                const icon = $(this).children('span');
+                const icon = link.children('span');
                 icon.prop('class', 'loading-spinner16');
-                icon.prop('title', 'Searching');
+                icon.prop('title', 'Queuing');
 
-                $.getJSON($(this).attr('href'), function (data) {
-                    if (data.result.toLowerCase() !== 'failure' && data.result.toLowerCase() !== 'no subtitles downloaded') {
-                        // Clear and update the subtitles column with new information
-                        const subtitles = data.subtitles.split(',');
-                        subtitlesTd.empty();
-                        $.each(subtitles, (index, language) => {
-                            if (language !== '') {
-                                subtitlesTd.append($('<img/>', {
-                                    src: scRoot + '/images/subtitles/flags/' + language + '.png', alt: language, width: 16, height: 11,
-                                }));
-                            }
-                        });
-                        icon.prop('class', 'displayshow-icon-sub');
-                        enableLink($(this));
-                    } else {
+                $.getJSON(link.attr('href'), data => {
+                    if (data.result.toLowerCase() === 'failure') {
                         icon.prop('class', 'displayshow-icon-disable');
+                        icon.prop('title', data.errorMessage || data.result || 'Failed');
+                        enableLink(link);
+                        return;
                     }
 
-                    icon.prop('title', data.result);
+                    // Search is queued; notification fires when the worker finishes
+                    let title = data.message || _('Subtitle search queued');
+                    if (data.queued && data.blocked_by) {
+                        title = _('Queued') + ' (' + data.blocked_by + ' ' + _('search running') + ')';
+                        icon.prop('class', 'displayshow-icon-clock');
+                    } else {
+                        icon.prop('class', 'loading-spinner16');
+                    }
+
+                    icon.prop('title', title);
+                    // Keep link disabled until page reload / notification; avoid duplicate queue items
                 });
                 return false;
             });
@@ -2778,28 +2776,32 @@ const SICKCHILL = {
                 const selectedEpisode = $(this);
                 const subtitleModal = $('#confirmSubtitleDownloadModal');
 
-                $('#confirmSubtitleDownloadModal .btn.btn-success').on('click', () => {
+                $('#confirmSubtitleDownloadModal .btn.btn-success').off('click.subtitleQueue').on('click.subtitleQueue', () => {
                     disableLink(selectedEpisode);
                     subtitleModal.modal('hide');
 
                     const img = selectedEpisode.children('img');
                     img.hide();
 
-                    selectedEpisode.append($('<span/>').attr({class: 'loading-spinner16', title: 'Searching'}));
+                    selectedEpisode.append($('<span/>').attr({class: 'loading-spinner16', title: 'Queuing'}));
                     const icon = selectedEpisode.children('span');
 
                     $.getJSON(selectedEpisode.prop('href'), data => {
                         if (data.result.toLowerCase() === 'failure') {
                             icon.prop('class', 'displayshow-icon-disable');
-                            icon.prop('title', 'Failed');
-                        } else {
-                            img.prop('title', 'Success');
-                            img.prop('alt', 'Success');
-                            icon.hide();
-                            img.show();
+                            icon.prop('title', data.errorMessage || 'Failed');
+                            enableLink(selectedEpisode);
+                            return;
                         }
+
+                        let title = data.message || _('Subtitle search queued');
+                        if (data.queued && data.blocked_by) {
+                            title = _('Queued') + ' (' + data.blocked_by + ' ' + _('search running') + ')';
+                            icon.prop('class', 'displayshow-icon-clock');
+                        }
+
+                        icon.prop('title', title);
                     });
-                    enableLink(selectedEpisode);
                     return false;
                 });
                 subtitleModal.modal('show');
