@@ -42,8 +42,9 @@ class SearchQueue(generic_queue.GenericQueue):
         Find a subtitle queue/current item for this episode and language.
 
         force_lang is part of identity so a retry for a different language is not
-        treated as a duplicate of an existing job.
+        treated as a duplicate of an existing job. Empty strings normalize to None.
         """
+        force_lang = SubtitleEpisodeQueueItem.normalize_force_lang(force_lang)
         for cur_item in self.queue + ([self.currentItem] if self.currentItem else []):
             if not isinstance(cur_item, SubtitleEpisodeQueueItem):
                 continue
@@ -358,13 +359,23 @@ class FailedQueueItem(generic_queue.QueueItem):
 class SubtitleEpisodeQueueItem(generic_queue.QueueItem):
     """Download subtitles for a single episode (SEARCHQUEUE, does not block SHOWQUEUE)."""
 
+    @staticmethod
+    def normalize_force_lang(force_lang):
+        """Treat None and blank strings as the same unforced subtitle search."""
+        if force_lang is None:
+            return None
+        if isinstance(force_lang, str):
+            force_lang = force_lang.strip()
+            return force_lang or None
+        return force_lang
+
     def __init__(self, show, segment, force_lang=None):
         super().__init__("Episode Subtitle", EPISODE_SUBTITLE_SEARCH)
         self.priority = generic_queue.QueuePriorities.HIGH
         self.name = f"SUBTITLE-{show.indexerid}-{segment.season}x{segment.episode}"
         self.show = show
         self.segment = segment
-        self.force_lang = force_lang
+        self.force_lang = self.normalize_force_lang(force_lang)
         self.success = None
         self.started = None
 
