@@ -298,7 +298,6 @@ def wanted_episodes(show, from_date):
     allowed_qualities, preferred_qualities = common.Quality.splitQuality(show.quality)
     all_qualities = list(set(allowed_qualities + preferred_qualities))
 
-    logger.debug(f"Seeing if we need anything from {show.name}")
     con = db.DBConnection()
 
     sql_results = con.select(
@@ -338,7 +337,7 @@ def search_for_needed_episodes():
     show_list = settings.show_list
     from_date = datetime.date.min
     episodes = []
-    logger.debug(f"Seeing if we need anything for: {','.join([f'[{ashow}]' for ashow in show_list])}")
+    logger.debug(f"Seeing if we need anything for: {', '.join(ashow.name for ashow in show_list)}")
 
     for curShow in show_list:
         if not curShow.paused:
