@@ -1134,16 +1134,29 @@ class PostProcessor(object):
         except (OSError, IOError):
             raise EpisodePostProcessingFailedException(_("Unable to move the files to their new home"))
 
+        # Phase 3: short DB commit. Files stay where IO left them if this fails — operator must fix DB.
         sql_l = []
         new_location = os.path.join(dest_path, new_filename)
-        for cur_ep in episodes:
-            with cur_ep.lock:
-                cur_ep.location = new_location
-                sql_l.append(cur_ep.get_sql())
 
-        if sql_l:
-            main_db_con = db.DBConnection()
-            main_db_con.mass_action(sql_l)
+        try:
+            for cur_ep in episodes:
+                with cur_ep.lock:
+                    cur_ep.location = new_location
+                    sql_l.append(cur_ep.get_sql())
+
+            if sql_l:
+                main_db_con = db.DBConnection()
+                main_db_con.mass_action(sql_l)
+        except Exception as error:
+            self._log(
+                _(
+                    "ERROR: Database update failed after media was already processed. "
+                    "Files were left as-is (source={source}, destination={destination}). "
+                    "Fix the database problem, then reconcile paths manually. Error: {error}"
+                ).format(source=self.directory, destination=new_location, error=error),
+                logger.ERROR,
+            )
+            raise EpisodePostProcessingFailedException(_("Database update failed after media IO; files left in place: {error}").format(error=error))
 
         if release_name:
             self.history.log_success(release_name)
