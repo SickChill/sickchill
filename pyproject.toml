@@ -276,13 +276,11 @@ pybabel extract
 
 babel-compile = { cmd = """
 pybabel compile
-  --mapping-file=.github/babel-mapping.cfg
   --directory=sickchill/locale
 """, help = "Compile translation catalogs" }
 
 babel-init = { cmd = """
 pybabel init
-  --mapping-file=.github/babel-mapping.cfg
   --output-dir=sickchill/locale
   --input-file=sickchill/locale/messages.pot
 """, help = "Init a new locale (pass -l LANG)" }
