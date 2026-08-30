@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import tempfile
 import threading
 import unittest
@@ -37,13 +36,14 @@ class TestNoDbDuringMoveFile(unittest.TestCase):
             mock_db.assert_not_called()
 
     def test_process_defers_mass_action_until_after_move(self):
-        """Sanity: process() places mass_action after media IO."""
+        """Sanity: process() places mass_action after media IO and appends get_sql units."""
         source = Path("sickchill/oldbeard/postProcessor.py").read_text(encoding="utf-8")
         move_idx = source.find("self._move(")
         mass_idx = source.find("main_db_con.mass_action(sql_l)")
         self.assertGreater(move_idx, 0)
         self.assertGreater(mass_idx, move_idx)
-        self.assertIn("sql_l.extend(sql)", source)
+        self.assertIn("sql_l.append(sql)", source)
+        self.assertNotIn("sql_l.extend(sql)", source)
         self.assertIn("Files were left as-is", source)
 
 
@@ -52,13 +52,16 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
 
     @staticmethod
     def _production_get_sql():
-        # Matches TVEpisode.get_sql(): a one-element list containing the query tuple
-        return [("UPDATE tv_episodes SET location = ? WHERE episode_id = ?", ["/show/ep.mkv", 1])]
+        """Shape matches TVEpisode.get_sql(): [statement:str, params:list]."""
+        return [
+            "UPDATE tv_episodes SET location = ? WHERE episode_id = ?",
+            ["/show/ep.mkv", 1],
+        ]
 
     def test_process_move_before_mass_action_and_sql_shape(self):
         """
         Invoke production process() on a MOVE: media IO must run before mass_action,
-        and mass_action must receive flat [("UPDATE ...", [...])] units (not nested lists).
+        and mass_action must receive [[stmt, params], ...] units (append, not extend).
         """
         call_order = []
 
@@ -103,12 +106,12 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
 
             def tracking_mass_action(query_list=None, **kwargs):
                 call_order.append("mass_action")
-                # Detect nesting defect: each unit must be (stmt, params), not [(stmt, params)]
                 self.assertIsInstance(query_list, list)
                 self.assertGreaterEqual(len(query_list), 1)
                 for qu in query_list:
-                    self.assertIsInstance(qu, (list, tuple))
-                    self.assertEqual(len(qu), 2, f"expected [stmt, params] or (stmt, params), got nested {qu!r}")
+                    # Production unit after append: [stmt, params]
+                    self.assertIsInstance(qu, list)
+                    self.assertEqual(len(qu), 2, f"extend would flatten; got {qu!r}")
                     self.assertIsInstance(qu[0], str)
                     self.assertTrue(qu[0].lstrip().upper().startswith("UPDATE"))
                     self.assertIsInstance(qu[1], list)
@@ -149,7 +152,6 @@ class TestProcessMoveThenMassAction(unittest.TestCase):
 
             self.assertEqual(call_order, ["move", "mass_action"])
             self.assertTrue(any("Files were left as-is" in str(c) for c in pp._log.call_args_list))
-            # get_sql production shape used
             ep.get_sql.assert_called()
 
 

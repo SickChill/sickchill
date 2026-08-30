@@ -1142,11 +1142,10 @@ class PostProcessor(object):
             for cur_ep in episodes:
                 with cur_ep.lock:
                     cur_ep.location = new_location
-                    # get_sql() returns [(statement, params)] — extend so mass_action sees
-                    # ("UPDATE ...", [...]) units, not a nested [[(...)]].
+                    # get_sql() returns one mass_action unit: [statement, params]. Append — do not extend
                     sql = cur_ep.get_sql()
                     if sql:
-                        sql_l.extend(sql)
+                        sql_l.append(sql)
 
             if sql_l:
                 main_db_con = db.DBConnection()
