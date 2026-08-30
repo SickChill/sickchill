@@ -28,6 +28,55 @@ LOGGING_LEVELS = {
 censored_items = {}
 
 
+def rotated_log_namer(default_name: str) -> str:
+    """
+    RotatingFileHandler default: sickchill.log.1
+    Desired: sickchill.1.log (always end with .log)
+    """
+    # default_name is "{baseFilename}.{n}" e.g. /path/sickchill.log.1
+    base, dot, number = default_name.rpartition(".")
+    if not dot or not number.isdigit() or not base.endswith(".log"):
+        return default_name
+    stem = base[: -len(".log")]
+    return f"{stem}.{number}.log"
+
+
+def rotated_log_path(log_file: str, index: int) -> str:
+    """Path for rotated backup index (1..N): sickchill.1.log"""
+    if log_file.endswith(".log"):
+        return f"{log_file[: -len('.log')]}.{index}.log"
+    return f"{log_file}.{index}.log"
+
+
+def migrate_legacy_rotated_logs(log_file: str, backup_count: int) -> None:
+    """
+    One-time fold of legacy RotatingFileHandler names into the new scheme:
+
+        sickchill.log.N  →  sickchill.N.log
+
+    After this, the next rotate of sickchill.log → sickchill.1.log shifts
+    existing sickchill.N.log → sickchill.(N+1).log via the normal handler loop.
+    Rename highest index first to avoid clobbering.
+    """
+    if not log_file or backup_count < 1:
+        return
+
+    for i in range(int(backup_count), 0, -1):
+        legacy = f"{log_file}.{i}"
+        target = rotated_log_path(log_file, i)
+        if not os.path.isfile(legacy):
+            continue
+        if os.path.abspath(legacy) == os.path.abspath(target):
+            continue
+        if os.path.exists(target):
+            # New-style file already present; leave legacy for manual cleanup
+            continue
+        try:
+            os.rename(legacy, target)
+        except OSError:
+            pass
+
+
 class DispatchFormatter(logging.Formatter, object):
     """
     Censor information such as API keys, usernames, and passwords from the Log
@@ -160,7 +209,11 @@ class Logger(object):
 
         # rotating log file handler
         if self.file_logging:
+            # Fold sickchill.log.N → sickchill.N.log before the handler runs, so the
+            # next rotate shifts them to .2.log, .3.log, … under the new naming.
+            migrate_legacy_rotated_logs(self.log_file, settings.LOG_NR)
             rfh = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=int(settings.LOG_SIZE * 1048576), backupCount=settings.LOG_NR)
+            rfh.namer = rotated_log_namer
             rfh.setFormatter(DispatchFormatter(log_format, dateTimeFormat))
             rfh.setLevel(log_level)
 
@@ -261,10 +314,15 @@ def log_data(min_level, log_filter, log_search, max_lines):
     if os.path.isfile(Wrapper.instance.log_file):
         log_files.append(Wrapper.instance.log_file)
 
-        for i in range(1, int(settings.LOG_NR)):
-            name = f"{Wrapper.instance.log_file}.{i}"
+        # Match RotatingFileHandler backupCount (1..LOG_NR) using sickchill.N.log names.
+        # Fall back to legacy sickchill.log.N until those rotate away.
+        for i in range(1, int(settings.LOG_NR) + 1):
+            name = rotated_log_path(Wrapper.instance.log_file, i)
             if not os.path.isfile(name):
-                break
+                legacy = f"{Wrapper.instance.log_file}.{i}"
+                if not os.path.isfile(legacy):
+                    break
+                name = legacy
             log_files.append(name)
     else:
         return final_data
