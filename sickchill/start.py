@@ -311,6 +311,12 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.DOWNLOAD_PROPERS = check_setting_bool(settings.CFG, "General", "download_propers", True)
         settings.CHECK_PROPERS_INTERVAL = check_setting_str(settings.CFG, "General", "check_propers_interval")
+        # Legacy UI values: 15m→30m, 45m→90m (persist so config.ini is updated)
+        _legacy_propers = {"15m": "30m", "45m": "90m"}
+        if settings.CHECK_PROPERS_INTERVAL in _legacy_propers:
+            settings.CHECK_PROPERS_INTERVAL = _legacy_propers[settings.CHECK_PROPERS_INTERVAL]
+            settings.CFG.setdefault("General", {})["check_propers_interval"] = settings.CHECK_PROPERS_INTERVAL
+            settings.CFG.write()
         if settings.CHECK_PROPERS_INTERVAL not in ("30m", "90m", "4h", "8h", "daily"):
             settings.CHECK_PROPERS_INTERVAL = "daily"
 

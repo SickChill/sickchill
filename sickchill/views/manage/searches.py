@@ -1,6 +1,5 @@
-from urllib.parse import urlparse
-
 from sickchill import logger, settings
+from sickchill.helper.common import resolve_safe_redirect
 from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.manage.index import Manage
@@ -92,17 +91,14 @@ class ManageSearches(Manage):
                 ui.notifications.error(_("Error"), _("Auto Post Processor is already running"))
 
         # Prefer staying on the page that triggered the action (navbar / Manage Searches)
-        next_url = self.get_query_argument("next", default=None)
-        if next_url and next_url.startswith("/") and not next_url.startswith("//"):
-            return self.redirect(next_url)
-
-        referer = self.request.headers.get("Referer") or ""
-        parsed = urlparse(referer)
-        if parsed.netloc == self.request.host and parsed.path.startswith("/"):
-            path = parsed.path + (("?" + parsed.query) if parsed.query else "")
-            return self.redirect(path)
-
-        return self.redirect("/" + settings.DEFAULT_PAGE + "/")
+        return self.redirect(
+            resolve_safe_redirect(
+                self.get_query_argument("next", default=None),
+                self.request.headers.get("Referer") or "",
+                self.request.host,
+                settings.DEFAULT_PAGE,
+            )
+        )
 
     def forceShowUpdater(self):
         """Force ShowUpdater (developer mode only)."""
