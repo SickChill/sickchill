@@ -46,7 +46,7 @@
     "mini-css-extract-plugin": "^2.8.0",
     "sass": "^1.103.1",
     "sass-loader": "^17.0.0",
-    "snyk": "^1.1306.4",
+    "snyk": "^1.1307.0",
     "stylelint": "^16.2.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
     "toml": "^5.0.0",
