@@ -668,6 +668,7 @@ class TVShow(object):
         logger.debug(f"{self.indexerid}: Loading all episodes from the show directory {self._location}")
 
         media_files = helpers.list_media_files(self._location)
+        logger.debug(f"{self.indexerid}: Found {len(media_files)} media file(s) under {self._location}")
 
         # create TVEpisodes from each media file if possible
         sql_l = []
@@ -690,8 +691,9 @@ class TVShow(object):
             ep_filename = os.path.basename(current_episode.location)
             ep_filename = os.path.splitext(ep_filename)[0]
 
+            # show is already known — do not hit indexers during refresh dir scan
             try:
-                parse_result = NameParser(False, show_object=self, try_indexers=True).parse(ep_filename)
+                parse_result = NameParser(False, show_object=self, try_indexers=False).parse(ep_filename)
             except (InvalidNameException, InvalidShowException):
                 parse_result = None
 
@@ -864,15 +866,20 @@ class TVShow(object):
             logger.info(f"{self.indexerid}: That isn't even a real file dude... {filepath}")
             return None
 
+        basename = os.path.basename(filepath)
         logger.debug(f"{self.indexerid}: Creating episode object from {filepath}")
+        # Refresh/dir scan already knows the show — avoid indexer search hangs (try_indexers=False)
+        logger.debug(f"{self.indexerid}: NameParser starting for {basename} (try_indexers=False)")
 
         try:
-            parse_result = NameParser(show_object=self, try_indexers=True, parse_method=("normal", "anime")[self.is_anime]).parse(
+            parse_result = NameParser(show_object=self, try_indexers=False, parse_method=("normal", "anime")[self.is_anime]).parse(
                 filepath, skip_scene_detection=True
             )
         except (InvalidNameException, InvalidShowException) as error:
-            logger.debug(f"{self.indexerid}: {error}")
+            logger.debug(f"{self.indexerid}: NameParser failed for {basename}: {error}")
             return None
+
+        logger.debug(f"{self.indexerid}: NameParser finished for {basename}")
 
         episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
         if not episodes:
@@ -891,6 +898,7 @@ class TVShow(object):
             check_quality_again = False
             same_file = False
 
+            logger.debug(f"{self.indexerid}: get_episode for {episode_num(season, current_episode)}")
             episode = self.get_episode(season, current_episode)
             if not episode:
                 try:
@@ -909,12 +917,16 @@ class TVShow(object):
                     )
                     check_quality_again = True
 
+                logger.debug(f"{self.indexerid}: Setting location / reading file size for {basename}")
                 with episode.lock:
                     old_size = episode.file_size
                     episode.location = filepath
                     # if the sizes are the same then it's probably the same file
                     same_file = old_size and episode.file_size == old_size
                     episode.check_for_meta_files()
+                logger.debug(f"{self.indexerid}: Location/size done for {basename} size={episode.file_size}")
+
+            logger.debug(f"{self.indexerid}: episode object ready for {episode_num(season, current_episode)}")
 
             if root_episode is None:
                 root_episode = episode

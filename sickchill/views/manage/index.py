@@ -141,21 +141,16 @@ class Manage(Home, WebRoot):
             action="episodeStatuses",
         )
 
-    # noinspection PyUnusedLocal
-    def changeEpisodeStatuses(self, oldStatus, newStatus, *args, **kwargs):
+    def changeEpisodeStatuses(self):
         """
         Change selected episodes from one status to another.
 
         Selected episodes are collected from submitted checkbox arguments. A
         submitted `all` marker expands to all matching episodes for that show.
-
-        :param oldStatus: Current status to change from.
-        :param newStatus: New status to apply.
-        :param args: Unused positional route arguments.
-        :param kwargs: Submitted checkbox values keyed by show and episode.
-        :return: Redirect to the episode status overview.
         """
-        status_list = [int(oldStatus)]
+        old_status = self.get_body_argument("oldStatus")
+        new_status = self.get_body_argument("newStatus")  # noqa F841
+        status_list = [int(old_status)]
         if status_list[0] == SNATCHED:
             status_list = Quality.SNATCHED + Quality.SNATCHED_PROPER + Quality.SNATCHED_BEST
 
@@ -164,11 +159,16 @@ class Manage(Home, WebRoot):
         self.to_change_eps = []
 
         # make a list of all shows and their associated args
-        for arg in kwargs:
-            indexer_id, what = arg.split("-")
+        for arg in self.request.body_arguments:
+            if "-" not in arg:
+                continue
+            try:
+                indexer_id, what = arg.split("-", 1)
+            except ValueError:
+                continue
 
             # we don't care about unchecked checkboxes
-            if kwargs[arg] != "on":
+            if self.get_body_argument(arg, default=None) != "on":
                 continue
 
             if indexer_id not in to_change:
@@ -298,23 +298,25 @@ class Manage(Home, WebRoot):
             action="subtitleMissed",
         )
 
-    # noinspection PyUnusedLocal
-    def downloadSubtitleMissed(self, *args, **kwargs):
+    def downloadSubtitleMissed(self):
         """
         Queue subtitle downloads for selected missing-subtitle episodes.
 
-        :param args: Unused positional arguments.
-        :param kwargs: Keyword arguments mapping show identifiers to subtitle languages.
-        :return: None
+        Form fields are named ``{indexer_id}-{season}x{episode}`` (or ``…-all``) with value ``on``.
         """
         to_download = {}
 
         # make a list of all shows and their associated args
-        for arg in kwargs:
-            indexer_id, what = arg.split("-")
+        for arg in self.request.body_arguments:
+            if "-" not in arg:
+                continue
+            try:
+                indexer_id, what = arg.split("-", 1)
+            except ValueError:
+                continue
 
             # we don't care about unchecked checkboxes
-            if kwargs[arg] != "on":
+            if self.get_body_argument(arg, default=None) != "on":
                 continue
 
             if indexer_id not in to_download:
@@ -819,7 +821,7 @@ class Manage(Home, WebRoot):
         Processes removal of failed downloads and redirects to the failed downloads page.
         """
         remove = self.get_body_arguments("remove[]")
-        limit = self.get_argument("limit", "100")
+        limit = self.get_query_argument("limit", default="100") or self.get_body_argument("limit", default="100")
         failed_db_con = db.DBConnection("failed.db")
 
         if limit == "0":

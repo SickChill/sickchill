@@ -793,7 +793,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.POSTER_SORTBY = check_setting_str(settings.CFG, "GUI", "poster_sortby", "name")
         settings.POSTER_SORTDIR = check_setting_int(settings.CFG, "GUI", "poster_sortdir", 1, min_val=0, max_val=1)
         settings.DISPLAY_ALL_SEASONS = check_setting_bool(settings.CFG, "General", "display_all_seasons", True)
-        settings.ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(settings.CFG, "General", "ended_shows_update_interval", 7)
+        settings.ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(settings.CFG, "General", "ended_shows_update_interval", 14, min_val=-1, max_val=365)
+        settings.SHOW_DISK_REFRESH_DAYS = check_setting_int(settings.CFG, "General", "show_disk_refresh_days", 7, min_val=-1, max_val=365)
         settings.NO_LGMARGIN = check_setting_bool(settings.CFG, "GUI", "no_lgmargin", True)
 
         if check_section(settings.CFG, "Shares"):
@@ -1083,6 +1084,20 @@ def halt():
             for t in threads:
                 t.stop.set()
 
+            # Stop queue *workers* (currentItem), not only their scheduler threads.
+            # A stuck SHOWQUEUE-REFRESH otherwise survives join(10) on SHOWQUEUE.
+            for queue_scheduler in (
+                settings.showQueueScheduler,
+                settings.searchQueueScheduler,
+                settings.postProcessorTaskScheduler,
+            ):
+                action = getattr(queue_scheduler, "action", None)
+                if action is not None and hasattr(action, "stop_current_item"):
+                    try:
+                        action.stop_current_item(timeout=10)
+                    except Exception as error:
+                        logger.warning(f"Error stopping {getattr(queue_scheduler, 'name', 'queue')} current item: {error}")
+
             for t in threads:
                 logger.info(f"Waiting for the {t.name} thread to exit")
                 try:
@@ -1317,6 +1332,7 @@ def save_config():
                 "developer": int(settings.DEVELOPER),
                 "display_all_seasons": int(settings.DISPLAY_ALL_SEASONS),
                 "ended_shows_update_interval": int(settings.ENDED_SHOWS_UPDATE_INTERVAL),
+                "show_disk_refresh_days": int(settings.SHOW_DISK_REFRESH_DAYS),
                 "news_last_read": settings.NEWS_LAST_READ,
                 "flaresolverr_uri": settings.FLARESOLVERR_URI,
             },

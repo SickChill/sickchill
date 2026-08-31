@@ -673,6 +673,15 @@ class QueueItemRefresh(ShowQueueItem):
         # Load XEM data to DB for show
         scene_numbering.xem_refresh(self.show.indexerid, self.show.indexer)
 
+        # Stamp folder mtime after refresh (incl. silent post-update) so ShowUpdater
+        # does not immediately re-queue due to NFO/metadata touching the directory.
+        try:
+            from sickchill.oldbeard import show_dir_mtime
+
+            show_dir_mtime.stamp_show_dir_mtime(self.show)
+        except Exception as error:
+            logger.debug(f"show_dir_mtime stamp failed for {getattr(self.show, 'indexerid', '?')}: {error}")
+
         super(QueueItemRefresh, self).finish()
         self.finish()
 
