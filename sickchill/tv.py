@@ -510,7 +510,9 @@ class TVShow(object):
 
         return ep_list
 
-    def get_episode(self, season=None, episode=None, ep_file=None, nfo_create=False, absolute_number=None) -> Union["TVEpisode", None]:
+    def get_episode(
+        self, season=None, episode=None, ep_file=None, nfo_create=False, absolute_number=None, allow_indexer: bool = True
+    ) -> Union["TVEpisode", None]:
         season = try_int(season, None)
         episode = try_int(episode, None)
         absolute_number = try_int(absolute_number, None)
@@ -544,9 +546,9 @@ class TVShow(object):
                 return None
 
             if ep_file:
-                ep = TVEpisode(self, season, episode, ep_file)
+                ep = TVEpisode(self, season, episode, ep_file, allow_indexer=allow_indexer)
             else:
-                ep = TVEpisode(self, season, episode)
+                ep = TVEpisode(self, season, episode, allow_indexer=allow_indexer)
 
             if ep:
                 self.episodes[season][episode] = ep
@@ -668,6 +670,7 @@ class TVShow(object):
         logger.debug(f"{self.indexerid}: Loading all episodes from the show directory {self._location}")
 
         media_files = helpers.list_media_files(self._location)
+        logger.debug(f"{self.indexerid}: Found {len(media_files)} media file(s) under {self._location}")
 
         # create TVEpisodes from each media file if possible
         sql_l = []
@@ -690,8 +693,9 @@ class TVShow(object):
             ep_filename = os.path.basename(current_episode.location)
             ep_filename = os.path.splitext(ep_filename)[0]
 
+            # show is already known — do not hit indexers during refresh dir scan
             try:
-                parse_result = NameParser(False, show_object=self, try_indexers=True).parse(ep_filename)
+                parse_result = NameParser(False, show_object=self, try_indexers=False).parse(ep_filename)
             except (InvalidNameException, InvalidShowException):
                 parse_result = None
 
@@ -864,15 +868,20 @@ class TVShow(object):
             logger.info(f"{self.indexerid}: That isn't even a real file dude... {filepath}")
             return None
 
+        basename = os.path.basename(filepath)
         logger.debug(f"{self.indexerid}: Creating episode object from {filepath}")
+        # Refresh/dir scan already knows the show — avoid indexer search hangs (try_indexers=False)
+        logger.debug(f"{self.indexerid}: NameParser starting for {basename} (try_indexers=False)")
 
         try:
-            parse_result = NameParser(show_object=self, try_indexers=True, parse_method=("normal", "anime")[self.is_anime]).parse(
+            parse_result = NameParser(show_object=self, try_indexers=False, parse_method=("normal", "anime")[self.is_anime]).parse(
                 filepath, skip_scene_detection=True
             )
         except (InvalidNameException, InvalidShowException) as error:
-            logger.debug(f"{self.indexerid}: {error}")
+            logger.debug(f"{self.indexerid}: NameParser failed for {basename}: {error}")
             return None
+
+        logger.debug(f"{self.indexerid}: NameParser finished for {basename}")
 
         episodes = [ep for ep in parse_result.episode_numbers if ep is not None]
         if not episodes:
@@ -891,10 +900,12 @@ class TVShow(object):
             check_quality_again = False
             same_file = False
 
-            episode = self.get_episode(season, current_episode)
+            logger.debug(f"{self.indexerid}: get_episode for {episode_num(season, current_episode)}")
+            # Dir/refresh scan is local-only: do not contact the indexer for missing metadata
+            episode = self.get_episode(season, current_episode, allow_indexer=False)
             if not episode:
                 try:
-                    episode = self.get_episode(season, current_episode, filepath)
+                    episode = self.get_episode(season, current_episode, filepath, allow_indexer=False)
                     if not episode:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
@@ -909,12 +920,16 @@ class TVShow(object):
                     )
                     check_quality_again = True
 
+                logger.debug(f"{self.indexerid}: Setting location / reading file size for {basename}")
                 with episode.lock:
                     old_size = episode.file_size
                     episode.location = filepath
                     # if the sizes are the same then it's probably the same file
                     same_file = old_size and episode.file_size == old_size
                     episode.check_for_meta_files()
+                logger.debug(f"{self.indexerid}: Location/size done for {basename} size={episode.file_size}")
+
+            logger.debug(f"{self.indexerid}: episode object ready for {episode_num(season, current_episode)}")
 
             if root_episode is None:
                 root_episode = episode
@@ -1686,7 +1701,7 @@ class TVEpisode(object):
     # TVDB episode lastUpdated (unix); used to skip no-op indexer rewrites (Phase 2)
     last_update_indexer = DirtySetter(0)
 
-    def __init__(self, show: TVShow, season, episode, ep_file=""):
+    def __init__(self, show: TVShow, season, episode, ep_file="", allow_indexer: bool = True):
         self.season: int = season
         self.episode: int = episode
         self._location = ep_file
@@ -1706,7 +1721,7 @@ class TVEpisode(object):
 
         self.lock = threading.Lock()
 
-        self.specify_episode(self.season, self.episode)
+        self.specify_episode(self.season, self.episode, allow_indexer=allow_indexer)
 
         self.related_episodes = []
 
@@ -1842,7 +1857,7 @@ class TVEpisode(object):
         # if either setting has changed return true, if not return false
         return old_has_nfo != self.has_nfo or old_has_tbn != self.has_tbn
 
-    def specify_episode(self, season, episode):
+    def specify_episode(self, season, episode, allow_indexer: bool = True):
         sql_results = self.load_from_db(season, episode)
 
         if not sql_results and os.path.isfile(self.location):
@@ -1853,11 +1868,14 @@ class TVEpisode(object):
                 logger.error(f"{self.show.indexerid}: There was an error loading the NFO for episode {episode_num(season, episode)}")
 
             # if we tried loading it from NFO and didn't find the NFO, try the Indexers
+            # (unless caller requested local-only, e.g. refresh dir scan)
             if not self.has_nfo:
-                try:
-                    result = self.load_from_indexer(season, episode)
-                except EpisodeDeletedException:
-                    result = None
+                result = None
+                if allow_indexer:
+                    try:
+                        result = self.load_from_indexer(season, episode)
+                    except EpisodeDeletedException:
+                        result = None
 
                 # if we failed SQL *and* NFO, Indexers then fail
                 if not result:

@@ -190,11 +190,15 @@ class WebHandler(BaseHandler):
                 helpers.add_site_message(", ".join(message), tag=message[0])
                 return self.redirect("/home/")
 
-            from inspect import signature
+            from inspect import Parameter, signature
 
             sig = signature(method)
-            if settings.DEVELOPER and len(sig.parameters):
-                logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
+            # Warn only for *args/**kwargs or required params (legacy kwargs injection).
+            # Skip optional params used for in-process flags (e.g. editShow(direct_call=False)).
+            if settings.DEVELOPER:
+                needs_update = any(p.kind in (Parameter.VAR_POSITIONAL, Parameter.VAR_KEYWORD) or p.default is Parameter.empty for p in sig.parameters.values())
+                if needs_update:
+                    logger.debug(f"{route} has signature {sig} and needs updated to use get_*_argument to properly decode and sanitize argument values")
 
             results = await self.async_call(method, len(sig.parameters))
 

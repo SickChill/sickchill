@@ -6,6 +6,7 @@ import sickchill
 from sickchill import logger, settings
 from sickchill.oldbeard import db, network_timezones, ui
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
+from sickchill.oldbeard.show_dir_mtime import needs_disk_refresh
 
 
 class ShowUpdater(object):
@@ -45,7 +46,10 @@ class ShowUpdater(object):
                             advance_last_update = False
                             updated_shows = []
                             http_calls_note = "; update feed failed (will retry same window next cycle)"
-                            logger.warning("TVDB v4 update feed failed for all entity types; not advancing lastUpdate, scheduling disk refreshes only")
+                            logger.warning(
+                                "TVDB v4 update feed failed for all entity types; not advancing lastUpdate, "
+                                "scheduling disk refreshes only when folder mtime/interval requires"
+                            )
                         else:
                             updated_shows = [d["id"] for d in TvdbData.series]
                             http_calls_note = f"; update feed reported {len(updated_shows)} series id(s)"
@@ -56,7 +60,8 @@ class ShowUpdater(object):
                         http_calls_note = "; update feed error (will retry same window next cycle)"
                         logger.warning(
                             f"TVDB v4 updates failed ({error}); not advancing lastUpdate, "
-                            f"scheduling disk refreshes only (not a forced full re-pull of all shows)"
+                            f"scheduling disk refreshes only when folder mtime/interval requires "
+                            f"(not a forced full re-pull of all shows)"
                         )
                 else:
                     logger.info(_("No last update time from the cache, so we do a full update for all shows"))
@@ -64,9 +69,11 @@ class ShowUpdater(object):
                 pi_list = []
                 full_updates = 0
                 refreshes = 0
+                unchanged = 0
                 skipped = 0
                 full_update_names = []
                 loop_completed = True
+                disk_refresh_days = int(getattr(settings, "SHOW_DISK_REFRESH_DAYS", 7))
 
                 for cur_show in settings.show_list:
                     if settings.stopping or settings.restarting:
@@ -96,16 +103,28 @@ class ShowUpdater(object):
                             full_updates += 1
                             full_update_names.append(getattr(cur_show, "name", None) or str(cur_show.indexerid))
                         elif not skip_update:
-                            # Disk refresh only — no indexer episode re-pull
-                            pi_list.append(cur_show.refresh(force))
-                            refreshes += 1
+                            # Forced runs (e.g. Manage Searches Force Show Updater) bypass mtime/interval gate
+                            if force:
+                                pi_list.append(cur_show.refresh(force=True))
+                                refreshes += 1
+                            else:
+                                # Disk refresh only when folder mtime changed and/or safety interval elapsed
+                                needs_refresh, reason = needs_disk_refresh(cur_show, disk_refresh_days)
+                                if needs_refresh:
+                                    pi_list.append(cur_show.refresh(force))
+                                    refreshes += 1
+                                else:
+                                    logger.debug(f"Skipping disk refresh for {cur_show.name} ({reason})")
+                                    unchanged += 1
                         else:
                             skipped += 1
 
                     except Exception as error:
                         logger.info(_("Automatic update failed: {error}").format(error=error))
 
-                logger.info(f"ShowUpdater scheduled full updates={full_updates}, refreshes={refreshes}, skipped={skipped}{http_calls_note}")
+                logger.info(
+                    f"ShowUpdater scheduled full updates={full_updates}, refreshes={refreshes}, unchanged={unchanged}, skipped={skipped}{http_calls_note}"
+                )
                 if full_update_names:
                     logger.debug(f"ShowUpdater full update shows: {', '.join(full_update_names)}")
                 else:

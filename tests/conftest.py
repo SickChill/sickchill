@@ -129,15 +129,16 @@ def _dummy_save_config():
 sickchill.start.save_config = _dummy_save_config
 
 
-def _fake_specify_ep(self, season, episode):
+def _fake_specify_ep(self, season, episode, allow_indexer=True):
     """
     Override contact to TVDB indexer.
 
     :param self: ...not used
     :param season: Season to search for  ...not used
     :param episode: Episode to search for  ...not used
+    :param allow_indexer: unused (matches TVEpisode.specify_episode signature)
     """
-    _ = self, season, episode  # throw away unused variables
+    _ = self, season, episode, allow_indexer  # throw away unused variables
 
 
 # the real one tries to contact TVDB just stop it from getting more info on the ep

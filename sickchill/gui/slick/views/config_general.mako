@@ -115,6 +115,32 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                <label class="component-title">${_('Days between disk refreshes for shows not in the TVDB update feed')}</label>
+                            </div>
+                            <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input class="form-control input-sm input75" type="number" name="show_disk_refresh_days" id="show_disk_refresh_days" min="-1" max="365"
+                                               value="${settings.SHOW_DISK_REFRESH_DAYS}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="show_disk_refresh_days">
+                                            ${_('Shows not listed in the daily TVDB update feed are disk-refreshed only if the show folder changed, or after this many days. Full TVDB updates still run for shows in the feed.')}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>${_('note')}:</b>&nbsp;${_('Default 7, mtime-only 0, never auto disk-refresh -1')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-pair row">
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                 <label class="component-title">${_('Days to wait before updating paused and ended shows')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
@@ -133,7 +159,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label><b>${_('note')}:</b>&nbsp;${_('Default 7, daily 0, never -1')}</label>
+                                        <label><b>${_('note')}:</b>&nbsp;${_('Default 14, daily 0, never -1')}</label>
                                     </div>
                                 </div>
                             </div>
