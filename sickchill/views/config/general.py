@@ -217,9 +217,7 @@ class ConfigGeneral(Config):
                 return 365
             return value
 
-        settings.ENDED_SHOWS_UPDATE_INTERVAL = _clamp_day_setting(
-            self.get_body_argument("ended_shows_update_interval", default="14"), 14
-        )
+        settings.ENDED_SHOWS_UPDATE_INTERVAL = _clamp_day_setting(self.get_body_argument("ended_shows_update_interval", default="14"), 14)
         settings.SHOW_DISK_REFRESH_DAYS = _clamp_day_setting(self.get_body_argument("show_disk_refresh_days", default="7"), 7)
 
         settings.DEFAULT_PAGE = self.get_body_argument("default_page", default=None)

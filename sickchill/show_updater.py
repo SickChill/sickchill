@@ -103,14 +103,19 @@ class ShowUpdater(object):
                             full_updates += 1
                             full_update_names.append(getattr(cur_show, "name", None) or str(cur_show.indexerid))
                         elif not skip_update:
-                            # Disk refresh only when folder mtime changed and/or safety interval elapsed
-                            needs_refresh, reason = needs_disk_refresh(cur_show, disk_refresh_days)
-                            if needs_refresh:
-                                pi_list.append(cur_show.refresh(force))
+                            # Forced runs (e.g. Manage Searches Force Show Updater) bypass mtime/interval gate
+                            if force:
+                                pi_list.append(cur_show.refresh(force=True))
                                 refreshes += 1
                             else:
-                                logger.debug(f"Skipping disk refresh for {cur_show.name} ({reason})")
-                                unchanged += 1
+                                # Disk refresh only when folder mtime changed and/or safety interval elapsed
+                                needs_refresh, reason = needs_disk_refresh(cur_show, disk_refresh_days)
+                                if needs_refresh:
+                                    pi_list.append(cur_show.refresh(force))
+                                    refreshes += 1
+                                else:
+                                    logger.debug(f"Skipping disk refresh for {cur_show.name} ({reason})")
+                                    unchanged += 1
                         else:
                             skipped += 1
 

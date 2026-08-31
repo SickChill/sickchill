@@ -13,12 +13,41 @@ if TYPE_CHECKING:
     from sickchill.tv import TVShow
 
 
+def newest_dir_mtime(location: str) -> Optional[float]:
+    """
+    Return the newest directory mtime under ``location`` (inclusive).
+
+    Walks descendant directories so season/episode folder changes are detected even
+    when the show root mtime is unchanged. File-only in-place overwrites may not
+    bump any directory mtime — the calendar safety net covers that case.
+    """
+    if not location or not os.path.isdir(location):
+        return None
+
+    try:
+        newest = os.path.getmtime(location)
+    except OSError as error:
+        logger.debug(f"Could not read mtime for {location}: {error}")
+        return None
+
+    try:
+        for root, _dirs, _files in os.walk(location):
+            try:
+                newest = max(newest, os.path.getmtime(root))
+            except OSError:
+                continue
+    except OSError as error:
+        logger.debug(f"Could not walk show folder {location}: {error}")
+
+    return newest
+
+
 def get_show_dir_mtime(show: "TVShow") -> Optional[float]:
-    """Return os.path.getmtime for the show location directory, or None if unavailable."""
+    """Return newest directory mtime under the show location, or None if unavailable."""
     location = getattr(show, "_location", None) or getattr(show, "location", None)
     try:
-        if location and os.path.isdir(location):
-            return os.path.getmtime(location)
+        if location:
+            return newest_dir_mtime(location)
     except OSError as error:
         logger.debug(f"Could not read mtime for {location}: {error}")
     return None
