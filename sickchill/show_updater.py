@@ -4,8 +4,9 @@ import time
 
 import sickchill
 from sickchill import logger, settings
-from sickchill.oldbeard import db, network_timezones, show_dir_mtime, ui
+from sickchill.oldbeard import db, network_timezones, ui
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone
+from sickchill.oldbeard.show_dir_mtime import needs_disk_refresh
 
 
 class ShowUpdater(object):
@@ -103,7 +104,7 @@ class ShowUpdater(object):
                             full_update_names.append(getattr(cur_show, "name", None) or str(cur_show.indexerid))
                         elif not skip_update:
                             # Disk refresh only when folder mtime changed and/or safety interval elapsed
-                            needs_refresh, reason = show_dir_mtime.needs_disk_refresh(cur_show, disk_refresh_days)
+                            needs_refresh, reason = needs_disk_refresh(cur_show, disk_refresh_days)
                             if needs_refresh:
                                 pi_list.append(cur_show.refresh(force))
                                 refreshes += 1

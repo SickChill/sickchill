@@ -676,9 +676,9 @@ class QueueItemRefresh(ShowQueueItem):
         # Stamp folder mtime after refresh (incl. silent post-update) so ShowUpdater
         # does not immediately re-queue due to NFO/metadata touching the directory.
         try:
-            from sickchill.oldbeard import show_dir_mtime
+            from sickchill.oldbeard.show_dir_mtime import stamp_show_dir_mtime
 
-            show_dir_mtime.stamp_show_dir_mtime(self.show)
+            stamp_show_dir_mtime(self.show)
         except Exception as error:
             logger.debug(f"show_dir_mtime stamp failed for {getattr(self.show, 'indexerid', '?')}: {error}")
 
