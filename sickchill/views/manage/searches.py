@@ -1,4 +1,5 @@
 from sickchill import logger, settings
+from sickchill.helper.common import resolve_safe_redirect
 from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
 from sickchill.views.manage.index import Manage
@@ -79,12 +80,25 @@ class ManageSearches(Manage):
 
     def forceAutoPostProcess(self):
         # force it to run the next time it looks
-        result = settings.autoPostProcessorScheduler.forceRun()
-        if result:
-            logger.info("Auto Post Processor forced")
-            ui.notifications.message(_("Auto Post Processor started"))
+        if not settings.PROCESS_AUTOMATICALLY:
+            ui.notifications.error(_("Error"), _("Auto Post Processor is disabled"))
+        else:
+            result = settings.autoPostProcessorScheduler.forceRun()
+            if result:
+                logger.info("Auto Post Processor forced")
+                ui.notifications.message(_("Auto Post Processor started"))
+            else:
+                ui.notifications.error(_("Error"), _("Auto Post Processor is already running"))
 
-        return self.redirect("/manage/manageSearches/")
+        # Prefer staying on the page that triggered the action (navbar / Manage Searches)
+        return self.redirect(
+            resolve_safe_redirect(
+                self.get_query_argument("next", default=None),
+                self.request.headers.get("Referer") or "",
+                self.request.host,
+                settings.DEFAULT_PAGE,
+            )
+        )
 
     def forceShowUpdater(self):
         """Force ShowUpdater (developer mode only)."""
