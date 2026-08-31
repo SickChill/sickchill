@@ -510,7 +510,9 @@ class TVShow(object):
 
         return ep_list
 
-    def get_episode(self, season=None, episode=None, ep_file=None, nfo_create=False, absolute_number=None) -> Union["TVEpisode", None]:
+    def get_episode(
+        self, season=None, episode=None, ep_file=None, nfo_create=False, absolute_number=None, allow_indexer: bool = True
+    ) -> Union["TVEpisode", None]:
         season = try_int(season, None)
         episode = try_int(episode, None)
         absolute_number = try_int(absolute_number, None)
@@ -544,9 +546,9 @@ class TVShow(object):
                 return None
 
             if ep_file:
-                ep = TVEpisode(self, season, episode, ep_file)
+                ep = TVEpisode(self, season, episode, ep_file, allow_indexer=allow_indexer)
             else:
-                ep = TVEpisode(self, season, episode)
+                ep = TVEpisode(self, season, episode, allow_indexer=allow_indexer)
 
             if ep:
                 self.episodes[season][episode] = ep
@@ -899,10 +901,11 @@ class TVShow(object):
             same_file = False
 
             logger.debug(f"{self.indexerid}: get_episode for {episode_num(season, current_episode)}")
-            episode = self.get_episode(season, current_episode)
+            # Dir/refresh scan is local-only: do not contact the indexer for missing metadata
+            episode = self.get_episode(season, current_episode, allow_indexer=False)
             if not episode:
                 try:
-                    episode = self.get_episode(season, current_episode, filepath)
+                    episode = self.get_episode(season, current_episode, filepath, allow_indexer=False)
                     if not episode:
                         raise EpisodeNotFoundException
                 except EpisodeNotFoundException:
@@ -1698,7 +1701,7 @@ class TVEpisode(object):
     # TVDB episode lastUpdated (unix); used to skip no-op indexer rewrites (Phase 2)
     last_update_indexer = DirtySetter(0)
 
-    def __init__(self, show: TVShow, season, episode, ep_file=""):
+    def __init__(self, show: TVShow, season, episode, ep_file="", allow_indexer: bool = True):
         self.season: int = season
         self.episode: int = episode
         self._location = ep_file
@@ -1718,7 +1721,7 @@ class TVEpisode(object):
 
         self.lock = threading.Lock()
 
-        self.specify_episode(self.season, self.episode)
+        self.specify_episode(self.season, self.episode, allow_indexer=allow_indexer)
 
         self.related_episodes = []
 
@@ -1854,7 +1857,7 @@ class TVEpisode(object):
         # if either setting has changed return true, if not return false
         return old_has_nfo != self.has_nfo or old_has_tbn != self.has_tbn
 
-    def specify_episode(self, season, episode):
+    def specify_episode(self, season, episode, allow_indexer: bool = True):
         sql_results = self.load_from_db(season, episode)
 
         if not sql_results and os.path.isfile(self.location):
@@ -1865,11 +1868,14 @@ class TVEpisode(object):
                 logger.error(f"{self.show.indexerid}: There was an error loading the NFO for episode {episode_num(season, episode)}")
 
             # if we tried loading it from NFO and didn't find the NFO, try the Indexers
+            # (unless caller requested local-only, e.g. refresh dir scan)
             if not self.has_nfo:
-                try:
-                    result = self.load_from_indexer(season, episode)
-                except EpisodeDeletedException:
-                    result = None
+                result = None
+                if allow_indexer:
+                    try:
+                        result = self.load_from_indexer(season, episode)
+                    except EpisodeDeletedException:
+                        result = None
 
                 # if we failed SQL *and* NFO, Indexers then fail
                 if not result:

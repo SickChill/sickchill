@@ -207,9 +207,20 @@ class ConfigGeneral(Config):
         settings.CUSTOM_CSS = config.checkbox_to_value(self.get_body_argument("custom_css", default=None))
         config.change_custom_css(self.get_body_argument("custom_css_path", default=None))
 
-        # Use explicit string defaults — int(None) / empty values must not silently become 0
-        settings.ENDED_SHOWS_UPDATE_INTERVAL = try_int(self.get_body_argument("ended_shows_update_interval", default="14"), 14)
-        settings.SHOW_DISK_REFRESH_DAYS = try_int(self.get_body_argument("show_disk_refresh_days", default="7"), 7)
+        # Use explicit string defaults — int(None) / empty values must not silently become 0.
+        # Clamp to -1..365 (-1 = never / sentinel for both settings).
+        def _clamp_day_setting(raw, default):
+            value = try_int(raw, default)
+            if value < -1:
+                return -1
+            if value > 365:
+                return 365
+            return value
+
+        settings.ENDED_SHOWS_UPDATE_INTERVAL = _clamp_day_setting(
+            self.get_body_argument("ended_shows_update_interval", default="14"), 14
+        )
+        settings.SHOW_DISK_REFRESH_DAYS = _clamp_day_setting(self.get_body_argument("show_disk_refresh_days", default="7"), 7)
 
         settings.DEFAULT_PAGE = self.get_body_argument("default_page", default=None)
 

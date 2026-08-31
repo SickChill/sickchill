@@ -821,7 +821,8 @@ class Manage(Home, WebRoot):
         Processes removal of failed downloads and redirects to the failed downloads page.
         """
         remove = self.get_body_arguments("remove[]")
-        limit = self.get_query_argument("limit", default="100") or self.get_body_argument("limit", default="100")
+        # Prefer query limit when present; otherwise body; finally default 100
+        limit = self.get_query_argument("limit", default=None) or self.get_body_argument("limit", default="100")
         failed_db_con = db.DBConnection("failed.db")
 
         if limit == "0":

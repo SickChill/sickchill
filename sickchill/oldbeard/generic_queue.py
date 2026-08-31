@@ -105,9 +105,11 @@ class GenericQueue(object):
             logger.info(f"Waiting up to {timeout:g}s for {name} to exit")
             item.join(timeout)
             if item.is_alive():
-                logger.warning(f"{name} did not exit within {timeout:g}s; continuing shutdown")
-            else:
-                logger.info(f"{name} exited")
+                # Keep currentItem set so Scheduler.run will not start another worker
+                # while this one is still running after the join timeout.
+                logger.warning(f"{name} did not exit within {timeout:g}s; leaving as currentItem")
+                return
+            logger.info(f"{name} exited")
 
         with self.lock:
             if self.currentItem is item:
