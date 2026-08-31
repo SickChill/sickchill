@@ -29,7 +29,7 @@
     "bower": "^1.8.14",
     "browser-env": "^3.3.0",
     "css-loader": "^7.1.1",
-    "eslint": "^10.8.1",
+    "eslint": "^10.9.1",
     "globals": "^17.11.0",
     "grunt": "^1.6.3",
     "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
