@@ -311,7 +311,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.DOWNLOAD_PROPERS = check_setting_bool(settings.CFG, "General", "download_propers", True)
         settings.CHECK_PROPERS_INTERVAL = check_setting_str(settings.CFG, "General", "check_propers_interval")
-        if settings.CHECK_PROPERS_INTERVAL not in ("15m", "45m", "90m", "4h", "daily"):
+        if settings.CHECK_PROPERS_INTERVAL not in ("30m", "90m", "4h", "8h", "daily"):
             settings.CHECK_PROPERS_INTERVAL = "daily"
 
         settings.RANDOMIZE_PROVIDERS = check_setting_bool(settings.CFG, "General", "randomize_providers")
@@ -944,7 +944,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             searchBacklog.BacklogSearcher(), cycleTime=update_interval, threadName="BACKLOG", run_delay=update_interval
         )
 
-        search_intervals = {"15m": 15, "45m": 45, "90m": 90, "4h": 4 * 60, "daily": 24 * 60}
+        search_intervals = {"30m": 30, "90m": 90, "4h": 4 * 60, "8h": 8 * 60, "daily": 24 * 60}
         if settings.CHECK_PROPERS_INTERVAL in search_intervals:
             update_interval = datetime.timedelta(minutes=search_intervals[settings.CHECK_PROPERS_INTERVAL])
             run_at = None

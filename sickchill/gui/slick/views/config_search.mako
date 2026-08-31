@@ -60,7 +60,7 @@
                                     </div>
                                     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                         <select id="check_propers_interval" name="check_propers_interval" class="form-control input-sm input150">
-                                            <% check_propers_interval_text = {'daily': _('24 hours'), '4h': _('4 hours'), '90m': _('90 mins'), '45m': _('45 mins'), '15m': _('15 mins')} %>
+                                            <% check_propers_interval_text = {'daily': _('24 hours'), '8h': _('8 hours'), '4h': _('4 hours'), '90m': _('90 mins'), '30m': _('30 mins')} %>
                                             % for curInterval in check_propers_interval_text:
                                                 <option value="${curInterval}" ${selected(settings.CHECK_PROPERS_INTERVAL == curInterval)}>${check_propers_interval_text[curInterval]}</option>
                                             % endfor

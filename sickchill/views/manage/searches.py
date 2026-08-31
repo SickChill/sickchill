@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from sickchill import logger, settings
 from sickchill.oldbeard import ui
 from sickchill.views.common import PageTemplate
@@ -79,12 +81,28 @@ class ManageSearches(Manage):
 
     def forceAutoPostProcess(self):
         # force it to run the next time it looks
-        result = settings.autoPostProcessorScheduler.forceRun()
-        if result:
-            logger.info("Auto Post Processor forced")
-            ui.notifications.message(_("Auto Post Processor started"))
+        if not settings.PROCESS_AUTOMATICALLY:
+            ui.notifications.error(_("Error"), _("Auto Post Processor is disabled"))
+        else:
+            result = settings.autoPostProcessorScheduler.forceRun()
+            if result:
+                logger.info("Auto Post Processor forced")
+                ui.notifications.message(_("Auto Post Processor started"))
+            else:
+                ui.notifications.error(_("Error"), _("Auto Post Processor is already running"))
 
-        return self.redirect("/manage/manageSearches/")
+        # Prefer staying on the page that triggered the action (navbar / Manage Searches)
+        next_url = self.get_query_argument("next", default=None)
+        if next_url and next_url.startswith("/") and not next_url.startswith("//"):
+            return self.redirect(next_url)
+
+        referer = self.request.headers.get("Referer") or ""
+        parsed = urlparse(referer)
+        if parsed.netloc == self.request.host and parsed.path.startswith("/"):
+            path = parsed.path + (("?" + parsed.query) if parsed.query else "")
+            return self.redirect(path)
+
+        return self.redirect("/" + settings.DEFAULT_PAGE + "/")
 
     def forceShowUpdater(self):
         """Force ShowUpdater (developer mode only)."""
