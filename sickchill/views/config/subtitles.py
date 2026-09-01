@@ -70,6 +70,7 @@ class ConfigSubtitles(Config):
         settings.SUBSCENTER_USER = self.get_body_argument("subscenter_user", default="")
         settings.SUBSCENTER_PASS = filters.unhide(settings.SUBSCENTER_PASS, self.get_body_argument("subscenter_pass", default=""))
 
+        self.log_configuration_save("Subtitles Settings")
         sickchill.start.save_config()
         # Reset provider pool so next time we use the newest settings
         subtitle_module.SubtitleProviderPool().reset()

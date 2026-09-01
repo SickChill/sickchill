@@ -1,15 +1,16 @@
 <%!
-    import re
     import datetime
+    import re
+    from time import time
     from urllib.parse import urljoin
+
+    from sickchill import logger, settings
+    from sickchill.helper.common import pretty_file_size
+    from sickchill.init_helpers import get_current_version
+    from sickchill.logging.weblog import WebErrorViewer
     from sickchill.oldbeard.filters import hide
     from sickchill.oldbeard.helpers import anon_url
-    from sickchill.helper.common import pretty_file_size
-
-    from sickchill.init_helpers import get_current_version
     from sickchill.show.Show import Show
-    from sickchill import settings, logger
-    from time import time
 
     # resource module is unix only
     try:
@@ -120,10 +121,8 @@
         <nav class="navbar navbar-default navbar-fixed-top hidden-print">
             <div class="container-fluid">
                 <%
-                    if 'error_count' not in locals():
-                        error_count = 0
-                    if 'warning_count' not in locals():
-                        warning_count = 0
+                    error_count = WebErrorViewer.num_errors()
+                    warning_count = WebErrorViewer.num_warnings()
 
                     total_warning_error_count = error_count + warning_count + settings.NEWS_UNREAD
                     if total_warning_error_count:
@@ -159,6 +158,7 @@
                                     <li><a href="${static_url('home/', include_version=False)}"><i class="fa fa-fw fa-home"></i>&nbsp;${_('Show List')}</a></li>
                                     <li><a href="${static_url('addShows/', include_version=False)}"><i class="fa fa-fw fa-television"></i>&nbsp;${_('Add Shows')}</a></li>
                                     <li><a href="${static_url('home/postprocess/', include_version=False)}"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
+                                    <li><a href="${static_url('manage/manageSearches/forceAutoPostProcess', include_version=False)}"><i class="fa fa-fw fa-play"></i>&nbsp;${_('Force Auto Post-Processing')}</a></li>
                                     % if settings.SHOWS_RECENT:
                                         <li role="separator" class="divider"></li>
                                         % for recentShow in settings.SHOWS_RECENT:

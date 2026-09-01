@@ -9,6 +9,7 @@ class QueuePriorities(object):
     LOW: int = 10
     NORMAL: int = 20
     HIGH: int = 30
+    USER: int = 40  # UI click: after currentItem, before scheduled HIGH
 
 
 class GenericQueue(object):
@@ -41,18 +42,82 @@ class GenericQueue(object):
         logger.info("Unpausing queue")
         self.min_priority = 0
 
-    def add_item(self, item):
+    def _apply_front(self, item):
+        """Raise priority to USER and date the item so it sorts next after currentItem."""
+        item.priority = max(item.priority, QueuePriorities.USER)
+        # Last promote/click first among USER items
+        waiting = [x.added for x in self.queue if x is not item and x.priority >= QueuePriorities.USER and x.added is not None]
+        if waiting:
+            item.added = min(waiting) - datetime.timedelta(microseconds=1)
+        elif item.added is None:
+            item.added = sc_now()
+
+    def add_item(self, item, front=False):
         """
         Adds an item to this queue
 
         :param item: Queue object to add
+        :param front: If True, bump to USER priority so it runs next after currentItem
+            (last USER click runs first among USER items). Cannot preempt currentItem
+            or outrank Remove (HIGH**2).
         :return: item
         """
         with self.lock:
             item.added = sc_now()
+            if front:
+                self._apply_front(item)
             self.queue.append(item)
 
             return item
+
+    def promote_item(self, item):
+        """
+        Promote an already-queued item to run next after currentItem (USER priority).
+
+        :return: item if it was in the queue and promoted, else None
+        """
+        with self.lock:
+            if item not in self.queue:
+                return None
+            self._apply_front(item)
+            return item
+
+    def stop_current_item(self, timeout: float = 10):
+        """
+        Signal the running queue worker to stop and wait briefly.
+
+        Used on shutdown/restart so we do not only join the scheduler thread while a
+        SHOWQUEUE-REFRESH (or similar) worker stays stuck forever. A hung worker may
+        still not exit (Python cannot kill threads); we log and continue after timeout.
+        """
+        with self.lock:
+            item = self.currentItem
+
+        if not item:
+            return
+
+        name = getattr(item, "name", "queue-item")
+        if getattr(item, "stop", None) is not None:
+            item.stop.set()
+            logger.info(f"Signaled {name} to stop")
+
+        if item.is_alive():
+            logger.info(f"Waiting up to {timeout:g}s for {name} to exit")
+            item.join(timeout)
+            if item.is_alive():
+                # Keep currentItem set so Scheduler.run will not start another worker
+                # while this one is still running after the join timeout.
+                logger.warning(f"{name} did not exit within {timeout:g}s; leaving as currentItem")
+                return
+            logger.info(f"{name} exited")
+
+        with self.lock:
+            if self.currentItem is item:
+                try:
+                    item.finish()
+                except Exception:
+                    pass
+                self.currentItem = None
 
     def run(self, force=False):
         """

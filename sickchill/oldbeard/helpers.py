@@ -242,7 +242,8 @@ def list_media_files(path):
         return []
 
     files = []
-    for entry in os.listdir(path):
+    # Case-insensitive primary order, then case-sensitive for deterministic ties (A/a).
+    for entry in sorted(os.listdir(path), key=lambda name: (name.lower(), name)):
         full_entry = os.path.join(path, entry)
 
         # if it's a folder do it recursively
@@ -852,6 +853,71 @@ def encrypt(data: str, encryption_version=0, _decrypt=False):
 
 def decrypt(data, encryption_version=0):
     return encrypt(data, encryption_version, _decrypt=True)
+
+
+# Explicit envelope for config secrets that are not named "*password*"
+# (e.g. tvdb_v4_pin, trakt_api_secret). Format: SCENC{version}:{ciphertext}
+_CONFIG_ENC_PREFIX_FMT = "SCENC{version}:"
+
+
+def config_enc_prefix(encryption_version):
+    return _CONFIG_ENC_PREFIX_FMT.format(version=int(encryption_version))
+
+
+def is_encrypted_config_value(value):
+    """Return True if value uses the SCENC{version}: envelope."""
+    if value is None:
+        return False
+    value = str(value)
+    return value.startswith(("SCENC1:", "SCENC2:"))
+
+
+def decrypt_config_value(value, encryption_version=None):
+    """
+    Decrypt a config value that uses the SCENC{version}: envelope.
+
+    Unmarked values are treated as legacy plaintext and returned unchanged
+    (independent of the check_setting_str "password" item-name rule).
+    ``encryption_version`` is unused for unmarked values; marked values decrypt
+    with the version embedded in the prefix.
+    """
+    if value is None:
+        return ""
+    value = str(value)
+    if not value or value == "None":
+        return ""
+    for version in (1, 2):
+        prefix = config_enc_prefix(version)
+        if value.startswith(prefix):
+            ciphertext = value[len(prefix) :]
+            try:
+                return decrypt(ciphertext, version)
+            except Exception:
+                logger.debug(f"Failed to decrypt marked config value (SCENC{version}); returning empty")
+                return ""
+    return value
+
+
+def encrypt_config_value(value, encryption_version=None):
+    """
+    Encrypt a config value for save_config() with an explicit SCENC{version}: envelope.
+
+    Already-marked values are preserved (no double-encryption). Unmarked values
+    are encrypted exactly once when ENCRYPTION_VERSION is 1 or 2 (migrating
+    legacy plaintext, including Base64-form TVDB PINs / Trakt secrets).
+    """
+    if value is None:
+        return ""
+    value = str(value)
+    if not value or value == "None":
+        return ""
+    if is_encrypted_config_value(value):
+        return value
+    if encryption_version is None:
+        encryption_version = settings.ENCRYPTION_VERSION
+    if encryption_version not in (1, 2):
+        return value
+    return config_enc_prefix(encryption_version) + encrypt(value, encryption_version)
 
 
 def full_sanitizeSceneName(name):

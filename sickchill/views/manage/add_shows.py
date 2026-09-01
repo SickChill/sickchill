@@ -3,7 +3,7 @@ import json
 import os
 import re
 import traceback
-from operator import itemgetter
+from urllib.parse import quote_plus
 
 import dateutil.parser
 from tornado.web import HTTPError
@@ -11,19 +11,42 @@ from tornado.web import HTTPError
 import sickchill
 from sickchill import logger, settings
 from sickchill.helper import sanitize_filename, try_int
-from sickchill.oldbeard import config, db, filters, helpers, ui
+from sickchill.helper.list_status import build_list_status
+from sickchill.oldbeard import config, db, helpers, tmdbLists, tvmazePremieres, ui
 from sickchill.oldbeard.blackandwhitelist import short_group_names
 from sickchill.oldbeard.common import Quality
-from sickchill.oldbeard.network_timezones import sc_today
 from sickchill.oldbeard.trakt_api import TraktAPI
-from sickchill.oldbeard.traktTrending import trakt_trending
-from sickchill.show.recommendations.favorites import favorites
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
 from sickchill.tv import TVShow
 from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
+
+# Discovery list keys (TMDB + TVMaze). Old traktList= query values are aliased below.
+_DISCOVERY_LIST_KEYS = ("trending", "popular", "top_rated", "on_the_air", "premieres")
+
+_DISCOVERY_LIST_ALIASES = {
+    "anticipated": "trending",
+    "newshow": "premieres",
+    "newseason": "premieres",
+    "collected": "popular",
+    "watched": "popular",
+    "played": "popular",
+    "recommended": "top_rated",
+    "tvmaze": "premieres",
+    "upcoming": "premieres",
+}
+
+
+def _discovery_list_options():
+    return {
+        "trending": _("Trending (TMDB)"),
+        "popular": _("Popular (TMDB)"),
+        "top_rated": _("Top Rated (TMDB)"),
+        "on_the_air": _("On The Air (TMDB)"),
+        "premieres": _("Upcoming Premieres (TVMaze)"),
+    }
 
 
 @Route("/addShows(/?.*)", name="addShows")
@@ -87,28 +110,64 @@ class AddShows(Home):
                 results.setdefault(index, []).extend(indexer_results)
 
         for index, shows in results.items():
-            # noinspection PyUnresolvedReferences
-            final_results.extend(
-                {
-                    (
-                        sickchill.indexer[index].name,
-                        index,
-                        sickchill.indexer[index].show_url,
-                        show["id"],
-                        show["seriesName"],
-                        show["firstAired"],
-                        sickchill.tv.Show.find(settings.show_list, show["id"]) is not None,
-                    )
-                    for show in shows
-                }
-            )
+            for show in shows:
+                show_id = show["id"]
+                series_name = show.get("seriesName") or ""
+                first_aired = show.get("firstAired") or ""
+                in_list = sickchill.tv.Show.find(settings.show_list, show_id) is not None
+                # Legacy pipe fields for whichSeries form value (indexes 0–6)
+                which_series = "|".join(
+                    [
+                        str(sickchill.indexer[index].name),
+                        str(index),
+                        str(sickchill.indexer[index].show_url),
+                        str(show_id),
+                        str(series_name).replace("|", " "),
+                        str(first_aired).replace("|", " "),
+                        "1" if in_list else "0",
+                    ]
+                )
+                try:
+                    # Already 0–100 from TVDB mapping; keep integer for UI
+                    score = round(float(show.get("score") or 0))
+                except (TypeError, ValueError):
+                    score = 0
+                final_results.append(
+                    {
+                        "whichSeries": which_series,
+                        "indexer": sickchill.indexer[index].name,
+                        "indexer_id": index,
+                        "show_url": sickchill.indexer[index].show_url,
+                        "id": show_id,
+                        "seriesName": series_name,
+                        "firstAired": first_aired,
+                        "inShowList": in_list,
+                        "score": score,
+                        "image_url": show.get("image_url") or "",
+                        "network": show.get("network") or "",
+                        "overview": show.get("overview") or "",
+                        "status": show.get("status") or "",
+                        "year": show.get("year") or "",
+                        "source": show.get("source") or "tvdb",
+                    }
+                )
+
+        # Dedupe by indexer id (multi-term searches can repeat hits)
+        deduped = {}
+        for item in final_results:
+            key = (item["indexer_id"], item["id"])
+            prev = deduped.get(key)
+            if prev is None or float(item.get("score") or 0) > float(prev.get("score") or 0):
+                deduped[key] = item
+        final_results = list(deduped.values())
 
         if exact in [True, "1"]:
-            logger.debug(_("Filtering and sorting out excess results because exact match was checked"))
-            final_results = [item for item in final_results if search_term.lower() in item[4].lower()]
-            final_results.sort(key=itemgetter(4))
-            final_results.sort(key=lambda x: x[4].lower().index(search_term.lower()))
-            final_results.sort(key=lambda x: x[4].lower() == search_term.lower(), reverse=True)
+            logger.debug(_("Filtering results because exact match was checked"))
+            term_l = (search_term or "").strip().lower()
+            final_results = [item for item in final_results if (item.get("seriesName") or "").strip().lower() == term_l]
+
+        # Always sort by score (highest first); exact checkbox is filter-only
+        final_results.sort(key=lambda x: int(x.get("score") or 0), reverse=True)
 
         lang_id = sickchill.indexer[indexer or sickchill.indexer.TVDB].lang_dict[lang]
         return json.dumps({"results": final_results, "langid": lang_id, "success": len(final_results) > 0})
@@ -168,20 +227,35 @@ class AddShows(Home):
                     cur_dir["added_already"] = True
         return t.render(dirList=dir_list)
 
-    def newShow(self, show_to_add=None, other_shows=None, search_string=None):
+    def newShow(self, show_to_add=None, other_shows=None, search_string=None, exact=None, indexer_id=None):
         """
         Display the new show page which collects a tvdb id, folder, and extra options and
         posts them to addNewShow
+
+        Query kwargs ``exact`` and ``indexer_id`` must be in the signature: the web router
+        passes them as kwargs, and unexpected names caused TypeError → empty ``newShow()``.
         """
-        show_to_add = self.get_body_argument("show_to_add", show_to_add)
-        other_shows = other_shows if other_shows is not None else self.get_body_arguments("other_shows")
-        search_string = self.get_body_argument("search_string", search_string)
+        # Prefer router/query kwargs; fall back to explicit get_* for POST body / in-process calls
+        if show_to_add is None:
+            show_to_add = self.get_body_argument("show_to_add", default=None)
+        if other_shows is None:
+            other_shows = self.get_body_arguments("other_shows") or None
+        if search_string is None:
+            search_string = self.get_query_argument("search_string", default="") or self.get_body_argument("search_string", default="")
+        if exact is None:
+            exact = self.get_query_argument("exact", default="") or self.get_body_argument("exact", default="")
+        exact_match = str(exact or "").strip().lower() in ("1", "true", "yes", "on")
+
+        # Discovery Add may pass a verified TVDB id while search_string holds the display title
+        discovery_indexer_id = try_int(indexer_id, 0) if indexer_id not in (None, "") else 0
+        if not discovery_indexer_id:
+            discovery_indexer_id = try_int(self.get_query_argument("indexer_id", default="0"), 0)
 
         t = PageTemplate(rh=self, filename="addShows_newShow.mako")
 
-        indexer, show_dir, indexer_id, show_name = self.split_extra_show(show_to_add)
+        indexer, show_dir, pipe_indexer_id, show_name = self.split_extra_show(show_to_add)
 
-        if indexer_id and indexer and show_name:
+        if pipe_indexer_id and indexer and show_name:
             use_provided_info = True
         else:
             use_provided_info = False
@@ -201,7 +275,7 @@ class AddShows(Home):
         elif not isinstance(other_shows, list):
             other_shows = [other_shows]
 
-        provided_indexer_id = int(indexer_id or 0)
+        provided_indexer_id = int(pipe_indexer_id or 0)
         provided_indexer_name = show_name
 
         provided_indexer = int(indexer or settings.INDEXER_DEFAULT)
@@ -210,6 +284,8 @@ class AddShows(Home):
             enable_anime_options=True,
             use_provided_info=use_provided_info,
             default_show_name=default_show_name,
+            exact_match=exact_match,
+            discovery_indexer_id=discovery_indexer_id or "",
             other_shows=other_shows,
             provided_show_dir=show_dir,
             provided_indexer_id=provided_indexer_id,
@@ -225,84 +301,125 @@ class AddShows(Home):
             action="newShow",
         )
 
+    @staticmethod
+    def _resolve_discovery_list_key(raw: str) -> str:
+        key = (raw or "trending").strip().lower()
+        key = _DISCOVERY_LIST_ALIASES.get(key, key)
+        if key not in _DISCOVERY_LIST_KEYS:
+            return "trending"
+        return key
+
+    @staticmethod
+    def _mark_already_added(cards: list) -> None:
+        """Soft-mark cards already in the library (tvdb id or title+year)."""
+        by_tvdb = {int(show.indexerid): show for show in settings.show_list if getattr(show, "indexerid", None)}
+        by_title_year = {}
+        for show in settings.show_list:
+            name = (getattr(show, "name", None) or getattr(show, "show_name", None) or "").strip().lower()
+            year = None
+            try:
+                year = int(str(getattr(show, "startyear", "") or "")[:4])
+            except (TypeError, ValueError):
+                year = None
+            if name:
+                by_title_year[(name, year)] = show
+
+        for card in cards:
+            tvdb_id = card.get("tvdb_id")
+            if tvdb_id and int(tvdb_id) in by_tvdb:
+                card["already_added"] = True
+                continue
+            title = (card.get("title") or "").strip().lower()
+            year = card.get("year")
+            card["already_added"] = bool(title and (title, year) in by_title_year)
+
     def trendingShows(self):
-        """
-        Display the new show page which collects a tvdb id, folder, and extra options and
-        posts them to addNewShow
-        """
-
-        trakt_list = self.get_query_argument("traktList", default="anticipated").lower()
-
-        # noinspection SpellCheckingInspection
-        trakt_options = {
-            "anticipated": _("Most Anticipated Shows"),
-            "newshow": _("New Shows"),
-            "newseason": _("Season Premieres"),
-            "trending": _("Trending Shows"),
-            "popular": _("Popular Shows"),
-            "watched": _("Most Watched Shows"),
-            "played": _("Most Played Shows"),
-            "collected": _("Most Collected Shows"),
-        }
-        if settings.TRAKT_ACCESS_TOKEN:
-            trakt_options["recommended"] = _("Recommended Shows")
+        """Shell page for TMDB / TVMaze discovery lists (AJAX loads getTrendingShows)."""
+        raw = self.get_query_argument("tmdbList", default="") or self.get_query_argument("traktList", default="trending")
+        list_key = self._resolve_discovery_list_key(raw)
+        list_options = _discovery_list_options()
 
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
         return t.render(
-            title=trakt_options[trakt_list],
-            header=trakt_options[trakt_list],
-            traktList=trakt_list,
-            trakt_options=trakt_options,
+            title=_("The Lists"),
+            header=_("The Lists"),
+            list_key=list_key,
+            list_options=list_options,
+            # Compat for older JS reading #traktList
+            traktList=list_key,
+            trakt_options=list_options,
             controller="addShows",
             action="trendingShows",
         )
 
     def getTrendingShows(self):
-        """
-        Display the new show page which collects a tvdb id, folder, and extra options and posts them to addNewShow
-        """
+        """AJAX fragment: TMDB or TVMaze discovery cards."""
         t = PageTemplate(rh=self, filename="trendingShows.mako")
 
-        trakt_list = self.get_query_argument("traktList", "").lower()
-
-        # noinspection SpellCheckingInspection
-        if trakt_list == "trending":
-            page_url = "shows/trending"
-        elif trakt_list == "popular":
-            page_url = "shows/popular"
-        elif trakt_list == "anticipated":
-            page_url = "shows/anticipated"
-        elif trakt_list == "collected":
-            page_url = "shows/collected"
-        elif trakt_list == "watched":
-            page_url = "shows/watched"
-        elif trakt_list == "played":
-            page_url = "shows/played"
-        elif trakt_list == "recommended":
-            page_url = "recommendations/shows"
-        elif trakt_list == "newshow":
-            page_url = "calendars/all/shows/new/{0}/30".format(sc_today().strftime("%Y-%m-%d"))
-        elif trakt_list == "newseason":
-            page_url = "calendars/all/shows/premieres/{0}/30".format(sc_today().strftime("%Y-%m-%d"))
-        else:
-            page_url = "shows/anticipated"
+        raw = self.get_query_argument("tmdbList", default="") or self.get_query_argument("traktList", default="")
+        list_key = self._resolve_discovery_list_key(raw)
 
         trending_shows = []
-        black_list = False
-        try:
-            trending_shows, black_list = trakt_trending.fetch_trending_shows(trakt_list, page_url)
-        except Exception as error:
-            logger.warning(f"Could not get trending shows: {error}")
+        status_code = None
+        settings_url = f"{settings.WEB_ROOT}/config/general/"
 
-        return t.render(black_list=black_list, trending_shows=trending_shows)
+        try:
+            if list_key == "premieres":
+                trending_shows = tvmazePremieres.fetch_premieres()
+            else:
+                trending_shows = tmdbLists.fetch_list(list_key)
+            if not trending_shows:
+                status_code = "empty"
+            else:
+                self._mark_already_added(trending_shows)
+        except tmdbLists.TMDBMissingKeyError as error:
+            status_code = "missing_key"
+            logger.warning(f"TMDB discovery list unavailable: {error}")
+        except (tmdbLists.TMDBListsError, tvmazePremieres.TVMazePremieresError) as error:
+            status_code = "fetch_failed"
+            logger.warning(f"Could not get discovery shows ({list_key}): {error}")
+        except Exception as error:
+            status_code = "fetch_failed"
+            logger.warning(f"Could not get discovery shows ({list_key}): {error}")
+
+        list_status = build_list_status(status_code, settings_url=settings_url)
+        return t.render(
+            black_list=False,
+            trending_shows=trending_shows,
+            list_status=list_status,
+            list_key=list_key,
+        )
 
     def getTrendingShowImage(self):
-        indexer_id = self.get_body_argument("indexerId")
-        image_url = sickchill.indexer.series_poster_url_by_id(indexer_id)
-        if image_url:
-            image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexer_id))
-            trakt_trending.cache_image(image_url, image_path)
-            return indexer_id
+        """Legacy Trakt poster cache endpoint — unused for TMDB/TVMaze CDN posters."""
+        return ""
+
+    def addShowFromTMDB(self):
+        """Lazy-resolve TMDB → TVDB id, then addShowByID or name search."""
+        tmdb_id = try_int(self.get_query_argument("tmdb_id", default="0"), 0)
+        show_name = self.get_query_argument("show_name", default="") or ""
+        # year reserved for future soft-match; accepted for API compatibility
+        _year = self.get_query_argument("year", default="")
+
+        if tmdb_id <= 0:
+            ui.notifications.error(_("Unable to add show"), _("Missing TMDB id"))
+            return self.redirect("/addShows/")
+
+        try:
+            tvdb_id = tmdbLists.resolve_tvdb_id(tmdb_id)
+        except tmdbLists.TMDBMissingKeyError:
+            ui.notifications.error(_("Unable to add show"), _("TMDB API key is not configured"))
+            return self.redirect("/addShows/trendingShows/")
+        except Exception as error:
+            logger.warning(f"TMDB external_ids failed for {tmdb_id}: {error}")
+            tvdb_id = None
+
+        if tvdb_id:
+            return self.redirect(f"/addShows/addShowByID?indexer_id={tvdb_id}&show_name={quote_plus(show_name)}")
+
+        # No TVDB mapping — name search with exact-match (do not guess TVDB from title)
+        search = show_name.strip() or str(tmdb_id)
+        return self.redirect(f"/addShows/newShow/?search_string={quote_plus(search)}&exact=1")
 
     def popularShows(self):
         """
@@ -380,37 +497,6 @@ class AddShows(Home):
                 action="popularShows",
             )
 
-    def favoriteShows(self):
-        """
-        Fetches data from IMDB to show a list of favorite shows.
-        Presently this is not possible due to IMDB
-        """
-        t = PageTemplate(rh=self, filename="addShows_favoriteShows.mako")
-        error = None
-
-        if self.get_body_argument("submit", None):
-            tvdb_user = self.get_body_argument("tvdb_user")
-            tvdb_user_key = filters.unhide(settings.TVDB_USER_KEY, self.get_body_argument("tvdb_user_key"))
-            if tvdb_user and tvdb_user_key and (tvdb_user != settings.TVDB_USER or tvdb_user_key != settings.TVDB_USER_KEY):
-                favorites.test_user_key(tvdb_user, tvdb_user_key, 1)
-
-        try:
-            favorite_shows = favorites.fetch_indexer_favorites()
-        except Exception as error:
-            logger.exception(traceback.format_exc())
-            logger.warning(_("Could not get favorite shows: {error}").format(error=error))
-            favorite_shows = None
-
-        return t.render(
-            title=_("Favorite Shows"),
-            header=_("Favorite Shows"),
-            favorite_shows=favorite_shows,
-            favorites_exception=error,
-            topmenu="home",
-            controller="addShows",
-            action="popularShows",
-        )
-
     def addShowToBlacklist(self):
         # URL parameters
 
@@ -461,7 +547,12 @@ class AddShows(Home):
         if try_int(indexer_id) <= 0 or existing:
             return add_error(existing)
 
-        return self.newShow("|".join([str(1), "", indexer_id, ""]), [], search_string=show_name)
+        # Trakt-style pick-a-show (#2) confirmation. Search by verified TVDB id (not exact
+        # title match); keep the human title in the search box via search_string.
+        title = (show_name or "").strip()
+        if title:
+            return self.redirect(f"/addShows/newShow/?search_string={quote_plus(title)}&indexer_id={quote_plus(str(indexer_id))}")
+        return self.redirect(f"/addShows/newShow/?search_string={quote_plus(str(indexer_id))}")
 
     def addNewShow(self):
         """

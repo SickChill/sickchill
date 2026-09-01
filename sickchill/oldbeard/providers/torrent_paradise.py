@@ -60,7 +60,11 @@ class Provider(TorrentProvider):
                         continue
 
                     size = item.pop("len")
-                    logger.debug(_("Found result: {0} with {1} seeders and {2} leechers with a file size {3}".format(title, seeders, leechers, size)))
+                    logger.debug(
+                        _("Found result: {title} with {seeders} seeders and {leechers} leechers with a file size {size}").format(
+                            title=title, seeders=seeders, leechers=leechers, size=size
+                        )
+                    )
 
                     items.append(
                         {

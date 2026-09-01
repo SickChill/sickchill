@@ -215,8 +215,31 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         sickchill.indexer = sickchill.ShowIndexer()
 
-        settings.TVDB_USER = check_setting_str(settings.CFG, "General", "tvdb_user")
-        settings.TVDB_USER_KEY = check_setting_str(settings.CFG, "General", "tvdb_user_key", censor_log=True)
+        # TheTVDB v4 API key:
+        #   1) env TVDB_V4_APIKEY if set
+        #   2) else [General] tvdb_v4_apikey from config.ini if present and non-empty
+        #   3) else built-in project key (also written into CFG when missing/empty)
+        # UI blank + Save restores built-in and persists that UUID into config.ini.
+        settings.TVDB_V4_APIKEY = os.environ.get("TVDB_V4_APIKEY") or check_setting_str(
+            settings.CFG,
+            "General",
+            "tvdb_v4_apikey",
+            settings.TVDB_V4_APIKEY_BUILTIN,
+            censor_log=True,
+        )
+        if not (settings.TVDB_V4_APIKEY or "").strip():
+            settings.TVDB_V4_APIKEY = settings.TVDB_V4_APIKEY_BUILTIN
+            settings.CFG.setdefault("General", {})["tvdb_v4_apikey"] = settings.TVDB_V4_APIKEY_BUILTIN
+        # PIN is not named "*password*", so decrypt explicitly (legacy plaintext migrates on save).
+        raw_tvdb_pin = os.environ.get("TVDB_V4_PIN") or check_setting_str(settings.CFG, "General", "tvdb_v4_pin", "", censor_log=True)
+        settings.TVDB_V4_PIN = helpers.decrypt_config_value(raw_tvdb_pin) or None
+        if not (settings.TVDB_V4_PIN or "").strip():
+            settings.TVDB_V4_PIN = None
+        # Env values skip check_setting_str's censor_log path — always register final credentials.
+        if settings.TVDB_V4_APIKEY:
+            logger.censored_items[("General", "tvdb_v4_apikey")] = settings.TVDB_V4_APIKEY
+        if settings.TVDB_V4_PIN:
+            logger.censored_items[("General", "tvdb_v4_pin")] = settings.TVDB_V4_PIN
 
         settings.TRASH_REMOVE_SHOW = check_setting_bool(settings.CFG, "General", "trash_remove_show")
         settings.TRASH_ROTATE_LOGS = check_setting_bool(settings.CFG, "General", "trash_rotate_logs")
@@ -288,7 +311,13 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.DOWNLOAD_PROPERS = check_setting_bool(settings.CFG, "General", "download_propers", True)
         settings.CHECK_PROPERS_INTERVAL = check_setting_str(settings.CFG, "General", "check_propers_interval")
-        if settings.CHECK_PROPERS_INTERVAL not in ("15m", "45m", "90m", "4h", "daily"):
+        # Legacy UI values: 15m→30m, 45m→90m (persist so config.ini is updated)
+        _legacy_propers = {"15m": "30m", "45m": "90m"}
+        if settings.CHECK_PROPERS_INTERVAL in _legacy_propers:
+            settings.CHECK_PROPERS_INTERVAL = _legacy_propers[settings.CHECK_PROPERS_INTERVAL]
+            settings.CFG.setdefault("General", {})["check_propers_interval"] = settings.CHECK_PROPERS_INTERVAL
+            settings.CFG.write()
+        if settings.CHECK_PROPERS_INTERVAL not in ("30m", "90m", "4h", "8h", "daily"):
             settings.CHECK_PROPERS_INTERVAL = "daily"
 
         settings.RANDOMIZE_PROVIDERS = check_setting_bool(settings.CFG, "General", "randomize_providers")
@@ -608,6 +637,15 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.USE_TRAKT = check_setting_bool(settings.CFG, "Trakt", "use_trakt")
         settings.TRAKT_USERNAME = check_setting_str(settings.CFG, "Trakt", "trakt_username", censor_log=True)
+        settings.TRAKT_API_KEY = check_setting_str(settings.CFG, "Trakt", "trakt_api_key", settings.TRAKT_API_KEY, censor_log=True)
+        # Secret is not named "*password*", so decrypt explicitly (legacy plaintext migrates on save).
+        raw_trakt_secret = check_setting_str(settings.CFG, "Trakt", "trakt_api_secret", settings.TRAKT_API_SECRET or "", censor_log=True)
+        settings.TRAKT_API_SECRET = helpers.decrypt_config_value(raw_trakt_secret)
+        if settings.TRAKT_API_SECRET:
+            logger.censored_items[("Trakt", "trakt_api_secret")] = settings.TRAKT_API_SECRET
+        from sickchill.oldbeard.trakt_api.trakt import refresh_trakt_pin_url
+
+        refresh_trakt_pin_url()
         settings.TRAKT_ACCESS_TOKEN = check_setting_str(settings.CFG, "Trakt", "trakt_access_token", censor_log=True)
         settings.TRAKT_REFRESH_TOKEN = check_setting_str(settings.CFG, "Trakt", "trakt_refresh_token", censor_log=True)
         settings.TRAKT_REMOVE_WATCHLIST = check_setting_bool(settings.CFG, "Trakt", "trakt_remove_watchlist")
@@ -761,7 +799,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.POSTER_SORTBY = check_setting_str(settings.CFG, "GUI", "poster_sortby", "name")
         settings.POSTER_SORTDIR = check_setting_int(settings.CFG, "GUI", "poster_sortdir", 1, min_val=0, max_val=1)
         settings.DISPLAY_ALL_SEASONS = check_setting_bool(settings.CFG, "General", "display_all_seasons", True)
-        settings.ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(settings.CFG, "General", "ended_shows_update_interval", 7)
+        settings.ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(settings.CFG, "General", "ended_shows_update_interval", 14, min_val=-1, max_val=365)
+        settings.SHOW_DISK_REFRESH_DAYS = check_setting_int(settings.CFG, "General", "show_disk_refresh_days", 7, min_val=-1, max_val=365)
         settings.NO_LGMARGIN = check_setting_bool(settings.CFG, "GUI", "no_lgmargin", True)
 
         if check_section(settings.CFG, "Shares"):
@@ -911,7 +950,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             searchBacklog.BacklogSearcher(), cycleTime=update_interval, threadName="BACKLOG", run_delay=update_interval
         )
 
-        search_intervals = {"15m": 15, "45m": 45, "90m": 90, "4h": 4 * 60, "daily": 24 * 60}
+        search_intervals = {"30m": 30, "90m": 90, "4h": 4 * 60, "8h": 8 * 60, "daily": 24 * 60}
         if settings.CHECK_PROPERS_INTERVAL in search_intervals:
             update_interval = datetime.timedelta(minutes=search_intervals[settings.CHECK_PROPERS_INTERVAL])
             run_at = None
@@ -1051,6 +1090,20 @@ def halt():
             for t in threads:
                 t.stop.set()
 
+            # Stop queue *workers* (currentItem), not only their scheduler threads.
+            # A stuck SHOWQUEUE-REFRESH otherwise survives join(10) on SHOWQUEUE.
+            for queue_scheduler in (
+                settings.showQueueScheduler,
+                settings.searchQueueScheduler,
+                settings.postProcessorTaskScheduler,
+            ):
+                action = getattr(queue_scheduler, "action", None)
+                if action is not None and hasattr(action, "stop_current_item"):
+                    try:
+                        action.stop_current_item(timeout=10)
+                    except Exception as error:
+                        logger.warning(f"Error stopping {getattr(queue_scheduler, 'name', 'queue')} current item: {error}")
+
             for t in threads:
                 logger.info(f"Waiting for the {t.name} thread to exit")
                 try:
@@ -1081,6 +1134,11 @@ def save_all():
     logger.info("Saving all shows to the database")
     for show in settings.show_list:
         show.save_to_db()
+
+    # persist in-memory name cache (scene_names) in one write
+    from sickchill.oldbeard import name_cache
+
+    name_cache.save_all_cached_names()
 
     # save config
     logger.info("Saving config file to disk")
@@ -1170,8 +1228,8 @@ def save_config():
                 "localhost_ip": settings.LOCALHOST_IP,
                 "cpu_preset": settings.CPU_PRESET,
                 "anon_redirect": settings.ANON_REDIRECT or "disabled",
-                "tvdb_user": settings.TVDB_USER,
-                "tvdb_user_key": settings.TVDB_USER_KEY,
+                "tvdb_v4_apikey": settings.TVDB_V4_APIKEY,
+                "tvdb_v4_pin": helpers.encrypt_config_value(settings.TVDB_V4_PIN or ""),
                 "api_key": settings.API_KEY,
                 "debug": int(settings.DEBUG),
                 "dbdebug": int(settings.DBDEBUG),
@@ -1280,6 +1338,7 @@ def save_config():
                 "developer": int(settings.DEVELOPER),
                 "display_all_seasons": int(settings.DISPLAY_ALL_SEASONS),
                 "ended_shows_update_interval": int(settings.ENDED_SHOWS_UPDATE_INTERVAL),
+                "show_disk_refresh_days": int(settings.SHOW_DISK_REFRESH_DAYS),
                 "news_last_read": settings.NEWS_LAST_READ,
                 "flaresolverr_uri": settings.FLARESOLVERR_URI,
             },
@@ -1538,6 +1597,8 @@ def save_config():
             "Trakt": {
                 "use_trakt": int(settings.USE_TRAKT),
                 "trakt_username": settings.TRAKT_USERNAME,
+                "trakt_api_key": settings.TRAKT_API_KEY,
+                "trakt_api_secret": helpers.encrypt_config_value(settings.TRAKT_API_SECRET or ""),
                 "trakt_access_token": settings.TRAKT_ACCESS_TOKEN,
                 "trakt_refresh_token": settings.TRAKT_REFRESH_TOKEN,
                 "trakt_remove_watchlist": int(settings.TRAKT_REMOVE_WATCHLIST),

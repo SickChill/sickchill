@@ -1,8 +1,5 @@
 <%inherit file="/layouts/main.mako" />
 <%!
-    import timeago
-    from datetime import datetime
-
     from sickchill import settings
     from sickchill.oldbeard import helpers
     from sickchill.oldbeard.scdatetime import sctimeago
@@ -247,17 +244,21 @@
             <td>${_('NORMAL')}</td>
         % elif item.priority == 30:
             <td>${_('HIGH')}</td>
+        % elif item.priority == 40:
+            <td>${_('USER')}</td>
+        % elif item.priority >= 900:
+            <td>${_('REMOVE')}</td>
         % else:
             <td>${item.priority}</td>
         % endif
-        <td>${timeago.format(item.added)}</td>
+        <td>${sctimeago(item.added)}</td>
         <td>${ShowQueueActions.names[item.action_id]}</td>
     </tr>
 </%def>
 
 <%def name="post_processor_task_row(item)">
     <tr class="text-center">
-        <td>${timeago.format(item.added)}</td>
+        <td>${sctimeago(item.added)}</td>
         <td>${item.mode}</td>
         <td class="text-left">${item.directory}</td>
         <td class="text-left">${item.filename}</td>

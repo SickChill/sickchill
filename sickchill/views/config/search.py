@@ -136,6 +136,7 @@ class ConfigSearch(Config):
 
         helpers.manage_torrents_url(reset=True)
 
+        self.log_configuration_save("Search Settings")
         sickchill.start.save_config()
 
         if results:

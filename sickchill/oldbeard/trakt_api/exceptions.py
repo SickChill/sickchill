@@ -8,3 +8,7 @@ class traktAuthException(traktException):
 
 class traktServerBusy(traktException):
     pass
+
+
+class traktForbiddenException(traktException):
+    """Trakt returned 403 — invalid / blocked API key or unapproved app."""

@@ -52,6 +52,9 @@ class TVShow(object):
 
 
 class SampleEpisode(TVEpisode):
+    # Marks UI/config naming samples so TVEpisode/NameParser skip noisy debug logs
+    is_naming_sample = True
+
     def __init__(self, season, episode, absolute_number, name):
         self.related_episodes = []
         self.name = name
@@ -95,11 +98,9 @@ def check_valid_naming(pattern=None, multi=None, anime_type=None):
     if pattern is None:
         pattern = settings.NAMING_PATTERN
 
-    logger.debug("Checking whether the pattern " + pattern + " is valid for a single episode")
     valid = validate_name(pattern, None, anime_type)
 
     if multi is not None:
-        logger.debug("Checking whether the pattern " + pattern + " is valid for a multi episode")
         valid = valid and validate_name(pattern, multi, anime_type)
 
     return valid
@@ -114,10 +115,7 @@ def check_valid_abd_naming(pattern=None):
     if pattern is None:
         pattern = settings.NAMING_PATTERN
 
-    logger.debug("Checking whether the pattern " + pattern + " is valid for an air-by-date episode")
-    valid = validate_name(pattern, abd=True)
-
-    return valid
+    return validate_name(pattern, abd=True)
 
 
 def check_valid_sports_naming(pattern=None):
@@ -129,10 +127,7 @@ def check_valid_sports_naming(pattern=None):
     if pattern is None:
         pattern = settings.NAMING_PATTERN
 
-    logger.debug("Checking whether the pattern " + pattern + " is valid for an sports episode")
-    valid = validate_name(pattern, sports=True)
-
-    return valid
+    return validate_name(pattern, sports=True)
 
 
 def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=False, sports=False):
@@ -155,10 +150,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
         new_name = os.path.join(new_path, new_name)
 
     if not new_name:
-        logger.debug("Unable to create a name out of " + pattern)
         return False
-
-    logger.debug("Trying to parse " + new_name)
 
     try:
         result = NameParser(True, show_object=ep.show, naming_pattern=True).parse(new_name)
@@ -166,8 +158,7 @@ def validate_name(pattern, multi=None, anime_type=None, file_only=False, abd=Fal
         logger.debug(f"{error}")
         return False
 
-    logger.debug(f"The name {new_name} parsed into {result}")
-
+    # Keep failure reasons at debug; skip success spam (UI validates many presets per page load)
     if abd or sports:
         if result.air_date != ep.airdate:
             logger.debug("Air date incorrect in parsed episode, pattern isn't valid")

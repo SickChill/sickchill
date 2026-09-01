@@ -4,7 +4,6 @@ import binascii
 import datetime
 import json
 import os
-import time
 import urllib.parse
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -17,9 +16,9 @@ from sickchill import adba, logger, settings
 from sickchill.helper import try_int
 from sickchill.helper.common import episode_num, pretty_file_size
 from sickchill.helper.exceptions import CantUpdateShowException, NoNFOException, ShowDirectoryNotFoundException
-from sickchill.oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, subtitles as subtitle_module, ui
+from sickchill.oldbeard import clients, config, db, filters, helpers, notifiers, sab, search_queue, ui
 from sickchill.oldbeard.blackandwhitelist import BlackAndWhiteList, short_group_names
-from sickchill.oldbeard.common import FAILED, IGNORED, SKIPPED, SNATCHED_BEST, UNAIRED, WANTED, Overview, Quality, cpu_presets, statusStrings
+from sickchill.oldbeard.common import FAILED, IGNORED, SKIPPED, SNATCHED_BEST, UNAIRED, WANTED, Overview, Quality, statusStrings
 from sickchill.oldbeard.network_timezones import sc_now, sc_timezone, sc_today
 from sickchill.oldbeard.scene_numbering import (
     get_scene_absolute_numbering,
@@ -34,7 +33,6 @@ from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.providers import result_classes
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.metadata.generic import GenericMetadata
-from sickchill.providers.metadata.helpers import getShowImage
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -917,6 +915,9 @@ class Home(WebRoot):
         elif settings.showQueueScheduler.action.is_being_refreshed(show_obj):
             show_message = _("The episodes below are currently being refreshed from disk")
 
+        elif settings.showQueueScheduler.action.is_being_tba_names(show_obj):
+            show_message = _("Currently updating TBA episode names for this show")
+
         elif settings.showQueueScheduler.action.is_being_subtitled(show_obj):
             show_message = _("Currently downloading subtitles for this show")
 
@@ -925,6 +926,9 @@ class Home(WebRoot):
 
         elif settings.showQueueScheduler.action.is_in_update_queue(show_obj):
             show_message = _("This show is queued and awaiting an update.")
+
+        elif settings.showQueueScheduler.action.is_in_tba_names_queue(show_obj):
+            show_message = _("This show is queued and awaiting a TBA episode name update.")
 
         elif settings.showQueueScheduler.action.is_in_subtitle_queue(show_obj):
             show_message = _("This show is queued and awaiting subtitles download.")
@@ -997,6 +1001,14 @@ class Home(WebRoot):
                         }
                     )
 
+            submenu.append(
+                {
+                    "title": _("Update TBA Names"),
+                    "path": f"home/updateTBANames?show={show_obj.indexerid}",
+                    "icon": "fa fa-pencil-square-o",
+                }
+            )
+
             submenu.append({"title": _("Preview Rename"), "path": f"home/testRename?show={show_obj.indexerid}", "icon": "fa fa-tag"})
 
             if settings.USE_SUBTITLES and show_obj.subtitles and not settings.showQueueScheduler.action.is_being_subtitled(show_obj):
@@ -1055,6 +1067,19 @@ class Home(WebRoot):
             },
         )
 
+        # Season order label: same series-specific TVDB names as editShow (Aired Order, platform titles, …)
+        seasons_order_slug = getattr(show_obj, "resolved_seasons_order", None) or getattr(show_obj, "seasons_order", None)
+        if not seasons_order_slug:
+            seasons_order_slug = "dvd" if show_obj.dvdorder else "default"
+        if seasons_order_slug == "official":
+            seasons_order_slug = "default"
+        seasons_order_label = seasons_order_slug
+        try:
+            seasons_order_label = show_obj.idxr.seasons_order_label(show_obj.indexerid, seasons_order_slug, allow_fetch=False)
+        except Exception as error:
+            logger.debug(f"Could not resolve seasons_order label for {show_obj.indexerid}: {error}")
+            # Keep slug as display fallback (do not call private helpers)
+
         return t.render(
             submenu=submenu,
             show_location=show_location,
@@ -1071,6 +1096,8 @@ class Home(WebRoot):
             xem_numbering=get_xem_numbering_for_show(indexerid, indexer),
             scene_absolute_numbering=get_scene_absolute_numbering_for_show(indexerid, indexer),
             xem_absolute_numbering=get_xem_absolute_numbering_for_show(indexerid, indexer),
+            seasons_order_slug=seasons_order_slug,
+            seasons_order_label=seasons_order_label,
             title=show_obj.name,
             controller="home",
             action="displayShow",
@@ -1108,6 +1135,8 @@ class Home(WebRoot):
         banner = None
         fanart = None
         poster = None
+        seasons_order = None
+        dvdorder = False
 
         if not direct_call:
             # Original + safe image handling
@@ -1123,6 +1152,7 @@ class Home(WebRoot):
                 whitelist = self.get_body_argument("whitelist", default=None)
                 default_ep_status = self.get_body_argument("defaultEpStatus", default=None)
                 dvdorder = config.checkbox_to_value(self.get_body_argument("dvdorder", default="False"))
+                seasons_order = self.get_body_argument("seasons_order", default=None)
                 exceptions_list = self.get_body_argument("exceptions_list", default=None)
                 rls_ignore_words = self.get_body_argument("rls_ignore_words", default=None)
                 rls_prefer_words = self.get_body_argument("rls_prefer_words", default=None)
@@ -1203,6 +1233,18 @@ class Home(WebRoot):
                         ui.notifications.error(_("Unable to retrieve Fansub Groups from AniDB."))
                         logger.debug(f"Unable to retrieve Fansub Groups from AniDB. Error is {error}")
 
+            # Available TVDB season order types (cache-only on GET; warm on show update)
+            season_order_types = []
+            try:
+                season_order_types = show_obj.idxr.series_season_types(show_obj.indexerid, use_cache=True, allow_fetch=False)
+            except Exception as error:
+                logger.debug(f"Could not load season order types for {show_obj.indexerid}: {error}")
+            if not season_order_types:
+                season_order_types = [
+                    {"slug": "default", "name": "Aired Order"},
+                    {"slug": "dvd", "name": "DVD Order"},
+                ]
+
             if show_obj.is_anime:
                 return t.render(
                     show=show_obj,
@@ -1211,6 +1253,7 @@ class Home(WebRoot):
                     groups=groups,
                     whitelist=whitelist,
                     blacklist=blacklist,
+                    season_order_types=season_order_types,
                     title=_("Edit Show"),
                     header=_("Edit Show"),
                     controller="home",
@@ -1221,6 +1264,7 @@ class Home(WebRoot):
                 show=show_obj,
                 scene_exceptions=show_obj.exceptions,
                 seasonResults=seasonResults,
+                season_order_types=season_order_types,
                 title=_("Edit Show"),
                 header=_("Edit Show"),
                 controller="home",
@@ -1241,9 +1285,18 @@ class Home(WebRoot):
         if not indexer_lang or indexer_lang not in show_obj.idxr.languages:
             indexer_lang = show_obj.lang
 
-        # if we changed the language then kick off an update
+        # if we changed the language or season order then kick off a full update
         do_update = indexer_lang != show_obj.lang
         do_update_scene_numbering = scene != show_obj.scene or anime != show_obj.anime
+        seasons_order_changed = False
+        if not direct_call:
+            # Prefer seasons_order select; fall back to legacy dvdorder checkbox if present
+            if seasons_order is not None and str(seasons_order).strip():
+                seasons_order_changed = show_obj.apply_seasons_order(seasons_order)
+            elif "dvdorder" in self.request.arguments:
+                seasons_order_changed = show_obj.apply_seasons_order("dvd" if dvdorder else "default")
+            if seasons_order_changed:
+                do_update = True
 
         if not any_qualities:
             any_qualities = []
@@ -1308,17 +1361,11 @@ class Home(WebRoot):
                     logger.warning(f"Failed to decode uploaded image: {e}")
                     return None, None
 
-            # 2. Remote URL (TheTVDB, Fanart.tv, etc.)
-            elif isinstance(image, str):
-                try:
-                    image_parts = image.split("|")
-                    _img_data = getShowImage(image_parts[0])
-                    if len(image_parts) > 1:
-                        return _img_data, getShowImage(image_parts[1])
-                    return _img_data, _img_data
-                except Exception as e:  # Keep this one broader as getShowImage can raise various errors
-                    logger.warning(f"Failed to fetch remote image: {e}")
-                    return None, None
+            # 2. Remote URL (TheTVDB, Fanart.tv, etc.) — do not block edit save on CDN fetch.
+            # Queued show update/refresh can refresh artwork later; uploaded bytes still write below.
+            elif isinstance(image, str) and image.startswith(("http://", "https://")):
+                logger.debug(f"Skipping remote image fetch on edit save for show {show_obj.indexerid}")
+                return None, None
 
             return None, None
 
@@ -1389,7 +1436,7 @@ class Home(WebRoot):
 
             if not direct_call:
                 show_obj.lang = indexer_lang
-                show_obj.dvdorder = dvdorder
+                # seasons_order / dvdorder already applied above when present
                 location = self.get_body_argument("location", show_obj.get_location)
 
             location = os.path.normpath(location)
@@ -1420,28 +1467,30 @@ class Home(WebRoot):
             # save it to the DB
             show_obj.save_to_db()
 
-        # force the update
+        # force the update (queued; do not sleep on the web thread)
         if do_update:
-            error, show = show_obj.update(force=True)
+            try:
+                show_obj.idxr.clear_episode_cache(show_obj.indexerid)
+            except Exception as error:
+                logger.debug(f"clear_episode_cache failed for {show_obj.indexerid}: {error}")
+            if do_update_scene_numbering:
+                show_obj._pending_xem_refresh = True
+            error, show = show_obj.update(force=True, front=True)
             if error:
                 errors.append(_("Unable to update show: {error}").format(error=error))
-
-            time.sleep(cpu_presets[settings.CPU_PRESET])
+        elif do_update_scene_numbering:
+            # Scene/anime flag changed without a full update — still refresh XEM off-request via queued update
+            show_obj._pending_xem_refresh = True
+            error, show = show_obj.update(force=False, front=True)
+            if error:
+                errors.append(_("Unable to update show: {error}").format(error=error))
 
         logger.debug("Updating show exceptions")
         try:
             sickchill.oldbeard.scene_exceptions.update_custom_scene_exceptions(show_obj.indexerid, exceptions)
-            time.sleep(cpu_presets[settings.CPU_PRESET])
         except CantUpdateShowException:
             logger.debug("Error updating scene exceptions", exc_info=True)
             errors.append(_("Unable to force an update on scene exceptions of the show."))
-
-        if do_update_scene_numbering:
-            try:
-                sickchill.oldbeard.scene_numbering.xem_refresh(show_obj.indexerid, show_obj.indexer)
-                time.sleep(cpu_presets[settings.CPU_PRESET])
-            except CantUpdateShowException:
-                errors.append(_("Unable to force an update on scene numbering of the show."))
 
         if direct_call:
             return errors
@@ -1450,6 +1499,15 @@ class Home(WebRoot):
             ui.notifications.error(
                 _("{num_errors:d} error{plural} while saving changes:").format(num_errors=len(errors), plural="" if len(errors) == 1 else "s"),
                 "<ul>" + "\n".join([f"<li>{error}</li>" for error in errors]) + "</ul>",
+            )
+        elif seasons_order_changed:
+            try:
+                order_label = show_obj.idxr.seasons_order_label(show_obj.indexerid, show_obj.resolved_seasons_order, allow_fetch=False)
+            except Exception:
+                order_label = show_obj.resolved_seasons_order
+            ui.notifications.message(
+                _("Season order updated"),
+                _("Episodes reloaded using {order}.").format(order=order_label),
             )
 
         return self.redirect("/home/displayShow?show=" + show_id + "&from_edit=1")
@@ -1482,8 +1540,6 @@ class Home(WebRoot):
             )
         )
 
-        time.sleep(cpu_presets[settings.CPU_PRESET])
-
         # Remove show from 'RECENT SHOWS' in 'Shows' menu
         settings.SHOWS_RECENT = [x for x in settings.SHOWS_RECENT if x["indexerid"] != show.indexerid]
 
@@ -1494,7 +1550,7 @@ class Home(WebRoot):
         show = self.get_query_argument("show")
         force = bool(try_int(self.get_query_argument("force", default="0")))
 
-        error, show = Show.refresh(show, force)
+        error, show = Show.refresh(show, force, front=True)
 
         # This is a show validation error
         if error and not show:
@@ -1504,8 +1560,6 @@ class Home(WebRoot):
         if error:
             ui.notifications.error(_("Unable to refresh this show."), error)
 
-        time.sleep(cpu_presets[settings.CPU_PRESET])
-
         return self.redirect(f"/home/displayShow?show={show.indexerid}")
 
     def updateShow(self):
@@ -1513,7 +1567,7 @@ class Home(WebRoot):
         force = bool(try_int(self.get_query_argument("force", default="0")))
 
         # force the update
-        error, show = Show.update(show, force)
+        error, show = Show.update(show, force, front=True)
 
         # This is a show validation error
         if error and not show:
@@ -1522,10 +1576,40 @@ class Home(WebRoot):
         if error:
             ui.notifications.error(_("Unable to update this show."), f"{error}")
 
-        # just give it some time
-        time.sleep(cpu_presets[settings.CPU_PRESET])
-
         return self.redirect(f"/home/displayShow?show={show.indexerid}")
+
+    def updateTBANames(self):
+        """Queue TBA episode title refresh (V4 list) off the web thread."""
+        show = self.get_query_argument("show")
+        show_obj = Show.find(settings.show_list, int(show))
+
+        if not show_obj:
+            return self._genericMessage(_("Error"), _("Unable to find the specified show"))
+
+        try:
+            from sickchill.oldbeard.show_queue import ShowQueueActions
+
+            item = settings.showQueueScheduler.action.download_tba_names(show_obj)
+            if item and item.action_id in (ShowQueueActions.UPDATE, ShowQueueActions.FORCEUPDATE):
+                ui.notifications.message(
+                    _("Promoted"),
+                    _("Promoted queued update for {show} (covers TBA episode names)").format(show=show_obj.name),
+                )
+            else:
+                ui.notifications.message(
+                    _("Queued"),
+                    _("Queued TBA name update for {show}").format(show=show_obj.name),
+                )
+        except CantUpdateShowException as error:
+            ui.notifications.error(_("Unable to queue TBA name update."), str(error))
+        except Exception as error:
+            logger.exception(f"Failed to queue TBA name update for {show_obj.name}: {error}")
+            ui.notifications.error(
+                _("Error"),
+                _("Failed to queue TBA episode name update for {show}").format(show=show_obj.name),
+            )
+
+        return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
     def subtitleShow(self):
         show = self.get_query_argument("show")
@@ -1536,8 +1620,6 @@ class Home(WebRoot):
 
         # search and download subtitles
         settings.showQueueScheduler.action.download_subtitles(show_obj)
-
-        time.sleep(cpu_presets[settings.CPU_PRESET])
 
         return self.redirect(f"/home/displayShow?show={show_obj.indexerid}")
 
@@ -1906,17 +1988,22 @@ class Home(WebRoot):
         if error_msg or not episode_object:
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
-        # make a queue item for it and put it on the queue
+        search_q = settings.searchQueueScheduler.action
+        # make a queue item for it and put it on the queue (front among USER/HIGH clicks)
         ep_queue_item = search_queue.ManualSearchQueueItem(episode_object.show, episode_object, bool(down_cur_quality))
+        added = search_q.add_item(ep_queue_item, front=True)
+        if added is None:
+            return json.dumps({"result": "failure", "errorMessage": _("Episode search already queued")})
 
-        settings.searchQueueScheduler.action.add_item(ep_queue_item)
-
-        if not ep_queue_item.started and ep_queue_item.success is None:
-            return json.dumps({"result": "success"})  # I Actually want to call it queued, because the search hasn't been started yet!
-        if ep_queue_item.started and ep_queue_item.success is None:
-            return json.dumps({"result": "success"})
-
-        return json.dumps({"result": "failure"})
+        current = search_q.currentItem
+        queued = current is not None and current is not ep_queue_item
+        payload = {
+            "result": "success",
+            "queued": queued,
+            "blocked_by": search_q.queue_head_kind() if queued else None,
+            "queue_length": search_q.queue_length(),
+        }
+        return json.dumps(payload)
 
     # ## Returns the current ep_queue_item status for the current viewed show.
     # Possible status: Downloaded, Snatched, etc...
@@ -1978,16 +2065,21 @@ class Home(WebRoot):
             return results
 
         episodes = []
+        search_q = settings.searchQueueScheduler.action
+        blocked_by = search_q.queue_head_kind()
 
         # Queued Searches
         searchstatus = "Queued"
-        for searchThread in settings.searchQueueScheduler.action.get_all_ep_from_queue(show):
-            episodes += getEpisodes(searchThread, searchstatus)
+        for searchThread in search_q.get_all_ep_from_queue(show):
+            for ep in getEpisodes(searchThread, searchstatus):
+                if blocked_by and blocked_by != "manual":
+                    ep["blocked_by"] = blocked_by
+                episodes.append(ep)
 
         # Running Searches
         searchstatus = "Searching"
-        if settings.searchQueueScheduler.action.is_manualsearch_in_progress():
-            searchThread = settings.searchQueueScheduler.action.currentItem
+        if search_q.is_manualsearch_in_progress():
+            searchThread = search_q.currentItem
 
             if searchThread.success:
                 searchstatus = "Finished"
@@ -2036,20 +2128,26 @@ class Home(WebRoot):
         if error_msg or not episode_object:
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
-        # noinspection PyBroadException
-        try:
-            new_subtitles = episode_object.download_subtitles()
-        except Exception:
-            return json.dumps({"result": "failure"})
+        search_q = settings.searchQueueScheduler.action
+        item = search_queue.SubtitleEpisodeQueueItem(episode_object.show, episode_object)
+        added = search_q.add_item(item, front=True)
+        if added is None:
+            return json.dumps({"result": "failure", "errorMessage": _("Subtitle search already queued")})
 
-        if new_subtitles:
-            new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
-            status = _("New subtitles downloaded: {new_subtitle_languages}").format(new_subtitle_languages=", ".join(new_languages))
-        else:
-            status = _("No subtitles downloaded")
-
-        ui.notifications.message(episode_object.show.name, status)
-        return json.dumps({"result": status, "subtitles": ",".join(episode_object.subtitles)})
+        # added may be a new item, a promoted queued item, or the already-running currentItem
+        current = search_q.currentItem
+        queued = current is not None and current is not added
+        already_running = added is current
+        message = _("Subtitle search already in progress") if already_running else _("Subtitle search queued")
+        return json.dumps(
+            {
+                "result": "success",
+                "message": message,
+                "queued": queued,
+                "blocked_by": search_q.queue_head_kind() if queued else None,
+                "subtitles": ",".join(episode_object.subtitles or []),
+            }
+        )
 
     def playOnKodi(self):
         show = self.get_query_argument("show", None)
@@ -2074,19 +2172,25 @@ class Home(WebRoot):
         if error_msg or not episode_object:
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
-        try:
-            new_subtitles = episode_object.download_subtitles(force_lang=lang)
-        except Exception as error:
-            return json.dumps({"result": "failure", "errorMessage": error})
+        search_q = settings.searchQueueScheduler.action
+        item = search_queue.SubtitleEpisodeQueueItem(episode_object.show, episode_object, force_lang=lang)
+        added = search_q.add_item(item, front=True)
+        if added is None:
+            return json.dumps({"result": "failure", "errorMessage": _("Subtitle search already queued")})
 
-        if new_subtitles:
-            new_languages = [subtitle_module.name_from_code(code) for code in new_subtitles]
-            status = _("New subtitles downloaded: {new_subtitle_languages}").format(new_subtitle_languages=", ".join(new_languages))
-        else:
-            status = _("No subtitles downloaded")
-
-        ui.notifications.message(episode_object.show.name, status)
-        return json.dumps({"result": status, "subtitles": ",".join(episode_object.subtitles)})
+        current = search_q.currentItem
+        queued = current is not None and current is not added
+        already_running = added is current
+        message = _("Subtitle search already in progress") if already_running else _("Subtitle search queued")
+        return json.dumps(
+            {
+                "result": "success",
+                "message": message,
+                "queued": queued,
+                "blocked_by": search_q.queue_head_kind() if queued else None,
+                "subtitles": ",".join(episode_object.subtitles or []),
+            }
+        )
 
     def setSceneNumbering(self, show, indexer, forSeason=None, forEpisode=None, forAbsolute=None, sceneSeason=None, sceneEpisode=None, sceneAbsolute=None):
         # sanitize:
@@ -2175,16 +2279,22 @@ class Home(WebRoot):
         if error_msg or not episode_object:
             return json.dumps({"result": "failure", "errorMessage": error_msg})
 
-        # make a queue item for it and put it on the queue
+        search_q = settings.searchQueueScheduler.action
         ep_queue_item = search_queue.FailedQueueItem(episode_object.show, [episode_object], bool(down_cur_quality))
-        settings.searchQueueScheduler.action.add_item(ep_queue_item)
+        added = search_q.add_item(ep_queue_item, front=True)
+        if added is None:
+            return json.dumps({"result": "failure", "errorMessage": _("Episode search already queued")})
 
-        if not ep_queue_item.started and ep_queue_item.success is None:
-            return json.dumps({"result": "success"})  # I Actually want to call it queued, because the search hasn't been started yet!
-        if ep_queue_item.started and ep_queue_item.success is None:
-            return json.dumps({"result": "success"})
-
-        return json.dumps({"result": "failure"})
+        current = search_q.currentItem
+        queued = current is not None and current is not ep_queue_item
+        return json.dumps(
+            {
+                "result": "success",
+                "queued": queued,
+                "blocked_by": search_q.queue_head_kind() if queued else None,
+                "queue_length": search_q.queue_length(),
+            }
+        )
 
     @staticmethod
     def fetch_releasegroups(show_name):

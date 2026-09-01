@@ -47,6 +47,7 @@ class ConfigGeneral(Config):
         settings.ANIME_DEFAULT = config.checkbox_to_value(self.get_body_argument("anime", settings.ANIME_DEFAULT))
         settings.SCENE_DEFAULT = config.checkbox_to_value(self.get_body_argument("scene", settings.SCENE_DEFAULT))
 
+        self.log_configuration_save("Add Show Defaults")
         sickchill.start.save_config()
 
         ui.notifications.message(_("Saved Defaults"), _('Your "add show" defaults have been set to your current selections.'))
@@ -134,6 +135,52 @@ class ConfigGeneral(Config):
         if indexer_timeout:
             settings.INDEXER_TIMEOUT = try_int(self.get_body_argument("indexer_timeout", default=None))
 
+        # TheTVDB personal credentials:
+        #   - non-blank field → that key (override)
+        #   - blank / cleared → built-in project key (also persisted to config.ini on save)
+        raw_tvdb_key = (self.get_body_argument("tvdb_v4_apikey", default="") or "").strip()
+        raw_tvdb_pin = (filters.unhide(settings.TVDB_V4_PIN or "", self.get_body_argument("tvdb_v4_pin", default="") or "") or "").strip()
+        builtin_key = settings.TVDB_V4_APIKEY_BUILTIN
+        new_tvdb_key = raw_tvdb_key if raw_tvdb_key else builtin_key
+        new_tvdb_pin = raw_tvdb_pin or None
+        tvdb_changed = new_tvdb_key != (settings.TVDB_V4_APIKEY or "") or (new_tvdb_pin or "") != (settings.TVDB_V4_PIN or "")
+        settings.TVDB_V4_APIKEY = new_tvdb_key
+        settings.TVDB_V4_PIN = new_tvdb_pin
+        logger.censored_items[("General", "tvdb_v4_apikey")] = settings.TVDB_V4_APIKEY
+        if settings.TVDB_V4_PIN:
+            logger.censored_items[("General", "tvdb_v4_pin")] = settings.TVDB_V4_PIN
+        elif ("General", "tvdb_v4_pin") in logger.censored_items:
+            del logger.censored_items[("General", "tvdb_v4_pin")]
+        if tvdb_changed:
+            # Force next TVDB call to rebuild client/token with new credentials
+            try:
+                for indexer in getattr(sickchill.indexer, "indexers", {}).values():
+                    if hasattr(indexer, "_client"):
+                        indexer._client = None
+                    if hasattr(indexer, "clear_episode_cache"):
+                        indexer.clear_episode_cache()
+            except Exception as error:
+                logger.debug(f"Could not reset TVDB client after credential change: {error}")
+
+        # Trakt account credentials (Indexer / Data) — notify toggles stay on Notifications
+        new_api_key = (self.get_body_argument("trakt_api_key", default="") or "").strip()
+        new_api_secret = (filters.unhide(settings.TRAKT_API_SECRET or "", self.get_body_argument("trakt_api_secret", default="") or "") or "").strip()
+        new_username = (self.get_body_argument("trakt_username", default="") or "").strip()
+        key_changed = False
+        if new_api_key and new_api_key != settings.TRAKT_API_KEY:
+            settings.TRAKT_API_KEY = new_api_key
+            key_changed = True
+        if new_api_secret and new_api_secret != (settings.TRAKT_API_SECRET or ""):
+            settings.TRAKT_API_SECRET = new_api_secret
+            key_changed = True
+        settings.TRAKT_USERNAME = new_username or None
+        if key_changed:
+            settings.TRAKT_ACCESS_TOKEN = None
+            settings.TRAKT_REFRESH_TOKEN = None
+        from sickchill.oldbeard.trakt_api.trakt import refresh_trakt_pin_url
+
+        refresh_trakt_pin_url()
+
         if time_preset:
             settings.TIME_PRESET_W_SECONDS = time_preset
             settings.TIME_PRESET = time_preset.replace(":%S", "")
@@ -160,10 +207,22 @@ class ConfigGeneral(Config):
         settings.CUSTOM_CSS = config.checkbox_to_value(self.get_body_argument("custom_css", default=None))
         config.change_custom_css(self.get_body_argument("custom_css_path", default=None))
 
-        settings.ENDED_SHOWS_UPDATE_INTERVAL = int(self.get_body_argument("ended_shows_update_interval", default=None))
+        # Use explicit string defaults — int(None) / empty values must not silently become 0.
+        # Clamp to -1..365 (-1 = never / sentinel for both settings).
+        def _clamp_day_setting(raw, default):
+            value = try_int(raw, default)
+            if value < -1:
+                return -1
+            if value > 365:
+                return 365
+            return value
+
+        settings.ENDED_SHOWS_UPDATE_INTERVAL = _clamp_day_setting(self.get_body_argument("ended_shows_update_interval", default="14"), 14)
+        settings.SHOW_DISK_REFRESH_DAYS = _clamp_day_setting(self.get_body_argument("show_disk_refresh_days", default="7"), 7)
 
         settings.DEFAULT_PAGE = self.get_body_argument("default_page", default=None)
 
+        self.log_configuration_save("General")
         sickchill.start.save_config()
 
         if results:

@@ -7,7 +7,13 @@ from requests.exceptions import RequestException
 from requests.structures import CaseInsensitiveDict
 
 from sickchill import logger, settings
-from sickchill.oldbeard.trakt_api.exceptions import traktException
+from sickchill.oldbeard.trakt_api.exceptions import traktException, traktForbiddenException
+
+
+def refresh_trakt_pin_url():
+    """Rebuild authorize URL from the active Client ID."""
+    client_id = settings.TRAKT_API_KEY or ""
+    settings.TRAKT_PIN_URL = f"https://trakt.tv/oauth/authorize?response_type=code&client_id={client_id}&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
 
 
 class TraktAPI:
@@ -16,7 +22,14 @@ class TraktAPI:
         self.timeout = timeout if timeout else None
         self.auth_url = settings.TRAKT_OAUTH_URL
         self.api_url = settings.TRAKT_API_URL
-        self.headers = CaseInsensitiveDict({"Content-Type": "application/json", "trakt-api-version": "2", "trakt-api-key": settings.TRAKT_API_KEY})
+        self.headers = CaseInsensitiveDict(
+            {
+                "Content-Type": "application/json",
+                "trakt-api-version": "2",
+                "trakt-api-key": settings.TRAKT_API_KEY,
+                "User-Agent": "SickChill",
+            }
+        )
 
     def traktToken(self, trakt_pin=None, refresh=False, count=0):
         if count > 3:
@@ -58,7 +71,15 @@ class TraktAPI:
         count = count + 1
 
         if headers is None:
-            headers = self.headers
+            # Rebuild each request so Client ID changes from config take effect without restart
+            headers = CaseInsensitiveDict(
+                {
+                    "Content-Type": "application/json",
+                    "trakt-api-version": "2",
+                    "trakt-api-key": settings.TRAKT_API_KEY,
+                    "User-Agent": "SickChill",
+                }
+            )
 
         if count >= 2 and not settings.TRAKT_ACCESS_TOKEN:
             logger.warning(_("You must get a Trakt TOKEN. Check your Trakt settings"))
@@ -92,7 +113,10 @@ class TraktAPI:
                 if self.traktToken(refresh=True, count=count):
                     return self.traktRequest(path, data, headers, url, method)
                 else:
-                    logger.warning("Unauthorized. Please check your Trakt settings")
+                    logger.warning(_("Unauthorized. Please check your Trakt settings"))
+            elif code == 403:
+                logger.warning(_("Trakt API key rejected (403 Forbidden). Configure your own Client ID and Secret under Config → General → Indexer / Data."))
+                raise traktForbiddenException("Trakt API key rejected (403 Forbidden). Invalid API key or unapproved app.")
             elif code in (500, 501, 503, 504, 520, 521, 522):
                 # http://docs.trakt.apiary.io/#introduction/status-codes
                 logger.debug(_("Trakt may have some issues and it's unavailable. Try again later please"))

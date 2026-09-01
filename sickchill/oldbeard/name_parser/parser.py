@@ -492,7 +492,9 @@ class NameParser(object):
         if cache_result:
             name_parser_cache[name] = final_result
 
-        logger.debug(f"Parsed {name} into {final_result}")
+        # Skip success spam for naming-pattern UI/tests (config post-processing page)
+        if not self.naming_pattern:
+            logger.debug(f"Parsed {name} into {final_result}")
         return final_result
 
 

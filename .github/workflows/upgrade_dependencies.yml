@@ -42,7 +42,7 @@ jobs:
       - name: Upgrade dependencies
         run: |
           pip install poethepoet
-          poe depup
+          poe update-dependencies
 
       - name: Push changes
         if: success()
