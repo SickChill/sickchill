@@ -3,7 +3,7 @@ services:
     image: sickchill/sickchill:develop
     # image: sickchill/sickchill:latest
     container_name: sickchill
-    restart: unless-stopped
+    restart: on-failure
 
     # Do NOT set "user:" here when using PUID/PGID (recommended for NAS).
     # The entrypoint runs as root to set up permissions + persistent venv, then drops privileges.
