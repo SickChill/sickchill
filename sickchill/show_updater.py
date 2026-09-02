@@ -1,4 +1,5 @@
 import datetime
+import random
 import threading
 import time
 
@@ -143,10 +144,30 @@ class ShowUpdater(object):
                     logger.info(f"Preserving lastUpdate for {provider.name}: show loop interrupted")
                 else:
                     logger.info(f"Preserving lastUpdate for {provider.name} after feed failure")
+
+            # After a normal daily run, nudge next start_time.minute by +0..20 (wrap if >60).
+            # Scheduler already won't re-fire for ~a day / 1h lastRun gate — Status Start Time updates.
+            if not force:
+                self._bump_next_start_minute()
         except Exception as error:
             logger.exception(error)
 
         self.amActive = False
+
+    @staticmethod
+    def _bump_next_start_minute():
+        sched = getattr(settings, "showUpdateScheduler", None)
+        if not sched or not getattr(sched, "start_time", None):
+            return
+        hour = sched.start_time.hour
+        new_minute = sched.start_time.minute + random.randint(0, 20)
+        # Wrap within the hour (datetime.time minutes are 0..59)
+        if new_minute > 60:
+            new_minute -= 60
+        if new_minute == 60:
+            new_minute = 0
+        sched.start_time = datetime.time(hour=hour, minute=new_minute)
+        logger.debug(f"ShowUpdater next start_time set to {sched.start_time.strftime('%H:%M')}")
 
     @staticmethod
     def request_hook(response, **kwargs):

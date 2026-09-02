@@ -924,11 +924,13 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(), cycleTime=datetime.timedelta(seconds=5), threadName="SHOWQUEUE")
 
+        # Minute from process start (not stored); ShowUpdater may nudge it +0..20 after each run.
+        _showupdate_minute = sc_now().minute
         settings.showUpdateScheduler = scheduler.Scheduler(
             show_updater.ShowUpdater(),
             run_delay=datetime.timedelta(seconds=20),
             cycleTime=datetime.timedelta(hours=1),
-            start_time=datetime.time(hour=settings.SHOWUPDATE_HOUR),
+            start_time=datetime.time(hour=settings.SHOWUPDATE_HOUR, minute=_showupdate_minute),
             threadName="SHOWUPDATER",
             silent=False,
         )

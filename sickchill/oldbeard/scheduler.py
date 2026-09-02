@@ -23,11 +23,12 @@ class Scheduler(threading.Thread):
         if start_time is None:
             self.lastRun = sc_now() + self.run_delay - cycleTime
         else:
-            # Set last run to the last full hour
             temp_now = sc_now()
-            self.lastRun = (
-                datetime.datetime(temp_now.year, temp_now.month, temp_now.day, temp_now.hour, 0, 0, 0, tzinfo=sc_timezone) + self.run_delay - cycleTime
-            )
+            start_today = datetime.datetime.combine(temp_now.date(), start_time, tzinfo=sc_timezone)
+            if temp_now >= start_today:
+                self.lastRun = start_today
+            else:
+                self.lastRun = start_today - datetime.timedelta(days=1)
         self.action = action
         self.cycleTime = cycleTime
         self.start_time = start_time
@@ -50,13 +51,13 @@ class Scheduler(threading.Thread):
             delta = sc_now() - self.lastRun
             return (self.cycleTime - delta, self.cycleTime)[delta > self.cycleTime]
 
+        # Honor full start_time (hour and minute), not hour alone
         time_now = sc_now()
         start_time_today = datetime.datetime.combine(time_now.date(), self.start_time, tzinfo=sc_timezone)
         start_time_tomorrow = start_time_today + datetime.timedelta(days=1)
-        if time_now.hour >= self.start_time.hour:
+        if time_now >= start_time_today:
             return start_time_tomorrow - time_now
-        else:
-            return start_time_today - time_now
+        return start_time_today - time_now
 
     def forceRun(self):
         if not self.action.amActive:
@@ -76,18 +77,13 @@ class Scheduler(threading.Thread):
                     # Is self.force enable
                     if self.force:
                         should_run = True
-                    # check if interval has passed
-                    elif current_time - self.lastRun >= self.cycleTime:
-                        # check if wanting to start around certain time taking interval into account
-                        if self.start_time is not None:
-                            hour_diff = current_time.time().hour - self.start_time.hour
-                            if not hour_diff < 0 and hour_diff < self.cycleTime.seconds / 3600:
-                                should_run = True
-                            else:
-                                # set lastRun to only check start_time after another cycleTime
-                                self.lastRun = current_time
-                        else:
+                    elif self.start_time is not None:
+                        # Once per day at start_time (hour+minute); run when due and not yet run today
+                        start_today = datetime.datetime.combine(current_time.date(), self.start_time, tzinfo=sc_timezone)
+                        if current_time >= start_today and self.lastRun < start_today:
                             should_run = True
+                    elif current_time - self.lastRun >= self.cycleTime:
+                        should_run = True
 
                     if should_run:
                         self.lastRun = current_time

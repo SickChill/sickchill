@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os.path
 import sys
@@ -346,15 +347,20 @@ class ConfigTestChanges(unittest.TestCase):
         Test change_showupdate_hour
         """
         settings.showUpdateScheduler = scheduler.Scheduler(lambda: None)  # dummy
+        # Simulate process-start minute already on the scheduler
+        settings.showUpdateScheduler.start_time = datetime.time(hour=3, minute=47)
 
         config.change_showupdate_hour(-2)
         assert settings.SHOWUPDATE_HOUR == 0
+        assert settings.showUpdateScheduler.start_time == datetime.time(hour=0, minute=47)
         config.change_showupdate_hour("s")
         assert settings.SHOWUPDATE_HOUR == settings.DEFAULT_SHOWUPDATE_HOUR
+        assert settings.showUpdateScheduler.start_time.minute == 47
         config.change_showupdate_hour(60)
         assert settings.SHOWUPDATE_HOUR == 0
         config.change_showupdate_hour(12)
         assert settings.SHOWUPDATE_HOUR == 12
+        assert settings.showUpdateScheduler.start_time == datetime.time(hour=12, minute=47)
 
     def test_change_sub_finder_freq(self):
         """

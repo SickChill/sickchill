@@ -389,7 +389,11 @@ def change_showupdate_hour(freq):
     if settings.SHOWUPDATE_HOUR > 23 or settings.SHOWUPDATE_HOUR < 0:
         settings.SHOWUPDATE_HOUR = 0
 
-    settings.showUpdateScheduler.start_time = datetime.time(hour=settings.SHOWUPDATE_HOUR)
+    # Keep process-lifetime minute (from instance start); only the hour is configured
+    minute = 0
+    if settings.showUpdateScheduler and getattr(settings.showUpdateScheduler, "start_time", None):
+        minute = settings.showUpdateScheduler.start_time.minute
+    settings.showUpdateScheduler.start_time = datetime.time(hour=settings.SHOWUPDATE_HOUR, minute=minute)
     return True
 
 
