@@ -102,10 +102,14 @@ else \
   poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)[speedups]"; \
 fi
 
-# Ensure installed package has _revision.txt (wheel may omit gitignored file)
+# Ensure installed package has _revision.txt (wheel may omit gitignored file).
+# Run python from /tmp so cwd (/sickchill) is not on sys.path — otherwise
+# `import sickchill` resolves to the source tree and cp is same-file.
 RUN if [ -f sickchill/_revision.txt ]; then \
-  REV_DST="$(python -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
-  cp sickchill/_revision.txt "$REV_DST/_revision.txt"; \
+  REV_DST="$(cd /tmp && python -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
+  SRC="$(realpath sickchill/_revision.txt)" && \
+  DST="$(realpath -m "$REV_DST/_revision.txt")" && \
+  if [ "$SRC" != "$DST" ]; then cp sickchill/_revision.txt "$REV_DST/_revision.txt"; fi; \
 fi
 
 RUN mkdir -m 777 /sickchill-wheels && \
