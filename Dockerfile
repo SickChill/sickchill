@@ -1,10 +1,13 @@
-# syntax=docker/dockerfile:experimental
+# syntax=docker/dockerfile:1
 
 # NAS-friendly SickChill image (dockering), based on develop packaging:
-# - Pre-builds venv at a fixed path (/opt/sickchill/.venv)
-# - Entrypoint copies it to persistent /data/.venv and refreshes on new GIT_SHA
+# - Pre-builds a template venv at /opt/sickchill/.venv (image layer; not under VOLUME)
+# - Entrypoint copies it to /data/.venv and launches via that interpreter (not stale shebangs)
 # - Bakes Help & Info revision via sickchill/_revision.txt + SICKCHILL_* env
 # - gosu + PUID/PGID for Synology / DSM style installs
+#
+# Note: the venv cannot be created at /data/.venv during build — /data is a runtime
+# volume/bind-mount and would hide any bake-time contents.
 
 # docker run -dit --name sickchill --restart=on-failure \
 #   -e PUID=1026 -e PGID=100 -e TZ=America/New_York \
@@ -25,8 +28,10 @@ ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 ARG GIT_SHA=unknown
 ARG GIT_BRANCH=unknown
 
-# Fixed venv path so runtime HOME=/data does not hide the image install
+# Template venv in the image (copied to /data/.venv at runtime — see entrypoint).
+# Keep this off /data so VOLUME/bind-mounts do not erase the bake.
 ENV VENV_IMAGE_PATH=/opt/sickchill/.venv
+ENV VENV_RUNTIME_PATH=/data/.venv
 ENV HOME="/root/"
 ENV CARGO_HOME="/root/.cargo"
 ENV PATH="$VENV_IMAGE_PATH/bin:$CARGO_HOME/bin:$PATH"
@@ -66,6 +71,8 @@ RUN curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/sel
 
 ENV PATH="$RUSTUP_HOME/bin:$CARGO_HOME/bin:$VENV_IMAGE_PATH/bin:$PATH"
 
+# Create the template environment at VENV_IMAGE_PATH (final user path is VENV_RUNTIME_PATH;
+# entrypoint launches through that interpreter after copy — see docker-sc-entrypoint.sh).
 RUN python3 -m venv "$VENV_IMAGE_PATH" --upgrade --upgrade-deps
 RUN pip install -U wheel setuptools-rust
 # Pin setuptools for pkg_resources compatibility (enzyme on Python 3.13)
