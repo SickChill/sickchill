@@ -17,8 +17,19 @@ DATADIR=${DATADIR:-/data}
 UMASK=${UMASK:-002}
 PORT=${PORT:-8081}
 VENV_IMAGE="${VENV_IMAGE_PATH:-/opt/sickchill/.venv}"
-VENV_PERSISTENT="${VENV_RUNTIME_PATH:-${DATADIR}/.venv}"
 IMAGE_REV_FILE="/sickchill/.image_revision"
+
+# Keep DATADIR and runtime venv path consistent:
+# - default / image pairing → ${DATADIR}/.venv
+# - explicit custom VENV_RUNTIME_PATH (not the legacy /data/.venv default) is respected
+case "${VENV_RUNTIME_PATH:-}" in
+    "" | "${DATADIR}/.venv" | /data/.venv)
+        VENV_PERSISTENT="${DATADIR}/.venv"
+        ;;
+    *)
+        VENV_PERSISTENT="$VENV_RUNTIME_PATH"
+        ;;
+esac
 
 umask "$UMASK"
 mkdir -p "$DATADIR"
@@ -53,12 +64,54 @@ fix_venv_shebangs() {
     done
 }
 
+# Copy image venv to a temp sibling, validate SickChill import, then replace
+# VENV_PERSISTENT atomically. On any failure, leave the existing venv in place.
 install_persistent_venv() {
+    local parent tmp old
+    parent="$(dirname "$VENV_PERSISTENT")"
+    tmp="${parent}/.venv.new.$$"
+    old="${parent}/.venv.old.$$"
+
     echo "==> Installing persistent venv at $VENV_PERSISTENT"
-    rm -rf "$VENV_PERSISTENT"
-    cp -a "$VENV_IMAGE" "$VENV_PERSISTENT"
-    fix_venv_shebangs "$VENV_PERSISTENT"
-    write_persistent_revision
+    mkdir -p "$parent"
+    rm -rf "$tmp" "$old"
+
+    if ! cp -a "$VENV_IMAGE" "$tmp"; then
+        echo "ERROR: failed to copy image venv to $tmp — keeping existing persistent venv (if any)"
+        rm -rf "$tmp"
+        return 1
+    fi
+
+    fix_venv_shebangs "$tmp"
+    # Stamp revision on the staged tree before swap (only committed if validation passes)
+    image_revision >"$tmp/.image_revision"
+
+    if [ ! -x "$tmp/bin/python" ] || ! "$tmp/bin/python" -c 'import SickChill'; then
+        echo "ERROR: staged venv failed SickChill import check — keeping existing persistent venv (if any)"
+        rm -rf "$tmp"
+        return 1
+    fi
+
+    if [ -e "$VENV_PERSISTENT" ]; then
+        if ! mv "$VENV_PERSISTENT" "$old"; then
+            echo "ERROR: could not move aside existing venv — keeping it"
+            rm -rf "$tmp"
+            return 1
+        fi
+        if ! mv "$tmp" "$VENV_PERSISTENT"; then
+            echo "ERROR: could not install staged venv — restoring previous"
+            mv "$old" "$VENV_PERSISTENT" || true
+            rm -rf "$tmp"
+            return 1
+        fi
+        rm -rf "$old"
+    elif ! mv "$tmp" "$VENV_PERSISTENT"; then
+        echo "ERROR: could not install staged venv at $VENV_PERSISTENT"
+        rm -rf "$tmp"
+        return 1
+    fi
+
+    return 0
 }
 
 # Persistent venv initialization / update
@@ -80,7 +133,15 @@ else
         PREVIOUS="$(tr -d '[:space:]' <"$VENV_PERSISTENT/.image_revision")"
     fi
 
-    if [ "$CURRENT" != "unknown" ] && [ "$CURRENT" != "$PREVIOUS" ]; then
+    if [ ! -f "$VENV_PERSISTENT/.image_revision" ]; then
+        # Unmarked legacy venv: reinstall from image; do not stamp current rev onto the old tree
+        echo "==> Persistent venv missing .image_revision — reinstalling from image..."
+        install_persistent_venv
+        if [ "$(id -u)" = "0" ]; then
+            chown -R "$PUID:$PGID" "$VENV_PERSISTENT" || true
+        fi
+        echo "==> Persistent venv reinstalled (revision $(image_revision))."
+    elif [ "$CURRENT" != "unknown" ] && [ "$CURRENT" != "$PREVIOUS" ]; then
         echo "==> New image revision detected ($PREVIOUS → $CURRENT) — updating persistent venv..."
         install_persistent_venv
 
@@ -89,10 +150,6 @@ else
         fi
         echo "==> Persistent venv updated."
     else
-        # Ensure marker exists even on older persistent venvs; refresh shebangs if needed
-        if [ ! -f "$VENV_PERSISTENT/.image_revision" ]; then
-            write_persistent_revision
-        fi
         fix_venv_shebangs "$VENV_PERSISTENT"
     fi
 fi

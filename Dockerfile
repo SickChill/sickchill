@@ -28,10 +28,12 @@ ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 ARG GIT_SHA=unknown
 ARG GIT_BRANCH=unknown
 
-# Template venv in the image (copied to /data/.venv at runtime — see entrypoint).
-# Keep this off /data so VOLUME/bind-mounts do not erase the bake.
+# Template venv in the image (copied to ${DATADIR}/.venv at runtime — see entrypoint).
+# Keep this off DATADIR so VOLUME/bind-mounts do not erase the bake.
+# VENV_RUNTIME_PATH is derived from DATADIR; override both together if relocating data.
+ENV DATADIR=/data
 ENV VENV_IMAGE_PATH=/opt/sickchill/.venv
-ENV VENV_RUNTIME_PATH=/data/.venv
+ENV VENV_RUNTIME_PATH=${DATADIR}/.venv
 ENV HOME="/root/"
 ENV CARGO_HOME="/root/.cargo"
 ENV PATH="$VENV_IMAGE_PATH/bin:$CARGO_HOME/bin:$PATH"
@@ -117,7 +119,7 @@ RUN mkdir -m 777 /sickchill-wheels && \
 
 RUN if [ -n "$SOURCE" ]; then \
   rm -rf /sickchill-wheels/sickchill*.whl && \
-  cp dist/sickchill-*.whl /sickchill-wheels/ || true; \
+  cp dist/sickchill-*.whl /sickchill-wheels/; \
 fi
 
 FROM scratch AS sickchill-wheels
@@ -147,6 +149,7 @@ RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
 # Runtime configuration — datadir is the accessible NAS mount
 ENV HOME=/data
 ENV DATADIR=/data
+ENV VENV_RUNTIME_PATH=${DATADIR}/.venv
 ENV PATH="$VENV_IMAGE_PATH/bin:$PATH"
 WORKDIR /data
 
