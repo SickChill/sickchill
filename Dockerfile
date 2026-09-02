@@ -62,7 +62,7 @@ ENV CARGO_TERM_VERBOSE="true"
 ENV CARGO="$CARGO_HOME/bin/cargo"
 
 # hadolint ignore=SC2215
-RUN --security=insecure curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
+RUN curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sed "s#/proc/self/exe#$SHELL#g" | sh -s -- -y --profile minimal --default-toolchain nightly
 
 ENV PATH="$RUSTUP_HOME/bin:$CARGO_HOME/bin:$VENV_IMAGE_PATH/bin:$PATH"
 
