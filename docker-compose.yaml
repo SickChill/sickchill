@@ -1,7 +1,17 @@
 services:
   sickchill:
     image: sickchill/sickchill:develop
-    # image: sickchill/sickchill:latest
+    # Local/NAS build from this tree (omit "build:" to pull the Hub image only):
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: sickchill-final
+      args:
+        SOURCE: "1"
+        # Pass through from host env, e.g.:
+        #   GIT_SHA=$(git rev-parse HEAD) GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD) docker compose build
+        GIT_SHA: ${GIT_SHA:-unknown}
+        GIT_BRANCH: ${GIT_BRANCH:-unknown}
     container_name: sickchill
     restart: on-failure
 
@@ -16,10 +26,14 @@ services:
       - TZ=America/New_York
       - UMASK=002
       - DATADIR=/data
+      # Help & Info / entrypoint revision fallback (image bake is primary; env is backup)
+      - SICKCHILL_SHA=${GIT_SHA:-}
+      - SICKCHILL_BRANCH=${GIT_BRANCH:-}
 
     volumes:
       # Main persistent folder - AFTER FIRST START this will contain:
-      #   .venv/          (full Python environment + sickchill package - now lives here!)
+      #   .venv/          (full Python environment + sickchill package — lives on the NAS share)
+      #   .venv/.image_revision  (GIT_SHA used to detect image updates)
       #   cache/ logs/
       #   config.ini sickchill.db etc
       - /docker/sickchill/data:/data
