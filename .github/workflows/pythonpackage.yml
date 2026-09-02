@@ -187,6 +187,8 @@ jobs:
           cache-to: type=gha,mode=max  # Added for better reuse
           build-args: |
             SOURCE=1
+            GIT_SHA=${{ github.sha }}
+            GIT_BRANCH=${{ github.head_ref || github.ref_name }}
           allow: |
             security.insecure
 
@@ -274,6 +276,8 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             SOURCE=1
+            GIT_SHA=${{ github.sha }}
+            GIT_BRANCH=${{ github.head_ref || github.ref_name }}
           allow: |
             security.insecure
 
@@ -289,6 +293,8 @@ jobs:
           cache-from: type=gha
           build-args: |
             SOURCE=1
+            GIT_SHA=${{ github.sha }}
+            GIT_BRANCH=${{ github.head_ref || github.ref_name }}
           allow: |
             security.insecure
 

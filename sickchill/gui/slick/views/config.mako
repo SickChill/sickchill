@@ -42,6 +42,21 @@
                             </div>
                         </div>
                     % endif
+                    % if sc_branch or sc_revision:
+                        <div class="row">
+                            <div class="col-md-12">
+                                ${_('Revision')}:
+                                % if sc_branch and sc_branch != 'HEAD':
+                                    <a href="${anon_url('https://github.com/SickChill/sickchill/tree/%s' % sc_branch)}">${sc_branch}</a>@
+                                % elif sc_branch:
+                                    ${sc_branch}@
+                                % endif
+                                % if sc_revision:
+                                    <a href="${anon_url('https://github.com/SickChill/sickchill/commit/%s' % sc_revision)}">${sc_revision[:12]}</a>
+                                % endif
+                            </div>
+                        </div>
+                    % endif
                     <div class="row">
                         <div class="col-md-12">
                             Database Version: ${'{}.{}'.format(*db.DBConnection().version)}

@@ -18,6 +18,9 @@ ENV PYTHONUNBUFFERED=1
 ARG SOURCE
 ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 ARG HOME=${HOME:-}
+# Neutral defaults — never invent "develop" (master/local builds omit or pass real ref)
+ARG GIT_SHA=unknown
+ARG GIT_BRANCH=unknown
 
 ENV POETRY_INSTALLER_PARALLEL=false
 ENV POETRY_VIRTUALENVS_CREATE=false
@@ -79,6 +82,17 @@ RUN pip install -U wheel setuptools-rust
 WORKDIR /sickchill
 COPY . /sickchill/
 
+# Bake git revision for Help & Info. Skip placeholder "unknown" so pip-only
+ARG GIT_SHA
+ARG GIT_BRANCH
+RUN if [ -n "$GIT_SHA" ] && [ "$GIT_SHA" != "unknown" ]; then \
+  if [ -n "$GIT_BRANCH" ] && [ "$GIT_BRANCH" != "unknown" ]; then \
+    printf '%s %s\n' "$GIT_BRANCH" "$GIT_SHA" > sickchill/_revision.txt; \
+  else \
+    printf '%s\n' "$GIT_SHA" > sickchill/_revision.txt; \
+  fi; \
+fi
+
 # https://github.com/rust-lang/cargo/issues/8719#issuecomment-1253575253
 # hadolint ignore=SC2215,SC1089
 RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
@@ -86,6 +100,12 @@ RUN --mount=type=tmpfs,target="$CARGO_HOME" if [ -z "$SOURCE" ]; then \
 else \
   pip install --upgrade poetry && poetry run pip install -U setuptools-rust pycparser && \
   poetry build --no-interaction --no-ansi && pip install --upgrade "$(ls ./dist/sickchill-*.whl)[speedups]"; \
+fi
+
+# Ensure installed package has _revision.txt (wheel may omit gitignored file)
+RUN if [ -f sickchill/_revision.txt ]; then \
+  REV_DST="$(python -c 'import pathlib, sickchill; print(pathlib.Path(sickchill.__file__).parent)')" && \
+  cp sickchill/_revision.txt "$REV_DST/_revision.txt"; \
 fi
 
 RUN mkdir -m 777 /sickchill-wheels && \
@@ -104,6 +124,14 @@ COPY --from=builder /sickchill-wheels /
 FROM base AS sickchill-final
 
 COPY --from=builder "$POETRY_VIRTUALENVS_PATH" "$POETRY_VIRTUALENVS_PATH"
+
+# Runtime env + OCI label (builder-stage ENV/LABEL do not reach this image).
+# Defaults are "unknown" (filtered at runtime); CI passes the real ref_name.
+ARG GIT_SHA=unknown
+ARG GIT_BRANCH=unknown
+ENV SICKCHILL_SHA=$GIT_SHA
+ENV SICKCHILL_BRANCH=$GIT_BRANCH
+LABEL org.opencontainers.image.revision=$GIT_SHA
 
 # When you docker exec, show the config files in the container
 ENV HOME=/data

@@ -151,3 +151,107 @@ def get_current_version() -> str:
         return get_distribution().version
     except PackageNotFoundError:
         return fallback_version
+
+
+_revision_cache: tuple[str, str] | None = None
+_revision_file = sickchill_dir / "_revision.txt"
+
+
+def _git_output(*args: str, cwd: Path | None = None) -> str | None:
+    """Run a git command; return stripped stdout or None on any failure."""
+    import subprocess
+
+    try:
+        return (
+            subprocess.check_output(
+                ["git", *args],
+                cwd=str(cwd) if cwd else None,
+                stderr=subprocess.DEVNULL,
+                timeout=5,
+                text=True,
+            ).strip()
+            or None
+        )
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        return None
+
+
+def _normalize_revision(branch: str, sha: str) -> tuple[str, str]:
+    """Drop placeholder values so Help does not show a fake revision."""
+    branch = (branch or "").strip()
+    sha = (sha or "").strip()
+    if branch in ("", "unknown"):
+        branch = ""
+    if sha in ("", "unknown"):
+        # No real commit → hide the whole Revision row (do not show "develop@")
+        return "", ""
+    return branch, sha
+
+
+def _parse_revision_file(path: Path) -> tuple[str, str]:
+    """Parse ``branch sha`` or a single ``sha`` from a bake file."""
+    try:
+        text = path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return "", ""
+    if not text:
+        return "", ""
+    parts = text.split()
+    if len(parts) >= 2:
+        return _normalize_revision(parts[0], parts[1])
+    return _normalize_revision("", parts[0])
+
+
+def _revision_from_git() -> tuple[str, str] | None:
+    """Return (branch, sha) from a live checkout, or None if not a git tree."""
+    repo_root = git_folder.parent
+    if _git_output("-C", str(repo_root), "rev-parse", "--git-dir") is None:
+        return None
+    sha = _git_output("-C", str(repo_root), "rev-parse", "HEAD")
+    if not sha:
+        return None
+    branch = _git_output("-C", str(repo_root), "rev-parse", "--abbrev-ref", "HEAD") or "HEAD"
+    return branch, sha
+
+
+def _revision_from_env() -> tuple[str, str]:
+    sha = os.environ.get("SICKCHILL_SHA") or os.environ.get("GIT_SHA") or ""
+    branch = os.environ.get("SICKCHILL_BRANCH") or os.environ.get("GIT_BRANCH") or ""
+    return _normalize_revision(branch, sha)
+
+
+def get_git_revision() -> tuple[str, str]:
+    """
+    Return ``(branch, sha)`` for the running code.
+
+    Resolution order: live git checkout → ``sickchill/_revision.txt`` → env
+    (``SICKCHILL_SHA`` / ``GIT_SHA``, ``SICKCHILL_BRANCH`` / ``GIT_BRANCH``).
+    Result is cached for the process lifetime.
+    """
+    global _revision_cache
+    if _revision_cache is not None:
+        return _revision_cache
+
+    result = _revision_from_git()
+    if result is None and _revision_file.is_file():
+        result = _parse_revision_file(_revision_file)
+        if result == ("", ""):
+            result = None
+    if result is None:
+        result = _revision_from_env()
+        if result == ("", ""):
+            result = ("", "")
+
+    _revision_cache = result
+    return _revision_cache
+
+
+def format_git_revision(short: int = 12) -> str:
+    """Return ``branch@sha12`` or ``sha12`` or empty string for logs/UI helpers."""
+    branch, sha = get_git_revision()
+    if not sha:
+        return f"{branch}@" if branch else ""
+    short_sha = sha[:short] if short else sha
+    if branch and branch != "HEAD":
+        return f"{branch}@{short_sha}"
+    return short_sha
