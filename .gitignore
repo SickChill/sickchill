@@ -112,3 +112,4 @@ config.xml
 fvapp-sickchill.service
 
 poetry.lock
+/crowdin.env
