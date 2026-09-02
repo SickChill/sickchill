@@ -185,10 +185,11 @@ jobs:
           target: sickchill-final
           cache-from: type=gha
           cache-to: type=gha,mode=max  # Added for better reuse
+          # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
             GIT_SHA=${{ github.sha }}
-            GIT_BRANCH=${{ github.head_ref || github.ref_name }}
+            GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
           allow: |
             security.insecure
 
@@ -274,10 +275,11 @@ jobs:
           target: sickchill-final
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
             GIT_SHA=${{ github.sha }}
-            GIT_BRANCH=${{ github.head_ref || github.ref_name }}
+            GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
           allow: |
             security.insecure
 
@@ -291,10 +293,11 @@ jobs:
           outputs: type=local,dest=/tmp/sickchill-wheels
           target: sickchill-wheels
           cache-from: type=gha
+          # GIT_BRANCH: PR head_ref, or branch ref_name; empty on tag pushes (sha-only bake)
           build-args: |
             SOURCE=1
             GIT_SHA=${{ github.sha }}
-            GIT_BRANCH=${{ github.head_ref || github.ref_name }}
+            GIT_BRANCH=${{ github.head_ref || (startsWith(github.ref, 'refs/heads/') && github.ref_name) || '' }}
           allow: |
             security.insecure
 

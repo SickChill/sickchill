@@ -31,19 +31,46 @@ class TestGetGitRevision(unittest.TestCase):
 
     def test_from_git_checkout(self):
         sha = "e1f8475ded8dabcdef0123456789abcdef012345"
-        with mock.patch.object(init_helpers, "_git_output") as git_out:
-            git_out.side_effect = [
-                ".git",  # rev-parse --git-dir
-                sha,  # rev-parse HEAD
-                "develop",  # rev-parse --abbrev-ref HEAD
-            ]
-            branch, got_sha = init_helpers.get_git_revision()
+        with mock.patch.object(init_helpers, "git_folder") as gf:
+            gf.exists.return_value = True
+            gf.parent = Path("/repo")
+            with mock.patch.object(init_helpers, "_git_output") as git_out:
+                git_out.side_effect = [
+                    ".git",  # rev-parse --git-dir
+                    sha,  # rev-parse HEAD
+                    "develop",  # rev-parse --abbrev-ref HEAD
+                ]
+                branch, got_sha = init_helpers.get_git_revision()
         self.assertEqual(branch, "develop")
         self.assertEqual(got_sha, sha)
         # Cached: second call does not hit git again
         with mock.patch.object(init_helpers, "_git_output") as git_out2:
             self.assertEqual(init_helpers.get_git_revision(), ("develop", sha))
             git_out2.assert_not_called()
+
+    def test_skips_git_when_dot_git_missing(self):
+        """No .git file/dir → do not spawn git (pip install / bare tree)."""
+        with mock.patch.object(init_helpers, "git_folder") as gf:
+            gf.exists.return_value = False
+            with mock.patch.object(init_helpers, "_git_output") as git_out:
+                with mock.patch.object(init_helpers, "_revision_file") as rev_file:
+                    rev_file.is_file.return_value = False
+                    self.assertEqual(init_helpers.get_git_revision(), ("", ""))
+                    git_out.assert_not_called()
+
+    def test_worktree_git_file_still_looked_up(self):
+        """Worktrees use a .git *file*; exists() is enough (not is_dir())."""
+        sha = "cccccccccccccccccccccccccccccccccccccccc"
+        with mock.patch.object(init_helpers, "git_folder") as gf:
+            gf.exists.return_value = True
+            gf.is_dir.return_value = False  # file pointer
+            gf.parent = Path("/repo")
+            with mock.patch.object(init_helpers, "_git_output") as git_out:
+                git_out.side_effect = [".git", sha, "HEAD"]
+                branch, got_sha = init_helpers.get_git_revision()
+        self.assertEqual(branch, "HEAD")
+        self.assertEqual(got_sha, sha)
+        gf.is_dir.assert_not_called()
 
     def test_from_revision_file_when_no_git(self):
         sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"

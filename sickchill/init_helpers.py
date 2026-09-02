@@ -203,7 +203,13 @@ def _parse_revision_file(path: Path) -> tuple[str, str]:
 
 
 def _revision_from_git() -> tuple[str, str] | None:
-    """Return (branch, sha) from a live checkout, or None if not a git tree."""
+    """Return (branch, sha) from a live checkout, or None if not a git tree.
+
+    ``git_folder`` may be a directory *or* a file (worktree / ``gitdir:``
+    pointer). Only ``exists()`` is required — do not use ``is_dir()``.
+    """
+    if not git_folder.exists():
+        return None
     repo_root = git_folder.parent
     if _git_output("-C", str(repo_root), "rev-parse", "--git-dir") is None:
         return None
