@@ -9,7 +9,7 @@ from sickchill.views.routes import Route
 
 @Route("/changes(/?.*)", name="changelog")
 class HomeChangeLog(Home):
-    def index(self, *args, **kwargs):
+    def index(self):
         # noinspection PyBroadException
         try:
             changes = helpers.getURL("https://raw.githubusercontent.com/SickChill/sickchill/master/CHANGES.md", session=helpers.make_session(), returns="text")

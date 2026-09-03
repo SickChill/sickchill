@@ -86,3 +86,17 @@ class AddSceneNamesNameIndex(AddCacheIndexes):
         self.connection.action("CREATE INDEX IF NOT EXISTS idx_scene_names_name ON scene_names (name);")
         if self.get_db_version() < 3:
             self.increment_db_version()
+
+
+class AddShowDirMtime(AddSceneNamesNameIndex):
+    """Track show-folder mtime / last disk refresh for ShowUpdater gating."""
+
+    def test(self):
+        return self.has_table("show_dir_mtime") and self.get_db_version() >= 4
+
+    def execute(self):
+        self.connection.action(
+            "CREATE TABLE IF NOT EXISTS show_dir_mtime (indexer_id INTEGER PRIMARY KEY, location TEXT, mtime REAL, last_disk_refresh INTEGER);"
+        )
+        if self.get_db_version() < 4:
+            self.increment_db_version()

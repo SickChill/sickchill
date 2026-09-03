@@ -82,6 +82,43 @@ class GenericQueue(object):
             self._apply_front(item)
             return item
 
+    def stop_current_item(self, timeout: float = 10):
+        """
+        Signal the running queue worker to stop and wait briefly.
+
+        Used on shutdown/restart so we do not only join the scheduler thread while a
+        SHOWQUEUE-REFRESH (or similar) worker stays stuck forever. A hung worker may
+        still not exit (Python cannot kill threads); we log and continue after timeout.
+        """
+        with self.lock:
+            item = self.currentItem
+
+        if not item:
+            return
+
+        name = getattr(item, "name", "queue-item")
+        if getattr(item, "stop", None) is not None:
+            item.stop.set()
+            logger.info(f"Signaled {name} to stop")
+
+        if item.is_alive():
+            logger.info(f"Waiting up to {timeout:g}s for {name} to exit")
+            item.join(timeout)
+            if item.is_alive():
+                # Keep currentItem set so Scheduler.run will not start another worker
+                # while this one is still running after the join timeout.
+                logger.warning(f"{name} did not exit within {timeout:g}s; leaving as currentItem")
+                return
+            logger.info(f"{name} exited")
+
+        with self.lock:
+            if self.currentItem is item:
+                try:
+                    item.finish()
+                except Exception:
+                    pass
+                self.currentItem = None
+
     def run(self, force=False):
         """
         Process items in this queue

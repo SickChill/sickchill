@@ -54,6 +54,19 @@
         </div>
     </div>
     <br>
+    % if settings.DEVELOPER:
+    <div class="row">
+        <div class="col-md-12">
+            <h3>${_('Show Updater')}:</h3>
+            <a class="btn" href="${scRoot}/manage/manageSearches/forceShowUpdater">
+                <i class="icon-exclamation-sign"></i> ${_('Force')}
+            </a>
+            ${(_('Not in progress'), _('In Progress'))[showUpdaterStatus]}
+            <span class="text-muted">(${_('developer')})</span>
+        </div>
+    </div>
+    <br>
+    % endif
     <div class="row">
         <div class="col-md-12">
             <h3>${_('Search Queue')}:</h3>

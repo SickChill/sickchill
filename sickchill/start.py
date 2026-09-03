@@ -311,7 +311,13 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.DOWNLOAD_PROPERS = check_setting_bool(settings.CFG, "General", "download_propers", True)
         settings.CHECK_PROPERS_INTERVAL = check_setting_str(settings.CFG, "General", "check_propers_interval")
-        if settings.CHECK_PROPERS_INTERVAL not in ("15m", "45m", "90m", "4h", "daily"):
+        # Legacy UI values: 15m→30m, 45m→90m (persist so config.ini is updated)
+        _legacy_propers = {"15m": "30m", "45m": "90m"}
+        if settings.CHECK_PROPERS_INTERVAL in _legacy_propers:
+            settings.CHECK_PROPERS_INTERVAL = _legacy_propers[settings.CHECK_PROPERS_INTERVAL]
+            settings.CFG.setdefault("General", {})["check_propers_interval"] = settings.CHECK_PROPERS_INTERVAL
+            settings.CFG.write()
+        if settings.CHECK_PROPERS_INTERVAL not in ("30m", "90m", "4h", "8h", "daily"):
             settings.CHECK_PROPERS_INTERVAL = "daily"
 
         settings.RANDOMIZE_PROVIDERS = check_setting_bool(settings.CFG, "General", "randomize_providers")
@@ -793,7 +799,8 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.POSTER_SORTBY = check_setting_str(settings.CFG, "GUI", "poster_sortby", "name")
         settings.POSTER_SORTDIR = check_setting_int(settings.CFG, "GUI", "poster_sortdir", 1, min_val=0, max_val=1)
         settings.DISPLAY_ALL_SEASONS = check_setting_bool(settings.CFG, "General", "display_all_seasons", True)
-        settings.ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(settings.CFG, "General", "ended_shows_update_interval", 7)
+        settings.ENDED_SHOWS_UPDATE_INTERVAL = check_setting_int(settings.CFG, "General", "ended_shows_update_interval", 14, min_val=-1, max_val=365)
+        settings.SHOW_DISK_REFRESH_DAYS = check_setting_int(settings.CFG, "General", "show_disk_refresh_days", 7, min_val=-1, max_val=365)
         settings.NO_LGMARGIN = check_setting_bool(settings.CFG, "GUI", "no_lgmargin", True)
 
         if check_section(settings.CFG, "Shares"):
@@ -917,11 +924,13 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
 
         settings.showQueueScheduler = scheduler.Scheduler(show_queue.ShowQueue(), cycleTime=datetime.timedelta(seconds=5), threadName="SHOWQUEUE")
 
+        # Minute from process start (not stored); ShowUpdater may nudge it +0..20 after each run.
+        _showupdate_minute = sc_now().minute
         settings.showUpdateScheduler = scheduler.Scheduler(
             show_updater.ShowUpdater(),
             run_delay=datetime.timedelta(seconds=20),
             cycleTime=datetime.timedelta(hours=1),
-            start_time=datetime.time(hour=settings.SHOWUPDATE_HOUR),
+            start_time=datetime.time(hour=settings.SHOWUPDATE_HOUR, minute=_showupdate_minute),
             threadName="SHOWUPDATER",
             silent=False,
         )
@@ -943,7 +952,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             searchBacklog.BacklogSearcher(), cycleTime=update_interval, threadName="BACKLOG", run_delay=update_interval
         )
 
-        search_intervals = {"15m": 15, "45m": 45, "90m": 90, "4h": 4 * 60, "daily": 24 * 60}
+        search_intervals = {"30m": 30, "90m": 90, "4h": 4 * 60, "8h": 8 * 60, "daily": 24 * 60}
         if settings.CHECK_PROPERS_INTERVAL in search_intervals:
             update_interval = datetime.timedelta(minutes=search_intervals[settings.CHECK_PROPERS_INTERVAL])
             run_at = None
@@ -1082,6 +1091,20 @@ def halt():
             # set them all to stop at the same time
             for t in threads:
                 t.stop.set()
+
+            # Stop queue *workers* (currentItem), not only their scheduler threads.
+            # A stuck SHOWQUEUE-REFRESH otherwise survives join(10) on SHOWQUEUE.
+            for queue_scheduler in (
+                settings.showQueueScheduler,
+                settings.searchQueueScheduler,
+                settings.postProcessorTaskScheduler,
+            ):
+                action = getattr(queue_scheduler, "action", None)
+                if action is not None and hasattr(action, "stop_current_item"):
+                    try:
+                        action.stop_current_item(timeout=10)
+                    except Exception as error:
+                        logger.warning(f"Error stopping {getattr(queue_scheduler, 'name', 'queue')} current item: {error}")
 
             for t in threads:
                 logger.info(f"Waiting for the {t.name} thread to exit")
@@ -1317,6 +1340,7 @@ def save_config():
                 "developer": int(settings.DEVELOPER),
                 "display_all_seasons": int(settings.DISPLAY_ALL_SEASONS),
                 "ended_shows_update_interval": int(settings.ENDED_SHOWS_UPDATE_INTERVAL),
+                "show_disk_refresh_days": int(settings.SHOW_DISK_REFRESH_DAYS),
                 "news_last_read": settings.NEWS_LAST_READ,
                 "flaresolverr_uri": settings.FLARESOLVERR_URI,
             },

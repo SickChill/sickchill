@@ -158,6 +158,7 @@
                                     <li><a href="${static_url('home/', include_version=False)}"><i class="fa fa-fw fa-home"></i>&nbsp;${_('Show List')}</a></li>
                                     <li><a href="${static_url('addShows/', include_version=False)}"><i class="fa fa-fw fa-television"></i>&nbsp;${_('Add Shows')}</a></li>
                                     <li><a href="${static_url('home/postprocess/', include_version=False)}"><i class="fa fa-fw fa-refresh"></i>&nbsp;${_('Manual Post-Processing')}</a></li>
+                                    <li><a href="${static_url('manage/manageSearches/forceAutoPostProcess', include_version=False)}"><i class="fa fa-fw fa-play"></i>&nbsp;${_('Force Auto Post-Processing')}</a></li>
                                     % if settings.SHOWS_RECENT:
                                         <li role="separator" class="divider"></li>
                                         % for recentShow in settings.SHOWS_RECENT:

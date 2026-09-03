@@ -1,5 +1,7 @@
 <%inherit file="/layouts/main.mako" />
 <%!
+    from urllib.parse import quote
+
     from sickchill import settings
     from sickchill.oldbeard import db
     from sickchill.oldbeard.helpers import anon_url
@@ -39,6 +41,21 @@
                                 <a href="${anon_url('https://github.com/SickChill/SickChill/releases/tag/%s' % sc_version)}">
                                     ${sc_version}
                                 </a>
+                            </div>
+                        </div>
+                    % endif
+                    % if sc_branch or sc_revision:
+                        <div class="row">
+                            <div class="col-md-12">
+                                ${_('Revision')}:
+                                % if sc_branch and sc_branch != 'HEAD':
+                                    <a href="${anon_url('https://github.com/SickChill/sickchill/tree/%s' % quote(sc_branch, safe=''))}">${sc_branch}</a>@
+                                % elif sc_branch:
+                                    ${sc_branch}@
+                                % endif
+                                % if sc_revision:
+                                    ${sc_revision[:12]}
+                                % endif
                             </div>
                         </div>
                     % endif
