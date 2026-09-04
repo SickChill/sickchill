@@ -409,8 +409,9 @@ class TVCache(RSSTorrentMixin):
                     if part:
                         tags.add(part)
 
+        # Leading '.' required (scene-style delimiter); trailing may be '.' or
         like_clauses = " OR ".join(["name LIKE ?" for _ in tags])
-        params = [self.provider_id] + [f"%.{tag}.%" for tag in sorted(tags)]
+        params = [self.provider_id] + [f"%.{tag}%" for tag in sorted(tags)]
         sql = f"SELECT * FROM results WHERE provider = ? AND ({like_clauses})"
 
         if date is not None:

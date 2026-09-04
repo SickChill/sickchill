@@ -68,6 +68,20 @@ class TestListPropersSQL(conftest.SickChillTestDBCase):
         self.assertIn("Show.S01E02.REAL.1080p.WEB", names)
         self.assertNotIn("Show.S01E03.PROPER.1080p.WEB", names)
 
+    def test_list_propers_matches_hyphenated_proper_group_suffix(self):
+        """Leading '.' before PROPER retained; trailing -GRP (release group) allowed."""
+        self._insert(self.provider_a, "Show.S01E01.PROPER-GRP.720p.HDTV")
+        self._insert(self.provider_a, "Show.S01E01.REPACK-GROUP.1080p.WEB")
+        self._insert(self.provider_a, "Show.S01E01.NOPROPERHERE.720p.HDTV")  # no .PROPER delimiter
+
+        provider = _FakeProvider(self.provider_a)
+        cache = TVCache(provider)
+        rows = cache.list_propers(date=None)
+        names = {r["name"] for r in rows}
+        self.assertIn("Show.S01E01.PROPER-GRP.720p.HDTV", names)
+        self.assertIn("Show.S01E01.REPACK-GROUP.1080p.WEB", names)
+        self.assertNotIn("Show.S01E01.NOPROPERHERE.720p.HDTV", names)
+
 
 class TestProperSearchDate(unittest.TestCase):
     def test_defaults_to_two_day_floor_when_never_run(self):
@@ -124,6 +138,56 @@ class TestTorrentFindPropersCacheFirst(unittest.TestCase):
 
         self.assertEqual(len(results), 1)
         provider.search.assert_not_called()
+
+    def test_consumes_cached_proper_grp_via_list_propers(self):
+        from sickchill.providers.torrent.TorrentProvider import TorrentProvider
+
+        provider = TorrentProvider("CacheProperGrp")
+        provider.cache = mock.Mock()
+        provider.cache.list_propers.return_value = [
+            {
+                "name": "Show.S01E01.PROPER-GRP.720p.HDTV",
+                "url": "http://example/proper-grp",
+                "time": int(time.time()),
+            },
+        ]
+        provider.search = mock.Mock(return_value=[])
+
+        results = provider.find_propers(search_date=sc_now())
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].name, "Show.S01E01.PROPER-GRP.720p.HDTV")
+        self.assertEqual(results[0].url, "http://example/proper-grp")
+        provider.search.assert_not_called()
+        provider.cache.list_propers.assert_called_once()
+
+
+class TestGenericFindPropersCachedProperGrp(conftest.SickChillTestDBCase):
+    def setUp(self):
+        super().setUp()
+        from sickchill.providers.GenericProvider import GenericProvider
+
+        self.cache_db = db.DBConnection("cache.db")
+        self.provider = GenericProvider("GenericProperGrp")
+        self.provider_id = self.provider.get_id()
+        self.provider.cache = TVCache(self.provider)
+        self.cache_db.action("DELETE FROM results WHERE provider = ?", [self.provider_id])
+
+    def tearDown(self):
+        self.cache_db.action("DELETE FROM results WHERE provider = ?", [self.provider_id])
+        super().tearDown()
+
+    def test_generic_find_propers_consumes_cached_proper_grp(self):
+        name = "Show.S01E01.PROPER-GRP.720p.HDTV"
+        ts = int(time.time())
+        self.cache_db.action(
+            "INSERT OR IGNORE INTO results (provider, name, season, episodes, indexerid, url, time, quality, release_group, version) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [self.provider_id, name, 1, "|1|", 12345, f"http://example/{self.provider_id}/{name}", ts, "HD", "", -1],
+        )
+
+        results = self.provider.find_propers(search_date=None)
+        names = [r.name for r in results]
+        self.assertIn(name, names)
 
 
 class TestProperQueueAndInterval(unittest.TestCase):
