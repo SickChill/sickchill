@@ -112,4 +112,6 @@ config.xml
 fvapp-sickchill.service
 
 poetry.lock
-/crowdin.env
+
+# Crowdin API credentials (never commit)
+crowdin.env
