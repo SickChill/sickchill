@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2026-09-04 14:13+0700\n"
+"POT-Creation-Date: 2026-09-04 15:13+0700\n"
 "PO-Revision-Date: 2021-06-16 19:00+0000\n"
 "Last-Translator: \n"
 "Language: zh_CN\n"
@@ -6761,9 +6761,9 @@ msgstr ""
 msgid "Show updater is already running"
 msgstr ""
 
+# | msgid "Update Failed"
 #: sickchill/views/manage/searches.py:112
 #, fuzzy
-#| msgid "Update Failed"
 msgid "Show updater started"
 msgstr "更新失败"
 

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2026-09-04 14:13+0700\n"
+"POT-Creation-Date: 2026-09-04 15:13+0700\n"
 "PO-Revision-Date: 2021-06-16 19:00+0000\n"
 "Last-Translator: \n"
 "Language: sk_SK\n"
@@ -693,9 +693,9 @@ msgid "Auto Post Processor is already running"
 msgstr ""
 
 # | msgid "Post Processing"
+# | msgid "Post Processing Dir"
 #: sickchill/views/manage/searches.py:84
 #, fuzzy
-#| msgid "Post Processing Dir"
 msgid "Auto Post Processor is disabled"
 msgstr "Následné spracovanie"
 
@@ -2961,9 +2961,9 @@ msgid "Force"
 msgstr ""
 
 # | msgid "Post Processing"
+# | msgid "Manual Post-Processing"
 #: sickchill/gui/slick/views/layouts/main.mako:161
 #, fuzzy
-#| msgid "Manual Post-Processing"
 msgid "Force Auto Post-Processing"
 msgstr "Následné spracovanie"
 
@@ -6129,9 +6129,9 @@ msgid "Reverse proxy headers"
 msgstr ""
 
 # | msgid "Season"
+# | msgid "Version"
 #: sickchill/gui/slick/views/config.mako:50
 #, fuzzy
-#| msgid "Version"
 msgid "Revision"
 msgstr "Sezóna"
 
@@ -7091,9 +7091,9 @@ msgid "Show updater is already running"
 msgstr ""
 
 # | msgid "Mass Update"
+# | msgid "Show Update"
 #: sickchill/views/manage/searches.py:112
 #, fuzzy
-#| msgid "Show Update"
 msgid "Show updater started"
 msgstr "Hromadná aktualizácia"
 

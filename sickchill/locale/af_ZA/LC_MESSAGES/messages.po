@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2026-09-04 14:13+0700\n"
+"POT-Creation-Date: 2026-09-04 15:13+0700\n"
 "PO-Revision-Date: 2021-06-16 19:01+0000\n"
 "Last-Translator: \n"
 "Language: af_ZA\n"
@@ -6025,9 +6025,9 @@ msgid "Reverse proxy headers"
 msgstr ""
 
 # | msgid "Season"
+# | msgid "Version"
 #: sickchill/gui/slick/views/config.mako:50
 #, fuzzy
-#| msgid "Version"
 msgid "Revision"
 msgstr "Seisoen"
 
@@ -6961,9 +6961,9 @@ msgstr ""
 msgid "Show updater is already running"
 msgstr ""
 
+# | msgid "Show Updater"
 #: sickchill/views/manage/searches.py:112
 #, fuzzy
-#| msgid "Show Updater"
 msgid "Show updater started"
 msgstr "Program Opdatering"
 

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  sickchill\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2026-09-04 14:13+0700\n"
+"POT-Creation-Date: 2026-09-04 15:13+0700\n"
 "PO-Revision-Date: 2021-06-16 19:00+0000\n"
 "Last-Translator: \n"
 "Language: en_US\n"
@@ -695,16 +695,16 @@ msgid "Auto Post Processor disabled"
 msgstr ""
 
 # | msgid "Postprocessor"
+# | msgid "Auto Post Processor"
 #: sickchill/views/manage/searches.py:91
 #, fuzzy
-#| msgid "Auto Post Processor"
 msgid "Auto Post Processor is already running"
 msgstr "Postprocessor"
 
 # | msgid "Postprocessor"
+# | msgid "Auto Post Processor"
 #: sickchill/views/manage/searches.py:84
 #, fuzzy
-#| msgid "Auto Post Processor"
 msgid "Auto Post Processor is disabled"
 msgstr "Postprocessor"
 
@@ -2985,9 +2985,9 @@ msgid "Force"
 msgstr ""
 
 # | msgid "Post Processing"
+# | msgid "Manual Post-Processing"
 #: sickchill/gui/slick/views/layouts/main.mako:161
 #, fuzzy
-#| msgid "Manual Post-Processing"
 msgid "Force Auto Post-Processing"
 msgstr "Post Processing"
 
@@ -6182,9 +6182,9 @@ msgid "Reverse proxy headers"
 msgstr ""
 
 # | msgid "Season"
+# | msgid "Version"
 #: sickchill/gui/slick/views/config.mako:50
 #, fuzzy
-#| msgid "Version"
 msgid "Revision"
 msgstr "Season"
 
@@ -7155,9 +7155,9 @@ msgstr "Show specials"
 msgid "Show updater is already running"
 msgstr ""
 
+# | msgid "Show Updater"
 #: sickchill/views/manage/searches.py:112
 #, fuzzy
-#| msgid "Show Updater"
 msgid "Show updater started"
 msgstr "Show Updater"
 
