@@ -100,3 +100,21 @@ class AddShowDirMtime(AddSceneNamesNameIndex):
         )
         if self.get_db_version() < 4:
             self.increment_db_version()
+
+
+class UniqueSceneNamesIndex(AddShowDirMtime):
+    """Stop scene_names bloat: dedupe identical (indexer_id, name) and enforce UNIQUE.
+
+    Writers use INSERT OR REPLACE, which only replaces on a constraint conflict.
+    Without a unique key every save inserted another duplicate row.
+    """
+
+    def test(self):
+        return self.has_index("idx_scene_names_indexer_name") and self.get_db_version() >= 5
+
+    def execute(self):
+        # Keep one row per (indexer_id, name) before creating the unique index
+        self.connection.action("DELETE FROM scene_names WHERE rowid NOT IN (SELECT MIN(rowid) FROM scene_names GROUP BY indexer_id, name)")
+        self.connection.action("CREATE UNIQUE INDEX IF NOT EXISTS idx_scene_names_indexer_name ON scene_names (indexer_id, name)")
+        if self.get_db_version() < 5:
+            self.increment_db_version()

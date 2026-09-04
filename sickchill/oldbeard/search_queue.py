@@ -15,6 +15,7 @@ DAILY_SEARCH = 20
 FAILED_SEARCH = 30
 MANUAL_SEARCH = 40
 EPISODE_SUBTITLE_SEARCH = 50
+PROPER_SEARCH = 15  # between backlog and daily; low priority proper upgrades
 
 MANUAL_SEARCH_HISTORY = []
 MANUAL_SEARCH_HISTORY_SIZE = 100
@@ -64,6 +65,8 @@ class SearchQueue(generic_queue.GenericQueue):
             return None
         if isinstance(current, DailySearchQueueItem):
             return "daily"
+        if isinstance(current, ProperSearchQueueItem):
+            return "proper"
         if isinstance(current, (BacklogQueueItem, MovieQueueItem)):
             return "backlog"
         if isinstance(current, FailedQueueItem):
@@ -73,6 +76,12 @@ class SearchQueue(generic_queue.GenericQueue):
         if isinstance(current, SubtitleEpisodeQueueItem):
             return "subtitle"
         return "other"
+
+    def is_proper_search_in_progress(self):
+        for cur_item in self.queue + [self.currentItem]:
+            if isinstance(cur_item, ProperSearchQueueItem):
+                return True
+        return False
 
     def is_show_in_queue(self, show):
         for cur_item in self.queue:
@@ -120,10 +129,12 @@ class SearchQueue(generic_queue.GenericQueue):
         return False
 
     def queue_length(self):
-        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0, "subtitle": 0}
+        length = {"backlog": 0, "daily": 0, "manual": 0, "failed": 0, "subtitle": 0, "proper": 0}
         for cur_item in self.queue + [self.currentItem]:
             if isinstance(cur_item, DailySearchQueueItem):
                 length["daily"] += 1
+            elif isinstance(cur_item, ProperSearchQueueItem):
+                length["proper"] += 1
             elif isinstance(cur_item, (BacklogQueueItem, MovieQueueItem)):
                 length["backlog"] += 1
             elif isinstance(cur_item, ManualSearchQueueItem):
@@ -139,6 +150,8 @@ class SearchQueue(generic_queue.GenericQueue):
         if isinstance(item, DailySearchQueueItem):
             # daily searches
             should_add = True
+        elif isinstance(item, ProperSearchQueueItem):
+            should_add = not self.is_proper_search_in_progress()
         elif isinstance(item, BacklogQueueItem):
             # backlog searches
             should_add = not self.is_in_queue(item.show, item.segment)
@@ -194,6 +207,28 @@ class DailySearchQueueItem(generic_queue.QueueItem):
         if self.success is None:
             self.success = False
 
+        super().finish()
+        self.finish()
+
+
+class ProperSearchQueueItem(generic_queue.QueueItem):
+    """Low-priority proper/repack/real upgrade search (Phase 3)."""
+
+    def __init__(self, force=False):
+        super().__init__("Proper Search", PROPER_SEARCH)
+        self.priority = generic_queue.QueuePriorities.LOW
+        self.force = force
+        self.success = None
+
+    def run(self):
+        super().run()
+        try:
+            finder = settings.properFinderScheduler.action
+            finder.run_search(force=self.force)
+            self.success = True
+        except Exception:
+            logger.debug(traceback.format_exc())
+            self.success = False
         super().finish()
         self.finish()
 

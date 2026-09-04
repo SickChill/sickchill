@@ -53,7 +53,25 @@
                             </div>
 
                             <div id="content_download_propers" ${hidden(settings.DOWNLOAD_PROPERS)}>
-
+                                <div class="field-pair row">
+                                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                        <label class="component-title">${_('Proper search window')}</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="number" min="1" max="7" step="1" name="download_propers_window_days"
+                                                   id="download_propers_window_days" value="${settings.DOWNLOAD_PROPERS_WINDOW_DAYS}"
+                                                   class="form-control input-sm input75" autocapitalize="off" />
+                                           </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="download_propers_window_days">${_('number of days (1–7). How far back to look for PROPER/REPACK/REAL episodes. Default 2.')}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="field-pair row">
                                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
                                         <label class="component-title">${_('Check propers every')}</label>
