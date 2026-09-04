@@ -307,6 +307,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
             settings.TORRENT_METHOD = "blackhole"
 
         settings.DOWNLOAD_PROPERS = check_setting_bool(settings.CFG, "General", "download_propers", True)
+        settings.DOWNLOAD_PROPERS_WINDOW_DAYS = check_setting_int(settings.CFG, "General", "download_propers_window_days", 2, min_val=1, max_val=7)
         settings.CHECK_PROPERS_INTERVAL = check_setting_str(settings.CFG, "General", "check_propers_interval")
         # Legacy UI values: 15m→30m, 45m→90m (persist so config.ini is updated)
         _legacy_propers = {"15m": "30m", "45m": "90m"}
@@ -1250,6 +1251,7 @@ def save_config():
                 "update_frequency": int(settings.UPDATE_FREQUENCY),
                 "showupdate_hour": int(settings.SHOWUPDATE_HOUR),
                 "download_propers": int(settings.DOWNLOAD_PROPERS),
+                "download_propers_window_days": int(settings.DOWNLOAD_PROPERS_WINDOW_DAYS),
                 "randomize_providers": int(settings.RANDOMIZE_PROVIDERS),
                 "check_propers_interval": settings.CHECK_PROPERS_INTERVAL,
                 "allow_high_priority": int(settings.ALLOW_HIGH_PRIORITY),

@@ -60,8 +60,8 @@ class ConfigSearch(Config):
         settings.RANDOMIZE_PROVIDERS = config.checkbox_to_value(self.get_body_argument("randomize_providers", default=None))
 
         config.change_download_propers(self.get_body_argument("download_propers", default=None))
-
-        settings.CHECK_PROPERS_INTERVAL = self.get_body_argument("check_propers_interval", default=None)
+        config.change_download_propers_window_days(self.get_body_argument("download_propers_window_days", default="2"))
+        config.change_check_propers_interval(self.get_body_argument("check_propers_interval", default=None))
 
         settings.ALLOW_HIGH_PRIORITY = config.checkbox_to_value(self.get_body_argument("allow_high_priority", default=None))
 

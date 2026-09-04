@@ -135,6 +135,23 @@ class GenericProvider(object):
 
         return [Proper(x["name"], x["url"], datetime.fromtimestamp(x["time"], tz=sc_timezone), self.show) for x in results]
 
+    def proper_search_add_string(self) -> str:
+        """Collapse proper_strings into one OR'd token for a single provider search."""
+        parts: list[str] = []
+        seen: set[str] = set()
+        for item in self.proper_strings or ["PROPER|REPACK|REAL"]:
+            for part in str(item).replace("{{", "").replace("}}", "").split("|"):
+                part = part.strip(" .")
+                key = part.upper()
+                if part and key not in seen:
+                    seen.add(key)
+                    parts.append(part)
+        if not parts:
+            return "PROPER"
+        if len(parts) == 1:
+            return parts[0]
+        return "|".join(parts)
+
     def find_search_results(self, show, episodes, search_mode, manual_search=False, download_current_quality=False):
         self._check_auth()
         self.show = show

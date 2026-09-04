@@ -395,23 +395,30 @@ class TVCache(RSSTorrentMixin):
         return needed_eps.get(episode, [])
 
     def list_propers(self, date=None):
+        """Return cached PROPER/REPACK/REAL (etc.) results for this provider only.
+
+        Name matches are OR'd inside parentheses so ``provider = ?`` always applies.
+        """
         cache_db_con = self.get_db()
-        sql = "SELECT * FROM results WHERE provider = ? AND name LIKE '%.PROPER.%' OR name LIKE '%.REPACK.%'"
-        # Add specific provider proper_strings also, like REAL, RERIP, etc.
-        if hasattr(self.provider, "proper_strings") and self.provider.proper_strings:
+        # Always include the common proper tags; merge provider-specific proper_strings
+        tags = {"PROPER", "REPACK", "REAL"}
+        if getattr(self.provider, "proper_strings", None):
             for item in self.provider.proper_strings:
-                if "|" in item:
-                    items = item.split("|")
-                    for _item in items:
-                        if _item.upper() not in sql:
-                            sql += " OR name LIKE '%.{}.%'".format(_item)
-                elif item.upper() not in sql:
-                    sql += " OR name LIKE '%.{}.%'".format(item)
+                for part in str(item).split("|"):
+                    part = part.strip(" .").upper()
+                    if part:
+                        tags.add(part)
+
+        # Leading '.' required (scene-style delimiter); trailing may be '.' or
+        like_clauses = " OR ".join(["name LIKE ?" for _ in tags])
+        params = [self.provider_id] + [f"%.{tag}%" for tag in sorted(tags)]
+        sql = f"SELECT * FROM results WHERE provider = ? AND ({like_clauses})"
 
         if date is not None:
-            sql += " AND time >= " + str(int(time.mktime(date.timetuple())))
+            sql += " AND time >= ?"
+            params.append(int(time.mktime(date.timetuple())))
 
-        propers_results = cache_db_con.select(sql, [self.provider_id])
+        propers_results = cache_db_con.select(sql, params)
         return [x for x in propers_results if x["indexerid"]]
 
     def find_needed_episodes(self, episode, manual_search=False, down_cur_quality=False):

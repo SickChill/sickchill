@@ -23,25 +23,64 @@ class ProperFinder(object):
     # noinspection PyUnusedLocal
     def run(self, force=False):
         """
-        Start looking for new propers
+        Schedule a proper search on the SearchQueue (low priority) so it does not
+        race daily/backlog provider traffic on the FINDPROPERS thread.
 
-        :param force: Start even if already running (currently not used, defaults to False)
+        :param force: Enqueue even if backlog is running
         """
+        from sickchill.oldbeard.search_queue import ProperSearchQueueItem
+
+        search_queue = settings.searchQueueScheduler.action
+        if search_queue.is_proper_search_in_progress():
+            logger.info(_("Proper search already queued or running, skipping"))
+            return
+
+        if not force and search_queue.is_backlog_in_progress():
+            logger.info(_("Backlog in progress, deferring proper search until next cycle"))
+            return
+
+        search_queue.add_item(ProperSearchQueueItem(force=force))
+        logger.info(_("Queued proper search on SEARCHQUEUE"))
+
+    def run_search(self, force=False):
+        """
+        Perform the proper search (called from ProperSearchQueueItem).
+
+        :param force: Currently unused; reserved for forced runs
+        """
+        if self.amActive:
+            logger.debug(_("Proper search already active, skipping"))
+            return
+
         logger.info(_("Beginning the search for new propers"))
-
         self.amActive = True
+        try:
+            propers = self._get_propers()
 
-        propers = self._get_propers()
+            if propers:
+                self._download_propers(propers)
 
-        if propers:
-            self._download_propers(propers)
+            self._set_last_proper_search(sc_now().toordinal())
 
-        self._set_last_proper_search(sc_now().toordinal())
+            when = sctimeago(settings.properFinderScheduler.timeLeft())
+            logger.info(_("Completed the search for new propers, next check approximately {when}").format(when=when))
+        finally:
+            self.amActive = False
 
-        when = sctimeago(settings.properFinderScheduler.timeLeft())
-        logger.info(_("Completed the search for new propers, next check approximately {when}").format(when=when))
+    # Overlap when using last_proper_search so we do not miss edge releases
+    _PROPER_OVERLAP = datetime.timedelta(hours=6)
 
-        self.amActive = False
+    def _proper_search_date(self):
+        """Incremental watermark: max(last_proper_search - overlap, now - max_window)."""
+        now = sc_now()
+        max_days = int(getattr(settings, "DOWNLOAD_PROPERS_WINDOW_DAYS", 2) or 2)
+        max_days = min(7, max(1, max_days))
+        floor = now - datetime.timedelta(days=max_days)
+        last = self._get_last_proper_search()
+        if last <= datetime.date.min:
+            return floor
+        last_dt = datetime.datetime.combine(last, datetime.time(), tzinfo=now.tzinfo)
+        return max(last_dt - self._PROPER_OVERLAP, floor)
 
     def _get_propers(self):
         """
@@ -49,7 +88,8 @@ class ProperFinder(object):
         """
         propers = {}
 
-        search_date = sc_now() - datetime.timedelta(days=2)
+        search_date = self._proper_search_date()
+        logger.debug(_("Proper search window starts at {when}").format(when=search_date))
 
         # for each provider get a list of the proper releases
         original_thread_name = threading.current_thread().name
@@ -60,6 +100,14 @@ class ProperFinder(object):
             logger.info(_("Searching for any new PROPER releases from {name}").format(name=provider.name))
 
             try:
+                # Refresh RSS/cache under min_time so NZB/torrent list_propers sees recent titles
+                # without forcing an extra hit when daily search already updated the cache.
+                if getattr(provider, "cache", None) is not None:
+                    try:
+                        provider.cache.update_cache()
+                    except Exception as error:
+                        logger.debug(_("Cache update before propers failed for {name}: {error}").format(name=provider.name, error=error))
+
                 provider_propers = provider.find_propers(search_date)
             except AuthException as error:
                 logger.warning(_("Authentication error: {error}").format(error=error))
