@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sickchill VERSION\n"
 "Report-Msgid-Bugs-To: miigotu@gmail.com\n"
-"POT-Creation-Date: 2026-08-30 19:13+0700\n"
+"POT-Creation-Date: 2026-09-04 14:13+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,7 +67,7 @@ msgstr ""
 msgid "(This field may be blank except when testing.)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:760
+#: sickchill/gui/slick/views/config_general.mako:786
 msgid "(X-Forwarded-For, X-Forwarded-Host, and X-Forwarded-Proto)"
 msgstr ""
 
@@ -139,10 +139,6 @@ msgid "100"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_search.mako:63
-msgid "15 mins"
-msgstr ""
-
-#: sickchill/gui/slick/views/config_search.mako:63
 msgid "24 hours"
 msgstr ""
 
@@ -151,15 +147,19 @@ msgid "250"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_search.mako:63
-msgid "4 hours"
+msgid "30 mins"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_search.mako:63
-msgid "45 mins"
+msgid "4 hours"
 msgstr ""
 
 #: sickchill/gui/slick/views/manage_failedDownloads.mako:15
 msgid "500"
+msgstr ""
+
+#: sickchill/gui/slick/views/config_search.mako:63
+msgid "8 hours"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_search.mako:63
@@ -261,12 +261,12 @@ msgid ""
 " read other users' messages called tweets."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:242 sickchill/views/index.py:311
-#: sickchill/views/index.py:312
+#: sickchill/gui/slick/views/layouts/main.mako:243 sickchill/views/index.py:315
+#: sickchill/views/index.py:316
 msgid "API Builder"
 msgstr ""
 
-#: sickchill/views/index.py:307
+#: sickchill/views/index.py:311
 msgid "API Key not generated"
 msgstr ""
 
@@ -274,8 +274,8 @@ msgstr ""
 msgid "API Timeout"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:605
-#: sickchill/gui/slick/views/config_general.mako:1233
+#: sickchill/gui/slick/views/config_general.mako:631
+#: sickchill/gui/slick/views/config_general.mako:1259
 #: sickchill/gui/slick/views/config_notifications.mako:2264
 #: sickchill/gui/slick/views/config_providers.mako:150
 #: sickchill/gui/slick/views/config_providers.mako:248
@@ -300,7 +300,7 @@ msgstr ""
 msgid "API: sc.backup successful!"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:996
+#: sickchill/gui/slick/views/config_general.mako:1022
 msgid "ASCII characters"
 msgstr ""
 
@@ -317,8 +317,8 @@ msgid "Action"
 msgstr ""
 
 #: sickchill/gui/slick/views/inc_home_show_list.mako:30
-#: sickchill/gui/slick/views/layouts/main.mako:371
-#: sickchill/gui/slick/views/status.mako:46
+#: sickchill/gui/slick/views/layouts/main.mako:372
+#: sickchill/gui/slick/views/status.mako:49
 msgid "Active"
 msgstr ""
 
@@ -350,7 +350,7 @@ msgstr ""
 msgid "Add From TMDB Lists"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:177
+#: sickchill/gui/slick/views/layouts/main.mako:178
 msgid "Add Movies"
 msgstr ""
 
@@ -401,8 +401,8 @@ msgstr ""
 msgid "Add to Whitelist"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:76
-#: sickchill/gui/slick/views/status.mako:102
+#: sickchill/gui/slick/views/status.mako:79
+#: sickchill/gui/slick/views/status.mako:105
 msgid "Added"
 msgstr ""
 
@@ -436,7 +436,7 @@ msgstr ""
 msgid "Advanced"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:906
+#: sickchill/gui/slick/views/config_general.mako:932
 #: sickchill/gui/slick/views/editShow.mako:305
 msgid "Advanced Settings"
 msgstr ""
@@ -473,7 +473,7 @@ msgstr ""
 msgid "Alien Alarm (long)"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:44
+#: sickchill/gui/slick/views/status.mako:47
 msgid "Alive"
 msgstr ""
 
@@ -499,7 +499,7 @@ msgid "All"
 msgstr ""
 
 #: sickchill/gui/slick/views/addShows_newShow.mako:95
-#: sickchill/gui/slick/views/config_general.mako:1179
+#: sickchill/gui/slick/views/config_general.mako:1205
 msgid "All Indexers"
 msgstr ""
 
@@ -587,7 +587,7 @@ msgstr ""
 #: sickchill/gui/slick/views/home.mako:35
 #: sickchill/gui/slick/views/inc_addShowOptions.mako:79
 #: sickchill/gui/slick/views/inc_home_show_list.mako:36
-#: sickchill/gui/slick/views/layouts/main.mako:240
+#: sickchill/gui/slick/views/layouts/main.mako:241
 #: sickchill/gui/slick/views/manage.mako:45
 #: sickchill/gui/slick/views/manage_massEdit.mako:192
 #: sickchill/views/config/anime.py:22 sickchill/views/config/index.py:24
@@ -598,7 +598,7 @@ msgstr ""
 msgid "AnimeDB Settings"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:937
+#: sickchill/gui/slick/views/config_general.mako:963
 msgid "Anonymous redirect"
 msgstr ""
 
@@ -610,11 +610,11 @@ msgstr ""
 msgid "Archived"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1119
+#: sickchill/gui/slick/views/config_general.mako:1145
 msgid "Archived option will keep previous downloaded quality"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:172
+#: sickchill/gui/slick/views/config.mako:189
 msgid "Arguments"
 msgstr ""
 
@@ -657,7 +657,7 @@ msgstr ""
 msgid "Authorization token of your Gotify account"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:86
+#: sickchill/gui/slick/views/manage_manageSearches.mako:99
 msgid "Auto"
 msgstr ""
 
@@ -669,7 +669,15 @@ msgstr ""
 msgid "Auto Post Processor disabled"
 msgstr ""
 
+#: sickchill/views/manage/searches.py:91
+msgid "Auto Post Processor is already running"
+msgstr ""
+
 #: sickchill/views/manage/searches.py:84
+msgid "Auto Post Processor is disabled"
+msgstr ""
+
+#: sickchill/views/manage/searches.py:89
 msgid "Auto Post Processor started"
 msgstr ""
 
@@ -677,7 +685,7 @@ msgstr ""
 msgid "Auto Post-Processing Frequency"
 msgstr ""
 
-#: sickchill/show_updater.py:106
+#: sickchill/show_updater.py:124
 #, python-brace-format
 msgid "Automatic update failed: {error}"
 msgstr ""
@@ -687,7 +695,7 @@ msgstr ""
 msgid "Automatically added {num_shows} from their existing metadata files"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:220
+#: sickchill/gui/slick/views/config_general.mako:246
 msgid "Automatically update"
 msgstr ""
 
@@ -699,21 +707,21 @@ msgstr ""
 msgid "Background"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:342
+#: sickchill/gui/slick/views/config_general.mako:368
 msgid "Background Path"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:62
-#: sickchill/gui/slick/views/status.mako:13 sickchill/logger.py:284
+#: sickchill/gui/slick/views/manage_manageSearches.mako:75
+#: sickchill/gui/slick/views/status.mako:16 sickchill/logger.py:284
 msgid "Backlog"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:196
-#: sickchill/views/manage/index.py:436 sickchill/views/manage/index.py:437
+#: sickchill/gui/slick/views/layouts/main.mako:197
+#: sickchill/views/manage/index.py:438 sickchill/views/manage/index.py:439
 msgid "Backlog Overview"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:385
+#: sickchill/gui/slick/views/layouts/main.mako:386
 #: sickchill/gui/slick/views/manage_manageSearches.mako:16
 msgid "Backlog Search"
 msgstr ""
@@ -736,7 +744,7 @@ msgstr ""
 msgid "Backlog search is currently not working on this provider"
 msgstr ""
 
-#: sickchill/views/manage/searches.py:48
+#: sickchill/views/manage/searches.py:50
 msgid "Backlog search started"
 msgstr ""
 
@@ -763,7 +771,7 @@ msgstr ""
 msgid "Backup"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:234
+#: sickchill/gui/slick/views/layouts/main.mako:235
 msgid "Backup &amp; Restore"
 msgstr ""
 
@@ -848,15 +856,15 @@ msgstr ""
 msgid "Bugle"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1238
+#: sickchill/gui/slick/views/config_general.mako:1264
 msgid "Built-in project key"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:915
+#: sickchill/gui/slick/views/config_general.mako:941
 msgid "CPU throttling"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:135
+#: sickchill/gui/slick/views/config.mako:152
 msgid "Cache Folder"
 msgstr ""
 
@@ -932,12 +940,12 @@ msgid ""
 "numbering"
 msgstr ""
 
-#: sickchill/oldbeard/config.py:548
+#: sickchill/oldbeard/config.py:551
 #, python-brace-format
 msgid "Changed logs folder to {directory} and restarting logging"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:267 sickchill/views/changelog.py:25
+#: sickchill/gui/slick/views/layouts/main.mako:268 sickchill/views/changelog.py:25
 #: sickchill/views/changelog.py:26
 msgid "Changelog"
 msgstr ""
@@ -960,7 +968,7 @@ msgid ""
 "{ep} at {location} (File {result})"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:283
+#: sickchill/gui/slick/views/layouts/main.mako:284
 msgid "Check For Updates"
 msgstr ""
 
@@ -972,7 +980,7 @@ msgstr ""
 msgid "Check blacklist name; the value needs to be a trakt slug"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:210
+#: sickchill/gui/slick/views/config_general.mako:236
 msgid "Check for software updates"
 msgstr ""
 
@@ -996,7 +1004,7 @@ msgstr ""
 msgid "Check the box for exact string search"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:230
+#: sickchill/gui/slick/views/config_general.mako:256
 msgid "Check the server every*"
 msgstr ""
 
@@ -1139,17 +1147,17 @@ msgid ""
 "blocker."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1284
+#: sickchill/gui/slick/views/config_general.mako:1310
 msgid "Client ID"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1276
+#: sickchill/gui/slick/views/config_general.mako:1302
 msgid ""
 "Client ID / Secret and account for Trakt notifications and sync. Create an "
 "app with Redirect URI urn:ietf:wg:oauth:2.0:oob."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1302
+#: sickchill/gui/slick/views/config_general.mako:1328
 msgid "Client Secret"
 msgstr ""
 
@@ -1218,7 +1226,7 @@ msgstr ""
 msgid "Config - Subtitles"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:111
+#: sickchill/gui/slick/views/config.mako:128
 msgid "Config File"
 msgstr ""
 
@@ -1238,7 +1246,7 @@ msgstr ""
 msgid "Config → General → Indexer / Data"
 msgstr ""
 
-#: sickchill/views/config/anime.py:38 sickchill/views/config/general.py:222
+#: sickchill/views/config/anime.py:38 sickchill/views/config/general.py:233
 #: sickchill/views/config/notifications.py:275
 #: sickchill/views/config/post_processing.py:135
 #: sickchill/views/config/providers.py:271 sickchill/views/config/search.py:147
@@ -1526,7 +1534,7 @@ msgstr ""
 msgid "Customize options"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:48
+#: sickchill/gui/slick/views/status.mako:51
 msgid "Cycle Time"
 msgstr ""
 
@@ -1534,13 +1542,13 @@ msgstr ""
 msgid "DELETED"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:66
+#: sickchill/gui/slick/views/manage_manageSearches.mako:79
 msgid "Daily"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:384
+#: sickchill/gui/slick/views/layouts/main.mako:385
 #: sickchill/gui/slick/views/manage_manageSearches.mako:25
-#: sickchill/gui/slick/views/status.mako:12
+#: sickchill/gui/slick/views/status.mako:15
 msgid "Daily Search"
 msgstr ""
 
@@ -1558,7 +1566,7 @@ msgstr ""
 msgid "Daily search is currently not working on this provider"
 msgstr ""
 
-#: sickchill/views/manage/searches.py:57
+#: sickchill/views/manage/searches.py:59
 msgid "Daily search started"
 msgstr ""
 
@@ -1570,7 +1578,7 @@ msgstr ""
 msgid "Daily/RSS only"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:316
+#: sickchill/gui/slick/views/config_general.mako:342
 msgid "Dark"
 msgstr ""
 
@@ -1617,7 +1625,7 @@ msgstr ""
 msgid "Data returned from {0} does not contain any torrents"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:120
+#: sickchill/gui/slick/views/config.mako:137
 msgid "Database Files"
 msgstr ""
 
@@ -1638,7 +1646,7 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:491
+#: sickchill/gui/slick/views/config_general.mako:517
 msgid "Date style"
 msgstr ""
 
@@ -1648,11 +1656,19 @@ msgid "Day"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:118
+msgid "Days between disk refreshes for shows not in the TVDB update feed"
+msgstr ""
+
+#: sickchill/gui/slick/views/config_general.mako:144
 msgid "Days to wait before updating paused and ended shows"
 msgstr ""
 
+#: sickchill/gui/slick/views/config_general.mako:162
+msgid "Default 14, daily 0, never -1"
+msgstr ""
+
 #: sickchill/gui/slick/views/config_general.mako:136
-msgid "Default 7, daily 0, never -1"
+msgid "Default 7, mtime-only 0, never auto disk-refresh -1"
 msgstr ""
 
 #: sickchill/gui/slick/views/displayShow.mako:215
@@ -1664,7 +1680,7 @@ msgstr ""
 msgid "Default Episode Status"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1154
+#: sickchill/gui/slick/views/config_general.mako:1180
 msgid "Default Indexer Language"
 msgstr ""
 
@@ -1672,7 +1688,7 @@ msgstr ""
 msgid "Default Status"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1091
+#: sickchill/gui/slick/views/config_general.mako:1117
 msgid "Default deleted episode status"
 msgstr ""
 
@@ -1680,7 +1696,7 @@ msgstr ""
 msgid "Default indexer"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1147
+#: sickchill/gui/slick/views/config_general.mako:1173
 msgid "Default language, indexer, and timeouts for show metadata."
 msgstr ""
 
@@ -1694,7 +1710,7 @@ msgid ""
 "dialog"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:442
+#: sickchill/gui/slick/views/config_general.mako:468
 msgid "Definite/Indefinite articles to remove for sorting"
 msgstr ""
 
@@ -1704,7 +1720,7 @@ msgstr ""
 #: sickchill/gui/slick/views/manage.mako:71
 #: sickchill/gui/slick/views/manage.mako:146
 #: sickchill/gui/slick/views/manage_massEdit.mako:65
-#: sickchill/gui/slick/views/status.mako:108
+#: sickchill/gui/slick/views/status.mako:111
 msgid "Delete"
 msgstr ""
 
@@ -1757,7 +1773,7 @@ msgstr ""
 msgid "Deleting file {cur_file}"
 msgstr ""
 
-#: sickchill/tv.py:2306
+#: sickchill/tv.py:2324
 msgid "Deleting myself from the database"
 msgstr ""
 
@@ -1773,7 +1789,7 @@ msgstr ""
 msgid "Deleting orphan episode with episode_id: {current_episode_id}"
 msgstr ""
 
-#: sickchill/tv.py:2298
+#: sickchill/tv.py:2316
 #, python-brace-format
 msgid "Deleting {show} {ep} from the DB"
 msgstr ""
@@ -1875,9 +1891,9 @@ msgid ""
 "{0} (S:{1} L:{2})"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:228
+#: sickchill/gui/slick/views/config.mako:245
 #: sickchill/gui/slick/views/config_notifications.mako:3716
-#: sickchill/gui/slick/views/layouts/main.mako:266
+#: sickchill/gui/slick/views/layouts/main.mako:267
 msgid "Discord"
 msgstr ""
 
@@ -1905,15 +1921,15 @@ msgstr ""
 msgid "Discovery List Selection"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:130
+#: sickchill/gui/slick/views/status.mako:133
 msgid "Disk Space"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:471
+#: sickchill/gui/slick/views/config_general.mako:497
 msgid "Display fuzzy dates"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:310
+#: sickchill/gui/slick/views/config_general.mako:336
 msgid "Display theme"
 msgstr ""
 
@@ -1987,7 +2003,7 @@ msgstr ""
 msgid "Download subtitles for this show?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:562
+#: sickchill/gui/slick/views/config_general.mako:588
 msgid "Download url"
 msgstr ""
 
@@ -2162,15 +2178,15 @@ msgstr ""
 #: sickchill/gui/slick/views/config_notifications.mako:3605
 #: sickchill/gui/slick/views/config_notifications.mako:3726
 #: sickchill/gui/slick/views/config_postProcessing.mako:35
-#: sickchill/gui/slick/views/status.mako:45
+#: sickchill/gui/slick/views/status.mako:48
 msgid "Enable"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:715
+#: sickchill/gui/slick/views/config_general.mako:741
 msgid "Enable HTTPS"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1277
+#: sickchill/gui/slick/views/config_general.mako:1303
 msgid "Enable Trakt notifications and sync options under Config → Notifications."
 msgstr ""
 
@@ -2186,11 +2202,11 @@ msgstr ""
 msgid "Enable daily searches"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:845
+#: sickchill/gui/slick/views/config_general.mako:871
 msgid "Enable database debug"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:830
+#: sickchill/gui/slick/views/config_general.mako:856
 msgid "Enable debug"
 msgstr ""
 
@@ -2200,7 +2216,7 @@ msgstr ""
 msgid "Enable fallback"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:984
+#: sickchill/gui/slick/views/config_general.mako:1010
 msgid "Encrypt passwords"
 msgstr ""
 
@@ -2273,7 +2289,7 @@ msgstr ""
 msgid "Episode Skipped if older than"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:198
+#: sickchill/gui/slick/views/layouts/main.mako:199
 msgid "Episode Status Management"
 msgstr ""
 
@@ -2313,7 +2329,7 @@ msgstr ""
 msgid "Episode_Name"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:382
+#: sickchill/gui/slick/views/layouts/main.mako:383
 msgid "Episodes Downloaded"
 msgstr ""
 
@@ -2332,7 +2348,7 @@ msgstr ""
 msgid "Episodes without {subtitleLanguage} (undefined) subtitles."
 msgstr ""
 
-#: sickchill/logger.py:299 sickchill/oldbeard/show_queue.py:757
+#: sickchill/logger.py:299 sickchill/oldbeard/show_queue.py:766
 #: sickchill/views/home.py:883 sickchill/views/home.py:886
 #: sickchill/views/home.py:1204 sickchill/views/home.py:1211
 #: sickchill/views/home.py:1519 sickchill/views/home.py:1533
@@ -2345,6 +2361,8 @@ msgstr ""
 #: sickchill/views/home.py:1871 sickchill/views/home.py:1875
 #: sickchill/views/home.py:1880 sickchill/views/imageSelector.py:22
 #: sickchill/views/imageSelector.py:26 sickchill/views/imageSelector.py:58
+#: sickchill/views/manage/searches.py:84 sickchill/views/manage/searches.py:91
+#: sickchill/views/manage/searches.py:106 sickchill/views/manage/searches.py:114
 #: sickchill/views/movies.py:68 sickchill/views/movies.py:85
 msgid "Error"
 msgstr ""
@@ -2400,7 +2418,7 @@ msgstr ""
 msgid "Error while sending torrent: {error}"
 msgstr ""
 
-#: sickchill/views/config/general.py:220
+#: sickchill/views/config/general.py:231
 #: sickchill/views/config/notifications.py:273
 #: sickchill/views/config/post_processing.py:133
 #: sickchill/views/config/search.py:145
@@ -2428,7 +2446,7 @@ msgstr ""
 msgid "Error: {error}"
 msgstr ""
 
-#: sickchill/views/manage/index.py:784
+#: sickchill/views/manage/index.py:786
 msgid "Errors encountered"
 msgstr ""
 
@@ -2445,7 +2463,7 @@ msgstr ""
 msgid "Exception while searching propers in {name}, skipping: {error}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:153
+#: sickchill/gui/slick/views/config.mako:170
 msgid "Executable"
 msgstr ""
 
@@ -2482,13 +2500,13 @@ msgid "Extra Scripts"
 msgstr ""
 
 #: sickchill/gui/slick/js/ajaxEpSearch.js:186
-#: sickchill/gui/slick/views/manage_manageSearches.mako:74
+#: sickchill/gui/slick/views/manage_manageSearches.mako:87
 #: sickchill/oldbeard/common.py:184
 msgid "Failed"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:215
-#: sickchill/views/manage/index.py:841 sickchill/views/manage/index.py:842
+#: sickchill/gui/slick/views/layouts/main.mako:216
+#: sickchill/views/manage/index.py:844 sickchill/views/manage/index.py:845
 msgid "Failed Downloads"
 msgstr ""
 
@@ -2549,7 +2567,7 @@ msgstr ""
 msgid "Failed to queue TBA episode name update for {show}"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:758
+#: sickchill/oldbeard/show_queue.py:767
 #, python-brace-format
 msgid "Failed to update TBA episode names for {show}"
 msgstr ""
@@ -2566,7 +2584,7 @@ msgstr ""
 msgid "Fanart for"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:372
+#: sickchill/gui/slick/views/config_general.mako:398
 msgid "Fanart transparency"
 msgstr ""
 
@@ -2676,7 +2694,7 @@ msgstr ""
 msgid "Find database"
 msgstr ""
 
-#: sickchill/views/manage/searches.py:66
+#: sickchill/views/manage/searches.py:68
 msgid "Find propers search started"
 msgstr ""
 
@@ -2766,8 +2784,13 @@ msgstr ""
 #: sickchill/gui/slick/views/manage_manageSearches.mako:34
 #: sickchill/gui/slick/views/manage_manageSearches.mako:42
 #: sickchill/gui/slick/views/manage_manageSearches.mako:51
-#: sickchill/gui/slick/views/status.mako:110
+#: sickchill/gui/slick/views/manage_manageSearches.mako:62
+#: sickchill/gui/slick/views/status.mako:113
 msgid "Force"
+msgstr ""
+
+#: sickchill/gui/slick/views/layouts/main.mako:161
+msgid "Force Auto Post-Processing"
 msgstr ""
 
 #: sickchill/gui/slick/views/manage_backlogOverview.mako:65
@@ -2776,6 +2799,10 @@ msgstr ""
 
 #: sickchill/views/home.py:954
 msgid "Force Full Update"
+msgstr ""
+
+#: sickchill/views/manage/searches.py:106
+msgid "Force Show Updater is only available when developer mode is enabled"
 msgstr ""
 
 #: sickchill/oldbeard/show_queue.py:303
@@ -2976,7 +3003,7 @@ msgid ""
 "their customer a free SMS API."
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:137
+#: sickchill/gui/slick/views/status.mako:140
 msgid "Free space"
 msgstr ""
 
@@ -2996,7 +3023,7 @@ msgstr ""
 msgid "Gamelan"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:233
+#: sickchill/gui/slick/views/layouts/main.mako:234
 #: sickchill/views/config/index.py:17
 msgid "General"
 msgstr ""
@@ -3017,7 +3044,7 @@ msgstr ""
 msgid "Get Settings"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1339
+#: sickchill/gui/slick/views/config_general.mako:1365
 msgid "Get Trakt PIN"
 msgstr ""
 
@@ -3041,7 +3068,7 @@ msgstr ""
 msgid "Go"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1023
+#: sickchill/gui/slick/views/config_general.mako:1049
 msgid "Google Calendar Icons"
 msgstr ""
 
@@ -3083,24 +3110,24 @@ msgstr ""
 msgid "Growl IP:Port"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:246
-#: sickchill/gui/slick/views/status.mako:271
+#: sickchill/gui/slick/views/status.mako:263
+#: sickchill/gui/slick/views/status.mako:288
 msgid "HIGH"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:629
+#: sickchill/gui/slick/views/config_general.mako:655
 msgid "HTTP logs"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:657
+#: sickchill/gui/slick/views/config_general.mako:683
 msgid "HTTP password"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:677
+#: sickchill/gui/slick/views/config_general.mako:703
 msgid "HTTP port"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:639
+#: sickchill/gui/slick/views/config_general.mako:665
 msgid "HTTP username"
 msgstr ""
 
@@ -3108,11 +3135,11 @@ msgstr ""
 msgid "HTTPS"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:727
+#: sickchill/gui/slick/views/config_general.mako:753
 msgid "HTTPS certificate"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:737
+#: sickchill/gui/slick/views/config_general.mako:763
 msgid "HTTPS key"
 msgstr ""
 
@@ -3137,7 +3164,7 @@ msgstr ""
 msgid "Hearing Impaired Subtitles"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:232
+#: sickchill/gui/slick/views/layouts/main.mako:233
 msgid "Help &amp; Info"
 msgstr ""
 
@@ -3169,7 +3196,7 @@ msgid "High"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:65
-#: sickchill/gui/slick/views/layouts/main.mako:187 sickchill/settings.py:36
+#: sickchill/gui/slick/views/layouts/main.mako:188 sickchill/settings.py:36
 #: sickchill/views/history.py:73 sickchill/views/history.py:74
 msgid "History"
 msgstr ""
@@ -3242,7 +3269,7 @@ msgstr ""
 msgid "IP or Hostname of your Deluge Daemon (e.g. http://localhost:58846)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1083
+#: sickchill/gui/slick/views/config_general.mako:1109
 msgid ""
 "If checked, broken symbolic links warnings generated when calculating show "
 "size will be logged as debug"
@@ -3261,11 +3288,11 @@ msgid ""
 "cache.db file without losing any data"
 msgstr ""
 
-#: sickchill/settings.py:607
+#: sickchill/settings.py:603
 msgid "Ignore (do not process contents)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1077
+#: sickchill/gui/slick/views/config_general.mako:1103
 msgid "Ignore Broken Symbolic Links"
 msgstr ""
 
@@ -3312,8 +3339,9 @@ msgstr ""
 #: sickchill/gui/slick/views/manage_manageSearches.mako:35
 #: sickchill/gui/slick/views/manage_manageSearches.mako:43
 #: sickchill/gui/slick/views/manage_manageSearches.mako:53
-#: sickchill/gui/slick/views/status.mako:74
-#: sickchill/gui/slick/views/status.mako:111
+#: sickchill/gui/slick/views/manage_manageSearches.mako:64
+#: sickchill/gui/slick/views/status.mako:77
+#: sickchill/gui/slick/views/status.mako:114
 msgid "In Progress"
 msgstr ""
 
@@ -3358,7 +3386,7 @@ msgstr ""
 msgid "Indexer and Trakt account settings are under the Indexer / Data tab."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1146
+#: sickchill/gui/slick/views/config_general.mako:1172
 msgid "Indexer options"
 msgstr ""
 
@@ -3376,7 +3404,7 @@ msgstr ""
 msgid "Initial page"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:29
+#: sickchill/gui/slick/views/config.mako:31
 msgid "Install"
 msgstr ""
 
@@ -3384,7 +3412,7 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:282
+#: sickchill/gui/slick/views/config_general.mako:308
 msgid "Interface Language"
 msgstr ""
 
@@ -3521,7 +3549,7 @@ msgstr ""
 msgid "Is this show scene numbered?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:596
+#: sickchill/gui/slick/views/config_general.mako:622
 msgid ""
 "It is recommended that you enable a username and password to secure SickChill"
 " from being tampered with remotely."
@@ -3618,8 +3646,8 @@ msgstr ""
 msgid "Key verification successful"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:242
-#: sickchill/gui/slick/views/status.mako:267
+#: sickchill/gui/slick/views/status.mako:259
+#: sickchill/gui/slick/views/status.mako:284
 msgid "LOW"
 msgstr ""
 
@@ -3632,7 +3660,7 @@ msgstr ""
 msgid "Large Screen Margins"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:50
+#: sickchill/gui/slick/views/status.mako:53
 msgid "Last Run"
 msgstr ""
 
@@ -3683,7 +3711,7 @@ msgstr ""
 msgid "Library update command sent to Plex Media Server host: {plex_server}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:317
+#: sickchill/gui/slick/views/config_general.mako:343
 msgid "Light"
 msgstr ""
 
@@ -3696,21 +3724,21 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:446
+#: sickchill/gui/slick/views/config_general.mako:472
 msgid ""
 "List of words to treat as articles, separated by the pipe character. Default:"
 " \"the|a|an\""
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:705
+#: sickchill/gui/slick/views/config_general.mako:731
 msgid "Listen on IPv6"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:392
+#: sickchill/gui/slick/views/layouts/main.mako:393
 msgid "Load time"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1243
+#: sickchill/gui/slick/views/config_general.mako:1269
 msgid ""
 "Loaded from config.ini on startup when set; otherwise the built-in key is "
 "used. Enter a personal key to override. Clear the field and Save to restore "
@@ -3743,22 +3771,22 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:538
+#: sickchill/gui/slick/views/config_general.mako:564
 msgid "Local"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:82
+#: sickchill/gui/slick/views/config.mako:99
 msgid "Locale"
 msgstr ""
 
 #: sickchill/gui/slick/views/displayShow.mako:220
 #: sickchill/gui/slick/views/displayShow.mako:225
 #: sickchill/gui/slick/views/movies/details.mako:83
-#: sickchill/gui/slick/views/status.mako:136
+#: sickchill/gui/slick/views/status.mako:139
 msgid "Location"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:794
+#: sickchill/gui/slick/views/config_general.mako:820
 msgid "Log Dir"
 msgstr ""
 
@@ -3766,7 +3794,7 @@ msgstr ""
 msgid "Log File"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:144
+#: sickchill/gui/slick/views/config.mako:161
 msgid "Log Folder"
 msgstr ""
 
@@ -3774,7 +3802,7 @@ msgstr ""
 msgid "Logging"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:784
+#: sickchill/gui/slick/views/config_general.mako:810
 msgid "Logging Settings"
 msgstr ""
 
@@ -3788,7 +3816,7 @@ msgid ""
 "again."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:290
+#: sickchill/gui/slick/views/layouts/main.mako:291
 msgid "Logout"
 msgstr ""
 
@@ -3828,7 +3856,7 @@ msgstr ""
 msgid "Main"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:162
+#: sickchill/gui/slick/views/config.mako:179
 msgid "Main Script"
 msgstr ""
 
@@ -3841,7 +3869,7 @@ msgstr ""
 msgid "Mako Error"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:191
+#: sickchill/gui/slick/views/layouts/main.mako:192
 #: sickchill/gui/slick/views/manage_episodeStatuses.mako:31
 #: sickchill/gui/slick/views/manage_subtitleMissed.mako:43
 msgid "Manage"
@@ -3851,12 +3879,12 @@ msgstr ""
 msgid "Manage Directories"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:197
-#: sickchill/views/manage/searches.py:36 sickchill/views/manage/searches.py:37
+#: sickchill/gui/slick/views/layouts/main.mako:198
+#: sickchill/views/manage/searches.py:38 sickchill/views/manage/searches.py:39
 msgid "Manage Searches"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:212
+#: sickchill/gui/slick/views/layouts/main.mako:213
 msgid "Manage Torrents"
 msgstr ""
 
@@ -3869,8 +3897,8 @@ msgstr ""
 msgid "Manage episodes without"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:70
-#: sickchill/gui/slick/views/manage_manageSearches.mako:90
+#: sickchill/gui/slick/views/manage_manageSearches.mako:83
+#: sickchill/gui/slick/views/manage_manageSearches.mako:103
 msgid "Manual"
 msgstr ""
 
@@ -3891,7 +3919,7 @@ msgstr ""
 msgid "Mark Dir/Files as priority download"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:109
+#: sickchill/gui/slick/views/status.mako:112
 msgid "Mark Failures"
 msgstr ""
 
@@ -3899,11 +3927,11 @@ msgstr ""
 msgid "Mark download as failed"
 msgstr ""
 
-#: sickchill/views/manage/index.py:592 sickchill/views/manage/index.py:593
+#: sickchill/views/manage/index.py:594 sickchill/views/manage/index.py:595
 msgid "Mass Edit"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:195
+#: sickchill/gui/slick/views/layouts/main.mako:196
 #: sickchill/views/manage/index.py:41 sickchill/views/manage/index.py:42
 msgid "Mass Update"
 msgstr ""
@@ -3991,11 +4019,11 @@ msgstr ""
 msgid "Mechanical"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:153
+#: sickchill/gui/slick/views/status.mako:156
 msgid "Media Root Directories"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:390
+#: sickchill/gui/slick/views/layouts/main.mako:391
 msgid "Memory used"
 msgstr ""
 
@@ -4012,7 +4040,7 @@ msgstr ""
 msgid "Metadata language"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:106
+#: sickchill/gui/slick/views/status.mako:109
 msgid "Method"
 msgstr ""
 
@@ -4042,17 +4070,17 @@ msgstr ""
 msgid "Missed"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:218
+#: sickchill/gui/slick/views/layouts/main.mako:219
 msgid "Missed Subtitle Management"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:452
+#: sickchill/gui/slick/views/config_general.mako:478
 msgid "Missed episodes range"
 msgstr ""
 
 #: sickchill/gui/slick/views/displayShow.mako:226
-#: sickchill/gui/slick/views/status.mako:148
-#: sickchill/gui/slick/views/status.mako:159
+#: sickchill/gui/slick/views/status.mako:151
+#: sickchill/gui/slick/views/status.mako:162
 msgid "Missing"
 msgstr ""
 
@@ -4101,7 +4129,7 @@ msgid ""
 "{root_dir}/{show_path}"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:103
+#: sickchill/gui/slick/views/status.mako:106
 msgid "Mode"
 msgstr ""
 
@@ -4128,7 +4156,7 @@ msgstr ""
 msgid "Move associated files"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:176 sickchill/views/movies.py:20
+#: sickchill/gui/slick/views/layouts/main.mako:177 sickchill/views/movies.py:20
 msgid "Movie List"
 msgstr ""
 
@@ -4148,7 +4176,7 @@ msgstr ""
 msgid "Movie not found"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:172 sickchill/views/movies.py:19
+#: sickchill/gui/slick/views/layouts/main.mako:173 sickchill/views/movies.py:19
 #: sickchill/views/movies.py:37 sickchill/views/movies.py:74
 #: sickchill/views/movies.py:89
 msgid "Movies"
@@ -4224,8 +4252,8 @@ msgstr ""
 msgid "NMJv2 database"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:244
-#: sickchill/gui/slick/views/status.mako:269
+#: sickchill/gui/slick/views/status.mako:261
+#: sickchill/gui/slick/views/status.mako:286
 msgid "NORMAL"
 msgstr ""
 
@@ -4277,7 +4305,7 @@ msgstr ""
 msgid "Name Pattern"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:544
+#: sickchill/gui/slick/views/config_general.mako:570
 #: sickchill/gui/slick/views/inc_home_menu.mako:48
 #: sickchill/gui/slick/views/inc_home_show_list.mako:26
 #: sickchill/gui/slick/views/manage.mako:41
@@ -4339,7 +4367,7 @@ msgid "New update found for SickChill, starting auto-updater"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:66
-#: sickchill/gui/slick/views/layouts/main.mako:265 sickchill/settings.py:39
+#: sickchill/gui/slick/views/layouts/main.mako:266 sickchill/settings.py:39
 #: sickchill/views/news.py:28 sickchill/views/news.py:29
 msgid "News"
 msgstr ""
@@ -4370,7 +4398,7 @@ msgstr ""
 msgid "Next Episode"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:49
+#: sickchill/gui/slick/views/status.mako:52
 msgid "Next Run"
 msgstr ""
 
@@ -4423,11 +4451,11 @@ msgstr ""
 msgid "No Provider Url specified"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:965
+#: sickchill/gui/slick/views/config_general.mako:991
 msgid "No Restart"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:752
+#: sickchill/oldbeard/show_queue.py:761
 #, python-brace-format
 msgid "No TBA episode names were updated for {show}"
 msgstr ""
@@ -4498,7 +4526,7 @@ msgstr ""
 msgid "No html data parsed from provider"
 msgstr ""
 
-#: sickchill/show_updater.py:62
+#: sickchill/show_updater.py:68
 msgid "No last update time from the cache, so we do a full update for all shows"
 msgstr ""
 
@@ -4547,7 +4575,7 @@ msgstr ""
 msgid "No update needed"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:751
+#: sickchill/oldbeard/show_queue.py:760
 msgid "No updates"
 msgstr ""
 
@@ -4569,7 +4597,7 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:929
+#: sickchill/gui/slick/views/config_general.mako:955
 msgid "Normal (default). High is lower and Low is higher CPU use"
 msgstr ""
 
@@ -4601,6 +4629,7 @@ msgstr ""
 #: sickchill/gui/slick/views/manage_manageSearches.mako:35
 #: sickchill/gui/slick/views/manage_manageSearches.mako:43
 #: sickchill/gui/slick/views/manage_manageSearches.mako:53
+#: sickchill/gui/slick/views/manage_manageSearches.mako:64
 msgid "Not in progress"
 msgstr ""
 
@@ -4626,12 +4655,12 @@ msgid ""
 "error."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:239
+#: sickchill/gui/slick/views/layouts/main.mako:240
 #: sickchill/views/config/index.py:23 sickchill/views/config/notifications.py:23
 msgid "Notifications"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:819
+#: sickchill/gui/slick/views/config_general.mako:845
 msgid "Notify on Logged Errors"
 msgstr ""
 
@@ -4660,7 +4689,7 @@ msgstr ""
 msgid "Notify on download"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:695
+#: sickchill/gui/slick/views/config_general.mako:721
 msgid "Notify on login"
 msgstr ""
 
@@ -4693,7 +4722,7 @@ msgstr ""
 msgid "Notify on snatch"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:248
+#: sickchill/gui/slick/views/config_general.mako:274
 msgid "Notify on software update"
 msgstr ""
 
@@ -4721,11 +4750,11 @@ msgstr ""
 msgid "Notify on subtitle download"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:395
+#: sickchill/gui/slick/views/layouts/main.mako:396
 msgid "Now"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:854
+#: sickchill/gui/slick/views/config_general.mako:880
 msgid "Number of Log files saved"
 msgstr ""
 
@@ -4744,7 +4773,7 @@ msgid ""
 "provider's use for VOS shows)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:73
+#: sickchill/gui/slick/views/config.mako:90
 msgid "OS"
 msgstr ""
 
@@ -4772,25 +4801,25 @@ msgstr ""
 msgid "Open General settings"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1221
+#: sickchill/gui/slick/views/config_general.mako:1247
 msgid ""
 "Optional personal v4 API key and subscriber PIN. Leave the API key blank to "
 "use SickChill's built-in project key."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1261
+#: sickchill/gui/slick/views/config_general.mako:1287
 msgid "Optional. Required only if your TheTVDB key type needs a subscriber PIN."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:785
+#: sickchill/gui/slick/views/config_general.mako:811
 msgid "Options for Logging."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:202
+#: sickchill/gui/slick/views/config_general.mako:228
 msgid "Options for software updates."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:273
+#: sickchill/gui/slick/views/config_general.mako:299
 msgid "Options for visual appearance."
 msgstr ""
 
@@ -4811,7 +4840,7 @@ msgid ""
 "{current_show_id}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1349
+#: sickchill/gui/slick/views/config_general.mako:1375
 msgid "PIN code to authorize SickChill to access Trakt on your behalf."
 msgstr ""
 
@@ -4839,15 +4868,15 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:104
+#: sickchill/gui/slick/views/status.mako:107
 msgid "Path"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:353
+#: sickchill/gui/slick/views/config_general.mako:379
 msgid "Path to the background image"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:413
+#: sickchill/gui/slick/views/config_general.mako:439
 msgid "Path to the stylesheet (.css) file"
 msgstr ""
 
@@ -4877,11 +4906,11 @@ msgstr ""
 #: sickchill/gui/slick/views/manage_manageSearches.mako:19
 #: sickchill/gui/slick/views/manage_massEdit.mako:149
 #: sickchill/gui/slick/views/movies/details.mako:117
-#: sickchill/gui/slick/views/status.mako:190
+#: sickchill/gui/slick/views/status.mako:193
 msgid "Paused"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:130
+#: sickchill/gui/slick/views/config_general.mako:156
 msgid ""
 "Paused and Ended shows will only be updated after this many days have passed,"
 " if there is an update for the show"
@@ -4994,15 +5023,15 @@ msgstr ""
 msgid "Popular on iMDB"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:20
+#: sickchill/gui/slick/views/status.mako:23
 msgid "Post Process"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:19
+#: sickchill/gui/slick/views/status.mako:22
 msgid "Post Process - Auto"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:238
+#: sickchill/gui/slick/views/layouts/main.mako:239
 #: sickchill/views/config/index.py:22 sickchill/views/config/post_processing.py:24
 #: sickchill/views/manage/post_processing.py:16
 #: sickchill/views/manage/post_processing.py:17
@@ -5013,8 +5042,8 @@ msgstr ""
 msgid "Post Processing Dir"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:83
-#: sickchill/gui/slick/views/status.mako:97
+#: sickchill/gui/slick/views/manage_manageSearches.mako:96
+#: sickchill/gui/slick/views/status.mako:100
 msgid "Post Processing Queue"
 msgstr ""
 
@@ -5111,8 +5140,8 @@ msgstr ""
 msgid "Preview of the proposed name changes"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:75
-#: sickchill/gui/slick/views/status.mako:107
+#: sickchill/gui/slick/views/status.mako:78
+#: sickchill/gui/slick/views/status.mako:110
 msgid "Priority"
 msgstr ""
 
@@ -5172,7 +5201,7 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:102
+#: sickchill/gui/slick/views/config.mako:119
 msgid "Program Folder"
 msgstr ""
 
@@ -5193,7 +5222,7 @@ msgstr ""
 msgid "Prompt me to set settings for each show"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:18
+#: sickchill/gui/slick/views/status.mako:21
 msgid "Proper Finder"
 msgstr ""
 
@@ -5266,7 +5295,7 @@ msgstr ""
 msgid "Prowl priority"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1033
+#: sickchill/gui/slick/views/config_general.mako:1059
 msgid "Proxy host"
 msgstr ""
 
@@ -5366,7 +5395,7 @@ msgstr ""
 msgid "Put.io Parent Folder"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:55
+#: sickchill/gui/slick/views/config.mako:72
 msgid "Python Version"
 msgstr ""
 
@@ -5396,7 +5425,7 @@ msgstr ""
 msgid "Query"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:77
+#: sickchill/gui/slick/views/status.mako:80
 msgid "Queue type"
 msgstr ""
 
@@ -5410,11 +5439,11 @@ msgstr ""
 msgid "Queued TBA name update for {show}"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:250
+#: sickchill/gui/slick/views/status.mako:267
 msgid "REMOVE"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:786
+#: sickchill/gui/slick/views/config_general.mako:812
 msgid "RESTART REQUIRED after saving changes."
 msgstr ""
 
@@ -5463,7 +5492,7 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
-#: sickchill/views/manage/index.py:794
+#: sickchill/views/manage/index.py:796
 msgid "Refreshes"
 msgstr ""
 
@@ -5508,7 +5537,7 @@ msgstr ""
 #: sickchill/gui/slick/views/config_postProcessing.mako:935
 #: sickchill/gui/slick/views/config_postProcessing.mako:1135
 #: sickchill/gui/slick/views/config_postProcessing.mako:1331
-#: sickchill/gui/slick/views/status.mako:105
+#: sickchill/gui/slick/views/status.mako:108
 msgid "Release Name"
 msgstr ""
 
@@ -5565,7 +5594,7 @@ msgstr ""
 msgid "Removed history entries older than 30 days"
 msgstr ""
 
-#: sickchill/tv.py:2302
+#: sickchill/tv.py:2320
 msgid "Removing myself from my show's list"
 msgstr ""
 
@@ -5591,7 +5620,7 @@ msgstr ""
 msgid "Rename Selected"
 msgstr ""
 
-#: sickchill/views/manage/index.py:799
+#: sickchill/views/manage/index.py:801
 msgid "Renames"
 msgstr ""
 
@@ -5653,7 +5682,7 @@ msgstr ""
 msgid "Respecting the set-group-ID bit on the parent directory of {childPath}"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:286
+#: sickchill/gui/slick/views/layouts/main.mako:287
 msgid "Restart"
 msgstr ""
 
@@ -5715,8 +5744,12 @@ msgstr ""
 msgid "Returned xml contained no results"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:749
+#: sickchill/gui/slick/views/config_general.mako:775
 msgid "Reverse proxy headers"
+msgstr ""
+
+#: sickchill/gui/slick/views/config.mako:50
+msgid "Revision"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_notifications.mako:3508
@@ -5827,7 +5860,7 @@ msgid ""
 "{ssl.OPENSSL_VERSION}, try upgrading OpenSSL to 1.0.1e+. Error: {error}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:64
+#: sickchill/gui/slick/views/config.mako:81
 msgid "SSL Version"
 msgstr ""
 
@@ -5836,12 +5869,12 @@ msgstr ""
 msgid "Sanitized string: {0}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:187
-#: sickchill/gui/slick/views/config_general.mako:258
-#: sickchill/gui/slick/views/config_general.mako:580
-#: sickchill/gui/slick/views/config_general.mako:768
-#: sickchill/gui/slick/views/config_general.mako:1132
-#: sickchill/gui/slick/views/config_general.mako:1362
+#: sickchill/gui/slick/views/config_general.mako:213
+#: sickchill/gui/slick/views/config_general.mako:284
+#: sickchill/gui/slick/views/config_general.mako:606
+#: sickchill/gui/slick/views/config_general.mako:794
+#: sickchill/gui/slick/views/config_general.mako:1158
+#: sickchill/gui/slick/views/config_general.mako:1388
 #: sickchill/gui/slick/views/config_notifications.mako:186
 #: sickchill/gui/slick/views/config_notifications.mako:335
 #: sickchill/gui/slick/views/config_notifications.mako:466
@@ -5880,7 +5913,7 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:837
+#: sickchill/gui/slick/views/config_general.mako:863
 msgid "Save and refresh logger required when changed"
 msgstr ""
 
@@ -5935,13 +5968,13 @@ msgid "Scene Quality"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:64
-#: sickchill/gui/slick/views/layouts/main.mako:183 sickchill/views/index.py:405
-#: sickchill/views/index.py:406
+#: sickchill/gui/slick/views/layouts/main.mako:184 sickchill/views/index.py:409
+#: sickchill/views/index.py:410
 msgid "Schedule"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:38
-#: sickchill/gui/slick/views/status.mako:43
+#: sickchill/gui/slick/views/status.mako:41
+#: sickchill/gui/slick/views/status.mako:46
 msgid "Scheduler"
 msgstr ""
 
@@ -6039,13 +6072,13 @@ msgstr ""
 msgid "Search NZBs"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:236
+#: sickchill/gui/slick/views/layouts/main.mako:237
 #: sickchill/views/config/index.py:20 sickchill/views/config/providers.py:28
 msgid "Search Providers"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:59
-#: sickchill/gui/slick/views/status.mako:17
+#: sickchill/gui/slick/views/manage_manageSearches.mako:72
+#: sickchill/gui/slick/views/status.mako:20
 msgid "Search Queue"
 msgstr ""
 
@@ -6073,7 +6106,7 @@ msgstr ""
 msgid "Search Queue (Retry/Failed)"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:235
+#: sickchill/gui/slick/views/layouts/main.mako:236
 #: sickchill/views/config/index.py:19 sickchill/views/config/search.py:23
 msgid "Search Settings"
 msgstr ""
@@ -6361,7 +6394,7 @@ msgstr ""
 msgid "Send full notification message using text-to-speech else Bot Name only"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:144
+#: sickchill/gui/slick/views/config_general.mako:170
 msgid "Send to trash for actions"
 msgstr ""
 
@@ -6369,7 +6402,7 @@ msgstr ""
 msgid "Send torrents to"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:293
+#: sickchill/gui/slick/views/layouts/main.mako:294
 msgid "Server Status"
 msgstr ""
 
@@ -6493,8 +6526,8 @@ msgstr ""
 msgid "Show Name ShowYear - Overrides Strip Show Year selector"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:16
-#: sickchill/gui/slick/views/status.mako:67 sickchill/logger.py:287
+#: sickchill/gui/slick/views/status.mako:19
+#: sickchill/gui/slick/views/status.mako:70 sickchill/logger.py:287
 msgid "Show Queue"
 msgstr ""
 
@@ -6512,11 +6545,11 @@ msgstr ""
 msgid "Show Status"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:14
+#: sickchill/gui/slick/views/status.mako:17
 msgid "Show Update"
 msgstr ""
 
-#: sickchill/logger.py:285
+#: sickchill/gui/slick/views/manage_manageSearches.mako:60 sickchill/logger.py:285
 msgid "Show Updater"
 msgstr ""
 
@@ -6524,7 +6557,7 @@ msgstr ""
 msgid "Show added"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:422
+#: sickchill/gui/slick/views/config_general.mako:448
 msgid "Show all seasons"
 msgstr ""
 
@@ -6532,7 +6565,7 @@ msgstr ""
 msgid "Show directory doesn't exist, creating it"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:362
+#: sickchill/gui/slick/views/config_general.mako:388
 msgid "Show fanart in the background"
 msgstr ""
 
@@ -6540,7 +6573,7 @@ msgstr ""
 msgid "Show file locations."
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:72
+#: sickchill/gui/slick/views/status.mako:75
 msgid "Show id"
 msgstr ""
 
@@ -6558,7 +6591,7 @@ msgstr ""
 
 #: sickchill/gui/slick/views/addShows_newShow.mako:42
 #: sickchill/gui/slick/views/addShows_newShow.mako:147
-#: sickchill/gui/slick/views/status.mako:73
+#: sickchill/gui/slick/views/status.mako:76
 msgid "Show name"
 msgstr ""
 
@@ -6577,7 +6610,7 @@ msgstr ""
 msgid "Show retrieved from existing metadata"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:169
+#: sickchill/gui/slick/views/config_general.mako:195
 msgid "Show root directories"
 msgstr ""
 
@@ -6587,6 +6620,14 @@ msgstr ""
 
 #: sickchill/views/home.py:997
 msgid "Show specials"
+msgstr ""
+
+#: sickchill/views/manage/searches.py:114
+msgid "Show updater is already running"
+msgstr ""
+
+#: sickchill/views/manage/searches.py:112
+msgid "Show updater started"
 msgstr ""
 
 #: sickchill/gui/slick/views/config_postProcessing.mako:543
@@ -6633,7 +6674,7 @@ msgstr ""
 #: sickchill/gui/slick/views/config_general.mako:63
 #: sickchill/gui/slick/views/home.mako:35
 #: sickchill/gui/slick/views/layouts/main.mako:154
-#: sickchill/gui/slick/views/layouts/main.mako:371
+#: sickchill/gui/slick/views/layouts/main.mako:372
 msgid "Shows"
 msgstr ""
 
@@ -6645,11 +6686,18 @@ msgstr ""
 msgid "Shows containing"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:288
+#: sickchill/gui/slick/views/config_general.mako:130
+msgid ""
+"Shows not listed in the daily TVDB update feed are disk-refreshed only if the"
+" show folder changed, or after this many days. Full TVDB updates still run "
+"for shows in the feed."
+msgstr ""
+
+#: sickchill/gui/slick/views/layouts/main.mako:289
 msgid "Shutdown"
 msgstr ""
 
-#: sickchill/views/config/index.py:60 sickchill/views/config/index.py:61
+#: sickchill/views/config/index.py:61 sickchill/views/config/index.py:62
 msgid "SickChill Configuration"
 msgstr ""
 
@@ -6678,7 +6726,7 @@ msgstr ""
 msgid "SickChill new login"
 msgstr ""
 
-#: sickchill/views/index.py:469
+#: sickchill/views/index.py:473
 msgid ""
 "SickChill no longer is supported unless installed with pip or poetry. Source "
 "and git installs are for experienced users only"
@@ -6691,7 +6739,7 @@ msgstr ""
 msgid "SickChill' is used in place of RLSGROUP if it could not be properly detected"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:51
+#: sickchill/gui/slick/views/status.mako:54
 msgid "Silent"
 msgstr ""
 
@@ -6728,7 +6776,7 @@ msgstr ""
 msgid "Size"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:875
+#: sickchill/gui/slick/views/config_general.mako:901
 msgid "Size of Log files saved"
 msgstr ""
 
@@ -6736,7 +6784,7 @@ msgstr ""
 msgid "Skip All"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1058
+#: sickchill/gui/slick/views/config_general.mako:1084
 msgid "Skip Remove Detection"
 msgstr ""
 
@@ -6763,7 +6811,7 @@ msgstr ""
 msgid "Skipping initial creation of {show_dir} due to config.ini setting"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:239
+#: sickchill/gui/slick/views/config.mako:256
 #: sickchill/gui/slick/views/config_notifications.mako:3184
 msgid "Slack"
 msgstr ""
@@ -6806,7 +6854,7 @@ msgstr ""
 #: sickchill/gui/slick/views/history.mako:123
 #: sickchill/gui/slick/views/inc_home_show_list.mako:129
 #: sickchill/gui/slick/views/inc_home_show_list_poster.mako:82
-#: sickchill/gui/slick/views/layouts/main.mako:380
+#: sickchill/gui/slick/views/layouts/main.mako:381
 #: sickchill/gui/slick/views/schedule.mako:28
 #: sickchill/gui/slick/views/schedule.mako:316 sickchill/oldbeard/common.py:182
 msgid "Snatched"
@@ -6833,7 +6881,7 @@ msgstr ""
 msgid "Some items were not processed."
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:902
+#: sickchill/oldbeard/show_queue.py:911
 #, python-brace-format
 msgid "Some notifications could not be sent. Continuing removal of {}..."
 msgstr ""
@@ -6870,7 +6918,7 @@ msgstr ""
 msgid "Sort Order"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:432
+#: sickchill/gui/slick/views/config_general.mako:458
 msgid "Sort with \"The\", \"A\", \"An\""
 msgstr ""
 
@@ -6878,7 +6926,7 @@ msgstr ""
 msgid "Sorting results by"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:217
+#: sickchill/gui/slick/views/config.mako:234
 msgid "Source"
 msgstr ""
 
@@ -6920,7 +6968,7 @@ msgstr ""
 msgid "Stars"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:47
+#: sickchill/gui/slick/views/status.mako:50
 msgid "Start Time"
 msgstr ""
 
@@ -6992,7 +7040,7 @@ msgstr ""
 msgid "Stupid captcha"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:402
+#: sickchill/gui/slick/views/config_general.mako:428
 msgid "Stylesheet File Path"
 msgstr ""
 
@@ -7007,7 +7055,7 @@ msgstr ""
 msgid "Subscribe"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1251
+#: sickchill/gui/slick/views/config_general.mako:1277
 msgid "Subscriber PIN"
 msgstr ""
 
@@ -7065,7 +7113,7 @@ msgstr ""
 msgid "Subtitle search queued"
 msgstr ""
 
-#: sickchill/views/manage/searches.py:75
+#: sickchill/views/manage/searches.py:77
 msgid "Subtitle search started"
 msgstr ""
 
@@ -7080,11 +7128,11 @@ msgstr ""
 #: sickchill/gui/slick/views/inc_addShowOptions.mako:20
 #: sickchill/gui/slick/views/manage_massEdit.mako:252
 #: sickchill/gui/slick/views/movies/details.mako:112
-#: sickchill/views/config/subtitles.py:22 sickchill/views/manage/index.py:804
+#: sickchill/views/config/subtitles.py:22 sickchill/views/manage/index.py:806
 msgid "Subtitles"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:21
+#: sickchill/gui/slick/views/status.mako:24
 msgid "Subtitles Finder"
 msgstr ""
 
@@ -7109,7 +7157,7 @@ msgstr ""
 msgid "Subtitles Search"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:237
+#: sickchill/gui/slick/views/layouts/main.mako:238
 #: sickchill/views/config/index.py:21
 msgid "Subtitles Settings"
 msgstr ""
@@ -7153,7 +7201,7 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:268
+#: sickchill/gui/slick/views/layouts/main.mako:269
 msgid "Support SickChill"
 msgstr ""
 
@@ -7195,7 +7243,7 @@ msgstr ""
 msgid "Synology Notifier is the notification system of Synology DSM"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:288
+#: sickchill/gui/slick/views/config_general.mako:314
 msgid "System Language"
 msgstr ""
 
@@ -7223,7 +7271,7 @@ msgstr ""
 msgid "TTS"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:143
+#: sickchill/gui/slick/views/status.mako:146
 msgid "TV Download Directory"
 msgstr ""
 
@@ -7245,7 +7293,7 @@ msgstr ""
 msgid "Talk-Show"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:253
+#: sickchill/gui/slick/views/config.mako:270
 #: sickchill/gui/slick/views/config_notifications.mako:2077
 #: sickchill/gui/slick/views/config_notifications.mako:2078
 msgid "Telegram"
@@ -7261,11 +7309,11 @@ msgid ""
 "worked"
 msgstr ""
 
-#: sickchill/views/index.py:440
+#: sickchill/views/index.py:444
 msgid "Test 1"
 msgstr ""
 
-#: sickchill/views/index.py:441
+#: sickchill/views/index.py:445
 msgid "Test 2"
 msgstr ""
 
@@ -7420,11 +7468,11 @@ msgstr ""
 msgid "The episodes below are currently being refreshed from disk"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:805
+#: sickchill/gui/slick/views/config_general.mako:831
 msgid "The folder where sickchill log/s go."
 msgstr ""
 
-#: sickchill/views/manage/index.py:809
+#: sickchill/views/manage/index.py:811
 msgid "The following actions were queued"
 msgstr ""
 
@@ -7447,7 +7495,7 @@ msgstr ""
 msgid "The show in {show_dir} is already in your show list, skipping"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:907
+#: sickchill/gui/slick/views/config_general.mako:933
 msgid "The special options."
 msgstr ""
 
@@ -7607,7 +7655,7 @@ msgstr ""
 msgid "There were no files associated with {file_path}, not moving anything"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:597
+#: sickchill/gui/slick/views/config_general.mako:623
 msgid "These options require a manual restart to take effect."
 msgstr ""
 
@@ -7638,11 +7686,11 @@ msgstr ""
 msgid "This is a test notification from SickChill"
 msgstr ""
 
-#: sickchill/views/index.py:440
+#: sickchill/views/index.py:444
 msgid "This is test number 1"
 msgstr ""
 
-#: sickchill/views/index.py:441
+#: sickchill/views/index.py:445
 msgid "This is test number 2"
 msgstr ""
 
@@ -7730,7 +7778,7 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:510
+#: sickchill/gui/slick/views/config_general.mako:536
 msgid "Time style"
 msgstr ""
 
@@ -7738,7 +7786,7 @@ msgstr ""
 msgid "Timeout connecting to Trakt. Try to increase timeout value in Trakt settings"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1196
+#: sickchill/gui/slick/views/config_general.mako:1222
 msgid "Timeout show indexer at"
 msgstr ""
 
@@ -7746,7 +7794,7 @@ msgstr ""
 msgid "Timeout while accessing provider"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:532
+#: sickchill/gui/slick/views/config_general.mako:558
 msgid "Timezone"
 msgstr ""
 
@@ -7783,7 +7831,7 @@ msgstr ""
 msgid "Too many login access attempts"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:260
+#: sickchill/gui/slick/views/layouts/main.mako:261
 msgid "Tools"
 msgstr ""
 
@@ -7861,7 +7909,7 @@ msgstr ""
 msgid "Trakt Authorized"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:22 sickchill/logger.py:297
+#: sickchill/gui/slick/views/status.mako:25 sickchill/logger.py:297
 msgid "Trakt Checker"
 msgstr ""
 
@@ -7869,11 +7917,11 @@ msgstr ""
 msgid "Trakt Not Authorized!"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1333
+#: sickchill/gui/slick/views/config_general.mako:1359
 msgid "Trakt PIN"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1294
+#: sickchill/gui/slick/views/config_general.mako:1320
 msgid ""
 "Trakt application Client ID. Leave default until you create your own app at "
 "trakt.tv/oauth/applications."
@@ -7904,7 +7952,7 @@ msgstr ""
 msgid "Transaction with {count:d} of queries executed successfully"
 msgstr ""
 
-#: sickchill/settings.py:609
+#: sickchill/settings.py:605
 msgid "Treat as video (process archive as-is)"
 msgstr ""
 
@@ -7920,11 +7968,11 @@ msgstr ""
 msgid "Trim History"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:481
+#: sickchill/gui/slick/views/config_general.mako:507
 msgid "Trim zero padding"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:195
+#: sickchill/gui/slick/views/status.mako:198
 msgid "True"
 msgstr ""
 
@@ -7967,7 +8015,7 @@ msgid "Twitter account to send Direct Messages to (must follow you)"
 msgstr ""
 
 #: sickchill/gui/slick/views/apiBuilder.mako:85
-#: sickchill/gui/slick/views/status.mako:135
+#: sickchill/gui/slick/views/status.mako:138
 msgid "Type"
 msgstr ""
 
@@ -8033,11 +8081,11 @@ msgstr ""
 msgid "URL to your uTorrent client (e.g. http://localhost:8000)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:572
+#: sickchill/gui/slick/views/config_general.mako:598
 msgid "URL where the shows can be downloaded."
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:248
+#: sickchill/gui/slick/views/status.mako:265
 msgid "USER"
 msgstr ""
 
@@ -8150,12 +8198,12 @@ msgstr ""
 msgid "Unable to create the show directory: "
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:872
+#: sickchill/oldbeard/show_queue.py:881
 #, python-brace-format
 msgid "Unable to delete show from Trakt: {show_name}. Error: {error}"
 msgstr ""
 
-#: sickchill/views/manage/index.py:749
+#: sickchill/views/manage/index.py:751
 #, python-brace-format
 msgid "Unable to delete show {show_name}: {error}"
 msgstr ""
@@ -8254,7 +8302,7 @@ msgstr ""
 msgid "Unable to queue TBA name update."
 msgstr ""
 
-#: sickchill/views/manage/index.py:771
+#: sickchill/views/manage/index.py:773
 #, python-brace-format
 msgid "Unable to refresh show {show_name}: {exception_format}"
 msgstr ""
@@ -8268,7 +8316,7 @@ msgstr ""
 msgid "Unable to refresh this show: {error}"
 msgstr ""
 
-#: sickchill/views/manage/index.py:756
+#: sickchill/views/manage/index.py:758
 #, python-brace-format
 msgid "Unable to remove show {show_name}: {error}"
 msgstr ""
@@ -8277,7 +8325,7 @@ msgstr ""
 msgid "Unable to retrieve Fansub Groups from AniDB."
 msgstr ""
 
-#: sickchill/views/manage/index.py:763
+#: sickchill/views/manage/index.py:765
 #, python-brace-format
 msgid "Unable to update show {show_name}: {error}"
 msgstr ""
@@ -8334,7 +8382,7 @@ msgstr ""
 msgid "Unpack"
 msgstr ""
 
-#: sickchill/settings.py:608
+#: sickchill/settings.py:604
 msgid "Unpack (process contents)"
 msgstr ""
 
@@ -8346,7 +8394,7 @@ msgstr ""
 msgid "Unpacking Not Supported, disabling unpack setting"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1004
+#: sickchill/gui/slick/views/config_general.mako:1030
 msgid "Unprotected calendar"
 msgstr ""
 
@@ -8375,7 +8423,7 @@ msgstr ""
 msgid "Update Categories"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:206
+#: sickchill/gui/slick/views/layouts/main.mako:207
 msgid "Update Emby"
 msgstr ""
 
@@ -8383,11 +8431,11 @@ msgstr ""
 msgid "Update Failed"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:209
+#: sickchill/gui/slick/views/layouts/main.mako:210
 msgid "Update Jellyfin"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:203
+#: sickchill/gui/slick/views/layouts/main.mako:204
 msgid "Update KODI"
 msgstr ""
 
@@ -8395,7 +8443,7 @@ msgstr ""
 msgid "Update Library"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:200
+#: sickchill/gui/slick/views/layouts/main.mako:201
 msgid "Update PLEX"
 msgstr ""
 
@@ -8435,17 +8483,17 @@ msgstr ""
 msgid "Update wasn't successful, not restarting. Check your log for more information."
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:746
+#: sickchill/oldbeard/show_queue.py:755
 msgid "Updated"
 msgstr ""
 
-#: sickchill/oldbeard/show_queue.py:747
+#: sickchill/oldbeard/show_queue.py:756
 #, python-brace-format
 msgid "Updated {count} TBA episode name(s) for {show}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:201
-#: sickchill/views/manage/index.py:789
+#: sickchill/gui/slick/views/config_general.mako:227
+#: sickchill/views/manage/index.py:791
 msgid "Updates"
 msgstr ""
 
@@ -8498,7 +8546,7 @@ msgstr ""
 msgid "Use SC Metadata"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:500
+#: sickchill/gui/slick/views/config_general.mako:526
 msgid "Use System Default"
 msgstr ""
 
@@ -8506,11 +8554,11 @@ msgstr ""
 msgid "Use TLS"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:331
+#: sickchill/gui/slick/views/config_general.mako:357
 msgid "Use a background image"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:391
+#: sickchill/gui/slick/views/config_general.mako:417
 msgid "Use a custom stylesheet file"
 msgstr ""
 
@@ -8526,7 +8574,7 @@ msgstr ""
 msgid "Use icacls"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1173
+#: sickchill/gui/slick/views/config_general.mako:1199
 msgid "Use initial indexer set to"
 msgstr ""
 
@@ -8549,11 +8597,11 @@ msgstr ""
 msgid "Usenet retention"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:93
+#: sickchill/gui/slick/views/config.mako:110
 msgid "User"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:272
+#: sickchill/gui/slick/views/config_general.mako:298
 msgid "User Interface"
 msgstr ""
 
@@ -8573,7 +8621,7 @@ msgstr ""
 msgid "User/group ID"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1315
+#: sickchill/gui/slick/views/config_general.mako:1341
 #: sickchill/gui/slick/views/config_notifications.mako:141
 #: sickchill/gui/slick/views/config_notifications.mako:249
 #: sickchill/gui/slick/views/config_notifications.mako:420
@@ -8602,7 +8650,7 @@ msgstr ""
 msgid "Using release for release name."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:955
+#: sickchill/gui/slick/views/config_general.mako:981
 msgid "Verify SSL Certs"
 msgstr ""
 
@@ -8614,11 +8662,11 @@ msgstr ""
 msgid "Verify certificate"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:394
+#: sickchill/gui/slick/views/layouts/main.mako:395
 msgid "Version"
 msgstr ""
 
-#: sickchill/gui/slick/views/status.mako:15
+#: sickchill/gui/slick/views/status.mako:18
 msgid "Version Check"
 msgstr ""
 
@@ -8635,7 +8683,7 @@ msgstr ""
 msgid "Very low"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:271
+#: sickchill/gui/slick/views/layouts/main.mako:272
 msgid "View Errors"
 msgstr ""
 
@@ -8645,7 +8693,7 @@ msgid ""
 "MOVIEMeter algorithm to identify popular TV Series."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:280
+#: sickchill/gui/slick/views/layouts/main.mako:281
 msgid "View Log"
 msgstr ""
 
@@ -8657,7 +8705,7 @@ msgstr ""
 msgid "View Snatched"
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:276
+#: sickchill/gui/slick/views/layouts/main.mako:277
 msgid "View Warnings"
 msgstr ""
 
@@ -8676,7 +8724,7 @@ msgstr ""
 msgid "View other popular {imdbgenre} shows on IMDB."
 msgstr ""
 
-#: sickchill/gui/slick/views/layouts/main.mako:377
+#: sickchill/gui/slick/views/layouts/main.mako:378
 msgid "View overview of snatched episodes"
 msgstr ""
 
@@ -8724,15 +8772,15 @@ msgstr ""
 msgid "Watchlist add method"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:595
+#: sickchill/gui/slick/views/config_general.mako:621
 msgid "Web Interface"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:183
+#: sickchill/gui/slick/views/config.mako:200
 msgid "Web Root"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:195
+#: sickchill/gui/slick/views/config.mako:212
 msgid "Website"
 msgstr ""
 
@@ -8748,7 +8796,7 @@ msgstr ""
 msgid "Whitelist"
 msgstr ""
 
-#: sickchill/gui/slick/views/config.mako:206
+#: sickchill/gui/slick/views/config.mako:223
 msgid "Wiki"
 msgstr ""
 
@@ -8898,7 +8946,7 @@ msgid ""
 "first or remove database file to begin fresh."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:755
+#: sickchill/gui/slick/views/config_general.mako:781
 msgid "accept the following reverse proxy headers (advanced)..."
 msgstr ""
 
@@ -8958,11 +9006,11 @@ msgstr ""
 msgid "age limit in days for usenet articles to be used (e.g. 500)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1010
+#: sickchill/gui/slick/views/config_general.mako:1036
 msgid "allow subscribing to the calendar without user and password"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1049
+#: sickchill/gui/slick/views/config_general.mako:1075
 msgid "also use global proxy setting for indexers (tvdb, xem, anidb, etc.)"
 msgstr ""
 
@@ -8978,11 +9026,11 @@ msgstr ""
 msgid "as authentication method"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1188
+#: sickchill/gui/slick/views/config_general.mako:1214
 msgid "as the default selection when adding new shows"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:709
+#: sickchill/gui/slick/views/config_general.mako:735
 msgid "attempt binding to any available IPv6 address"
 msgstr ""
 
@@ -9003,7 +9051,7 @@ msgstr ""
 msgid "automatically filled via the 'Get Settings' button."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:947
+#: sickchill/gui/slick/views/config_general.mako:973
 #, python-brace-format
 msgid "backlink protection via anonymizer service, must end in \"?\" (default: {} )"
 msgstr ""
@@ -9012,7 +9060,7 @@ msgstr ""
 msgid "backlog searches"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:669
+#: sickchill/gui/slick/views/config_general.mako:695
 #: sickchill/gui/slick/views/config_notifications.mako:259
 #: sickchill/gui/slick/views/config_notifications.mako:281
 #: sickchill/gui/slick/views/config_notifications.mako:430
@@ -9020,7 +9068,7 @@ msgstr ""
 msgid "blank = no authentication"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1043
+#: sickchill/gui/slick/views/config_general.mako:1069
 msgid "blank to disable or proxy to use when connecting to providers"
 msgstr ""
 
@@ -9126,7 +9174,7 @@ msgstr ""
 msgid "database is locked"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1114
+#: sickchill/gui/slick/views/config_general.mako:1140
 msgid "define the status to be set for media file that has been deleted."
 msgstr ""
 
@@ -9146,6 +9194,10 @@ msgstr ""
 msgid "deleted"
 msgstr ""
 
+#: sickchill/gui/slick/views/manage_manageSearches.mako:65
+msgid "developer"
+msgstr ""
+
 #: sickchill/gui/slick/js/core.js:1985
 msgid "disable if you get \"Deluge: Authentication Error\" in your log"
 msgstr ""
@@ -9154,11 +9206,11 @@ msgstr ""
 msgid "disabled entries come from a central file on github,"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:549
+#: sickchill/gui/slick/views/config_general.mako:575
 msgid "display dates and times in either your timezone or the shows network timezone"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:214
+#: sickchill/gui/slick/views/config_general.mako:240
 msgid ""
 "display notifications when updates are available. Checks are run on startup "
 "and at the frequency set below*"
@@ -9204,19 +9256,19 @@ msgstr ""
 msgid "enable Secure control in NZBGet and set the correct Secure Port here"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:719
+#: sickchill/gui/slick/views/config_general.mako:745
 msgid "enable access to the web interface using a HTTPS address"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:849
+#: sickchill/gui/slick/views/config_general.mako:875
 msgid "enable database debug logging"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:834
+#: sickchill/gui/slick/views/config_general.mako:860
 msgid "enable debug logging"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:633
+#: sickchill/gui/slick/views/config_general.mako:659
 msgid "enable logs from the internal Tornado web server"
 msgstr ""
 
@@ -9238,7 +9290,7 @@ msgid ""
 "Post Processing Dir"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:699
+#: sickchill/gui/slick/views/config_general.mako:725
 msgid "enable to be notified when a new login happens in webserver"
 msgstr ""
 
@@ -9272,7 +9324,7 @@ msgstr ""
 msgid "episodes only."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1124
+#: sickchill/gui/slick/views/config_general.mako:1150
 msgid "example: Downloaded (1080p WEB-DL) ==> Archived (1080p WEB-DL)"
 msgstr ""
 
@@ -9283,17 +9335,17 @@ msgid ""
 "logging in on your browser."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:224
+#: sickchill/gui/slick/views/config_general.mako:250
 msgid ""
 "fetch and install software updates. Updates are run on startup and in the "
 "background at the frequency set below*"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:731
+#: sickchill/gui/slick/views/config_general.mako:757
 msgid "file name or path to HTTPS certificate"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:741
+#: sickchill/gui/slick/views/config_general.mako:767
 msgid "file name or path to HTTPS key"
 msgstr ""
 
@@ -9325,12 +9377,12 @@ msgstr ""
 msgid "for a script arguments description."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1165
+#: sickchill/gui/slick/views/config_general.mako:1191
 msgid "for adding shows and metadata providers"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:302
-#: sickchill/gui/slick/views/config_general.mako:323
+#: sickchill/gui/slick/views/config_general.mako:328
+#: sickchill/gui/slick/views/config_general.mako:349
 msgid "for appearance to take effect, save then refresh your browser"
 msgstr ""
 
@@ -9347,7 +9399,7 @@ msgstr ""
 msgid "headers are {requests_exception.request.headers}"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:621
+#: sickchill/gui/slick/views/config_general.mako:647
 msgid "here"
 msgstr ""
 
@@ -9377,11 +9429,11 @@ msgstr ""
 msgid "hostname of your SMTP email server."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:240
+#: sickchill/gui/slick/views/config_general.mako:266
 msgid "hours for software updates (default:168 (7d))"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1069
+#: sickchill/gui/slick/views/config_general.mako:1095
 msgid "if disabled the episode will be set to the default deleted status"
 msgstr ""
 
@@ -9421,11 +9473,11 @@ msgid ""
 "later will be ignored."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:990
+#: sickchill/gui/slick/views/config_general.mako:1016
 msgid "in the <code>config.ini</code> file"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:436
+#: sickchill/gui/slick/views/config_general.mako:462
 msgid "include articles (\"The\", \"A\", \"An\") when sorting show lists"
 msgstr ""
 
@@ -9502,7 +9554,7 @@ msgstr ""
 msgid "matrix server room"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:888
+#: sickchill/gui/slick/views/config_general.mako:914
 msgid "maximum size in MB of the log file (default: 1MB, max: 100MB)"
 msgstr ""
 
@@ -9528,7 +9580,7 @@ msgstr ""
 msgid "missing provider"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:475
+#: sickchill/gui/slick/views/config_general.mako:501
 msgid "move absolute dates into tooltips and display e.g. \"Last Thu\", \"On Tue\""
 msgstr ""
 
@@ -9564,10 +9616,11 @@ msgstr ""
 
 #: sickchill/gui/slick/views/config_general.mako:110
 #: sickchill/gui/slick/views/config_general.mako:136
-#: sickchill/gui/slick/views/config_general.mako:524
-#: sickchill/gui/slick/views/config_general.mako:554
-#: sickchill/gui/slick/views/config_general.mako:810
-#: sickchill/gui/slick/views/config_general.mako:1119
+#: sickchill/gui/slick/views/config_general.mako:162
+#: sickchill/gui/slick/views/config_general.mako:550
+#: sickchill/gui/slick/views/config_general.mako:580
+#: sickchill/gui/slick/views/config_general.mako:836
+#: sickchill/gui/slick/views/config_general.mako:1145
 #: sickchill/gui/slick/views/config_notifications.mako:471
 #: sickchill/gui/slick/views/config_notifications.mako:909
 #: sickchill/gui/slick/views/config_notifications.mako:954
@@ -9612,16 +9665,16 @@ msgstr ""
 msgid "number of day(s) that the \"Forced Backlog Search\" will cover (e.g. 7 Days)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:867
+#: sickchill/gui/slick/views/config_general.mako:893
 msgid "number of log files saved when rotating logs (default: 5)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:156
+#: sickchill/gui/slick/views/config_general.mako:182
 msgid "on scheduled deletes of the oldest log files"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:366
-#: sickchill/gui/slick/views/config_general.mako:426
+#: sickchill/gui/slick/views/config_general.mako:392
+#: sickchill/gui/slick/views/config_general.mako:452
 msgid "on the show summary page"
 msgstr ""
 
@@ -9672,7 +9725,7 @@ msgstr ""
 msgid "only download torrents from trusted or verified uploaders ?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:976
+#: sickchill/gui/slick/views/config_general.mako:1002
 msgid ""
 "only select this when you have external software restarting SC automatically "
 "when it stops (like FireDaemon)"
@@ -9682,7 +9735,7 @@ msgstr ""
 msgid "only send library updates to the first active host?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:971
+#: sickchill/gui/slick/views/config_general.mako:997
 msgid "only shutdown when restarting SC"
 msgstr ""
 
@@ -9711,7 +9764,7 @@ msgstr ""
 msgid "password of your AniDB account"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:995
+#: sickchill/gui/slick/views/config_general.mako:1021
 msgid "passwords must only contain"
 msgstr ""
 
@@ -9723,12 +9776,12 @@ msgstr ""
 msgid "paused"
 msgstr ""
 
-#: sickchill/gui/slick/views/manage_manageSearches.mako:63
-#: sickchill/gui/slick/views/manage_manageSearches.mako:67
-#: sickchill/gui/slick/views/manage_manageSearches.mako:71
-#: sickchill/gui/slick/views/manage_manageSearches.mako:75
-#: sickchill/gui/slick/views/manage_manageSearches.mako:87
-#: sickchill/gui/slick/views/manage_manageSearches.mako:91
+#: sickchill/gui/slick/views/manage_manageSearches.mako:76
+#: sickchill/gui/slick/views/manage_manageSearches.mako:80
+#: sickchill/gui/slick/views/manage_manageSearches.mako:84
+#: sickchill/gui/slick/views/manage_manageSearches.mako:88
+#: sickchill/gui/slick/views/manage_manageSearches.mako:100
+#: sickchill/gui/slick/views/manage_manageSearches.mako:104
 msgid "pending items"
 msgstr ""
 
@@ -9740,7 +9793,7 @@ msgstr ""
 msgid "perform a full library update if update per-show fails?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:811
+#: sickchill/gui/slick/views/config_general.mako:837
 msgid "please make sure that sickchill user has the right permissions for the folder."
 msgstr ""
 
@@ -9811,7 +9864,7 @@ msgstr ""
 msgid "remove the TV show's year when renaming the file?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:485
+#: sickchill/gui/slick/views/config_general.mako:511
 msgid "remove the leading number \"0\" shown on hour of day, and date of month"
 msgstr ""
 
@@ -9917,11 +9970,11 @@ msgstr ""
 msgid "season packs only."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:524
+#: sickchill/gui/slick/views/config_general.mako:550
 msgid "seconds are only shown on the History page"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1206
+#: sickchill/gui/slick/views/config_general.mako:1232
 msgid "seconds of inactivity when finding new shows (default:20)"
 msgstr ""
 
@@ -9948,7 +10001,7 @@ msgid ""
 "the form!"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:161
+#: sickchill/gui/slick/views/config_general.mako:187
 msgid ""
 "selected actions use trash (recycle bin) instead of the default permanent "
 "delete"
@@ -10034,7 +10087,7 @@ msgstr ""
 msgid "send a SMS when subtitles are downloaded?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:252
+#: sickchill/gui/slick/views/config_general.mako:278
 msgid "send a message to all enabled notifiers when SickChill has been updated"
 msgstr ""
 
@@ -10150,7 +10203,7 @@ msgstr ""
 msgid "send email notifications?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:824
+#: sickchill/gui/slick/views/config_general.mako:850
 msgid "send logged errors to notifiers"
 msgstr ""
 
@@ -10207,7 +10260,7 @@ msgstr ""
 msgid "set Zero(0) to disabled, default: 30 days"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:649
+#: sickchill/gui/slick/views/config_general.mako:675
 msgid "set blank for no login"
 msgstr ""
 
@@ -10219,7 +10272,7 @@ msgstr ""
 msgid "set last modified file date to the date that the episode aired?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:463
+#: sickchill/gui/slick/views/config_general.mako:489
 msgid "set the range in days of the missed episodes in the Schedule page"
 msgstr ""
 
@@ -10255,7 +10308,7 @@ msgstr ""
 msgid "should SickChill use data from AniDB?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1027
+#: sickchill/gui/slick/views/config_general.mako:1053
 msgid "show an icon next to exported calendar events in Google Calendar"
 msgstr ""
 
@@ -10268,7 +10321,7 @@ msgstr ""
 msgid "shows grabbed from your trakt watchlist start paused."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1064
+#: sickchill/gui/slick/views/config_general.mako:1090
 msgid "skip detection of removed files"
 msgstr ""
 
@@ -10278,7 +10331,7 @@ msgid ""
 " e.g. Plexapp for Samsung TVs"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1015
+#: sickchill/gui/slick/views/config_general.mako:1041
 msgid "some services like Google Calendar only work this way"
 msgstr ""
 
@@ -10409,7 +10462,7 @@ msgstr ""
 msgid "trackers that will be added to magnets without trackers"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:382
+#: sickchill/gui/slick/views/config_general.mako:408
 msgid "transparency of the fanart in the background"
 msgstr ""
 
@@ -10450,11 +10503,11 @@ msgid ""
 "autodiscovered metadata"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:396
+#: sickchill/gui/slick/views/config_general.mako:422
 msgid "use a custom .css file to style SickChill (for advanced users)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:336
+#: sickchill/gui/slick/views/config_general.mako:362
 msgid "use a custom image as background for SickChill"
 msgstr ""
 
@@ -10470,7 +10523,7 @@ msgstr ""
 msgid "use https for plex media server requests?"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:554
+#: sickchill/gui/slick/views/config_general.mako:580
 msgid ""
 "use local timezone to start searching for episodes minutes after show ends "
 "(depends on your dailysearch frequency)"
@@ -10480,7 +10533,7 @@ msgstr ""
 msgid "use tabs for when splitting show lists"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:616
+#: sickchill/gui/slick/views/config_general.mako:642
 msgid "used to give 3rd party programs limited access to SickChill"
 msgstr ""
 
@@ -10496,7 +10549,7 @@ msgstr ""
 msgid "username of your AniDB account"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:1325
+#: sickchill/gui/slick/views/config_general.mako:1351
 msgid "username of your Trakt account."
 msgstr ""
 
@@ -10504,7 +10557,7 @@ msgstr ""
 msgid "value used in pyTivo Web Configuration to name the share."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:959
+#: sickchill/gui/slick/views/config_general.mako:985
 msgid "verify SSL Certificates (Disable this for broken SSL installs (Like QNAP))"
 msgstr ""
 
@@ -10520,13 +10573,13 @@ msgstr ""
 msgid "wait to process a folder if sync files are present."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:995
+#: sickchill/gui/slick/views/config_general.mako:1021
 #: sickchill/gui/slick/views/config_postProcessing.mako:414
 #: sickchill/gui/slick/views/config_subtitles.mako:215
 msgid "warning"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:687
+#: sickchill/gui/slick/views/config_general.mako:713
 msgid "web port to browse and access SickChill (default:8081)"
 msgstr ""
 
@@ -10560,7 +10613,7 @@ msgid ""
 "episodes."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:150
+#: sickchill/gui/slick/views/config_general.mako:176
 msgid "when using show \"Remove\" and delete files"
 msgstr ""
 
@@ -10582,7 +10635,7 @@ msgid ""
 "client default)"
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:174
+#: sickchill/gui/slick/views/config_general.mako:200
 msgid "where the files of shows are located"
 msgstr ""
 
@@ -10601,7 +10654,7 @@ msgstr ""
 msgid "words starting with a plus sign must all be present."
 msgstr ""
 
-#: sickchill/gui/slick/views/config_general.mako:621
+#: sickchill/gui/slick/views/config_general.mako:647
 msgid "you can try all the features of the API"
 msgstr ""
 
@@ -10641,7 +10694,7 @@ msgstr ""
 msgid "{msg}"
 msgstr ""
 
-#: sickchill/views/home.py:1500 sickchill/views/manage/index.py:713
+#: sickchill/views/home.py:1500 sickchill/views/manage/index.py:715
 #, python-brace-format
 msgid "{num_errors:d} error{plural} while saving changes:"
 msgstr ""
@@ -10663,7 +10716,7 @@ msgstr ""
 msgid "{prefix} setting to default episode status for this show: {status_string}"
 msgstr ""
 
-#: sickchill/tv.py:762
+#: sickchill/tv.py:766
 #, python-brace-format
 msgid "{show_id}: Loading all episodes from {indexer_name}..."
 msgstr ""
