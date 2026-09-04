@@ -216,10 +216,7 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         sickchill.indexer = sickchill.ShowIndexer()
 
         # TheTVDB v4 API key:
-        #   1) env TVDB_V4_APIKEY if set
-        #   2) else [General] tvdb_v4_apikey from config.ini if present and non-empty
-        #   3) else built-in project key (also written into CFG when missing/empty)
-        # UI blank + Save restores built-in and persists that UUID into config.ini.
+        #   1) env TVDB_V4_APIKEY if set, 2) from config.ini, 3) else built-in project key
         settings.TVDB_V4_APIKEY = os.environ.get("TVDB_V4_APIKEY") or check_setting_str(
             settings.CFG,
             "General",

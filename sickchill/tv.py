@@ -353,7 +353,7 @@ class TVShow(object):
         try:
             indexer_eps = self.idxr.episodes(self) or []
         except Exception as error:
-            logger.warning(f"TVDB v4 episode list failed during TBA refresh for {self.name}: {error}")
+            logger.warning(f"TVDB episode list failed during TBA refresh for {self.name}: {error}")
             return 0
 
         tvdb_by_ep = {}
@@ -406,10 +406,10 @@ class TVShow(object):
                     extra = [f for f in changed_fields if f != "name"]
                     if extra:
                         logger.debug(
-                            f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r}; also set {', '.join(extra)} (TVDB v4)"
+                            f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r}; also set {', '.join(extra)} (TVDB)"
                         )
                     else:
-                        logger.debug(f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r} (TVDB v4)")
+                        logger.debug(f"Updated TBA episode {self.name} {episode_num(s, e)}: name {old_name!r} -> {ep_obj.name!r} (TVDB)")
             except Exception as error:
                 logger.debug(f"Failed to update TBA data for {self.name} {episode_num(s, e)}: {error}")
 
