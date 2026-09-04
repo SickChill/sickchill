@@ -188,7 +188,7 @@ def pick_best_result(results, show):
         if show.is_anime and not show.release_groups.is_valid(result):
             continue
 
-        logger.info(f"Quality of {result.name} is {Quality.qualityStrings[result.quality]}")
+        logger.debug(f"Quality of {result.name} is {Quality.qualityStrings[result.quality]}")
 
         allowed_qualities, preferred_qualities = Quality.splitQuality(show.quality)
 
@@ -337,7 +337,6 @@ def search_for_needed_episodes():
     show_list = settings.show_list
     from_date = datetime.date.min
     episodes = []
-    logger.debug(f"Seeing if we need anything for: {', '.join(ashow.name for ashow in show_list)}")
 
     for curShow in show_list:
         if not curShow.paused:
