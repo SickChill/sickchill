@@ -969,6 +969,89 @@ const SICKCHILL = {
                 $('#trakt_pin').removeClass('hide');
             });
 
+            let traktDevicePollTimer = null;
+            const stopTraktDevicePolling = () => {
+                if (traktDevicePollTimer) {
+                    clearTimeout(traktDevicePollTimer);
+                    traktDevicePollTimer = null;
+                }
+            };
+
+            const pollTraktDevice = (deviceCode, intervalSeconds, expiresAt) => {
+                if (Date.now() > expiresAt) {
+                    $('#TraktDeviceStatus').text(_('Authorization code expired. Please try again.'));
+                    $('#TraktDeviceStart').removeClass('hide').prop('disabled', false);
+                    return;
+                }
+                $.post(scRoot + '/home/pollTraktDeviceAuth', {device_code: deviceCode}) // eslint-disable-line camelcase
+                    .done(response => {
+                        let data = response;
+                        if (typeof data === 'string') {
+                            try { data = JSON.parse(data); } catch (_error) { data = {}; }
+                        }
+                        if (data.status === 'authorized') {
+                            $('#TraktDeviceStatus').text(_('Trakt authorized successfully.'));
+                            $('#TraktDevicePanel').addClass('hide');
+                            $('#testTrakt-result').html(_('Trakt Authorized'));
+                            return;
+                        }
+                        if (data.status === 'pending') {
+                            traktDevicePollTimer = setTimeout(
+                                () => pollTraktDevice(deviceCode, intervalSeconds, expiresAt),
+                                intervalSeconds * 1000,
+                            );
+                            return;
+                        }
+                        if (data.status === 'expired') {
+                            $('#TraktDeviceStatus').text(_('Code expired. Please try again.'));
+                            $('#TraktDeviceStart').removeClass('hide').prop('disabled', false);
+                            return;
+                        }
+                        $('#TraktDeviceStatus').text((data && data.message) || _('Trakt authorization failed.'));
+                        $('#TraktDeviceStart').removeClass('hide').prop('disabled', false);
+                    })
+                    .fail(() => {
+                        traktDevicePollTimer = setTimeout(
+                            () => pollTraktDevice(deviceCode, intervalSeconds, expiresAt),
+                            intervalSeconds * 1000,
+                        );
+                    });
+            };
+
+            $('#TraktDeviceStart').on('click', () => {
+                stopTraktDevicePolling();
+                $('#TraktDeviceStatus').text(_('Contacting Trakt...'));
+                $('#TraktDeviceStart').prop('disabled', true);
+                $.post(scRoot + '/home/startTraktDeviceAuth')
+                    .done(response => {
+                        let data = response;
+                        if (typeof data === 'string') {
+                            try { data = JSON.parse(data); } catch (_error) { data = {}; }
+                        }
+                        if (!data || data.error || !data.user_code) {
+                            $('#TraktDeviceStatus').text((data && data.error) || _('Failed to start Trakt authorization.'));
+                            $('#TraktDeviceStart').prop('disabled', false);
+                            return;
+                        }
+                        $('#TraktDeviceUserCode').text(data.user_code);
+                        $('#TraktDeviceVerifyLink').attr('href', data.verification_url).text(data.verification_url);
+                        $('#TraktDevicePanel').removeClass('hide');
+                        $('#TraktDeviceStatus').text(_('Waiting for approval...'));
+                        try {
+                            window.open(data.verification_url, '_blank', 'noopener');
+                        } catch (_error) {
+                            // Popup blocked - user can click the link.
+                        }
+                        const interval = Math.max(1, Number(data.interval) || 5);
+                        const expiresAt = Date.now() + (Math.max(60, Number(data.expires_in) || 600) * 1000);
+                        pollTraktDevice(data.device_code, interval, expiresAt);
+                    })
+                    .fail(() => {
+                        $('#TraktDeviceStatus').text(_('Failed to start Trakt authorization.'));
+                        $('#TraktDeviceStart').prop('disabled', false);
+                    });
+            });
+
             $('#trakt_pin').on('keyup change', () => {
                 if ($('#trakt_pin').val().length === 0) {
                     $('#TraktGetPin').removeClass('hide');

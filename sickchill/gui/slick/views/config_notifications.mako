@@ -2744,18 +2744,36 @@
 
                             <div class="field-pair row">
                                 <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                    <label class="component-title">${_('Trakt PIN')}</label>
+                                    <label class="component-title">${_('Trakt Authorization')}</label>
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <div class="row">
                                         <div class="col-md-12">
+                                            <input type="button" class="btn ${('', 'hide')[bool(settings.TRAKT_ACCESS_TOKEN)]}" value="${_('Authorize with Trakt')}" id="TraktDeviceStart" />
+                                            <span id="TraktDeviceStatus" class="text-muted" style="margin-left:10px;"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row hide" id="TraktDevicePanel" style="margin-top:10px;">
+                                        <div class="col-md-12">
+                                            <p>
+                                                ${_('Open')}
+                                                <a id="TraktDeviceVerifyLink" href="#" target="_blank" rel="noopener"></a>
+                                                ${_('and enter this code:')}
+                                                <strong id="TraktDeviceUserCode" style="font-size:1.4em; letter-spacing:2px;"></strong>
+                                            </p>
+                                            <p class="text-muted"><small>${_('This page will confirm automatically once you approve access. The code expires in a few minutes.')}</small></p>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:15px;">
+                                        <div class="col-md-12">
+                                            <label>${_('Legacy PIN flow (optional)')}</label>
                                             <input type="hidden" id="trakt_pin_url" value="${settings.TRAKT_PIN_URL}">
-                                            <input type="button" class="btn ${('', 'hide')[bool(settings.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
+                                            <input type="button" class="btn btn-sm" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="text" name="trakt_pin" id="trakt_pin" value="" class="form-control input-sm input250" autocapitalize="off" />
+                                            <input type="text" name="trakt_pin" id="trakt_pin" value="" class="form-control input-sm input250" autocapitalize="off" placeholder="${_('Paste PIN here')}" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -2765,7 +2783,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input type="button" class="btn hide" value="Authorize SickChill" id="authTrakt" />
+                                            <input type="button" class="btn hide" value="${_('Authorize with PIN')}" id="authTrakt" />
                                         </div>
                                     </div>
                                 </div>
