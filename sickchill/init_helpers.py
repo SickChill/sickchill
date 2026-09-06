@@ -260,6 +260,10 @@ def _revision_from_direct_url() -> tuple[str, str] | None:
         # Missing dist, missing file, bad JSON, etc. — never fail Help/startup
         return None
 
+    # Valid non-object JSON (array, string, …) must not raise — fall through to env
+    if not isinstance(data, dict):
+        return None
+
     vcs = data.get("vcs_info")
     if not isinstance(vcs, dict):
         return None

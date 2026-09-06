@@ -199,6 +199,23 @@ class TestGetGitRevision(unittest.TestCase):
                 with mock.patch.object(init_helpers, "get_distribution", return_value=dist):
                     self.assertEqual(init_helpers.get_git_revision(), ("", ""))
 
+    def test_direct_url_json_array_falls_through_to_env(self):
+        """Top-level JSON array is valid JSON but not PEP 610 — do not crash; use env."""
+        sha = "dddddddddddddddddddddddddddddddddddddddd"
+        os.environ["SICKCHILL_SHA"] = sha
+        os.environ["SICKCHILL_BRANCH"] = "develop"
+        dist = mock.Mock()
+        dist.read_text.return_value = '[{"url": "https://example.com"}]'
+        with mock.patch.object(init_helpers, "_revision_from_git", return_value=None):
+            with mock.patch.object(init_helpers, "_revision_file") as rev_file:
+                rev_file.is_file.return_value = False
+                with mock.patch.object(init_helpers, "get_distribution", return_value=dist):
+                    self.assertEqual(init_helpers.get_git_revision(), ("develop", sha))
+        # Helper itself returns None for non-object JSON
+        _clear_revision_cache()
+        with mock.patch.object(init_helpers, "get_distribution", return_value=dist):
+            self.assertIsNone(init_helpers._revision_from_direct_url())
+
 
 class TestFormatGitRevision(unittest.TestCase):
     def setUp(self):
