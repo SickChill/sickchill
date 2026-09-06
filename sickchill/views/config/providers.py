@@ -232,6 +232,8 @@ class ConfigProviders(Config):
         for provider in sickchill.oldbeard.providers.sorted_provider_list():
             provider.check_set_option(self, "custom_url")
             provider.check_set_option(self, "cookies")
+            provider.check_set_option(self, "indexer", "all")
+            provider.check_set_option(self, "categories", "5000,5030,5040,5045,5050,5060,5070")
 
             provider.check_set_option(self, "minseed", 0, int)
             provider.check_set_option(self, "minleech", 0, int)
