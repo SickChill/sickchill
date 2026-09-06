@@ -465,15 +465,22 @@ TRACKERS_LIST += "udp://exodus.desync.com:6969,udp://9.rarbg.me:2710/announce,"
 TRACKERS_LIST += "udp://glotorrents.pw:6969/announce,udp://tracker.openbittorrent.com:80/announce,"
 TRACKERS_LIST += "udp://tracker.opentrackr.org:1337/announce,udp://tracker.internetwarriors.net:1337"
 TRAKT_ACCESS_TOKEN = None
-# TRAKT_API_KEY = 'd4161a7a106424551add171e5470112e4afdaf2438e6ef2fe0548edc75924868'
-TRAKT_API_KEY = "5c65f55e11d48c35385d9e8670615763a605fad28374c8ae553a7b7a50651ddd"
-TRAKT_API_SECRET = "b53e32045ac122a445ef163e6d859403301ffe9b17fb8321d428531b69022a82"
+# Trakt API apps require VIP. Do not ship a shared Client ID — previous defaults were revoked.
+TRAKT_API_KEY = ""
+TRAKT_API_SECRET = ""
 TRAKT_API_URL = "https://api.trakt.tv/"
 TRAKT_BLACKLIST_NAME = None
 TRAKT_DEFAULT_INDEXER = None
 TRAKT_METHOD_ADD = None
 TRAKT_OAUTH_URL = "https://trakt.tv/"
-TRAKT_PIN_URL = f"https://trakt.tv/oauth/authorize?response_type=code&client_id={TRAKT_API_KEY}&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
+TRAKT_PIN_URL = "https://trakt.tv/oauth/authorize?response_type=code&client_id=&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
+# Revoked historical SickChill Client IDs (blanked on load if still present in config.ini).
+TRAKT_REVOKED_CLIENT_IDS = frozenset(
+    {
+        "5c65f55e11d48c35385d9e8670615763a605fad28374c8ae553a7b7a50651ddd",
+        "d4161a7a106424551add171e5470112e4afdaf2438e6ef2fe0548edc75924868",
+    }
+)
 TRAKT_REFRESH_TOKEN = None
 TRAKT_REMOVE_SERIESLIST = False
 TRAKT_REMOVE_SHOW_FROM_SICKCHILL = False

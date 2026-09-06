@@ -163,15 +163,23 @@ class ConfigGeneral(Config):
                 logger.debug(f"Could not reset TVDB client after credential change: {error}")
 
         # Trakt account credentials (Indexer / Data) — notify toggles stay on Notifications
+        # Trakt VIP API app required; known-revoked stock Client IDs are rejected.
         new_api_key = (self.get_body_argument("trakt_api_key", default="") or "").strip()
         new_api_secret = (filters.unhide(settings.TRAKT_API_SECRET or "", self.get_body_argument("trakt_api_secret", default="") or "") or "").strip()
         new_username = (self.get_body_argument("trakt_username", default="") or "").strip()
+        if new_api_key in getattr(settings, "TRAKT_REVOKED_CLIENT_IDS", ()):
+            ui.notifications.error(_("Invalid Trakt Client ID"), _("That Client ID is a revoked built-in key. Create a Trakt VIP API app and use its Client ID."))
+            new_api_key = ""
         key_changed = False
-        if new_api_key and new_api_key != settings.TRAKT_API_KEY:
+        if new_api_key != (settings.TRAKT_API_KEY or ""):
             settings.TRAKT_API_KEY = new_api_key
             key_changed = True
         if new_api_secret and new_api_secret != (settings.TRAKT_API_SECRET or ""):
             settings.TRAKT_API_SECRET = new_api_secret
+            key_changed = True
+        # Allow clearing secret when Client ID was cleared
+        if not new_api_key and (settings.TRAKT_API_SECRET or ""):
+            settings.TRAKT_API_SECRET = ""
             key_changed = True
         settings.TRAKT_USERNAME = new_username or None
         if key_changed:

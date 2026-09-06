@@ -303,10 +303,97 @@ const SICKCHILL = {
         init() {
             $('#config-components').tabs();
 
-            // Trakt account PIN (Config → General → Indexer / Data)
+            // Trakt account auth (Config → General → Indexer / Data)
             $('#TraktGetPin').on('click', () => {
                 window.open($('#trakt_pin_url').val(), 'popUp', 'toolbar=no, scrollbars=no, resizable=no, top=200, left=200, width=650, height=550');
                 $('#trakt_pin').removeClass('hide');
+            });
+
+            let traktDevicePollTimer = null;
+            const stopTraktDevicePolling = () => {
+                if (traktDevicePollTimer) {
+                    clearTimeout(traktDevicePollTimer);
+                    traktDevicePollTimer = null;
+                }
+            };
+
+            const pollTraktDevice = (deviceCode, intervalSeconds, expiresAt) => {
+                if (Date.now() > expiresAt) {
+                    $('#TraktDeviceStatus').text(_('Authorization code expired. Please try again.'));
+                    $('#TraktDeviceStart').removeClass('hide').prop('disabled', false);
+                    return;
+                }
+                $.post(scRoot + '/home/pollTraktDeviceAuth', {device_code: deviceCode}) // eslint-disable-line camelcase
+                    .done(response => {
+                        let data = response;
+                        if (typeof data === 'string') {
+                            try { data = JSON.parse(data); } catch (_error) { data = {}; }
+                        }
+                        if (data.status === 'authorized') {
+                            $('#TraktDeviceStatus').text(_('Trakt authorized successfully.'));
+                            $('#TraktDevicePanel').addClass('hide');
+                            if ($('#testTrakt-result').length > 0) {
+                                $('#testTrakt-result').html(_('Trakt Authorized'));
+                            } else {
+                                notifyModal(_('Trakt Authorized'));
+                            }
+                            return;
+                        }
+                        if (data.status === 'pending') {
+                            traktDevicePollTimer = setTimeout(
+                                () => pollTraktDevice(deviceCode, intervalSeconds, expiresAt),
+                                intervalSeconds * 1000,
+                            );
+                            return;
+                        }
+                        if (data.status === 'expired') {
+                            $('#TraktDeviceStatus').text(_('Code expired. Please try again.'));
+                            $('#TraktDeviceStart').removeClass('hide').prop('disabled', false);
+                            return;
+                        }
+                        $('#TraktDeviceStatus').text((data && data.message) || _('Trakt authorization failed.'));
+                        $('#TraktDeviceStart').removeClass('hide').prop('disabled', false);
+                    })
+                    .fail(() => {
+                        traktDevicePollTimer = setTimeout(
+                            () => pollTraktDevice(deviceCode, intervalSeconds, expiresAt),
+                            intervalSeconds * 1000,
+                        );
+                    });
+            };
+
+            $('#TraktDeviceStart').on('click', () => {
+                stopTraktDevicePolling();
+                $('#TraktDeviceStatus').text(_('Contacting Trakt...'));
+                $('#TraktDeviceStart').prop('disabled', true);
+                $.post(scRoot + '/home/startTraktDeviceAuth')
+                    .done(response => {
+                        let data = response;
+                        if (typeof data === 'string') {
+                            try { data = JSON.parse(data); } catch (_error) { data = {}; }
+                        }
+                        if (!data || data.error || !data.user_code) {
+                            $('#TraktDeviceStatus').text((data && data.error) || _('Failed to start Trakt authorization.'));
+                            $('#TraktDeviceStart').prop('disabled', false);
+                            return;
+                        }
+                        $('#TraktDeviceUserCode').text(data.user_code);
+                        $('#TraktDeviceVerifyLink').attr('href', data.verification_url).text(data.verification_url);
+                        $('#TraktDevicePanel').removeClass('hide');
+                        $('#TraktDeviceStatus').text(_('Waiting for approval...'));
+                        try {
+                            window.open(data.verification_url, '_blank', 'noopener');
+                        } catch (_error) {
+                            // Popup blocked - user can click the link.
+                        }
+                        const interval = Math.max(1, Number(data.interval) || 5);
+                        const expiresAt = Date.now() + (Math.max(60, Number(data.expires_in) || 600) * 1000);
+                        pollTraktDevice(data.device_code, interval, expiresAt);
+                    })
+                    .fail(() => {
+                        $('#TraktDeviceStatus').text(_('Failed to start Trakt authorization.'));
+                        $('#TraktDeviceStart').prop('disabled', false);
+                    });
             });
 
             $('#trakt_pin').on('keyup change', () => {
@@ -335,6 +422,7 @@ const SICKCHILL = {
                         $('#authTrakt').addClass('hide');
                         $('#trakt_pin').addClass('hide');
                         $('#TraktGetPin').addClass('hide');
+                        $('#TraktDeviceStart').addClass('hide');
                     });
                 }
             });
@@ -4614,9 +4702,16 @@ const SICKCHILL = {
             );
         },
         trendingShows() {
-            const listParameter = () => ($('#tmdbList').val() || $('#traktList').val() || 'trending');
+            const discoverySource = () => ($('#discoverySource').val() || 'tmdb');
+            const listParameter = () => {
+                if (discoverySource() === 'trakt') {
+                    return $('#traktList').val() || 'anticipated';
+                }
+                return $('#tmdbList').val() || 'trending';
+            };
+            const listQueryParam = () => (discoverySource() === 'trakt' ? 'traktList' : 'tmdbList');
             const syncPremiereFilters = listKey => {
-                if (listKey === 'premieres') {
+                if (discoverySource() === 'tmdb' && listKey === 'premieres') {
                     $('#premiereFilters').show();
                 } else {
                     $('#premiereFilters').hide();
@@ -4624,10 +4719,15 @@ const SICKCHILL = {
             };
 
             const loadDiscoveryShows = listKey => {
+                const param = listQueryParam();
+                const loadingTxt = discoverySource() === 'trakt' ? 'Loading Trakt shows...' : 'Loading discovery shows...';
+                const errorTxt = discoverySource() === 'trakt'
+                    ? 'Trakt timed out, refresh page to try again'
+                    : 'List request timed out, refresh page to try again';
                 $('#trendingShows').loadRemoteShows(
-                    '/addShows/getTrendingShows/?tmdbList=' + listKey,
-                    'Loading discovery shows...',
-                    'List request timed out, refresh page to try again',
+                    '/addShows/getTrendingShows/?' + param + '=' + listKey,
+                    loadingTxt,
+                    errorTxt,
                 );
             };
 
@@ -4637,9 +4737,15 @@ const SICKCHILL = {
 
             $('#traktlistselection').on('change', event => {
                 const listKey = event.target.value;
-                $('#traktList').val(listKey);
-                $('#tmdbList').val(listKey);
-                window.history.replaceState({}, document.title, '?tmdbList=' + listKey);
+                const param = listQueryParam();
+                if (discoverySource() === 'trakt') {
+                    $('#traktList').val(listKey);
+                    $('#tmdbList').val('');
+                } else {
+                    $('#tmdbList').val(listKey);
+                    $('#traktList').val('');
+                }
+                window.history.replaceState({}, document.title, '?' + param + '=' + listKey);
                 syncPremiereFilters(listKey);
                 loadDiscoveryShows(listKey);
             });

@@ -38,7 +38,7 @@
                 </select>
             </div>
         </div>
-        <div id="premiereFilters" class="discovery-filters" style="margin-bottom: 0.75em;${'' if list_key == 'premieres' else ' display:none;'}">
+        <div id="premiereFilters" class="discovery-filters" style="margin-bottom: 0.75em;${'' if discovery_source == 'tmdb' and list_key == 'premieres' else ' display:none;'}">
             <label for="premiere-window">
                 <span>${_('Premiere window')}:</span>
             </label>
@@ -63,7 +63,8 @@
             </div>
         </div>
         <div id="trendingShows"></div>
-        <input type="hidden" name="traktList" id="traktList" value="${list_key}" />
-        <input type="hidden" name="tmdbList" id="tmdbList" value="${list_key}" />
+        <input type="hidden" name="discoverySource" id="discoverySource" value="${discovery_source}" />
+        <input type="hidden" name="traktList" id="traktList" value="${traktList}" />
+        <input type="hidden" name="tmdbList" id="tmdbList" value="${tmdbList}" />
     </div>
 </%block>
