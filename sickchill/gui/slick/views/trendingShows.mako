@@ -65,7 +65,7 @@
 
                         <div class="show-title">
                             % if title:
-                                ${title}
+                                ${title | h}
                             % else:
                                 <span>&nbsp;</span>
                             % endif
@@ -73,10 +73,10 @@
 
                         <div class="clearfix">
                             % if rating:
-                                <p>${rating_pct}% <span class="displayshow-icon-heart"></span></p>
+                                <p>${rating_pct | h}% <span class="displayshow-icon-heart"></span></p>
                             % endif
                             % if votes:
-                                <i>${votes} ${_('votes')}</i>
+                                <i>${votes | h} ${_('votes')}</i>
                             % endif
                             <div class="traktShowTitleIcons">
                                 % if cur_show.get("already_added"):
@@ -132,21 +132,24 @@
 
                         <div class="show-title ${('has-tvdb' if tvdb_id else 'no-tvdb') if source == 'tvmaze' else ''}">
                             % if title:
-                                ${title}${' ({})'.format(year) if year else ''}
+                                ${title | h}
+                                % if year:
+                                    (${year | h})
+                                % endif
                             % else:
                                 <span>&nbsp;</span>
                             % endif
                             % if source == "tvmaze" and airdate:
-                                <br/><small>${_('Airdate')}: ${airdate}</small>
+                                <br/><small>${_('Airdate')}: ${airdate | h}</small>
                             % endif
                         </div>
 
                         <div class="clearfix">
                             % if rating:
-                                <p>${rating_pct}% <span class="displayshow-icon-heart"></span></p>
+                                <p>${rating_pct | h}% <span class="displayshow-icon-heart"></span></p>
                             % endif
                             % if votes:
-                                <i>${votes} ${_('votes')}</i>
+                                <i>${votes | h} ${_('votes')}</i>
                             % endif
                             <div class="traktShowTitleIcons">
                                 % if already:

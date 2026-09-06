@@ -472,7 +472,7 @@ TRAKT_API_URL = "https://api.trakt.tv/"
 TRAKT_BLACKLIST_NAME = None
 TRAKT_DEFAULT_INDEXER = None
 TRAKT_METHOD_ADD = None
-TRAKT_OAUTH_URL = "https://trakt.tv/"
+TRAKT_OAUTH_URL = "https://auth.trakt.tv/"
 TRAKT_PIN_URL = "https://trakt.tv/oauth/authorize?response_type=code&client_id=&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
 # Revoked historical SickChill Client IDs (blanked on load if still present in config.ini).
 TRAKT_REVOKED_CLIENT_IDS = frozenset(

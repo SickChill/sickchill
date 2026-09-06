@@ -356,6 +356,17 @@ const SICKCHILL = {
                             return;
                         }
 
+                        if (data.status === 'slow_down') {
+                            const slowedInterval = Math.max(intervalSeconds * 2, intervalSeconds + 5);
+                            $('#TraktDeviceStatus').text(_('Trakt asked us to slow down; retrying...'));
+                            traktDevicePollTimer = setTimeout(
+                                () => pollTraktDevice(deviceCode, slowedInterval, expiresAt),
+                                slowedInterval * 1000,
+                            );
+
+                            return;
+                        }
+
                         if (data.status === 'expired') {
                             $('#TraktDeviceStatus').text(_('Code expired. Please try again.'));
                             $('#TraktDeviceStart').removeClass('hide').prop('disabled', false);

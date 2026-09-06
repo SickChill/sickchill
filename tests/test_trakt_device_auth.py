@@ -14,7 +14,9 @@ from sickchill.oldbeard.trakt_api import (
     traktDeviceCodeExpiredException,
     traktDeviceCodePendingException,
     traktException,
+    traktRateLimitException,
 )
+from sickchill.oldbeard.trakt_api.trakt import _MAX_RETRY_AFTER_SECONDS, _parse_retry_after
 
 
 class TraktDeviceCodeAPITests(unittest.TestCase):
@@ -25,7 +27,7 @@ class TraktDeviceCodeAPITests(unittest.TestCase):
         api.verify = False
         api.timeout = 10
         api.headers = {}
-        api.auth_url = "https://api.trakt.tv/"
+        api.auth_url = "https://auth.trakt.tv/"
         return api
 
     @patch.object(TraktAPI, "traktRequest")
@@ -78,6 +80,24 @@ class TraktDeviceCodeAPITests(unittest.TestCase):
         api = self._api()
         with self.assertRaises(traktDeviceCodeExpiredException):
             api.device_code_poll("dev-1")
+
+    @patch("sickchill.oldbeard.trakt_api.trakt.requests.post")
+    def test_device_code_poll_rate_limit(self, post):
+        response = MagicMock()
+        response.status_code = 429
+        post.return_value = response
+        api = self._api()
+        with self.assertRaises(traktRateLimitException):
+            api.device_code_poll("dev-1")
+
+
+class TraktRetryAfterClampTests(unittest.TestCase):
+    def test_parse_retry_after_clamps(self):
+        self.assertEqual(_parse_retry_after(None), 2.0)
+        self.assertEqual(_parse_retry_after("1"), 1.0)
+        self.assertEqual(_parse_retry_after("30"), 30.0)
+        self.assertEqual(_parse_retry_after("999"), _MAX_RETRY_AFTER_SECONDS)
+        self.assertEqual(_parse_retry_after("nope"), 2.0)
 
 
 class TraktCredentialsConfigTests(unittest.TestCase):
@@ -169,6 +189,15 @@ class TraktHomeDeviceAuthEndpointTests(unittest.TestCase):
         trakt_cls.return_value.device_code_poll.side_effect = traktDeviceCodeExpiredException("gone")
         data = json.loads(home.pollTraktDeviceAuth())
         self.assertEqual(data["status"], "expired")
+
+    @patch("sickchill.views.home.TraktAPI")
+    def test_poll_slow_down(self, trakt_cls):
+        home = self._home()
+        home.get_body_argument = MagicMock(return_value="dev-1")
+        trakt_cls.return_value.device_code_poll.side_effect = traktRateLimitException("slow down")
+        data = json.loads(home.pollTraktDeviceAuth())
+        self.assertEqual(data["status"], "slow_down")
+        self.assertIn("slow down", data["message"])
 
     def test_poll_missing_code(self):
         home = self._home()

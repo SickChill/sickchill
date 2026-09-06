@@ -34,6 +34,7 @@ from sickchill.oldbeard.trakt_api import (
     traktDeviceCodeExpiredException,
     traktDeviceCodePendingException,
     traktException,
+    traktRateLimitException,
 )
 from sickchill.providers import result_classes
 from sickchill.providers.GenericProvider import GenericProvider
@@ -672,8 +673,10 @@ class Home(WebRoot):
     def pollTraktDeviceAuth(self):
         """Poll Trakt once for a pending device code authorization.
 
-        Returns a small JSON payload: ``{"status": "authorized"|"pending"|"expired"|"error", ...}``.
-        The browser polls this at ``interval`` seconds until it stops receiving ``pending``.
+        Returns a small JSON payload:
+        ``{"status": "authorized"|"pending"|"expired"|"slow_down"|"error", ...}``.
+        The browser polls this at ``interval`` seconds until it stops receiving ``pending``
+        (or ``slow_down``, which should increase the poll interval and retry).
         """
         device_code = self.get_body_argument("device_code", default="")
         self.set_header("Content-Type", "application/json")
@@ -689,6 +692,8 @@ class Home(WebRoot):
             return json.dumps({"status": "pending"})
         except traktDeviceCodeExpiredException:
             return json.dumps({"status": "expired"})
+        except traktRateLimitException as error:
+            return json.dumps({"status": "slow_down", "message": str(error)})
         except traktException as error:
             return json.dumps({"status": "error", "message": str(error)})
 

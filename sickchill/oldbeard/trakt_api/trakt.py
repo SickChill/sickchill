@@ -40,6 +40,7 @@ from sickchill.oldbeard.trakt_api.exceptions import (
 # Trakt's own guidance: retry transient failures a small, bounded number of times.
 _MAX_RETRIES = 3
 _RETRY_BACKOFF_SECONDS = 2.0
+_MAX_RETRY_AFTER_SECONDS = 60.0
 _RETRYABLE_STATUS = frozenset({500, 502, 503, 504, 520, 521, 522, 524})
 
 # OAuth 2.0 out-of-band redirect used by the legacy PIN flow.
@@ -421,9 +422,11 @@ def _extract_error_message(response: requests.Response) -> str:
 
 
 def _parse_retry_after(value: Optional[str]) -> float:
+    """Parse Retry-After seconds and clamp to ``[_RETRY_BACKOFF_SECONDS, _MAX_RETRY_AFTER_SECONDS]``."""
     if not value:
         return _RETRY_BACKOFF_SECONDS
     try:
-        return max(float(value), 1.0)
+        parsed = max(float(value), 1.0)
     except (TypeError, ValueError):
         return _RETRY_BACKOFF_SECONDS
+    return min(parsed, _MAX_RETRY_AFTER_SECONDS)
