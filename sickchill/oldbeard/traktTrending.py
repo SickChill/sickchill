@@ -17,6 +17,8 @@ class traktTrending(object):
         """Get trending show information from Trakt"""
 
         trending_shows = []
+        black_list = bool(settings.TRAKT_BLACKLIST_NAME)
+        library_shows = []
 
         trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
 
@@ -35,9 +37,6 @@ class traktTrending(object):
                 limit_show = "?"
 
             shows = trakt_api.traktRequest(page_url + limit_show + "extended=full") or []
-
-            if settings.TRAKT_ACCESS_TOKEN:
-                library_shows = trakt_api.traktRequest("sync/collection/shows?extended=full") or []
 
             for show in shows:
                 try:
@@ -63,14 +62,9 @@ class traktTrending(object):
                 except MultipleShowObjectsException:
                     continue
 
-            if settings.TRAKT_BLACKLIST_NAME != "":
-                black_list = True
-            else:
-                black_list = False
-
         except traktException as error:
             logger.warning(f"Could not connect to Trakt service: {error}")
-
+            raise
         for trending_show in trending_shows:
             # get indexer id
             indexer_id = trending_show["show"]["ids"]["tvdb"]

@@ -35,6 +35,68 @@
                     <p class="red-text">${_('No shows returned for this list.')}</p>
                 % endif
             </div>
+        % elif discovery_source == "trakt":
+            % for cur_show in trending_shows:
+                <%
+                    show = cur_show.get("show") or cur_show
+                    ids = show.get("ids") or {}
+                    title = show.get("title") or ""
+                    rating = show.get("rating") or 0
+                    votes = show.get("votes") or 0
+                    tvdb_id = ids.get("tvdb")
+                    slug = ids.get("slug") or ""
+                    show_url = "http://www.trakt.tv/shows/%s" % slug if slug else "#"
+                    image_path = cur_show.get("image_path") or ""
+                    indexer_id = cur_show.get("indexer_id") or ""
+                    rating_pct = int(round(float(rating) * 10)) if rating else 0
+                %>
+                <div class="trakt_show" data-name="${title | h}"
+                     data-rating="${rating_pct | h}" data-votes="${votes | h}"
+                     data-source="trakt">
+                    <div class="traktContainer">
+                        <div class="trakt-image">
+                            <a class="trakt-image" href="${anon_url(show_url)}" target="_blank" rel="noreferrer">
+                                <img alt="" class="trakt-image" src=""
+                                     data-src-indexer-id="${indexer_id | h}"
+                                     data-src-cache="${static_url('cache/' + image_path, include_version=True) if image_path else static_url('images/poster.png')}"
+                                     height="273px" width="186px" />
+                            </a>
+                        </div>
+
+                        <div class="show-title">
+                            % if title:
+                                ${title | h}
+                            % else:
+                                <span>&nbsp;</span>
+                            % endif
+                        </div>
+
+                        <div class="clearfix">
+                            % if rating:
+                                <p>${rating_pct | h}% <span class="displayshow-icon-heart"></span></p>
+                            % endif
+                            % if votes:
+                                <i>${votes | h} ${_('votes')}</i>
+                            % endif
+                            <div class="traktShowTitleIcons">
+                                % if cur_show.get("already_added"):
+                                    <span class="btn btn-xs disabled">${_('In Library')}</span>
+                                % elif tvdb_id:
+                                    <a href="${scRoot}/addShows/addShowByID?indexer_id=${tvdb_id}&amp;show_name=${quote_plus(title)}"
+                                       class="btn btn-xs">${_('Add Show')}</a>
+                                    % if black_list:
+                                        <a href="${scRoot}/addShows/addShowToBlacklist?indexer_id=${tvdb_id}"
+                                           class="btn btn-xs">${_('Remove Show')}</a>
+                                    % endif
+                                % else:
+                                    <a href="${scRoot}/addShows/newShow/?search_string=${quote_plus(title)}&amp;exact=1"
+                                       class="btn btn-xs">${_('Search / Add')}</a>
+                                % endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            % endfor
         % else:
             % for cur_show in trending_shows:
                 <%
@@ -70,21 +132,24 @@
 
                         <div class="show-title ${('has-tvdb' if tvdb_id else 'no-tvdb') if source == 'tvmaze' else ''}">
                             % if title:
-                                ${title}${' ({})'.format(year) if year else ''}
+                                ${title | h}
+                                % if year:
+                                    (${year | h})
+                                % endif
                             % else:
                                 <span>&nbsp;</span>
                             % endif
                             % if source == "tvmaze" and airdate:
-                                <br/><small>${_('Airdate')}: ${airdate}</small>
+                                <br/><small>${_('Airdate')}: ${airdate | h}</small>
                             % endif
                         </div>
 
                         <div class="clearfix">
                             % if rating:
-                                <p>${rating_pct}% <span class="displayshow-icon-heart"></span></p>
+                                <p>${rating_pct | h}% <span class="displayshow-icon-heart"></span></p>
                             % endif
                             % if votes:
-                                <i>${votes} ${_('votes')}</i>
+                                <i>${votes | h} ${_('votes')}</i>
                             % endif
                             <div class="traktShowTitleIcons">
                                 % if already:

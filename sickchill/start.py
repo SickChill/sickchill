@@ -641,11 +641,17 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
         settings.TRAKT_API_SECRET = helpers.decrypt_config_value(raw_trakt_secret)
         if settings.TRAKT_API_SECRET:
             logger.censored_items[("Trakt", "trakt_api_secret")] = settings.TRAKT_API_SECRET
-        from sickchill.oldbeard.trakt_api.trakt import refresh_trakt_pin_url
+        from sickchill.oldbeard.trakt_api.trakt import clear_revoked_trakt_defaults, refresh_trakt_pin_url
 
-        refresh_trakt_pin_url()
         settings.TRAKT_ACCESS_TOKEN = check_setting_str(settings.CFG, "Trakt", "trakt_access_token", censor_log=True)
         settings.TRAKT_REFRESH_TOKEN = check_setting_str(settings.CFG, "Trakt", "trakt_refresh_token", censor_log=True)
+        # After tokens load: blank revoked stock Client IDs (and their tokens) from older installs.
+        if clear_revoked_trakt_defaults():
+            logger.warning(
+                _("Cleared revoked built-in Trakt Client ID. Create a Trakt VIP API app and paste Client ID/Secret under Config → General → Indexer / Data.")
+            )
+        else:
+            refresh_trakt_pin_url()
         settings.TRAKT_REMOVE_WATCHLIST = check_setting_bool(settings.CFG, "Trakt", "trakt_remove_watchlist")
         settings.TRAKT_REMOVE_SERIESLIST = check_setting_bool(settings.CFG, "Trakt", "trakt_remove_serieslist")
         settings.TRAKT_REMOVE_SHOW_FROM_SICKCHILL = check_setting_bool(settings.CFG, "Trakt", "trakt_remove_show_from_sickchill")

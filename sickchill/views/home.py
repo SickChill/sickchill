@@ -29,7 +29,13 @@ from sickchill.oldbeard.scene_numbering import (
     get_xem_numbering_for_show,
     set_scene_numbering,
 )
-from sickchill.oldbeard.trakt_api import TraktAPI
+from sickchill.oldbeard.trakt_api import (
+    TraktAPI,
+    traktDeviceCodeExpiredException,
+    traktDeviceCodePendingException,
+    traktException,
+    traktRateLimitException,
+)
 from sickchill.providers import result_classes
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.metadata.generic import GenericMetadata
@@ -639,6 +645,58 @@ class Home(WebRoot):
         if response:
             return _("Trakt Authorized")
         return _("Trakt Not Authorized!")
+
+    def startTraktDeviceAuth(self):
+        """Kick off the Trakt OAuth Device Code flow.
+
+        Returns a JSON payload with the ``user_code`` and ``verification_url`` to display
+        to the user, plus the ``device_code`` and polling ``interval`` used by the browser
+        to call :meth:`pollTraktDeviceAuth`.
+        """
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
+        try:
+            payload = trakt_api.device_code_start()
+        except traktException as error:
+            logger.warning(f"Trakt device code start failed: {error}")
+            self.set_header("Content-Type", "application/json")
+            return json.dumps({"error": str(error)})
+        self.set_header("Content-Type", "application/json")
+        return json.dumps(
+            {
+                "device_code": payload.get("device_code"),
+                "user_code": payload.get("user_code"),
+                "verification_url": payload.get("verification_url"),
+                "expires_in": payload.get("expires_in"),
+                "interval": payload.get("interval", 5),
+            }
+        )
+
+    def pollTraktDeviceAuth(self):
+        """Poll Trakt once for a pending device code authorization.
+
+        Returns a small JSON payload:
+        ``{"status": "authorized"|"pending"|"expired"|"slow_down"|"error", ...}``.
+        The browser polls this at ``interval`` seconds until it stops receiving ``pending``
+        (or ``slow_down``, which should increase the poll interval and retry).
+        """
+        device_code = self.get_body_argument("device_code", default="")
+        self.set_header("Content-Type", "application/json")
+        if not device_code:
+            return json.dumps({"status": "error", "message": _("Missing device_code")})
+
+        trakt_api = TraktAPI(settings.SSL_VERIFY, settings.TRAKT_TIMEOUT)
+        try:
+            if trakt_api.device_code_poll(device_code):
+                return json.dumps({"status": "authorized"})
+            return json.dumps({"status": "error", "message": _("Unknown error")})
+        except traktDeviceCodePendingException:
+            return json.dumps({"status": "pending"})
+        except traktDeviceCodeExpiredException:
+            return json.dumps({"status": "expired"})
+        except traktRateLimitException as error:
+            return json.dumps({"status": "slow_down", "message": str(error)})
+        except traktException as error:
+            return json.dumps({"status": "error", "message": str(error)})
 
     def testTrakt(self):
         username = self.get_body_argument("username")

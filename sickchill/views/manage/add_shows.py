@@ -15,7 +15,8 @@ from sickchill.helper.list_status import build_list_status
 from sickchill.oldbeard import config, db, helpers, tmdbLists, tvmazePremieres, ui
 from sickchill.oldbeard.blackandwhitelist import short_group_names
 from sickchill.oldbeard.common import Quality
-from sickchill.oldbeard.trakt_api import TraktAPI
+from sickchill.oldbeard.trakt_api import TraktAPI, trakt_credentials_configured
+from sickchill.oldbeard.traktTrending import trakt_trending
 from sickchill.show.recommendations.imdb import imdb_popular
 from sickchill.show.Show import Show
 from sickchill.tv import TVShow
@@ -23,10 +24,12 @@ from sickchill.views.common import PageTemplate
 from sickchill.views.home import Home
 from sickchill.views.routes import Route
 
-# Discovery list keys (TMDB + TVMaze). Old traktList= query values are aliased below.
-_DISCOVERY_LIST_KEYS = ("trending", "popular", "top_rated", "on_the_air", "premieres")
+# TMDB + TVMaze discovery. Legacy traktList= values still alias here when source=tmdb.
+_TMDB_LIST_KEYS = ("trending", "popular", "top_rated", "on_the_air", "premieres")
+# Kept for older tests / callers that imported the previous name.
+_DISCOVERY_LIST_KEYS = _TMDB_LIST_KEYS
 
-_DISCOVERY_LIST_ALIASES = {
+_TMDB_LIST_ALIASES = {
     "anticipated": "trending",
     "newshow": "premieres",
     "newseason": "premieres",
@@ -37,9 +40,34 @@ _DISCOVERY_LIST_ALIASES = {
     "tvmaze": "premieres",
     "upcoming": "premieres",
 }
+_DISCOVERY_LIST_ALIASES = _TMDB_LIST_ALIASES
+
+_TRAKT_LIST_KEYS = (
+    "anticipated",
+    "trending",
+    "popular",
+    "collected",
+    "watched",
+    "played",
+    "recommended",
+    "newshow",
+    "newseason",
+)
+
+_TRAKT_PAGE_URLS = {
+    "trending": "shows/trending",
+    "popular": "shows/popular",
+    "anticipated": "shows/anticipated",
+    "collected": "shows/collected",
+    "watched": "shows/watched",
+    "played": "shows/played",
+    "recommended": "recommendations/shows",
+    "newshow": "calendars/all/shows/new",
+    "newseason": "calendars/all/shows/premieres",
+}
 
 
-def _discovery_list_options():
+def _tmdb_list_options():
     return {
         "trending": _("Trending (TMDB)"),
         "popular": _("Popular (TMDB)"),
@@ -47,6 +75,27 @@ def _discovery_list_options():
         "on_the_air": _("On The Air (TMDB)"),
         "premieres": _("Upcoming Premieres (TVMaze)"),
     }
+
+
+def _discovery_list_options():
+    """Backward-compatible alias used by older tests."""
+    return _tmdb_list_options()
+
+
+def _trakt_list_options():
+    options = {
+        "anticipated": _("Most Anticipated"),
+        "trending": _("Trending Shows"),
+        "popular": _("Popular Shows"),
+        "collected": _("Most Collected"),
+        "watched": _("Most Watched"),
+        "played": _("Most Played"),
+        "newshow": _("New Shows"),
+        "newseason": _("New Seasons"),
+    }
+    if settings.TRAKT_ACCESS_TOKEN:
+        options["recommended"] = _("Recommended Shows")
+    return options
 
 
 @Route("/addShows(/?.*)", name="addShows")
@@ -303,11 +352,36 @@ class AddShows(Home):
 
     @staticmethod
     def _resolve_discovery_list_key(raw: str) -> str:
+        """Resolve a TMDB/TVMaze list key (aliases legacy traktList values)."""
         key = (raw or "trending").strip().lower()
-        key = _DISCOVERY_LIST_ALIASES.get(key, key)
-        if key not in _DISCOVERY_LIST_KEYS:
+        key = _TMDB_LIST_ALIASES.get(key, key)
+        if key not in _TMDB_LIST_KEYS:
             return "trending"
         return key
+
+    @staticmethod
+    def _resolve_trakt_list_key(raw: str) -> str:
+        key = (raw or "anticipated").strip().lower()
+        if key not in _TRAKT_LIST_KEYS:
+            return "anticipated"
+        if key == "recommended" and not settings.TRAKT_ACCESS_TOKEN:
+            return "anticipated"
+        return key
+
+    @staticmethod
+    def _discovery_source_from_query(handler) -> tuple[str, str]:
+        """Return ``(source, raw_list_key)`` from query args.
+
+        ``tmdbList`` selects TMDB/TVMaze; ``traktList`` alone selects Trakt.
+        When both are present, ``tmdbList`` wins (TMDB UI historically wrote both).
+        """
+        tmdb_raw = handler.get_query_argument("tmdbList", default="")
+        trakt_raw = handler.get_query_argument("traktList", default="")
+        if tmdb_raw:
+            return "tmdb", tmdb_raw
+        if trakt_raw:
+            return "trakt", trakt_raw
+        return "tmdb", "trending"
 
     @staticmethod
     def _mark_already_added(cards: list) -> None:
@@ -333,65 +407,109 @@ class AddShows(Home):
             year = card.get("year")
             card["already_added"] = bool(title and (title, year) in by_title_year)
 
+    @staticmethod
+    def _mark_trakt_already_added(shows: list) -> None:
+        """Soft-mark nested Trakt API show payloads already in the SickChill library."""
+        by_tvdb = {int(show.indexerid): show for show in settings.show_list if getattr(show, "indexerid", None)}
+        for cur in shows:
+            show = cur.get("show") or cur
+            ids = show.get("ids") or {}
+            tvdb_id = ids.get("tvdb")
+            try:
+                cur["already_added"] = bool(tvdb_id and int(tvdb_id) in by_tvdb)
+            except (TypeError, ValueError):
+                cur["already_added"] = False
+
     def trendingShows(self):
-        """Shell page for TMDB / TVMaze discovery lists (AJAX loads getTrendingShows)."""
-        raw = self.get_query_argument("tmdbList", default="") or self.get_query_argument("traktList", default="trending")
-        list_key = self._resolve_discovery_list_key(raw)
-        list_options = _discovery_list_options()
+        """Shell page for TMDB/TVMaze or Trakt discovery lists (AJAX loads getTrendingShows)."""
+        source, raw = self._discovery_source_from_query(self)
+        if source == "trakt":
+            list_key = self._resolve_trakt_list_key(raw)
+            list_options = _trakt_list_options()
+            title = list_options.get(list_key, _("Trakt Lists"))
+        else:
+            list_key = self._resolve_discovery_list_key(raw)
+            list_options = _tmdb_list_options()
+            title = _("The Lists")
 
         t = PageTemplate(rh=self, filename="addShows_trendingShows.mako")
         return t.render(
-            title=_("The Lists"),
-            header=_("The Lists"),
+            title=title,
+            header=title,
             list_key=list_key,
             list_options=list_options,
-            # Compat for older JS reading #traktList
-            traktList=list_key,
+            discovery_source=source,
+            # Compat for older JS reading #traktList / #tmdbList
+            traktList=list_key if source == "trakt" else "",
+            tmdbList=list_key if source == "tmdb" else "",
             trakt_options=list_options,
             controller="addShows",
             action="trendingShows",
         )
 
     def getTrendingShows(self):
-        """AJAX fragment: TMDB or TVMaze discovery cards."""
+        """AJAX fragment: TMDB/TVMaze or Trakt discovery cards."""
         t = PageTemplate(rh=self, filename="trendingShows.mako")
 
-        raw = self.get_query_argument("tmdbList", default="") or self.get_query_argument("traktList", default="")
-        list_key = self._resolve_discovery_list_key(raw)
-
+        source, raw = self._discovery_source_from_query(self)
         trending_shows = []
+        black_list = False
         status_code = None
         settings_url = f"{settings.WEB_ROOT}/config/general/"
 
-        try:
-            if list_key == "premieres":
-                trending_shows = tvmazePremieres.fetch_premieres()
+        if source == "trakt":
+            list_key = self._resolve_trakt_list_key(raw)
+            if not trakt_credentials_configured():
+                status_code = "missing_key"
             else:
-                trending_shows = tmdbLists.fetch_list(list_key)
-            if not trending_shows:
-                status_code = "empty"
-            else:
-                self._mark_already_added(trending_shows)
-        except tmdbLists.TMDBMissingKeyError as error:
-            status_code = "missing_key"
-            logger.warning(f"TMDB discovery list unavailable: {error}")
-        except (tmdbLists.TMDBListsError, tvmazePremieres.TVMazePremieresError) as error:
-            status_code = "fetch_failed"
-            logger.warning(f"Could not get discovery shows ({list_key}): {error}")
-        except Exception as error:
-            status_code = "fetch_failed"
-            logger.warning(f"Could not get discovery shows ({list_key}): {error}")
+                page_url = _TRAKT_PAGE_URLS.get(list_key, "shows/anticipated")
+                try:
+                    trending_shows, black_list = trakt_trending.fetch_trending_shows(list_key, page_url)
+                    if not trending_shows:
+                        status_code = "empty"
+                    else:
+                        self._mark_trakt_already_added(trending_shows)
+                except Exception as error:
+                    status_code = "fetch_failed"
+                    logger.warning(f"Could not get Trakt shows ({list_key}): {error}")
+        else:
+            list_key = self._resolve_discovery_list_key(raw)
+            try:
+                if list_key == "premieres":
+                    trending_shows = tvmazePremieres.fetch_premieres()
+                else:
+                    trending_shows = tmdbLists.fetch_list(list_key)
+                if not trending_shows:
+                    status_code = "empty"
+                else:
+                    self._mark_already_added(trending_shows)
+            except tmdbLists.TMDBMissingKeyError as error:
+                status_code = "missing_key"
+                logger.warning(f"TMDB discovery list unavailable: {error}")
+            except (tmdbLists.TMDBListsError, tvmazePremieres.TVMazePremieresError) as error:
+                status_code = "fetch_failed"
+                logger.warning(f"Could not get discovery shows ({list_key}): {error}")
+            except Exception as error:
+                status_code = "fetch_failed"
+                logger.warning(f"Could not get discovery shows ({list_key}): {error}")
 
-        list_status = build_list_status(status_code, settings_url=settings_url)
+        list_status = build_list_status(status_code, settings_url=settings_url, source=source)
         return t.render(
-            black_list=False,
+            black_list=black_list,
             trending_shows=trending_shows,
             list_status=list_status,
             list_key=list_key,
+            discovery_source=source,
         )
 
     def getTrendingShowImage(self):
-        """Legacy Trakt poster cache endpoint — unused for TMDB/TVMaze CDN posters."""
+        """Cache a TVDB poster for a Trakt discovery card (lazy-loaded by JS)."""
+        indexer_id = self.get_body_argument("indexerId")
+        image_url = sickchill.indexer.series_poster_url_by_id(indexer_id)
+        if image_url:
+            image_path = trakt_trending.get_image_path(trakt_trending.get_image_name(indexer_id))
+            trakt_trending.cache_image(image_url, image_path)
+            return indexer_id
         return ""
 
     def addShowFromTMDB(self):
