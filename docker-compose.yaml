@@ -1,15 +1,49 @@
-version: '3'
 services:
   sickchill:
-    image: sickchill/sickchill:latest
+    image: sickchill/sickchill:develop
+    # Local/NAS build from this tree (omit "build:" to pull the Hub image only):
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: sickchill-final
+      args:
+        SOURCE: "1"
+        # Pass through from host env, e.g.:
+        #   GIT_SHA=$(git rev-parse HEAD) GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD) docker compose build
+        GIT_SHA: ${GIT_SHA:-unknown}
+        GIT_BRANCH: ${GIT_BRANCH:-unknown}
     container_name: sickchill
-    restart: unless-stopped
-    ports:
-      - 8081:8081
-    user: "1000:1000" #optional change two numbers to match the user and group Sickchill should run as or delete this line to run as root
+    restart: on-failure
+
+    # Do NOT set "user:" here when using PUID/PGID (recommended for NAS).
+    # The entrypoint runs as root to set up permissions + persistent venv, then drops privileges.
+    # user: "1026:100"   # only for advanced/manual use
+
+    environment:
+      # NAS / Synology friendly settings (adjust to your DSM user)
+      - PUID=1026          # your DSM user ID (or 1000 for many systems)
+      - PGID=100           # usually the "users" group, or "video" group if you added container to it
+      - TZ=America/New_York
+      - UMASK=002
+      - DATADIR=/data
+      # Help & Info / entrypoint revision fallback (image bake is primary; env is backup)
+      - SICKCHILL_SHA=${GIT_SHA:-}
+      - SICKCHILL_BRANCH=${GIT_BRANCH:-}
+
     volumes:
+      # Main persistent folder - AFTER FIRST START this will contain:
+      #   .venv/          (full Python environment + sickchill package — lives on the NAS share)
+      #   .venv/.image_revision  (GIT_SHA used to detect image updates)
+      #   cache/ logs/
+      #   config.ini sickchill.db etc
       - /docker/sickchill/data:/data
-      - /docker/sickchill/downloads:/downloads
-      - /docker/sickchill/tv:/tv
-      - /docker/sickchill/cache:/app/sickchill/sickchill/gui/slick/cache
-      - /etc/localtime:/etc/localtime:ro
+
+      # Optional media folders (adjust paths for your NAS)
+      # - /docker/downloads:/downloads
+      # - /your_media/Series:/tv
+
+      # Timezone (optional as assigned above)
+      # - /etc/localtime:/etc/localtime:ro
+
+    ports:
+      - "8081:8081"
