@@ -337,7 +337,23 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="text" name="${provider.get_id("_custom_url")}" id="${provider.get_id("_custom_url")}" value="${provider.custom_url}" class="form-control input-sm input350" autocapitalize="off" />
-                                            <label for="${provider.get_id("_custom_url")}">${_('the URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/')}</label>
+                                            % if provider.get_id() == 'jackett':
+                                                <label for="${provider.get_id("_custom_url")}">${_('Jackett base URL (protocol and port). Example: http://127.0.0.1:9117 — or paste a full Torznab feed URL.')}</label>
+                                            % else:
+                                                <label for="${provider.get_id("_custom_url")}">${_('the URL should include the protocol (and port if applicable).  Examples:  http://192.168.1.4/ or http://localhost:3000/')}</label>
+                                            % endif
+                                        </div>
+                                    </div>
+                                % endif
+
+                                % if hasattr(provider, 'indexer'):
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Jackett indexer')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="text" name="${provider.get_id("_indexer")}" id="${provider.get_id("_indexer")}" value="${provider.indexer}" class="form-control input-sm input150" autocapitalize="off" />
+                                            <label for="${provider.get_id("_indexer")}">${_('Use "all" to search every configured Jackett indexer, or a single Jackett indexer id.')}</label>
                                         </div>
                                     </div>
                                 % endif
@@ -349,6 +365,21 @@
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="text" name="${provider.get_id("_api_key")}" id="${provider.get_id("_api_key")}" value="${provider.api_key}" class="form-control input-sm input350" autocapitalize="off" />
+                                            % if provider.get_id() == 'jackett':
+                                                <label for="${provider.get_id("_api_key")}">${_('API key from the Jackett dashboard (upper right).')}</label>
+                                            % endif
+                                        </div>
+                                    </div>
+                                % endif
+
+                                % if hasattr(provider, 'categories') and provider.get_id() == 'jackett':
+                                    <div class="field-pair row">
+                                        <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                            <label class="component-title">${_('Categories')}</label>
+                                        </div>
+                                        <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
+                                            <input type="text" name="${provider.get_id("_categories")}" id="${provider.get_id("_categories")}" value="${provider.categories}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <label for="${provider.get_id("_categories")}">${_('Comma-separated Torznab TV category ids (e.g. 5000,5030,5040).')}</label>
                                         </div>
                                     </div>
                                 % endif
@@ -674,6 +705,7 @@
                         <div class="component-group-desc">
                             <h3>${_('Configure Custom<br>Newznab Providers')}</h3>
                             <p>${_('Add and setup or remove custom Newznab providers.')}</p>
+                            <p><em>${_('For Jackett, use the built-in Jackett provider under Provider Options (Torrent Search). You do not need NZB search or a Custom Newznab entry.')}</em></p>
                         </div>
                     </div>
                     <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">

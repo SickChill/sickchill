@@ -872,6 +872,19 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
                 curProvider.subtitle = check_setting_bool(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_subtitle"))
             if hasattr(curProvider, "cookies"):
                 curProvider.cookies = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cookies"), censor_log=True)
+            if hasattr(curProvider, "indexer"):
+                curProvider.indexer = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_indexer"), "all")
+            if hasattr(curProvider, "categories"):
+                curProvider.categories = check_setting_str(
+                    settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_categories"), "5000,5030,5040,5045,5050,5060,5070"
+                )
+
+        try:
+            from sickchill.oldbeard.providers.jackett import warn_jackett_newznab_overlap
+
+            warn_jackett_newznab_overlap()
+        except Exception as error:
+            logger.debug(f"Jackett/Newznab overlap check skipped: {error}")
 
         providers.check_enabled_providers()
 
@@ -1155,6 +1168,10 @@ def save_config():
         new_config[curProvider.get_id().upper()][curProvider.get_id()] = int(curProvider.enabled)
         if hasattr(curProvider, "custom_url"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_custom_url")] = curProvider.custom_url
+        if hasattr(curProvider, "indexer"):
+            new_config[curProvider.get_id().upper()][curProvider.get_id("_indexer")] = curProvider.indexer
+        if hasattr(curProvider, "categories"):
+            new_config[curProvider.get_id().upper()][curProvider.get_id("_categories")] = curProvider.categories
         if hasattr(curProvider, "digest"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_digest")] = curProvider.digest
         if hasattr(curProvider, "hash"):
