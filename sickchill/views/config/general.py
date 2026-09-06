@@ -168,7 +168,9 @@ class ConfigGeneral(Config):
         new_api_secret = (filters.unhide(settings.TRAKT_API_SECRET or "", self.get_body_argument("trakt_api_secret", default="") or "") or "").strip()
         new_username = (self.get_body_argument("trakt_username", default="") or "").strip()
         if new_api_key in getattr(settings, "TRAKT_REVOKED_CLIENT_IDS", ()):
-            ui.notifications.error(_("Invalid Trakt Client ID"), _("That Client ID is a revoked built-in key. Create a Trakt VIP API app and use its Client ID."))
+            ui.notifications.error(
+                _("Invalid Trakt Client ID"), _("That Client ID is a revoked built-in key. Create a Trakt VIP API app and use its Client ID.")
+            )
             new_api_key = ""
         key_changed = False
         if new_api_key != (settings.TRAKT_API_KEY or ""):
