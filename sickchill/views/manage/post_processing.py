@@ -40,8 +40,8 @@ class PostProcess(Home):
         failed = config.checkbox_to_value(self.get_argument("failed", default="False"))
         force_next = config.checkbox_to_value(self.get_argument("force_next", default="False"))
         quiet = config.checkbox_to_value(self.get_argument("quiet", default="0"))
-        # Scripts may send type=; UI / default is manual
-        mode = self.get_argument("type", default=self.get_argument("proc_type", default="manual")) or "manual"
+        # Prefer type (scripts), then proc_type (UI); empty type must not hide a set proc_type.
+        mode = self.get_argument("type", default="") or self.get_argument("proc_type", default="") or "manual"
 
         result = settings.postProcessorTaskScheduler.action.add_item(
             process_path,
