@@ -55,8 +55,9 @@ class TestGetGitRevision(unittest.TestCase):
             with mock.patch.object(init_helpers, "_git_output") as git_out:
                 with mock.patch.object(init_helpers, "_revision_file") as rev_file:
                     rev_file.is_file.return_value = False
-                    self.assertEqual(init_helpers.get_git_revision(), ("", ""))
-                    git_out.assert_not_called()
+                    with mock.patch.object(init_helpers, "_revision_from_direct_url", return_value=None):
+                        self.assertEqual(init_helpers.get_git_revision(), ("", ""))
+                        git_out.assert_not_called()
 
     def test_worktree_git_file_still_looked_up(self):
         """Worktrees use a .git *file*; exists() is enough (not is_dir())."""
@@ -121,7 +122,8 @@ class TestGetGitRevision(unittest.TestCase):
         with mock.patch.object(init_helpers, "_revision_from_git", return_value=None):
             with mock.patch.object(init_helpers, "_revision_file") as rev_file:
                 rev_file.is_file.return_value = False
-                branch, got_sha = init_helpers.get_git_revision()
+                with mock.patch.object(init_helpers, "_revision_from_direct_url", return_value=None):
+                    branch, got_sha = init_helpers.get_git_revision()
         self.assertEqual(branch, "feature/x")
         self.assertEqual(got_sha, sha)
 
@@ -131,13 +133,71 @@ class TestGetGitRevision(unittest.TestCase):
         with mock.patch.object(init_helpers, "_revision_from_git", return_value=None):
             with mock.patch.object(init_helpers, "_revision_file") as rev_file:
                 rev_file.is_file.return_value = False
-                self.assertEqual(init_helpers.get_git_revision(), ("", ""))
+                with mock.patch.object(init_helpers, "_revision_from_direct_url", return_value=None):
+                    self.assertEqual(init_helpers.get_git_revision(), ("", ""))
 
     def test_all_missing_returns_empty(self):
         with mock.patch.object(init_helpers, "_revision_from_git", return_value=None):
             with mock.patch.object(init_helpers, "_revision_file") as rev_file:
                 rev_file.is_file.return_value = False
-                self.assertEqual(init_helpers.get_git_revision(), ("", ""))
+                with mock.patch.object(init_helpers, "_revision_from_direct_url", return_value=None):
+                    self.assertEqual(init_helpers.get_git_revision(), ("", ""))
+
+    def test_from_direct_url_pip_git_install(self):
+        """pip install git+https://…@develop → PEP 610 direct_url.json."""
+        sha = "a00b0e1e8482408ffbace149cfe59573d078034d"
+        payload = {
+            "url": "https://github.com/SickChill/SickChill.git",
+            "vcs_info": {
+                "vcs": "git",
+                "requested_revision": "develop",
+                "commit_id": sha,
+            },
+        }
+        dist = mock.Mock()
+        dist.read_text.return_value = __import__("json").dumps(payload)
+        with mock.patch.object(init_helpers, "_revision_from_git", return_value=None):
+            with mock.patch.object(init_helpers, "_revision_file") as rev_file:
+                rev_file.is_file.return_value = False
+                with mock.patch.object(init_helpers, "get_distribution", return_value=dist):
+                    branch, got_sha = init_helpers.get_git_revision()
+        self.assertEqual(branch, "develop")
+        self.assertEqual(got_sha, sha)
+        dist.read_text.assert_called_with("direct_url.json")
+
+    def test_direct_url_commitish_omits_branch(self):
+        sha = "a00b0e1e8482408ffbace149cfe59573d078034d"
+        payload = {
+            "url": "https://github.com/SickChill/SickChill.git",
+            "vcs_info": {
+                "vcs": "git",
+                "requested_revision": sha,
+                "commit_id": sha,
+            },
+        }
+        self.assertEqual(
+            init_helpers._branch_from_requested_revision(sha, sha),
+            "",
+        )
+        dist = mock.Mock()
+        dist.read_text.return_value = __import__("json").dumps(payload)
+        with mock.patch.object(init_helpers, "_revision_from_git", return_value=None):
+            with mock.patch.object(init_helpers, "_revision_file") as rev_file:
+                rev_file.is_file.return_value = False
+                with mock.patch.object(init_helpers, "get_distribution", return_value=dist):
+                    branch, got_sha = init_helpers.get_git_revision()
+        self.assertEqual(branch, "")
+        self.assertEqual(got_sha, sha)
+
+    def test_direct_url_editable_without_vcs_ignored(self):
+        """Editable local installs have dir_info only — fall through."""
+        dist = mock.Mock()
+        dist.read_text.return_value = '{"dir_info": {"editable": true}, "url": "file:///tmp/sickchill"}'
+        with mock.patch.object(init_helpers, "_revision_from_git", return_value=None):
+            with mock.patch.object(init_helpers, "_revision_file") as rev_file:
+                rev_file.is_file.return_value = False
+                with mock.patch.object(init_helpers, "get_distribution", return_value=dist):
+                    self.assertEqual(init_helpers.get_git_revision(), ("", ""))
 
 
 class TestFormatGitRevision(unittest.TestCase):
