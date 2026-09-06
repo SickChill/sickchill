@@ -66,9 +66,10 @@ class ImageSelector(Home):
         Wrap Image URL so it has our host and does not trigger ADBlock.
         @return: redirect
         """
+        from sickchill.providers.metadata.helpers import is_allowed_show_image_url
+
         url = self.get_query_argument("url")
-        regex = r"^https?://(artworks\.thetvdb\.com|assets\.fanart\.tv|image\.tmdb\.org)/.*"
-        if not re.match(regex, url):
+        if not is_allowed_show_image_url(url):
             return self.write_error(404)
 
         request = self.indexer_session.get(url, stream=True)
