@@ -226,11 +226,61 @@ def _revision_from_env() -> tuple[str, str]:
     return _normalize_revision(branch, sha)
 
 
+def _branch_from_requested_revision(requested: str, commit_id: str) -> str:
+    """Use requested_revision as branch unless it is clearly a commit-ish."""
+    req = (requested or "").strip()
+    if not req:
+        return ""
+    # pip records the ref the user asked for; when that is a SHA, do not show "sha@sha"
+    if commit_id and (req == commit_id or commit_id.startswith(req)):
+        return ""
+    return req
+
+
+def _revision_from_direct_url() -> tuple[str, str] | None:
+    """
+    PEP 610 ``direct_url.json`` written by pip for VCS installs, e.g.::
+
+        pip install "git+https://github.com/SickChill/SickChill.git@develop"
+
+    Yields ``vcs_info.commit_id`` and optional ``requested_revision`` (branch/tag).
+    Editable local checkouts use ``dir_info`` only — those return None here.
+    """
+    import json
+
+    try:
+        dist = get_distribution()
+        if dist is None:
+            return None
+        text = dist.read_text("direct_url.json")
+        if not text:
+            return None
+        data = json.loads(text)
+    except Exception:
+        # Missing dist, missing file, bad JSON, etc. — never fail Help/startup
+        return None
+
+    # Valid non-object JSON (array, string, …) must not raise — fall through to env
+    if not isinstance(data, dict):
+        return None
+
+    vcs = data.get("vcs_info")
+    if not isinstance(vcs, dict):
+        return None
+    sha = (vcs.get("commit_id") or "").strip()
+    branch = _branch_from_requested_revision(vcs.get("requested_revision") or "", sha)
+    normalized = _normalize_revision(branch, sha)
+    if not normalized[1]:
+        return None
+    return normalized
+
+
 def get_git_revision() -> tuple[str, str]:
     """
     Return ``(branch, sha)`` for the running code.
 
-    Resolution order: live git checkout → ``sickchill/_revision.txt`` → env
+    Resolution order: live git checkout → ``sickchill/_revision.txt`` →
+    PEP 610 ``direct_url.json`` (pip ``git+https://…@branch``) → env
     (``SICKCHILL_SHA`` / ``GIT_SHA``, ``SICKCHILL_BRANCH`` / ``GIT_BRANCH``).
     Result is cached for the process lifetime.
     """
@@ -243,6 +293,8 @@ def get_git_revision() -> tuple[str, str]:
         result = _parse_revision_file(_revision_file)
         if result == ("", ""):
             result = None
+    if result is None:
+        result = _revision_from_direct_url()
     if result is None:
         result = _revision_from_env()
         if result == ("", ""):
