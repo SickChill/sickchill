@@ -39,6 +39,7 @@ from sickchill.oldbeard.trakt_api import (
 from sickchill.providers import result_classes
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.metadata.generic import GenericMetadata
+from sickchill.providers.metadata.helpers import getShowImage, is_allowed_show_image_url
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -807,7 +808,6 @@ class Home(WebRoot):
 
     def getPushbulletDevices(self):
         api = self.get_body_argument("api")
-        # self.set_header('Cache-Control', 'max-age=0,no-cache,no-store')
 
         result = notifiers.pushbullet_notifier.get_devices(api)
         if result:
@@ -934,7 +934,6 @@ class Home(WebRoot):
             self.set_header("Pragma", "no-cache")
             self.set_header("Expires", "0")
 
-        # todo: add more comprehensive show validation
         try:
             show_obj = Show.find(settings.show_list, int(show))
         except (ValueError, TypeError):
@@ -1189,7 +1188,6 @@ class Home(WebRoot):
     def editShow(self, direct_call=False):
         """Edit show settings"""
 
-        # Initialize image variables for ALL call paths
         banner = None
         fanart = None
         poster = None
@@ -1402,7 +1400,7 @@ class Home(WebRoot):
                 data = bytes(image)
                 return data, data
 
-            # 1. Upload from imageSelector (data:image;base64...)
+            # Upload from imageSelector (data:image;base64...)
             if isinstance(image, str) and image.startswith("data:image"):
                 try:
                     header, image_data = image.split(",", 1)
@@ -1419,35 +1417,49 @@ class Home(WebRoot):
                     logger.warning(f"Failed to decode uploaded image: {e}")
                     return None, None
 
-            # 2. Remote URL (TheTVDB, Fanart.tv, etc.) — do not block edit save on CDN fetch.
-            # Queued show update/refresh can refresh artwork later; uploaded bytes still write below.
-            elif isinstance(image, str) and image.startswith(("http://", "https://")):
-                logger.debug(f"Skipping remote image fetch on edit save for show {show_obj.indexerid}")
-                return None, None
+            # Remote URL (TheTVDB, Fanart.tv, etc.) — optional "full|thumb" pipe form from the selector.
+            # TVDB/TMDB often send the same URL for both; only fetch thumb when it differs.
+            # SSRF: only allowlisted public artwork hosts (same set as imageSelector.url_wrap).
+            elif isinstance(image, str) and image.strip():
+                try:
+                    image_parts = image.split("|")
+                    full_url = (image_parts[0] or "").strip()
+                    thumb_url = (image_parts[1] if len(image_parts) > 1 else "").strip()
+                    if not is_allowed_show_image_url(full_url):
+                        logger.warning(f"Rejected non-allowlisted image URL for show {show_obj.indexerid}: {full_url}")
+                        return None, None
+                    if thumb_url and thumb_url != full_url and not is_allowed_show_image_url(thumb_url):
+                        logger.warning(f"Rejected non-allowlisted thumb URL for show {show_obj.indexerid}: {thumb_url}")
+                        thumb_url = ""
+                    _img_data = getShowImage(full_url)
+                    if not _img_data:
+                        return None, None
+                    if thumb_url and thumb_url != full_url:
+                        _thumb = getShowImage(thumb_url)
+                        return _img_data, _thumb or _img_data
+                    return _img_data, _img_data
+                except Exception as e:  # getShowImage / CDN can raise various errors
+                    logger.warning(f"Failed to fetch remote image for show {show_obj.indexerid}: {e}")
+                    return None, None
 
             return None, None
 
+        def _write_replaced_image(data, path):
+            if not data:
+                return False
+            return metadata_generator._write_image(data, path, overwrite=True)
+
         if poster:
             img_data, img_thumb_data = get_images(poster)
-            dest_path = settings.IMAGE_CACHE.poster_path(show_obj.indexerid)
-            dest_thumb_path = settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_data, dest_path, overwrite=True)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
+            _write_replaced_image(img_data, settings.IMAGE_CACHE.poster_path(show_obj.indexerid))
+            _write_replaced_image(img_thumb_data, settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid))
         if banner:
             img_data, img_thumb_data = get_images(banner)
-            dest_path = settings.IMAGE_CACHE.banner_path(show_obj.indexerid)
-            dest_thumb_path = settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_data, dest_path, overwrite=True)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_thumb_data, dest_thumb_path, overwrite=True)
+            _write_replaced_image(img_data, settings.IMAGE_CACHE.banner_path(show_obj.indexerid))
+            _write_replaced_image(img_thumb_data, settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid))
         if fanart:
             img_data, img_thumb_data = get_images(fanart)
-            dest_path = settings.IMAGE_CACHE.fanart_path(show_obj.indexerid)
-            # noinspection PyProtectedMember
-            metadata_generator._write_image(img_data, dest_path, overwrite=True)
+            _write_replaced_image(img_data, settings.IMAGE_CACHE.fanart_path(show_obj.indexerid))
 
         # If direct_call from mass_edit_update no scene exceptions handling or blackandwhite list handling
         if not direct_call:
