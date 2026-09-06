@@ -33,7 +33,7 @@ from sickchill.oldbeard.trakt_api import TraktAPI
 from sickchill.providers import result_classes
 from sickchill.providers.GenericProvider import GenericProvider
 from sickchill.providers.metadata.generic import GenericMetadata
-from sickchill.providers.metadata.helpers import getShowImage
+from sickchill.providers.metadata.helpers import getShowImage, is_allowed_show_image_url
 from sickchill.show.Show import Show
 from sickchill.system.Restart import Restart
 from sickchill.system.Shutdown import Shutdown
@@ -1361,11 +1361,18 @@ class Home(WebRoot):
 
             # Remote URL (TheTVDB, Fanart.tv, etc.) — optional "full|thumb" pipe form from the selector.
             # TVDB/TMDB often send the same URL for both; only fetch thumb when it differs.
+            # SSRF: only allowlisted public artwork hosts (same set as imageSelector.url_wrap).
             elif isinstance(image, str) and image.strip():
                 try:
                     image_parts = image.split("|")
                     full_url = (image_parts[0] or "").strip()
                     thumb_url = (image_parts[1] if len(image_parts) > 1 else "").strip()
+                    if not is_allowed_show_image_url(full_url):
+                        logger.warning(f"Rejected non-allowlisted image URL for show {show_obj.indexerid}: {full_url}")
+                        return None, None
+                    if thumb_url and thumb_url != full_url and not is_allowed_show_image_url(thumb_url):
+                        logger.warning(f"Rejected non-allowlisted thumb URL for show {show_obj.indexerid}: {thumb_url}")
+                        thumb_url = ""
                     _img_data = getShowImage(full_url)
                     if not _img_data:
                         return None, None
