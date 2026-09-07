@@ -39,10 +39,11 @@ class GetShowImageSSRFTests(unittest.TestCase):
         response.raise_for_status = MagicMock()
         get_url.return_value = response
 
-        self.assertEqual(getShowImage("https://artworks.thetvdb.com/banners/x.jpg"), b"IMG")
+        self.assertEqual(getShowImage("https://artworks.thetvdb.com/banners/x.jpg", timeout=10), b"IMG")
         get_url.assert_called_once()
         kwargs = get_url.call_args.kwargs
         self.assertFalse(kwargs.get("allow_redirects"))
+        self.assertEqual(kwargs.get("timeout"), 10)
 
     @patch("sickchill.providers.metadata.helpers.helpers.getURL")
     def test_revalidates_redirect_target(self, get_url):
