@@ -15,16 +15,20 @@ from sickchill.providers.torrent.TorrentProvider import TorrentProvider
 
 
 class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
-    """Jackett aggregator via Torznab API — enabled under torrent search only."""
+    """Jackett aggregator via Torznab API — enabled under torrent search only.
+
+    Named Jackett-SC (id ``jackett_sc``) so it does not collide with Custom Newznab
+    entries named ``Jackett`` from older setup guides.
+    """
 
     def __init__(self):
-        super().__init__("Jackett")
+        super().__init__("Jackett-SC")
 
         self.public = False
         self.supports_backlog = True
 
         self.custom_url = "http://127.0.0.1:9117"
-        self.api_key = None
+        self.api_key = "9dxv8e0lv3z9os1lzqt97klpucon60z8"
         self.indexer = "all"
         self.categories = "5000,5030,5040,5045,5050,5060,5070"
         self.minseed = 1
@@ -123,6 +127,17 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
             return False
         return True
 
+    @staticmethod
+    def _is_tv_category(cat_id, name: str) -> bool:
+        """Torznab TV cats are 5000-5999; also match TV/Television names."""
+        name_u = (name or "").upper()
+        if "TV" in name_u or "TELEVISION" in name_u:
+            return True
+        try:
+            return 5000 <= int(cat_id) <= 5999
+        except (TypeError, ValueError):
+            return False
+
     def get_jackett_categories(self, just_caps: bool = False):
         """Fetch Torznab caps (TV categories) from Jackett."""
         return_categories = []
@@ -146,12 +161,26 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
             if just_caps:
                 return True, return_categories, "Just checking caps!"
 
+            seen_ids = set()
             for category in html("category"):
-                if "TV" in category.get("name", "") and category.get("id", ""):
-                    return_categories.append({"id": category["id"], "name": category["name"]})
-                    for subcat in category("subcat"):
-                        if subcat.get("name", "") and subcat.get("id", ""):
-                            return_categories.append({"id": subcat["id"], "name": subcat["name"]})
+                cat_id = category.get("id", "")
+                cat_name = category.get("name", "")
+                if not cat_id or not self._is_tv_category(cat_id, cat_name):
+                    continue
+                if cat_id not in seen_ids:
+                    return_categories.append({"id": cat_id, "name": cat_name or cat_id})
+                    seen_ids.add(cat_id)
+                for subcat in category("subcat"):
+                    sub_id = subcat.get("id", "")
+                    sub_name = subcat.get("name", "")
+                    if not sub_id or sub_id in seen_ids:
+                        continue
+                    # Subcats under a TV parent are TV even if the name omits "TV"
+                    return_categories.append({"id": sub_id, "name": sub_name or sub_id})
+                    seen_ids.add(sub_id)
+
+            if not return_categories:
+                return False, return_categories, f"No TV categories found in caps for [{self.name}]"
 
             return True, return_categories, ""
 
@@ -271,18 +300,34 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
 
 
 def warn_jackett_newznab_overlap() -> None:
-    """Warn-only: one warning per Custom Newznab entry that looks like Jackett/Torznab."""
-    jackett = next((p for p in (settings.providerList or []) if p.get_id() == "jackett"), None)
-    if not jackett or not jackett.enabled:
-        return
+    """Warn-only: Custom Newznab entries that collide with or look like Jackett/Torznab."""
+    jackett = next((p for p in (settings.providerList or []) if p.get_id() == "jackett_sc"), None)
+    builtin_ids = {p.get_id() for p in (settings.providerList or [])}
 
     for provider in settings.newznab_provider_list or []:
+        provider_id = provider.get_id()
         url = (getattr(provider, "url", None) or "").lower()
-        if "torznab" in url or "jackett" in url or "/indexers/" in url:
+        name_l = (provider.name or "").lower()
+
+        # Same id as a built-in (e.g. custom named Jackett-SC) hides that built-in in priorities
+        if provider_id in builtin_ids:
+            logger.warning(
+                _(
+                    "Custom Newznab provider '{name}' conflicts with built-in id '{provider_id}'. "
+                    "Rename or delete it under Configure Custom Newznab Providers, then enable the "
+                    "built-in Jackett-SC torrent provider (Torrent Search — NZB search is not required)."
+                ).format(name=provider.name, provider_id=provider_id)
+            )
+            continue
+
+        if not jackett or not jackett.enabled:
+            continue
+
+        if name_l == "jackett" or "torznab" in url or "jackett" in url or "/indexers/" in url:
             logger.warning(
                 _(
                     "Custom Newznab provider '{name}' looks like Jackett/Torznab. "
-                    "Prefer the built-in Jackett torrent provider (Search Providers) and disable this "
-                    "Newznab entry to avoid duplicate searches. NZB search is not required for Jackett."
+                    "Prefer the built-in Jackett-SC torrent provider (Search Providers) and disable this "
+                    "Newznab entry to avoid duplicate searches. NZB search is not required for Jackett-SC."
                 ).format(name=provider.name)
             )

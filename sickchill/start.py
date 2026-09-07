@@ -819,9 +819,22 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
                 settings.CFG, curProvider.get_id().upper(), curProvider.get_id()
             )
             if hasattr(curProvider, "custom_url"):
-                curProvider.custom_url = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_custom_url"), "", censor_log=True)
+                # Keep provider-defined defaults (e.g. Jackett http://127.0.0.1:9117) when unset in config
+                curProvider.custom_url = check_setting_str(
+                    settings.CFG,
+                    curProvider.get_id().upper(),
+                    curProvider.get_id("_custom_url"),
+                    getattr(curProvider, "custom_url", "") or "",
+                    censor_log=True,
+                )
             if hasattr(curProvider, "api_key"):
-                curProvider.api_key = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_api_key"), censor_log=True)
+                curProvider.api_key = check_setting_str(
+                    settings.CFG,
+                    curProvider.get_id().upper(),
+                    curProvider.get_id("_api_key"),
+                    getattr(curProvider, "api_key", "") or "",
+                    censor_log=True,
+                )
             if hasattr(curProvider, "hash"):
                 curProvider.hash = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_hash"), censor_log=True)
             if hasattr(curProvider, "digest"):

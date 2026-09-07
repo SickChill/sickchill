@@ -3,7 +3,7 @@ from random import shuffle
 from typing import List, Union
 
 import sickchill.oldbeard.helpers
-from sickchill import settings
+from sickchill import logger, settings
 from sickchill.oldbeard.providers import (
     abnormal,
     alpharatio,
@@ -136,9 +136,20 @@ broken_providers = [
 
 def sorted_provider_list(randomize=False, only_enabled=False) -> List[Union[TorrentProvider, NZBProvider, TorrentRssProvider, GenericProvider]]:
     provider_types = List[Union[GenericProvider, TorrentProvider, NZBProvider, TorrentRssProvider]]
-    initial_list: provider_types = settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list
-
-    provider_dict = {x.get_id(): x for x in initial_list}
+    # Built-ins must win on id collisions (e.g. a custom named "Jackett-SC" → jackett_sc).
+    provider_dict: dict = {x.get_id(): x for x in (settings.providerList or [])}
+    reserved_ids = set(provider_dict)
+    for custom in (settings.newznab_provider_list or []) + (settings.torrent_rss_provider_list or []):
+        custom_id = custom.get_id()
+        if custom_id in reserved_ids:
+            logger.warning(
+                _(
+                    "Custom provider '{name}' uses id '{provider_id}' which conflicts with a built-in provider. "
+                    "Rename or remove the custom entry so the built-in provider can be used."
+                ).format(name=custom.name, provider_id=custom_id)
+            )
+            continue
+        provider_dict[custom_id] = custom
 
     new_provider_list: provider_types = []
 
@@ -186,12 +197,14 @@ def getProviderModule(name):
 
 
 def getProviderClass(provider_id):
-    provider_match = [x for x in settings.providerList + settings.newznab_provider_list + settings.torrent_rss_provider_list if x and x.get_id() == provider_id]
-
-    if len(provider_match) != 1:
-        return None
-    else:
+    # Prefer built-ins when a custom provider reuses the same id (e.g. Newznab named "Jackett-SC")
+    for provider in settings.providerList or []:
+        if provider and provider.get_id() == provider_id:
+            return provider
+    provider_match = [x for x in (settings.newznab_provider_list or []) + (settings.torrent_rss_provider_list or []) if x and x.get_id() == provider_id]
+    if len(provider_match) == 1:
         return provider_match[0]
+    return None
 
 
 def check_enabled_providers():

@@ -18,9 +18,13 @@ class JackettProviderTests(unittest.TestCase):
             "USE_NZBS": settings.USE_NZBS,
             "providerList": settings.providerList,
             "newznab_provider_list": settings.newznab_provider_list,
+            "torrent_rss_provider_list": settings.torrent_rss_provider_list,
+            "PROVIDER_ORDER": settings.PROVIDER_ORDER,
             "CPU_PRESET": settings.CPU_PRESET,
         }
         settings.CPU_PRESET = "NORMAL"
+        settings.PROVIDER_ORDER = []
+        settings.torrent_rss_provider_list = []
         self.provider = Provider()
         self.provider.custom_url = "http://127.0.0.1:9117"
         self.provider.api_key = "test-key"
@@ -31,10 +35,17 @@ class JackettProviderTests(unittest.TestCase):
         settings.USE_NZBS = self._saved["USE_NZBS"]
         settings.providerList = self._saved["providerList"]
         settings.newznab_provider_list = self._saved["newznab_provider_list"]
+        settings.torrent_rss_provider_list = self._saved["torrent_rss_provider_list"]
+        settings.PROVIDER_ORDER = self._saved["PROVIDER_ORDER"]
         settings.CPU_PRESET = self._saved["CPU_PRESET"]
 
     def test_provider_type_is_torrent(self):
         self.assertEqual(self.provider.provider_type, GenericProvider.TORRENT)
+
+    def test_default_site_url_and_api_key(self):
+        fresh = Provider()
+        self.assertEqual(fresh.custom_url, "http://127.0.0.1:9117")
+        self.assertEqual(fresh.api_key, "9dxv8e0lv3z9os1lzqt97klpucon60z8")
 
     def test_is_active_requires_use_torrents_not_nzbs(self):
         self.provider.enabled = True
@@ -169,6 +180,7 @@ class JackettProviderTests(unittest.TestCase):
 
         fake_nzb = MagicMock()
         fake_nzb.name = "MyJackett"
+        fake_nzb.get_id.return_value = "myjackett"
         fake_nzb.url = "http://127.0.0.1:9117/api/v2.0/indexers/all/results/torznab/"
         settings.newznab_provider_list = [fake_nzb]
 
@@ -179,6 +191,106 @@ class JackettProviderTests(unittest.TestCase):
         jackett.enabled = False
         warn_jackett_newznab_overlap()
         mock_logger.warning.assert_not_called()
+
+    def test_provider_display_name_and_id(self):
+        self.assertEqual(self.provider.name, "Jackett-SC")
+        self.assertEqual(self.provider.get_id(), "jackett_sc")
+
+    @patch("sickchill.oldbeard.providers.jackett.logger")
+    def test_warn_overlap_name_collision_even_if_builtin_disabled(self, mock_logger):
+        jackett = Provider()
+        jackett.enabled = False
+        settings.providerList = [jackett]
+
+        # Custom named exactly like the built-in still conflicts on id
+        fake_nzb = MagicMock()
+        fake_nzb.name = "Jackett-SC"
+        fake_nzb.get_id.return_value = "jackett_sc"
+        fake_nzb.url = "http://127.0.0.1:9117/"
+        settings.newznab_provider_list = [fake_nzb]
+
+        warn_jackett_newznab_overlap()
+        self.assertEqual(mock_logger.warning.call_count, 1)
+        self.assertIn("conflicts with built-in", mock_logger.warning.call_args[0][0])
+
+    def test_custom_newznab_named_jackett_coexists_with_builtin(self):
+        """Custom Newznab 'Jackett' (id jackett) must not hide built-in Jackett-SC."""
+        from sickchill.oldbeard.providers import sorted_provider_list
+        from sickchill.oldbeard.providers.newznab import NewznabProvider
+
+        builtin = Provider()
+        settings.providerList = [builtin]
+        custom = NewznabProvider("Jackett", "http://127.0.0.1:9117/api/v2.0/indexers/all/results/torznab/")
+        settings.newznab_provider_list = [custom]
+        settings.USE_TORRENTS = True
+        settings.USE_NZBS = True
+
+        providers = sorted_provider_list(only_enabled=True)
+        by_id = {p.get_id(): p for p in providers}
+        self.assertIn("jackett_sc", by_id)
+        self.assertIn("jackett", by_id)
+        self.assertEqual(by_id["jackett_sc"].provider_type, GenericProvider.TORRENT)
+        self.assertEqual(by_id["jackett"].provider_type, GenericProvider.NZB)
+        self.assertIs(by_id["jackett_sc"], builtin)
+
+        # NZB-only: custom Jackett remains; built-in Jackett-SC is filtered out
+        settings.USE_TORRENTS = False
+        settings.USE_NZBS = True
+        providers = sorted_provider_list(only_enabled=True)
+        ids = {p.get_id() for p in providers}
+        self.assertIn("jackett", ids)
+        self.assertNotIn("jackett_sc", ids)
+
+        # Torrents-only: built-in only
+        settings.USE_TORRENTS = True
+        settings.USE_NZBS = False
+        providers = sorted_provider_list(only_enabled=True)
+        ids = {p.get_id() for p in providers}
+        self.assertIn("jackett_sc", ids)
+        self.assertNotIn("jackett", ids)
+
+    @patch.object(Provider, "get_url")
+    def test_get_jackett_categories_parses_tv_caps(self, mock_get_url):
+        mock_get_url.return_value = """<?xml version="1.0"?>
+        <caps>
+          <searching>
+            <search available="yes"/>
+            <tv-search available="yes" supportedParams="q,season,ep"/>
+          </searching>
+          <categories>
+            <category id="2000" name="Movies"/>
+            <category id="5000" name="TV">
+              <subcat id="5030" name="HD"/>
+              <subcat id="5040" name="SD"/>
+            </category>
+            <category id="5070" name="Anime"/>
+          </categories>
+        </caps>
+        """
+        ok, cats, err = self.provider.get_jackett_categories()
+        self.assertTrue(ok, err)
+        ids = [c["id"] for c in cats]
+        self.assertIn("5000", ids)
+        self.assertIn("5030", ids)
+        self.assertIn("5040", ids)
+        # Torznab anime is TV-range 5070
+        self.assertIn("5070", ids)
+        self.assertNotIn("2000", ids)
+
+    @patch.object(Provider, "get_url")
+    def test_get_jackett_categories_empty_tv_fails(self, mock_get_url):
+        mock_get_url.return_value = """<?xml version="1.0"?>
+        <caps>
+          <searching><search available="yes"/></searching>
+          <categories>
+            <category id="2000" name="Movies"/>
+          </categories>
+        </caps>
+        """
+        ok, cats, err = self.provider.get_jackett_categories()
+        self.assertFalse(ok)
+        self.assertEqual(cats, [])
+        self.assertIn("No TV categories", err)
 
 
 if __name__ == "__main__":
