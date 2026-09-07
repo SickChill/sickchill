@@ -1420,7 +1420,6 @@ class Home(WebRoot):
             # Remote URL (TheTVDB, Fanart.tv, etc.) — optional "full|thumb" pipe form from the selector.
             # TVDB/TMDB often send the same URL for both; only fetch thumb when it differs.
             # SSRF: only allowlisted public artwork hosts (same set as imageSelector.url_wrap).
-            # Keep timeout short: this runs on the edit-save web request and must not stall the redirect.
             elif isinstance(image, str) and image.strip():
                 try:
                     image_parts = image.split("|")
@@ -1432,11 +1431,11 @@ class Home(WebRoot):
                     if thumb_url and thumb_url != full_url and not is_allowed_show_image_url(thumb_url):
                         logger.warning(f"Rejected non-allowlisted thumb URL for show {show_obj.indexerid}: {thumb_url}")
                         thumb_url = ""
-                    _img_data = getShowImage(full_url, timeout=10)
+                    _img_data = getShowImage(full_url)
                     if not _img_data:
                         return None, None
                     if thumb_url and thumb_url != full_url:
-                        _thumb = getShowImage(thumb_url, timeout=10)
+                        _thumb = getShowImage(thumb_url)
                         return _img_data, _thumb or _img_data
                     return _img_data, _img_data
                 except Exception as e:  # getShowImage / CDN can raise various errors
@@ -1450,32 +1449,17 @@ class Home(WebRoot):
                 return False
             return metadata_generator._write_image(data, path, overwrite=True)
 
-        # Artwork replace must never prevent returning to displayShow after a successful settings save.
-        artwork_errors = []
-        try:
-            if poster:
-                img_data, img_thumb_data = get_images(poster)
-                if not img_data:
-                    artwork_errors.append(_("Could not process the selected poster image."))
-                else:
-                    _write_replaced_image(img_data, settings.IMAGE_CACHE.poster_path(show_obj.indexerid))
-                    _write_replaced_image(img_thumb_data, settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid))
-            if banner:
-                img_data, img_thumb_data = get_images(banner)
-                if not img_data:
-                    artwork_errors.append(_("Could not process the selected banner image."))
-                else:
-                    _write_replaced_image(img_data, settings.IMAGE_CACHE.banner_path(show_obj.indexerid))
-                    _write_replaced_image(img_thumb_data, settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid))
-            if fanart:
-                img_data, img_thumb_data = get_images(fanart)
-                if not img_data:
-                    artwork_errors.append(_("Could not process the selected fanart image."))
-                else:
-                    _write_replaced_image(img_data, settings.IMAGE_CACHE.fanart_path(show_obj.indexerid))
-        except Exception as error:
-            logger.warning(f"Error replacing show artwork for {show_obj.indexerid}: {error}")
-            artwork_errors.append(_("Error replacing show artwork: {error}").format(error=error))
+        if poster:
+            img_data, img_thumb_data = get_images(poster)
+            _write_replaced_image(img_data, settings.IMAGE_CACHE.poster_path(show_obj.indexerid))
+            _write_replaced_image(img_thumb_data, settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid))
+        if banner:
+            img_data, img_thumb_data = get_images(banner)
+            _write_replaced_image(img_data, settings.IMAGE_CACHE.banner_path(show_obj.indexerid))
+            _write_replaced_image(img_thumb_data, settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid))
+        if fanart:
+            img_data, img_thumb_data = get_images(fanart)
+            _write_replaced_image(img_data, settings.IMAGE_CACHE.fanart_path(show_obj.indexerid))
 
         # If direct_call from mass_edit_update no scene exceptions handling or blackandwhite list handling
         if not direct_call:
@@ -1496,7 +1480,7 @@ class Home(WebRoot):
                     else:
                         show_obj.release_groups.set_black_keywords([])
 
-        errors = list(artwork_errors)
+        errors = []
         with show_obj.lock:
             new_quality = Quality.combineQualities([int(q) for q in any_qualities], [int(q) for q in best_qualities])
             show_obj.quality = new_quality

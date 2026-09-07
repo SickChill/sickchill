@@ -1276,9 +1276,7 @@ def getURL(
             proxies=proxies,
             verify=verify,
         )
-        # When callers disable redirects they must inspect 3xx themselves (e.g. SSRF-safe image fetch).
-        if allow_redirects or not (getattr(response, "is_redirect", False) or response.status_code in {301, 302, 303, 307, 308}):
-            response.raise_for_status()
+        response.raise_for_status()
     except Exception as error:
         handle_requests_exception(error)
         return ""

@@ -42,7 +42,7 @@ def is_allowed_show_image_url(url: str | None) -> bool:
     return host in ALLOWED_SHOW_IMAGE_HOSTS
 
 
-def getShowImage(url, imgNum=None, timeout=30):
+def getShowImage(url, imgNum=None):
     if not url:
         return None
 
@@ -59,7 +59,7 @@ def getShowImage(url, imgNum=None, timeout=30):
     logger.debug("Fetching image from " + temp_url)
 
     try:
-        image_data = _fetch_allowed_image_content(temp_url, timeout=timeout)
+        image_data = _fetch_allowed_image_content(temp_url)
     except requests.exceptions.RequestException:
         image_data = None
 
@@ -70,7 +70,7 @@ def getShowImage(url, imgNum=None, timeout=30):
     return image_data
 
 
-def _fetch_allowed_image_content(url: str, timeout: int = 30):
+def _fetch_allowed_image_content(url: str):
     """GET image bytes, re-validating every redirect target against the allowlist."""
     current = url
     for _ in range(_MAX_IMAGE_REDIRECTS + 1):
@@ -84,7 +84,6 @@ def _fetch_allowed_image_content(url: str, timeout: int = 30):
             returns="response",
             allow_redirects=False,
             allow_proxy=settings.PROXY_INDEXERS,
-            timeout=timeout,
         )
         if not response:
             return None
@@ -97,10 +96,7 @@ def _fetch_allowed_image_content(url: str, timeout: int = 30):
             current = urljoin(response.url or current, location)
             continue
 
-        try:
-            response.raise_for_status()
-        except requests.exceptions.RequestException:
-            return None
+        response.raise_for_status()
         content = getattr(response, "content", None)
         return content or None
 
