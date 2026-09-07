@@ -5,7 +5,6 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import settings
-from sickchill.helper import try_int
 from sickchill.helper.common import try_float
 from sickchill.oldbeard import config, ui
 from sickchill.oldbeard.providers.newznab import NewznabProvider
@@ -72,6 +71,27 @@ class ConfigProviders(Config):
         return json.dumps({"success": success, "tv_categories": tv_categories, "error": error})
 
     @staticmethod
+    def getJackettCategories(url="", key="", indexer="all"):
+        """Fetch Torznab TV category caps from the built-in Jackett provider settings/form values."""
+        from sickchill.oldbeard.providers.jackett import Provider as JackettProvider
+
+        error = ""
+        if not url:
+            error += "\n" + _("No Jackett URL specified")
+        if not key:
+            error += "\n" + _("No Jackett API key specified")
+        if error:
+            return json.dumps({"success": False, "error": error.strip(), "tv_categories": []})
+
+        temp_provider = JackettProvider()
+        temp_provider.custom_url = url
+        temp_provider.api_key = key
+        temp_provider.indexer = (indexer or "all").strip() or "all"
+
+        success, tv_categories, err = temp_provider.get_jackett_categories()
+        return json.dumps({"success": success, "tv_categories": tv_categories, "error": err})
+
+    @staticmethod
     def deleteNewznabProvider(nnid):
         provider_dict = {x.get_id(): x for x in settings.newznab_provider_list}
         if nnid not in provider_dict or provider_dict[nnid].default:
@@ -122,60 +142,60 @@ class ConfigProviders(Config):
 
         finished_names = []
 
-        newznab_string = self.get_body_argument("newznab_string", default="")
-        torrent_rss_string = self.get_body_argument("torrent_rss_string", default="")
+        # None = section not in the form (e.g. NZB search disabled). "" = user deleted all customs.
+        newznab_string = self.get_body_argument("newznab_string", default=None)
+        torrent_rss_string = self.get_body_argument("torrent_rss_string", default=None)
         provider_order = self.get_body_argument("provider_order", default="")
 
         # print line for testing order of providers
         # print(provider_order)
 
-        for current_newznab_string in newznab_string.split("!!!"):
-            if not current_newznab_string:
-                continue
+        if newznab_string is not None:
+            for current_newznab_string in newznab_string.split("!!!"):
+                if not current_newznab_string:
+                    continue
 
-            name, url, key, categories = current_newznab_string.split("|")
-            url = config.clean_url(url)
-            provider_id = GenericProvider.make_id(name)
+                name, url, key, categories = current_newznab_string.split("|")
+                url = config.clean_url(url)
+                provider_id = GenericProvider.make_id(name)
 
-            # if it does not already exist then add it
-            if provider_id not in newznab_provider_dict:
-                new_provider = NewznabProvider(name, url, key=key, categories=categories)
-                settings.newznab_provider_list.append(new_provider)
-                newznab_provider_dict[provider_id] = new_provider
+                # if it does not already exist then add it
+                if provider_id not in newznab_provider_dict:
+                    new_provider = NewznabProvider(name, url, key=key, categories=categories)
+                    settings.newznab_provider_list.append(new_provider)
+                    newznab_provider_dict[provider_id] = new_provider
 
-            # set all params
-            newznab_provider_dict[provider_id].name = name
-            newznab_provider_dict[provider_id].url = url
-            newznab_provider_dict[provider_id].key = key
-            newznab_provider_dict[provider_id].categories = categories
-            # a 0 in the key spot indicates that no key is needed
-            newznab_provider_dict[provider_id].needs_auth = key and key != "0"
-            newznab_provider_dict[provider_id].search_mode = self.get_body_argument(provider_id + "_search_mode", "episode")
-            newznab_provider_dict[provider_id].search_fallback = config.checkbox_to_value(
-                self.get_body_argument(provider_id + "search_fallback", 0), value_on=1, value_off=0
-            )
-            newznab_provider_dict[provider_id].enable_daily = config.checkbox_to_value(
-                self.get_body_argument(provider_id + "enable_daily", 0), value_on=1, value_off=0
-            )
-            newznab_provider_dict[provider_id].enable_backlog = config.checkbox_to_value(
-                self.get_body_argument(provider_id + "enable_backlog", 0), value_on=1, value_off=0
-            )
+                # set all params
+                newznab_provider_dict[provider_id].name = name
+                newznab_provider_dict[provider_id].url = url
+                newznab_provider_dict[provider_id].key = key
+                newznab_provider_dict[provider_id].categories = categories
+                # a 0 in the key spot indicates that no key is needed
+                newznab_provider_dict[provider_id].needs_auth = key and key != "0"
+                newznab_provider_dict[provider_id].search_mode = self.get_body_argument(provider_id + "_search_mode", "episode")
+                newznab_provider_dict[provider_id].search_fallback = config.checkbox_to_value(
+                    self.get_body_argument(provider_id + "search_fallback", 0), value_on=1, value_off=0
+                )
+                newznab_provider_dict[provider_id].enable_daily = config.checkbox_to_value(
+                    self.get_body_argument(provider_id + "enable_daily", 0), value_on=1, value_off=0
+                )
+                newznab_provider_dict[provider_id].enable_backlog = config.checkbox_to_value(
+                    self.get_body_argument(provider_id + "enable_backlog", 0), value_on=1, value_off=0
+                )
 
-            # mark it finished
-            finished_names.append(provider_id)
+                # mark it finished
+                finished_names.append(provider_id)
 
-        # delete anything that is in the list that was not processed just now
-        if newznab_string:
-            for provider in settings.newznab_provider_list:
-                if provider.get_id() not in finished_names:
-                    settings.newznab_provider_list.remove(provider)
-                    del newznab_provider_dict[provider.get_id()]
+            # Reconcile to the submitted list (empty string clears all customs). Avoid remove-while-iterating.
+            keep_ids = set(finished_names)
+            settings.newznab_provider_list = [provider for provider in settings.newznab_provider_list if provider.get_id() in keep_ids]
+            newznab_provider_dict = {provider.get_id(): provider for provider in settings.newznab_provider_list}
 
         torrent_rss_provider_dict = {x.get_id(): x for x in settings.torrent_rss_provider_list}
 
         finished_names = []
 
-        if torrent_rss_string:
+        if torrent_rss_string is not None:
             for current_torrent_rss_provider_string in torrent_rss_string.split("!!!"):
                 if not current_torrent_rss_provider_string:
                     continue
@@ -199,19 +219,25 @@ class ConfigProviders(Config):
                 # mark it finished
                 finished_names.append(provider_id)
 
-        # delete anything that is in the list that was not processed just now
-        if torrent_rss_string:
-            for provider in settings.torrent_rss_provider_list:
-                if provider.get_id() not in finished_names:
-                    settings.torrent_rss_provider_list.remove(provider)
-                    del torrent_rss_provider_dict[provider.get_id()]
+            keep_ids = set(finished_names)
+            settings.torrent_rss_provider_list = [provider for provider in settings.torrent_rss_provider_list if provider.get_id() in keep_ids]
+            torrent_rss_provider_dict = {provider.get_id(): provider for provider in settings.torrent_rss_provider_list}
 
         # do the enable/disable
         enabled_provider_list = []
         disabled_provider_list = []
+        known_provider_ids = {provider.get_id() for provider in sickchill.oldbeard.providers.sorted_provider_list()}
+        known_provider_ids.update(newznab_provider_dict)
+        known_provider_ids.update(torrent_rss_provider_dict)
 
-        for provider_id, enabled in (provider.split(":") for provider in provider_order.split()):
-            enabled = bool(try_int(enabled))
+        for entry in provider_order.split():
+            # Require exactly "provider_id:0" or "provider_id:1" with a known id
+            if not entry or entry.count(":") != 1:
+                continue
+            provider_id, flag = entry.split(":")
+            if not provider_id or flag not in ("0", "1") or provider_id not in known_provider_ids:
+                continue
+            enabled = flag == "1"
 
             current_provider_object = [x for x in sickchill.oldbeard.providers.sorted_provider_list() if x.get_id() == provider_id and hasattr(x, "enabled")]
 
@@ -232,6 +258,8 @@ class ConfigProviders(Config):
         for provider in sickchill.oldbeard.providers.sorted_provider_list():
             provider.check_set_option(self, "custom_url")
             provider.check_set_option(self, "cookies")
+            provider.check_set_option(self, "indexer", "all")
+            provider.check_set_option(self, "categories", "5000,5030,5040,5045,5050,5060,5070")
 
             provider.check_set_option(self, "minseed", 0, int)
             provider.check_set_option(self, "minleech", 0, int)
