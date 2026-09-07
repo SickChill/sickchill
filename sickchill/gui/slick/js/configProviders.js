@@ -385,8 +385,76 @@ $(document).ready(function () {
         $(this).updateTorrentRssProvider(selectedProvider, url, cookies, titleTAG);
     });
 
+    $.fn.populateJackettSelectedCategories = function () {
+        const saved = ($('#jackett_sc_categories').val() || '').split(',');
+        const selectedOptions = [];
+        for (const cat of saved) {
+            const trimmed = $.trim(cat);
+            if (trimmed) {
+                selectedOptions.push({text: trimmed, value: trimmed});
+            }
+        }
+
+        $('#jackett_cat').replaceOptions(selectedOptions);
+        $('#jackett_categories_display').text($('#jackett_sc_categories').val() || '');
+    };
+
+    $.fn.loadJackettCategories = function () {
+        const url = $('#jackett_sc_custom_url').val();
+        const key = $('#jackett_sc_api_key').val();
+        const indexer = $('#jackett_sc_indexer').val() || 'all';
+
+        if (!url || !key) {
+            return;
+        }
+
+        const status = $('.updating_jackett_categories');
+        status.html('<span><img src="' + scRoot + '/images/loading16' + themeSpinner + '.gif" alt=""> ' + _('Fetching categories...') + '</span>');
+
+        $.getJSON(scRoot + '/config/providers/getJackettCategories', {url, key, indexer}, data => {
+            if (!data || data.success === false) {
+                const message = (data && data.error) ? data.error : _('Failed to fetch Jackett categories');
+                status.text(message);
+                alert(message); // eslint-disable-line no-alert
+                return;
+            }
+
+            const capOptions = [];
+            for (const categorySet of (data.tv_categories || [])) {
+                if (categorySet.id) {
+                    const label = categorySet.name ? (categorySet.name + ' (' + categorySet.id + ')') : categorySet.id;
+                    capOptions.push({value: categorySet.id, text: label});
+                }
+            }
+
+            $('#jackett_cap').replaceOptions(capOptions);
+            $(this).populateJackettSelectedCategories();
+            status.text(capOptions.length > 0 ? _('Categories loaded. Select on the left, then Update Categories.') : _('No TV categories returned.'));
+        }).fail(() => {
+            status.text(_('Failed to fetch Jackett categories'));
+        });
+    };
+
     $('body').on('change', '#editAProvider', function () {
         $(this).showHideProviders();
+        if ($('#editAProvider').val() === 'jackett_sc') {
+            $(this).populateJackettSelectedCategories();
+            $(this).loadJackettCategories();
+        }
+    });
+
+    $('#jackett_cat_fetch').on('click', function () {
+        $(this).loadJackettCategories();
+    });
+
+    $('#jackett_cat_update').on('click', function () {
+        const selected = $('#jackett_cap option:selected').map((i, opt) => $(opt).val()).toArray();
+        // If nothing selected on the left, keep using the right-hand list as-is
+        const cats = selected.length > 0 ? selected : $('#jackett_cat option').map((i, opt) => $(opt).val()).toArray();
+        const joined = cats.filter(Boolean).join(',');
+        $('#jackett_sc_categories').val(joined);
+        $('#jackett_categories_display').text(joined);
+        $(this).populateJackettSelectedCategories();
     });
 
     $('#editANewznabProvider').on('change', function () {
@@ -547,5 +615,10 @@ $(document).ready(function () {
 
     if ($('#editANewznabProvider').length > 0) {
         $(this).populateNewznabSection();
+    }
+
+    if ($('#editAProvider').val() === 'jackett_sc') {
+        $(this).populateJackettSelectedCategories();
+        $(this).loadJackettCategories();
     }
 });
