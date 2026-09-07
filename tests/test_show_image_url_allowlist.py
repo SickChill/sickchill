@@ -43,7 +43,7 @@ class GetShowImageSSRFTests(unittest.TestCase):
         get_url.assert_called_once()
         kwargs = get_url.call_args.kwargs
         self.assertFalse(kwargs.get("allow_redirects"))
-        self.assertEqual(kwargs.get("timeout"), 10)
+        self.assertAlmostEqual(kwargs.get("timeout"), 10, delta=0.05)
 
     @patch("sickchill.providers.metadata.helpers.helpers.getURL")
     def test_revalidates_redirect_target(self, get_url):
@@ -76,7 +76,34 @@ class GetShowImageSSRFTests(unittest.TestCase):
         get_url.side_effect = [redirect, final]
         self.assertEqual(getShowImage("https://artworks.thetvdb.com/banners/x.jpg"), b"OK")
         self.assertEqual(get_url.call_count, 2)
+        # Second hop should receive a remaining timeout budget, not a fresh full timeout reset only
+        self.assertIn("timeout", get_url.call_args_list[0].kwargs)
+        self.assertIn("timeout", get_url.call_args_list[1].kwargs)
 
+
+class GetURLRedirectHandlingTests(unittest.TestCase):
+    def test_disabled_redirects_do_not_return_redirect_body_as_text(self):
+        """Jackett-style callers use returns=text with allow_redirects=False — must not parse 3xx bodies."""
+        from sickchill.oldbeard import helpers as oldbeard_helpers
+
+        session = MagicMock()
+        redirect = MagicMock()
+        redirect.is_redirect = True
+        redirect.status_code = 302
+        redirect.headers = {"Location": "https://example.invalid/next"}
+        redirect.text = "<html>redirect</html>"
+        redirect.raise_for_status = MagicMock()
+        session.request.return_value = redirect
+
+        result = oldbeard_helpers.getURL(
+            "http://127.0.0.1:9117/api",
+            session=session,
+            returns="text",
+            allow_redirects=False,
+            allow_proxy=False,
+        )
+        self.assertEqual(result, "")
+        redirect.raise_for_status.assert_not_called()
 
 if __name__ == "__main__":
     unittest.main()

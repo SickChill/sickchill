@@ -1,4 +1,5 @@
 import re
+import time
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -70,21 +71,31 @@ def getShowImage(url, imgNum=None, timeout=30):
     return image_data
 
 
-def _fetch_allowed_image_content(url: str, timeout: int = 30):
-    """GET image bytes, re-validating every redirect target against the allowlist."""
+def _fetch_allowed_image_content(url: str, timeout: float = 30):
+    """GET image bytes, re-validating every redirect target against the allowlist.
+
+    ``timeout`` is a budget for the whole redirect chain, not per hop.
+    """
+    deadline = time.monotonic() + float(timeout)
     current = url
     for _ in range(_MAX_IMAGE_REDIRECTS + 1):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            logger.warning(f"Timed out while fetching show image from {url}")
+            return None
+
         if not is_allowed_show_image_url(current):
             logger.warning(f"Blocked show image redirect to non-allowlisted URL: {current}")
             return None
 
+        # Pass only remaining budget — do not inflate past the cumulative deadline.
         response = helpers.getURL(
             current,
             session=meta_session,
             returns="response",
             allow_redirects=False,
             allow_proxy=settings.PROXY_INDEXERS,
-            timeout=timeout,
+            timeout=remaining,
         )
         if not response:
             return None
