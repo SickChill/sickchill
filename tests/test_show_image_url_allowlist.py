@@ -105,5 +105,6 @@ class GetURLRedirectHandlingTests(unittest.TestCase):
         self.assertEqual(result, "")
         redirect.raise_for_status.assert_not_called()
 
+
 if __name__ == "__main__":
     unittest.main()
