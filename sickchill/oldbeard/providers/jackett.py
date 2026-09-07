@@ -60,7 +60,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
 
     @classmethod
     def _url_allows_apikey_transport(cls, url: str) -> bool:
-        """Allow apikey query params over HTTPS, or HTTP only for local/loopback endpoints."""
+        """Allow apikey query params over HTTPS, or HTTP only for loopback endpoints."""
         parts = urlsplit((url or "").strip())
         scheme = (parts.scheme or "").lower()
         if scheme == "https":
@@ -75,11 +75,10 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
             return True
 
         try:
-            ip = ipaddress.ip_address(host)
-            return bool(ip.is_loopback or ip.is_private or ip.is_link_local)
+            return bool(ipaddress.ip_address(host).is_loopback)
         except ValueError:
-            # Hostnames: allow clearly local-only names (docker service, mDNS, home LAN)
-            return "." not in host or host.endswith((".local", ".lan", ".home", ".internal"))
+            # Any non-loopback hostname (LAN, docker, public) requires HTTPS
+            return False
 
     @property
     def torznab_url(self) -> str:
@@ -113,10 +112,13 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         if self.invalid_url(self.custom_url or ""):
             logger.warning(_("Invalid Jackett URL. Check your provider settings."))
             return False
-        # apikey is sent as a query param — require HTTPS except for local/loopback HTTP
+        # apikey is sent as a query param — require HTTPS except for loopback HTTP
         if not self._url_allows_apikey_transport(self.torznab_url):
             logger.warning(
-                _("Jackett URL must use HTTPS for remote hosts (API key is sent in the query string). HTTP is only allowed for local/loopback addresses.")
+                _(
+                    "Jackett URL must use HTTPS when the API key is sent in the query string. "
+                    "HTTP is only allowed for loopback addresses (localhost / 127.0.0.1 / ::1)."
+                )
             )
             return False
         return True

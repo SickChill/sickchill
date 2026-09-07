@@ -89,19 +89,27 @@ class JackettProviderTests(unittest.TestCase):
         self.provider.api_key = "abc"
         self.assertTrue(self.provider._check_auth())
 
-    def test_check_auth_rejects_remote_http_with_apikey(self):
+    def test_check_auth_rejects_non_loopback_http_with_apikey(self):
         self.provider.custom_url = "http://jackett.example.com:9117"
         self.assertFalse(self.provider._check_auth())
 
         self.provider.custom_url = "https://jackett.example.com:9117"
         self.assertTrue(self.provider._check_auth())
 
-        # Local / loopback HTTP still allowed (bare docker hostnames fail valid_url)
+        # Loopback HTTP still allowed (bare "localhost" fails validators.url)
         self.provider.custom_url = "http://127.0.0.1:9117"
         self.assertTrue(self.provider._check_auth())
+        self.provider.custom_url = "http://[::1]:9117"
+        self.assertTrue(self.provider._check_auth())
+
+        # Private / LAN / hostname HTTP requires HTTPS (apikey in query string)
         self.provider.custom_url = "http://192.168.1.10:9117"
+        self.assertFalse(self.provider._check_auth())
+        self.provider.custom_url = "https://192.168.1.10:9117"
         self.assertTrue(self.provider._check_auth())
         self.provider.custom_url = "http://jackett.local:9117"
+        self.assertFalse(self.provider._check_auth())
+        self.provider.custom_url = "https://jackett.local:9117"
         self.assertTrue(self.provider._check_auth())
 
     def test_url_allows_apikey_transport_helpers(self):
@@ -109,9 +117,13 @@ class JackettProviderTests(unittest.TestCase):
         self.assertTrue(allow("https://remote.example/jackett"))
         self.assertTrue(allow("http://127.0.0.1:9117"))
         self.assertTrue(allow("http://localhost:9117"))
-        self.assertTrue(allow("http://10.0.0.5:9117"))
-        self.assertTrue(allow("http://jackett:9117"))
-        self.assertTrue(allow("http://nas.local:9117"))
+        self.assertTrue(allow("http://[::1]:9117"))
+        self.assertTrue(allow("https://192.168.1.10:9117"))
+        self.assertTrue(allow("https://jackett.local:9117"))
+        self.assertFalse(allow("http://10.0.0.5:9117"))
+        self.assertFalse(allow("http://192.168.1.10:9117"))
+        self.assertFalse(allow("http://jackett:9117"))
+        self.assertFalse(allow("http://nas.local:9117"))
         self.assertFalse(allow("http://remote.example:9117"))
         self.assertFalse(allow("ftp://127.0.0.1:9117"))
 
