@@ -95,6 +95,23 @@ class SaveProvidersDeleteTests(unittest.TestCase):
         handler.saveProviders()
         self.assertEqual(settings.newznab_provider_list, before)
 
+    @patch("sickchill.oldbeard.providers.check_enabled_providers")
+    @patch("sickchill.start.save_config")
+    @patch("sickchill.oldbeard.ui.notifications")
+    def test_provider_order_rejects_malformed_entries(self, _notifications, _save_config, _check):
+        settings.newznab_provider_list[0].enabled = True
+        handler = self._handler(
+            {
+                "newznab_string": "KeepMe|https://keep.example/|k1|5030",
+                "torrent_rss_string": "RssKeep|https://rss.example/feed||title",
+                # valid keepme:0 plus junk: missing flag, bad flag, extra colon, unknown id, empty
+                "provider_order": "keepme:0 junk keepme:2 keepme:0:1 notaprovider:1 :1 keepme:",
+            }
+        )
+        handler.saveProviders()
+        self.assertEqual(settings.PROVIDER_ORDER, ["keepme"])
+        self.assertFalse(settings.newznab_provider_list[0].enabled)
+
 
 if __name__ == "__main__":
     unittest.main()

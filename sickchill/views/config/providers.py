@@ -5,7 +5,6 @@ from tornado.web import addslash
 
 import sickchill.start
 from sickchill import settings
-from sickchill.helper import try_int
 from sickchill.helper.common import try_float
 from sickchill.oldbeard import config, ui
 from sickchill.oldbeard.providers.newznab import NewznabProvider
@@ -227,12 +226,18 @@ class ConfigProviders(Config):
         # do the enable/disable
         enabled_provider_list = []
         disabled_provider_list = []
+        known_provider_ids = {provider.get_id() for provider in sickchill.oldbeard.providers.sorted_provider_list()}
+        known_provider_ids.update(newznab_provider_dict)
+        known_provider_ids.update(torrent_rss_provider_dict)
 
-        for provider in provider_order.split():
-            if not provider or ":" not in provider:
+        for entry in provider_order.split():
+            # Require exactly "provider_id:0" or "provider_id:1" with a known id
+            if not entry or entry.count(":") != 1:
                 continue
-            provider_id, enabled = provider.split(":", 1)
-            enabled = bool(try_int(enabled))
+            provider_id, flag = entry.split(":")
+            if not provider_id or flag not in ("0", "1") or provider_id not in known_provider_ids:
+                continue
+            enabled = flag == "1"
 
             current_provider_object = [x for x in sickchill.oldbeard.providers.sorted_provider_list() if x.get_id() == provider_id and hasattr(x, "enabled")]
 

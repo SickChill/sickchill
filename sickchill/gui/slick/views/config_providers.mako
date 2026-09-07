@@ -376,7 +376,7 @@
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                             <input type="text" name="${provider.get_id("_api_key")}" id="${provider.get_id("_api_key")}" value="${provider.api_key|h}" class="form-control input-sm input350" autocapitalize="off" />
                                             % if provider.get_id() == 'jackett_sc':
-                                                <label for="${provider.get_id("_api_key")}">${_('API key from the Jackett dashboard (upper right). Pre-filled with the default; replace if your Jackett key differs.')}</label>
+                                                <label for="${provider.get_id("_api_key")}">${_('Copy the API key from the Jackett Dashboard (default: http://127.0.0.1:9117/UI/Dashboard). It is shown on that page — replace the pre-filled value if your Jackett key differs.')}</label>
                                             % endif
                                         </div>
                                     </div>

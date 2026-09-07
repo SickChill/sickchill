@@ -276,6 +276,8 @@ class JackettProviderTests(unittest.TestCase):
         # Torznab anime is TV-range 5070
         self.assertIn("5070", ids)
         self.assertNotIn("2000", ids)
+        mock_get_url.assert_called()
+        self.assertFalse(mock_get_url.call_args.kwargs.get("allow_redirects", True))
 
     @patch.object(Provider, "get_url")
     def test_get_jackett_categories_empty_tv_fails(self, mock_get_url):

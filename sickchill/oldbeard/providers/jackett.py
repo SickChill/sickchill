@@ -145,7 +145,8 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
             return False, return_categories, "Jackett requires a URL and API key"
 
         params = {"t": "caps", "apikey": self.api_key}
-        data = self.get_url(self.torznab_url, params=params, returns="text")
+        # Do not follow redirects — apikey is in the query string
+        data = self.get_url(self.torznab_url, params=params, returns="text", allow_redirects=False)
         if not data:
             error_string = f"Error getting caps xml for [{self.name}]"
             logger.warning(error_string)
@@ -260,7 +261,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
                         search_params["q"] = search_string
 
                 time.sleep(cpu_presets[settings.CPU_PRESET])
-                data = self.get_url(self.torznab_url, params=search_params, returns="text")
+                data = self.get_url(self.torznab_url, params=search_params, returns="text", allow_redirects=False)
                 if not data:
                     logger.debug(_("No data was returned from the provider"))
                     break
