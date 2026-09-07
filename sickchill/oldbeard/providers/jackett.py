@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import ipaddress
 import time
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from sickchill import logger, settings
 from sickchill.helper.common import try_int
@@ -50,6 +51,36 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
             return icon
         return "newznab.png"
 
+    @staticmethod
+    def _normalize_jackett_base(url: str) -> str:
+        """Strip query/fragment and trailing slash so path suffix checks stay valid."""
+        parts = urlsplit((url or "").strip())
+        path = (parts.path or "").rstrip("/")
+        return urlunsplit((parts.scheme, parts.netloc, path, "", ""))
+
+    @classmethod
+    def _url_allows_apikey_transport(cls, url: str) -> bool:
+        """Allow apikey query params over HTTPS, or HTTP only for local/loopback endpoints."""
+        parts = urlsplit((url or "").strip())
+        scheme = (parts.scheme or "").lower()
+        if scheme == "https":
+            return True
+        if scheme != "http":
+            return False
+
+        host = (parts.hostname or "").lower().rstrip(".")
+        if not host:
+            return False
+        if host in ("localhost", "127.0.0.1", "::1") or host.endswith(".localhost"):
+            return True
+
+        try:
+            ip = ipaddress.ip_address(host)
+            return bool(ip.is_loopback or ip.is_private or ip.is_link_local)
+        except ValueError:
+            # Hostnames: allow clearly local-only names (docker service, mDNS, home LAN)
+            return "." not in host or host.endswith((".local", ".lan", ".home", ".internal"))
+
     @property
     def torznab_url(self) -> str:
         """Build Jackett Torznab API URL.
@@ -61,7 +92,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         Accepts a bare Jackett base URL, a Torznab feed path (with or without trailing
         ``/api``), or an indexer id of ``all`` / a single configured indexer.
         """
-        raw = (self.custom_url or "http://127.0.0.1:9117").strip().rstrip("/")
+        raw = self._normalize_jackett_base(self.custom_url or "http://127.0.0.1:9117")
         lowered = raw.lower()
 
         # Already a Torznab API endpoint
@@ -70,7 +101,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
 
         # Torznab feed root without /api — append it (Jackett query syntax)
         if "/results/torznab" in lowered or lowered.endswith("/torznab"):
-            return raw.rstrip("/") + "/api"
+            return raw + "/api"
 
         indexer = (self.indexer or "all").strip().strip("/") or "all"
         return urljoin(raw + "/", f"api/v2.0/indexers/{indexer}/results/torznab/api")
@@ -81,6 +112,12 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
             return False
         if self.invalid_url(self.custom_url or ""):
             logger.warning(_("Invalid Jackett URL. Check your provider settings."))
+            return False
+        # apikey is sent as a query param — require HTTPS except for local/loopback HTTP
+        if not self._url_allows_apikey_transport(self.torznab_url):
+            logger.warning(
+                _("Jackett URL must use HTTPS for remote hosts (API key is sent in the query string). HTTP is only allowed for local/loopback addresses.")
+            )
             return False
         return True
 
@@ -160,6 +197,8 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
 
             # Aggregate "all" mixes indexers poorly with tvdbid/season/ep (Jackett README).
             use_structured_tv = bool(self.use_tv_search and self.show and (self.indexer or "all").strip().lower() != "all")
+            # Air-date / sports structured search sets q=airdate; do not overwrite with search_string.
+            preserve_airdate_q = False
 
             if mode != "RSS" and use_structured_tv:
                 if self.cap_tv_search and "tvdbid" in str(self.cap_tv_search):
@@ -168,6 +207,7 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
                 if self.show.air_by_date or self.show.sports:
                     if self.current_episode_object:
                         search_params["q"] = str(self.current_episode_object.airdate)
+                        preserve_airdate_q = True
                 elif self.show.is_anime:
                     if self.current_episode_object:
                         search_params["ep"] = self.current_episode_object.absolute_number
@@ -185,7 +225,8 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
                 if mode != "RSS":
                     logger.debug(_("Search String: {search_string}").format(search_string=search_string))
                     # Jackett tvsearch still uses q= for the show title alongside season/ep
-                    search_params["q"] = search_string
+                    if not preserve_airdate_q:
+                        search_params["q"] = search_string
 
                 time.sleep(cpu_presets[settings.CPU_PRESET])
                 data = self.get_url(self.torznab_url, params=search_params, returns="text")

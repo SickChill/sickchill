@@ -352,7 +352,7 @@
                                             <label class="component-title">${_('Jackett indexer')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="text" name="${provider.get_id("_indexer")}" id="${provider.get_id("_indexer")}" value="${provider.indexer}" class="form-control input-sm input150" autocapitalize="off" />
+                                            <input type="text" name="${provider.get_id("_indexer")}" id="${provider.get_id("_indexer")}" value="${provider.indexer|h}" class="form-control input-sm input150" autocapitalize="off" />
                                             <label for="${provider.get_id("_indexer")}">${_('Use "all" to search every configured Jackett indexer, or a single Jackett indexer id.')}</label>
                                         </div>
                                     </div>
@@ -378,7 +378,7 @@
                                             <label class="component-title">${_('Categories')}</label>
                                         </div>
                                         <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
-                                            <input type="text" name="${provider.get_id("_categories")}" id="${provider.get_id("_categories")}" value="${provider.categories}" class="form-control input-sm input350" autocapitalize="off" />
+                                            <input type="text" name="${provider.get_id("_categories")}" id="${provider.get_id("_categories")}" value="${provider.categories|h}" class="form-control input-sm input350" autocapitalize="off" />
                                             <label for="${provider.get_id("_categories")}">${_('Comma-separated Torznab TV category ids (e.g. 5000,5030,5040).')}</label>
                                         </div>
                                     </div>
