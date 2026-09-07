@@ -30,7 +30,7 @@
     "browser-env": "^3.3.0",
     "css-loader": "^7.1.1",
     "eslint": "^10.9.1",
-    "globals": "^17.11.0",
+    "globals": "^17.12.0",
     "grunt": "^1.6.3",
     "grunt-bower-concat": "git+https://github.com/miigotu/grunt-bower-concat.git",
     "grunt-bower-task": "^0.6.2",
