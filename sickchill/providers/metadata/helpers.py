@@ -1,4 +1,5 @@
 import re
+import time
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -24,6 +25,7 @@ _ALLOWED_SHOW_IMAGE_URL_RE = re.compile(
 )
 
 _MAX_IMAGE_REDIRECTS = 5
+_IMAGE_CHUNK_SIZE = 64 * 1024
 
 
 def is_allowed_show_image_url(url: str | None) -> bool:
@@ -70,39 +72,78 @@ def getShowImage(url, imgNum=None, timeout=30):
     return image_data
 
 
-def _fetch_allowed_image_content(url: str, timeout: int = 30):
-    """GET image bytes, re-validating every redirect target against the allowlist."""
+def _read_response_until_deadline(response, deadline: float, url: str):
+    """Consume a streamed response in bounded chunks, aborting when the shared deadline expires."""
+    chunks = []
+    try:
+        for chunk in response.iter_content(_IMAGE_CHUNK_SIZE):
+            if deadline - time.monotonic() <= 0:
+                logger.warning(f"Timed out while reading show image from {url}")
+                return None
+            if chunk:
+                chunks.append(chunk)
+    finally:
+        try:
+            response.close()
+        except Exception:
+            pass
+    return b"".join(chunks) or None
+
+
+def _fetch_allowed_image_content(url: str, timeout: float = 30):
+    """GET image bytes, re-validating every redirect target against the allowlist.
+
+    ``timeout`` is a budget for the whole redirect chain and body download, not per hop.
+    Responses are streamed in bounded chunks so a slow body cannot overrun the deadline.
+    """
+    deadline = time.monotonic() + float(timeout)
     current = url
     for _ in range(_MAX_IMAGE_REDIRECTS + 1):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            logger.warning(f"Timed out while fetching show image from {url}")
+            return None
+
         if not is_allowed_show_image_url(current):
             logger.warning(f"Blocked show image redirect to non-allowlisted URL: {current}")
             return None
 
+        # Pass only remaining budget — do not inflate past the cumulative deadline.
         response = helpers.getURL(
             current,
             session=meta_session,
             returns="response",
             allow_redirects=False,
             allow_proxy=settings.PROXY_INDEXERS,
-            timeout=timeout,
+            timeout=remaining,
+            stream=True,
         )
         if not response:
             return None
 
         if getattr(response, "is_redirect", False) or response.status_code in {301, 302, 303, 307, 308}:
             location = response.headers.get("Location") or ""
+            response_url = response.url or current
+            try:
+                response.close()
+            except Exception:
+                pass
             if not location:
                 logger.warning(f"Show image redirect missing Location from {current}")
                 return None
-            current = urljoin(response.url or current, location)
+            current = urljoin(response_url, location)
             continue
 
         try:
             response.raise_for_status()
         except requests.exceptions.RequestException:
+            try:
+                response.close()
+            except Exception:
+                pass
             return None
-        content = getattr(response, "content", None)
-        return content or None
+
+        return _read_response_until_deadline(response, deadline, url)
 
     logger.warning(f"Too many redirects while fetching show image from {url}")
     return None

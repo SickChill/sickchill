@@ -1276,9 +1276,14 @@ def getURL(
             proxies=proxies,
             verify=verify,
         )
+        is_redirect = getattr(response, "is_redirect", False) or response.status_code in {301, 302, 303, 307, 308}
         # When callers disable redirects they must inspect 3xx themselves (e.g. SSRF-safe image fetch).
-        if allow_redirects or not (getattr(response, "is_redirect", False) or response.status_code in {301, 302, 303, 307, 308}):
+        if allow_redirects or not is_redirect:
             response.raise_for_status()
+        elif response_type not in ("response", None):
+            # Do not treat a redirect payload as successful text/json/content (e.g. Jackett with allow_redirects=False).
+            logger.debug(_("Ignoring redirect response for {url} because redirects are disabled").format(url=url))
+            return ""
     except Exception as error:
         handle_requests_exception(error)
         return ""

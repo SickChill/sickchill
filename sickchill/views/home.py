@@ -4,6 +4,7 @@ import binascii
 import datetime
 import json
 import os
+import time
 import urllib.parse
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -1420,7 +1421,7 @@ class Home(WebRoot):
             # Remote URL (TheTVDB, Fanart.tv, etc.) — optional "full|thumb" pipe form from the selector.
             # TVDB/TMDB often send the same URL for both; only fetch thumb when it differs.
             # SSRF: only allowlisted public artwork hosts (same set as imageSelector.url_wrap).
-            # Keep timeout short: this runs on the edit-save web request and must not stall the redirect.
+            # One shared deadline for full+thumb so edit-save cannot stall the redirect.
             elif isinstance(image, str) and image.strip():
                 try:
                     image_parts = image.split("|")
@@ -1432,11 +1433,24 @@ class Home(WebRoot):
                     if thumb_url and thumb_url != full_url and not is_allowed_show_image_url(thumb_url):
                         logger.warning(f"Rejected non-allowlisted thumb URL for show {show_obj.indexerid}: {thumb_url}")
                         thumb_url = ""
-                    _img_data = getShowImage(full_url, timeout=10)
+
+                    deadline = time.monotonic() + 10.0
+
+                    def _remaining_timeout():
+                        return max(0.0, deadline - time.monotonic())
+
+                    remaining = _remaining_timeout()
+                    if remaining <= 0:
+                        return None, None
+                    # Remaining budget is shared with streamed chunk reads inside getShowImage.
+                    _img_data = getShowImage(full_url, timeout=remaining)
                     if not _img_data:
                         return None, None
                     if thumb_url and thumb_url != full_url:
-                        _thumb = getShowImage(thumb_url, timeout=10)
+                        remaining = _remaining_timeout()
+                        if remaining <= 0:
+                            return _img_data, _img_data
+                        _thumb = getShowImage(thumb_url, timeout=remaining)
                         return _img_data, _thumb or _img_data
                     return _img_data, _img_data
                 except Exception as e:  # getShowImage / CDN can raise various errors
@@ -1450,32 +1464,54 @@ class Home(WebRoot):
                 return False
             return metadata_generator._write_image(data, path, overwrite=True)
 
+        def _replace_artwork(kind, image_value, write_targets):
+            """Fetch/write one artwork kind; failures here must not skip other kinds.
+
+            write_targets: list of (image_data_key, path) where image_data_key is 'full' or 'thumb'
+            """
+            try:
+                img_data, img_thumb_data = get_images(image_value)
+                if not img_data:
+                    artwork_errors.append(_("Could not process the selected {kind} image.").format(kind=kind))
+                    return
+                payloads = {"full": img_data, "thumb": img_thumb_data or img_data}
+                for key, path in write_targets:
+                    if not _write_replaced_image(payloads[key], path):
+                        # Continue other targets for this kind (e.g. thumb after full) and other kinds.
+                        artwork_errors.append(_("Could not save the selected {kind} image.").format(kind=kind))
+            except Exception as error:
+                logger.warning(f"Error replacing {kind} for show {show_obj.indexerid}: {error}")
+                artwork_errors.append(_("Error replacing {kind} artwork: {error}").format(kind=kind, error=error))
+
         # Artwork replace must never prevent returning to displayShow after a successful settings save.
+        # Isolate each kind so one failure does not skip the others.
         artwork_errors = []
-        try:
-            if poster:
-                img_data, img_thumb_data = get_images(poster)
-                if not img_data:
-                    artwork_errors.append(_("Could not process the selected poster image."))
-                else:
-                    _write_replaced_image(img_data, settings.IMAGE_CACHE.poster_path(show_obj.indexerid))
-                    _write_replaced_image(img_thumb_data, settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid))
-            if banner:
-                img_data, img_thumb_data = get_images(banner)
-                if not img_data:
-                    artwork_errors.append(_("Could not process the selected banner image."))
-                else:
-                    _write_replaced_image(img_data, settings.IMAGE_CACHE.banner_path(show_obj.indexerid))
-                    _write_replaced_image(img_thumb_data, settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid))
-            if fanart:
-                img_data, img_thumb_data = get_images(fanart)
-                if not img_data:
-                    artwork_errors.append(_("Could not process the selected fanart image."))
-                else:
-                    _write_replaced_image(img_data, settings.IMAGE_CACHE.fanart_path(show_obj.indexerid))
-        except Exception as error:
-            logger.warning(f"Error replacing show artwork for {show_obj.indexerid}: {error}")
-            artwork_errors.append(_("Error replacing show artwork: {error}").format(error=error))
+        if poster:
+            _replace_artwork(
+                _("poster"),
+                poster,
+                [
+                    ("full", settings.IMAGE_CACHE.poster_path(show_obj.indexerid)),
+                    ("thumb", settings.IMAGE_CACHE.poster_thumb_path(show_obj.indexerid)),
+                ],
+            )
+        if banner:
+            _replace_artwork(
+                _("banner"),
+                banner,
+                [
+                    ("full", settings.IMAGE_CACHE.banner_path(show_obj.indexerid)),
+                    ("thumb", settings.IMAGE_CACHE.banner_thumb_path(show_obj.indexerid)),
+                ],
+            )
+        if fanart:
+            _replace_artwork(
+                _("fanart"),
+                fanart,
+                [
+                    ("full", settings.IMAGE_CACHE.fanart_path(show_obj.indexerid)),
+                ],
+            )
 
         # If direct_call from mass_edit_update no scene exceptions handling or blackandwhite list handling
         if not direct_call:
