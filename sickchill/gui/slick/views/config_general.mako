@@ -1299,8 +1299,9 @@
                 <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
                     <div class="component-group-desc">
                         <h3><a href="${anon_url('https://trakt.tv/oauth/applications')}" rel="noreferrer" target="_blank">Trakt</a></h3>
-                        <p>${_('Client ID / Secret and account for Trakt notifications and sync. Create an app with Redirect URI urn:ietf:wg:oauth:2.0:oob.')}</p>
-                        <p>${_('Enable Trakt notifications and sync options under Config → Notifications.')}</p>
+                        <p><strong>${_('Trakt VIP required.')}</strong> ${_('Creating an API application (Client ID / Secret) and connecting community apps requires a Trakt VIP account. Free Trakt accounts cannot use this integration.')}</p>
+                        <p>${_('Paste your VIP API app credentials below, then Authorize with Trakt (device code). Legacy PIN remains available. Enable notifications and sync under Config → Notifications.')}</p>
+                        <p>${_('Add From Trakt Lists appears on the Add Shows page only after Client ID and Secret are saved.')}</p>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
@@ -1312,12 +1313,12 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="trakt_api_key" id="trakt_api_key" value="${settings.TRAKT_API_KEY}" class="form-control input-sm input350" autocapitalize="off" autocomplete="off" />
+                                        <input type="text" name="trakt_api_key" id="trakt_api_key" value="${settings.TRAKT_API_KEY}" class="form-control input-sm input350" autocapitalize="off" autocomplete="off" placeholder="${_('VIP API app Client ID')}" />
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="trakt_api_key">${_('Trakt application Client ID. Leave default until you create your own app at trakt.tv/oauth/applications.')}</label>
+                                        <label for="trakt_api_key">${_('Client ID from your Trakt VIP API application (trakt.tv/oauth/applications). Leave blank if you are not a Trakt VIP.')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1330,7 +1331,12 @@
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="password" name="trakt_api_secret" id="trakt_api_secret" value="${settings.TRAKT_API_SECRET|hide}" class="form-control input-sm input350" autocapitalize="off" autocomplete="new-password" />
+                                        <input type="password" name="trakt_api_secret" id="trakt_api_secret" value="${settings.TRAKT_API_SECRET|hide}" class="form-control input-sm input350" autocapitalize="off" autocomplete="new-password" placeholder="${_('VIP API app Client Secret')}" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="trakt_api_secret">${_('Client Secret from the same VIP API application.')}</label>
                                     </div>
                                 </div>
                             </div>
@@ -1356,18 +1362,36 @@
 
                         <div class="field-pair row">
                             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
-                                <label class="component-title">${_('Trakt PIN')}</label>
+                                <label class="component-title">${_('Trakt Authorization')}</label>
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                 <div class="row">
                                     <div class="col-md-12">
+                                        <input type="button" class="btn ${('', 'hide')[bool(settings.TRAKT_ACCESS_TOKEN)]}" value="${_('Authorize with Trakt')}" id="TraktDeviceStart" />
+                                        <span id="TraktDeviceStatus" class="text-muted" style="margin-left:10px;"></span>
+                                    </div>
+                                </div>
+                                <div class="row hide" id="TraktDevicePanel" style="margin-top:10px;">
+                                    <div class="col-md-12">
+                                        <p>
+                                            ${_('Open')}
+                                            <a id="TraktDeviceVerifyLink" href="#" target="_blank" rel="noopener"></a>
+                                            ${_('and enter this code:')}
+                                            <strong id="TraktDeviceUserCode" style="font-size:1.4em; letter-spacing:2px;"></strong>
+                                        </p>
+                                        <p class="text-muted"><small>${_('This page will confirm automatically once you approve access. The code expires in a few minutes.')}</small></p>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:15px;">
+                                    <div class="col-md-12">
+                                        <label>${_('Legacy PIN flow (optional)')}</label>
                                         <input type="hidden" id="trakt_pin_url" value="${settings.TRAKT_PIN_URL}">
-                                        <input type="button" class="btn ${('', 'hide')[bool(settings.TRAKT_ACCESS_TOKEN)]}" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
+                                        <input type="button" class="btn btn-sm" value="${_('Get Trakt PIN')}" id="TraktGetPin" />
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <input type="text" name="trakt_pin" id="trakt_pin" value="" class="form-control input-sm input250" autocapitalize="off" />
+                                        <input type="text" name="trakt_pin" id="trakt_pin" value="" class="form-control input-sm input250" autocapitalize="off" placeholder="${_('Paste PIN here')}" />
                                     </div>
                                 </div>
                                 <div class="row">

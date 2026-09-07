@@ -2730,7 +2730,8 @@
                                 </div>
                                 <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 component-desc">
                                     <p>
-                                        ${_('Configure Trakt Client ID, Secret, Username, and PIN under')}
+                                        <strong>${_('Trakt VIP required.')}</strong>
+                                        ${_('Configure Client ID, Secret, Username, and authorize (device code or legacy PIN) under')}
                                         <a href="${scRoot}/config/general/#indexer-data">${_('Config → General → Indexer / Data')}</a>.
                                     </p>
                                     % if settings.TRAKT_USERNAME:

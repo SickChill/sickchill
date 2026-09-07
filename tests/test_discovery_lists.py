@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from sickchill.helper.list_status import build_list_status
 from sickchill.oldbeard import tmdbLists, tvmazePremieres
@@ -134,6 +134,60 @@ class DiscoveryListKeyTests(unittest.TestCase):
         self.assertEqual(AddShows._resolve_discovery_list_key("newshow"), "premieres")
         self.assertEqual(AddShows._resolve_discovery_list_key("traktList-bogus"), "trending")
         self.assertEqual(AddShows._resolve_discovery_list_key("top_rated"), "top_rated")
+
+    def test_trakt_list_keys(self):
+        self.assertEqual(AddShows._resolve_trakt_list_key("anticipated"), "anticipated")
+        self.assertEqual(AddShows._resolve_trakt_list_key("trending"), "trending")
+        self.assertEqual(AddShows._resolve_trakt_list_key("bogus"), "anticipated")
+
+    def test_discovery_source_from_query(self):
+        class FakeHandler:
+            def __init__(self, args):
+                self._args = args
+
+            def get_query_argument(self, name, default=""):
+                return self._args.get(name, default)
+
+        self.assertEqual(
+            AddShows._discovery_source_from_query(FakeHandler({"tmdbList": "popular"})),
+            ("tmdb", "popular"),
+        )
+        self.assertEqual(
+            AddShows._discovery_source_from_query(FakeHandler({"traktList": "anticipated"})),
+            ("trakt", "anticipated"),
+        )
+        # Both present: tmdb wins (legacy JS wrote both)
+        self.assertEqual(
+            AddShows._discovery_source_from_query(FakeHandler({"tmdbList": "trending", "traktList": "anticipated"})),
+            ("tmdb", "trending"),
+        )
+        self.assertEqual(
+            AddShows._discovery_source_from_query(FakeHandler({})),
+            ("tmdb", "trending"),
+        )
+
+
+class ListStatusTraktTests(unittest.TestCase):
+    def test_trakt_fetch_failed_mentions_auth(self):
+        status = build_list_status("fetch_failed", settings_url="/config/general/", source="trakt")
+        self.assertEqual(status["code"], "fetch_failed")
+        self.assertIn("Trakt", status["title"])
+        self.assertTrue(status["settings_url"])
+
+
+class TraktAlreadyAddedTests(unittest.TestCase):
+    @patch("sickchill.views.manage.add_shows.settings")
+    def test_mark_trakt_already_added(self, mock_settings):
+        show = MagicMock()
+        show.indexerid = 121361
+        mock_settings.show_list = [show]
+        cards = [
+            {"show": {"title": "GoT", "ids": {"tvdb": 121361}}},
+            {"show": {"title": "Other", "ids": {"tvdb": 1}}},
+        ]
+        AddShows._mark_trakt_already_added(cards)
+        self.assertTrue(cards[0]["already_added"])
+        self.assertFalse(cards[1]["already_added"])
 
 
 if __name__ == "__main__":

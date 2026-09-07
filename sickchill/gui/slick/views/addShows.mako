@@ -1,4 +1,7 @@
 <%inherit file="/layouts/main.mako" />
+<%!
+    from sickchill.oldbeard.trakt_api import trakt_credentials_configured
+%>
 <%block name="content">
 <div id="addShowPortal">
     <div class="row">
@@ -39,6 +42,20 @@
         </div>
     </div>
     <br/>
+    % if trakt_credentials_configured():
+    <div class="row">
+        <div class="col-md-12">
+            <a href="${static_url('addShows/trendingShows/?traktList=anticipated', include_version=False)}" id="btnNewShow" class="btn btn-large">
+                <div class="button"><div class="add-list-icon-addtrakt"></div></div>
+                <div class="buttontext">
+                    <h3>${_('Add From Trakt Lists')}</h3>
+                    <p>${_('For shows that you haven\'t downloaded yet, this option lets you choose a show from one of the Trakt lists to add to SickChill.')}</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    <br/>
+    % endif
     <div class="row">
         <div class="col-md-12">
             <a href="${static_url('addShows/popularShows/', include_version=False)}" id="btnNewShow" class="btn btn-large">
