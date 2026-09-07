@@ -1442,14 +1442,15 @@ class Home(WebRoot):
                     remaining = _remaining_timeout()
                     if remaining <= 0:
                         return None, None
-                    _img_data = getShowImage(full_url, timeout=max(0.1, remaining))
+                    # Remaining budget is shared with streamed chunk reads inside getShowImage.
+                    _img_data = getShowImage(full_url, timeout=remaining)
                     if not _img_data:
                         return None, None
                     if thumb_url and thumb_url != full_url:
                         remaining = _remaining_timeout()
                         if remaining <= 0:
                             return _img_data, _img_data
-                        _thumb = getShowImage(thumb_url, timeout=max(0.1, remaining))
+                        _thumb = getShowImage(thumb_url, timeout=remaining)
                         return _img_data, _thumb or _img_data
                     return _img_data, _img_data
                 except Exception as e:  # getShowImage / CDN can raise various errors
