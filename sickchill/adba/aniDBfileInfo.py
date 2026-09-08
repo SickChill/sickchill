@@ -102,5 +102,4 @@ def read_tvdb_map_xml(cache_dir: Path):
 
 
 def read_xml_into_etree(file_path):
-    with file_path.open("r") as f:
-        return ElementTree.ElementTree(file=f)
+    return ElementTree.parse(file_path)
