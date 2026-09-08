@@ -47,7 +47,16 @@ class DownloadFileSafetyTests(unittest.TestCase):
 
 class AnidbExceptionsGeneratorTests(unittest.TestCase):
     def setUp(self):
-        self._saved_show_list = settings.show_list
+        self._saved = {
+            "show_list": settings.show_list,
+            "CACHE_DIR": settings.CACHE_DIR,
+            "stopping": settings.stopping,
+            "restarting": settings.restarting,
+        }
+        # Other tests can leave these True and abort the generator early (CI flake).
+        settings.stopping = False
+        settings.restarting = False
+
         self._tmp = TemporaryDirectory()
         self.cache_root = Path(self._tmp.name)
         self.anime_dir = self.cache_root / "anime"
@@ -70,7 +79,10 @@ class AnidbExceptionsGeneratorTests(unittest.TestCase):
         )
 
     def tearDown(self):
-        settings.show_list = self._saved_show_list
+        settings.show_list = self._saved["show_list"]
+        settings.CACHE_DIR = self._saved["CACHE_DIR"]
+        settings.stopping = self._saved["stopping"]
+        settings.restarting = self._saved["restarting"]
         self._tmp.cleanup()
 
     def _show(self, name: str, indexerid: int, is_anime: bool = True, indexer: int = 1):
