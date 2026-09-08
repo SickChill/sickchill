@@ -1168,27 +1168,27 @@ class TVShow(object):
                 logger.debug(f"Search failed: {e}")
 
         self.check_imdb_id()
-    
+
         if not self.imdb_id:
             logger.debug(f"{self.indexerid}: No IMDb ID")
             return
-    
+
         logger.debug(f"{self.indexerid}: Refreshing IMDb info")
-    
+
         executor = ThreadPoolExecutor(max_workers=1)
         future = None
-    
+
         try:
             future = executor.submit(self._fetch_imdb_title, self.imdb_id)
             title = future.result(timeout=25)  # raises FuturesTimeoutError on timeout
-    
+
             if title:
                 new_title = getattr(title, "title", self.name)
                 new_imdb_id = helpers.normalize_imdb_id(getattr(title, "imdb_id", None)) or self.imdb_id
                 if new_imdb_id != self.imdb_id:
                     logger.info(f"{self.indexerid}: IMDb id {self.imdb_id} redirects to {new_imdb_id}")
                     self.imdb_id = new_imdb_id
-    
+
                 self.imdb_info.update(
                     {
                         "indexer_id": self.indexerid,
@@ -1208,7 +1208,7 @@ class TVShow(object):
                 )
                 self.dirty = True
                 self.save_to_db()
-    
+
                 logger.debug(f"{self.indexerid}: IMDb info refreshed → {new_title} ({new_imdb_id})")
             else:
                 logger.warning(f"{self.indexerid}: No live IMDb data for {self.imdb_id}")
