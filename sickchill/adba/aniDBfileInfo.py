@@ -37,18 +37,24 @@ def get_file_hash(filePath: Path):
 
 
 def download_file(url, filename: Path):
+    """Download ``url`` to ``filename``.
+
+    Writes via a temp file and only replaces the destination on success, so a
+    failed refresh never deletes a previously good cache file.
+    """
+    tmp_path = filename.with_suffix(filename.suffix + ".tmp")
     try:
-        r = requests.get(url, stream=True, verify=False)
+        r = requests.get(url, stream=True, verify=False, timeout=120)
         r.raise_for_status()
-        with filename.open("wb") as fp:
+        with tmp_path.open("wb") as fp:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
                     fp.write(chunk)
                     fp.flush()
-
+        tmp_path.replace(filename)
     except requests.exceptions.RequestException:
-        if filename.is_file():
-            filename.unlink()
+        if tmp_path.is_file():
+            tmp_path.unlink()
         return False
 
     return True
@@ -67,12 +73,15 @@ def read_anidb_xml(cache_dir: Path):
 
     if not file_path.exists():
         if not get_anime_titles_xml(file_path):
-            return
+            return None
     else:
         mtime = os.path.getmtime(file_path)
-        if time.time() > mtime + 24 * 60 * 60 and not get_anime_titles_xml(file_path):
-            return
+        # Best-effort daily refresh; keep the stale file if the download fails.
+        if time.time() > mtime + 24 * 60 * 60:
+            get_anime_titles_xml(file_path)
 
+    if not file_path.exists():
+        return None
     return read_xml_into_etree(file_path)
 
 
@@ -80,15 +89,17 @@ def read_tvdb_map_xml(cache_dir: Path):
     file_path = cache_dir / "anime-list.xml"
     if not file_path.is_file():
         if not get_anime_list_xml(file_path):
-            return
+            return None
     else:
         mtime = os.path.getmtime(file_path)
-        if time.time() > mtime + 24 * 60 * 60 and not get_anime_list_xml(file_path):
-            return
+        # Best-effort daily refresh; keep the stale file if the download fails.
+        if time.time() > mtime + 24 * 60 * 60:
+            get_anime_list_xml(file_path)
 
+    if not file_path.is_file():
+        return None
     return read_xml_into_etree(file_path)
 
 
 def read_xml_into_etree(file_path):
-    with file_path.open("r") as f:
-        return ElementTree.ElementTree(file=f)
+    return ElementTree.parse(file_path)

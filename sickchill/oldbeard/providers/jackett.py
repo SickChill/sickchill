@@ -46,6 +46,11 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         self.url = self.custom_url
         self.cache = tvcache.TVCache(self, min_time=30)
 
+    @property
+    def uses_configurable_categories(self) -> bool:
+        """Persist Torznab category ids via the generic provider config keys."""
+        return True
+
     def image_name(self):
         import os
 
