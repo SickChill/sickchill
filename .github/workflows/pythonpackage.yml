@@ -234,7 +234,12 @@ jobs:
 
   Deploy:
     needs: [Environment, Test, Test-Docker]
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    # Skip Dependabot: no registry login/push for that actor, but multi-arch build still ran (~12m) and often failed checks.
+    # PRs still get amd64 smoke via Test-Docker; full Deploy stays for pushes and human/repo PRs.
+    if: >
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name == 'push' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest  # Updated from 22.04
     steps:
       - uses: actions/checkout@v7
