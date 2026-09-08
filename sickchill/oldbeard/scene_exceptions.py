@@ -329,14 +329,54 @@ def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, N
     set_last_refresh("sickchill")
 
 
+def _parse_defaulttvdbseason(raw) -> int:
+    """ScudLee defaulttvdbseason → scene-exception season.
+
+    ``a`` means absolute / whole-series numbering → generic season -1.
+    Missing or non-numeric values default to 1 (ScudLee one-off convention).
+    """
+    if raw is None:
+        return 1
+    value = str(raw).strip().lower()
+    if not value:
+        return 1
+    if value == "a":
+        return -1
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 1
+
+
+def _show_applicable_tvdb_seasons(show) -> set[int] | None:
+    """Seasons that should select among multiple AniDB mappings.
+
+    Optional ``show.default_tvdb_season`` (tests / callers) wins; otherwise
+    regular seasons already on the show. ``None`` means “accept all mappings”.
+    """
+    explicit = getattr(show, "default_tvdb_season", None)
+    if explicit is not None:
+        try:
+            return {int(explicit)}
+        except (TypeError, ValueError):
+            pass
+
+    episodes = getattr(show, "episodes", None)
+    if isinstance(episodes, dict) and episodes:
+        seasons = {int(season) for season in episodes if str(season).lstrip("-").isdigit()}
+        seasons.discard(0)
+        if seasons:
+            return seasons
+    return None
+
+
 def _anidb_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
     """Yield AniDB main titles for local anime shows via ScudLee mapping XMLs.
 
     This does **not** use the AniDB UDP API. It downloads/parses local caches of
     ``anime-list.xml`` / ``animetitles.xml`` once per refresh, then looks up each
-    show. The previous per-show ``adba.Anime(...)`` path re-parsed multi‑MB XML for
-    every title (minutes of MAIN/SHOWQUEUE blocking) and swallowed missing-map
-    ``ValueError``s without detail.
+    show. Multiple AniDB ids can share one TVDB id (e.g. 72025 → aid 1 season 1
+    and aid 4 season 2); those rows are kept and selected by ``defaulttvdbseason``.
     """
     if not should_refresh("anidb"):
         return
@@ -358,16 +398,21 @@ def _anidb_exceptions_generator() -> Generator[tuple[int, str, int], None, None]
         logger.warning("AniDB scene exceptions skipped: anime-list/animetitles XML unavailable")
         return
 
-    tvdb_to_aid: dict[int, int] = {}
+    # tvdb_id -> [(aid, defaulttvdbseason), ...]  — all rows, not first-wins
+    tvdb_to_mappings: dict[int, list[tuple[int, int]]] = {}
     for anime in anime_list.findall("anime"):
         try:
             tvdb_id = int(anime.get("tvdbid") or 0)
             aid = int(anime.get("anidbid") or 0)
         except (TypeError, ValueError):
             continue
-        if tvdb_id > 0 and aid > 0:
-            # First mapping wins; list order is stable enough for scene-name use.
-            tvdb_to_aid.setdefault(tvdb_id, aid)
+        if tvdb_id <= 0 or aid <= 0:
+            continue
+        mapped_season = _parse_defaulttvdbseason(anime.get("defaulttvdbseason"))
+        mappings = tvdb_to_mappings.setdefault(tvdb_id, [])
+        pair = (aid, mapped_season)
+        if pair not in mappings:
+            mappings.append(pair)
 
     aid_to_main_name: dict[int, str] = {}
     xml_lang = "{http://www.w3.org/XML/1998/namespace}lang"
@@ -400,22 +445,35 @@ def _anidb_exceptions_generator() -> Generator[tuple[int, str, int], None, None]
             continue
 
         try:
-            aid = tvdb_to_aid.get(int(show.indexerid), 0)
-            if not aid:
+            mappings = tvdb_to_mappings.get(int(show.indexerid), [])
+            if not mappings:
                 skipped += 1
                 logger.debug(f"AniDB: no TVDB mapping for {show.name} (tvdb={show.indexerid})")
                 continue
 
-            anidb_name = aid_to_main_name.get(aid)
-            if not anidb_name:
-                skipped += 1
-                logger.debug(f"AniDB: no title for aid={aid} ({show.name}, tvdb={show.indexerid})")
-                continue
-
-            if anidb_name != show.name:
-                updated += 1
-                yield int(show.indexerid), anidb_name, -1
+            applicable = _show_applicable_tvdb_seasons(show)
+            selected: list[tuple[int, int]] = []
+            if applicable is None:
+                selected = list(mappings)
             else:
+                selected = [(aid, season) for aid, season in mappings if season in applicable or season == -1]
+                # Absolute/"a" rows already included; if nothing matched, fall back to season 1 then first row
+                if not selected:
+                    selected = [(aid, season) for aid, season in mappings if season == 1] or mappings[:1]
+
+            yielded = False
+            for aid, mapped_season in selected:
+                anidb_name = aid_to_main_name.get(aid)
+                if not anidb_name:
+                    logger.debug(f"AniDB: no title for aid={aid} ({show.name}, tvdb={show.indexerid})")
+                    continue
+                if anidb_name == show.name:
+                    continue
+                updated += 1
+                yielded = True
+                yield int(show.indexerid), anidb_name, mapped_season
+
+            if not yielded:
                 skipped += 1
         except Exception as error:
             failed += 1
