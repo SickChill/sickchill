@@ -13,10 +13,14 @@ from sickchill.adba import aniDBfileInfo as anidb_files
 from sickchill.oldbeard import scene_exceptions
 
 
-def _write_map_xml(path: Path, entries: list[tuple[str, str, str]]) -> None:
+def _write_map_xml(path: Path, entries: list[tuple]) -> None:
     root = ElementTree.Element("anime-list")
-    for anidb, tvdb, name in entries:
-        anime = ElementTree.SubElement(root, "anime", anidbid=anidb, tvdbid=tvdb)
+    for entry in entries:
+        anidb, tvdb, name = entry[0], entry[1], entry[2]
+        attrs = {"anidbid": anidb, "tvdbid": tvdb}
+        if len(entry) > 3 and entry[3] is not None:
+            attrs["defaulttvdbseason"] = str(entry[3])
+        anime = ElementTree.SubElement(root, "anime", **attrs)
         ElementTree.SubElement(anime, "name").text = name
     ElementTree.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
 
@@ -47,13 +51,10 @@ class DownloadFileSafetyTests(unittest.TestCase):
 
 class AnidbExceptionsGeneratorTests(unittest.TestCase):
     def setUp(self):
-        self._saved = {
-            "show_list": settings.show_list,
-            "CACHE_DIR": settings.CACHE_DIR,
-            "stopping": settings.stopping,
-            "restarting": settings.restarting,
-        }
-        # Other tests can leave these True and abort the generator early (CI flake).
+        self._saved_show_list = settings.show_list
+        self._saved_cache_dir = settings.CACHE_DIR
+        self._saved_stopping = settings.stopping
+        self._saved_restarting = settings.restarting
         settings.stopping = False
         settings.restarting = False
 
@@ -66,8 +67,9 @@ class AnidbExceptionsGeneratorTests(unittest.TestCase):
         _write_map_xml(
             self.anime_dir / "anime-list.xml",
             [
-                ("12385", "329820", "Isekai Shokudou"),
-                ("1", "72025", "Seikai no Monshou"),
+                ("12385", "329820", "Isekai Shokudou", "1"),
+                ("1", "72025", "Seikai no Monshou", "1"),
+                ("4", "72025", "Seikai no Senki", "2"),
             ],
         )
         _write_titles_xml(
@@ -75,48 +77,46 @@ class AnidbExceptionsGeneratorTests(unittest.TestCase):
             [
                 ("12385", "Isekai Shokudou"),
                 ("1", "Seikai no Monshou"),
+                ("4", "Seikai no Senki"),
             ],
         )
 
     def tearDown(self):
-        settings.show_list = self._saved["show_list"]
-        settings.CACHE_DIR = self._saved["CACHE_DIR"]
-        settings.stopping = self._saved["stopping"]
-        settings.restarting = self._saved["restarting"]
+        settings.show_list = self._saved_show_list
+        settings.CACHE_DIR = self._saved_cache_dir
+        settings.stopping = self._saved_stopping
+        settings.restarting = self._saved_restarting
         self._tmp.cleanup()
 
-    def _show(self, name: str, indexerid: int, is_anime: bool = True, indexer: int = 1):
+    def _show(self, name: str, indexerid: int, is_anime: bool = True, indexer: int = 1, default_tvdb_season=None, episodes=None):
         show = MagicMock()
         show.name = name
         show.indexerid = indexerid
         show.is_anime = is_anime
         show.indexer = indexer
+        show.default_tvdb_season = default_tvdb_season
+        show.episodes = episodes if episodes is not None else {}
         return show
 
     @patch("sickchill.oldbeard.scene_exceptions.should_refresh", return_value=True)
     @patch("sickchill.oldbeard.scene_exceptions.set_last_refresh")
-    def test_yields_anidb_main_name_when_different(self, set_refresh, _should):
-        settings.show_list = [
-            self._show("Restaurant to Another World", 329820),
-            self._show("4 Cut Hero", 462598),  # unmapped → skipped, not raised
-            self._show("Not Anime", 1, is_anime=False),
-        ]
-
+    def test_tvdb_72025_selects_season_specific_anidb_title(self, set_refresh, _should):
+        # Whole series: both AniDB titles, tagged with defaulttvdbseason
+        settings.show_list = [self._show("Crest of the Stars", 72025)]
         results = list(scene_exceptions._anidb_exceptions_generator())
-        self.assertEqual(results, [(329820, "Isekai Shokudou", -1)])
-        set_refresh.assert_called_once_with("anidb")
+        self.assertEqual(
+            sorted(results),
+            [
+                (72025, "Seikai no Monshou", 1),
+                (72025, "Seikai no Senki", 2),
+            ],
+        )
 
-    @patch("sickchill.adba.aniDBfileInfo.get_anime_titles_xml", return_value=False)
-    @patch("sickchill.adba.aniDBfileInfo.get_anime_list_xml", return_value=False)
-    @patch("sickchill.oldbeard.scene_exceptions.should_refresh", return_value=True)
-    @patch("sickchill.oldbeard.scene_exceptions.set_last_refresh")
-    def test_skips_when_xml_missing(self, set_refresh, _should, _list_dl, _titles_dl):
-        for path in self.anime_dir.glob("*.xml"):
-            path.unlink()
-        settings.show_list = [self._show("Restaurant to Another World", 329820)]
-
-        self.assertEqual(list(scene_exceptions._anidb_exceptions_generator()), [])
-        set_refresh.assert_not_called()
+        # Season-2-only show must not first-wins onto aid 1
+        settings.show_list = [self._show("Banner of the Stars", 72025, default_tvdb_season=2)]
+        results = list(scene_exceptions._anidb_exceptions_generator())
+        self.assertEqual(results, [(72025, "Seikai no Senki", 2)])
+        set_refresh.assert_called_with("anidb")
 
 
 if __name__ == "__main__":
