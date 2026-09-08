@@ -1173,6 +1173,17 @@ class TVShow(object):
             logger.debug(f"{self.indexerid}: No IMDb ID")
             return
 
+        # Follow IMDb redirect/legacy ids before refresh (imdbpie raises on those).
+        try:
+            resolved_id = helpers.resolve_imdb_title_id(self.imdb_id)
+        except Exception as error:
+            logger.debug(f"{self.indexerid}: IMDb redirect resolve failed: {error}")
+            resolved_id = self.imdb_id
+
+        if resolved_id and resolved_id != self.imdb_id:
+            logger.info(f"{self.indexerid}: IMDb id {self.imdb_id} redirects to {resolved_id}")
+            self.imdb_id = resolved_id
+
         logger.debug(f"{self.indexerid}: Refreshing IMDb info")
 
         executor = ThreadPoolExecutor(max_workers=1)
@@ -1184,7 +1195,9 @@ class TVShow(object):
 
             if title:
                 new_title = getattr(title, "title", self.name)
-                new_imdb_id = getattr(title, "imdb_id", self.imdb_id)
+                new_imdb_id = helpers.normalize_imdb_id(getattr(title, "imdb_id", None)) or self.imdb_id
+                if new_imdb_id != self.imdb_id:
+                    self.imdb_id = new_imdb_id
 
                 self.imdb_info.update(
                     {
@@ -1194,7 +1207,7 @@ class TVShow(object):
                         "year": getattr(title, "year", self.startyear),
                         "akas": self.imdb_info.get("akas", ""),
                         "runtimes": getattr(title, "runtime", self.runtime),
-                        "genres": "|".join(getattr(title, "genres", [])),
+                        "genres": "|".join(getattr(title, "genres", []) or []),
                         "countries": getattr(title, "countries", "") or self.imdb_info.get("countries", ""),
                         "country_codes": self.imdb_info.get("country_codes", ""),
                         "certificates": getattr(title, "certification", "") or "",
@@ -1221,9 +1234,22 @@ class TVShow(object):
             executor.shutdown(wait=False, cancel_futures=True)
 
     def _fetch_imdb_title(self, imdb_id):
-        """Isolated so it can be run in a thread with a timeout"""
-        facade = ImdbFacade()
-        return facade.get_title(imdb_id)
+        """Isolated so it can be run in a thread with a timeout.
+
+        Resolves redirected/legacy IMDb ids before calling imdbpie, which otherwise
+        raises ``Title not found. … is a redirection imdb id``.
+        """
+        client = Imdb()
+        resolved_id = helpers.resolve_imdb_title_id(imdb_id, client=client) or imdb_id
+        facade = ImdbFacade(client=client)
+        title = facade.get_title(resolved_id)
+        # Ensure callers persist the canonical id even if facade omits it.
+        if title is not None and resolved_id and getattr(title, "imdb_id", None) != resolved_id:
+            try:
+                title.imdb_id = resolved_id
+            except Exception:
+                pass
+        return title
 
     def next_episode(self):
         current_date = sc_today().toordinal()

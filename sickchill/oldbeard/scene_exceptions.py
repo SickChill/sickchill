@@ -1,10 +1,9 @@
-import datetime
 import time
 from pathlib import Path
 from typing import Generator
 
 import sickchill
-from sickchill import adba, logger, settings
+from sickchill import logger, settings
 from sickchill.oldbeard import db, helpers
 from sickchill.oldbeard.network_timezones import sc_now
 from sickchill.show.Show import Show
@@ -331,25 +330,98 @@ def _sickchill_exceptions_generator() -> Generator[tuple[int, str, int], None, N
 
 
 def _anidb_exceptions_generator() -> Generator[tuple[int, str, int], None, None]:
+    """Yield AniDB main titles for local anime shows via ScudLee mapping XMLs.
+
+    This does **not** use the AniDB UDP API. It downloads/parses local caches of
+    ``anime-list.xml`` / ``animetitles.xml`` once per refresh, then looks up each
+    show. The previous per-show ``adba.Anime(...)`` path re-parsed multi‑MB XML for
+    every title (minutes of MAIN/SHOWQUEUE blocking) and swallowed missing-map
+    ``ValueError``s without detail.
+    """
     if not should_refresh("anidb"):
         return
 
     logger.info("Checking for scene exception updates for AniDB")
+
+    cache_dir = Path(settings.CACHE_DIR) / "anime"
+    try:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as error:
+        logger.warning(f"AniDB scene exceptions skipped: cannot create cache dir {cache_dir}: {error}")
+        return
+
+    from sickchill.adba import aniDBfileInfo as anidb_files
+
+    anime_list = anidb_files.read_tvdb_map_xml(cache_dir)
+    titles_xml = anidb_files.read_anidb_xml(cache_dir)
+    if anime_list is None or titles_xml is None:
+        logger.warning("AniDB scene exceptions skipped: anime-list/animetitles XML unavailable")
+        return
+
+    tvdb_to_aid: dict[int, int] = {}
+    for anime in anime_list.findall("anime"):
+        try:
+            tvdb_id = int(anime.get("tvdbid") or 0)
+            aid = int(anime.get("anidbid") or 0)
+        except (TypeError, ValueError):
+            continue
+        if tvdb_id > 0 and aid > 0:
+            # First mapping wins; list order is stable enough for scene-name use.
+            tvdb_to_aid.setdefault(tvdb_id, aid)
+
+    aid_to_main_name: dict[int, str] = {}
+    xml_lang = "{http://www.w3.org/XML/1998/namespace}lang"
+    for anime in titles_xml.findall("anime"):
+        try:
+            aid = int(anime.get("aid") or 0)
+        except (TypeError, ValueError):
+            continue
+        if not aid:
+            continue
+        main_name = ""
+        for title in anime.findall("title"):
+            if title.get("type") == "main" and title.text:
+                main_name = title.text
+                break
+        if not main_name:
+            for title in anime.findall("title"):
+                if title.get(xml_lang) == "en" and title.text:
+                    main_name = title.text
+                    break
+        if main_name:
+            aid_to_main_name[aid] = main_name
+
+    updated = skipped = failed = 0
     for show in settings.show_list:
         if settings.stopping or settings.restarting:
             return
 
-        if show.is_anime and show.indexer == 1:
-            # noinspection PyBroadException
-            try:
-                anime = adba.Anime(None, name=show.name, tvdbid=show.indexerid, autoCorrectName=True, cache_dir=Path(settings.CACHE_DIR))
-            except Exception:
-                logger.debug(f"Could not update anime exceptions from anidb for {show.name}")
-                continue
-            else:
-                if anime.name and anime.name != show.name:
-                    yield int(show.indexerid), anime.name, -1
+        if not (show.is_anime and show.indexer == 1):
+            continue
 
+        try:
+            aid = tvdb_to_aid.get(int(show.indexerid), 0)
+            if not aid:
+                skipped += 1
+                logger.debug(f"AniDB: no TVDB mapping for {show.name} (tvdb={show.indexerid})")
+                continue
+
+            anidb_name = aid_to_main_name.get(aid)
+            if not anidb_name:
+                skipped += 1
+                logger.debug(f"AniDB: no title for aid={aid} ({show.name}, tvdb={show.indexerid})")
+                continue
+
+            if anidb_name != show.name:
+                updated += 1
+                yield int(show.indexerid), anidb_name, -1
+            else:
+                skipped += 1
+        except Exception as error:
+            failed += 1
+            logger.debug(f"Could not update anime exceptions from anidb for {show.name}: {error}")
+
+    logger.info(f"AniDB scene exceptions finished: updated={updated}, skipped={skipped}, failed={failed}")
     set_last_refresh("anidb")
 
 

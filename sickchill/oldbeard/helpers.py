@@ -1727,6 +1727,58 @@ def imdb_from_tvdbid_on_tvmaze(indexer_id: Union[str, int]) -> str:
     return imdb_id
 
 
+def normalize_imdb_id(imdb_id: Union[str, None]) -> str:
+    """Return a normalized ``tt`` IMDb title id, or empty string if invalid."""
+    if not imdb_id:
+        return ""
+    digits = re.sub(r"\D", "", str(imdb_id))
+    return f"tt{digits}" if digits else ""
+
+
+def resolve_imdb_title_id(imdb_id: Union[str, None], client=None) -> str:
+    """Normalize an IMDb title id and follow IMDb redirections to the canonical id.
+
+    IMDb sometimes keeps duplicate/legacy ids that redirect to a canonical ``tt`` id.
+    ``imdbpie`` refuses those with ``Title not found. … is a redirection imdb id``.
+    """
+    normalized = normalize_imdb_id(imdb_id)
+    if not normalized:
+        return ""
+
+    try:
+        from imdbpie import Imdb
+        from imdbpie.imdbpie import BASE_URI
+    except Exception as error:
+        logger.debug(f"IMDb redirect resolve unavailable: {error}")
+        return normalized
+
+    imdb_client = client or Imdb()
+    try:
+        path = "/template/imdb-ios-writable/title-auxiliary-v31.jstl/render"
+        resource = imdb_client._get(
+            url=urljoin(BASE_URI, path),
+            params={
+                "tconst": normalized,
+                "today": datetime.datetime.now(datetime.timezone.utc).date().strftime("%Y-%m-%d"),
+                "region": getattr(imdb_client, "region", None),
+            },
+        )
+    except Exception as error:
+        logger.debug(f"IMDb redirect lookup failed for {normalized}: {error}")
+        return normalized
+
+    if not isinstance(resource, dict):
+        return normalized
+
+    returned_id = resource.get("id") or ""
+    # IMDb title ids were historically 7 digits and are now commonly 7–8+ digits.
+    match = re.search(r"tt\d{7,}", str(returned_id))
+    if match and match.group() != normalized:
+        logger.debug(f"IMDb id {normalized} redirects to {match.group()}")
+        return match.group()
+    return normalized
+
+
 def is_ip_local(ip):
     request_ip = ipaddress.ip_address(ip)
     if request_ip.is_private:

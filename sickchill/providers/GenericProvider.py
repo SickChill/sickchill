@@ -348,6 +348,16 @@ class GenericProvider(object):
     def get_id(self, suffix=""):
         return GenericProvider.make_id(self.name) + str(suffix)
 
+    @property
+    def uses_configurable_categories(self) -> bool:
+        """True for Newznab and Jackett-SC (user-editable category id lists).
+
+        Torrent providers other than Jackett-SC reuse ``categories`` for hardcoded
+        ints/lists/dicts or query strings and must not be overwritten with
+        Newznab-style string defaults (#9148 TorrentDay regression).
+        """
+        return False
+
     def get_quality(self, item, anime=False):
         (title, url_) = self._get_title_and_url(item)
         quality = Quality.scene_quality(title, anime)

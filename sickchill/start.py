@@ -893,9 +893,14 @@ def initialize(console_logging: bool = True, debug: bool = False, dbdebug: bool 
                 curProvider.cookies = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_cookies"), censor_log=True)
             if hasattr(curProvider, "indexer"):
                 curProvider.indexer = check_setting_str(settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_indexer"), "all")
-            if hasattr(curProvider, "categories"):
+            # Newznab + Jackett-SC only. Other torrent providers keep hardcoded
+            # categories (ints/lists/dicts/query strings) — #9148 TorrentDay regression.
+            if getattr(curProvider, "uses_configurable_categories", False):
                 curProvider.categories = check_setting_str(
-                    settings.CFG, curProvider.get_id().upper(), curProvider.get_id("_categories"), "5000,5030,5040,5045,5050,5060,5070"
+                    settings.CFG,
+                    curProvider.get_id().upper(),
+                    curProvider.get_id("_categories"),
+                    getattr(curProvider, "categories", "") or "5000,5030,5040,5045,5050,5060,5070",
                 )
 
         try:
@@ -1189,7 +1194,7 @@ def save_config():
             new_config[curProvider.get_id().upper()][curProvider.get_id("_custom_url")] = curProvider.custom_url
         if hasattr(curProvider, "indexer"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_indexer")] = curProvider.indexer
-        if hasattr(curProvider, "categories"):
+        if getattr(curProvider, "uses_configurable_categories", False):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_categories")] = curProvider.categories
         if hasattr(curProvider, "digest"):
             new_config[curProvider.get_id().upper()][curProvider.get_id("_digest")] = curProvider.digest
