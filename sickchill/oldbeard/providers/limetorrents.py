@@ -13,9 +13,9 @@ class Provider(TorrentProvider):
         super().__init__("LimeTorrents")
 
         self.urls = {
-            "index": "https://www.limetorrents.info/",
-            "search": "https://www.limetorrents.info/searchrss/",
-            "rss": "https://www.limetorrents.info/rss/tv/",
+            "index": "https://www.limetorrents.fun/",
+            "search": "https://www.limetorrents.fun/searchrss/",
+            "rss": "https://www.limetorrents.fun/rss/tv/",
         }
 
         self.url = self.urls["index"]
