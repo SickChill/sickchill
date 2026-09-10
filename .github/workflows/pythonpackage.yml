@@ -40,6 +40,9 @@ jobs:
       docker_tags: ${{ steps.docker.outputs.tags }}
       docker_labels: ${{ steps.docker.outputs.labels }}
     steps:
+      - name: Immutable Docker tag
+        id: immutable
+        run: echo "tag=${GITHUB_REF_NAME}${GITHUB_RUN_ID}-${GITHUB_SHA:0:12}" >> "$GITHUB_OUTPUT"
       - name: Docker meta
         id: docker
         uses: docker/metadata-action@v6
@@ -57,8 +60,8 @@ jobs:
             type=ref,event=branch
             type=ref,event=tag
             type=ref,event=pr
-            type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.run_id }},event=push
-            type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.sha }},event=push
+            # Single immutable push tag: develop{run_id}-{sha:12} (replaces separate run_id + full-sha tags)
+            type=raw,value=${{ steps.immutable.outputs.tag }},event=push
             type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
             type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
             type=edge,branch=develop
