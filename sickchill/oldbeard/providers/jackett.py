@@ -70,8 +70,12 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
 
     @staticmethod
     def _ip_allows_cleartext_apikey(ip) -> bool:
-        """Local/private peers may use HTTP; globally routable peers require HTTPS."""
-        return not ip.is_global
+        """Loopback/private/link-local peers may use HTTP; all others require HTTPS.
+
+        Deliberately excludes CGNAT (100.64.0.0/10) and other non-global-but-not-private
+        ranges — those are not local Docker/LAN Jackett endpoints.
+        """
+        return bool(ip.is_loopback or ip.is_private or ip.is_link_local)
 
     @classmethod
     def _host_allows_cleartext_apikey(cls, host: str) -> bool:

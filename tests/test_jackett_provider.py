@@ -157,6 +157,9 @@ class JackettProviderTests(unittest.TestCase):
             self.assertFalse(allow("http://remote.example:9117"))
             self.assertFalse(allow("http://jackett.example.com:9117"))
         self.assertFalse(allow("http://8.8.8.8:9117"))
+        # CGNAT / RFC6598 is non-global but not private — require HTTPS
+        self.assertFalse(allow("http://100.64.0.1:9117"))
+        self.assertTrue(allow("https://100.64.0.1:9117"))
         self.assertFalse(allow("ftp://127.0.0.1:9117"))
         self.assertFalse(allow("http://127.0.0.1:99999"))
 
