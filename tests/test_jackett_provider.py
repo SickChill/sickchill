@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import socket
 import unittest
 from datetime import date
 from unittest.mock import MagicMock, patch
@@ -100,43 +101,67 @@ class JackettProviderTests(unittest.TestCase):
         self.provider.api_key = "abc"
         self.assertTrue(self.provider._check_auth())
 
-    def test_check_auth_rejects_non_loopback_http_with_apikey(self):
-        self.provider.custom_url = "http://jackett.example.com:9117"
-        self.assertFalse(self.provider._check_auth())
+    @staticmethod
+    def _addrinfo(ip: str):
+        """Minimal getaddrinfo-shaped tuple for mocking DNS."""
+        return [(socket.AF_INET, socket.SOCK_STREAM, 0, "", (ip, 0))]
 
+    def test_check_auth_http_local_vs_public(self):
+        # Public hostname over HTTP still rejected (apikey in query string)
+        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("8.8.8.8")):
+            self.provider.custom_url = "http://jackett.example.com:9117"
+            self.assertFalse(self.provider._check_auth())
         self.provider.custom_url = "https://jackett.example.com:9117"
         self.assertTrue(self.provider._check_auth())
 
-        # Loopback HTTP still allowed (bare "localhost" fails validators.url)
+        # Loopback / private literal IPs: HTTP or HTTPS
         self.provider.custom_url = "http://127.0.0.1:9117"
         self.assertTrue(self.provider._check_auth())
         self.provider.custom_url = "http://[::1]:9117"
         self.assertTrue(self.provider._check_auth())
-
-        # Private / LAN / hostname HTTP requires HTTPS (apikey in query string)
         self.provider.custom_url = "http://192.168.1.10:9117"
-        self.assertFalse(self.provider._check_auth())
+        self.assertTrue(self.provider._check_auth())
         self.provider.custom_url = "https://192.168.1.10:9117"
         self.assertTrue(self.provider._check_auth())
-        self.provider.custom_url = "http://jackett.local:9117"
-        self.assertFalse(self.provider._check_auth())
+
+        # Compose / .local hostnames: HTTP only when DNS pins to a local/private peer
+        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("172.18.0.2")):
+            self.provider.custom_url = "http://jackett:9117"
+            self.assertTrue(self.provider._check_auth())
+            self.provider.custom_url = "http://jackett.local:9117"
+            self.assertTrue(self.provider._check_auth())
         self.provider.custom_url = "https://jackett.local:9117"
         self.assertTrue(self.provider._check_auth())
+
+        # Malformed port must not reach auth success via the Docker-name fallback
+        self.provider.custom_url = "http://jackett:notaport"
+        self.assertFalse(self.provider._check_auth())
 
     def test_url_allows_apikey_transport_helpers(self):
         allow = Provider._url_allows_apikey_transport
         self.assertTrue(allow("https://remote.example/jackett"))
         self.assertTrue(allow("http://127.0.0.1:9117"))
-        self.assertTrue(allow("http://localhost:9117"))
         self.assertTrue(allow("http://[::1]:9117"))
         self.assertTrue(allow("https://192.168.1.10:9117"))
-        self.assertTrue(allow("https://jackett.local:9117"))
-        self.assertFalse(allow("http://10.0.0.5:9117"))
-        self.assertFalse(allow("http://192.168.1.10:9117"))
-        self.assertFalse(allow("http://jackett:9117"))
-        self.assertFalse(allow("http://nas.local:9117"))
-        self.assertFalse(allow("http://remote.example:9117"))
+        self.assertTrue(allow("http://10.0.0.5:9117"))
+        self.assertTrue(allow("http://192.168.1.10:9117"))
+        self.assertTrue(allow("http://172.16.5.1:9117"))
+        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("127.0.0.1")):
+            self.assertTrue(allow("http://localhost:9117"))
+        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("172.18.0.2")):
+            self.assertTrue(allow("https://jackett.local:9117"))
+            self.assertTrue(allow("http://jackett:9117"))
+            self.assertTrue(allow("http://host.docker.internal:9117"))
+            self.assertTrue(allow("http://nas.local:9117"))
+        with patch("sickchill.oldbeard.providers.jackett.socket.getaddrinfo", return_value=self._addrinfo("8.8.8.8")):
+            self.assertFalse(allow("http://remote.example:9117"))
+            self.assertFalse(allow("http://jackett.example.com:9117"))
+        self.assertFalse(allow("http://8.8.8.8:9117"))
+        # CGNAT / RFC6598 is non-global but not private — require HTTPS
+        self.assertFalse(allow("http://100.64.0.1:9117"))
+        self.assertTrue(allow("https://100.64.0.1:9117"))
         self.assertFalse(allow("ftp://127.0.0.1:9117"))
+        self.assertFalse(allow("http://127.0.0.1:99999"))
 
     @patch("sickchill.oldbeard.providers.jackett.time.sleep", return_value=None)
     @patch.object(Provider, "get_url")
