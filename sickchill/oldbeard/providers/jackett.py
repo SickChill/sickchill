@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ipaddress
+import socket
 import time
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
@@ -67,32 +68,44 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         path = (parts.path or "").rstrip("/")
         return urlunsplit((parts.scheme, parts.netloc, path, "", ""))
 
+    @staticmethod
+    def _ip_allows_cleartext_apikey(ip) -> bool:
+        """Local/private peers may use HTTP; globally routable peers require HTTPS."""
+        return not ip.is_global
+
     @classmethod
     def _host_allows_cleartext_apikey(cls, host: str) -> bool:
         """True when HTTP (cleartext) apikey transport is acceptable for ``host``.
 
-        Allows loopback, RFC1918/link-local/ULA addresses, and local/Docker-style
-        names (``jackett``, ``host.docker.internal``, ``*.local`` / ``*.lan``).
-        Public IPs and public-looking hostnames still require HTTPS — apikey is a
-        query param on the Torznab URL.
+        Literal IPs are classified directly. Hostnames are resolved and every answer
+        must be non-global (loopback/private/link-local) — we do not trust
+        ``*.local`` / single-label name text alone (pin classification to peer addrs).
         """
         host = (host or "").lower().rstrip(".")
         if not host:
             return False
-        if host in ("localhost", "127.0.0.1", "::1", "host.docker.internal", "gateway.docker.internal"):
-            return True
-        if host.endswith((".localhost", ".local", ".lan", ".internal")):
-            return True
-        # Docker Compose / swarm service names are usually single-label.
-        if "." not in host and host.replace("-", "").replace("_", "").isalnum():
-            return True
 
         try:
-            ip = ipaddress.ip_address(host)
+            return cls._ip_allows_cleartext_apikey(ipaddress.ip_address(host))
         except ValueError:
+            pass
+
+        try:
+            addrinfo = socket.getaddrinfo(host, None)
+        except OSError:
             return False
-        # Prefer is_global so documentation/TEST-NET ranges stay non-public across Python versions.
-        return not ip.is_global
+
+        resolved = set()
+        for entry in addrinfo:
+            sockaddr = entry[4]
+            if not sockaddr:
+                continue
+            try:
+                resolved.add(ipaddress.ip_address(sockaddr[0]))
+            except ValueError:
+                continue
+
+        return bool(resolved) and all(cls._ip_allows_cleartext_apikey(ip) for ip in resolved)
 
     @classmethod
     def _url_allows_apikey_transport(cls, url: str) -> bool:
@@ -103,14 +116,24 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
             return True
         if scheme != "http":
             return False
+        try:
+            # urlsplit.port raises ValueError on malformed ports (e.g. :99999 / :abc).
+            _ = parts.port
+        except ValueError:
+            return False
         return cls._host_allows_cleartext_apikey(parts.hostname or "")
 
     @classmethod
     def _is_usable_jackett_url(cls, url: str) -> bool:
         """Like ``invalid_url``, but also accept Docker service names validators.url rejects."""
+        parts = urlsplit((url or "").strip())
+        try:
+            _ = parts.port
+        except ValueError:
+            return False
+
         if not cls.invalid_url(url or ""):
             return True
-        parts = urlsplit((url or "").strip())
         if (parts.scheme or "").lower() not in ("http", "https"):
             return False
         return cls._host_allows_cleartext_apikey(parts.hostname or "")
@@ -147,12 +170,14 @@ class Provider(TorrentProvider, tvcache.RSSTorrentMixin):
         if not self._is_usable_jackett_url(self.custom_url or ""):
             logger.warning(_("Invalid Jackett URL. Check your provider settings."))
             return False
-        # apikey is sent as a query param — require HTTPS except for local/private HTTP
+        # apikey is a query param — HTTPS for public peers; HTTP only for local/private.
         if not self._url_allows_apikey_transport(self.torznab_url):
             logger.warning(
                 _(
-                    "Jackett URL must use HTTPS when the API key is sent public in the query string. "
-                    "HTTP allowed for loopback, private LAN IPs, and local/Docker hostnames "
+                    "Jackett URL must use HTTPS when the API key is sent in the query string to a "
+                    "public address. HTTP is allowed for loopback/private LAN IPs and hostnames "
+                    "that resolve only to local/private addresses "
+                    "(e.g. 127.0.0.1, 192.168.x.x, jackett, host.docker.internal)."
                 )
             )
             return False
